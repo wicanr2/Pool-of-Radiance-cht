@@ -65,7 +65,13 @@ var classesByRace = map[string][]ClassChoice{
 }
 
 func ClassesForRace(raceID string) []ClassChoice {
-	return append([]ClassChoice(nil), classesByRace[raceID]...)
+	source := classesByRace[raceID]
+	result := make([]ClassChoice, len(source))
+	for index, value := range source {
+		result[index] = value
+		result[index].Components = append([]string(nil), value.Components...)
+	}
+	return result
 }
 
 func HintFor(stage string) string {

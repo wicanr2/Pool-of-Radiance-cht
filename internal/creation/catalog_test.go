@@ -30,8 +30,12 @@ func TestRaceClassMenusMatchDOSOracle(t *testing.T) {
 func TestCatalogReturnsCopiesAndGuidance(t *testing.T) {
 	got := ClassesForRace("elf")
 	got[0].Label = "changed"
+	got[0].Components[0] = "changed"
 	if ClassesForRace("elf")[0].Label != "Fighter" {
 		t.Fatal("caller mutated class catalog")
+	}
+	if ClassesForRace("elf")[0].Components[0] != "fighter" {
+		t.Fatal("caller mutated nested class components")
 	}
 	for _, stage := range []string{"race", "class", "alignment", "portrait", "icon"} {
 		if HintFor(stage) == "" {

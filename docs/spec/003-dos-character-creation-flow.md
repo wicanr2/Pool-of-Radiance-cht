@@ -4,6 +4,12 @@
 日期：2026-08-31。能力擲值、年齡、金錢與職業限制公式仍是 DRAFT，不在本次實作
 授權內。
 
+操作契約同時對照 IBM PC Quick Start Card（垂直項目用 Home／End＋Enter；水平
+命令按畫面白色字母）與原版 Rule Book 的 ICON 章：
+<https://dosdays.co.uk/media/games/pool/PoolOfRadiance-ReferenceCard-PC.pdf>、
+<https://www.mocagh.org/ssi/pool-manual.pdf>。實際選單、輸出 bytes 與順序仍以本
+DOS build 的 runtime capture 為準。
+
 ## Oracle 環境勘誤
 
 `POOL.CFG` 以 bytes 明確指定資料根目錄為 `C:\POOLRAD\`。DOSBox 必須 mount
