@@ -49,10 +49,13 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![Pool remake 標題](docs/screenshots/pool-remake-title.png) | ![Pool remake 角色資料頁](docs/screenshots/pool-remake-character-sheet.png) |
 
-在 Docker Go／Ebitengine 工具鏈內執行：
+目前以 Docker／Xvfb 做離線測試與煙霧擷取：
 
 ```sh
-tools/go.sh run ./cmd/pool-game -zip "Pool of Radiance (1988).zip"
+tools/go.sh test ./...
 ```
+
+`tools/go.sh` 會在測試容器內自行建立有界 Xvfb。可互動封包尚未完成；本階段不把
+主機 X11 socket 掛入開發容器，也不把只在背景 Xvfb 執行的入口寫成玩家啟動方式。
 
 這仍是首條玩家垂直鏈的前半段，不是可玩版或完整建角完成聲明。

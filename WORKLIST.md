@@ -31,6 +31,8 @@
   `cmd/pool-game` 已由標題以正常按鍵走到完整公式資料頁，R 可重擲，F1／F2／ESC／F10
   已有接縫測試與 Xvfb 截圖。剩餘驗收是 YES 後的姓名、portrait／icon、285-byte CHA
   serialization、回到 party menu、加入隊伍與 theme 下 sprite／tileset 同步切換。
+  Portrait archive shape 已全掃（Spec 006：63 HEAD 88×40、46 BODY 88×48）；下一步
+  必須閉合 overlay selector／wrap、透明與 body y，不能直接把全部 block 做任意組合。
 - [ ] 解出 Phlan 第一個地圖、入口、移動遮罩與第一個玩家事件。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。

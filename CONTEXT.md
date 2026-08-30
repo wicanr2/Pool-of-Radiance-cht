@@ -49,6 +49,10 @@
   標題 → 主選單 → Race／Gender／Class／Alignment → Spec 004 角色資料頁。Xvfb
   以逐鍵延遲走到資料頁並保存四張 remake 截圖；F1／F2／ESC／F10 有按鍵接縫測試。
   這只證明前半段 UI 垂直鏈，姓名、portrait、combat icon、party、Phlan 與存檔仍未接。
+- HEAD1..8／BODY1..8 共 16 archives 已由新 `pool-portrait-audit` 全掃：109／109
+  blocks 可由共用 engine picture decoder fail-closed 解碼；63 HEAD 固定 88×40，
+  46 BODY 固定 88×48。Spec 006 只將 shape 升為 READY；稀疏 block selector、透明與
+  疊合 y 尚未閉合，因此 remake 尚未把 109 張任意交叉組合冒充原版選單。
 
 ## 尚未知／不阻擋目前盤點
 
