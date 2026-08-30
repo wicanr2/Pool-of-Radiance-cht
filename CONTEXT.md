@@ -28,8 +28,10 @@
   缺口，不得寫成 gameplay opcode 已知或 VM parity。
 - DOSBox 資料目錄必須是 `C:\POOLRAD\`；直接掛成 `C:\` 會到建角資料頁才
   假性要求 disk 3。修正掛載後，預設 Dwarf／Male／Fighter／Lawful Good 可正常
-  產生非零能力值、頭像、姓名提示與 `MAX BONUS?`。sprite／調色仍未走到，維持
-  DRAFT（Spec 003）。
+  產生非零能力值與頭像。原先誤讀成 `MAX BONUS?` 的文字經放大後訂正為
+  `HEAD / BODY / KEEP` portrait editor；其後 READY／ACTION combat icon、Parts、
+  雙色六部位、Size 與 Exit 均已走通。285-byte CHA 的 `BDh..C6h` 已由原版 UI
+  單變因差分閉合（Spec 003 READY）；能力公式仍是 DRAFT。
 
 ## 尚未知／不阻擋目前盤點
 

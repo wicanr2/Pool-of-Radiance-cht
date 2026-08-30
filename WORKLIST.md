@@ -21,9 +21,9 @@
 ## P1：第一條玩家垂直鏈
 
 - [ ] 反組譯並寫 READY 建角／建隊 spec，包含戰鬥 sprite、調色與角色檔。
-  已用正確的 `C:\POOLRAD\` 掛載走到姓名與 `MAX BONUS?`；Race／Gender／Class／
-  Alignment／角色頁順序已記於 DRAFT Spec 003。仍須跨過該閘門並做角色檔差分，
-  才能實作 sprite ready／action 與六部位調色。
+  已用正確的 `C:\POOLRAD\` 掛載走通 portrait、READY／ACTION combat icon、Parts、
+  雙色六部位、Size 與完成建角；285-byte CHA icon 欄位已有單變因差分，Spec 003
+  對這一範圍已 READY。能力擲值／age／gold／HP 與 Race／Class 限制仍須另行 RE。
 - [ ] 解出 Phlan 第一個地圖、入口、移動遮罩與第一個玩家事件。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
