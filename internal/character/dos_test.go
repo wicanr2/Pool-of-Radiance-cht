@@ -12,6 +12,7 @@ func TestParseDOSIconMapping(t *testing.T) {
 	record[0] = 4
 	copy(record[1:], "TEST")
 	copy(record[0x10:], []byte{14, 13, 11, 13, 15, 13})
+	record[offsetRace], record[offsetClass], record[offsetGender] = 1, 2, 1
 	copy(record[offsetIconHead:], []byte{0, 0, 0x7A, 1, 0x91, 0xA2, 0xB3, 0xC4, 0xE6, 0xF7})
 	got, err := ParseDOS(record)
 	if err != nil {
@@ -19,6 +20,9 @@ func TestParseDOSIconMapping(t *testing.T) {
 	}
 	if got.Name != "TEST" || got.Abilities != [6]uint8{14, 13, 11, 13, 15, 13} {
 		t.Fatalf("unexpected identity: %+v", got)
+	}
+	if got.RaceCode != 1 || got.ClassCode != 2 || got.GenderCode != 1 {
+		t.Fatalf("unexpected identity codes: %+v", got)
 	}
 	if got.Icon.OpaqueBF != 0x7A || got.Icon.Size != 1 {
 		t.Fatalf("unexpected structure: %+v", got.Icon)

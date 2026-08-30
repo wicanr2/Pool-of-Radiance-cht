@@ -15,6 +15,9 @@ const (
 	offsetColorFace   = 0xC4
 	offsetColorShield = 0xC5
 	offsetColorWeapon = 0xC6
+	offsetRace        = 0x2E
+	offsetClass       = 0x2F
+	offsetGender      = 0x9E
 )
 
 type DualColor struct{ Color1, Color2 uint8 }
@@ -25,9 +28,12 @@ type IconCustomization struct {
 }
 
 type DOSCharacter struct {
-	Name      string
-	Abilities [6]uint8
-	Icon      IconCustomization
+	Name       string
+	Abilities  [6]uint8
+	RaceCode   uint8
+	ClassCode  uint8
+	GenderCode uint8
+	Icon       IconCustomization
 }
 
 func ParseDOS(record []byte) (DOSCharacter, error) {
@@ -40,6 +46,9 @@ func ParseDOS(record []byte) (DOSCharacter, error) {
 	}
 	result := DOSCharacter{Name: string(record[1 : 1+nameLength])}
 	copy(result.Abilities[:], record[0x10:0x16])
+	result.RaceCode = record[offsetRace]
+	result.ClassCode = record[offsetClass]
+	result.GenderCode = record[offsetGender]
 	result.Icon = IconCustomization{
 		Head: record[offsetIconHead], Weapon: record[offsetIconWeapon],
 		OpaqueBF: record[offsetIconOpaque], Size: record[offsetIconSize],

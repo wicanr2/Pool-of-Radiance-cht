@@ -32,6 +32,10 @@
   `HEAD / BODY / KEEP` portrait editor；其後 READY／ACTION combat icon、Parts、
   雙色六部位、Size 與 Exit 均已走通。285-byte CHA 的 `BDh..C6h` 已由原版 UI
   單變因差分閉合（Spec 003 READY）；能力公式仍是 DRAFT。
+- 六種族職業清單已由正常 UI 逐張擷取並寫成 typed catalog；原版 Race codes 是
+  `1,2,3,4,5,7`，單職 Class codes 為 Cleric `0`／Fighter `2`／Magic-User `5`／
+  Thief `6`，Gender 位於 `9Eh`（Male `0`／Female `1`）。多職持久碼與能力公式仍
+  未閉合，不以排列猜測。
 
 ## 尚未知／不阻擋目前盤點
 

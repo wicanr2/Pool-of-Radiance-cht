@@ -15,6 +15,9 @@
   typed adapter 匯出、2× 最近鄰呈現後，與原版標題逐像素 AE=`0`。
 - ECL 已確認本作 code-address base 為 `9914h`；目前只有 3／29 blocks 可由既有
   CoAB decoder 完整走圖，其餘屬格式差異研究缺口，尚未接入 production VM。
+- 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
+  Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
+  原版職業清單已進 typed catalog，並有 Race→Gender→Class→Alignment＋ESC 狀態機。
 - 共用 engine 固定使用同層
   `/home/anr2/cht/golden_box/golden-box-remake-engine`，本 repository 不複製
   engine source。

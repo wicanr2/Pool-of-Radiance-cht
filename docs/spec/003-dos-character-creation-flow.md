@@ -34,6 +34,21 @@
 11. 頂層 Exit 顯示 `IS THIS ICON OK? YES NO`；Yes 寫出 `<NAME>.CHA` 與
     `<NAME>.SPC`，再返回 Party Creation Menu。
 
+### 原版 Race → Class 清單
+
+| Race | 依畫面順序的 Class |
+|---|---|
+| Dwarf | Fighter；Thief；Fighter/Thief |
+| Elf | Fighter；Magic-User；Thief；Fighter/Magic-User；Fighter/Thief；Fighter/Magic-User/Thief；Magic-User/Thief |
+| Gnome | Fighter；Thief；Fighter/Thief |
+| Half-Elf | Cleric；Fighter；Magic-User；Thief；Cleric/Fighter；Cleric/Fighter/Magic-User；Cleric/Magic-User；Fighter/Magic-User；Fighter/Thief；Fighter/Magic-User/Thief；Magic-User/Thief |
+| Halfling | Fighter；Thief；Fighter/Thief |
+| Human | Cleric；Fighter；Magic-User；Thief |
+
+六張同狀態畫面在
+[`docs/reference/original-dos/character-classes/`](../reference/original-dos/character-classes/)。
+這是原版 menu corpus，不由現代規則推導；順序也屬 UI 契約。
+
 正確掛載下的畫面證據位於
 [`docs/reference/original-dos/character-flow/`](../reference/original-dos/character-flow/)。
 擲值具有隨機性，畫面只證明欄位、順序與一次 runtime 樣本，不把樣本數字寫成
@@ -56,6 +71,12 @@ ALLTWO 將六部位各前進一色。所有 CHA 固定 285 bytes。差分得到�
 | `C4h` | Hair／Face colors | low=Hair（Color-1）；high=Face（Color-2） |
 | `C5h` | Shield colors | low=Color-1；high=Color-2 |
 | `C6h` | Weapon colors | low=Color-1；high=Color-2 |
+
+另由原版 UI 完成六種族與性別／單職角色得到：`2Eh` 是 race code
+（Dwarf=`1`、Elf=`2`、Gnome=`3`、Half-Elf=`4`、Halfling=`5`、Human=`7`）；
+`2Fh` 是 class code（Cleric=`0`、Fighter=`2`、Magic-User=`5`、Thief=`6`）；
+`9Eh` 是 gender（Male=`0`、Female=`1`）。多職 class code 尚未逐項寫檔驗證，
+因此 typed catalog 先用 stable ID，不猜數值。
 
 基線 `C1..C6 = 91 A2 B3 C4 E6 F7`；六個 Color-1 各前進一格後為
 `92 A3 B4 C5 E7 F8`，六個 Color-2 各前進一格後為
