@@ -36,6 +36,11 @@
   `1,2,3,4,5,7`，單職 Class codes 為 Cleric `0`／Fighter `2`／Magic-User `5`／
   Thief `6`，Gender 位於 `9Eh`（Male `0`／Female `1`）。多職持久碼與能力公式仍
   未閉合，不以排列猜測。
+- 通用 TPOV parser 已對本 build 解出 38 overlays／774 entries；IDA Pro 9.4
+  最小探針通過後，角色建立定位到 overlay-16，角色資料顯示定位到 overlay-19。
+  `.CHA +10h..+15h` 六能力與 `+30h` age 的欄位身分已有原版 bytes 與顯示／直接
+  存取交叉證實；`+32h` 金錢、`+B1h` HP 目前是有直接資料流支持的強推論，亂數
+  helper、修正表與多職代碼仍維持 DRAFT，詳見 Spec 004，不得先猜公式實作。
 
 ## 尚未知／不阻擋目前盤點
 

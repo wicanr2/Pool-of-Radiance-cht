@@ -11,6 +11,8 @@
 - [ ] 完成 `START.EXE`／`GAME.OVR` 的 compiler、linker 與 overlay 邊界。
   MZ／`TPOV!` 與 family 強推論已記於 `docs/re/dos-toolchain-baseline.md`；仍須以
   startup code、RTL helper bytes、overlay directory 與 IDA 位址空間交叉驗證。
+  TPOV 結構層已可重生解出 38 overlays／774 entries；角色 overlay 的 IDA 9.4
+  窄切片已完成，但 compiler／RTL fingerprint 仍未閉合。
 - [x] 建立 DOSBox 正常啟動 oracle 與未縮放標題／主選單截圖。
   驗收：Docker/Xvfb 有界重播，輸入序列、畫面與 metadata 齊全。
 - [x] 完成 `TITLE.DAX` typed consumer 與 PNG／總覽圖匯出；block 1 放大 2× 後
@@ -24,7 +26,8 @@
   已用正確的 `C:\POOLRAD\` 掛載走通 portrait、READY／ACTION combat icon、Parts、
   雙色六部位、Size 與完成建角；285-byte CHA icon 欄位已有單變因差分，Spec 003
   對這一範圍已 READY。六種族職業清單、引導文字與 Race→Gender→Class→Alignment
-  狀態機已實作；能力擲值／age／gold／HP 與多職 class 持久碼仍須另行 RE。
+  狀態機已實作；Spec 004 已閉合六能力／age 欄位、`+32h／+B1h` 存取候選及建角 overlay，
+  能力 producer、age／gold／HP 公式與多職 class 持久碼仍須另行 RE。
 - [ ] 解出 Phlan 第一個地圖、入口、移動遮罩與第一個玩家事件。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
