@@ -4,8 +4,10 @@
 
 ## P0：可重現研究基線
 
-- [ ] 在 Docker 內解出 DOS ZIP 到唯讀來源快照，記錄每檔 SHA-256 與 manifest。
-  驗收：輸入 ZIP 不被修改；manifest 可由單一命令重生。
+- [x] DOS ZIP 的 168 個檔案已逐檔記錄 size、CRC32 與 SHA-256，固定 ZIP 雜湊、
+  `START.EXE` 錨點、檔案數與解壓總長；報表為 `docs/audit/dos-input-manifest.json`，
+  可由 `cmd/pool-input-manifest` 在不解壓、不修改來源的情況下重生。DOSBox oracle
+  仍將 ZIP 複製到 tmpfs writable overlay，原始來源唯讀掛載。
 - [x] 以 engine `dax` 掃描全部 DAX：113／113 成功，合計 1,245 blocks；結果在
   `docs/audit/dos-dax-inventory.json`。下一階段仍須依 payload consumer 分格式驗證。
 - [x] 以 engine `geometry.Parse` 掃描 `GEO1..8`：29／29 blocks 皆為 `0x402` bytes

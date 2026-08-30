@@ -6,6 +6,9 @@
 
 - DOS 來源 ZIP SHA-256：
   `1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633`。
+- ZIP 的 168 個非目錄檔案、解壓總長 1,582,291 bytes，已由
+  `cmd/pool-input-manifest` 逐檔固定 size／CRC32／SHA-256；可重生報表為
+  `docs/audit/dos-input-manifest.json`，工具不解壓也不修改來源。
 - ZIP 有 169 筆，內含 47,936-byte `START.EXE`、232,379-byte `GAME.OVR`，
   以及 `ECL1..8`、`GEO1..8`、`WALLDEF1..8` 等 DAX。這只證明檔案 inventory，
   尚未證明 executable 版本、DAX consumer 語意或遊戲完成度。

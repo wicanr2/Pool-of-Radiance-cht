@@ -1,0 +1,1017 @@
+{
+  "schema": "pool-dos-input-manifest/1",
+  "zip": "Pool of Radiance (1988).zip",
+  "zip_sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633",
+  "files": 168,
+  "decoded_bytes": 1582291,
+  "entries": [
+    {
+      "path": "poolrad/8x8d1.dax",
+      "bytes": 9711,
+      "crc32": "5d3c852d",
+      "sha256": "cce9313f23a600200fec60b5d46cd08aa9535a6143eee5d5d768a1d4e0415021"
+    },
+    {
+      "path": "poolrad/8x8d2.dax",
+      "bytes": 12190,
+      "crc32": "a1e8e17b",
+      "sha256": "418fc6cfa448646d3f0b590b53d1c926a0b308a521260469c0d06d05a7869cf4"
+    },
+    {
+      "path": "poolrad/8x8d3.dax",
+      "bytes": 12967,
+      "crc32": "1c81e489",
+      "sha256": "379aea0e70fe2f74512a2845176b3fb65d2d1f883abf661e7c8a9813e319c223"
+    },
+    {
+      "path": "poolrad/8x8d4.dax",
+      "bytes": 14343,
+      "crc32": "746c501a",
+      "sha256": "02dbb15f007e8609d365dcbf47b1ae850bff577569e5b844931f9312569fa032"
+    },
+    {
+      "path": "poolrad/8x8d5.dax",
+      "bytes": 5847,
+      "crc32": "d7cb94a2",
+      "sha256": "90698c59d65d38b5cd4fb80c7ec8e9ad90f7ecce087d66dc47f5cf5b56ff3a2f"
+    },
+    {
+      "path": "poolrad/8x8d6.dax",
+      "bytes": 10285,
+      "crc32": "689aa5cc",
+      "sha256": "f24577eec17af3bbfe0ee8517391157b4b655a35082429d2618de223c2021083"
+    },
+    {
+      "path": "poolrad/8x8d7.dax",
+      "bytes": 9820,
+      "crc32": "ffac25d1",
+      "sha256": "d8086eb6b52f8a0b04156d67d2cfc16d4aefc571aad440285a55a601236bf0a2"
+    },
+    {
+      "path": "poolrad/8x8d8.dax",
+      "bytes": 14510,
+      "crc32": "f63b673d",
+      "sha256": "05590e593534715f26790a82f9dbaf1ee73e29e7b71a038ee039a3d64651c4d5"
+    },
+    {
+      "path": "poolrad/CHARLIST.TXT",
+      "bytes": 0,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "poolrad/CONTROL",
+      "bytes": 172,
+      "crc32": "9fca306f",
+      "sha256": "8988063e462b2ab921552d4349ad1cca2e062b2a6c5f2ea215323225e9066871"
+    },
+    {
+      "path": "poolrad/PIC1.DAT",
+      "bytes": 0,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "poolrad/PIC1.NDX",
+      "bytes": 0,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "poolrad/POOL.CFG",
+      "bytes": 35,
+      "crc32": "dcbc407d",
+      "sha256": "6a9490d9226ada1bf709041faec4b73a284b782dea0224c6916852c498a54fee"
+    },
+    {
+      "path": "poolrad/bacpac.dax",
+      "bytes": 11328,
+      "crc32": "17c22494",
+      "sha256": "17033abf359e9d2777f97e045433b11e5351c4e3e8787c09851c74ec404893b6"
+    },
+    {
+      "path": "poolrad/body1.dax",
+      "bytes": 4139,
+      "crc32": "0e62b81f",
+      "sha256": "a7ead275498703c349a0188585015b4d601582ff733bb738018278a07e8b6eae"
+    },
+    {
+      "path": "poolrad/body2.dax",
+      "bytes": 7685,
+      "crc32": "12aa0036",
+      "sha256": "221a04bf51421c65a8759e5daa4c0d038ba50e7e662f63c38ca4d2746573feef"
+    },
+    {
+      "path": "poolrad/body3.dax",
+      "bytes": 21505,
+      "crc32": "96a05f98",
+      "sha256": "7ea261c09a93293157e6865e1ac0ba82a8cbf149882dfd95e35704efd5a8b804"
+    },
+    {
+      "path": "poolrad/body4.dax",
+      "bytes": 4185,
+      "crc32": "c4975bda",
+      "sha256": "7de15cbbb0ea180989dd02a69076e57a1c1f4d40c196137c1f9e231f693d9a62"
+    },
+    {
+      "path": "poolrad/body5.dax",
+      "bytes": 8230,
+      "crc32": "e0b23c0e",
+      "sha256": "b27fa5baabfe1ac00455e38661028bbb54725d7f352076c0fc3cc8a61c7b168d"
+    },
+    {
+      "path": "poolrad/body6.dax",
+      "bytes": 6545,
+      "crc32": "45828281",
+      "sha256": "4212c957474012b0441cbbd88660206a0298f4f257d50f46d9614fdb4f91a088"
+    },
+    {
+      "path": "poolrad/body7.dax",
+      "bytes": 5717,
+      "crc32": "ab337cf8",
+      "sha256": "67c83e25e9c63a19dd45c2fb6eeafa5ea3202bfa31e952a44e56028e4f562e97"
+    },
+    {
+      "path": "poolrad/body8.dax",
+      "bytes": 3973,
+      "crc32": "af0b67a6",
+      "sha256": "36d6c30d15706c1a05e139f49747809438f077e26139ef6707b3ff2e29c951af"
+    },
+    {
+      "path": "poolrad/cbody.dax",
+      "bytes": 23978,
+      "crc32": "dac02b0c",
+      "sha256": "9928778ce936d070675233abeb008b27656838b0b41bc5a398a62f9b42151601"
+    },
+    {
+      "path": "poolrad/chead.dax",
+      "bytes": 3442,
+      "crc32": "70f9a128",
+      "sha256": "aecd2ebbcd0f6c9d6fe7fb490591ea0357c1ced8917be059cfd4e60e60d701d4"
+    },
+    {
+      "path": "poolrad/chrdata7.itm",
+      "bytes": 189,
+      "crc32": "7f9938fc",
+      "sha256": "eca14a0f2f040b14689012e487e2cefd03edcab03c7977a3abf55fa7faa59a14"
+    },
+    {
+      "path": "poolrad/chrdata7.sav",
+      "bytes": 285,
+      "crc32": "908b590b",
+      "sha256": "aa1238f4fe736e94c4a6fdfa7da21755f7ab986aa06d99888440f890da141d9b"
+    },
+    {
+      "path": "poolrad/chrdatb1.itm",
+      "bytes": 630,
+      "crc32": "54c26a9d",
+      "sha256": "d04c68ae1c8385da81b484f327e76b9dd2f64d70f3c7fb3923ed1a6eea49846b"
+    },
+    {
+      "path": "poolrad/chrdatb1.sav",
+      "bytes": 285,
+      "crc32": "0df91edd",
+      "sha256": "1eb998c232ed9d307ba08355b2a9ec11bd7addc738af7a04f83cc1b347bcbc48"
+    },
+    {
+      "path": "poolrad/chrdatb2.itm",
+      "bytes": 189,
+      "crc32": "b735edc9",
+      "sha256": "324d0f70a641e0d2115bcc1159c67744675ea79bb5f7e1885f624218e66017b7"
+    },
+    {
+      "path": "poolrad/chrdatb2.sav",
+      "bytes": 285,
+      "crc32": "e903c8db",
+      "sha256": "0baa53d1ffebd3b1dddc502b1c596d9986b8c0d8ca8e879bb1e393f6c7015c4c"
+    },
+    {
+      "path": "poolrad/chrdatb3.itm",
+      "bytes": 630,
+      "crc32": "f07c6b59",
+      "sha256": "50c9381f87e00b686cceda41210e30b54f34fd355ba7e394fc3b01bdea287ed6"
+    },
+    {
+      "path": "poolrad/chrdatb3.sav",
+      "bytes": 285,
+      "crc32": "e224116d",
+      "sha256": "49097b0f23997ed0717360b177449bc45738b3a380f79166e2b111b47c94c20a"
+    },
+    {
+      "path": "poolrad/chrdatb4.itm",
+      "bytes": 315,
+      "crc32": "d9a25353",
+      "sha256": "8e3b503c7a984c7ca01b46d5c802592907981aebf66fdb4e0ad1e0ef02bea8ea"
+    },
+    {
+      "path": "poolrad/chrdatb4.sav",
+      "bytes": 285,
+      "crc32": "4655e8bf",
+      "sha256": "7348e42f957b7041e4a06c6dde6417f8f70dd464be9615779a2510bd48063580"
+    },
+    {
+      "path": "poolrad/chrdatb5.itm",
+      "bytes": 441,
+      "crc32": "df825cd4",
+      "sha256": "7cad1e2fbc17006d30476c38d221629326fa1727cc1743f49023d677c8333f76"
+    },
+    {
+      "path": "poolrad/chrdatb5.sav",
+      "bytes": 285,
+      "crc32": "073e0dd3",
+      "sha256": "7bf4562e36cc2b265c46c9ff9695f3ccbca8a717cd293c923899d565273fb0e7"
+    },
+    {
+      "path": "poolrad/chrdatb6.itm",
+      "bytes": 504,
+      "crc32": "4fe25ca3",
+      "sha256": "26b8bcf62865d88375a3dc27220f2f7e83aef2dc06e1339d9b3929ed738894e1"
+    },
+    {
+      "path": "poolrad/chrdatb6.sav",
+      "bytes": 285,
+      "crc32": "b8ae87d8",
+      "sha256": "176ae8402ee88ac95fa683d8eec65f6287fdee8ed2e8ab8a846394e741d9daf1"
+    },
+    {
+      "path": "poolrad/chrdatd1.itm",
+      "bytes": 756,
+      "crc32": "7525ec39",
+      "sha256": "413ef87c9a278f3f4861d24b744d5f43e7e1661b4be5347f81ac65ea86aa0f9f"
+    },
+    {
+      "path": "poolrad/chrdatd1.sav",
+      "bytes": 285,
+      "crc32": "09d8bd55",
+      "sha256": "25bb8dc5eba9df1083e24f877b088cdb9f9d4c28a87553e2422c0ce904c909f8"
+    },
+    {
+      "path": "poolrad/chrdatd1.spc",
+      "bytes": 9,
+      "crc32": "4eb5f350",
+      "sha256": "69fb798d033ab72af260512785fa3c406943ba2bb314a282c47caa6e0580f8f8"
+    },
+    {
+      "path": "poolrad/chrdatd2.itm",
+      "bytes": 504,
+      "crc32": "d7d1a933",
+      "sha256": "f0c5436d0ada29de8bb0efe5ebdacd3d6ffd1707b46d2327259a204853e91792"
+    },
+    {
+      "path": "poolrad/chrdatd2.sav",
+      "bytes": 285,
+      "crc32": "8c800ff6",
+      "sha256": "4a57dfeaf9cb678f58245dd05a68744ffba85659f0c6dc53885ca5517fe06cbd"
+    },
+    {
+      "path": "poolrad/chrdatd2.spc",
+      "bytes": 9,
+      "crc32": "4eb5f350",
+      "sha256": "69fb798d033ab72af260512785fa3c406943ba2bb314a282c47caa6e0580f8f8"
+    },
+    {
+      "path": "poolrad/chrdatd3.itm",
+      "bytes": 630,
+      "crc32": "597dcac5",
+      "sha256": "01c54095aa8d941550eb58debc7e902daa9fe04e0c3174d334f655c31b5480dd"
+    },
+    {
+      "path": "poolrad/chrdatd3.sav",
+      "bytes": 285,
+      "crc32": "38db5b25",
+      "sha256": "fdc7a193e3b6707c5e3a2c176881f9afe7be14a64b2e56ddf8309f5c88d1f46d"
+    },
+    {
+      "path": "poolrad/chrdatd3.spc",
+      "bytes": 18,
+      "crc32": "696ca141",
+      "sha256": "037438da6de7d9e51c167d316ee6e6006452dd4d133fac3a3360c2f64bc464b9"
+    },
+    {
+      "path": "poolrad/chrdatd4.itm",
+      "bytes": 315,
+      "crc32": "8ff04b29",
+      "sha256": "18acf8899ef17ab655857846b0f1f6582f44ae2f230e558af2e140581b758f00"
+    },
+    {
+      "path": "poolrad/chrdatd4.sav",
+      "bytes": 285,
+      "crc32": "0e3b9bbd",
+      "sha256": "25080902604fffb450e8176d77a1a7b5de1792cfde1e2f40aface839d8713c21"
+    },
+    {
+      "path": "poolrad/chrdatd4.spc",
+      "bytes": 18,
+      "crc32": "9aae0b05",
+      "sha256": "34a9b05b591fa55f92f70c867f76867ba531b364f06283813d69560686810baa"
+    },
+    {
+      "path": "poolrad/chrdatd5.itm",
+      "bytes": 630,
+      "crc32": "191f98f2",
+      "sha256": "64ac8211a191ff78b5d67d3dd748a34ef6069a044e76350c4291208ee48a9393"
+    },
+    {
+      "path": "poolrad/chrdatd5.sav",
+      "bytes": 285,
+      "crc32": "caff8d83",
+      "sha256": "b5af26f1e1508b3f870cea54e7b249e9c4d307c3d349613906229fff07f61acc"
+    },
+    {
+      "path": "poolrad/chrdatd5.spc",
+      "bytes": 9,
+      "crc32": "e1de1592",
+      "sha256": "971edb15f9d27fc7708e7f0daf00100db0e8c0c11d388b6e35b266f3a192c311"
+    },
+    {
+      "path": "poolrad/chrdatd6.itm",
+      "bytes": 693,
+      "crc32": "6f74507f",
+      "sha256": "e187ee0f2e81be9b3ae440317923506695fe736902933adfbd0dbae9d41f30d7"
+    },
+    {
+      "path": "poolrad/chrdatd6.sav",
+      "bytes": 285,
+      "crc32": "a2c95de1",
+      "sha256": "b8b8cd0856fd2794a75e14618f899ee8d8de7b81ad0d87c7fe8a315b56c51e45"
+    },
+    {
+      "path": "poolrad/chrdatd6.spc",
+      "bytes": 9,
+      "crc32": "4f3a23f8",
+      "sha256": "503c82edff7b81b7bf2a87ff7f3c74cf3f4aea3da929a298189cd2f34dc95f6c"
+    },
+    {
+      "path": "poolrad/chrdatd7.itm",
+      "bytes": 189,
+      "crc32": "0af1ba48",
+      "sha256": "33191902657b30a00bd5e0e620c7b4235a33025cd40ef7755d66b86a13a85e7b"
+    },
+    {
+      "path": "poolrad/chrdatd7.sav",
+      "bytes": 285,
+      "crc32": "8af06e69",
+      "sha256": "29526a70c620c0b5111d2f6e15b7eb928670720a33fea210a0deef89b0987433"
+    },
+    {
+      "path": "poolrad/chrdate1.itm",
+      "bytes": 882,
+      "crc32": "181b84c2",
+      "sha256": "95a7f87882525b23d0aef913d9e60dbe5c257bd99bceff79cb97d6d0a00caa2c"
+    },
+    {
+      "path": "poolrad/chrdate1.sav",
+      "bytes": 285,
+      "crc32": "fee310e8",
+      "sha256": "9852d629f58b03b861d13682bea45336fd0b6e5cf9d3ca36ec36c62efddfae4f"
+    },
+    {
+      "path": "poolrad/chrdate2.itm",
+      "bytes": 252,
+      "crc32": "dbe1ed98",
+      "sha256": "f2b2b3ad754ccae626b088196c89ca1faa34499c7ad8a610701d0b92cd04419e"
+    },
+    {
+      "path": "poolrad/chrdate2.sav",
+      "bytes": 285,
+      "crc32": "5c849fff",
+      "sha256": "a6eaae8c76f0df0554deb16a77e70f6e467d7e6d08a81ae4f094888868a706d6"
+    },
+    {
+      "path": "poolrad/chrdate3.itm",
+      "bytes": 630,
+      "crc32": "561e708a",
+      "sha256": "ddd1d16fa0d052228209a9640ebb4664d4ba039d81e5c4cb739782e628ff2bd1"
+    },
+    {
+      "path": "poolrad/chrdate3.sav",
+      "bytes": 285,
+      "crc32": "f7710474",
+      "sha256": "92528a96bedfcd83d71951c6949c1b7eaa1c4b5151c24d8b74f52e9ebb9061f5"
+    },
+    {
+      "path": "poolrad/chrdate4.itm",
+      "bytes": 126,
+      "crc32": "532382b3",
+      "sha256": "b156a5f4c730f95aeffc8ac982649d640499afbbe4d13b2363fe4b3d8fbabb41"
+    },
+    {
+      "path": "poolrad/chrdate4.sav",
+      "bytes": 285,
+      "crc32": "230502ae",
+      "sha256": "f0db1fc16848ee2c0f95cedbd3cc75481d5944d5b76c47c4577948ad41b22779"
+    },
+    {
+      "path": "poolrad/chrdate5.itm",
+      "bytes": 441,
+      "crc32": "78ee2ab7",
+      "sha256": "e1208b23fe01bc52a34c2e5e81d3fe3f02c74da83ea3bbec7e869da18a2b905d"
+    },
+    {
+      "path": "poolrad/chrdate5.sav",
+      "bytes": 285,
+      "crc32": "112bc6c5",
+      "sha256": "aa66fdda6b1ead58d7aa29375ce1ab67c82c4c17afee887efbb4fb2d586ae78b"
+    },
+    {
+      "path": "poolrad/chrdate6.itm",
+      "bytes": 441,
+      "crc32": "70113a9e",
+      "sha256": "1fcb4f62e79287fdb31449ef5224e6cd313d998c4fda41fa23983d7975493261"
+    },
+    {
+      "path": "poolrad/chrdate6.sav",
+      "bytes": 285,
+      "crc32": "1103125b",
+      "sha256": "f1ab1a06b9f6b633031dc6c78de46be49daec5f89c1253125f83a5b2a7a7fc3e"
+    },
+    {
+      "path": "poolrad/chrdate6.spc",
+      "bytes": 9,
+      "crc32": "4cec2163",
+      "sha256": "1e9b76ed198c2e5f2d0024c2ce283d018fb295d1590b24f81b1504b5c632273a"
+    },
+    {
+      "path": "poolrad/comspr.dax",
+      "bytes": 3612,
+      "crc32": "d495030e",
+      "sha256": "6bff177f6776339a627be3c0199518a41330f01f462e8994f649804e488a86d5"
+    },
+    {
+      "path": "poolrad/cpic1.dax",
+      "bytes": 6182,
+      "crc32": "b9749c36",
+      "sha256": "61a13e8daf91b511d316ecdc4e230e776c7d2de49894ccef3c30e2e250c09ff3"
+    },
+    {
+      "path": "poolrad/cpic2.dax",
+      "bytes": 11505,
+      "crc32": "95bc6025",
+      "sha256": "d9c24617095cb341a843fdb4921fe54d3d4ee0f909de2b3179301afb7ae567ba"
+    },
+    {
+      "path": "poolrad/cpic3.dax",
+      "bytes": 3150,
+      "crc32": "e323220b",
+      "sha256": "0e063d1b659832639c859f4248e538a2ea69917acfcad394aaecec43228336df"
+    },
+    {
+      "path": "poolrad/cpic4.dax",
+      "bytes": 12154,
+      "crc32": "78d05130",
+      "sha256": "181fe21499fce0504d84bcc3bb01d7911db74584400cdaa857a9fe7a20fdfac9"
+    },
+    {
+      "path": "poolrad/cpic5.dax",
+      "bytes": 7779,
+      "crc32": "438d932e",
+      "sha256": "ace0d371b4e5a7fcb894a3c6b6078751ac52445b9e435897432e0a6ce576f705"
+    },
+    {
+      "path": "poolrad/cpic6.dax",
+      "bytes": 8101,
+      "crc32": "355a58b9",
+      "sha256": "f8285ccd2642a3c8c90b74810952796f240ee189412a5e24d7ed167c0ac424c6"
+    },
+    {
+      "path": "poolrad/cpic7.dax",
+      "bytes": 6178,
+      "crc32": "ad9d06ba",
+      "sha256": "6918aa709d53ef608574d734c879216f09c362ac1c8805f680232aad4744544a"
+    },
+    {
+      "path": "poolrad/cpic8.dax",
+      "bytes": 10325,
+      "crc32": "5e681538",
+      "sha256": "dda82c9521fad757cf8dd35756393d76937a471224895ac99da92218c2a92f30"
+    },
+    {
+      "path": "poolrad/dungcom.dax",
+      "bytes": 5664,
+      "crc32": "d8e6c307",
+      "sha256": "96149f6bcaca85771aad2490beaad44d8000f30458c9f1d84a23f319e2937268"
+    },
+    {
+      "path": "poolrad/ecl1.dax",
+      "bytes": 14564,
+      "crc32": "4121fedf",
+      "sha256": "b1d08075869ef58ae4f08b53d2059b4ea60f0259c35fb6fda44e1c0737c3a4b9"
+    },
+    {
+      "path": "poolrad/ecl2.dax",
+      "bytes": 19968,
+      "crc32": "2d1146a9",
+      "sha256": "6ad6dc5aa53da82f4dba62dbc47d5a02a3f14c14071bec44e81a692615f08a3d"
+    },
+    {
+      "path": "poolrad/ecl3.dax",
+      "bytes": 24951,
+      "crc32": "69b181c4",
+      "sha256": "db58f0c6326d400cc65902933392ce928812c7cd3baf7f68827aed0dff64d076"
+    },
+    {
+      "path": "poolrad/ecl4.dax",
+      "bytes": 19950,
+      "crc32": "8698b342",
+      "sha256": "c01eecd57718e3899b06abd7c376bb06289cbb555ae19c0a4162f69957386b64"
+    },
+    {
+      "path": "poolrad/ecl5.dax",
+      "bytes": 27914,
+      "crc32": "2dac3967",
+      "sha256": "475bcb10a321d78b69c7999516267a5a132b9b9fa7e75d9f673b1c63ba296ecd"
+    },
+    {
+      "path": "poolrad/ecl6.dax",
+      "bytes": 24894,
+      "crc32": "124835b9",
+      "sha256": "cd40ea59659fdcc00f99ece7d26d625985bf97edf07835aeb187f858d01a1f9e"
+    },
+    {
+      "path": "poolrad/ecl7.dax",
+      "bytes": 23574,
+      "crc32": "c92d84c2",
+      "sha256": "74b9aa32373d9bbc90ec615653f9cb99b7b2808759bdc36b8406111435e2e2e3"
+    },
+    {
+      "path": "poolrad/ecl8.dax",
+      "bytes": 24167,
+      "crc32": "6e1cb4b3",
+      "sha256": "81a07cf9ca1ac17288dc6fdd6980241ebb3239d6bb4205789a6a7e419b875457"
+    },
+    {
+      "path": "poolrad/final5.dax",
+      "bytes": 36603,
+      "crc32": "71635c63",
+      "sha256": "b8e60dbe397bc8e79088812f0f4988c1bdcd497b109086ab8277d4c48354009c"
+    },
+    {
+      "path": "poolrad/game.ovr",
+      "bytes": 232379,
+      "crc32": "1a24d98a",
+      "sha256": "bc4e3c32daf04b87db0c0a9508bb67b94d9f138aa39ed1dae7e32911b3171638"
+    },
+    {
+      "path": "poolrad/geo1.dax",
+      "bytes": 2619,
+      "crc32": "c6c5b1b9",
+      "sha256": "e6bcc8c5ea4b101497353ec75386b96ad6368447a6669f4f82ca7dac3c1e204a"
+    },
+    {
+      "path": "poolrad/geo2.dax",
+      "bytes": 2572,
+      "crc32": "ebfea796",
+      "sha256": "2035246014efdb26de3114f4737d52a935ad8834f79b4a8e4880da2922b6d595"
+    },
+    {
+      "path": "poolrad/geo3.dax",
+      "bytes": 1761,
+      "crc32": "accf926f",
+      "sha256": "ce4b4ecb74b03ca18bda5d00e9050ec4e18284ef89edf816480800070ed0c6ee"
+    },
+    {
+      "path": "poolrad/geo4.dax",
+      "bytes": 2861,
+      "crc32": "38353a28",
+      "sha256": "167017243737cfacb996433632d3c70a55ce506d794a44e31c02d34e9e3c55d5"
+    },
+    {
+      "path": "poolrad/geo5.dax",
+      "bytes": 3612,
+      "crc32": "cbad4db5",
+      "sha256": "24c5b6f1bbf18b6f9a34600d99043e002848b9d2165189e4000c000a01f5c527"
+    },
+    {
+      "path": "poolrad/geo6.dax",
+      "bytes": 2324,
+      "crc32": "9227217c",
+      "sha256": "8bf4bbf5b1845c9d3181a7d47382d75f5337e27e1263690abb8820f9b722ecdb"
+    },
+    {
+      "path": "poolrad/geo7.dax",
+      "bytes": 3118,
+      "crc32": "448f0e71",
+      "sha256": "5f30b6e76ca42b563253fc9b4cee5be7db6ccbe0eb38eefe37866197e5be2127"
+    },
+    {
+      "path": "poolrad/geo8.dax",
+      "bytes": 4690,
+      "crc32": "82545d54",
+      "sha256": "050cd0316ebf339f6b36233156eb99129c8eaa689df89e05fbfa13d72e89c045"
+    },
+    {
+      "path": "poolrad/head1.dax",
+      "bytes": 1863,
+      "crc32": "7f835ec1",
+      "sha256": "20f95a9acd7c362648da77b6a7ae85cfd727b554daeccd4b14e937beeea08ddf"
+    },
+    {
+      "path": "poolrad/head2.dax",
+      "bytes": 2808,
+      "crc32": "b2ee4e01",
+      "sha256": "98420012ee7e4070624020ee041ce1577ed4e4946c1a3a2d1ed59e59cbb7e613"
+    },
+    {
+      "path": "poolrad/head3.dax",
+      "bytes": 12403,
+      "crc32": "ff0839e5",
+      "sha256": "1413773d5c2841bf62902a0d5bef7fc7439e9644fc518e03ae1b268d34ea1ed4"
+    },
+    {
+      "path": "poolrad/head4.dax",
+      "bytes": 1702,
+      "crc32": "4106c9ff",
+      "sha256": "edb292f32c4213e106f77f2c72b810fbb505b7d065348b82b6c3046ac56861d4"
+    },
+    {
+      "path": "poolrad/head5.dax",
+      "bytes": 6708,
+      "crc32": "23c05f13",
+      "sha256": "fda77add43df4d8380c905f098d7287d9deb3c26e228eeb32977932434f4a692"
+    },
+    {
+      "path": "poolrad/head6.dax",
+      "bytes": 4577,
+      "crc32": "6f32c48e",
+      "sha256": "f6c7b6b67341b1d469cfaff049c95a2b91777a1d075645626cd53dba0735d8ca"
+    },
+    {
+      "path": "poolrad/head7.dax",
+      "bytes": 6192,
+      "crc32": "cd17a83d",
+      "sha256": "3359dbf1a1726ee3f8162afeab082f47484388c747a2c61a8b9d5a3341f4c51b"
+    },
+    {
+      "path": "poolrad/head8.dax",
+      "bytes": 1814,
+      "crc32": "8119fc63",
+      "sha256": "0435c5b0d9ac9a990a5daab2bcd69459c92758973884398d22a9ccf450bfbd91"
+    },
+    {
+      "path": "poolrad/icon.dax",
+      "bytes": 1287,
+      "crc32": "66e8f1e4",
+      "sha256": "6ca4bce61eb5c31cf01ca1538dfa60401f24f286ba29d60926e4fd07cd7809eb"
+    },
+    {
+      "path": "poolrad/item1.dax",
+      "bytes": 2785,
+      "crc32": "be7d35fa",
+      "sha256": "54216036d2897201e0d606547378757cce0eaf369793b9230d66b82b17e2e0d8"
+    },
+    {
+      "path": "poolrad/item2.dax",
+      "bytes": 632,
+      "crc32": "de359405",
+      "sha256": "48bedd08c0750aa174f4309d4fe742e7b9df9ffef63954d00fc29643e8512ace"
+    },
+    {
+      "path": "poolrad/item3.dax",
+      "bytes": 4687,
+      "crc32": "e000024d",
+      "sha256": "84d71e83b5d51b02c407e9969cae51ef5034af111a8885b34a6c4e04e4e03d89"
+    },
+    {
+      "path": "poolrad/item4.dax",
+      "bytes": 2364,
+      "crc32": "ca01d73c",
+      "sha256": "468b427186027fdbd1dfee1d24d1c4118a0c9329d93da279113a08ff31c71d63"
+    },
+    {
+      "path": "poolrad/item5.dax",
+      "bytes": 2130,
+      "crc32": "0bf557ad",
+      "sha256": "4c03380630a978d6565eba2b9050a4bb7d41b6bfea3a49047f2d79b3523384b3"
+    },
+    {
+      "path": "poolrad/item6.dax",
+      "bytes": 27,
+      "crc32": "7f491e6a",
+      "sha256": "bb26f127d13ae6f8d0ed9e6420a75b513766fe355ae7636f4cd44ca5707981a0"
+    },
+    {
+      "path": "poolrad/item7.dax",
+      "bytes": 81,
+      "crc32": "513634d8",
+      "sha256": "f83968c1b177bfa877aa1c1c44df4f0600e8a21378194632aabf16a251b49d82"
+    },
+    {
+      "path": "poolrad/item8.dax",
+      "bytes": 716,
+      "crc32": "4457b2f5",
+      "sha256": "c6c1c456f99a8848f22d5d4f9b7349cdd8b59a4b658696c81046c5949b6f0387"
+    },
+    {
+      "path": "poolrad/items",
+      "bytes": 2050,
+      "crc32": "23e4f041",
+      "sha256": "ece7dc8d8331c9b915b79c5963454bd5a4c3ab3b015844829b67016334eb0cf2"
+    },
+    {
+      "path": "poolrad/mon1cha.dax",
+      "bytes": 1766,
+      "crc32": "7da603fd",
+      "sha256": "304cf750bac1474a3c5a1a15570795da598157e8e2da9f219cbc2ca0e4097225"
+    },
+    {
+      "path": "poolrad/mon1itm.dax",
+      "bytes": 792,
+      "crc32": "d5d50df9",
+      "sha256": "048e3f8e2a434004e2fff5e519da2a4e9b3b6aad87eb310a9c21b6e814e7deaa"
+    },
+    {
+      "path": "poolrad/mon2cha.dax",
+      "bytes": 3254,
+      "crc32": "4cd9c9eb",
+      "sha256": "30ba6c43886dcf9ac661b5c1870862da95c00e38040dbbe58d077d2fead3a2a0"
+    },
+    {
+      "path": "poolrad/mon2itm.dax",
+      "bytes": 1293,
+      "crc32": "57b3a839",
+      "sha256": "06a69dd2a63077a464a3a936ed3f14dc4d463175d43de6670e3c30fe41481988"
+    },
+    {
+      "path": "poolrad/mon2spc.dax",
+      "bytes": 150,
+      "crc32": "0aa7b140",
+      "sha256": "8ab7c7a7593466eb269a9ea5fb1a48e08c5707cec0fb24aaaa1c36d3711645f8"
+    },
+    {
+      "path": "poolrad/mon3cha.dax",
+      "bytes": 2521,
+      "crc32": "3df223fb",
+      "sha256": "bfcea37ee0ebb7549036e9815c367ccd6ffa4368c63945b0510ecc021ded0600"
+    },
+    {
+      "path": "poolrad/mon3itm.dax",
+      "bytes": 1329,
+      "crc32": "a610902c",
+      "sha256": "8ba4c7f722469c671c5b5cc4021b6d11e750b31a492c73e26917894555ef2ed1"
+    },
+    {
+      "path": "poolrad/mon4cha.dax",
+      "bytes": 3006,
+      "crc32": "0fb8cadc",
+      "sha256": "e6f6de26dcd8880d169667bf1fb2780409686e32a58be54624085a79e2fd715e"
+    },
+    {
+      "path": "poolrad/mon4itm.dax",
+      "bytes": 349,
+      "crc32": "1f89aba0",
+      "sha256": "e9c8ee5a987a498c4b93950d001f45b855f248df779457678f51364bac7517e9"
+    },
+    {
+      "path": "poolrad/mon4spc.dax",
+      "bytes": 904,
+      "crc32": "bc007a18",
+      "sha256": "4e87bb3aeb9d6a8750dfad5d0fe5a416c5d921dac9a7f36dfce91492dda99343"
+    },
+    {
+      "path": "poolrad/mon5cha.dax",
+      "bytes": 2377,
+      "crc32": "c6229c44",
+      "sha256": "dd8bc74ea450a581a1f7cacd4afc5c823bb0990ea6e5aa753d50619e21706d82"
+    },
+    {
+      "path": "poolrad/mon5itm.dax",
+      "bytes": 739,
+      "crc32": "a70d3379",
+      "sha256": "dd3bf78c479909b87b0ddf32bc32380c02fa8d62953e26d5ae05c1bc21874c94"
+    },
+    {
+      "path": "poolrad/mon5spc.dax",
+      "bytes": 238,
+      "crc32": "3134d8d9",
+      "sha256": "d711f338646c474afce4da37a7b0513f657e199e0b1a98c34d662d0a620f845c"
+    },
+    {
+      "path": "poolrad/mon6cha.dax",
+      "bytes": 2562,
+      "crc32": "407f70c5",
+      "sha256": "2ad12c6a1f3b1f8a11fa39fa4752814dae0f9296fb032121913b06341624b53b"
+    },
+    {
+      "path": "poolrad/mon6itm.dax",
+      "bytes": 978,
+      "crc32": "c8a394d6",
+      "sha256": "b56cf3c70e13f31121cfc57464db5420dbf5a1c6cbfdcf3714818038fcb214cb"
+    },
+    {
+      "path": "poolrad/mon6spc.dax",
+      "bytes": 124,
+      "crc32": "1e0c7896",
+      "sha256": "c3304d4a8b5fad3ce02917079453ae567a22e188c1121e92a3c0e33ffa6a37ff"
+    },
+    {
+      "path": "poolrad/mon7cha.dax",
+      "bytes": 2773,
+      "crc32": "d4046805",
+      "sha256": "af406dd08cd0e4b07069c9bfd2eade739628e565b87c981eb857f8d46ff36e36"
+    },
+    {
+      "path": "poolrad/mon7itm.dax",
+      "bytes": 1320,
+      "crc32": "4f7434b3",
+      "sha256": "86ef5f43c05db3c1aeedaa26875e1325bd01e6d78ba4ef270aa1c8e99b7a594f"
+    },
+    {
+      "path": "poolrad/mon7spc.dax",
+      "bytes": 36,
+      "crc32": "25922a08",
+      "sha256": "e068cfe5d81874f8099944930b49d69460a031d70d779f846385a0e4aee2a5e5"
+    },
+    {
+      "path": "poolrad/mon8cha.dax",
+      "bytes": 2042,
+      "crc32": "8f8db9ab",
+      "sha256": "3d47476ed41519a0adc730ff58f7787bc71aadd566c9a7459dee2c4b30c7fe83"
+    },
+    {
+      "path": "poolrad/mon8itm.dax",
+      "bytes": 350,
+      "crc32": "4ff717d2",
+      "sha256": "ffeebbd5822542894ec0c8090025e735b58f9aafe09e97d2781321d42a00902f"
+    },
+    {
+      "path": "poolrad/mon8spc.dax",
+      "bytes": 134,
+      "crc32": "f6fdf33a",
+      "sha256": "b5d80a56634e30b764e1d2a032d8d1ce767b20b7f9bb1e5fc7f65cf67737df37"
+    },
+    {
+      "path": "poolrad/pic1.dax",
+      "bytes": 36273,
+      "crc32": "0b14b5aa",
+      "sha256": "ff636705387218dcca9b8f559e12223d2f1ab1ca45c56fcc5e11b6fd67f0891d"
+    },
+    {
+      "path": "poolrad/pic2.dax",
+      "bytes": 71533,
+      "crc32": "a79df71c",
+      "sha256": "aa0f7e67e65b362e19056a6d869b9238e2d2815404c508c7e93f72f0abef0f21"
+    },
+    {
+      "path": "poolrad/pic3.dax",
+      "bytes": 15316,
+      "crc32": "7a5c6899",
+      "sha256": "44fc6edc72bad4a62ac4b5c45ca90ff99d59370044342c0bb2e3e8b4809d028d"
+    },
+    {
+      "path": "poolrad/pic4.dax",
+      "bytes": 91885,
+      "crc32": "7480df61",
+      "sha256": "346d2f48680a7693137c2a2366903fbe59ce1de94f7b02b2654a81b7e2d6cdc8"
+    },
+    {
+      "path": "poolrad/pic5.dax",
+      "bytes": 46750,
+      "crc32": "c9858286",
+      "sha256": "522f71a6de97a59e69e11985c91b5cae279961c30648b26286036a14f1710227"
+    },
+    {
+      "path": "poolrad/pic6.dax",
+      "bytes": 66888,
+      "crc32": "0c2ac4fe",
+      "sha256": "2c93668dc322c4823b20d7be7ae51653f0c03f31fd1f94dc8c109541f71d0234"
+    },
+    {
+      "path": "poolrad/pic7.dax",
+      "bytes": 67804,
+      "crc32": "73af47f5",
+      "sha256": "4171a7d575b562ccb9bbe28fa1e4d0fa3250625744a418931d0721a07a3b12cd"
+    },
+    {
+      "path": "poolrad/pic8.dax",
+      "bytes": 67227,
+      "crc32": "acd1778c",
+      "sha256": "760cf9042110bbf41e60bb4b0cf76635398751ceaf1ce693dc5e39ef92d8200a"
+    },
+    {
+      "path": "poolrad/randcom.dax",
+      "bytes": 755,
+      "crc32": "d8f20f9c",
+      "sha256": "9e176f9521f0157c86a2f5891766ae19f0b9c29165138d7588f465d75ff48da2"
+    },
+    {
+      "path": "poolrad/sprit1.dax",
+      "bytes": 5613,
+      "crc32": "e97a292b",
+      "sha256": "a7a822a1fb883aa619881e0cfca0b8534b29ee07786b5eab722c3e7163bde3a7"
+    },
+    {
+      "path": "poolrad/sprit2.dax",
+      "bytes": 16768,
+      "crc32": "d80e1a1d",
+      "sha256": "413c1dd3a1a787122396aab3b9451b4c4058ad1a0612309945cd6064fce8585e"
+    },
+    {
+      "path": "poolrad/sprit3.dax",
+      "bytes": 6124,
+      "crc32": "e792bf11",
+      "sha256": "890f70ff6fb131f03abca845f5468b601fda3c1b5daf9dc163b72dad6bf1f9d0"
+    },
+    {
+      "path": "poolrad/sprit4.dax",
+      "bytes": 11176,
+      "crc32": "f4f45c05",
+      "sha256": "3a32d1a894ab35c5a6541d9cd686ee61ef6a18bb7a1a5581132e181c3c10aef1"
+    },
+    {
+      "path": "poolrad/sprit5.dax",
+      "bytes": 13174,
+      "crc32": "d0448042",
+      "sha256": "edcba16aab8187feb733f2edd50e4b7edec9b18af6a7a48973af231d1e47dd59"
+    },
+    {
+      "path": "poolrad/sprit6.dax",
+      "bytes": 13727,
+      "crc32": "53596f39",
+      "sha256": "53b777d72abba897d20452fe68ab4242bbc0fcb58101991fc7000860bef61079"
+    },
+    {
+      "path": "poolrad/sprit7.dax",
+      "bytes": 12985,
+      "crc32": "db402885",
+      "sha256": "11090b90c51a655ade1aaa0b76e2ab30ce961d1e2d4f17483a91b11d51f30f5d"
+    },
+    {
+      "path": "poolrad/sprit8.dax",
+      "bytes": 14853,
+      "crc32": "39423681",
+      "sha256": "046fb1431b1401e7267ad79038c74160cb9d91c77dbc10cb6a7acfd3cccd2c47"
+    },
+    {
+      "path": "poolrad/sqrpaci.dax",
+      "bytes": 69788,
+      "crc32": "1fd89eb2",
+      "sha256": "88c7892b2b0fb96929840535a39b0145b13ac8ff0b4fb7188e9f39f30afe11dd"
+    },
+    {
+      "path": "poolrad/start.exe",
+      "bytes": 47936,
+      "crc32": "0f5c324c",
+      "sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f"
+    },
+    {
+      "path": "poolrad/title.dax",
+      "bytes": 33898,
+      "crc32": "e4ab2607",
+      "sha256": "7944ab87afbe0002d39479d138c78c7b6b219bd6bbc3fb6844d361f5cd4dba2b"
+    },
+    {
+      "path": "poolrad/walldef1.dax",
+      "bytes": 2147,
+      "crc32": "e4ec8d7d",
+      "sha256": "7a6102b9a38b2400f38d3c3d66460ab889ab7b35bc684c9ac282b80de028ec5a"
+    },
+    {
+      "path": "poolrad/walldef2.dax",
+      "bytes": 4044,
+      "crc32": "927acfe3",
+      "sha256": "bfbd4106d6207ea22d0e5862074ddef582ae24772656b9e47251f1b00933995d"
+    },
+    {
+      "path": "poolrad/walldef3.dax",
+      "bytes": 4289,
+      "crc32": "22c9f530",
+      "sha256": "86a8b136b0254398c03c31fdf13ebe2d23cf571d473a4f38718578f1479f661e"
+    },
+    {
+      "path": "poolrad/walldef4.dax",
+      "bytes": 4956,
+      "crc32": "1228c509",
+      "sha256": "e1729459c867048b25553beea4681808c958a5501291b9bf931def3463fe70ed"
+    },
+    {
+      "path": "poolrad/walldef5.dax",
+      "bytes": 2121,
+      "crc32": "0c646088",
+      "sha256": "26d2dbab7054fc22fb4ce44019b6e5cb0d981a05d082a4a22b085dbafd0b4802"
+    },
+    {
+      "path": "poolrad/walldef6.dax",
+      "bytes": 3492,
+      "crc32": "cdc75338",
+      "sha256": "d1b1ebc727dca3e65d86d4ccbf7f461dca59b64cce173d51bd46f024e5121010"
+    },
+    {
+      "path": "poolrad/walldef7.dax",
+      "bytes": 3176,
+      "crc32": "56fe3ce9",
+      "sha256": "cbb055cf16e516cdfc58cae66fdff21ceaa2f33adbe17321fb57c47f589238aa"
+    },
+    {
+      "path": "poolrad/walldef8.dax",
+      "bytes": 4998,
+      "crc32": "ade6525a",
+      "sha256": "1fc950ad158ef1542f13efc1d7ace02e61ba8e49b8042850098386648285bca2"
+    },
+    {
+      "path": "poolrad/wildcom.dax",
+      "bytes": 5786,
+      "crc32": "912a512f",
+      "sha256": "b56655e896772d11322ef3bc8a69988704cdc27ce67b8ad6f7fcded90f1bfb7c"
+    }
+  ]
+}

@@ -17,7 +17,8 @@ exec docker run --rm --network none --memory 2g --cpus 2 --pids-limit 256 \
   -e GOCACHE=/gocache -e GOMODCACHE=/gomod \
   -e 'GOFLAGS=-buildvcs=false -modfile=/src/workplace/pool-local.mod' \
   -w /src "$IMAGE" bash -c \
-  'cp go.mod workplace/pool-local.mod; printf "\nreplace github.com/wicanr2/golden-box-remake-engine => /engine\n" >> workplace/pool-local.mod
+  'cp go.mod workplace/pool-local.mod; cp go.sum workplace/pool-local.sum
+   printf "\nreplace github.com/wicanr2/golden-box-remake-engine => /engine\n" >> workplace/pool-local.mod
    if test "${1:-}" = test; then
      Xvfb :99 -screen 0 1024x768x24 >/tmp/xvfb.log 2>&1 & xvfb=$!
      trap "kill $xvfb 2>/dev/null || true" EXIT

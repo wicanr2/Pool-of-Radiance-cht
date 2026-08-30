@@ -46,6 +46,10 @@ wrapped 與 dungeon-door 哪一個適用，必須由該 ECL／area consumer 決�
   `8629cfbb045deb8e56724ef4737930e3ddb680a4669c9980d655a9d9ace083ad`；
 - `overlay-11.bin` SHA-256：
   `d1e1c62ef11ddf26607bca6bcb183fc70218a4629fde664e38fabd76966e4e0a`；
+- `overlay-17.bin` SHA-256：
+  `f92fed1bcf009daa8638ba0ab1f8f9a680c0ad3b2b43b799faa9383b02f7d1e4`；
+- `overlay-30.bin` SHA-256：
+  `9a29e0fe6624f69fd0a5c5789c81c98409380ea36112884862720b0bf473da91`；
 - IDA Pro 9.4、`ida-pro-9.4-idapython:locked-v1`；位址均為各 overlay local offset。
   可重生匯出器為 `tools/ida-export-overlay-functions.py`，保留 entry seed、原始 bytes、
   operand、SHA-256、IDA 版本與 16-bit segment，不以推測性改名取代定位。
@@ -66,9 +70,25 @@ wrapped 與 dungeon-door 哪一個適用，必須由該 ECL／area consumer 決�
 4. overlay-11 entry 1 是全域初始化鏈；`0329h..0337h` 明確寫
    `DS:6A0B=15`、`6A0C=1`、`6A0D=6`。這證明 DOS session 的 default 初始化值，
    但尚未證明 Begin 前後沒有 ECL／load path 覆寫，所以不可先寫成 Phlan 出生點。
+5. Party Creation Menu 本身在 overlay-16 `0155h` 把 `DS:52D4` 寫成 `3`；Begin
+   分支 `0426h..0445h` 只檢查隊伍、把 mode 寫成 `4` 並返回，分支內沒有改寫
+   `DS:52D4` 或呼叫地圖 loader。因此「新遊戲進入 Adventure 時的目前檔集為 3」
+   已由同一路徑證實；這仍不等於已知 GEO block。
+6. overlay-30 SHA-256
+   `9a29e0fe6624f69fd0a5c5789c81c98409380ea36112884862720b0bf473da91`；entry 10
+   `10EAh..1225h` 以 `DS:52D4` 組成 `GEO%d.dax`，用唯一 byte 參數取 block，嚴格
+   要求解碼長度 `0x402`，略過兩-byte prefix 後各複製四段 `0x100`，最後在
+   `1214h..121Dh` 把該 block ID 寫入 party record `+018Ah`。這閉合
+   `DS:52D4 = archive`、entry argument `= GEO block` 與存檔 consumer 的方向。
+7. overlay-17 SHA-256
+   `f92fed1bcf009daa8638ba0ab1f8f9a680c0ad3b2b43b799faa9383b02f7d1e4`；讀檔流程
+   `1B56h..1B73h` 從 party-save record `+0624h` 恢復 `DS:52D4`，在 mode < 2 時
+   從 party record `+018Ah` 取 GEO block 並呼叫 loader。這是讀檔 producer，不能
+   反推尚未存檔的新隊伍 block。
 
-剩餘最小缺口是追出 Begin mode 4 在第一次 Adventure frame 前所使用的 ECL／GEO
-archive、block，以及 `6A0B..6A0D` 是否仍為上述 default；閉合前不實作玩家出生點。
+剩餘最小缺口已縮成：追出 Begin mode 4 在第一次 Adventure frame 前所使用的 ECL／
+GEO block，以及 `6A0B..6A0D` 是否仍為上述 default；GEO archive 已證實是 3。
+閉合 block 與座標前不實作玩家出生點。
 
 ## Typed adapter
 
