@@ -26,8 +26,9 @@
   已用正確的 `C:\POOLRAD\` 掛載走通 portrait、READY／ACTION combat icon、Parts、
   雙色六部位、Size 與完成建角；285-byte CHA icon 欄位已有單變因差分，Spec 003
   對這一範圍已 READY。六種族職業清單、引導文字與 Race→Gender→Class→Alignment
-  狀態機已實作；Spec 004 已閉合六能力／age／HP／Gold 欄位、`+B1h` 存取候選及建角 overlay，
-  七種多職 class 持久碼已逐項閉合；能力 producer 與 age／gold／HP 公式仍須另行 RE。
+  狀態機已實作；Spec 004 已 READY，閉合年齡、能力限制、exceptional STR、Gold、
+  hit dice／CON／多職平均公式，並已有注入式 dice roller 與純資料生成器。剩餘驗收是
+  完整資料頁、重擲／KEEP、portrait／icon 與 285-byte CHA serialization 的正常按鍵串接。
 - [ ] 解出 Phlan 第一個地圖、入口、移動遮罩與第一個玩家事件。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。

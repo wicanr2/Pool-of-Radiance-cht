@@ -89,3 +89,13 @@ func (flow Flow) SelectedClass() ClassChoice {
 	return ClassesForRace(flow.SelectedRace().ID)[flow.ClassIndex]
 }
 func (flow Flow) SelectedAlignment() Alignment { return Alignments[flow.AlignmentIndex] }
+
+// Roll uses the selections accepted by the original menu order. Calling it
+// before the roll page is fail-closed so tests and future frontends cannot
+// silently generate a character from default, unconfirmed selections.
+func (flow Flow) Roll(roller Roller) (RolledCharacter, error) {
+	if flow.Stage != StageRoll {
+		return RolledCharacter{}, fmt.Errorf("creation stage %d is not ready to roll", flow.Stage)
+	}
+	return RollCharacter(roller, flow.SelectedRace(), flow.SelectedGender(), flow.SelectedClass()), nil
+}

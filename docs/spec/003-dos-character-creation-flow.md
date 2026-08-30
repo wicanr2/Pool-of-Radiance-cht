@@ -1,8 +1,8 @@
 # Spec 003：DOS 建角流程
 
 狀態：READY（建角畫面順序、portrait／combat icon 與 285-byte CHA icon 欄位）；
-日期：2026-08-31。能力擲值、年齡、金錢與職業限制公式仍是 DRAFT，不在本次實作
-授權內。
+日期：2026-08-31。能力擲值、年齡、金錢與職業限制後續已在 Spec 004 閉合並
+升為 READY；本文件只負責畫面順序與 icon／CHA 契約。
 
 操作契約同時對照 IBM PC Quick Start Card（垂直項目用 Home／End＋Enter；水平
 命令按畫面白色字母）與原版 Rule Book 的 ICON 章：
@@ -105,7 +105,7 @@ ALLTWO 將六部位各前進一色。所有 CHA 固定 285 bytes。差分得到�
 
 ## 尚未閉合／禁止先猜
 
-- Race／Class 組合限制、擲值與 age／gold／HP 公式。
+- 把 Spec 004 的擲值結果接進完整畫面、KEEP／重擲與 CHA serialization。
 - 返回上一層、取消、重擲與完成建角後加入隊伍的完整按鍵狀態機。
 - portrait head／body 的 CHA offsets；本輪只證明玩家可見循環與 KEEP。
 - `BFh` 的語意，以及 Head／Weapon selector 的合法上限。

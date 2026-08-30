@@ -1,6 +1,6 @@
 # DOS 角色擲值與持久欄位
 
-狀態：DRAFT（欄位、直接資料流與多職代碼已閉合；亂數及種族／職業修正尚未 READY）
+狀態：READY（建角擲值、年齡、能力修正、Gold、HP 與持久欄位）
 日期：2026-08-31
 
 ## 輸入與位址空間
@@ -61,9 +61,58 @@ SHA-256 `cc8febdd1f9f8c2dc0ee7c752bddca90b1960b0b9cce8a33f6cdb19f66c9471a`）
 直接否定舊解釋：HP `7`=`+32h`，Gold `100`=word `+8Eh`，而 `+B1h`=`5`。
 舊推論形成原因保留於此，後續不得再引用它。
 
-## 尚未授權實作的缺口
+## READY 公式與執行順序
 
-1. 解出六能力初始 producer、重擲迴圈、種族上下限與職業資格修正的執行順序。
-2. 閉合 age tables（overlay-16 `3DD3h／3DE7h` 附近）與其亂數 helper。
-3. 閉合 local `4209h`、`3F01h` 與 CON／多職 divisor 的資料表。
-4. 上述公式升為 READY 後，才可實作擲值頁與最終角色產生器。
+下列均由 IDA Pro 9.4 對 overlay-16 的指令、resident data segment 原始表格與
+同源畫面／CHA anchor 交叉驗證，位址仍是 overlay-local；resident 表格則標為
+`DS:`，不可混作同一位址空間。
+
+### 年齡
+
+`0EC6h..11CAh` 以 `race*28 + class*4 + DS:3DD3h` 取四 byte 記錄：little-endian
+基準年齡、骰數、骰面。單職年齡是 `base + roll(count,sides)`。多職代碼不呼叫
+亂數 helper，而取主導職業記錄的 `base + count*sides`：`8／9／11／12` 用 Cleric，
+`13／15／16` 用 Magic-User，`14` 用 Thief。這個「多職取最大值」是原版指令契約，
+不是現代規則推測。六種可選種族的完整表已逐 byte 固化於
+`internal/creation/rolls.go`；未出現在本作選單的 race／class 記錄不授權 UI。
+
+### 六能力與限制順序
+
+`11EBh..12B8h` 先對 STR、INT、WIS、DEX、CON、CHA 各擲 `3d6`，再套種族修正：
+Dwarf `CON+1／CHA-1`；Elf `DEX+1／CON-1`；Halfling `STR-1／DEX+1`。程式也有
+race code 6 的 `STR+1／CON+1／CHA-2`，但該種族不在 Pool 選單，只保留為證據，
+不對玩家暴露。
+
+其後 `12BBh..1BB7h` 依序套用：年齡修正 → `DS:3D1B` 種族／性別最小最大值 →
+`DS:3EF9` 的 `classCode*6+ability` 職業最低值。Cleric 多職集合（Pascal set bytes
+位於 overlay `0512h`，本作可見代碼為 `8／9／11`）另把 WIS 提至 13。STR 最終為
+18 且 Fighter level slot `+98h>0` 時擲 `1d100` exceptional strength，再依
+`DS:3D1F + gender` 的種族／性別上限截斷。年齡臨界值來自 `DS:3EA9` 每種族
+五個 word；本函式使用前四個，最後一個是壽命界線而非這段能力修正輸入。
+
+### Gold
+
+`1C10h..1D17h` 對每個 active class slot 擲該職業起始金錢，再計算
+`sum*10/classCount`（整數除法）寫入 word `+8Eh`：Cleric／Druid `3d6`，
+Fighter／Paladin／Ranger `5d4`，Magic-User `2d4`，Thief `2d6`，Monk `5d4`。
+Elf／Thief runtime anchor 的畫面 Gold 100 與 `+8Eh=100` 對應。
+
+### HP 與 CON
+
+local `4209h..42BEh` 對 active class slot 擲 hit dice：Cleric `1d8`、Druid `1d8`、
+Fighter `1d10`、Paladin `1d10`、Ranger `2d8`、Magic-User `1d4`、Thief `1d6`、
+Monk `2d4`。一級單一職業骰若小於 `floor(2*sides/3)` 就提升至該值；各職業
+結果先相加寫 `+B1h`。
+
+local `3F01h..3F80h` 對每個 active class 依 CON 加 modifier：CON 3=`-2`、
+4..6=`-1`、7..14=`0`、15=`+1`、16+=`+2`。只有 class code 恰為 pure Fighter
+（`2`）才於 CON 17 再 `+1`、CON 18 再 `+1`；多職 Fighter 不取得這兩級額外值。
+caller `1D31h..1DE1h` 的畫面 HP 是
+`max(1,(sumHitDice+sumConModifiers)/classCount)`，寫 `+32h` 並鏡像到 `+11Bh`；
+最後 `+B1h` 改寫為 `sumHitDice/classCount`。所有除法皆為原版整數除法。
+
+## 實作邊界
+
+本規格授權注入式 dice roller、上述原版表格與純資料角色生成器。畫面上的
+重擲／KEEP 狀態、把結果完整序列化進 CHA、AC／THAC0／damage 等衍生欄位仍須各自
+沿垂直鏈閉合，不因本規格 READY 就宣稱完整建角已完成。

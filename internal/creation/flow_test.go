@@ -39,3 +39,24 @@ func TestFlowBackAndInvalidSelectionFailClosed(t *testing.T) {
 		t.Fatalf("Back did not return to race: %+v", flow)
 	}
 }
+
+func TestFlowOnlyRollsAfterAllDOSMenusAreAccepted(t *testing.T) {
+	flow := NewFlow()
+	roller := &fixedRoller{values: []int{}}
+	if _, err := flow.Roll(roller); err == nil {
+		t.Fatal("rolled before menu completion")
+	}
+	for _, selected := range []int{5, 0, 1, 0} {
+		if err := flow.Select(selected); err != nil {
+			t.Fatal(err)
+		}
+	}
+	roller.values = []int{4, 10, 11, 12, 13, 14, 15, 12, 8}
+	got, err := flow.Roll(roller)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Age != 19 || got.Gold != 120 || got.HP != 8 {
+		t.Fatalf("rolled character = %+v", got)
+	}
+}

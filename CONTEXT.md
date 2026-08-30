@@ -31,18 +31,20 @@
   產生非零能力值與頭像。原先誤讀成 `MAX BONUS?` 的文字經放大後訂正為
   `HEAD / BODY / KEEP` portrait editor；其後 READY／ACTION combat icon、Parts、
   雙色六部位、Size 與 Exit 均已走通。285-byte CHA 的 `BDh..C6h` 已由原版 UI
-  單變因差分閉合（Spec 003 READY）；能力公式仍是 DRAFT。
+  單變因差分閉合（Spec 003 READY）；擲值公式已另於 Spec 004 READY。
 - 六種族職業清單已由正常 UI 逐張擷取並寫成 typed catalog；原版 Race codes 是
   `1,2,3,4,5,7`，單職 Class codes 為 Cleric `0`／Fighter `2`／Magic-User `5`／
-  Thief `6`，Gender 位於 `9Eh`（Male `0`／Female `1`）。多職持久碼與能力公式仍
-  未閉合，不以排列猜測。
+  Thief `6`，Gender 位於 `9Eh`（Male `0`／Female `1`）。七種多職持久碼均已用
+  正常 UI 的同源畫面／CHA 配對閉合，不以排列猜測。
 - 通用 TPOV parser 已對本 build 解出 38 overlays／774 entries；IDA Pro 9.4
   最小探針通過後，角色建立定位到 overlay-16，角色資料顯示定位到 overlay-19。
   `.CHA +10h..+15h` 六能力、`+30h` age、`+32h` HP 與 word `+8Eh` Gold 已由
   同一次原版資料頁＋最終 CHA 與直接存取交叉證實。早先將 `+32h／+B1h` 推作
   Gold／HP 的說法已被 runtime anchor 否定並在 Spec 004 保留勘誤；`+B1h` 現只作
-  未套完整 modifier 的 HP accumulator 強推論。七種多職代碼已由 Half-Elf 正常 UI
-  逐項閉合；亂數 helper 與修正表仍維持 DRAFT，不得先猜公式實作。
+  raw class HP accumulator，最後除以 active class count。七種多職代碼已由 Half-Elf
+  正常 UI 逐項閉合；overlay-16 與 resident 表格也已閉合年齡、`3d6`、種族／年齡／
+  職業能力限制、exceptional STR、Gold、hit dice 與 CON modifier。Spec 004 已 READY，
+  注入式 dice roller 與純資料角色生成器已實作；完整畫面／CHA 串接仍待完成。
 
 ## 尚未知／不阻擋目前盤點
 
