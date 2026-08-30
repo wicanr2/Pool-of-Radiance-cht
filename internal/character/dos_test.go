@@ -13,6 +13,7 @@ func TestParseDOSIconMapping(t *testing.T) {
 	copy(record[1:], "TEST")
 	copy(record[0x10:], []byte{14, 13, 11, 13, 15, 13})
 	record[offsetRace], record[offsetClass], record[offsetGender] = 1, 2, 1
+	record[offsetPortraitHead], record[offsetPortraitBody] = 14, 12
 	copy(record[offsetIconHead:], []byte{0, 0, 0x7A, 1, 0x91, 0xA2, 0xB3, 0xC4, 0xE6, 0xF7})
 	got, err := ParseDOS(record)
 	if err != nil {
@@ -24,11 +25,43 @@ func TestParseDOSIconMapping(t *testing.T) {
 	if got.RaceCode != 1 || got.ClassCode != 2 || got.GenderCode != 1 {
 		t.Fatalf("unexpected identity codes: %+v", got)
 	}
+	if got.Portrait != (PortraitSelection{Head: 14, Body: 12}) {
+		t.Fatalf("unexpected portrait: %+v", got.Portrait)
+	}
 	if got.Icon.OpaqueBF != 0x7A || got.Icon.Size != 1 {
 		t.Fatalf("unexpected structure: %+v", got.Icon)
 	}
 	if got.Icon.Body != (DualColor{1, 9}) || got.Icon.Arm != (DualColor{2, 10}) || got.Icon.Leg != (DualColor{3, 11}) || got.Icon.HairFace != (DualColor{4, 12}) || got.Icon.Shield != (DualColor{6, 14}) || got.Icon.WeaponColor != (DualColor{7, 15}) {
 		t.Fatalf("unexpected colors: %+v", got.Icon)
+	}
+}
+
+func TestWriteDOSPortraitPreservesEveryOtherByte(t *testing.T) {
+	record := bytes.Repeat([]byte{0x5A}, DOSRecordSize)
+	record[0] = 0
+	got, err := WriteDOSPortrait(record, PortraitSelection{Head: 14, Body: 12})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index := range record {
+		want := record[index]
+		if index == offsetPortraitHead {
+			want = 14
+		} else if index == offsetPortraitBody {
+			want = 12
+		}
+		if got[index] != want {
+			t.Fatalf("byte %X = %02X, want %02X", index, got[index], want)
+		}
+	}
+}
+
+func TestWriteDOSPortraitRejectsOutOfRangeSelectors(t *testing.T) {
+	record := make([]byte, DOSRecordSize)
+	for _, portrait := range []PortraitSelection{{Head: 0, Body: 1}, {Head: 15, Body: 1}, {Head: 1, Body: 0}, {Head: 1, Body: 13}} {
+		if _, err := WriteDOSPortrait(record, portrait); err == nil {
+			t.Fatalf("accepted out-of-range portrait %+v", portrait)
+		}
 	}
 }
 

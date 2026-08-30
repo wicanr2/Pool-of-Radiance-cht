@@ -4,23 +4,27 @@ package character
 import "fmt"
 
 const (
-	DOSRecordSize     = 285
-	offsetIconHead    = 0xBD
-	offsetIconWeapon  = 0xBE
-	offsetIconOpaque  = 0xBF
-	offsetIconSize    = 0xC0
-	offsetColorBody   = 0xC1
-	offsetColorArm    = 0xC2
-	offsetColorLeg    = 0xC3
-	offsetColorFace   = 0xC4
-	offsetColorShield = 0xC5
-	offsetColorWeapon = 0xC6
-	offsetRace        = 0x2E
-	offsetClass       = 0x2F
-	offsetGender      = 0x9E
+	DOSRecordSize      = 285
+	offsetPortraitHead = 0xBB
+	offsetPortraitBody = 0xBC
+	offsetIconHead     = 0xBD
+	offsetIconWeapon   = 0xBE
+	offsetIconOpaque   = 0xBF
+	offsetIconSize     = 0xC0
+	offsetColorBody    = 0xC1
+	offsetColorArm     = 0xC2
+	offsetColorLeg     = 0xC3
+	offsetColorFace    = 0xC4
+	offsetColorShield  = 0xC5
+	offsetColorWeapon  = 0xC6
+	offsetRace         = 0x2E
+	offsetClass        = 0x2F
+	offsetGender       = 0x9E
 )
 
 type DualColor struct{ Color1, Color2 uint8 }
+
+type PortraitSelection struct{ Head, Body uint8 }
 
 type IconCustomization struct {
 	Head, Weapon, OpaqueBF, Size                  uint8
@@ -33,6 +37,7 @@ type DOSCharacter struct {
 	RaceCode   uint8
 	ClassCode  uint8
 	GenderCode uint8
+	Portrait   PortraitSelection
 	Icon       IconCustomization
 }
 
@@ -49,6 +54,7 @@ func ParseDOS(record []byte) (DOSCharacter, error) {
 	result.RaceCode = record[offsetRace]
 	result.ClassCode = record[offsetClass]
 	result.GenderCode = record[offsetGender]
+	result.Portrait = PortraitSelection{Head: record[offsetPortraitHead], Body: record[offsetPortraitBody]}
 	result.Icon = IconCustomization{
 		Head: record[offsetIconHead], Weapon: record[offsetIconWeapon],
 		OpaqueBF: record[offsetIconOpaque], Size: record[offsetIconSize],
@@ -56,6 +62,22 @@ func ParseDOS(record []byte) (DOSCharacter, error) {
 		Leg: unpackColor(record[offsetColorLeg]), HairFace: unpackColor(record[offsetColorFace]),
 		Shield: unpackColor(record[offsetColorShield]), WeaponColor: unpackColor(record[offsetColorWeapon]),
 	}
+	return result, nil
+}
+
+// WriteDOSPortrait changes only the two evidence-backed portrait selectors.
+func WriteDOSPortrait(record []byte, portrait PortraitSelection) ([]byte, error) {
+	if len(record) != DOSRecordSize {
+		return nil, fmt.Errorf("Pool DOS CHA length %d, want %d", len(record), DOSRecordSize)
+	}
+	if portrait.Head < 1 || portrait.Head > 14 {
+		return nil, fmt.Errorf("Pool portrait HEAD selector %d, want 1..14", portrait.Head)
+	}
+	if portrait.Body < 1 || portrait.Body > 12 {
+		return nil, fmt.Errorf("Pool portrait BODY selector %d, want 1..12", portrait.Body)
+	}
+	result := append([]byte(nil), record...)
+	result[offsetPortraitHead], result[offsetPortraitBody] = portrait.Head, portrait.Body
 	return result, nil
 }
 
