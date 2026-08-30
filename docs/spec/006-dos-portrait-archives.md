@@ -1,6 +1,6 @@
 # Spec 006：DOS 建角 portrait archive 形狀
 
-狀態：READY（archive shape、CHA selector 欄位與循環範圍）；descriptor／組合位置仍是 DRAFT
+狀態：READY（archive shape、CHA selector、循環與 archive/block descriptor）；組合位置仍是 DRAFT
 日期：2026-08-31
 
 ## 輸入與工具
@@ -45,9 +45,41 @@ IDA Pro 9.4，以 overlay-local 位址空間分析。portrait editor 位於
 `37F2h..3F01h` 編輯 CHA `+BDh/+BEh`。以上位址均為 overlay-local，不是 START
 resident 位址或原始 ZIP file offset。
 
+## 已證實 archive／block descriptor
+
+overlay-16 `014Eh..` 在建角初始化把 DS `52D4h` 設為 `3`。portrait renderer 的
+far call 經 START overlay stub `012Bh:0043h` 映射到 overlay-29 entry 7、local
+`04C4h`；overlay-29 SHA-256 為
+`f085c0ab8b22d74153e7bf2a6318eefbeb28acaf959eea5fada77a88f9cf95f0`。
+renderer 的 `05A4h` 使用 Pascal 字串 `HEAD`／`BODY` 加上 DS `52D4h`，因此建角
+選擇器讀取 `HEAD3.DAX`／`BODY3.DAX`，不是在 16 個 archive 間任意搜尋。
+
+`04C4h` 以 selector 查 DS `2883h`／`2891h` 後的 byte；START.EXE 由 IDA DOS
+loader 載入基址 `10000h`，資料段基址 `17400h`，對應 bytes 如下：
+
+| selector | HEAD3 block ID | BODY3 block ID |
+|---:|---:|---:|
+| 1 | `00h` | `01h` |
+| 2 | `08h` | `02h` |
+| 3 | `09h` | `03h` |
+| 4 | `0Dh` | `04h` |
+| 5 | `10h` | `07h` |
+| 6 | `12h` | `08h` |
+| 7 | `16h` | `12h` |
+| 8 | `22h` | `18h` |
+| 9 | `2Dh` | `1Ah` |
+| 10 | `33h` | `21h` |
+| 11 | `35h` | `23h` |
+| 12 | `39h` | `25h` |
+| 13 | `43h` | — |
+| 14 | `44h` | — |
+
+這 14／12 個 ID 分別全部存在已稽核的 `HEAD3.DAX`／`BODY3.DAX`。DS `2883h`
+同時是其他流程使用的 scratch record 區；本結論只適用於建角 portrait renderer
+呼叫時的狀態，不能把該地址全域命名成唯讀肖像表。
+
 ## 下一個證據閘門
 
-1. 追 portrait renderer 使用的 archive／block descriptor table，把 selector
-   `1..14`／`1..12` 映射到實際 `(archive, block ID)`。
-2. 對 default、HEAD next、BODY next 各做組合畫面抽樣；閉合透明色與 body y offset。
-3. 完成後才可把 portrait editor 接到 `cmd/pool-game`，不能用全 109 張任意笛卡兒積。
+1. 對 default、HEAD next、BODY next 各做組合畫面抽樣；閉合透明色與 body y offset。
+2. 完成後才可把 portrait editor 接到 `cmd/pool-game`；descriptor adapter 可以先接，
+   但不能用全 109 張任意笛卡兒積或猜測合成幾何。
