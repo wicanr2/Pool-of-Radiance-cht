@@ -18,6 +18,11 @@
   consumer，作品位址、文字與劇情不得回填 engine。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
+- `GEO1.DAX..GEO8.DAX` 合計 29 blocks；29／29 payload 均為 `0x402` bytes，
+  已由 engine `geometry.Parse` fail-closed 解成 16×16 四平面，重生報表在
+  `docs/audit/dos-geo-inventory.json`。這只證明 GEO 結構與共用 engine contract
+  相容；尚未證明哪個 block 是 Phlan 起始地圖，也未證明該圖採 bounded、wrapped
+  或 dungeon-door 移動語意。
 - `START.EXE` 是 MZ，`GAME.OVR` 以 `TPOV!` 開頭；配合 overlay/runtime 字串，
   Borland／Turbo Pascal overlay family 目前是 `strong inference`，精確版本未知。
 - 未修改 DOS 程式可用固定輸入抵達標題與主選單；兩張穩定畫面及雜湊已保存。
@@ -73,5 +78,6 @@
 ## 現行驗證策略
 
 先做唯讀 inventory、雜湊與 fail-closed codec 驗證；再建立 READY spec，才實作
-玩家行為。首條玩家垂直鏈固定為標題 → 建角／建隊 → Phlan 第一個正常可操作
-地圖 → 事件／戰鬥 → 存檔／讀檔。
+玩家行為。GEO archive／block shape 已 READY；正常新遊戲入口仍須用 DOS runtime
+save／trace 閉合 ECL block、GEO archive、block ID、座標與朝向。首條玩家垂直鏈固定為
+標題 → 建角／建隊 → Phlan 第一個正常可操作地圖 → 事件／戰鬥 → 存檔／讀檔。
