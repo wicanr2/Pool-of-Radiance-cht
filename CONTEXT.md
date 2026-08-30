@@ -45,6 +45,10 @@
   正常 UI 逐項閉合；overlay-16 與 resident 表格也已閉合年齡、`3d6`、種族／年齡／
   職業能力限制、exceptional STR、Gold、hit dice 與 CON modifier。Spec 004 已 READY，
   注入式 dice roller 與純資料角色生成器已實作；完整畫面／CHA 串接仍待完成。
+- `cmd/pool-game` 是第一支 Ebitengine 正常入口：本機 ZIP → typed `TITLE.DAX` →
+  標題 → 主選單 → Race／Gender／Class／Alignment → Spec 004 角色資料頁。Xvfb
+  以逐鍵延遲走到資料頁並保存四張 remake 截圖；F1／F2／ESC／F10 有按鍵接縫測試。
+  這只證明前半段 UI 垂直鏈，姓名、portrait、combat icon、party、Phlan 與存檔仍未接。
 
 ## 尚未知／不阻擋目前盤點
 

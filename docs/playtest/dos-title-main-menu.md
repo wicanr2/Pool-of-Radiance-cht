@@ -28,4 +28,6 @@ prompt 輸入空字串 `Return` → 主選單連續兩張 AE=0。
 重生：`tools/capture-dos-oracle.sh`。腳本先等待畫面至少出現十色，再要求連續
 兩幀 AE=0；不能把啟動時同樣穩定的灰階 `LOADING` 畫面當成標題。
 
-尚未證明主選單鍵盤映射、建角流程與音訊；本輪為 nosound。
+後續同一 DOS build 的 OCR 驅動建角工作已證實主選單 `C` 進入 Create New
+Character；IBM card 的 Home／End 在垂直選單中分別作上一項／下一項。完整建角
+證據與畫面見 Spec 003。音訊仍未在本輪驗證。

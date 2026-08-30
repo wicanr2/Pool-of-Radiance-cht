@@ -28,7 +28,9 @@
   對這一範圍已 READY。六種族職業清單、引導文字與 Race→Gender→Class→Alignment
   狀態機已實作；Spec 004 已 READY，閉合年齡、能力限制、exceptional STR、Gold、
   hit dice／CON／多職平均公式，並已有注入式 dice roller 與純資料生成器。剩餘驗收是
-  完整資料頁、重擲／KEEP、portrait／icon 與 285-byte CHA serialization 的正常按鍵串接。
+  `cmd/pool-game` 已由標題以正常按鍵走到完整公式資料頁，R 可重擲，F1／F2／ESC／F10
+  已有接縫測試與 Xvfb 截圖。剩餘驗收是 YES 後的姓名、portrait／icon、285-byte CHA
+  serialization、回到 party menu、加入隊伍與 theme 下 sprite／tileset 同步切換。
 - [ ] 解出 Phlan 第一個地圖、入口、移動遮罩與第一個玩家事件。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。

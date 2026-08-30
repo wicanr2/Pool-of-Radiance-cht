@@ -15,6 +15,10 @@
   typed adapter 匯出、2× 最近鄰呈現後，與原版標題逐像素 AE=`0`。
 - ECL 已確認本作 code-address base 為 `9914h`；目前只有 3／29 blocks 可由既有
   CoAB decoder 完整走圖，其餘屬格式差異研究缺口，尚未接入 production VM。
+- 已有第一支可執行的 Ebitengine `cmd/pool-game`：讀取本機原版 ZIP 的 `TITLE.DAX`，
+  可由標題以正常按鍵進入主選單並走完 Race→Gender→Class→Alignment→角色資料頁；
+  F1 Help、F2 theme、ESC 返回、F10 離開與視窗拉伸已接通。Add／Load、姓名、portrait、
+  icon、建隊與進圖仍未完成，畫面會明確標為 pending。
 - 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
   Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
   原版職業清單已進 typed catalog，並有 Race→Gender→Class→Alignment＋ESC 狀態機。
@@ -38,3 +42,17 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 標題格式與驗收見 [Spec 001](docs/spec/001-dos-title-picture.md)；原版啟動收據見
 [DOS 標題／主選單 oracle](docs/playtest/dos-title-main-menu.md)。
+
+## 目前 remake 畫面
+
+| 標題（原版素材 typed decode） | 建角角色資料頁（Spec 003／004） |
+|---|---|
+| ![Pool remake 標題](docs/screenshots/pool-remake-title.png) | ![Pool remake 角色資料頁](docs/screenshots/pool-remake-character-sheet.png) |
+
+在 Docker Go／Ebitengine 工具鏈內執行：
+
+```sh
+tools/go.sh run ./cmd/pool-game -zip "Pool of Radiance (1988).zip"
+```
+
+這仍是首條玩家垂直鏈的前半段，不是可玩版或完整建角完成聲明。
