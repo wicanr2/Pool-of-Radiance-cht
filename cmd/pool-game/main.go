@@ -17,6 +17,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
 
@@ -66,6 +67,9 @@ type app struct {
 	iconAction   *ebiten.Image
 	loadPortrait func(head, body uint8) (*ebiten.Image, error)
 	loadIcon     func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
+	state        poolsave.State
+	saveState    func(poolsave.State) error
+	loadState    func() (poolsave.State, error)
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -83,7 +87,11 @@ func newApp(zipPath string) (*app, error) {
 		flow:   creation.NewFlow(),
 		roller: diceRoller{random: rand.New(rand.NewSource(time.Now().UnixNano()))},
 		keys:   ebitenKeys{},
+		state:  poolsave.NewState(),
 	}
+	const statePath = "saves/pool-remake-state.json"
+	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
+	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
 	application.loadPortrait = func(head, body uint8) (*ebiten.Image, error) {
 		parts, err := assets.ReadCreationPortraitParts(zipPath, head, body)
 		if err != nil {
@@ -154,6 +162,11 @@ func (a *app) reloadIcons() error {
 
 func (a *app) Update() error {
 	if a.justPressed(ebiten.KeyF10) {
+		if a.saveState != nil {
+			if err := a.saveState(a.state); err != nil {
+				return err
+			}
+		}
 		return ebiten.Termination
 	}
 	if a.justPressed(ebiten.KeyF1) {
@@ -177,6 +190,23 @@ func (a *app) Update() error {
 		if a.justPressed(ebiten.KeyC) || a.justPressed(ebiten.KeyEnter) {
 			a.flow, a.cursor, a.rolled = creation.NewFlow(), 0, nil
 			a.mode = modeCreation
+			return nil
+		}
+		if a.justPressed(ebiten.KeyA) {
+			return a.addFirstLibraryCharacter()
+		}
+		if a.justPressed(ebiten.KeyL) {
+			if a.loadState == nil {
+				a.statusLine = "No save loader is configured."
+				return nil
+			}
+			loaded, err := a.loadState()
+			if err != nil {
+				a.statusLine = err.Error()
+				return nil
+			}
+			a.state = loaded
+			a.statusLine = fmt.Sprintf("Loaded %d library / %d party characters.", len(loaded.CharacterLibrary), len(loaded.Party))
 		}
 	case modeCreation:
 		return a.updateCreation()
@@ -197,7 +227,10 @@ func (a *app) updateCreation() error {
 		if a.flow.Stage != creation.StagePortrait {
 			a.portrait = nil
 		}
-		a.cursor, a.rolled = 0, nil
+		a.cursor = 0
+		if a.flow.Stage <= creation.StageAlignment {
+			a.rolled = nil
+		}
 		return nil
 	}
 	if a.flow.Stage == creation.StageRoll {
@@ -298,8 +331,20 @@ func (a *app) updateCreation() error {
 			}
 			changed = true
 		}
+		if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeyE) {
+			return a.flow.RequestIconConfirmation()
+		}
 		if changed {
 			return a.reloadIcons()
+		}
+		return nil
+	}
+	if a.flow.Stage == creation.StageIconConfirm {
+		if a.justPressed(ebiten.KeyN) {
+			return a.flow.RejectIconConfirmation()
+		}
+		if a.justPressed(ebiten.KeyY) || a.justPressed(ebiten.KeyEnter) {
+			return a.finishCharacter()
 		}
 		return nil
 	}
@@ -319,6 +364,70 @@ func (a *app) updateCreation() error {
 	return nil
 }
 
+func (a *app) finishCharacter() error {
+	if a.rolled == nil {
+		return fmt.Errorf("Pool character confirmation has no rolled character")
+	}
+	for _, existing := range a.state.CharacterLibrary {
+		if existing.Name == a.flow.Name {
+			a.statusLine = "A character with that name already exists."
+			return nil
+		}
+	}
+	rolled := a.rolled
+	character := poolsave.Character{
+		Name: a.flow.Name, RaceID: a.flow.SelectedRace().ID, GenderID: a.flow.SelectedGender().ID,
+		ClassID: a.flow.SelectedClass().ID, AlignmentID: a.flow.SelectedAlignment().ID,
+		Age: rolled.Age, Abilities: rolled.Abilities, ExceptionalStrength: rolled.ExceptionalStrength,
+		Gold: rolled.Gold, HP: rolled.HP, RawHP: rolled.RawHP,
+		PortraitHead: a.flow.PortraitHead, PortraitBody: a.flow.PortraitBody,
+		IconHead: a.flow.IconHead, IconWeapon: a.flow.IconWeapon, IconSize: a.flow.IconSize, IconColors: a.flow.IconColors,
+	}
+	a.state.CharacterLibrary = append(a.state.CharacterLibrary, character)
+	if a.saveState != nil {
+		if err := a.saveState(a.state); err != nil {
+			a.state.CharacterLibrary = a.state.CharacterLibrary[:len(a.state.CharacterLibrary)-1]
+			a.statusLine = err.Error()
+			return nil
+		}
+	}
+	a.mode, a.flow, a.cursor, a.rolled = modeMenu, creation.NewFlow(), 0, nil
+	a.portrait, a.iconReady, a.iconAction = nil, nil, nil
+	a.statusLine = character.Name + " saved to the character library."
+	return nil
+}
+
+func (a *app) addFirstLibraryCharacter() error {
+	if len(a.state.Party) >= 6 {
+		a.statusLine = "The party already has six characters."
+		return nil
+	}
+	for _, candidate := range a.state.CharacterLibrary {
+		present := false
+		for _, member := range a.state.Party {
+			if member.Name == candidate.Name {
+				present = true
+				break
+			}
+		}
+		if present {
+			continue
+		}
+		a.state.Party = append(a.state.Party, candidate)
+		if a.saveState != nil {
+			if err := a.saveState(a.state); err != nil {
+				a.state.Party = a.state.Party[:len(a.state.Party)-1]
+				a.statusLine = err.Error()
+				return nil
+			}
+		}
+		a.statusLine = candidate.Name + " added to the party."
+		return nil
+	}
+	a.statusLine = "No unassigned character is available."
+	return nil
+}
+
 func (a *app) Draw(screen *ebiten.Image) {
 	background, foreground, accent := color.RGBA{0, 0, 0, 255}, color.RGBA{170, 255, 255, 255}, color.RGBA{255, 255, 85, 255}
 	if a.modern {
@@ -332,11 +441,17 @@ func (a *app) Draw(screen *ebiten.Image) {
 		drawText(screen, "ENTER / SPACE", 264, 382, accent)
 	} else if a.mode == modeMenu {
 		drawFrame(screen, foreground, accent)
-		drawText(screen, "POOL OF RADIANCE", 224, 54, accent)
-		drawText(screen, "C  CREATE NEW CHARACTER", 176, 122, foreground)
-		drawText(screen, "   ADD CHARACTER TO PARTY   [pending]", 176, 150, color.RGBA{110, 120, 125, 255})
-		drawText(screen, "   LOAD SAVED GAME          [pending]", 176, 178, color.RGBA{110, 120, 125, 255})
-		drawText(screen, "ENTER also starts character creation", 176, 226, foreground)
+		drawText(screen, "PARTY CREATION MENU", 224, 54, accent)
+		drawText(screen, "C  CREATE NEW CHARACTER", 176, 112, foreground)
+		drawText(screen, "A  ADD CHARACTER TO PARTY", 176, 140, foreground)
+		drawText(screen, "L  LOAD SAVED GAME", 176, 168, foreground)
+		drawText(screen, fmt.Sprintf("LIBRARY %d   PARTY %d/6", len(a.state.CharacterLibrary), len(a.state.Party)), 176, 210, accent)
+		for index, member := range a.state.Party {
+			drawText(screen, fmt.Sprintf("%d  %s", index+1, member.Name), 176, 240+index*20, foreground)
+		}
+		if a.statusLine != "" {
+			drawText(screen, a.statusLine, 72, 350, foreground)
+		}
 	} else {
 		drawCreation(screen, a, foreground, accent)
 	}
@@ -418,6 +533,15 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		drawText(screen, creation.HintFor("icon"), 48, 332, foreground)
 		return
 	}
+	if a.flow.Stage == creation.StageIconConfirm {
+		drawText(screen, "IS THIS ICON OK?", 230, 138, accent)
+		drawText(screen, "Y / ENTER  YES", 230, 190, foreground)
+		drawText(screen, "N          NO", 230, 222, foreground)
+		if a.statusLine != "" {
+			drawText(screen, a.statusLine, 72, 310, foreground)
+		}
+		return
+	}
 	title := map[creation.Stage]string{creation.StageRace: "PICK RACE", creation.StageGender: "PICK GENDER", creation.StageClass: "PICK CLASS", creation.StageAlignment: "PICK ALIGNMENT"}[a.flow.Stage]
 	drawText(screen, title, 250, 42, accent)
 	for index, option := range a.flow.Options() {
@@ -471,7 +595,7 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 		"ESC: return to the previous screen",
 		"R: reroll on the character sheet",
 		"F2: switch original/modern presentation",
-		"F10: quit the current prototype",
+		"F10: save the remake state and quit",
 	}
 	for index, line := range lines {
 		drawText(screen, line, 104, 120+index*30, foreground)

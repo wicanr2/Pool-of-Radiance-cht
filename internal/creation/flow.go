@@ -13,6 +13,7 @@ const (
 	StageName
 	StagePortrait
 	StageIcon
+	StageIconConfirm
 )
 
 type Flow struct {
@@ -94,6 +95,8 @@ func (flow *Flow) Back() bool {
 		flow.Stage = StageName
 	case StageIcon:
 		flow.Stage = StagePortrait
+	case StageIconConfirm:
+		flow.Stage = StageIcon
 	default:
 		return false
 	}
@@ -190,6 +193,22 @@ func (flow *Flow) ToggleIconSize() error {
 	} else {
 		flow.IconSize = 1
 	}
+	return nil
+}
+
+func (flow *Flow) RequestIconConfirmation() error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not finish an icon", flow.Stage)
+	}
+	flow.Stage = StageIconConfirm
+	return nil
+}
+
+func (flow *Flow) RejectIconConfirmation() error {
+	if flow.Stage != StageIconConfirm {
+		return fmt.Errorf("creation stage %d does not confirm an icon", flow.Stage)
+	}
+	flow.Stage = StageIcon
 	return nil
 }
 

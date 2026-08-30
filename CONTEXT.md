@@ -51,7 +51,11 @@
   IDA Pro 9.4 閉合 Head 0..13、Weapon 0..31、Size 與六個雙色欄位；CHEAD／CBODY
   184／184 blocks 全部 fail-closed 解碼，remake 由正常玩家路徑顯示 READY／ACTION
   真實素材並可調 Head、Weapon、Size 與六部位雙色。Xvfb 逐鍵截圖已涵蓋三個 editor；
-  party、CHA 完整 serialization、Phlan 與存檔仍未接。
+  Spec 008 已另接版本化 remake 角色庫與 atomic save：icon 確認後保存角色、回到原版
+  順序的 Party Creation Menu，`A` 加入最多六名玩家角色、`L` fail-closed 載入、F10 保存
+  後離開；Xvfb 正常按鍵已走到 Library 1／Party 1。DOS CHA／SPC exporter 未冒充完成：
+  33 份 CHA 均為 285 bytes，但 SPC 是 9-byte 節點鏈且 corpus 有 9／18／36 bytes，不能
+  複製單一模板。Phlan 與遊戲內存檔仍未接。
 - HEAD1..8／BODY1..8 共 16 archives 已全掃：109／109 blocks 可由共用 engine
   picture decoder fail-closed 解碼；Spec 006 已閉合建角固定使用 HEAD3／BODY3、
   14／12 筆稀疏 block selector，並以 DOS capture 全像素零差異證明 88×40＋88×48

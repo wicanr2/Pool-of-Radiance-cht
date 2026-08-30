@@ -30,7 +30,7 @@ cp go.mod /tmp/pool.mod
 cp go.sum /tmp/pool.sum
 printf "\nreplace github.com/wicanr2/golden-box-remake-engine => /engine\n" >> /tmp/pool.mod
 go build -modfile=/tmp/pool.mod -o /tmp/pool-game ./cmd/pool-game
-/tmp/pool-game -zip "Pool of Radiance (1988).zip" >/tmp/game.log 2>&1 &
+(cd /tmp && exec /tmp/pool-game -zip "/src/Pool of Radiance (1988).zip") >/tmp/game.log 2>&1 &
 game_pid=$!
 retries=0
 window=
@@ -69,11 +69,28 @@ done
 sleep 0.5
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-combat-icon-editor.png
+pulse Return
+sleep 0.5
+ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-icon-confirm.png
+pulse y
+sleep 0.8
+pulse a
+sleep 0.8
+ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-party-menu.png
 sha256sum docs/screenshots/pool-remake-character-name.png \
   docs/screenshots/pool-remake-portrait-editor.png \
-  docs/screenshots/pool-remake-combat-icon-editor.png
+  docs/screenshots/pool-remake-combat-icon-editor.png \
+  docs/screenshots/pool-remake-icon-confirm.png \
+  docs/screenshots/pool-remake-party-menu.png
 if cmp -s docs/screenshots/pool-remake-portrait-editor.png docs/screenshots/pool-remake-combat-icon-editor.png; then
   echo "combat icon capture did not leave the portrait screen" >&2
+  exit 1
+fi
+if cmp -s docs/screenshots/pool-remake-combat-icon-editor.png docs/screenshots/pool-remake-icon-confirm.png || \
+   cmp -s docs/screenshots/pool-remake-icon-confirm.png docs/screenshots/pool-remake-party-menu.png; then
+  echo "creation completion capture did not advance through confirmation and party menu" >&2
   exit 1
 fi
 '

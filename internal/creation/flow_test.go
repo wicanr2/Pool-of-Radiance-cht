@@ -98,4 +98,10 @@ func TestFlowContinuesThroughOriginalNameAndPortraitOrder(t *testing.T) {
 	if flow.IconHead != 0 || flow.IconWeapon != 0 || flow.IconSize != 1 {
 		t.Fatalf("Dwarf icon defaults = head %d weapon %d size %d", flow.IconHead, flow.IconWeapon, flow.IconSize)
 	}
+	if err := flow.RequestIconConfirmation(); err != nil || flow.Stage != StageIconConfirm {
+		t.Fatalf("icon confirmation: stage=%d err=%v", flow.Stage, err)
+	}
+	if err := flow.RejectIconConfirmation(); err != nil || flow.Stage != StageIcon {
+		t.Fatalf("icon reject: stage=%d err=%v", flow.Stage, err)
+	}
 }

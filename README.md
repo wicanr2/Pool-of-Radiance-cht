@@ -20,7 +20,9 @@
   →姓名→原版 HEAD／BODY／KEEP 肖像編輯器→READY／ACTION 戰鬥圖示編輯器；
   F1 Help、F2 theme、ESC 返回、F10 離開與視窗拉伸已接通。戰鬥圖示使用原版
   CHEAD／CBODY，支援 Head、Weapon、Size、六部位雙色及 READY／ACTION 同時預覽。
-  Add／Load、285-byte CHA 完整序列化、建隊與進圖仍未完成。
+  完成確認後會寫入版本化 remake 角色庫、回到原版順序的 Party Creation Menu；
+  Add、Load、六名玩家角色上限及 F10 原子保存已接通。DOS 285-byte CHA／SPC export
+  尚未完成，進圖亦未完成。
 - 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
   Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
   原版職業清單已進 typed catalog，並有 Race→Gender→Class→Alignment＋ESC 狀態機。
@@ -59,6 +61,10 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|
 | ![Pool remake 戰鬥圖示編輯器](docs/screenshots/pool-remake-combat-icon-editor.png) |
 
+| 最終確認 | 返回建隊選單並加入角色 |
+|---|---|
+| ![Pool remake icon 最終確認](docs/screenshots/pool-remake-icon-confirm.png) | ![Pool remake Party Creation Menu](docs/screenshots/pool-remake-party-menu.png) |
+
 目前以 Docker／Xvfb 做離線測試與煙霧擷取：
 
 ```sh
@@ -68,5 +74,5 @@ tools/go.sh test ./...
 `tools/go.sh` 會在測試容器內自行建立有界 Xvfb。可互動封包尚未完成；本階段不把
 主機 X11 socket 掛入開發容器，也不把只在背景 Xvfb 執行的入口寫成玩家啟動方式。
 
-這仍是首條玩家垂直鏈；角色檔、建隊與進入 Phlan 尚未完成，不能宣稱
-完整建角或可玩版。
+這仍是首條玩家垂直鏈；remake 自有角色庫與建隊已可用，但 DOS 相容角色檔、
+完整 Party Creation Menu 功能及進入 Phlan 尚未完成，不能宣稱可玩版。

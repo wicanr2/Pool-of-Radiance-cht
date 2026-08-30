@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
 type scriptedKeys map[ebiten.Key]bool
@@ -128,5 +129,46 @@ func TestKeysContinueThroughNameAndOriginalPortraitEditor(t *testing.T) {
 	before := application.flow.IconColors[1][0]
 	if err := press(application, ebiten.KeyDigit1); err != nil || application.flow.IconColors[1][0] != (before+1)&0x0F {
 		t.Fatalf("icon COLOR-1: %d err=%v", application.flow.IconColors[1][0], err)
+	}
+}
+
+func TestIconConfirmationSavesLibraryThenAddBuildsParty(t *testing.T) {
+	saves := 0
+	application := &app{
+		mode: modeCreation,
+		flow: creation.Flow{Stage: creation.StageIconConfirm, Name: "HERO", PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+			IconColors: [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}},
+		rolled:    &creation.RolledCharacter{Age: 53, Abilities: [6]int{16, 16, 11, 12, 12, 13}, Gold: 140, HP: 6, RawHP: 6},
+		state:     poolsave.NewState(),
+		saveState: func(state poolsave.State) error { saves++; return state.Validate() },
+	}
+	if err := press(application, ebiten.KeyY); err != nil {
+		t.Fatal(err)
+	}
+	if application.mode != modeMenu || len(application.state.CharacterLibrary) != 1 || len(application.state.Party) != 0 {
+		t.Fatalf("after finish mode=%d state=%+v", application.mode, application.state)
+	}
+	if got := application.state.CharacterLibrary[0]; got.Name != "HERO" || got.RaceID != "dwarf" || got.IconSize != 1 {
+		t.Fatalf("saved character=%+v", got)
+	}
+	if err := press(application, ebiten.KeyA); err != nil {
+		t.Fatal(err)
+	}
+	if len(application.state.Party) != 1 || application.state.Party[0].Name != "HERO" {
+		t.Fatalf("party=%+v", application.state.Party)
+	}
+	if saves != 2 {
+		t.Fatalf("save calls=%d, want 2", saves)
+	}
+}
+
+func TestLoadSavedGameUsesVersionedStateSeam(t *testing.T) {
+	want := poolsave.NewState()
+	application := &app{mode: modeMenu, state: poolsave.NewState(), loadState: func() (poolsave.State, error) { return want, nil }}
+	if err := press(application, ebiten.KeyL); err != nil {
+		t.Fatal(err)
+	}
+	if application.state.Schema != poolsave.Schema {
+		t.Fatalf("loaded schema=%q", application.state.Schema)
 	}
 }
