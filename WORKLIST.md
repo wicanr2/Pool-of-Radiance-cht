@@ -8,8 +8,9 @@
   驗收：輸入 ZIP 不被修改；manifest 可由單一命令重生。
 - [x] 以 engine `dax` 掃描全部 DAX：113／113 成功，合計 1,245 blocks；結果在
   `docs/audit/dos-dax-inventory.json`。下一階段仍須依 payload consumer 分格式驗證。
-- [ ] 辨識 `START.EXE`／`GAME.OVR` 的 MZ、compiler、linker 與 overlay 邊界。
-  驗收：規格記錄 SHA-256、工具版本、位址空間、原始 bytes 與推論等級。
+- [ ] 完成 `START.EXE`／`GAME.OVR` 的 compiler、linker 與 overlay 邊界。
+  MZ／`TPOV!` 與 family 強推論已記於 `docs/re/dos-toolchain-baseline.md`；仍須以
+  startup code、RTL helper bytes、overlay directory 與 IDA 位址空間交叉驗證。
 - [ ] 建立 DOSBox 正常啟動 oracle 與未縮放標題／主選單截圖。
   驗收：Docker/Xvfb 有界重播，輸入序列、畫面與 metadata 齊全。
 

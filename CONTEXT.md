@@ -18,10 +18,12 @@
   consumer，作品位址、文字與劇情不得回填 engine。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
+- `START.EXE` 是 MZ，`GAME.OVR` 以 `TPOV!` 開頭；配合 overlay/runtime 字串，
+  Borland／Turbo Pascal overlay family 目前是 `strong inference`，精確版本未知。
 
 ## 尚未知／不阻擋目前盤點
 
-- DOS 發行版精確 revision、compiler／linker／overlay 工具鏈。
+- DOS 發行版精確 revision、compiler／linker／overlay 精確版本（family 已有強推論）。
 - Pool 與 CoAB 的 DAX／ECL 共用程度，以及個別 payload record 語意。
 - 歷史中文 RAR 的字碼、修改範圍、可執行檔差異與授權狀態。
 - D64 實際平台、檔案系統內容及其與 DOS 版的關係。
