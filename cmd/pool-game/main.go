@@ -47,18 +47,22 @@ type keySource interface{ JustPressed(ebiten.Key) bool }
 type ebitenKeys struct{}
 
 func (ebitenKeys) JustPressed(key ebiten.Key) bool { return inpututil.IsKeyJustPressed(key) }
+func (ebitenKeys) Chars() []rune                   { return ebiten.AppendInputChars(nil) }
 
 type app struct {
-	mode       screenMode
-	title      *ebiten.Image
-	flow       creation.Flow
-	cursor     int
-	rolled     *creation.RolledCharacter
-	roller     diceRoller
-	help       bool
-	modern     bool
-	statusLine string
-	keys       keySource
+	mode         screenMode
+	title        *ebiten.Image
+	flow         creation.Flow
+	cursor       int
+	rolled       *creation.RolledCharacter
+	roller       diceRoller
+	help         bool
+	modern       bool
+	statusLine   string
+	keys         keySource
+	nameInput    string
+	portrait     *ebiten.Image
+	loadPortrait func(head, body uint8) (*ebiten.Image, error)
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -70,17 +74,52 @@ func newApp(zipPath string) (*app, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &app{
+	application := &app{
 		mode:   modeTitle,
 		title:  ebiten.NewImageFromImage(rendered),
 		flow:   creation.NewFlow(),
 		roller: diceRoller{random: rand.New(rand.NewSource(time.Now().UnixNano()))},
 		keys:   ebitenKeys{},
-	}, nil
+	}
+	application.loadPortrait = func(head, body uint8) (*ebiten.Image, error) {
+		parts, err := assets.ReadCreationPortraitParts(zipPath, head, body)
+		if err != nil {
+			return nil, err
+		}
+		composed, err := assets.ComposeCreationPortrait(parts)
+		if err != nil {
+			return nil, err
+		}
+		rendered, err := composed.RGBA(0, graphics.EGA16)
+		if err != nil {
+			return nil, err
+		}
+		return ebiten.NewImageFromImage(rendered), nil
+	}
+	return application, nil
 }
 
 func (a *app) justPressed(key ebiten.Key) bool {
 	return a.keys != nil && a.keys.JustPressed(key)
+}
+
+func (a *app) inputChars() []rune {
+	if source, ok := a.keys.(interface{ Chars() []rune }); ok {
+		return source.Chars()
+	}
+	return nil
+}
+
+func (a *app) reloadPortrait() error {
+	if a.loadPortrait == nil {
+		return fmt.Errorf("portrait loader is not configured")
+	}
+	portrait, err := a.loadPortrait(a.flow.PortraitHead, a.flow.PortraitBody)
+	if err != nil {
+		return err
+	}
+	a.portrait = portrait
+	return nil
 }
 
 func (a *app) Update() error {
@@ -122,6 +161,12 @@ func (a *app) updateCreation() error {
 			return nil
 		}
 		a.flow.Back()
+		if a.flow.Stage == creation.StageName {
+			a.nameInput = a.flow.Name
+		}
+		if a.flow.Stage != creation.StagePortrait {
+			a.portrait = nil
+		}
 		a.cursor, a.rolled = 0, nil
 		return nil
 	}
@@ -134,8 +179,58 @@ func (a *app) updateCreation() error {
 			a.rolled = &rolled
 		}
 		if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeyY) {
-			a.statusLine = "Character sheet accepted; name and portrait are the next READY slice."
+			if err := a.flow.AcceptRoll(); err != nil {
+				return err
+			}
+			a.nameInput, a.statusLine = "", ""
 		}
+		return nil
+	}
+	if a.flow.Stage == creation.StageName {
+		if a.justPressed(ebiten.KeyBackspace) && len(a.nameInput) > 0 {
+			a.nameInput = a.nameInput[:len(a.nameInput)-1]
+		}
+		for _, entered := range a.inputChars() {
+			if entered >= 0x20 && entered <= 0x7E && len(a.nameInput) < 15 {
+				a.nameInput += strings.ToUpper(string(entered))
+			}
+		}
+		if a.justPressed(ebiten.KeyEnter) {
+			if err := a.flow.SetName(a.nameInput); err != nil {
+				a.statusLine = err.Error()
+				return nil
+			}
+			a.statusLine = ""
+			return a.reloadPortrait()
+		}
+		return nil
+	}
+	if a.flow.Stage == creation.StagePortrait {
+		changed := false
+		if a.justPressed(ebiten.KeyH) {
+			if err := a.flow.NextPortraitHead(); err != nil {
+				return err
+			}
+			changed = true
+		}
+		if a.justPressed(ebiten.KeyB) {
+			if err := a.flow.NextPortraitBody(); err != nil {
+				return err
+			}
+			changed = true
+		}
+		if changed {
+			return a.reloadPortrait()
+		}
+		if a.justPressed(ebiten.KeyK) {
+			if err := a.flow.KeepPortrait(); err != nil {
+				return err
+			}
+			a.statusLine = "Portrait accepted; original combat icon editor is next."
+		}
+		return nil
+	}
+	if a.flow.Stage == creation.StageIcon {
 		return nil
 	}
 	options := a.flow.Options()
@@ -204,6 +299,34 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 48, 334, foreground)
 		}
+		return
+	}
+	if a.flow.Stage == creation.StageName {
+		drawText(screen, "CHARACTER NAME:", 160, 128, accent)
+		drawText(screen, a.nameInput+"_", 160, 164, foreground)
+		drawText(screen, "1-15 CHARACTERS; ENTER ACCEPTS", 160, 214, foreground)
+		if a.statusLine != "" {
+			drawText(screen, a.statusLine, 48, 334, foreground)
+		}
+		return
+	}
+	if a.flow.Stage == creation.StagePortrait {
+		drawText(screen, "HEAD / BODY / KEEP", 48, 72, accent)
+		drawText(screen, fmt.Sprintf("H HEAD %02d/14", a.flow.PortraitHead), 48, 118, foreground)
+		drawText(screen, fmt.Sprintf("B BODY %02d/12", a.flow.PortraitBody), 48, 150, foreground)
+		drawText(screen, "K KEEP", 48, 182, foreground)
+		if a.portrait != nil {
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(2, 2)
+			op.GeoM.Translate(448, 16)
+			screen.DrawImage(a.portrait, op)
+		}
+		return
+	}
+	if a.flow.Stage == creation.StageIcon {
+		drawText(screen, "COMBAT ICON EDITOR", 216, 72, accent)
+		drawText(screen, "READY / ACTION customization is the next slice.", 96, 132, foreground)
+		drawText(screen, a.statusLine, 96, 176, foreground)
 		return
 	}
 	title := map[creation.Stage]string{creation.StageRace: "PICK RACE", creation.StageGender: "PICK GENDER", creation.StageClass: "PICK CLASS", creation.StageAlignment: "PICK ALIGNMENT"}[a.flow.Stage]

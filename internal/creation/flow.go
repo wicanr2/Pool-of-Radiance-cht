@@ -10,6 +10,9 @@ const (
 	StageClass
 	StageAlignment
 	StageRoll
+	StageName
+	StagePortrait
+	StageIcon
 )
 
 type Flow struct {
@@ -18,6 +21,9 @@ type Flow struct {
 	GenderIndex    int
 	ClassIndex     int
 	AlignmentIndex int
+	Name           string
+	PortraitHead   uint8
+	PortraitBody   uint8
 }
 
 func NewFlow() Flow { return Flow{Stage: StageRace} }
@@ -77,10 +83,59 @@ func (flow *Flow) Back() bool {
 		flow.Stage = StageClass
 	case StageRoll:
 		flow.Stage = StageAlignment
+	case StageName:
+		flow.Stage = StageRoll
+	case StagePortrait:
+		flow.Stage = StageName
+	case StageIcon:
+		flow.Stage = StagePortrait
 	default:
 		return false
 	}
 	return true
+}
+
+func (flow *Flow) AcceptRoll() error {
+	if flow.Stage != StageRoll {
+		return fmt.Errorf("creation stage %d has no roll to accept", flow.Stage)
+	}
+	flow.Stage = StageName
+	return nil
+}
+
+func (flow *Flow) SetName(name string) error {
+	if flow.Stage != StageName {
+		return fmt.Errorf("creation stage %d does not accept a name", flow.Stage)
+	}
+	if len(name) < 1 || len(name) > 15 {
+		return fmt.Errorf("Pool character name length %d, want 1..15 bytes", len(name))
+	}
+	flow.Name, flow.PortraitHead, flow.PortraitBody, flow.Stage = name, 1, 1, StagePortrait
+	return nil
+}
+
+func (flow *Flow) NextPortraitHead() error {
+	if flow.Stage != StagePortrait {
+		return fmt.Errorf("creation stage %d does not edit a portrait", flow.Stage)
+	}
+	flow.PortraitHead = flow.PortraitHead%14 + 1
+	return nil
+}
+
+func (flow *Flow) NextPortraitBody() error {
+	if flow.Stage != StagePortrait {
+		return fmt.Errorf("creation stage %d does not edit a portrait", flow.Stage)
+	}
+	flow.PortraitBody = flow.PortraitBody%12 + 1
+	return nil
+}
+
+func (flow *Flow) KeepPortrait() error {
+	if flow.Stage != StagePortrait {
+		return fmt.Errorf("creation stage %d has no portrait to keep", flow.Stage)
+	}
+	flow.Stage = StageIcon
+	return nil
 }
 
 func (flow Flow) SelectedRace() Race     { return Races[flow.RaceIndex] }

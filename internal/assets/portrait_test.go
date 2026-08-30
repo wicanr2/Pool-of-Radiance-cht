@@ -30,5 +30,22 @@ func TestRealCreationPortraitDescriptorAnchors(t *testing.T) {
 		if parts.Body.Width() != 88 || parts.Body.Height() != 48 || len(parts.Body.Pixels) != 4224 {
 			t.Fatalf("BODY %d has unexpected shape", selectors[1])
 		}
+		composed, err := ComposeCreationPortrait(parts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if composed.Width() != 88 || composed.Height() != 88 || len(composed.Pixels) != 7744 {
+			t.Fatalf("composed portrait has unexpected shape")
+		}
+		for index, value := range parts.Head.Pixels {
+			if composed.Pixels[index] != value {
+				t.Fatalf("HEAD pixel %d changed during composition", index)
+			}
+		}
+		for index, value := range parts.Body.Pixels {
+			if composed.Pixels[88*40+index] != value {
+				t.Fatalf("BODY pixel %d changed during composition", index)
+			}
+		}
 	}
 }

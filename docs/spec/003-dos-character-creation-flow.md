@@ -40,6 +40,13 @@ DOS build 的 runtime capture 為準。
 11. 頂層 Exit 顯示 `IS THIS ICON OK? YES NO`；Yes 寫出 `<NAME>.CHA` 與
     `<NAME>.SPC`，再返回 Party Creation Menu。
 
+overlay-16 主函式的 overlay-local `1E19h..1E7Dh` 閉合了第 6 步：姓名輸入以
+立即值 `0Fh` 作長度上限，`1E58h..1E5Fh` 檢查 Pascal string 首 byte，長度為 0
+就回到提示；非空後才將該角色設為 DS `5CF0h` 的目前角色，依序 near-call
+portrait editor `33A9h` 與 combat icon editor `37F2h`。因此持久姓名契約是
+1..15 bytes，且兩個 editor 不能在姓名接受前啟動。輸入檔 SHA-256 與位址基準同
+Spec 006 的 overlay-16 證據。
+
 ### 原版 Race → Class 清單
 
 | Race | 依畫面順序的 Class |
@@ -107,7 +114,8 @@ ALLTWO 將六部位各前進一色。所有 CHA 固定 285 bytes。差分得到�
 
 - 把 Spec 004 的擲值結果接進完整畫面、KEEP／重擲與 CHA serialization。
 - 返回上一層、取消、重擲與完成建角後加入隊伍的完整按鍵狀態機。
-- portrait head／body 的 CHA offsets；本輪只證明玩家可見循環與 KEEP。
+- portrait 的 CHA offsets、合法範圍、descriptor 與合成幾何已由 Spec 006 閉合；
+  尚缺的是把該 READY 契約接入完整 UI 與最終 CHA serialization。
 - `BFh` 的語意，以及 Head／Weapon selector 的合法上限。
 
 本規格只授權 typed CHA icon codec 與上述 UI state machine；完整角色生成規則須另以

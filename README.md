@@ -16,9 +16,10 @@
 - ECL 已確認本作 code-address base 為 `9914h`；目前只有 3／29 blocks 可由既有
   CoAB decoder 完整走圖，其餘屬格式差異研究缺口，尚未接入 production VM。
 - 已有第一支可執行的 Ebitengine `cmd/pool-game`：讀取本機原版 ZIP 的 `TITLE.DAX`，
-  可由標題以正常按鍵進入主選單並走完 Race→Gender→Class→Alignment→角色資料頁；
-  F1 Help、F2 theme、ESC 返回、F10 離開與視窗拉伸已接通。Add／Load、姓名、portrait、
-  icon、建隊與進圖仍未完成，畫面會明確標為 pending。
+  可由標題以正常按鍵進入主選單並走完 Race→Gender→Class→Alignment→角色資料頁
+  →姓名→原版 HEAD／BODY／KEEP 肖像編輯器；
+  F1 Help、F2 theme、ESC 返回、F10 離開與視窗拉伸已接通。Add／Load、combat icon、
+  285-byte CHA 完整序列化、建隊與進圖仍未完成，畫面會明確標為 pending。
 - 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
   Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
   原版職業清單已進 typed catalog，並有 Race→Gender→Class→Alignment＋ESC 狀態機。
@@ -49,6 +50,10 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![Pool remake 標題](docs/screenshots/pool-remake-title.png) | ![Pool remake 角色資料頁](docs/screenshots/pool-remake-character-sheet.png) |
 
+| 姓名輸入（原版順序） | 肖像編輯器（原版 HEAD3／BODY3 素材） |
+|---|---|
+| ![Pool remake 姓名輸入](docs/screenshots/pool-remake-character-name.png) | ![Pool remake 肖像編輯器](docs/screenshots/pool-remake-portrait-editor.png) |
+
 目前以 Docker／Xvfb 做離線測試與煙霧擷取：
 
 ```sh
@@ -58,4 +63,5 @@ tools/go.sh test ./...
 `tools/go.sh` 會在測試容器內自行建立有界 Xvfb。可互動封包尚未完成；本階段不把
 主機 X11 socket 掛入開發容器，也不把只在背景 Xvfb 執行的入口寫成玩家啟動方式。
 
-這仍是首條玩家垂直鏈的前半段，不是可玩版或完整建角完成聲明。
+這仍是首條玩家垂直鏈；combat icon、角色檔、建隊與進入 Phlan 尚未完成，不能宣稱
+完整建角或可玩版。

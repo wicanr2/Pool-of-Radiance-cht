@@ -60,3 +60,39 @@ func TestFlowOnlyRollsAfterAllDOSMenusAreAccepted(t *testing.T) {
 		t.Fatalf("rolled character = %+v", got)
 	}
 }
+
+func TestFlowContinuesThroughOriginalNameAndPortraitOrder(t *testing.T) {
+	flow := NewFlow()
+	for _, selected := range []int{0, 0, 0, 0} {
+		if err := flow.Select(selected); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := flow.AcceptRoll(); err != nil || flow.Stage != StageName {
+		t.Fatalf("accept roll: stage=%d err=%v", flow.Stage, err)
+	}
+	for _, name := range []string{"", "1234567890123456"} {
+		if err := flow.SetName(name); err == nil {
+			t.Fatalf("accepted invalid name %q", name)
+		}
+	}
+	if err := flow.SetName("HERO"); err != nil || flow.Stage != StagePortrait || flow.PortraitHead != 1 || flow.PortraitBody != 1 {
+		t.Fatalf("set name: %+v err=%v", flow, err)
+	}
+	for index := 0; index < 14; index++ {
+		if err := flow.NextPortraitHead(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for index := 0; index < 12; index++ {
+		if err := flow.NextPortraitBody(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if flow.PortraitHead != 1 || flow.PortraitBody != 1 {
+		t.Fatalf("portrait wrap = %d/%d", flow.PortraitHead, flow.PortraitBody)
+	}
+	if err := flow.KeepPortrait(); err != nil || flow.Stage != StageIcon {
+		t.Fatalf("keep portrait: stage=%d err=%v", flow.Stage, err)
+	}
+}

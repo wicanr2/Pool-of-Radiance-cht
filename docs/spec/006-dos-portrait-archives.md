@@ -1,6 +1,6 @@
 # Spec 006：DOS 建角 portrait archive 形狀
 
-狀態：READY（archive shape、CHA selector、循環與 archive/block descriptor）；組合位置仍是 DRAFT
+狀態：READY（archive shape、CHA selector、循環、descriptor 與合成幾何）
 日期：2026-08-31
 
 ## 輸入與工具
@@ -22,8 +22,7 @@
 
 block ID 不是連續索引；例如 HEAD3 有 21 個稀疏 ID，而 BODY1 只有 `3／7／25`。
 runtime／exporter 必須保存 `(source archive, block ID)`，不可把排序後位置冒充原版
-selector。40＋48 恰為 88 只支持可組成 88×88 的 shape；在尚未從 overlay 或同源
-runtime 差分閉合疊合 y、透明規則與可選集合前，不宣稱直接上下拼接就是原版。
+selector。40＋48 恰為 88；實際合成方式由下方原版像素比對閉合。
 
 ## 已證實 selector 欄位與循環
 
@@ -78,8 +77,22 @@ loader 載入基址 `10000h`，資料段基址 `17400h`，對應 bytes 如下：
 同時是其他流程使用的 scratch record 區；本結論只適用於建角 portrait renderer
 呼叫時的狀態，不能把該地址全域命名成唯讀肖像表。
 
-## 下一個證據閘門
+## 已證實合成幾何
 
-1. 對 default、HEAD next、BODY next 各做組合畫面抽樣；閉合透明色與 body y offset。
-2. 完成後才可把 portrait editor 接到 `cmd/pool-game`；descriptor adapter 可以先接，
-   但不能用全 109 張任意笛卡兒積或猜測合成幾何。
+原版 `TEST.CHA` 的 portrait selectors 為 `1／1`。將同一 descriptor 解出的
+`HEAD3:00h` 與 `BODY3:01h` 以 EGA palette 對照既有 640×400 DOS runtime capture
+`workplace/oracle/character-debug/colors/00-base.png`：
+
+- HEAD 3,520／3,520 像素完全相同，位於螢幕 `(448,16)`、2× 顯示；
+- BODY 4,224／4,224 像素完全相同，位於螢幕 `(448,96)`、2× 顯示；
+- 換算 320×200 原始座標為 HEAD `(224,8)`、BODY `(224,48)`；BODY y offset
+  正好等於 HEAD 高度 40，因此沒有間隙或重疊；
+- 兩張 unmasked picture 的全部像素皆為 opaque，不能把 palette index 0 當透明色。
+
+所以建角 portrait 是保留每個 4-bit palette index 的 88×40／88×48 垂直串接，
+結果固定為 88×88。這不是 combat icon 的 masked／OR merge 規則。
+
+## 實作閘門
+
+portrait editor 可使用上述 14×12 原版 selector 組合；不得把其他 archive 的 109 張
+圖片混入玩家建角選單。合成必須保留 index 0，不能重用 combat icon 的透明／OR merge。

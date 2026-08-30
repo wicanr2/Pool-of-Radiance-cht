@@ -19,6 +19,21 @@ type PortraitParts struct {
 	Body graphics.Picture
 }
 
+// ComposeCreationPortrait preserves every unmasked 4-bit pixel and places
+// BODY immediately below HEAD, matching the original Pool runtime capture.
+func ComposeCreationPortrait(parts PortraitParts) (graphics.Picture, error) {
+	if parts.Head.Width() != 88 || parts.Head.Height() != 40 || parts.Head.ItemCount != 1 {
+		return graphics.Picture{}, fmt.Errorf("Pool portrait HEAD shape is %dx%dx%d, want 88x40x1", parts.Head.Width(), parts.Head.Height(), parts.Head.ItemCount)
+	}
+	if parts.Body.Width() != 88 || parts.Body.Height() != 48 || parts.Body.ItemCount != 1 {
+		return graphics.Picture{}, fmt.Errorf("Pool portrait BODY shape is %dx%dx%d, want 88x48x1", parts.Body.Width(), parts.Body.Height(), parts.Body.ItemCount)
+	}
+	result := graphics.Picture{WidthUnits: 11, HeightUnits: 88, ItemCount: 1, Pixels: make([]uint8, 88*88)}
+	copy(result.Pixels, parts.Head.Pixels)
+	copy(result.Pixels[88*40:], parts.Body.Pixels)
+	return result, nil
+}
+
 // ReadCreationPortraitParts resolves Pool's original 1-based selectors through
 // the evidence-backed HEAD3.DAX and BODY3.DAX descriptor tables. It deliberately
 // does not compose the pictures while the original overlap geometry is pending.

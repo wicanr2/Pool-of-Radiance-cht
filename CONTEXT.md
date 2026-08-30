@@ -46,13 +46,15 @@
   職業能力限制、exceptional STR、Gold、hit dice 與 CON modifier。Spec 004 已 READY，
   注入式 dice roller 與純資料角色生成器已實作；完整畫面／CHA 串接仍待完成。
 - `cmd/pool-game` 是第一支 Ebitengine 正常入口：本機 ZIP → typed `TITLE.DAX` →
-  標題 → 主選單 → Race／Gender／Class／Alignment → Spec 004 角色資料頁。Xvfb
-  以逐鍵延遲走到資料頁並保存四張 remake 截圖；F1／F2／ESC／F10 有按鍵接縫測試。
-  這只證明前半段 UI 垂直鏈，姓名、portrait、combat icon、party、Phlan 與存檔仍未接。
-- HEAD1..8／BODY1..8 共 16 archives 已由新 `pool-portrait-audit` 全掃：109／109
-  blocks 可由共用 engine picture decoder fail-closed 解碼；63 HEAD 固定 88×40，
-  46 BODY 固定 88×48。Spec 006 只將 shape 升為 READY；稀疏 block selector、透明與
-  疊合 y 尚未閉合，因此 remake 尚未把 109 張任意交叉組合冒充原版選單。
+  標題 → 主選單 → Race／Gender／Class／Alignment → Spec 004 角色資料頁 → 1..15-byte
+  姓名 → HEAD／BODY／KEEP portrait editor。Xvfb 真實視窗以 xdotool 逐鍵走到姓名與
+  肖像並保存截圖；F1／F2／ESC／F10 另有按鍵接縫測試。combat icon、party、Phlan
+  與存檔仍未接。
+- HEAD1..8／BODY1..8 共 16 archives 已全掃：109／109 blocks 可由共用 engine
+  picture decoder fail-closed 解碼；Spec 006 已閉合建角固定使用 HEAD3／BODY3、
+  14／12 筆稀疏 block selector，並以 DOS capture 全像素零差異證明 88×40＋88×48
+  是保留 index 0 的不透明無縫垂直合成。remake 只暴露原版這 14×12 組合，沒有把
+  全部 109 張任意交叉組合冒充建角選單。
 
 ## 尚未知／不阻擋目前盤點
 
