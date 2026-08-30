@@ -14,17 +14,24 @@
   magic 是 RAR4。它只作歷史中文化線索，不是 DOS 行為 oracle。
 - `amiga/` 中八檔實際大小都是 174,848 bytes，符合 D64 容器形狀；檔名中的
   `amiga` 尚未由內容證明，不把它當平台事實。
-- 共用 engine `86ac57e498c9` 已提供 `dax` 與 `ecl` codec；Pool 是第二作品
+- 共用 engine `025eb46b28a2` 已提供 `dax` 與 `ecl` codec；Pool 是第二作品
   consumer，作品位址、文字與劇情不得回填 engine。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
 - `START.EXE` 是 MZ，`GAME.OVR` 以 `TPOV!` 開頭；配合 overlay/runtime 字串，
   Borland／Turbo Pascal overlay family 目前是 `strong inference`，精確版本未知。
+- 未修改 DOS 程式可用固定輸入抵達標題與主選單；兩張穩定畫面及雜湊已保存。
+- `TITLE.DAX` 恰有兩個 320×200 picture blocks；block 1 經共用 engine 解碼、
+  標準 EGA 色盤與最近鄰 2× 呈現後，和 DOSBox oracle 的 AE 為 0。
+- ECL block entry address 的零位移對應 `9914h`，因此 code-address base 為
+  `9914h`。既有 decoder 目前只完整走過 3／29 blocks；剩餘 26 筆是明確待研究
+  缺口，不得寫成 gameplay opcode 已知或 VM parity。
 
 ## 尚未知／不阻擋目前盤點
 
 - DOS 發行版精確 revision、compiler／linker／overlay 精確版本（family 已有強推論）。
-- Pool 與 CoAB 的 DAX／ECL 共用程度，以及個別 payload record 語意。
+- Pool 與 CoAB 的 ECL variable／instruction record 差異，以及非 TITLE picture
+  payload 語意。
 - 歷史中文 RAR 的字碼、修改範圍、可執行檔差異與授權狀態。
 - D64 實際平台、檔案系統內容及其與 DOS 版的關係。
 

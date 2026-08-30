@@ -11,6 +11,10 @@
   ECL／GEO／WALLDEF／PIC／SPRIT DAX 與角色存檔樣本。
 - engine `dax` 已成功解析 113／113 個 DAX、合計 1,245 blocks，Pool 已成為
   該 codec 的第二個真實作品 consumer；payload 語意仍待逐項驗證。
+- 已用未修改 DOS 程式建立穩定標題與主選單 oracle；`TITLE.DAX` block 1 經
+  typed adapter 匯出、2× 最近鄰呈現後，與原版標題逐像素 AE=`0`。
+- ECL 已確認本作 code-address base 為 `9914h`；目前只有 3／29 blocks 可由既有
+  CoAB decoder 完整走圖，其餘屬格式差異研究缺口，尚未接入 production VM。
 - 共用 engine 固定使用同層
   `/home/anr2/cht/golden_box/golden-box-remake-engine`，本 repository 不複製
   engine source。
@@ -28,3 +32,6 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 目前真相來源與下一步分別見 [CONTEXT.md](CONTEXT.md) 與
 [WORKLIST.md](WORKLIST.md)；輸入盤點收據見
 [docs/audit/input-inventory.md](docs/audit/input-inventory.md)。
+
+標題格式與驗收見 [Spec 001](docs/spec/001-dos-title-picture.md)；原版啟動收據見
+[DOS 標題／主選單 oracle](docs/playtest/dos-title-main-menu.md)。

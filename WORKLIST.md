@@ -11,8 +11,12 @@
 - [ ] 完成 `START.EXE`／`GAME.OVR` 的 compiler、linker 與 overlay 邊界。
   MZ／`TPOV!` 與 family 強推論已記於 `docs/re/dos-toolchain-baseline.md`；仍須以
   startup code、RTL helper bytes、overlay directory 與 IDA 位址空間交叉驗證。
-- [ ] 建立 DOSBox 正常啟動 oracle 與未縮放標題／主選單截圖。
+- [x] 建立 DOSBox 正常啟動 oracle 與未縮放標題／主選單截圖。
   驗收：Docker/Xvfb 有界重播，輸入序列、畫面與 metadata 齊全。
+- [x] 完成 `TITLE.DAX` typed consumer 與 PNG／總覽圖匯出；block 1 放大 2× 後
+  與原版標題逐像素 AE=`0`，規格見 `docs/spec/001-dos-title-picture.md`。
+- [ ] 閉合 Pool ECL record format：既有 decoder 僅完整走過 3／29 blocks，
+  其餘 26 筆不得以 opcode 猜測補洞；先依 Spec 002 追 caller／bytes。
 
 ## P1：第一條玩家垂直鏈
 

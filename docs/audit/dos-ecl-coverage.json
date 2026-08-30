@@ -1,0 +1,454 @@
+{
+  "zip": "Pool of Radiance (1988).zip",
+  "blocks": 29,
+  "decoded_blocks": 3,
+  "failed_blocks": 26,
+  "entry_points": 15,
+  "instructions": 24,
+  "reachable_opcodes": [
+    0,
+    1,
+    5,
+    9,
+    10,
+    15,
+    19
+  ],
+  "block_results": [
+    {
+      "file": "poolrad/ecl1.dax",
+      "block_id": 18,
+      "bytes": 6550,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39353,
+        39607,
+        39188,
+        39264,
+        39281
+      ],
+      "error": "unknown opcode 0x81 at payload offset 422"
+    },
+    {
+      "file": "poolrad/ecl1.dax",
+      "block_id": 24,
+      "bytes": 7656,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39352,
+        46651,
+        46699,
+        46755
+      ],
+      "error": "unknown opcode 0x48 at payload offset 7567"
+    },
+    {
+      "file": "poolrad/ecl2.dax",
+      "block_id": 9,
+      "bytes": 6367,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        40040,
+        40224,
+        41070,
+        40372,
+        41127
+      ],
+      "error": "unknown opcode 0xF1 at payload offset 852"
+    },
+    {
+      "file": "poolrad/ecl2.dax",
+      "block_id": 15,
+      "bytes": 5548,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39401,
+        39697,
+        39809,
+        39821,
+        39822
+      ],
+      "instructions": 9
+    },
+    {
+      "file": "poolrad/ecl2.dax",
+      "block_id": 20,
+      "bytes": 7679,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39285,
+        39438,
+        39497,
+        39518
+      ],
+      "error": "unknown opcode 0x9C at payload offset 250"
+    },
+    {
+      "file": "poolrad/ecl3.dax",
+      "block_id": 0,
+      "bytes": 7470,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39403,
+        39518,
+        39571,
+        39666
+      ],
+      "error": "unknown opcode 0xAE at payload offset 215"
+    },
+    {
+      "file": "poolrad/ecl3.dax",
+      "block_id": 8,
+      "bytes": 7500,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39320,
+        39379,
+        39420,
+        39430
+      ],
+      "instructions": 6
+    },
+    {
+      "file": "poolrad/ecl3.dax",
+      "block_id": 11,
+      "bytes": 2171,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39230,
+        39301,
+        39338,
+        39448
+      ],
+      "error": "unknown opcode 0x6E at payload offset 42"
+    },
+    {
+      "file": "poolrad/ecl3.dax",
+      "block_id": 14,
+      "bytes": 7332,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39304,
+        46284,
+        46317,
+        46450
+      ],
+      "error": "unknown opcode 0xCD at payload offset 7262"
+    },
+    {
+      "file": "poolrad/ecl4.dax",
+      "block_id": 2,
+      "bytes": 6170,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39259,
+        39337,
+        39229,
+        39255,
+        39188
+      ],
+      "error": "unknown opcode 0xD3 at payload offset 71"
+    },
+    {
+      "file": "poolrad/ecl4.dax",
+      "block_id": 10,
+      "bytes": 7672,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39314,
+        39491,
+        39528,
+        39538
+      ],
+      "error": "unknown opcode 0xAB at payload offset 303"
+    },
+    {
+      "file": "poolrad/ecl4.dax",
+      "block_id": 21,
+      "bytes": 5710,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39330,
+        39465,
+        39502,
+        39531
+      ],
+      "error": "unknown opcode 0x6E at payload offset 142"
+    },
+    {
+      "file": "poolrad/ecl5.dax",
+      "block_id": 3,
+      "bytes": 6800,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39552,
+        39656,
+        39879,
+        40060,
+        39928
+      ],
+      "error": "unknown opcode 0xC0 at payload offset 734"
+    },
+    {
+      "file": "poolrad/ecl5.dax",
+      "block_id": 4,
+      "bytes": 6627,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39552,
+        39605,
+        39730,
+        39889,
+        39779
+      ],
+      "error": "unknown opcode 0xB5 at payload offset 542"
+    },
+    {
+      "file": "poolrad/ecl5.dax",
+      "block_id": 5,
+      "bytes": 4943,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39552,
+        39897,
+        40014,
+        44016,
+        40063
+      ],
+      "error": "unknown opcode 0x80 at payload offset 709"
+    },
+    {
+      "file": "poolrad/ecl5.dax",
+      "block_id": 6,
+      "bytes": 4859,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39738,
+        39833,
+        39955,
+        40004,
+        40008
+      ],
+      "error": "unknown opcode 0xCE at payload offset 767"
+    },
+    {
+      "file": "poolrad/ecl5.dax",
+      "block_id": 7,
+      "bytes": 4105,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39281,
+        39408,
+        39456,
+        39468,
+        39469
+      ],
+      "error": "unknown opcode 0x54 at payload offset 93"
+    },
+    {
+      "file": "poolrad/ecl6.dax",
+      "block_id": 1,
+      "bytes": 7673,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39239,
+        46616,
+        46675,
+        46752
+      ],
+      "error": "unknown opcode 0xF8 at payload offset 7564"
+    },
+    {
+      "file": "poolrad/ecl6.dax",
+      "block_id": 19,
+      "bytes": 3236,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39189,
+        42380,
+        42393,
+        42394
+      ],
+      "error": "unknown opcode 0x52 at payload offset 3192"
+    },
+    {
+      "file": "poolrad/ecl6.dax",
+      "block_id": 25,
+      "bytes": 5652,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39543,
+        44707,
+        44738,
+        44749
+      ],
+      "error": "unknown opcode 0x77 at payload offset 5531"
+    },
+    {
+      "file": "poolrad/ecl6.dax",
+      "block_id": 28,
+      "bytes": 7669,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39319,
+        46629,
+        46712,
+        46739
+      ],
+      "error": "unknown opcode 0xCE at payload offset 7441"
+    },
+    {
+      "file": "poolrad/ecl7.dax",
+      "block_id": 17,
+      "bytes": 7603,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        40423,
+        40574,
+        40653,
+        40641,
+        40663
+      ],
+      "error": "unknown opcode 0xD1 at payload offset 1465"
+    },
+    {
+      "file": "poolrad/ecl7.dax",
+      "block_id": 22,
+      "bytes": 3400,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39718,
+        39769,
+        39863,
+        39939,
+        39943
+      ],
+      "error": "unknown opcode 0x64 at payload offset 530"
+    },
+    {
+      "file": "poolrad/ecl7.dax",
+      "block_id": 23,
+      "bytes": 5640,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39699,
+        39750,
+        39895,
+        39912,
+        39919
+      ],
+      "error": "unknown opcode 0x54 at payload offset 513"
+    },
+    {
+      "file": "poolrad/ecl7.dax",
+      "block_id": 26,
+      "bytes": 6569,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39648,
+        45288,
+        45319,
+        45330
+      ],
+      "error": "unknown opcode 0x6D at payload offset 6142"
+    },
+    {
+      "file": "poolrad/ecl8.dax",
+      "block_id": 13,
+      "bytes": 7313,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39215,
+        39259,
+        46120,
+        46170,
+        39188
+      ],
+      "error": "unknown opcode 0xC9 at payload offset 71"
+    },
+    {
+      "file": "poolrad/ecl8.dax",
+      "block_id": 16,
+      "bytes": 5394,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39564,
+        39728,
+        39896,
+        39913,
+        39914
+      ],
+      "error": "unknown opcode 0x4A at payload offset 376"
+    },
+    {
+      "file": "poolrad/ecl8.dax",
+      "block_id": 27,
+      "bytes": 5079,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39580,
+        44078,
+        44109,
+        44120
+      ],
+      "error": "unknown opcode 0x46 at payload offset 4890"
+    },
+    {
+      "file": "poolrad/ecl8.dax",
+      "block_id": 29,
+      "bytes": 5875,
+      "prefix_word": 5000,
+      "entry_points": 5,
+      "entry_addresses": [
+        39188,
+        39459,
+        39901,
+        39979,
+        40006
+      ],
+      "instructions": 9
+    }
+  ]
+}
