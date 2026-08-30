@@ -1,0 +1,573 @@
+{
+  "zip": "Pool of Radiance (1988).zip",
+  "entries": 169,
+  "dax_files": [
+    {
+      "name": "poolrad/8x8d1.dax",
+      "bytes": 9711,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/8x8d2.dax",
+      "bytes": 12190,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/8x8d3.dax",
+      "bytes": 12967,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/8x8d4.dax",
+      "bytes": 14343,
+      "blocks": 7
+    },
+    {
+      "name": "poolrad/8x8d5.dax",
+      "bytes": 5847,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/8x8d6.dax",
+      "bytes": 10285,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/8x8d7.dax",
+      "bytes": 9820,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/8x8d8.dax",
+      "bytes": 14510,
+      "blocks": 7
+    },
+    {
+      "name": "poolrad/bacpac.dax",
+      "bytes": 11328,
+      "blocks": 1
+    },
+    {
+      "name": "poolrad/body1.dax",
+      "bytes": 4139,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/body2.dax",
+      "bytes": 7685,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/body3.dax",
+      "bytes": 21505,
+      "blocks": 16
+    },
+    {
+      "name": "poolrad/body4.dax",
+      "bytes": 4185,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/body5.dax",
+      "bytes": 8230,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/body6.dax",
+      "bytes": 6545,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/body7.dax",
+      "bytes": 5717,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/body8.dax",
+      "bytes": 3973,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/cbody.dax",
+      "bytes": 23978,
+      "blocks": 128
+    },
+    {
+      "name": "poolrad/chead.dax",
+      "bytes": 3442,
+      "blocks": 56
+    },
+    {
+      "name": "poolrad/comspr.dax",
+      "bytes": 3612,
+      "blocks": 26
+    },
+    {
+      "name": "poolrad/cpic1.dax",
+      "bytes": 6182,
+      "blocks": 22
+    },
+    {
+      "name": "poolrad/cpic2.dax",
+      "bytes": 11505,
+      "blocks": 38
+    },
+    {
+      "name": "poolrad/cpic3.dax",
+      "bytes": 3150,
+      "blocks": 14
+    },
+    {
+      "name": "poolrad/cpic4.dax",
+      "bytes": 12154,
+      "blocks": 44
+    },
+    {
+      "name": "poolrad/cpic5.dax",
+      "bytes": 7779,
+      "blocks": 20
+    },
+    {
+      "name": "poolrad/cpic6.dax",
+      "bytes": 8101,
+      "blocks": 30
+    },
+    {
+      "name": "poolrad/cpic7.dax",
+      "bytes": 6178,
+      "blocks": 22
+    },
+    {
+      "name": "poolrad/cpic8.dax",
+      "bytes": 10325,
+      "blocks": 28
+    },
+    {
+      "name": "poolrad/dungcom.dax",
+      "bytes": 5664,
+      "blocks": 1
+    },
+    {
+      "name": "poolrad/ecl1.dax",
+      "bytes": 14564,
+      "blocks": 2
+    },
+    {
+      "name": "poolrad/ecl2.dax",
+      "bytes": 19968,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/ecl3.dax",
+      "bytes": 24951,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/ecl4.dax",
+      "bytes": 19950,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/ecl5.dax",
+      "bytes": 27914,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/ecl6.dax",
+      "bytes": 24894,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/ecl7.dax",
+      "bytes": 23574,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/ecl8.dax",
+      "bytes": 24167,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/final5.dax",
+      "bytes": 36603,
+      "blocks": 8
+    },
+    {
+      "name": "poolrad/geo1.dax",
+      "bytes": 2619,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/geo2.dax",
+      "bytes": 2572,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/geo3.dax",
+      "bytes": 1761,
+      "blocks": 2
+    },
+    {
+      "name": "poolrad/geo4.dax",
+      "bytes": 2861,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/geo5.dax",
+      "bytes": 3612,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/geo6.dax",
+      "bytes": 2324,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/geo7.dax",
+      "bytes": 3118,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/geo8.dax",
+      "bytes": 4690,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/head1.dax",
+      "bytes": 1863,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/head2.dax",
+      "bytes": 2808,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/head3.dax",
+      "bytes": 12403,
+      "blocks": 21
+    },
+    {
+      "name": "poolrad/head4.dax",
+      "bytes": 1702,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/head5.dax",
+      "bytes": 6708,
+      "blocks": 11
+    },
+    {
+      "name": "poolrad/head6.dax",
+      "bytes": 4577,
+      "blocks": 7
+    },
+    {
+      "name": "poolrad/head7.dax",
+      "bytes": 6192,
+      "blocks": 10
+    },
+    {
+      "name": "poolrad/head8.dax",
+      "bytes": 1814,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/icon.dax",
+      "bytes": 1287,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/item1.dax",
+      "bytes": 2785,
+      "blocks": 7
+    },
+    {
+      "name": "poolrad/item2.dax",
+      "bytes": 632,
+      "blocks": 8
+    },
+    {
+      "name": "poolrad/item3.dax",
+      "bytes": 4687,
+      "blocks": 10
+    },
+    {
+      "name": "poolrad/item4.dax",
+      "bytes": 2364,
+      "blocks": 10
+    },
+    {
+      "name": "poolrad/item5.dax",
+      "bytes": 2130,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/item6.dax",
+      "bytes": 27,
+      "blocks": 1
+    },
+    {
+      "name": "poolrad/item7.dax",
+      "bytes": 81,
+      "blocks": 1
+    },
+    {
+      "name": "poolrad/item8.dax",
+      "bytes": 716,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/mon1cha.dax",
+      "bytes": 1766,
+      "blocks": 15
+    },
+    {
+      "name": "poolrad/mon1itm.dax",
+      "bytes": 792,
+      "blocks": 13
+    },
+    {
+      "name": "poolrad/mon2cha.dax",
+      "bytes": 3254,
+      "blocks": 28
+    },
+    {
+      "name": "poolrad/mon2itm.dax",
+      "bytes": 1293,
+      "blocks": 19
+    },
+    {
+      "name": "poolrad/mon2spc.dax",
+      "bytes": 150,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/mon3cha.dax",
+      "bytes": 2521,
+      "blocks": 20
+    },
+    {
+      "name": "poolrad/mon3itm.dax",
+      "bytes": 1329,
+      "blocks": 18
+    },
+    {
+      "name": "poolrad/mon4cha.dax",
+      "bytes": 3006,
+      "blocks": 26
+    },
+    {
+      "name": "poolrad/mon4itm.dax",
+      "bytes": 349,
+      "blocks": 8
+    },
+    {
+      "name": "poolrad/mon4spc.dax",
+      "bytes": 904,
+      "blocks": 16
+    },
+    {
+      "name": "poolrad/mon5cha.dax",
+      "bytes": 2377,
+      "blocks": 19
+    },
+    {
+      "name": "poolrad/mon5itm.dax",
+      "bytes": 739,
+      "blocks": 12
+    },
+    {
+      "name": "poolrad/mon5spc.dax",
+      "bytes": 238,
+      "blocks": 8
+    },
+    {
+      "name": "poolrad/mon6cha.dax",
+      "bytes": 2562,
+      "blocks": 22
+    },
+    {
+      "name": "poolrad/mon6itm.dax",
+      "bytes": 978,
+      "blocks": 11
+    },
+    {
+      "name": "poolrad/mon6spc.dax",
+      "bytes": 124,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/mon7cha.dax",
+      "bytes": 2773,
+      "blocks": 24
+    },
+    {
+      "name": "poolrad/mon7itm.dax",
+      "bytes": 1320,
+      "blocks": 18
+    },
+    {
+      "name": "poolrad/mon7spc.dax",
+      "bytes": 36,
+      "blocks": 2
+    },
+    {
+      "name": "poolrad/mon8cha.dax",
+      "bytes": 2042,
+      "blocks": 18
+    },
+    {
+      "name": "poolrad/mon8itm.dax",
+      "bytes": 350,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/mon8spc.dax",
+      "bytes": 134,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/pic1.dax",
+      "bytes": 36273,
+      "blocks": 7
+    },
+    {
+      "name": "poolrad/pic2.dax",
+      "bytes": 71533,
+      "blocks": 13
+    },
+    {
+      "name": "poolrad/pic3.dax",
+      "bytes": 15316,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/pic4.dax",
+      "bytes": 91885,
+      "blocks": 17
+    },
+    {
+      "name": "poolrad/pic5.dax",
+      "bytes": 46750,
+      "blocks": 10
+    },
+    {
+      "name": "poolrad/pic6.dax",
+      "bytes": 66888,
+      "blocks": 14
+    },
+    {
+      "name": "poolrad/pic7.dax",
+      "bytes": 67804,
+      "blocks": 14
+    },
+    {
+      "name": "poolrad/pic8.dax",
+      "bytes": 67227,
+      "blocks": 14
+    },
+    {
+      "name": "poolrad/randcom.dax",
+      "bytes": 755,
+      "blocks": 1
+    },
+    {
+      "name": "poolrad/sprit1.dax",
+      "bytes": 5613,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/sprit2.dax",
+      "bytes": 16768,
+      "blocks": 15
+    },
+    {
+      "name": "poolrad/sprit3.dax",
+      "bytes": 6124,
+      "blocks": 7
+    },
+    {
+      "name": "poolrad/sprit4.dax",
+      "bytes": 11176,
+      "blocks": 12
+    },
+    {
+      "name": "poolrad/sprit5.dax",
+      "bytes": 13174,
+      "blocks": 11
+    },
+    {
+      "name": "poolrad/sprit6.dax",
+      "bytes": 13727,
+      "blocks": 14
+    },
+    {
+      "name": "poolrad/sprit7.dax",
+      "bytes": 12985,
+      "blocks": 12
+    },
+    {
+      "name": "poolrad/sprit8.dax",
+      "bytes": 14853,
+      "blocks": 12
+    },
+    {
+      "name": "poolrad/sqrpaci.dax",
+      "bytes": 69788,
+      "blocks": 2
+    },
+    {
+      "name": "poolrad/title.dax",
+      "bytes": 33898,
+      "blocks": 2
+    },
+    {
+      "name": "poolrad/walldef1.dax",
+      "bytes": 2147,
+      "blocks": 3
+    },
+    {
+      "name": "poolrad/walldef2.dax",
+      "bytes": 4044,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/walldef3.dax",
+      "bytes": 4289,
+      "blocks": 4
+    },
+    {
+      "name": "poolrad/walldef4.dax",
+      "bytes": 4956,
+      "blocks": 6
+    },
+    {
+      "name": "poolrad/walldef5.dax",
+      "bytes": 2121,
+      "blocks": 2
+    },
+    {
+      "name": "poolrad/walldef6.dax",
+      "bytes": 3492,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/walldef7.dax",
+      "bytes": 3176,
+      "blocks": 5
+    },
+    {
+      "name": "poolrad/walldef8.dax",
+      "bytes": 4998,
+      "blocks": 7
+    },
+    {
+      "name": "poolrad/wildcom.dax",
+      "bytes": 5786,
+      "blocks": 1
+    }
+  ],
+  "dax_ok": 113,
+  "dax_failed": 0
+}

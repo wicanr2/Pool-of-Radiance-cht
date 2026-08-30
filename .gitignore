@@ -1,0 +1,14 @@
+# 原版與在地化來源只作本機 oracle，不進 Git。
+/Pool of Radiance (1988).zip
+/珍009-光芒之池.rar
+/amiga/
+
+# 可重生工作與交付物。
+/workplace/
+/dist/
+/dist-all/
+/golden-box-remake-engine/
+*.test
+*.exe
+*.AppImage
+
