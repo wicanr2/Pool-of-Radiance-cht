@@ -62,7 +62,10 @@ type app struct {
 	keys         keySource
 	nameInput    string
 	portrait     *ebiten.Image
+	iconReady    *ebiten.Image
+	iconAction   *ebiten.Image
 	loadPortrait func(head, body uint8) (*ebiten.Image, error)
+	loadIcon     func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -96,6 +99,17 @@ func newApp(zipPath string) (*app, error) {
 		}
 		return ebiten.NewImageFromImage(rendered), nil
 	}
+	application.loadIcon = func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error) {
+		picture, err := assets.ReadCustomizedCombatIcon(zipPath, assets.CombatIconSelection{Head: head, Body: body, Size: size}, action, colors)
+		if err != nil {
+			return nil, err
+		}
+		rendered, err := picture.RGBA(0, graphics.EGA16)
+		if err != nil {
+			return nil, err
+		}
+		return ebiten.NewImageFromImage(rendered), nil
+	}
 	return application, nil
 }
 
@@ -119,6 +133,22 @@ func (a *app) reloadPortrait() error {
 		return err
 	}
 	a.portrait = portrait
+	return nil
+}
+
+func (a *app) reloadIcons() error {
+	if a.loadIcon == nil {
+		return fmt.Errorf("combat icon loader is not configured")
+	}
+	ready, err := a.loadIcon(a.flow.IconHead, a.flow.IconWeapon, a.flow.IconSize, false, a.flow.IconColors)
+	if err != nil {
+		return err
+	}
+	action, err := a.loadIcon(a.flow.IconHead, a.flow.IconWeapon, a.flow.IconSize, true, a.flow.IconColors)
+	if err != nil {
+		return err
+	}
+	a.iconReady, a.iconAction = ready, action
 	return nil
 }
 
@@ -226,11 +256,51 @@ func (a *app) updateCreation() error {
 			if err := a.flow.KeepPortrait(); err != nil {
 				return err
 			}
-			a.statusLine = "Portrait accepted; original combat icon editor is next."
+			a.statusLine = "Portrait accepted."
+			return a.reloadIcons()
 		}
 		return nil
 	}
 	if a.flow.Stage == creation.StageIcon {
+		changed := false
+		if a.justPressed(ebiten.KeyH) {
+			if err := a.flow.NextIconHead(); err != nil {
+				return err
+			}
+			changed = true
+		}
+		if a.justPressed(ebiten.KeyW) {
+			if err := a.flow.NextIconWeapon(); err != nil {
+				return err
+			}
+			changed = true
+		}
+		if a.justPressed(ebiten.KeyP) {
+			if err := a.flow.SelectNextIconPart(); err != nil {
+				return err
+			}
+		}
+		if a.justPressed(ebiten.KeyDigit1) {
+			if err := a.flow.NextIconColor(0); err != nil {
+				return err
+			}
+			changed = true
+		}
+		if a.justPressed(ebiten.KeyDigit2) {
+			if err := a.flow.NextIconColor(1); err != nil {
+				return err
+			}
+			changed = true
+		}
+		if a.justPressed(ebiten.KeyS) {
+			if err := a.flow.ToggleIconSize(); err != nil {
+				return err
+			}
+			changed = true
+		}
+		if changed {
+			return a.reloadIcons()
+		}
 		return nil
 	}
 	options := a.flow.Options()
@@ -325,8 +395,27 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 	if a.flow.Stage == creation.StageIcon {
 		drawText(screen, "COMBAT ICON EDITOR", 216, 72, accent)
-		drawText(screen, "READY / ACTION customization is the next slice.", 96, 132, foreground)
-		drawText(screen, a.statusLine, 96, 176, foreground)
+		parts := []string{"BODY", "ARM", "LEG", "HAIR/FACE", "SHIELD", "WEAPON"}
+		drawText(screen, fmt.Sprintf("H HEAD %02d/13   W WEAPON %02d/31", a.flow.IconHead, a.flow.IconWeapon), 48, 116, foreground)
+		drawText(screen, fmt.Sprintf("P PART %-9s  1 COLOR-1 %X  2 COLOR-2 %X", parts[a.flow.IconPart], a.flow.IconColors[a.flow.IconPart][0], a.flow.IconColors[a.flow.IconPart][1]), 48, 146, foreground)
+		size := "LARGE"
+		if a.flow.IconSize == 1 {
+			size = "SMALL"
+		}
+		drawText(screen, "S SIZE "+size, 48, 176, foreground)
+		drawText(screen, "READY", 356, 118, accent)
+		drawText(screen, "ACTION", 472, 118, accent)
+		for index, icon := range []*ebiten.Image{a.iconReady, a.iconAction} {
+			if icon == nil {
+				continue
+			}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(4, 4)
+			op.GeoM.Translate(float64(340+index*116), 142)
+			screen.DrawImage(icon, op)
+		}
+		drawText(screen, "ALL DOS OPTIONS ARE KEPT; DIRECT KEYS GUIDE THIS FIRST SLICE.", 48, 298, foreground)
+		drawText(screen, creation.HintFor("icon"), 48, 332, foreground)
 		return
 	}
 	title := map[creation.Stage]string{creation.StageRace: "PICK RACE", creation.StageGender: "PICK GENDER", creation.StageClass: "PICK CLASS", creation.StageAlignment: "PICK ALIGNMENT"}[a.flow.Stage]

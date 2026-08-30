@@ -31,8 +31,10 @@
   `cmd/pool-game` 已由標題以正常按鍵走到完整公式資料頁，R 可重擲，F1／F2／ESC／F10
   已有接縫測試與 Xvfb 截圖。YES 後的 1..15-byte 姓名與 HEAD／BODY／KEEP portrait
   editor 已接正常玩家路徑；Spec 006 已閉合 `+BBh/+BCh`、1..14／1..12 wrap、
-  HEAD3／BODY3 稀疏 block descriptor 與 88×88 零間隙不透明合成。剩餘驗收是 combat
-  icon、285-byte CHA serialization、回到 party menu、加入隊伍，以及 theme 下
+  HEAD3／BODY3 稀疏 block descriptor 與 88×88 零間隙不透明合成。Spec 007 又閉合
+  CHEAD／CBODY 184 blocks、Head 0..13、Weapon 0..31、READY／ACTION × 大小 family
+  與六部位雙色；remake 已接真實素材雙預覽及 Head／Weapon／Size／顏色熱鍵。剩餘驗收是
+  原版 nested menu 細節、285-byte CHA serialization、回到 party menu、加入隊伍，以及 theme 下
   sprite／tileset 同步切換。
 - [ ] 解出 Phlan 第一個地圖、入口、移動遮罩與第一個玩家事件。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。

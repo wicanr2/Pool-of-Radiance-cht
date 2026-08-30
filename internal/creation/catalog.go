@@ -78,15 +78,15 @@ func ClassesForRace(raceID string) []ClassChoice {
 func HintFor(stage string) string {
 	switch stage {
 	case "race":
-		return "種族會限制可選職業；此清單完全依原版，不套用新版 D&D 規則。"
+		return "RACE LIMITS CLASS OPTIONS; THIS LIST FOLLOWS THE DOS ORIGINAL."
 	case "class":
-		return "多職業會分配經驗值；READY／ACTION 戰鬥圖示稍後仍可自訂。"
+		return "MULTI-CLASS CHARACTERS SPLIT EXPERIENCE BETWEEN ACTIVE CLASSES."
 	case "alignment":
-		return "陣營會影響部分職業與劇情互動；請依角色概念選擇。"
+		return "ALIGNMENT AFFECTS SOME CLASS AND STORY INTERACTIONS."
 	case "portrait":
-		return "HEAD 與 BODY 可分別循環；KEEP 接受目前肖像。"
+		return "HEAD AND BODY CYCLE SEPARATELY; KEEP ACCEPTS THE PORTRAIT."
 	case "icon":
-		return "可同時預覽 READY／ACTION，並調整 Parts、兩組顏色與 Size。"
+		return "PREVIEW READY/ACTION WHILE EDITING PARTS, TWO COLORS, AND SIZE."
 	default:
 		return ""
 	}

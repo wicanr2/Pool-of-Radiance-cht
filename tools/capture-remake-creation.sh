@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 以真實 Ebitengine 視窗與逐鍵輸入重生姓名／肖像建角截圖。
+# 以真實 Ebitengine 視窗與逐鍵輸入重生姓名／肖像／戰鬥圖示建角截圖。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -42,20 +42,38 @@ until test -n "$window"; do
 done
 xdotool windowfocus "$window"
 eval "$(xdotool getwindowgeometry --shell "$window")"
+pulse() {
+  xdotool keydown "$1"
+  sleep 0.18
+  xdotool keyup "$1"
+  sleep 0.28
+}
 for key in Return c Return Return Return Return; do
-  xdotool key "$key"
-  sleep 0.2
+  pulse "$key"
 done
+sleep 0.8
+pulse Return
 sleep 0.5
-xdotool key Return
-sleep 0.3
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-character-name.png
-xdotool type --delay 80 HERO
-xdotool key Return
+xdotool type --delay 120 HERO
+pulse Return
 sleep 0.5
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-portrait-editor.png
+pulse k
+sleep 0.8
+for key in h w p 1 2 s; do
+  pulse "$key"
+done
+sleep 0.5
+ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-combat-icon-editor.png
 sha256sum docs/screenshots/pool-remake-character-name.png \
-  docs/screenshots/pool-remake-portrait-editor.png
+  docs/screenshots/pool-remake-portrait-editor.png \
+  docs/screenshots/pool-remake-combat-icon-editor.png
+if cmp -s docs/screenshots/pool-remake-portrait-editor.png docs/screenshots/pool-remake-combat-icon-editor.png; then
+  echo "combat icon capture did not leave the portrait screen" >&2
+  exit 1
+fi
 '

@@ -95,4 +95,7 @@ func TestFlowContinuesThroughOriginalNameAndPortraitOrder(t *testing.T) {
 	if err := flow.KeepPortrait(); err != nil || flow.Stage != StageIcon {
 		t.Fatalf("keep portrait: stage=%d err=%v", flow.Stage, err)
 	}
+	if flow.IconHead != 0 || flow.IconWeapon != 0 || flow.IconSize != 1 {
+		t.Fatalf("Dwarf icon defaults = head %d weapon %d size %d", flow.IconHead, flow.IconWeapon, flow.IconSize)
+	}
 }

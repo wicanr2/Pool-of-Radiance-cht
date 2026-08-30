@@ -24,6 +24,11 @@ type Flow struct {
 	Name           string
 	PortraitHead   uint8
 	PortraitBody   uint8
+	IconHead       uint8
+	IconWeapon     uint8
+	IconSize       uint8
+	IconPart       uint8
+	IconColors     [6][2]uint8
 }
 
 func NewFlow() Flow { return Flow{Stage: StageRace} }
@@ -134,7 +139,57 @@ func (flow *Flow) KeepPortrait() error {
 	if flow.Stage != StagePortrait {
 		return fmt.Errorf("creation stage %d has no portrait to keep", flow.Stage)
 	}
+	flow.IconHead, flow.IconWeapon, flow.IconPart = 0, 0, 0
+	flow.IconSize = 2
+	if flow.SelectedRace().ID == "dwarf" || flow.SelectedRace().ID == "gnome" || flow.SelectedRace().ID == "halfling" {
+		flow.IconSize = 1
+	}
+	flow.IconColors = [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}
 	flow.Stage = StageIcon
+	return nil
+}
+
+func (flow *Flow) NextIconHead() error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	flow.IconHead = (flow.IconHead + 1) % 14
+	return nil
+}
+
+func (flow *Flow) NextIconWeapon() error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	flow.IconWeapon = (flow.IconWeapon + 1) % 32
+	return nil
+}
+
+func (flow *Flow) SelectNextIconPart() error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	flow.IconPart = (flow.IconPart + 1) % 6
+	return nil
+}
+
+func (flow *Flow) NextIconColor(component int) error {
+	if flow.Stage != StageIcon || component < 0 || component > 1 {
+		return fmt.Errorf("invalid icon color edit")
+	}
+	flow.IconColors[flow.IconPart][component] = (flow.IconColors[flow.IconPart][component] + 1) & 0x0F
+	return nil
+}
+
+func (flow *Flow) ToggleIconSize() error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	if flow.IconSize == 1 {
+		flow.IconSize = 2
+	} else {
+		flow.IconSize = 1
+	}
 	return nil
 }
 

@@ -47,9 +47,11 @@
   注入式 dice roller 與純資料角色生成器已實作；完整畫面／CHA 串接仍待完成。
 - `cmd/pool-game` 是第一支 Ebitengine 正常入口：本機 ZIP → typed `TITLE.DAX` →
   標題 → 主選單 → Race／Gender／Class／Alignment → Spec 004 角色資料頁 → 1..15-byte
-  姓名 → HEAD／BODY／KEEP portrait editor。Xvfb 真實視窗以 xdotool 逐鍵走到姓名與
-  肖像並保存截圖；F1／F2／ESC／F10 另有按鍵接縫測試。combat icon、party、Phlan
-  與存檔仍未接。
+  姓名 → HEAD／BODY／KEEP portrait editor → combat icon editor。Spec 007 已用
+  IDA Pro 9.4 閉合 Head 0..13、Weapon 0..31、Size 與六個雙色欄位；CHEAD／CBODY
+  184／184 blocks 全部 fail-closed 解碼，remake 由正常玩家路徑顯示 READY／ACTION
+  真實素材並可調 Head、Weapon、Size 與六部位雙色。Xvfb 逐鍵截圖已涵蓋三個 editor；
+  party、CHA 完整 serialization、Phlan 與存檔仍未接。
 - HEAD1..8／BODY1..8 共 16 archives 已全掃：109／109 blocks 可由共用 engine
   picture decoder fail-closed 解碼；Spec 006 已閉合建角固定使用 HEAD3／BODY3、
   14／12 筆稀疏 block selector，並以 DOS capture 全像素零差異證明 88×40＋88×48

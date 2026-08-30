@@ -85,6 +85,11 @@ func TestKeysContinueThroughNameAndOriginalPortraitEditor(t *testing.T) {
 			image.Fill(color.RGBA{uint8(head), uint8(body), 0, 255})
 			return image, nil
 		},
+		loadIcon: func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error) {
+			image := ebiten.NewImage(24, 24)
+			image.Fill(color.RGBA{head, body, size, 255})
+			return image, nil
+		},
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil || application.flow.Stage != creation.StageName {
 		t.Fatalf("roll accept: stage=%d err=%v", application.flow.Stage, err)
@@ -107,5 +112,21 @@ func TestKeysContinueThroughNameAndOriginalPortraitEditor(t *testing.T) {
 	}
 	if err := press(application, ebiten.KeyK); err != nil || application.flow.Stage != creation.StageIcon {
 		t.Fatalf("KEEP: stage=%d err=%v", application.flow.Stage, err)
+	}
+	if application.iconReady == nil || application.iconAction == nil {
+		t.Fatal("combat icon previews were not loaded")
+	}
+	if err := press(application, ebiten.KeyH); err != nil || application.flow.IconHead != 1 {
+		t.Fatalf("icon HEAD: %d err=%v", application.flow.IconHead, err)
+	}
+	if err := press(application, ebiten.KeyW); err != nil || application.flow.IconWeapon != 1 {
+		t.Fatalf("icon WEAPON: %d err=%v", application.flow.IconWeapon, err)
+	}
+	if err := press(application, ebiten.KeyP); err != nil || application.flow.IconPart != 1 {
+		t.Fatalf("icon PART: %d err=%v", application.flow.IconPart, err)
+	}
+	before := application.flow.IconColors[1][0]
+	if err := press(application, ebiten.KeyDigit1); err != nil || application.flow.IconColors[1][0] != (before+1)&0x0F {
+		t.Fatalf("icon COLOR-1: %d err=%v", application.flow.IconColors[1][0], err)
 	}
 }

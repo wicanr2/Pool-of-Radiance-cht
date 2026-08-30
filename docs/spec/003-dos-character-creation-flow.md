@@ -116,7 +116,8 @@ ALLTWO 將六部位各前進一色。所有 CHA 固定 285 bytes。差分得到�
 - 返回上一層、取消、重擲與完成建角後加入隊伍的完整按鍵狀態機。
 - portrait 的 CHA offsets、合法範圍、descriptor 與合成幾何已由 Spec 006 閉合；
   尚缺的是把該 READY 契約接入完整 UI 與最終 CHA serialization。
-- `BFh` 的語意，以及 Head／Weapon selector 的合法上限。
+- `BFh` 的語意仍未知；Head／Weapon selector 上限與四個圖庫 family 已由
+  Spec 007 閉合。
 
 本規格只授權 typed CHA icon codec 與上述 UI state machine；完整角色生成規則須另以
 executable consumer／更多角色檔差分閉合。remake 不得只依 CoAB 建角流程外推。
