@@ -10,7 +10,9 @@
   `docs/audit/dos-dax-inventory.json`。下一階段仍須依 payload consumer 分格式驗證。
 - [x] 以 engine `geometry.Parse` 掃描 `GEO1..8`：29／29 blocks 皆為 `0x402` bytes
   且成功解成 16×16 四平面；重生報表與結構契約見
-  `docs/audit/dos-geo-inventory.json`、Spec 009。地名、正常入口與移動變體不在此完成項。
+  `docs/audit/dos-geo-inventory.json`、Spec 009。Pool typed catalog 已依
+  `(archive, block ID)` 接妥並通過真檔／fail-closed 測試；地名、正常入口與移動變體
+  不在此完成項。
 - [ ] 完成 `START.EXE`／`GAME.OVR` 的 compiler、linker 與 overlay 邊界。
   MZ／`TPOV!` 與 family 強推論已記於 `docs/re/dos-toolchain-baseline.md`；仍須以
   startup code、RTL helper bytes、overlay directory 與 IDA 位址空間交叉驗證。

@@ -23,6 +23,9 @@
   `docs/audit/dos-geo-inventory.json`。這只證明 GEO 結構與共用 engine contract
   相容；尚未證明哪個 block 是 Phlan 起始地圖，也未證明該圖採 bounded、wrapped
   或 dungeon-door 移動語意。
+- Pool-owned `internal/gamepack.ReadDOSGeometryCatalog` 已將八份 archive／29 組原始
+  `(archive, block ID)` 接成 typed catalog，保留 prefix、拒絕缺檔／重複 identity，
+  並以值副本隔離 runtime map mutation。這項只完成結構 adapter，不替任何 map 命名。
 - `START.EXE` 是 MZ，`GAME.OVR` 以 `TPOV!` 開頭；配合 overlay/runtime 字串，
   Borland／Turbo Pascal overlay family 目前是 `strong inference`，精確版本未知。
 - 未修改 DOS 程式可用固定輸入抵達標題與主選單；兩張穩定畫面及雜湊已保存。

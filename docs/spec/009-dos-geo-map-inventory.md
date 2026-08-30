@@ -1,6 +1,6 @@
 # Spec 009：DOS GEO 地圖盤點與 Phlan 入口
 
-狀態：READY（GEO archive／block shape）；DRAFT（正常新遊戲入口、第一事件與地名）
+狀態：CONFORMED（GEO archive／block shape 與 Pool typed catalog）；DRAFT（正常新遊戲入口、第一事件與地名）
 日期：2026-08-31
 
 ## 可重生結構盤點
@@ -33,3 +33,54 @@ wrapped 與 dungeon-door 哪一個適用，必須由該 ECL／area consumer 決�
 
 因此本規格目前只授權 Pool game-pack 的 GEO typed adapter 與完整 map inventory，
 尚不授權把任一 block 接成玩家出生點。
+
+## 正常 Begin 路徑的新增 RE 證據（仍為 DRAFT）
+
+輸入與工具：
+
+- `overlay-16.bin` SHA-256：
+  `a142d8a8f3b3c46a7755cf231228e7981c5b9f77721313ce79ab6c0aec105b94`；
+- `overlay-25.bin` SHA-256：
+  `9fede24be1e64821c62ab2421783b004a06fa9d305aa57919bd15a9577b50c0e`；
+- `overlay-27.bin` SHA-256：
+  `8629cfbb045deb8e56724ef4737930e3ddb680a4669c9980d655a9d9ace083ad`；
+- `overlay-11.bin` SHA-256：
+  `d1e1c62ef11ddf26607bca6bcb183fc70218a4629fde664e38fabd76966e4e0a`；
+- IDA Pro 9.4、`ida-pro-9.4-idapython:locked-v1`；位址均為各 overlay local offset。
+  可重生匯出器為 `tools/ida-export-overlay-functions.py`，保留 entry seed、原始 bytes、
+  operand、SHA-256、IDA 版本與 16-bit segment，不以推測性改名取代定位。
+
+已證實的控制流：
+
+1. Party Creation Menu 是 overlay-16 entry 1，`014Eh..04DDh`；`02C2h` 引用
+   `Choose a function`。`0426h` 比對輸入 `B`，通過 enable／party pointer 檢查後，
+   `043Ah..0440h` 把 local 初始值 `4` 寫入 resident `DS:4954h` 並返回。
+2. overlay-25 `280Fh..2927h` 是該模式的 consumer；`2815h` 讀 `DS:4954h`，
+   `28AAh` 比對 `4`，其分支呼叫 resident relative `0124:0025` 後顯示 party。
+   raw opcode census 同時看到其他模組把 `DS:4954h` 寫成 1、2、3、5、6、7，故它是
+   功能／模式欄位，**不是 GEO archive 或 block ID**。
+3. MZ header 是 `0x3B0` bytes；`0124:0025` 的 relative linear `0x1265` 加 header
+   對應 START file offset `0x1615`，落在 overlay-27 descriptor（file `0x15F0`）的
+   stub `0x25`，即 overlay-27 entry 1、code `0181h`。該函式讀 `DS:6A0B..6A0D`
+   交給視圖 routines，但不寫出生狀態；目前只能把三欄標為位置／朝向候選。
+4. overlay-11 entry 1 是全域初始化鏈；`0329h..0337h` 明確寫
+   `DS:6A0B=15`、`6A0C=1`、`6A0D=6`。這證明 DOS session 的 default 初始化值，
+   但尚未證明 Begin 前後沒有 ECL／load path 覆寫，所以不可先寫成 Phlan 出生點。
+
+剩餘最小缺口是追出 Begin mode 4 在第一次 Adventure frame 前所使用的 ECL／GEO
+archive、block，以及 `6A0B..6A0D` 是否仍為上述 default；閉合前不實作玩家出生點。
+
+## Typed adapter
+
+`internal/gamepack.ReadDOSGeometryCatalog` 已實作本規格授權的結構範圍：
+
+- 以 `(GEO archive 1..8, original block ID)` 作唯一 `MapKey`，不讓不同 archive 的
+  相同 block ID 互相覆蓋；
+- 保留兩-byte prefix，地圖內容使用 engine `geometry.Grid`；
+- 嚴格要求八份 archive、29 張 map，缺檔、重複 archive／block、DAX 或 GEO 格式錯誤
+  均失敗即關閉；
+- `Map` 回傳值副本，門鎖等 runtime mutation 不會污染原始 catalog；
+- 真實 DOS ZIP 測試固定全部 29 組 archive／block identity、`GEO1/block 18` 的
+  `[0,4]` prefix anchor，並證明不存在的 `GEO1/block 0` 不會被補造。
+
+這使結構與 typed adapter 範圍升為 `CONFORMED`；入口與故事語意仍維持 `DRAFT`。
