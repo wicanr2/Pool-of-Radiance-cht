@@ -31,13 +31,13 @@ docker run --rm --network none --memory 1g --cpus 1 --pids-limit 128 \
   -e HOME=/tmp/home -v "$EXTRACTED:/source:ro" -v "$ROOT:/repo" \
   dosbox-run:latest sh -c '
 set -eu
-mkdir -p "$HOME" /repo/docs/reference/original-dos
-cp -R /source/. /run-game/
+mkdir -p "$HOME" /repo/docs/reference/original-dos /run-game/POOLRAD
+cp -R /source/. /run-game/POOLRAD/
 Xvfb :99 -screen 0 800x600x24 >/tmp/xvfb.log 2>&1 &
 xvfb=$!
 trap "kill $xvfb 2>/dev/null || true" EXIT
 until test -S /tmp/.X11-unix/X99; do sleep 0.1; done
-DISPLAY=:99 dosbox -c "mount c /run-game" -c "c:" -c "start" \
+DISPLAY=:99 dosbox -c "mount c /run-game" -c "c:" -c "cd POOLRAD" -c "start" \
   >/tmp/dosbox.log 2>&1 &
 dosbox_pid=$!
 sleep 3

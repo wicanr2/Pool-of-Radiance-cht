@@ -26,6 +26,10 @@
 - ECL block entry address 的零位移對應 `9914h`，因此 code-address base 為
   `9914h`。既有 decoder 目前只完整走過 3／29 blocks；剩餘 26 筆是明確待研究
   缺口，不得寫成 gameplay opcode 已知或 VM parity。
+- DOSBox 資料目錄必須是 `C:\POOLRAD\`；直接掛成 `C:\` 會到建角資料頁才
+  假性要求 disk 3。修正掛載後，預設 Dwarf／Male／Fighter／Lawful Good 可正常
+  產生非零能力值、頭像、姓名提示與 `MAX BONUS?`。sprite／調色仍未走到，維持
+  DRAFT（Spec 003）。
 
 ## 尚未知／不阻擋目前盤點
 
