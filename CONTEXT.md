@@ -38,9 +38,11 @@
   未閉合，不以排列猜測。
 - 通用 TPOV parser 已對本 build 解出 38 overlays／774 entries；IDA Pro 9.4
   最小探針通過後，角色建立定位到 overlay-16，角色資料顯示定位到 overlay-19。
-  `.CHA +10h..+15h` 六能力與 `+30h` age 的欄位身分已有原版 bytes 與顯示／直接
-  存取交叉證實；`+32h` 金錢、`+B1h` HP 目前是有直接資料流支持的強推論，亂數
-  helper、修正表與多職代碼仍維持 DRAFT，詳見 Spec 004，不得先猜公式實作。
+  `.CHA +10h..+15h` 六能力、`+30h` age、`+32h` HP 與 word `+8Eh` Gold 已由
+  同一次原版資料頁＋最終 CHA 與直接存取交叉證實。早先將 `+32h／+B1h` 推作
+  Gold／HP 的說法已被 runtime anchor 否定並在 Spec 004 保留勘誤；`+B1h` 現只作
+  未套完整 modifier 的 HP accumulator 強推論。七種多職代碼已由 Half-Elf 正常 UI
+  逐項閉合；亂數 helper 與修正表仍維持 DRAFT，不得先猜公式實作。
 
 ## 尚未知／不阻擋目前盤點
 

@@ -81,8 +81,22 @@ ALLTWO 將六部位各前進一色。所有 CHA 固定 285 bytes。差分得到�
 另由原版 UI 完成六種族與性別／單職角色得到：`2Eh` 是 race code
 （Dwarf=`1`、Elf=`2`、Gnome=`3`、Half-Elf=`4`、Halfling=`5`、Human=`7`）；
 `2Fh` 是 class code（Cleric=`0`、Fighter=`2`、Magic-User=`5`、Thief=`6`）；
-`9Eh` 是 gender（Male=`0`、Female=`1`）。多職 class code 尚未逐項寫檔驗證，
-因此 typed catalog 先用 stable ID，不猜數值。
+`9Eh` 是 gender（Male=`0`、Female=`1`）。多職 class code 已以 Half-Elf 正常 UI
+逐項建立；每筆都先由資料頁確認職業名稱，再配對同一次寫出的 285-byte CHA：
+
+| Class | `CHA +2Fh` |
+|---|---:|
+| Cleric/Fighter | `8` |
+| Cleric/Fighter/Magic-User | `9` |
+| Cleric/Magic-User | `11` |
+| Fighter/Magic-User | `13` |
+| Fighter/Thief | `14` |
+| Fighter/Magic-User/Thief | `15` |
+| Magic-User/Thief | `16` |
+
+逐筆 SHA-256 與固定 record offset 見
+[`docs/audit/dos-multiclass-codes.json`](../audit/dos-multiclass-codes.json)。這些代碼
+是原版持久格式契約，不由空號或 components 排列推測。
 
 基線 `C1..C6 = 91 A2 B3 C4 E6 F7`；六個 Color-1 各前進一格後為
 `92 A3 B4 C5 E7 F8`，六個 Color-2 各前進一格後為

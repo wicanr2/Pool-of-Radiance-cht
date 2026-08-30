@@ -10,6 +10,7 @@ type Gender struct {
 }
 type ClassChoice struct {
 	ID, Label  string
+	DOSCode    uint8
 	Components []string
 }
 type Alignment struct{ ID, Label string }
@@ -29,38 +30,38 @@ var Alignments = []Alignment{
 
 var classesByRace = map[string][]ClassChoice{
 	"dwarf": {
-		{"fighter", "Fighter", []string{"fighter"}}, {"thief", "Thief", []string{"thief"}},
-		{"fighter-thief", "Fighter/Thief", []string{"fighter", "thief"}},
+		{"fighter", "Fighter", 2, []string{"fighter"}}, {"thief", "Thief", 6, []string{"thief"}},
+		{"fighter-thief", "Fighter/Thief", 14, []string{"fighter", "thief"}},
 	},
 	"elf": {
-		{"fighter", "Fighter", []string{"fighter"}}, {"magic-user", "Magic-User", []string{"magic-user"}},
-		{"thief", "Thief", []string{"thief"}}, {"fighter-magic-user", "Fighter/Magic-User", []string{"fighter", "magic-user"}},
-		{"fighter-thief", "Fighter/Thief", []string{"fighter", "thief"}},
-		{"fighter-magic-user-thief", "Fighter/Magic-User/Thief", []string{"fighter", "magic-user", "thief"}},
-		{"magic-user-thief", "Magic-User/Thief", []string{"magic-user", "thief"}},
+		{"fighter", "Fighter", 2, []string{"fighter"}}, {"magic-user", "Magic-User", 5, []string{"magic-user"}},
+		{"thief", "Thief", 6, []string{"thief"}}, {"fighter-magic-user", "Fighter/Magic-User", 13, []string{"fighter", "magic-user"}},
+		{"fighter-thief", "Fighter/Thief", 14, []string{"fighter", "thief"}},
+		{"fighter-magic-user-thief", "Fighter/Magic-User/Thief", 15, []string{"fighter", "magic-user", "thief"}},
+		{"magic-user-thief", "Magic-User/Thief", 16, []string{"magic-user", "thief"}},
 	},
 	"gnome": {
-		{"fighter", "Fighter", []string{"fighter"}}, {"thief", "Thief", []string{"thief"}},
-		{"fighter-thief", "Fighter/Thief", []string{"fighter", "thief"}},
+		{"fighter", "Fighter", 2, []string{"fighter"}}, {"thief", "Thief", 6, []string{"thief"}},
+		{"fighter-thief", "Fighter/Thief", 14, []string{"fighter", "thief"}},
 	},
 	"half-elf": {
-		{"cleric", "Cleric", []string{"cleric"}}, {"fighter", "Fighter", []string{"fighter"}},
-		{"magic-user", "Magic-User", []string{"magic-user"}}, {"thief", "Thief", []string{"thief"}},
-		{"cleric-fighter", "Cleric/Fighter", []string{"cleric", "fighter"}},
-		{"cleric-fighter-magic-user", "Cleric/Fighter/Magic-User", []string{"cleric", "fighter", "magic-user"}},
-		{"cleric-magic-user", "Cleric/Magic-User", []string{"cleric", "magic-user"}},
-		{"fighter-magic-user", "Fighter/Magic-User", []string{"fighter", "magic-user"}},
-		{"fighter-thief", "Fighter/Thief", []string{"fighter", "thief"}},
-		{"fighter-magic-user-thief", "Fighter/Magic-User/Thief", []string{"fighter", "magic-user", "thief"}},
-		{"magic-user-thief", "Magic-User/Thief", []string{"magic-user", "thief"}},
+		{"cleric", "Cleric", 0, []string{"cleric"}}, {"fighter", "Fighter", 2, []string{"fighter"}},
+		{"magic-user", "Magic-User", 5, []string{"magic-user"}}, {"thief", "Thief", 6, []string{"thief"}},
+		{"cleric-fighter", "Cleric/Fighter", 8, []string{"cleric", "fighter"}},
+		{"cleric-fighter-magic-user", "Cleric/Fighter/Magic-User", 9, []string{"cleric", "fighter", "magic-user"}},
+		{"cleric-magic-user", "Cleric/Magic-User", 11, []string{"cleric", "magic-user"}},
+		{"fighter-magic-user", "Fighter/Magic-User", 13, []string{"fighter", "magic-user"}},
+		{"fighter-thief", "Fighter/Thief", 14, []string{"fighter", "thief"}},
+		{"fighter-magic-user-thief", "Fighter/Magic-User/Thief", 15, []string{"fighter", "magic-user", "thief"}},
+		{"magic-user-thief", "Magic-User/Thief", 16, []string{"magic-user", "thief"}},
 	},
 	"halfling": {
-		{"fighter", "Fighter", []string{"fighter"}}, {"thief", "Thief", []string{"thief"}},
-		{"fighter-thief", "Fighter/Thief", []string{"fighter", "thief"}},
+		{"fighter", "Fighter", 2, []string{"fighter"}}, {"thief", "Thief", 6, []string{"thief"}},
+		{"fighter-thief", "Fighter/Thief", 14, []string{"fighter", "thief"}},
 	},
 	"human": {
-		{"cleric", "Cleric", []string{"cleric"}}, {"fighter", "Fighter", []string{"fighter"}},
-		{"magic-user", "Magic-User", []string{"magic-user"}}, {"thief", "Thief", []string{"thief"}},
+		{"cleric", "Cleric", 0, []string{"cleric"}}, {"fighter", "Fighter", 2, []string{"fighter"}},
+		{"magic-user", "Magic-User", 5, []string{"magic-user"}}, {"thief", "Thief", 6, []string{"thief"}},
 	},
 }
 

@@ -1,6 +1,6 @@
 # DOS 角色擲值與持久欄位
 
-狀態：DRAFT（欄位與直接資料流已閉合；亂數、種族／職業修正及多職代碼尚未 READY）  
+狀態：DRAFT（欄位、直接資料流與多職代碼已閉合；亂數及種族／職業修正尚未 READY）
 日期：2026-08-31
 
 ## 輸入與位址空間
@@ -42,21 +42,28 @@ IDA 由 TPOV entry seeds 加保守 sweep 匯出 overlay-16 38 functions、overla
 | --- | --- | --- | --- |
 | `10h..15h` | 六個 byte | overlay-16 以能力索引加到 record base，再讀寫 `[es:di+10h]`；原版角色樣本逐 byte 對應畫面六能力順序 | STR、INT、WIS、DEX、CON、CHA；`exact` |
 | `30h` | little-endian word | overlay-16 `0F23h／0F86h／0FD9h／107Fh／1178h／11CAh` 寫 `[es:di+30h]`；overlay-19 `0184h` push 同一 word 到顯示鏈 | age 欄位；`exact` 欄位，公式 DRAFT |
-| `32h` | byte | overlay-16 `1CC6h` 初始化、`1D3Ch` 從 `B1h` 複製，後續依 modifier 調整；現有完成角色樣本若作 `×10` 均落在手冊的 30–180 gp 範圍 | 初始金錢儲存單位候選；欄位存取 `exact`，`×10 gp` 與語意仍為 `strong inference` |
-| `B1h` | byte | overlay-16 `1D2Ch` 寫入 local `4209h` 回傳值，`1D34h` 讀回；`1DDEh..1DE1h` 依 divisor 調整；現有樣本值落在合理一級 HP 範圍 | 初始／目前 HP 候選；欄位存取 `exact`、語意 `strong inference`，骰法 DRAFT |
-| `11Bh` | byte | overlay-16 `1DBEh..1DC5h` 複製調整後 `32h` | 金錢相關鏡像欄位候選；`exact bytes／unknown meaning` |
+| `32h` | byte | overlay-16 `1CC6h` 初始化、`1D3Ch` 從 `B1h` 複製，後續依 modifier 調整；同一次 Elf／Thief 資料頁顯示 HP `7`，最終 `.CHA +32h` 也是 `7` | 畫面 HP；`exact` |
+| `8Eh` | little-endian word | overlay-16 `1D00h..1D17h` 計算後寫 `[es:di+8Eh]`；同一次資料頁顯示 GOLD `100`，`.CHA +8Eh` 是 word `100` | 畫面 Gold；`exact`，產生公式 DRAFT |
+| `B1h` | byte | overlay-16 `1D2Ch` 寫入 local `4209h` 回傳值，`1D34h` 讀回；同一角色為 `5`，其畫面 HP 是 `7`；`1DDEh..1DE1h` 另依 divisor 調整 | 未套完整 modifier 的 HP roll／class HP accumulator；`strong inference`，精確公式 DRAFT |
+| `11Bh` | byte | overlay-16 `1DBEh..1DC5h` 複製調整後 `32h`；同一角色兩者同為 `7` | max/current HP 鏡像候選；`strong inference` |
 
-`1D00h..1DE1h` 明確顯示 `B1h` 與 `32h` 不是兩次彼此獨立的簡單亂數：local
-`4209h` 的回傳先寫 `B1h` 並複製到 `32h`，local `3F01h` 的 signed 結果再進入
-除法／下限處理。未閉合 `4209h`、`3F01h` 的 caller contract、表格與 divisor
-來源前，不把任何骰法寫成 READY。
+`1D00h..1DE1h` 明確分成 Gold 與 HP 兩條鏈：前段把計算結果寫入 word `8Eh`；
+local `4209h` 的回傳再寫 `B1h` 並複製到 `32h`，local `3F01h` 的 signed 結果只
+調整 `32h`，最後複製至 `11Bh`，另對 `B1h` 作 divisor 處理。未閉合 `4209h`、
+`3F01h` 的 caller contract、表格與 divisor 來源前，不把骰法寫成 READY。
+
+### 2026-08-31 勘誤
+
+前一版因只有未配對樣本，把 `+32h` 推作金錢單位、`+B1h` 推作畫面 HP。新的同源
+runtime anchor（資料頁 SHA-256
+`865e4612c68a93aeacf712d6f307fc3d5f871dbf3ac7cfbf00aa5f26eb5adabc`；CHA
+SHA-256 `cc8febdd1f9f8c2dc0ee7c752bddca90b1960b0b9cce8a33f6cdb19f66c9471a`）
+直接否定舊解釋：HP `7`=`+32h`，Gold `100`=word `+8Eh`，而 `+B1h`=`5`。
+舊推論形成原因保留於此，後續不得再引用它。
 
 ## 尚未授權實作的缺口
 
 1. 解出六能力初始 producer、重擲迴圈、種族上下限與職業資格修正的執行順序。
 2. 閉合 age tables（overlay-16 `3DD3h／3DE7h` 附近）與其亂數 helper。
-3. 閉合 local `4209h`、`3F01h`，以同一次建角的畫面＋`.CHA` 作 runtime 正對照。
-4. 將同一次建角資料頁與最終 `.CHA` 配對，才能把 `32h／B1h` 從強推論升為
-   gold／HP 已證實。
-5. 逐一產生多職角色，從 `.CHA +2Fh` 取得持久代碼；不得依空號排列猜測。
-6. 上述公式升為 READY 後，才可實作擲值頁與最終角色產生器。
+3. 閉合 local `4209h`、`3F01h` 與 CON／多職 divisor 的資料表。
+4. 上述公式升為 READY 後，才可實作擲值頁與最終角色產生器。

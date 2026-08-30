@@ -43,3 +43,29 @@ func TestCatalogReturnsCopiesAndGuidance(t *testing.T) {
 		}
 	}
 }
+
+func TestClassDOSCodesMatchPairedOriginalCharacterFiles(t *testing.T) {
+	want := map[string]uint8{
+		"cleric": 0, "fighter": 2, "magic-user": 5, "thief": 6,
+		"cleric-fighter": 8, "cleric-fighter-magic-user": 9,
+		"cleric-magic-user": 11, "fighter-magic-user": 13,
+		"fighter-thief": 14, "fighter-magic-user-thief": 15,
+		"magic-user-thief": 16,
+	}
+	seen := map[string]bool{}
+	for _, race := range Races {
+		for _, class := range ClassesForRace(race.ID) {
+			code, ok := want[class.ID]
+			if !ok {
+				t.Fatalf("missing original code for %s", class.ID)
+			}
+			if class.DOSCode != code {
+				t.Fatalf("%s DOS code=%d want %d", class.ID, class.DOSCode, code)
+			}
+			seen[class.ID] = true
+		}
+	}
+	if len(seen) != len(want) {
+		t.Fatalf("covered %d class identities, want %d", len(seen), len(want))
+	}
+}

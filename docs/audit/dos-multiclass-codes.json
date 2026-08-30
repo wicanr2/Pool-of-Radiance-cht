@@ -1,0 +1,16 @@
+{
+  "schema": "pool-dos-multiclass-codes/1",
+  "platform": "DOS",
+  "record_offset": 47,
+  "race": "Half-Elf",
+  "evidence_note": "Each row pairs a normal-UI character sheet naming the class with the final 285-byte CHA from the same run. Original screenshots and character files remain local evidence and are not distributed.",
+  "classes": [
+    {"id":"cleric-fighter","label":"Cleric/Fighter","dos_class_code":8,"cha_sha256":"e81375ab222b18064ebfe1ca68cdff3bc604e74bbfc4c984dc6487a218ab1dbc","sheet_sha256":"ec8bd744aa98847ac7d27284b1976494ec8920c2d6687b80d1d1f60386063fec","cha_size":285},
+    {"id":"cleric-fighter-magic-user","label":"Cleric/Fighter/Magic-User","dos_class_code":9,"cha_sha256":"7ffe203dab879fd49aaf74b06e3b574c8e6d2c0034a4b752aab2359dc0a63ceb","sheet_sha256":"2f0d3bfa86b558c50d75a46505c2ceba7623e61e5d4a5b66b0082d62c92b7b0c","cha_size":285},
+    {"id":"cleric-magic-user","label":"Cleric/Magic-User","dos_class_code":11,"cha_sha256":"35ab373f3884a84058ea6473bb8f7561bc0ccb186b9f6c226d636cb2156b955f","sheet_sha256":"09d2671cc3936cea3dbb75b8c8deac55c651f61bf9430dfb2a2c7495e4d094b9","cha_size":285},
+    {"id":"fighter-magic-user","label":"Fighter/Magic-User","dos_class_code":13,"cha_sha256":"e62e9899443311a03acb99e60c9225163765ea40efd49675b48a09bf5ffb1e5d","sheet_sha256":"7337e0a942d67e33bd4ab532e39ee51606f579c9d4d2ec776fc3936faf10aaac","cha_size":285},
+    {"id":"fighter-thief","label":"Fighter/Thief","dos_class_code":14,"cha_sha256":"945c42b209a89a065e8bf9e2a50db7b0c49891befe5bc31f8f1a94e79b6d8266","sheet_sha256":"98a14e7a8b02e906c15dbf37cce89d6bdaf2dc53545b87a89f2d2aa8f7a84540","cha_size":285},
+    {"id":"fighter-magic-user-thief","label":"Fighter/Magic-User/Thief","dos_class_code":15,"cha_sha256":"d210394f0c6aeb23b75ff0b2de52eb2c0c3521814db76403035e78bd9bb7e346","sheet_sha256":"fd29bb20d47f3029d1bbab18280de50ade21812bdf1f4bf7ae4b17fe71ecb31e","cha_size":285},
+    {"id":"magic-user-thief","label":"Magic-User/Thief","dos_class_code":16,"cha_sha256":"8daaff8b89e5636fb3c0c5e3d04a27ae5c83605e025482f99991e7dbfd10423f","sheet_sha256":"750d4039aafa1d76cce36e1621d001db0cf433ae0caa51b1f324d17688cc0b76","cha_size":285}
+  ]
+}
