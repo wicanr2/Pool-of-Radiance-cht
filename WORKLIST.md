@@ -119,7 +119,10 @@
   Spec 042 已先閉合 Slums 槽 `4ABBh`：ECL2/block20 的共用 helper 每次加一，達 25
   精確寫 `FEh`，`FEh` 以上不再改動；真 bytes 第 24／25 次正對照已通過。正式遊戲
   啟動也已載入八個 archive／29 blocks 的獨立 ECL namespace，不再只持有 ECL3；
-  尚待把 Slums 地圖入口、25 個實際戰鬥完成呼叫與返回 City Hall 接成正常玩家鏈。
+  Spec 045 又閉合並實作 `ECL3/block0:9955h` 的正常 controller：
+  `LOAD FILES FF,FF,7F → SAVE 2,6E12h → NEWECL 20` 會切到 ECL2，再由 entry 4
+  載入 GEO2/block20 與 WALLDEF2 slots 2/4/1；真檔垂直測試由 ECL3 起跑且 ECL2
+  存讀回歸通過。尚待把 25 個實際戰鬥完成呼叫與返回 City Hall 接成正常玩家鏈。
   `4A96h` 是接受後重入
   閘門；`4AB1h` 與吸血鬼事件相連但語意尚未足夠，不可猜名。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達

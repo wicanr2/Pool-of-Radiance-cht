@@ -1,6 +1,6 @@
 # Spec 043：LOAD FILES 與三個 WALLDEF slot
 
-狀態：READY（opcode handler 與 Slums 資源 identity）；DRAFT（跨 archive adventure controller）。
+狀態：READY。跨 archive adventure controller 由 Spec 045 閉合。
 日期：2026-09-01。
 
 ## IDA Pro 9.4 證據

@@ -1,0 +1,58 @@
+{
+  "schema": "pool-resident-ds-references-ida/1",
+  "input": "start.exe",
+  "sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+  "ida_version": "9.4",
+  "address_space": "IDA MZ loader linear address; file_offset recorded per instruction",
+  "ds_word": 21204,
+  "matches": [
+    {
+      "address": 74638,
+      "file_offset": 10046,
+      "bytes": "a0d452",
+      "text": "mov     al, byte_1C6D4",
+      "operands": [
+        "al",
+        "byte_1C6D4"
+      ],
+      "function_start": 74561,
+      "function_end": 74828
+    },
+    {
+      "address": 75394,
+      "file_offset": 10802,
+      "bytes": "a0d452",
+      "text": "mov     al, byte_1C6D4",
+      "operands": [
+        "al",
+        "byte_1C6D4"
+      ],
+      "function_start": null,
+      "function_end": null
+    },
+    {
+      "address": 75403,
+      "file_offset": 10811,
+      "bytes": "a2d452",
+      "text": "mov     byte_1C6D4, al",
+      "operands": [
+        "byte_1C6D4",
+        "al"
+      ],
+      "function_start": null,
+      "function_end": null
+    },
+    {
+      "address": 75418,
+      "file_offset": 10826,
+      "bytes": "a2d452",
+      "text": "mov     byte_1C6D4, al",
+      "operands": [
+        "byte_1C6D4",
+        "al"
+      ],
+      "function_start": null,
+      "function_end": null
+    }
+  ]
+}

@@ -291,6 +291,47 @@ func TestSlumsLoadPiecesResourceReplacesAllThreeWallSlots(t *testing.T) {
 	}
 }
 
+func TestRealNewPhlanControllerCrossesFromECL3ToSlumsECL2(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(3)
+	if !ok {
+		t.Fatal("ECL3 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 0, 0x9955)
+	if err != nil {
+		t.Fatal(err)
+	}
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 3
+	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 0, Y: 4, Facing: 6}
+	if err := application.configureEventSession(session); err != nil {
+		t.Fatal(err)
+	}
+	result, err := session.RunUntilEvent(4096, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.Events) != 1 || result.Events[0].Opcode != 0x21 || !reflect.DeepEqual(result.Events[0].Arguments, []uint16{0xFF, 0xFF, 0x7F}) {
+		t.Fatalf("first controller boundary=%+v", result)
+	}
+	if _, err := application.consumeInitialTransitionResources(result); err != nil {
+		t.Fatal(err)
+	}
+	if application.eclArchive != 2 || session.CurrentBlockID() != 20 || application.spawn.Map != (gamepack.MapKey{Archive: 2, BlockID: 20}) {
+		t.Fatalf("archive/block/map=%d/%d/%+v", application.eclArchive, session.CurrentBlockID(), application.spawn.Map)
+	}
+	if application.eventMachine.Memory[0x6E12] != 2 || application.initialMap == nil || application.initialMap.Key != (gamepack.MapKey{Archive: 2, BlockID: 20}) {
+		t.Fatalf("selector/map=%d/%+v", application.eventMachine.Memory[0x6E12], application.initialMap)
+	}
+	if application.initialWalls == nil || application.initialWalls.SetID != 1 || !reflect.DeepEqual(application.initialWalls.SymbolBlockIDs, []uint8{2, 4, 1}) || len(application.initialWalls.WallDefs) != 3 {
+		t.Fatalf("Slums wall slots=%+v", application.initialWalls)
+	}
+}
+
 func TestMoneyTreasureNormalMenuTakePoolAndShare(t *testing.T) {
 	hero := poolsave.Character{Name: "HERO", RaceID: "human", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Abilities: [6]int{18, 10, 10, 10, 10, 10}, Money: [7]uint16{3: 3}, MaxHP: 8, CurrentHP: 8, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
 	application := &app{spawn: gamepack.Spawn{Map: gamepack.MapKey{Archive: 3}}, state: poolsave.State{Schema: poolsave.Schema, CharacterLibrary: []poolsave.Character{hero}, Party: []poolsave.Character{hero}}}

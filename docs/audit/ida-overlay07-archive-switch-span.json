@@ -1,0 +1,89 @@
+{
+  "schema": "pool-overlay-span-ida/1",
+  "input": "overlay-07.bin",
+  "sha256": "a59f9d16a1d186bbd3806865ffe55de4be5b58484287237fb73872295da778ae",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0, 16-bit metapc",
+  "start": 3094,
+  "end": 3110,
+  "instructions": [
+    {
+      "address": 3094,
+      "bytes": "3d1203",
+      "text": "cmp     ax, 312h",
+      "operands": [
+        "ax",
+        "312h"
+      ],
+      "operand_values": [
+        0,
+        786
+      ]
+    },
+    {
+      "address": 3097,
+      "bytes": "750b",
+      "text": "jnz     short near ptr unk_D86",
+      "operands": [
+        "near ptr unk_D86",
+        ""
+      ],
+      "operand_values": [
+        3110,
+        -1
+      ]
+    },
+    {
+      "address": 3099,
+      "bytes": "8a4606",
+      "text": "mov     al, [bp+6]",
+      "operands": [
+        "al",
+        "[bp+6]"
+      ],
+      "operand_values": [
+        16,
+        6
+      ]
+    },
+    {
+      "address": 3102,
+      "bytes": "50",
+      "text": "push    ax",
+      "operands": [
+        "ax",
+        ""
+      ],
+      "operand_values": [
+        0,
+        -1
+      ]
+    },
+    {
+      "address": 3103,
+      "bytes": "9a0f09d701",
+      "text": "call    far ptr 1D7h:90Fh",
+      "operands": [
+        "far ptr 1D7h:90Fh",
+        ""
+      ],
+      "operand_values": [
+        2319,
+        -1
+      ]
+    },
+    {
+      "address": 3108,
+      "bytes": "eb67",
+      "text": "jmp     short near ptr unk_DED",
+      "operands": [
+        "near ptr unk_DED",
+        ""
+      ],
+      "operand_values": [
+        3213,
+        -1
+      ]
+    }
+  ]
+}

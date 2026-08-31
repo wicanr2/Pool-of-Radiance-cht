@@ -30,8 +30,14 @@
   三槽 WALLDEF／8X8D 載入，局部 `FFh` 替換仍在保存 slot state 前失敗即關閉。
 - Spec 044 修正跨 archive 存檔：schema 6 新增 `ecl_archive`，Load 從完整 ECL catalog
   重建正確 namespace。ECL3 舊路徑及 ECL2/block20＋GEO2/block20＋`4ABBh=24` 的
-  F10／Load round-trip 均通過；schema 5 依其 `map_archive` 確定性遷移。下一步仍是
-  找出正常 adventure controller 的 archive producer，接通玩家從 New Phlan 到 Slums。
+  F10／Load round-trip 均通過；schema 5 依其 `map_archive` 確定性遷移。
+- Spec 045 已閉合原版 archive controller：START resident `1D7h:090Fh` 保存舊
+  `52D4h` 並切換 selector，overlay-07 特殊分派呼叫它；正常 ECL3/block0 在
+  `9955h..9965h` 執行 `LOAD FILES FF,FF,7F → SAVE 2,6E12h → NEWECL 20`。
+  共用 engine 新增作品中立 catalog resolver，Pool adapter 才解讀 `6E12h`；真檔測試
+  已由 ECL3 起跑並落到 ECL2/block20、GEO2/block20、WALLDEF2 slots 2/4/1。
+  尚未完成的是 Slums 25 個實際戰鬥結果與回 City Hall 結算，不得把入口接通寫成
+  Slums 全區完成。
 
 - Spec 032 以 Pool overlay-03 dispatcher `346Eh/3474h` 與 handler `1A81h..1EA4h`
   固定 `27h TREASURE` 的八欄 numeric request。共用 engine `91801a5` 已提供 inline、

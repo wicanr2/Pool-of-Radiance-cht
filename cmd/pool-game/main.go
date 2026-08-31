@@ -318,6 +318,9 @@ func (a *app) Update() error {
 				if err != nil {
 					return err
 				}
+				if err := a.configureEventSession(session); err != nil {
+					return err
+				}
 				machine := session.Machine()
 				a.eventSession = session
 				a.eventMachine = machine
@@ -564,6 +567,9 @@ func (a *app) moveInitialDungeonForward() error {
 
 func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Result, error) {
 	for boundary := 0; boundary < 8; boundary++ {
+		if err := a.syncArchiveFromEventMachine(); err != nil {
+			return result, err
+		}
 		if result.Exited || result.WaitingForMenu || len(result.Events) != 1 {
 			return result, nil
 		}
@@ -603,6 +609,9 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 	}
 	switch event.Opcode {
 	case 0x21:
+		if reflect.DeepEqual(event.Arguments, []uint16{0xFF, 0xFF, 0x7F}) {
+			return true, nil
+		}
 		if event.Arguments[0] > 0xFF {
 			return false, fmt.Errorf("Pool LOAD FILES has invalid arguments %v/%v", event.Arguments, event.ArgumentsValid)
 		}
@@ -637,6 +646,45 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 	default:
 		return false, nil
 	}
+}
+
+func (a *app) configureEventSession(session *eclvm.BlockSession) error {
+	if session == nil {
+		return fmt.Errorf("Pool ECL session is nil")
+	}
+	return session.SetBlockCatalogResolver(func(_, _ uint16, memory map[uint16]uint16) (map[uint16][]byte, error) {
+		selector := memory[0x6E12]
+		if selector == 0 || selector == uint16(a.eclArchive) {
+			return nil, nil
+		}
+		if selector > 8 {
+			return nil, fmt.Errorf("Pool ECL archive selector 0x%X is outside 1..8", selector)
+		}
+		archive, ok := a.eclCatalog.Archive(uint8(selector))
+		if !ok {
+			return nil, fmt.Errorf("Pool ECL archive %d is unavailable", selector)
+		}
+		return archive.Blocks, nil
+	})
+}
+
+func (a *app) syncArchiveFromEventMachine() error {
+	if a.eventMachine == nil {
+		return nil
+	}
+	selector := a.eventMachine.Memory[0x6E12]
+	if selector == 0 || selector == uint16(a.eclArchive) {
+		return nil
+	}
+	if selector > 8 {
+		return fmt.Errorf("Pool ECL archive selector 0x%X is outside 1..8", selector)
+	}
+	if _, ok := a.eclCatalog.Archive(uint8(selector)); !ok {
+		return fmt.Errorf("Pool ECL archive %d is unavailable", selector)
+	}
+	a.eclArchive = uint8(selector)
+	a.spawn.Map.Archive = uint8(selector)
+	return nil
 }
 
 func (a *app) beginInitialSearch() error {
@@ -1092,6 +1140,9 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	}
 	if err := session.Restore(campaign.Session); err != nil {
 		return fmt.Errorf("restore Pool ECL session: %w", err)
+	}
+	if err := a.configureEventSession(session); err != nil {
+		return fmt.Errorf("configure restored Pool ECL session: %w", err)
 	}
 	// Commit only after every catalog and snapshot check succeeds.
 	a.state = cloneSaveState(loaded)
