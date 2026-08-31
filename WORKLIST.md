@@ -57,6 +57,9 @@
   selector／七頁文字與最終 ECL `EXIT`；正常按鍵已走到 Tyr 停靠畫面。wrapped traversal
   仍是跨作品 strong inference；Rolf 初次 APPROACH 圖像、自由移動交接、地名、
   bounded／wrapped／door policy、背景與同狀態 DOS 畫面仍待證明。
+  Spec 012 已再閉合 overlay-03 `401Fh` dispatch → overlay-07 entry 27，以及 cardinal
+  座標的 16×16 wrap；該 wrapper 無 collision check，所以下一個窄切片是回追 `401Fh`
+  producer／牆與門 gate，不能直接把 wrapper 當完整 movement policy。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

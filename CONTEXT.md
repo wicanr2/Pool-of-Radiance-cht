@@ -104,5 +104,9 @@
 WALLDEF／8X8D 素材 identity 與完整 Rolf 34-step 導覽已 READY；地名、移動變體、
 Pool 專屬第一人稱視錐／背景與 Rolf 初次 APPROACH 圖像仍須以 DOS runtime／
 executable 閉合。
+Spec 012 已用 IDA Pro 9.4 另證實 overlay-03 `30FAh` 的 `401Fh` dispatch 唯一呼叫
+overlay-07 entry 27；後者依 facing `0/2/4/6` 將 X／Y 在 `0..15` 間 wrap，並更新
+`6A0Fh/6A0Eh`。該函式沒有 collision check，因此目前缺口已縮小成 upstream `401Fh`
+producer 與牆／門 gate；不能用座標 wrapper 支持「自由移動已完成」。
 首條玩家垂直鏈固定為標題 → 建角／建隊 → 第一個正常可操作地圖 → 事件／戰鬥 →
 存檔／讀檔。
