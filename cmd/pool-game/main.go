@@ -107,6 +107,7 @@ type app struct {
 	loadState        func() (poolsave.State, error)
 	initialMap       *gamepack.GeometryMap
 	geometryCatalog  gamepack.GeometryCatalog
+	eclCatalog       gamepack.ECLCatalog
 	initialWalls     *graphics.PieceSet
 	initialEvent     *gamepack.InitialEvent
 	spawn            gamepack.Spawn
@@ -165,6 +166,11 @@ func newApp(zipPath string) (*app, error) {
 	}
 	application.initialMap = &initialMap
 	application.geometryCatalog = catalog
+	eclCatalog, err := gamepack.ReadDOSECLCatalog(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.eclCatalog = eclCatalog
 	initialWalls, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial wall set: %w", err)

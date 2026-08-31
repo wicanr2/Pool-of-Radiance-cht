@@ -115,6 +115,10 @@
   通過。Spec 041 已進一步證明 `9D63h` 掃描 `4AA6h..4ABFh` 26 槽完成通知表，只有
   十個分支增加 `4AC1h`；可重生矩陣及全 ECL 直接引用清冊已有缺證據負對照。下一步
   逐槽追真正的 `FEh` producer，並由至少四條正常 commission 完成鏈抵達墓園服務。
+  Spec 042 已先閉合 Slums 槽 `4ABBh`：ECL2/block20 的共用 helper 每次加一，達 25
+  精確寫 `FEh`，`FEh` 以上不再改動；真 bytes 第 24／25 次正對照已通過。正式遊戲
+  啟動也已載入八個 archive／29 blocks 的獨立 ECL namespace，不再只持有 ECL3；
+  尚待把 Slums 地圖入口、25 個實際戰鬥完成呼叫與返回 City Hall 接成正常玩家鏈。
   `4A96h` 是接受後重入
   閘門；`4AB1h` 與吸血鬼事件相連但語意尚未足夠，不可猜名。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達

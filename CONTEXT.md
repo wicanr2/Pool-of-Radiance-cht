@@ -18,6 +18,12 @@
   增量位址矩陣，並有刪 edge／改 producer 的失敗即關閉測試。另以全 ECL operand
   audit 固定各槽直接 producer／consumer 下界；三個 decoder failure 仍明列，零引用
   不得解讀成不存在。
+- Spec 042 已由 ECL2/block20 真 bytes 閉合 Slums 槽 `4ABBh`：`B69Ch..B6BBh`
+  在值小於 `FEh` 時逐次加一，達 25 寫 `FEh`，之後保持不變。direct-entry 第 24／25
+  次臨界測試已通過，但只證明 helper，不冒充正常 Slums 完成。game pack 新增八個
+  archive／29 blocks 的 ECL catalog，保留 archive namespace、拒絕重複 member／block，
+  並以副本隔離 runtime mutation；`cmd/pool-game` 啟動時已載入這份 catalog。下一步是
+  將 ECL2/block20 與對應地圖入口接入目前仍以 ECL3 起始區為中心的前端 session。
 
 - Spec 032 以 Pool overlay-03 dispatcher `346Eh/3474h` 與 handler `1A81h..1EA4h`
   固定 `27h TREASURE` 的八欄 numeric request。共用 engine `91801a5` 已提供 inline、
