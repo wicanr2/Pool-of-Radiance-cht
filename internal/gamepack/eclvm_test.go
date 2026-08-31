@@ -37,6 +37,84 @@ func TestInitialCharacterProjectorLeavesEmptyPartyUnprojected(t *testing.T) {
 	}
 }
 
+func TestInitialPartyStrengthProjectionMatchesDOSClassAnchors(t *testing.T) {
+	tests := []struct {
+		name    string
+		value   InitialCharacter
+		fields  [5]uint8
+		contrib uint8
+	}{
+		{name: "FEM fighter", value: InitialCharacter{ClassID: "fighter", Abilities: [6]int{14, 15, 16, 13, 15, 13}, CurrentHP: 7}, fields: [5]uint8{0, 0, 40, 50, 7}, contrib: 1},
+		{name: "HMU magic-user", value: InitialCharacter{ClassID: "magic-user", Abilities: [6]int{17, 15, 14, 14, 13, 14}, CurrentHP: 2}, fields: [5]uint8{0, 1, 41, 50, 2}, contrib: 2},
+		{name: "HTH thief", value: InitialCharacter{ClassID: "thief", Abilities: [6]int{13, 16, 12, 16, 14, 13}, CurrentHP: 4}, fields: [5]uint8{0, 0, 40, 52, 4}, contrib: 0},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			record, err := initialPartyStrengthRecord(test.value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := [5]uint8{record.Field96, record.Field9B, record.Field110, record.Field111, record.Field11B}
+			if got != test.fields || record.Contribution() != test.contrib {
+				t.Fatalf("fields=%v contribution=%d, want %v/%d", got, record.Contribution(), test.fields, test.contrib)
+			}
+		})
+	}
+	resolver := initialPartyStrengthResolver([]InitialCharacter{tests[0].value, tests[1].value, tests[2].value})
+	if got, err := resolver(); err != nil || got != 3 {
+		t.Fatalf("party strength=%d err=%v, want 3", got, err)
+	}
+}
+
+func TestInitialPartyStrengthProjectionFailsClosedOnUnknownCharacterShape(t *testing.T) {
+	for _, value := range []InitialCharacter{
+		{ClassID: "unknown", Abilities: [6]int{10, 10, 10, 10, 10, 10}, CurrentHP: 1},
+		{ClassID: "fighter", Abilities: [6]int{26, 10, 10, 10, 10, 10}, CurrentHP: 1},
+		{ClassID: "fighter", Abilities: [6]int{18, 10, 10, 10, 10, 10}, ExceptionalStrength: 101, CurrentHP: 1},
+	} {
+		if _, err := initialPartyStrengthRecord(value); err == nil {
+			t.Fatalf("invalid projection accepted: %+v", value)
+		}
+	}
+}
+
+func TestRealBlock8GraveyardStrengthGateUsesInlineResolver(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	event, err := ReadDOSInitialEvent(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	for _, test := range []struct {
+		name, anchor string
+		hp           int
+		want         uint8
+	}{
+		{name: "below threshold", hp: 175, want: 18, anchor: "ON THE MATTER OF COMMISSION"},
+		{name: "at threshold", hp: 185, want: 19, anchor: "VALHINGEN GRAVEYARD"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			member := InitialCharacter{ClassID: "fighter", Abilities: [6]int{14, 10, 10, 13, 10, 10}, CurrentHP: test.hp}
+			fixture := event
+			fixture.HandlerAddress = 0xA592
+			fixture.ScriptBlock = nil
+			fixture.ScriptBlocks = map[uint16][]byte{0: event.ScriptBlocks[8]}
+			session, err := NewInitialEventSession(fixture, member)
+			if err != nil {
+				t.Fatal(err)
+			}
+			machine := session.Machine()
+			machine.Memory[0x4AC1], machine.Memory[0x4AB1], machine.Memory[0x4A96] = 4, 0, 0
+			result, err := machine.RunUntilEvent(128, nil, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if machine.Memory[0x6E79] != uint16(test.want) || len(result.PartyStrengthRequests) != 1 || result.PartyStrengthRequests[0].Value != test.want || len(result.Events) != 1 || !strings.Contains(result.Events[0].Text, test.anchor) {
+				t.Fatalf("strength=%d requests=%v events=%v", machine.Memory[0x6E79], result.PartyStrengthRequests, result.Events)
+			}
+		})
+	}
+}
+
 // This is the first second-title consumer of the shared VM core. It executes
 // the original bytes rather than replaying the typed TourStep projection.
 func TestSharedVMRunsRealRolfTourToExit(t *testing.T) {

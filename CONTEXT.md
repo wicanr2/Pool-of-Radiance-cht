@@ -21,6 +21,15 @@
   slums、Sokal Keep、old Phlan books/maps 三項委託、`THESE ARE ALL...` 與 `AF7Ch EXIT`，
   並斷言回到 `(5,5)` 地城移動。完整 reward／commission 條件矩陣仍屬 DRAFT Spec 028，
   不得把這條預設分支冒充整個 City Hall 服務完成。
+- Spec 030 已用 IDA Pro 9.4 固定 Pool opcode `1Dh`：dispatcher `3404h..340Dh` →
+  handler `13A0h..14B1h`，沿 party `+104h` 鏈讀 `+96h/+9Bh/+110h/+111h/+11Bh`，
+  依原版整數公式累加為 byte 並 inline 寫回 destination。shared engine `4b10d7c` 已提供
+  fail-closed typed resolver，Pool／CoAB 正式依賴升到
+  `v0.0.0-20260831181703-4b10d7c5a302`。
+- Spec 031 以 `FEM/HMU/HTH.CHA` 三份原版 class oracle 固定一級 Fighter／Magic-User／
+  Thief 的五欄與 contribution；Pool 正常建角 roster snapshot 已接 resolver。真 block8
+  `A592h` 正／負 fixture 證明 18 跳過、19 進 Valhingen Graveyard。訓練、升級、裝備與
+  DOS 角色匯入投影仍是 DRAFT，不能把一級 snapshot 當完整角色成長。
 
 ## 2026-08-31 存檔生命值決定
 

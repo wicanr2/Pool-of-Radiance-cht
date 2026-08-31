@@ -4,6 +4,8 @@ import (
 	"archive/zip"
 	"fmt"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
+	"github.com/wicanr2/golden-box-remake-engine/combat/ability"
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
@@ -28,8 +30,12 @@ type InitialEvent struct {
 // InitialCharacter is the narrow active-character projection required by the
 // currently READY Pool ECL path. Full DOS character records remain game data.
 type InitialCharacter struct {
-	Name          string
-	ControlMorale uint8
+	Name                string
+	ClassID             string
+	Abilities           [6]int
+	ExceptionalStrength int
+	CurrentHP           int
+	ControlMorale       uint8
 }
 
 // TourStep is one original scripted position frame. Most steps only move the
@@ -268,7 +274,70 @@ func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) 
 		return nil, err
 	}
 	session.Machine().SetCharacterProjector(initialCharacterProjector(characters))
+	session.Machine().SetPartyStrengthResolver(initialPartyStrengthResolver(characters))
 	return session, nil
+}
+
+func initialPartyStrengthResolver(characters []InitialCharacter) eclvm.PartyStrengthResolver {
+	snapshot := append([]InitialCharacter(nil), characters...)
+	return func() (uint8, error) {
+		records := make([]character.PartyStrengthRecord, len(snapshot))
+		for index, value := range snapshot {
+			record, err := initialPartyStrengthRecord(value)
+			if err != nil {
+				return 0, fmt.Errorf("Pool party member %d: %w", index, err)
+			}
+			records[index] = record
+		}
+		return character.PartyStrength(records), nil
+	}
+}
+
+func initialPartyStrengthRecord(value InitialCharacter) (character.PartyStrengthRecord, error) {
+	if value.CurrentHP < 0 || value.CurrentHP > 0xFF {
+		return character.PartyStrengthRecord{}, fmt.Errorf("current HP %d is outside byte range", value.CurrentHP)
+	}
+	strengthIndex, ok := ability.StrengthIndex(value.Abilities[0], value.ExceptionalStrength)
+	if !ok {
+		return character.PartyStrengthRecord{}, fmt.Errorf("strength %d/%d has no original table index", value.Abilities[0], value.ExceptionalStrength)
+	}
+	if value.Abilities[3] < 0 || value.Abilities[3] > 0xFF {
+		return character.PartyStrengthRecord{}, fmt.Errorf("dexterity %d is outside byte range", value.Abilities[3])
+	}
+	cleric, magicUser, ok := initialCasterLevels(value.ClassID)
+	if !ok {
+		return character.PartyStrengthRecord{}, fmt.Errorf("class %q is outside the Pool creation catalog", value.ClassID)
+	}
+	storedAttack := 40 + ability.StrengthHitAdjustment(strengthIndex)
+	storedArmor := 50 + ability.DexterityDefenceAdjustment(value.Abilities[3])
+	if storedAttack < 0 || storedAttack > 0xFF || storedArmor < 0 || storedArmor > 0xFF {
+		return character.PartyStrengthRecord{}, fmt.Errorf("derived attack/armor %d/%d is outside byte range", storedAttack, storedArmor)
+	}
+	return character.PartyStrengthRecord{
+		Field96: uint8(cleric), Field9B: uint8(magicUser), Field110: uint8(storedAttack),
+		Field111: uint8(storedArmor), Field11B: uint8(value.CurrentHP),
+	}, nil
+}
+
+func initialCasterLevels(classID string) (cleric, magicUser int, ok bool) {
+	switch classID {
+	case "cleric":
+		return 1, 0, true
+	case "fighter", "thief":
+		return 0, 0, true
+	case "magic-user":
+		return 0, 1, true
+	case "cleric-fighter":
+		return 1, 0, true
+	case "cleric-fighter-magic-user", "cleric-magic-user":
+		return 1, 1, true
+	case "fighter-magic-user", "fighter-magic-user-thief", "magic-user-thief":
+		return 0, 1, true
+	case "fighter-thief":
+		return 0, 0, true
+	default:
+		return 0, 0, false
+	}
 }
 
 func initialCharacterProjector(characters []InitialCharacter) eclvm.CharacterProjector {

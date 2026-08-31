@@ -266,7 +266,10 @@ func (a *app) Update() error {
 			if len(a.initialEvent.ScriptBlock) != 0 {
 				characters := make([]gamepack.InitialCharacter, len(a.state.Party))
 				for index, character := range a.state.Party {
-					characters[index] = gamepack.InitialCharacter{Name: character.Name}
+					characters[index] = gamepack.InitialCharacter{
+						Name: character.Name, ClassID: character.ClassID, Abilities: character.Abilities,
+						ExceptionalStrength: character.ExceptionalStrength, CurrentHP: character.CurrentHP,
+					}
 				}
 				session, err := gamepack.NewInitialEventSession(*a.initialEvent, characters...)
 				if err != nil {

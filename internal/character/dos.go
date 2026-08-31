@@ -20,6 +20,11 @@ const (
 	offsetRace         = 0x2E
 	offsetClass        = 0x2F
 	offsetGender       = 0x9E
+	offsetStrength96   = 0x96
+	offsetStrength9B   = 0x9B
+	offsetStrength110  = 0x110
+	offsetStrength111  = 0x111
+	offsetStrength11B  = 0x11B
 )
 
 type DualColor struct{ Color1, Color2 uint8 }
@@ -39,6 +44,36 @@ type DOSCharacter struct {
 	GenderCode uint8
 	Portrait   PortraitSelection
 	Icon       IconCustomization
+	// PartyStrength preserves the five exact raw bytes consumed by ECL opcode
+	// 1Dh. Their Pool semantic names remain cross-title strong in Spec 030.
+	PartyStrength PartyStrengthRecord
+}
+
+type PartyStrengthRecord struct {
+	Field96, Field9B, Field110, Field111, Field11B uint8
+}
+
+// Contribution reproduces overlay-03:142E..147A for one party record.
+func (record PartyStrengthRecord) Contribution() uint8 {
+	field111 := 0
+	if record.Field111 > 60 {
+		field111 = int(record.Field111) - 60
+	}
+	field110 := 0
+	if record.Field110 > 39 {
+		field110 = int(record.Field110) - 39
+	}
+	value := int(record.Field11B) + 5*field111 + 5*field110 + 8*int(record.Field9B) + 4*int(record.Field96)
+	return uint8(value / 10)
+}
+
+// PartyStrength reproduces the handler's byte accumulator, including wrap.
+func PartyStrength(records []PartyStrengthRecord) uint8 {
+	var total uint8
+	for _, record := range records {
+		total += record.Contribution()
+	}
+	return total
 }
 
 func ParseDOS(record []byte) (DOSCharacter, error) {
@@ -54,6 +89,10 @@ func ParseDOS(record []byte) (DOSCharacter, error) {
 	result.RaceCode = record[offsetRace]
 	result.ClassCode = record[offsetClass]
 	result.GenderCode = record[offsetGender]
+	result.PartyStrength = PartyStrengthRecord{
+		Field96: record[offsetStrength96], Field9B: record[offsetStrength9B],
+		Field110: record[offsetStrength110], Field111: record[offsetStrength111], Field11B: record[offsetStrength11B],
+	}
 	result.Portrait = PortraitSelection{Head: record[offsetPortraitHead], Body: record[offsetPortraitBody]}
 	result.Icon = IconCustomization{
 		Head: record[offsetIconHead], Weapon: record[offsetIconWeapon],

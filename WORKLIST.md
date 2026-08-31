@@ -89,8 +89,11 @@
   block8 全 trace 已推翻「clerk 有單一 `4AC1h` producer」：十個 reward 子程式會各自
   把它加一。機器清冊已固定 reward 7 槽、commission 16 路與五個 external call；
   Spec 029 已 READY 並驗收全新隊伍依序顯示三項預設委託後由 `AF7Ch EXIT` 回到移動。
-  下一步是逐槽閉合 producer 條件／上限、非預設 reward／commission 矩陣與 external
-  service，以及 `AD29h` Skullcrusher 離隊事件。
+  Spec 030／031 已接第一個 external query `PARTYSTRENGTH`：真實 handler、五欄公式、
+  三份一級 class oracle 與 block8 強度 18／19 正負門檻均通過。下一步是 graveyard YES
+  分支的 `TREASURE`／`COMBAT` typed service，以及逐槽 producer 條件／上限、其他
+  reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
+  一級 immutable roster snapshot 換成有版本的 live derived-stat seam。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
   `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
   `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑
