@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"image/color"
@@ -19,6 +20,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/temple"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
@@ -35,11 +37,19 @@ const (
 
 type screenMode uint8
 
+type templeStage uint8
+
 const (
 	modeTitle screenMode = iota
 	modeMenu
 	modeCreation
 	modeAdventure
+)
+
+const (
+	templeMain templeStage = iota
+	templeHeal
+	templeConfirm
 )
 
 type diceRoller struct{ random *rand.Rand }
@@ -64,7 +74,7 @@ type app struct {
 	flow             creation.Flow
 	cursor           int
 	rolled           *creation.RolledCharacter
-	roller           diceRoller
+	roller           creation.Roller
 	help             bool
 	modern           bool
 	statusLine       string
@@ -96,6 +106,9 @@ type app struct {
 	cellMenuOptions  []string
 	cellMenuCursor   int
 	templeActive     bool
+	templeStage      templeStage
+	templeParty      int
+	templeService    int
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -352,6 +365,14 @@ func (a *app) Update() error {
 		}
 		if a.introDone {
 			if a.cellEventPending {
+				if a.templeActive && a.templeStage != templeConfirm {
+					for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
+						if index < len(a.state.Party) && a.justPressed(key) {
+							a.selectTempleParty(index)
+							return nil
+						}
+					}
+				}
 				if a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
 					if a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp) {
 						a.cellMenuCursor = (a.cellMenuCursor + len(a.cellMenuOptions) - 1) % len(a.cellMenuOptions)
@@ -366,11 +387,7 @@ func (a *app) Update() error {
 				}
 				if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
 					if a.templeActive {
-						if a.cellMenuCursor != len(a.cellMenuOptions)-1 {
-							a.statusLine = "This temple service remains fail-closed until its DOS rules are READY."
-							return nil
-						}
-						return a.leaveSuneTemple()
+						return a.selectSuneTempleOption()
 					}
 					var selection *uint16
 					if a.cellWaitingMenu {
@@ -508,17 +525,117 @@ func (a *app) enterSuneTemple() error {
 		return fmt.Errorf("Sune temple requires a named first party member")
 	}
 	a.templeActive = true
+	a.templeStage, a.templeParty, a.templeService = templeMain, 0, 0
 	a.cellEventPending, a.cellWaitingMenu = true, true
 	a.cellMenuOptions = []string{"Heal", "View", "Pool", "Appraise", "Exit"}
 	a.cellMenuCursor = 0
 	a.eventText = strings.TrimSpace(a.state.Party[0].Name) + ", how can we help you?"
 	a.eventLabel = a.cellMenuLabel()
-	a.statusLine = "Original Sune temple service menu is active."
+	a.statusLine = "Original Sune temple menu; press 1-6 to select the current character."
 	return nil
+}
+
+var templeHealOptions = []string{
+	"Cure Blindness", "Cure Disease", "Cure Light Wounds", "Cure Serious Wounds",
+	"Cure Critical Wounds", "Neutralize Poison", "Raise Dead", "Remove Curse",
+	"Stone to Flesh", "Exit",
+}
+
+func (a *app) selectTempleParty(index int) {
+	a.templeParty = index
+	name := strings.TrimSpace(a.state.Party[index].Name)
+	if a.templeStage == templeMain {
+		a.eventText = name + ", how can we help you?"
+	} else {
+		a.eventText = "Choose a cure for " + name + "."
+	}
+	a.statusLine = fmt.Sprintf("Temple character %d/%d: %s (HP %d/%d, %d GP; pool %d GP).", index+1, len(a.state.Party), name, a.state.Party[index].CurrentHP, a.state.Party[index].MaxHP, a.state.Party[index].Gold, a.state.PooledGold)
+}
+
+func (a *app) enterTempleMain() {
+	a.templeStage = templeMain
+	a.cellMenuOptions = []string{"Heal", "View", "Pool", "Appraise", "Exit"}
+	a.cellMenuCursor = 0
+	a.eventLabel = a.cellMenuLabel()
+	a.selectTempleParty(a.templeParty)
+}
+
+func (a *app) enterTempleHeal() {
+	a.templeStage = templeHeal
+	a.cellMenuOptions = append(a.cellMenuOptions[:0], templeHealOptions...)
+	a.cellMenuCursor = 0
+	a.eventLabel = a.cellMenuLabel()
+	a.selectTempleParty(a.templeParty)
+}
+
+func (a *app) selectSuneTempleOption() error {
+	switch a.templeStage {
+	case templeMain:
+		switch a.cellMenuCursor {
+		case 0:
+			a.enterTempleHeal()
+			return nil
+		case len(a.cellMenuOptions) - 1:
+			return a.leaveSuneTemple()
+		default:
+			a.statusLine = "This temple service remains fail-closed until its DOS rules are READY."
+			return nil
+		}
+	case templeHeal:
+		if a.cellMenuCursor == len(templeHealOptions)-1 {
+			a.enterTempleMain()
+			return nil
+		}
+		if a.cellMenuCursor < 2 || a.cellMenuCursor > 4 {
+			a.statusLine = "This status cure remains fail-closed until its DOS rules are READY."
+			return nil
+		}
+		a.templeService = a.cellMenuCursor - 2
+		service := temple.WoundServices[a.templeService]
+		a.templeStage = templeConfirm
+		a.cellMenuOptions = []string{"YES", "NO"}
+		a.cellMenuCursor = 0
+		a.eventText = fmt.Sprintf("%d gold pieces.\npay for cure", service.Cost)
+		a.eventLabel = a.cellMenuLabel()
+		a.statusLine = "Confirm the original temple cure price."
+		return nil
+	case templeConfirm:
+		if a.cellMenuCursor != 0 {
+			a.enterTempleHeal()
+			return nil
+		}
+		before := a.state
+		before.Party = append([]poolsave.Character(nil), a.state.Party...)
+		before.CharacterLibrary = append([]poolsave.Character(nil), a.state.CharacterLibrary...)
+		result, err := temple.CureWounds(&a.state, a.templeParty, a.templeService, a.roller)
+		if err != nil {
+			a.enterTempleHeal()
+			if errors.Is(err, temple.ErrNotEnoughMoney) {
+				a.eventText = "Not enough money."
+				a.statusLine = "The cure was not purchased; no money or HP changed."
+				return nil
+			}
+			return err
+		}
+		if a.saveState != nil {
+			if err := a.saveState(a.state); err != nil {
+				a.state = before
+				return err
+			}
+		}
+		name := a.state.Party[a.templeParty].Name
+		a.enterTempleHeal()
+		a.eventText = name + " is cured."
+		a.statusLine = fmt.Sprintf("Paid %d GP from %s; restored %d HP.", result.Cost, result.PaidFrom, result.Healed)
+		return nil
+	default:
+		return fmt.Errorf("unknown Pool temple stage %d", a.templeStage)
+	}
 }
 
 func (a *app) leaveSuneTemple() error {
 	a.templeActive = false
+	a.templeStage, a.templeParty, a.templeService = templeMain, 0, 0
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText, a.eventLabel = "", ""

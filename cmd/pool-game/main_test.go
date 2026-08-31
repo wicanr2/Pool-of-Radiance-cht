@@ -18,6 +18,10 @@ import (
 
 type scriptedKeys map[ebiten.Key]bool
 
+type fixedTempleRoller int
+
+func (value fixedTempleRoller) Roll(count, sides int) int { return int(value) }
+
 func (keys scriptedKeys) JustPressed(key ebiten.Key) bool {
 	pressed := keys[key]
 	delete(keys, key)
@@ -78,6 +82,43 @@ func TestGlobalHelpThemeAndQuitKeys(t *testing.T) {
 	application.help = false
 	if err := press(application, ebiten.KeyF10); !errors.Is(err, ebiten.Termination) {
 		t.Fatalf("F10=%v", err)
+	}
+}
+
+func TestSuneTempleCureUsesCurrentCharacterAndPersists(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 100, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application := &app{
+		roller:       fixedTempleRoller(6),
+		state:        poolsave.State{Schema: poolsave.Schema, PooledGold: 400, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}},
+		templeActive: true, cellEventPending: true, cellWaitingMenu: true,
+	}
+	var saved poolsave.State
+	application.saveState = func(state poolsave.State) error { saved = state; return nil }
+	application.enterTempleMain()
+	if err := application.selectSuneTempleOption(); err != nil || application.templeStage != templeHeal || len(application.cellMenuOptions) != 10 {
+		t.Fatalf("enter Heal stage=%d options=%v err=%v", application.templeStage, application.cellMenuOptions, err)
+	}
+	application.cellMenuCursor = 2
+	if err := application.selectSuneTempleOption(); err != nil || application.templeStage != templeConfirm || !strings.Contains(application.eventText, "100 gold pieces") {
+		t.Fatalf("confirm stage=%d text=%q err=%v", application.templeStage, application.eventText, err)
+	}
+	if err := application.selectSuneTempleOption(); err != nil {
+		t.Fatal(err)
+	}
+	if application.state.Party[0].Gold != 0 || application.state.PooledGold != 400 || application.state.Party[0].CurrentHP != 8 || saved.Party[0].CurrentHP != 8 || !strings.Contains(application.eventText, "HERO is cured") {
+		t.Fatalf("state=%+v saved=%+v text=%q", application.state, saved, application.eventText)
+	}
+}
+
+func TestSuneTempleFailedSaveRollsBackCure(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 0, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application := &app{roller: fixedTempleRoller(6), state: poolsave.State{Schema: poolsave.Schema, PooledGold: 100, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}, templeActive: true, templeStage: templeConfirm, templeService: 0, cellMenuOptions: []string{"YES", "NO"}}
+	application.saveState = func(poolsave.State) error { return errors.New("disk full") }
+	if err := application.selectSuneTempleOption(); err == nil {
+		t.Fatal("save failure was swallowed")
+	}
+	if application.state.PooledGold != 100 || application.state.Party[0].CurrentHP != 2 || application.state.CharacterLibrary[0].CurrentHP != 2 {
+		t.Fatalf("failed save did not roll back: %+v", application.state)
 	}
 }
 
@@ -255,8 +296,12 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 		t.Fatal("initial GEO map is absent")
 	}
 	walls := graphics.PieceSet{}
-	application := &app{mode: modeMenu, state: poolsave.NewState(), initialMap: &initial, initialWalls: &walls, initialEvent: &event, spawn: gamepack.DOSInitialSpawn()}
-	application.state.Party = []poolsave.Character{{Name: "HERO"}}
+	hero := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 100, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	state := poolsave.NewState()
+	state.CharacterLibrary, state.Party = []poolsave.Character{hero}, []poolsave.Character{hero}
+	application := &app{mode: modeMenu, state: state, roller: fixedTempleRoller(6), initialMap: &initial, initialWalls: &walls, initialEvent: &event, spawn: gamepack.DOSInitialSpawn()}
+	var saved poolsave.State
+	application.saveState = func(state poolsave.State) error { saved = state; return nil }
 	if err := press(application, ebiten.KeyB); err != nil {
 		t.Fatal(err)
 	}
@@ -314,6 +359,30 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	}
 	if application.eventMachine.Memory[0x6DE2] != 1 {
 		t.Fatalf("temple flag=%d, want 1", application.eventMachine.Memory[0x6DE2])
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.templeStage != templeHeal || !reflect.DeepEqual(application.cellMenuOptions, templeHealOptions) {
+		t.Fatalf("temple Heal stage=%d options=%v err=%v", application.templeStage, application.cellMenuOptions, err)
+	}
+	if err := press(application, ebiten.KeyArrowRight); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyArrowRight); err != nil || application.cellMenuCursor != 2 {
+		t.Fatalf("Cure Light cursor=%d err=%v", application.cellMenuCursor, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.templeStage != templeConfirm || !strings.Contains(application.eventText, "100 gold pieces") {
+		t.Fatalf("Cure Light confirm stage=%d text=%q err=%v", application.templeStage, application.eventText, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.templeStage != templeHeal {
+		t.Fatalf("Cure Light purchase stage=%d err=%v", application.templeStage, err)
+	}
+	if application.state.Party[0].Gold != 0 || application.state.Party[0].CurrentHP != 8 || saved.Party[0].CurrentHP != 8 || !strings.Contains(application.eventText, "HERO is cured") {
+		t.Fatalf("Cure Light state=%+v saved=%+v text=%q", application.state, saved, application.eventText)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.cellMenuCursor != 9 || !strings.Contains(application.eventLabel, "> Exit") {
+		t.Fatalf("Heal Exit cursor=%d label=%q err=%v", application.cellMenuCursor, application.eventLabel, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.templeStage != templeMain || application.cellMenuCursor != 0 {
+		t.Fatalf("return temple main stage=%d cursor=%d err=%v", application.templeStage, application.cellMenuCursor, err)
 	}
 	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.cellMenuCursor != 4 || !strings.Contains(application.eventLabel, "> Exit") {
 		t.Fatalf("temple Exit selection cursor=%d label=%q err=%v", application.cellMenuCursor, application.eventLabel, err)

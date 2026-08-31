@@ -29,6 +29,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "nested", "pool.json")
 	character := validCharacter("HERO")
 	state := NewState()
+	state.PooledGold = 123
 	state.CharacterLibrary = []Character{character}
 	state.Party = []Character{character}
 	if err := WriteAtomic(path, state); err != nil {
@@ -38,7 +39,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Schema != Schema || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" {
+	if got.Schema != Schema || got.PooledGold != 123 || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" {
 		t.Fatalf("round trip = %+v", got)
 	}
 	entries, err := os.ReadDir(filepath.Dir(path))

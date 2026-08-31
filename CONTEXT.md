@@ -10,8 +10,9 @@
 - CoAB 本來就有 `HitPoints`、`MaxHitPoints` 與健康狀態，不套用 Pool schema；依使用者
   授權已把正式 engine 相依升到 `0819c64` 並完成全套回歸與實際遊戲編譯。
 - Cure Light／Serious／Critical Wounds 的 100／350／600 GP 與 `1d8`／`2d8+1`／
-  `3d8+3` 已達 READY；但原版付款 helper 在個人與 pooled money 間的選擇尚未閉合，
-  所以玩家 Heal UI 仍維持失敗即關閉，不先實作錯誤扣款。
+  `3d8+3` 已 CONFORMED。overlay-04／19／21 證明付款先嘗試目前角色完整支付，個人
+  不足才嘗試 pooled money 完整支付，兩者不合併；玩家 Heal UI、原子保存、失敗回滾
+  與真實 ECL3 正常按鍵路徑均已通過。其他狀態治療仍 fail-closed。
 
 ## 已證實
 

@@ -38,6 +38,7 @@ type Character struct {
 
 type State struct {
 	Schema           string      `json:"schema"`
+	PooledGold       int         `json:"pooled_gold"`
 	CharacterLibrary []Character `json:"character_library"`
 	Party            []Character `json:"party"`
 }
@@ -50,6 +51,9 @@ func (state State) Validate() error {
 	}
 	if len(state.Party) > 6 {
 		return fmt.Errorf("Pool party has %d characters, maximum is 6", len(state.Party))
+	}
+	if state.PooledGold < 0 {
+		return fmt.Errorf("Pool pooled gold cannot be negative: %d", state.PooledGold)
 	}
 	seen := make(map[string]bool)
 	for _, character := range state.CharacterLibrary {
