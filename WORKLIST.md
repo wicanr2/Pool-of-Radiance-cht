@@ -103,12 +103,17 @@
   producer 條件／上限、其他
   reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
   一級 immutable roster snapshot 換成有版本的 live derived-stat seam。
-  Spec 037 已另修正戰役持久化：schema 4 與 engine `142b245` 保存穩定玩家邊界的
+  Spec 037 已另修正戰役持久化：schema 5（schema 4 campaign 契約加七貨幣）與
+  engine `142b245` 保存穩定玩家邊界的
   GEO position／完整不透明 ECL session，Load 直接回到 adventure；對話／服務／戰鬥
   中途續點仍待把前端 service state 一併版本化。
   Spec 038 的全 ECL 引用清冊再證明墓園正常 gate 依賴 `4AC1h >= 4`。Spec 039 已證明
-  `4A39h..4A3Fh` 是墓園七種戰利品累積量，不是七項任務；下一步先閉合 overlay-05
-  的七種貨幣 View／Take／Pool／Share，再逐一追 `9FAEh..A4D1h` 的真正進度 producer。
+  `4A39h..4A3Fh` 是墓園七種戰利品累積量，不是七項任務。Spec 040 又以 overlay-21
+  的 TPOV entry 與 IDA Pro 9.4 bytes 閉合 Copper／Silver／Electrum／Gold／Platinum／
+  Gems／Jewelry 七槽、角色 wallet、Pool／Share／Take、容量 gate 與餘額語意；remake
+  已接正常寶物選單、schema 5 七槽存檔及 schema 1..4 Gold 遷移，全專案測試與 vet
+  通過。下一步逐一追 `9FAEh..A4D1h` 的真正進度 producer，並由正常 commission 狀態
+  抵達墓園服務。
   `4A96h` 是接受後重入
   閘門；`4AB1h` 與吸血鬼事件相連但語意尚未足夠，不可猜名。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
@@ -116,9 +121,9 @@
   `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑
   接到 `(4,5)` clerk office 外與 `(5,5)` clerk 第一頁；Spec 027 又依 Pool 原始
   handler 在共用 engine 接妥 `35h SAVE TABLE`；Spec 029 又讓正常按鍵穿過 `9C9Eh`，
-  依序顯示三項預設委託與列舉結尾，再由 `AF7Ch EXIT` 回到移動。下一個窄切片是第一個
-  非零墓園戰利品累積量及它依賴的七種貨幣 service，不是重做 City Hall 入口或把預設分支
-  冒充完整 reward／commission 服務。
+  依序顯示三項預設委託與列舉結尾，再由 `AF7Ch EXIT` 回到移動。下一個窄切片是真正
+  `4AC1h` 進度 producer 與正常墓園 reward 路徑，不是重做已完成的七貨幣服務、
+  City Hall 入口，或把預設分支冒充完整 reward／commission 服務。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic

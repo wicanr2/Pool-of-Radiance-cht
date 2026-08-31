@@ -41,7 +41,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	character := validCharacter("HERO")
 	character.Inventory = []Item{validItem("Two-Handed Sword +1")}
 	state := NewState()
-	state.PooledGold = 123
+	state.PooledMoney[3] = 123
 	state.CharacterLibrary = []Character{character}
 	state.Party = []Character{character}
 	state.Campaign = &Campaign{MapArchive: 3, MapBlock: 0, X: 5, Y: 5, Facing: 2, Session: eclvm.BlockSessionSnapshot{
@@ -55,7 +55,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Schema != Schema || got.PooledGold != 123 || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" || len(got.Party[0].Inventory) != 1 || got.Party[0].Inventory[0].Name != "Two-Handed Sword +1" || got.Campaign == nil || got.Campaign.X != 5 || got.Campaign.Session.Current != 8 || got.Campaign.Session.Machine.Memory[2] != (eclvm.MemoryWord{Address: 0x4AC1, Value: 4}) || got.Campaign.Session.Machine.Random.Draws != 3 {
+	if got.Schema != Schema || got.PooledMoney[3] != 123 || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" || len(got.Party[0].Inventory) != 1 || got.Party[0].Inventory[0].Name != "Two-Handed Sword +1" || got.Campaign == nil || got.Campaign.X != 5 || got.Campaign.Session.Current != 8 || got.Campaign.Session.Machine.Memory[2] != (eclvm.MemoryWord{Address: 0x4AC1, Value: 4}) || got.Campaign.Session.Machine.Random.Draws != 3 {
 		t.Fatalf("round trip = %+v", got)
 	}
 	entries, err := os.ReadDir(filepath.Dir(path))
@@ -67,7 +67,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	}
 }
 
-func TestReadMigratesSchemaThreeWithoutCampaign(t *testing.T) {
+func TestReadMigratesSchemaFourWithoutCampaign(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "pool.json")
 	character := validCharacter("HERO")
 	character.Inventory = []Item{validItem("Sword")}
@@ -85,6 +85,49 @@ func TestReadMigratesSchemaThreeWithoutCampaign(t *testing.T) {
 	}
 	if got.Schema != Schema || got.Campaign != nil || len(got.Party[0].Inventory) != 1 {
 		t.Fatalf("schema 3 migration=%+v", got)
+	}
+}
+
+func TestReadMigratesSchemaTwoThroughFourGoldIntoSevenPools(t *testing.T) {
+	for _, schema := range []string{OlderSchema, EarlierSchema, PreviousSchema} {
+		t.Run(schema, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "pool.json")
+			character := validCharacter("HERO")
+			character.Gold = 321
+			state := State{Schema: schema, PooledGold: 654, CharacterLibrary: []Character{character}, Party: []Character{character}}
+			raw, err := json.Marshal(state)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(path, raw, 0o644); err != nil {
+				t.Fatal(err)
+			}
+			got, err := Read(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got.Schema != Schema || got.PooledMoney[3] != 654 || got.PooledGold != 0 || got.Party[0].Money[3] != 321 || got.Party[0].Gold != 0 || got.CharacterLibrary[0].Money[3] != 321 {
+				t.Fatalf("migration=%+v", got)
+			}
+		})
+	}
+}
+
+func TestReadRejectsAmbiguousLegacyAndSevenPoolMoney(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	character := validCharacter("HERO")
+	character.Gold = 1
+	character.Money[3] = 1
+	state := State{Schema: PreviousSchema, PooledGold: 1, PooledMoney: [7]uint32{3: 1}, CharacterLibrary: []Character{character}, Party: []Character{character}}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Read(path); err == nil {
+		t.Fatal("ambiguous old/new money fields accepted")
 	}
 }
 

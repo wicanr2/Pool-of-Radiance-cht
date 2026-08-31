@@ -1,7 +1,7 @@
 # Spec 039：墓園七種戰利品累積池
 
-狀態：READY（ECL 累積量 → `TREASURE` 請求 → ack）；DRAFT（貨幣名稱與
-View／Take／Pool／Share 分配）。日期：2026-09-01。
+狀態：READY（ECL 累積量 → `TREASURE` 請求 → ack）；貨幣服務由 Spec 040 READY。
+日期：2026-09-01。
 
 ## 證據與勘誤
 
@@ -23,13 +23,12 @@ View／Take／Pool／Share 分配）。日期：2026-09-01。
 3. 服務返回後，`9C9Eh SAVE TABLE` 才把 `memory[4A39h+i]` 寫入 `4A8Fh+i`。
 4. 這段不改寫 `4AC1h`；`4AC1h` 的十個 producer 位於後段 `9FAEh..A4D1h`。
 
-以上地址、順序、請求內容與 ack 為 `exact`。把 amounts 七欄命名為五種錢幣、寶石、
-珠寶目前只有同系列旁證，Pool 本作仍須由 overlay-05 的顯示與分配 consumer 證實後，
-才能讓產品接收非零 money request。
+以上地址、順序、請求內容與 ack 為 `exact`。七欄名稱、角色錢包、全隊池與
+View／Take／Pool／Share 的本作 consumer 已由 Spec 040 的 overlay-21 原始 bytes 閉合。
 
 ## 驗收
 
 - 真實 block8 七個獨立 VM fixture 各只設一槽為 1；逐一斷言共同墓園文字、唯一
   `TREASURE` request、精確 amounts 索引、對應 ack=1、`4AC1h=0`。
-- 產品在貨幣服務規格 READY 前，對非零 amounts 維持失敗即關閉，不把數值折算成現行
-  `PooledGold`，也不先清除 ack。
+- 產品依 Spec 040 保留七種數量，不得先折成單一 `PooledGold`；服務結束前不得讓 ECL
+  跨過 `9C9Eh` 清除 ack。

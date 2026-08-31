@@ -4,6 +4,15 @@
 
 ## 2026-09-01 City Hall clerk、結構清冊與預設委託離場
 
+- Spec 040 已由 `overlay-05:0E85h` 三個 far call 經 TPOV stub → overlay-21 entry →
+  IDA Pro 9.4 code offset 的完整位址鏈閉合七種貨幣服務；先前把 far target 當成
+  overlay-05 本地 offset 的暫時結果已作廢，未進入正式證據。原版七槽順序為 Copper、
+  Silver、Electrum、Gold、Platinum、Gems、Jewelry；Pool 清空各角色 wallet，Share
+  依高到低幣種與隊伍順序分配且超載餘額留池，Take 依幣種／角色／數量原子轉移。
+  remake 已接 View／Take／Pool／Share／Exit 正常 UI、數量輸入接縫與容量檢查；
+  存檔升為 schema 5，schema 1..4 的 `gold`／`pooled_gold` 確定性遷移到索引 3，
+  新舊欄位同時出現時失敗即關閉。全專案 `go test ./...` 與 `go vet ./...` 已通過。
+
 - Spec 032 以 Pool overlay-03 dispatcher `346Eh/3474h` 與 handler `1A81h..1EA4h`
   固定 `27h TREASURE` 的八欄 numeric request。共用 engine `91801a5` 已提供 inline、
   fail-closed 的 typed request；Pool 真 block8 `A780h` 抽樣得到七欄全零、
@@ -30,7 +39,8 @@
   HP、Gold 與 inventory，會遺失 map 與所有 ECL 旗標。共用 engine `142b245` 現提供
   作品中立、驗證後才原子替換的 `BlockSessionSnapshot`；Pool schema 4 保存 GEO identity、
   `(x,y,facing)`、current block、PC／stack、numeric／string memory、compare、亂數續點與
-  pending lifecycle entries。穩定玩家邊界的 F10／Load round-trip 已接妥；任意對話、
+  pending lifecycle entries；Spec 040 再把現行格式升為 schema 5 七貨幣。穩定玩家
+  邊界的 F10／Load round-trip 已接妥；任意對話、
   神殿、戰利品或未完成戰鬥中途續點仍為 DRAFT，不能宣稱全情境存讀檔完成。
 - Spec 038 新增全 ECL memory-reference audit，固定墓園入口的三個欄位：`4AC1h >= 4`、
   `4AB1h != FFh`、`4A96h != FFh`。`4A96h` 在接受後由 `A792h` 寫 `FFh`；`4AB1h`

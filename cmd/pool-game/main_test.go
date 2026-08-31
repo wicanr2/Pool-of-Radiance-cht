@@ -137,10 +137,10 @@ func TestF10RejectsTransientCampaignWithoutWriting(t *testing.T) {
 }
 
 func TestSuneTempleCureUsesCurrentCharacterAndPersists(t *testing.T) {
-	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 100, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Money: [7]uint16{3: 100}, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
 	application := &app{
 		roller:       fixedTempleRoller(6),
-		state:        poolsave.State{Schema: poolsave.Schema, PooledGold: 400, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}},
+		state:        poolsave.State{Schema: poolsave.Schema, PooledMoney: [7]uint32{3: 400}, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}},
 		templeActive: true, cellEventPending: true, cellWaitingMenu: true,
 	}
 	var saved poolsave.State
@@ -156,19 +156,19 @@ func TestSuneTempleCureUsesCurrentCharacterAndPersists(t *testing.T) {
 	if err := application.selectSuneTempleOption(); err != nil {
 		t.Fatal(err)
 	}
-	if application.state.Party[0].Gold != 0 || application.state.PooledGold != 400 || application.state.Party[0].CurrentHP != 8 || saved.Party[0].CurrentHP != 8 || !strings.Contains(application.eventText, "HERO is cured") {
+	if application.state.Party[0].Money[3] != 0 || application.state.PooledMoney[3] != 400 || application.state.Party[0].CurrentHP != 8 || saved.Party[0].CurrentHP != 8 || !strings.Contains(application.eventText, "HERO is cured") {
 		t.Fatalf("state=%+v saved=%+v text=%q", application.state, saved, application.eventText)
 	}
 }
 
 func TestSuneTempleFailedSaveRollsBackCure(t *testing.T) {
-	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 0, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
-	application := &app{roller: fixedTempleRoller(6), state: poolsave.State{Schema: poolsave.Schema, PooledGold: 100, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}, templeActive: true, templeStage: templeConfirm, templeService: 0, cellMenuOptions: []string{"YES", "NO"}}
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application := &app{roller: fixedTempleRoller(6), state: poolsave.State{Schema: poolsave.Schema, PooledMoney: [7]uint32{3: 100}, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}, templeActive: true, templeStage: templeConfirm, templeService: 0, cellMenuOptions: []string{"YES", "NO"}}
 	application.saveState = func(poolsave.State) error { return errors.New("disk full") }
 	if err := application.selectSuneTempleOption(); err == nil {
 		t.Fatal("save failure was swallowed")
 	}
-	if application.state.PooledGold != 100 || application.state.Party[0].CurrentHP != 2 || application.state.CharacterLibrary[0].CurrentHP != 2 {
+	if application.state.PooledMoney[3] != 100 || application.state.Party[0].CurrentHP != 2 || application.state.CharacterLibrary[0].CurrentHP != 2 {
 		t.Fatalf("failed save did not roll back: %+v", application.state)
 	}
 }
@@ -219,12 +219,49 @@ func TestGraveyardTreasureRequestEntersFiveItemService(t *testing.T) {
 	if err := application.enterTreasure([]eclvm.TreasureRequest{{ItemBlock: 0x33}}); err != nil {
 		t.Fatal(err)
 	}
-	if !application.treasureActive || application.treasureStage != treasureMain || !application.cellEventPending || !application.cellWaitingMenu || len(application.treasureItems) != 5 || !reflect.DeepEqual(application.cellMenuOptions, []string{"View", "Take", "Exit"}) {
+	if !application.treasureActive || application.treasureStage != treasureMain || !application.cellEventPending || !application.cellWaitingMenu || len(application.treasureItems) != 5 || !reflect.DeepEqual(application.cellMenuOptions, []string{"View", "Take", "Pool", "Share", "Exit"}) {
 		t.Fatalf("treasure service=%+v options=%v", application, application.cellMenuOptions)
 	}
-	application.cellMenuCursor = 2
+	application.cellMenuCursor = 4
 	if err := application.selectTreasureOption(); err != nil || application.treasureStage != treasureConfirmExit || !strings.Contains(application.eventText, "still treasure") {
 		t.Fatalf("leave confirmation stage=%d text=%q err=%v", application.treasureStage, application.eventText, err)
+	}
+}
+
+func TestMoneyTreasureNormalMenuTakePoolAndShare(t *testing.T) {
+	hero := poolsave.Character{Name: "HERO", RaceID: "human", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Abilities: [6]int{18, 10, 10, 10, 10, 10}, Money: [7]uint16{3: 3}, MaxHP: 8, CurrentHP: 8, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application := &app{spawn: gamepack.Spawn{Map: gamepack.MapKey{Archive: 3}}, state: poolsave.State{Schema: poolsave.Schema, CharacterLibrary: []poolsave.Character{hero}, Party: []poolsave.Character{hero}}}
+	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) { return nil, nil }
+	application.saveState = func(state poolsave.State) error { return state.Validate() }
+	if err := application.enterTreasure([]eclvm.TreasureRequest{{Amounts: [7]uint16{0: 2, 3: 7, 6: 1}}}); err != nil {
+		t.Fatal(err)
+	}
+	if application.state.PooledMoney != ([7]uint32{0: 2, 3: 7, 6: 1}) {
+		t.Fatalf("initial pools=%v", application.state.PooledMoney)
+	}
+	application.cellMenuCursor = 2
+	if err := application.selectTreasureOption(); err != nil || application.state.Party[0].Money[3] != 0 || application.state.PooledMoney[3] != 10 {
+		t.Fatalf("pool err=%v state=%+v", err, application.state)
+	}
+	application.cellMenuCursor = 3
+	if err := application.selectTreasureOption(); err != nil || application.state.PooledMoney != ([7]uint32{}) || application.state.Party[0].Money != ([7]uint16{0: 2, 3: 10, 6: 1}) {
+		t.Fatalf("share err=%v state=%+v", err, application.state)
+	}
+	application.state.PooledMoney[3] = 9
+	if err := application.enterTreasureMoneyCurrencies(); err != nil {
+		t.Fatal(err)
+	}
+	application.cellMenuCursor = 0
+	if err := application.selectTreasureOption(); err != nil || application.treasureStage != treasureMoneyCharacter {
+		t.Fatalf("currency err=%v stage=%d", err, application.treasureStage)
+	}
+	application.cellMenuCursor = 0
+	if err := application.selectTreasureOption(); err != nil || application.treasureStage != treasureMoneyAmount {
+		t.Fatalf("character err=%v stage=%d", err, application.treasureStage)
+	}
+	application.treasureAmount = "4"
+	if err := application.takeTreasureMoney(); err != nil || application.state.PooledMoney[3] != 5 || application.state.Party[0].Money[3] != 14 {
+		t.Fatalf("take err=%v state=%+v", err, application.state)
 	}
 }
 
@@ -449,7 +486,7 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 		t.Fatal("initial GEO map is absent")
 	}
 	walls := graphics.PieceSet{}
-	hero := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 100, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	hero := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Money: [7]uint16{3: 100}, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
 	state := poolsave.NewState()
 	state.CharacterLibrary, state.Party = []poolsave.Character{hero}, []poolsave.Character{hero}
 	application := &app{mode: modeMenu, state: state, roller: fixedTempleRoller(6), initialMap: &initial, geometryCatalog: catalog, initialWalls: &walls, initialEvent: &event, spawn: gamepack.DOSInitialSpawn()}
@@ -528,7 +565,7 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil || application.templeStage != templeHeal {
 		t.Fatalf("Cure Light purchase stage=%d err=%v", application.templeStage, err)
 	}
-	if application.state.Party[0].Gold != 0 || application.state.Party[0].CurrentHP != 8 || saved.Party[0].CurrentHP != 8 || !strings.Contains(application.eventText, "HERO is cured") {
+	if application.state.Party[0].Money[3] != 0 || application.state.Party[0].CurrentHP != 8 || saved.Party[0].CurrentHP != 8 || !strings.Contains(application.eventText, "HERO is cured") {
 		t.Fatalf("Cure Light state=%+v saved=%+v text=%q", application.state, saved, application.eventText)
 	}
 	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.cellMenuCursor != 9 || !strings.Contains(application.eventLabel, "> Exit") {

@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	Schema         = "pool-remake-state/4"
-	PreviousSchema = "pool-remake-state/3"
-	EarlierSchema  = "pool-remake-state/2"
+	Schema         = "pool-remake-state/5"
+	PreviousSchema = "pool-remake-state/4"
+	EarlierSchema  = "pool-remake-state/3"
+	OlderSchema    = "pool-remake-state/2"
 	LegacySchema   = "pool-remake-state/1"
 )
 
@@ -33,7 +34,8 @@ type Character struct {
 	Age                 int         `json:"age"`
 	Abilities           [6]int      `json:"abilities"`
 	ExceptionalStrength int         `json:"exceptional_strength"`
-	Gold                int         `json:"gold"`
+	Money               [7]uint16   `json:"money"`
+	Gold                int         `json:"gold,omitempty"` // schema 1..4 read-only migration field
 	MaxHP               int         `json:"max_hp"`
 	CurrentHP           int         `json:"current_hp"`
 	Status              uint8       `json:"status"`
@@ -58,7 +60,8 @@ type Campaign struct {
 
 type State struct {
 	Schema           string      `json:"schema"`
-	PooledGold       int         `json:"pooled_gold"`
+	PooledMoney      [7]uint32   `json:"pooled_money"`
+	PooledGold       int         `json:"pooled_gold,omitempty"` // schema 2..4 read-only migration field
 	CharacterLibrary []Character `json:"character_library"`
 	Party            []Character `json:"party"`
 	Campaign         *Campaign   `json:"campaign,omitempty"`
@@ -73,8 +76,8 @@ func (state State) Validate() error {
 	if len(state.Party) > 6 {
 		return fmt.Errorf("Pool party has %d characters, maximum is 6", len(state.Party))
 	}
-	if state.PooledGold < 0 {
-		return fmt.Errorf("Pool pooled gold cannot be negative: %d", state.PooledGold)
+	if state.PooledGold != 0 {
+		return fmt.Errorf("Pool schema 5 retains legacy pooled_gold %d", state.PooledGold)
 	}
 	if state.Campaign != nil {
 		if err := validateCampaign(*state.Campaign); err != nil {
@@ -141,6 +144,9 @@ func validateCampaign(campaign Campaign) error {
 }
 
 func validateCharacter(character Character) error {
+	if character.Gold != 0 {
+		return fmt.Errorf("Pool character %q retains legacy gold %d", character.Name, character.Gold)
+	}
 	if len(character.Name) < 1 || len(character.Name) > 15 {
 		return fmt.Errorf("Pool character name length %d, want 1..15", len(character.Name))
 	}
@@ -235,7 +241,7 @@ func Read(path string) (State, error) {
 	if header.Schema == LegacySchema {
 		return readLegacyState(raw)
 	}
-	if header.Schema == PreviousSchema || header.Schema == EarlierSchema {
+	if header.Schema == PreviousSchema || header.Schema == EarlierSchema || header.Schema == OlderSchema {
 		return readPreviousState(raw)
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
@@ -265,11 +271,45 @@ func readPreviousState(raw []byte) (State, error) {
 	if err := decoder.Decode(&trailing); err != io.EOF {
 		return State{}, fmt.Errorf("schema 2 Pool save has trailing JSON")
 	}
+	if state.PooledGold < 0 || uint64(state.PooledGold) > uint64(^uint32(0)) {
+		return State{}, fmt.Errorf("legacy Pool pooled gold %d is outside uint32", state.PooledGold)
+	}
+	if state.PooledMoney != ([7]uint32{}) && state.PooledGold != 0 {
+		return State{}, fmt.Errorf("legacy Pool save has both pooled_money and pooled_gold")
+	}
+	if state.PooledMoney == ([7]uint32{}) {
+		state.PooledMoney[3] = uint32(state.PooledGold)
+	}
+	state.PooledGold = 0
+	for index := range state.CharacterLibrary {
+		if err := migrateCharacterMoney(&state.CharacterLibrary[index]); err != nil {
+			return State{}, fmt.Errorf("legacy library character %d: %w", index, err)
+		}
+	}
+	for index := range state.Party {
+		if err := migrateCharacterMoney(&state.Party[index]); err != nil {
+			return State{}, fmt.Errorf("legacy party character %d: %w", index, err)
+		}
+	}
 	state.Schema = Schema
 	if err := state.Validate(); err != nil {
 		return State{}, err
 	}
 	return state, nil
+}
+
+func migrateCharacterMoney(character *Character) error {
+	if character.Gold < 0 || character.Gold > int(^uint16(0)) {
+		return fmt.Errorf("gold %d is outside uint16", character.Gold)
+	}
+	if character.Money != ([7]uint16{}) && character.Gold != 0 {
+		return fmt.Errorf("has both money and gold")
+	}
+	if character.Money == ([7]uint16{}) {
+		character.Money[3] = uint16(character.Gold)
+	}
+	character.Gold = 0
+	return nil
 }
 
 type legacyCharacter struct {
@@ -308,14 +348,27 @@ func readLegacyState(raw []byte) (State, error) {
 	if err := decoder.Decode(&trailing); err != io.EOF {
 		return State{}, fmt.Errorf("legacy Pool save has trailing JSON")
 	}
-	convert := func(values []legacyCharacter) []Character {
+	convert := func(values []legacyCharacter) ([]Character, error) {
 		out := make([]Character, len(values))
 		for i, c := range values {
-			out[i] = Character{Name: c.Name, RaceID: c.RaceID, GenderID: c.GenderID, ClassID: c.ClassID, AlignmentID: c.AlignmentID, Age: c.Age, Abilities: c.Abilities, ExceptionalStrength: c.ExceptionalStrength, Gold: c.Gold, MaxHP: c.HP, CurrentHP: c.HP, RawHP: c.RawHP, PortraitHead: c.PortraitHead, PortraitBody: c.PortraitBody, IconHead: c.IconHead, IconWeapon: c.IconWeapon, IconSize: c.IconSize, IconColors: c.IconColors}
+			if c.Gold < 0 || c.Gold > int(^uint16(0)) {
+				return nil, fmt.Errorf("legacy character %d gold %d is outside uint16", i, c.Gold)
+			}
+			money := [7]uint16{}
+			money[3] = uint16(c.Gold)
+			out[i] = Character{Name: c.Name, RaceID: c.RaceID, GenderID: c.GenderID, ClassID: c.ClassID, AlignmentID: c.AlignmentID, Age: c.Age, Abilities: c.Abilities, ExceptionalStrength: c.ExceptionalStrength, Money: money, MaxHP: c.HP, CurrentHP: c.HP, RawHP: c.RawHP, PortraitHead: c.PortraitHead, PortraitBody: c.PortraitBody, IconHead: c.IconHead, IconWeapon: c.IconWeapon, IconSize: c.IconSize, IconColors: c.IconColors}
 		}
-		return out
+		return out, nil
 	}
-	state := State{Schema: Schema, CharacterLibrary: convert(legacy.CharacterLibrary), Party: convert(legacy.Party)}
+	library, err := convert(legacy.CharacterLibrary)
+	if err != nil {
+		return State{}, err
+	}
+	party, err := convert(legacy.Party)
+	if err != nil {
+		return State{}, err
+	}
+	state := State{Schema: Schema, CharacterLibrary: library, Party: party}
 	if err := state.Validate(); err != nil {
 		return State{}, err
 	}

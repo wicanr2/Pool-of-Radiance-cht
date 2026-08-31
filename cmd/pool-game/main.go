@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,6 +24,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/temple"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
@@ -52,8 +54,12 @@ const (
 const (
 	treasureMain treasureStage = iota
 	treasureView
+	treasureTake
 	treasureItems
 	treasureCharacter
+	treasureMoneyCurrency
+	treasureMoneyCharacter
+	treasureMoneyAmount
 	treasureConfirmExit
 )
 
@@ -127,6 +133,8 @@ type app struct {
 	treasureStage    treasureStage
 	treasureItems    []gamepack.TreasureItemRecord
 	treasureSelected int
+	treasureCurrency int
+	treasureAmount   string
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -409,6 +417,25 @@ func (a *app) Update() error {
 		if a.introDone {
 			if a.cellEventPending {
 				if a.treasureActive && a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
+					if a.treasureStage == treasureMoneyAmount {
+						if a.justPressed(ebiten.KeyEscape) {
+							a.enterTreasureMain()
+							return nil
+						}
+						if a.justPressed(ebiten.KeyBackspace) && len(a.treasureAmount) != 0 {
+							a.treasureAmount = a.treasureAmount[:len(a.treasureAmount)-1]
+						}
+						for _, entered := range a.inputChars() {
+							if entered >= '0' && entered <= '9' && len(a.treasureAmount) < 10 {
+								a.treasureAmount += string(entered)
+							}
+						}
+						a.eventLabel = "AMOUNT " + a.treasureAmount + "   ENTER=TAKE   ESC=CANCEL"
+						if a.justPressed(ebiten.KeyEnter) {
+							return a.takeTreasureMoney()
+						}
+						return nil
+					}
 					if a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp) {
 						a.cellMenuCursor = (a.cellMenuCursor + len(a.cellMenuOptions) - 1) % len(a.cellMenuOptions)
 						a.eventLabel = a.cellMenuLabel()
@@ -640,32 +667,37 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 		return fmt.Errorf("Pool treasure loader is not configured")
 	}
 	loaded := make([]gamepack.TreasureItemRecord, 0)
+	pooled := [7]uint32{}
 	for _, request := range requests {
-		if request.Amounts != ([7]uint16{}) {
-			return fmt.Errorf("Pool money treasure %v is not READY", request.Amounts)
+		for currency, amount := range request.Amounts {
+			if uint64(pooled[currency])+uint64(amount) > uint64(^uint32(0)) {
+				return fmt.Errorf("Pool treasure %s overflows uint32", pooltreasure.Names[currency])
+			}
+			pooled[currency] += uint32(amount)
 		}
 		if request.ItemBlock > 0xFF {
 			return fmt.Errorf("Pool treasure item block 0x%X exceeds byte range", request.ItemBlock)
 		}
-		items, err := a.loadTreasure(a.spawn.Map.Archive, uint8(request.ItemBlock))
-		if err != nil {
-			return err
+		if request.ItemBlock != 0 {
+			items, err := a.loadTreasure(a.spawn.Map.Archive, uint8(request.ItemBlock))
+			if err != nil {
+				return err
+			}
+			loaded = append(loaded, items...)
 		}
-		loaded = append(loaded, items...)
 	}
+	a.state.PooledMoney = pooled
 	a.treasureActive, a.treasureStage = true, treasureMain
-	a.treasureItems, a.treasureSelected = loaded, 0
+	a.treasureItems, a.treasureSelected, a.treasureCurrency, a.treasureAmount = loaded, 0, 0, ""
 	a.cellEventPending, a.cellWaitingMenu = true, true
-	a.cellMenuOptions, a.cellMenuCursor = []string{"View", "Take", "Exit"}, 0
-	a.eventText = "The party has found treasure!"
-	a.eventLabel = a.cellMenuLabel()
-	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s).", len(loaded))
+	a.enterTreasureMain()
+	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s), seven money pools ready.", len(loaded))
 	return nil
 }
 
 func (a *app) enterTreasureMain() {
 	a.treasureStage = treasureMain
-	a.cellMenuOptions, a.cellMenuCursor = []string{"View", "Take", "Exit"}, 0
+	a.cellMenuOptions, a.cellMenuCursor = []string{"View", "Take", "Pool", "Share", "Exit"}, 0
 	a.eventText = "The party has found treasure!"
 	a.eventLabel = a.cellMenuLabel()
 }
@@ -673,34 +705,48 @@ func (a *app) enterTreasureMain() {
 func (a *app) selectTreasureOption() error {
 	switch a.treasureStage {
 	case treasureMain:
-		switch a.cellMenuCursor {
-		case 0:
+		switch a.cellMenuOptions[a.cellMenuCursor] {
+		case "View":
 			a.treasureStage = treasureView
-			names := make([]string, len(a.treasureItems))
+			names := make([]string, 0, 7+len(a.treasureItems))
+			for currency, amount := range a.state.PooledMoney {
+				if amount != 0 {
+					names = append(names, fmt.Sprintf("%s %d", pooltreasure.Names[currency], amount))
+				}
+			}
 			for index := range a.treasureItems {
-				names[index] = a.treasureItems[index].Name
+				names = append(names, a.treasureItems[index].Name)
+			}
+			if len(names) == 0 {
+				names = append(names, "Nothing")
 			}
 			a.eventText = strings.Join(names, " / ")
 			a.cellMenuOptions, a.cellMenuCursor = []string{"Return"}, 0
 			a.eventLabel = a.cellMenuLabel()
 			return nil
-		case 1:
-			if len(a.treasureItems) == 0 {
-				a.eventText = "There are no items left."
+		case "Take":
+			hasMoney := a.hasPooledMoney()
+			if !hasMoney && len(a.treasureItems) == 0 {
+				a.eventText = "There is no treasure left."
 				return nil
 			}
-			a.treasureStage = treasureItems
-			a.cellMenuOptions = make([]string, 0, len(a.treasureItems)+1)
-			for _, item := range a.treasureItems {
-				a.cellMenuOptions = append(a.cellMenuOptions, item.Name)
+			if hasMoney && len(a.treasureItems) != 0 {
+				a.treasureStage = treasureTake
+				a.cellMenuOptions, a.cellMenuCursor = []string{"Money", "Items", "Exit"}, 0
+				a.eventText = "Take what?"
+				a.eventLabel = a.cellMenuLabel()
+				return nil
 			}
-			a.cellMenuOptions = append(a.cellMenuOptions, "Exit")
-			a.cellMenuCursor = 0
-			a.eventText = "Take: Items"
-			a.eventLabel = a.cellMenuLabel()
-			return nil
-		case 2:
-			if len(a.treasureItems) == 0 {
+			if hasMoney {
+				return a.enterTreasureMoneyCurrencies()
+			}
+			return a.enterTreasureItems()
+		case "Pool":
+			return a.applyTreasureMoneyService(pooltreasure.PoolMoney, "Party money pooled.")
+		case "Share":
+			return a.applyTreasureMoneyService(pooltreasure.ShareMoney, "Pooled money shared.")
+		case "Exit":
+			if len(a.treasureItems) == 0 && !a.hasPooledMoney() {
 				return a.exitTreasure()
 			}
 			a.treasureStage = treasureConfirmExit
@@ -712,6 +758,16 @@ func (a *app) selectTreasureOption() error {
 	case treasureView:
 		a.enterTreasureMain()
 		return nil
+	case treasureTake:
+		switch a.cellMenuOptions[a.cellMenuCursor] {
+		case "Money":
+			return a.enterTreasureMoneyCurrencies()
+		case "Items":
+			return a.enterTreasureItems()
+		default:
+			a.enterTreasureMain()
+			return nil
+		}
 	case treasureItems:
 		if a.cellMenuCursor == len(a.treasureItems) {
 			a.enterTreasureMain()
@@ -734,6 +790,32 @@ func (a *app) selectTreasureOption() error {
 			return a.rebuildTreasureItemMenu()
 		}
 		return a.giveTreasureItem(a.cellMenuCursor)
+	case treasureMoneyCurrency:
+		if a.cellMenuCursor == len(a.cellMenuOptions)-1 {
+			a.enterTreasureMain()
+			return nil
+		}
+		a.treasureCurrency = a.currencyForMenuIndex(a.cellMenuCursor)
+		a.treasureStage = treasureMoneyCharacter
+		a.cellMenuOptions = a.cellMenuOptions[:0]
+		for _, member := range a.state.Party {
+			a.cellMenuOptions = append(a.cellMenuOptions, member.Name)
+		}
+		a.cellMenuOptions = append(a.cellMenuOptions, "Cancel")
+		a.cellMenuCursor = 0
+		a.eventText = "Who will take " + pooltreasure.Names[a.treasureCurrency] + "?"
+		a.eventLabel = a.cellMenuLabel()
+		return nil
+	case treasureMoneyCharacter:
+		if a.cellMenuCursor == len(a.state.Party) {
+			return a.enterTreasureMoneyCurrencies()
+		}
+		a.treasureSelected = a.cellMenuCursor
+		a.treasureStage, a.treasureAmount = treasureMoneyAmount, ""
+		a.cellMenuOptions = []string{"Amount"}
+		a.eventText = fmt.Sprintf("How many %s? Available %d.", pooltreasure.Names[a.treasureCurrency], a.state.PooledMoney[a.treasureCurrency])
+		a.eventLabel = "AMOUNT   ENTER=TAKE   ESC=CANCEL"
+		return nil
 	case treasureConfirmExit:
 		if a.cellMenuCursor == 0 {
 			return a.exitTreasure()
@@ -742,6 +824,83 @@ func (a *app) selectTreasureOption() error {
 		return nil
 	}
 	return fmt.Errorf("unknown Pool treasure stage %d", a.treasureStage)
+}
+
+func (a *app) hasPooledMoney() bool {
+	return a.state.PooledMoney != ([7]uint32{})
+}
+
+func (a *app) enterTreasureItems() error {
+	a.treasureStage = treasureItems
+	return a.rebuildTreasureItemMenu()
+}
+
+func (a *app) enterTreasureMoneyCurrencies() error {
+	a.treasureStage = treasureMoneyCurrency
+	a.cellMenuOptions = a.cellMenuOptions[:0]
+	for currency, amount := range a.state.PooledMoney {
+		if amount != 0 {
+			a.cellMenuOptions = append(a.cellMenuOptions, fmt.Sprintf("%s %d", pooltreasure.Names[currency], amount))
+		}
+	}
+	a.cellMenuOptions = append(a.cellMenuOptions, "Exit")
+	a.cellMenuCursor = 0
+	a.eventText = "Take: Money"
+	a.eventLabel = a.cellMenuLabel()
+	return nil
+}
+
+func (a *app) currencyForMenuIndex(menuIndex int) int {
+	for currency, amount := range a.state.PooledMoney {
+		if amount == 0 {
+			continue
+		}
+		if menuIndex == 0 {
+			return currency
+		}
+		menuIndex--
+	}
+	return -1
+}
+
+func (a *app) takeTreasureMoney() error {
+	amount, err := strconv.ParseUint(a.treasureAmount, 10, 32)
+	if err != nil || amount == 0 {
+		a.statusLine = "Enter a positive whole-number amount."
+		return nil
+	}
+	next := cloneSaveState(a.state)
+	if err := pooltreasure.TakeMoney(&next, a.treasureSelected, a.treasureCurrency, uint32(amount)); err != nil {
+		a.statusLine = err.Error()
+		return nil
+	}
+	if a.saveState == nil {
+		return fmt.Errorf("Pool save writer is not configured")
+	}
+	if err := a.saveState(next); err != nil {
+		return err
+	}
+	a.state = next
+	a.statusLine = fmt.Sprintf("%s takes %d %s.", a.state.Party[a.treasureSelected].Name, amount, pooltreasure.Names[a.treasureCurrency])
+	return a.enterTreasureMoneyCurrencies()
+}
+
+func (a *app) applyTreasureMoneyService(service func(*poolsave.State) error, message string) error {
+	next := cloneSaveState(a.state)
+	if err := service(&next); err != nil {
+		a.statusLine = err.Error()
+		return nil
+	}
+	if a.saveState == nil {
+		return fmt.Errorf("Pool save writer is not configured")
+	}
+	if err := a.saveState(next); err != nil {
+		return err
+	}
+	a.state = next
+	a.statusLine = message
+	a.enterTreasureMain()
+	return nil
 }
 
 func (a *app) rebuildTreasureItemMenu() error {
@@ -936,7 +1095,7 @@ func (a *app) selectTempleParty(index int) {
 	} else {
 		a.eventText = "Choose a cure for " + name + "."
 	}
-	a.statusLine = fmt.Sprintf("Temple character %d/%d: %s (HP %d/%d, %d GP; pool %d GP).", index+1, len(a.state.Party), name, a.state.Party[index].CurrentHP, a.state.Party[index].MaxHP, a.state.Party[index].Gold, a.state.PooledGold)
+	a.statusLine = fmt.Sprintf("Temple character %d/%d: %s (HP %d/%d, %d GP; pool %d GP).", index+1, len(a.state.Party), name, a.state.Party[index].CurrentHP, a.state.Party[index].MaxHP, a.state.Party[index].Money[3], a.state.PooledMoney[3])
 }
 
 func (a *app) enterTempleMain() {
@@ -1299,11 +1458,16 @@ func (a *app) finishCharacter() error {
 		}
 	}
 	rolled := a.rolled
+	if rolled.Gold < 0 || rolled.Gold > int(^uint16(0)) {
+		return fmt.Errorf("Pool character gold %d is outside uint16", rolled.Gold)
+	}
+	money := [7]uint16{}
+	money[3] = uint16(rolled.Gold)
 	character := poolsave.Character{
 		Name: a.flow.Name, RaceID: a.flow.SelectedRace().ID, GenderID: a.flow.SelectedGender().ID,
 		ClassID: a.flow.SelectedClass().ID, AlignmentID: a.flow.SelectedAlignment().ID,
 		Age: rolled.Age, Abilities: rolled.Abilities, ExceptionalStrength: rolled.ExceptionalStrength,
-		Gold: rolled.Gold, MaxHP: rolled.HP, CurrentHP: rolled.HP, RawHP: rolled.RawHP,
+		Money: money, MaxHP: rolled.HP, CurrentHP: rolled.HP, RawHP: rolled.RawHP,
 		PortraitHead: a.flow.PortraitHead, PortraitBody: a.flow.PortraitBody,
 		IconHead: a.flow.IconHead, IconWeapon: a.flow.IconWeapon, IconSize: a.flow.IconSize, IconColors: a.flow.IconColors,
 	}

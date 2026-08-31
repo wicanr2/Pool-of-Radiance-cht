@@ -49,11 +49,11 @@ func CureWounds(state *poolsave.State, partyIndex, serviceIndex int, roller Roll
 	service := WoundServices[serviceIndex]
 	character := &state.Party[partyIndex]
 	result := Result{Cost: service.Cost}
-	if character.Gold >= service.Cost {
-		character.Gold -= service.Cost
+	if int(character.Money[3]) >= service.Cost {
+		character.Money[3] -= uint16(service.Cost)
 		result.PaidFrom = "character"
-	} else if state.PooledGold >= service.Cost {
-		state.PooledGold -= service.Cost
+	} else if uint64(state.PooledMoney[3]) >= uint64(service.Cost) {
+		state.PooledMoney[3] -= uint32(service.Cost)
 		result.PaidFrom = "pool"
 	} else {
 		return Result{}, ErrNotEnoughMoney
