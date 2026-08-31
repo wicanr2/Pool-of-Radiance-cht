@@ -22,6 +22,7 @@ type InitialEvent struct {
 	ContinueLabel  string
 	Tour           []TourStep
 	ScriptBlock    []byte
+	ScriptBlocks   map[uint16][]byte
 }
 
 // TourStep is one original scripted position frame. Most steps only move the
@@ -204,6 +205,10 @@ func ReadDOSInitialEvent(zipPath string) (InitialEvent, error) {
 		}
 		tour[index] = step
 	}
+	scriptBlocks := make(map[uint16][]byte, len(blocks))
+	for id, data := range blocks {
+		scriptBlocks[uint16(id)] = append([]byte(nil), data...)
+	}
 	return InitialEvent{
 		TriggerAddress: 0x4AC5,
 		TriggerLimit:   1,
@@ -220,25 +225,80 @@ func ReadDOSInitialEvent(zipPath string) (InitialEvent, error) {
 		ContinueLabel: menu.OptionTexts[0],
 		Tour:          tour,
 		ScriptBlock:   append([]byte(nil), block...),
+		ScriptBlocks:  scriptBlocks,
 	}, nil
+}
+
+func initialEventPassthrough() map[byte]bool {
+	return map[byte]bool{
+		0x0C: true, // SETUP MONSTER
+		0x0D: true, // APPROACH
+		0x0E: true, // PICTURE
+		0x21: true, // LOAD FILES / title resource boundary
+		0x24: true, // Pool service / encounter boundary
+		0x2D: true, // CALL
+		0x31: true, // SPRITE OFF
+		0x3A: true, // DELAY
+	}
+}
+
+// NewInitialEventSession owns all ECL3 blocks and follows original NEWECL
+// transitions without resetting shared memory or the random stream.
+func NewInitialEventSession(event InitialEvent) (*eclvm.BlockSession, error) {
+	blocks := event.ScriptBlocks
+	if len(blocks) == 0 && len(event.ScriptBlock) != 0 {
+		blocks = map[uint16][]byte{0: event.ScriptBlock}
+	}
+	if len(blocks) == 0 {
+		return nil, fmt.Errorf("initial event has no ECL blocks")
+	}
+	return eclvm.NewBlockSession(blocks, 0, 0x9900, int(event.HandlerAddress)-0x9900, 5, initialEventPassthrough(), 1)
 }
 
 // NewInitialEventMachine executes the original Pool bytecode through the
 // shared VM. Only the six external effects observed on the READY Rolf path
 // are acknowledged; their title-specific effects remain frontend work.
 func NewInitialEventMachine(event InitialEvent) (*eclvm.Machine, error) {
-	if len(event.ScriptBlock) == 0 {
-		return nil, fmt.Errorf("initial event has no ECL block")
+	session, err := NewInitialEventSession(event)
+	if err != nil {
+		return nil, err
 	}
-	return eclvm.NewWithPassthrough(event.ScriptBlock, 0x9900, int(event.HandlerAddress)-0x9900, map[byte]bool{
-		0x0C: true, // SETUP MONSTER
-		0x0D: true, // APPROACH
-		0x0E: true, // PICTURE
-		0x24: true, // COMBAT / title service boundary
-		0x2D: true, // CALL
-		0x31: true, // SPRITE OFF
-		0x3A: true, // DELAY
-	})
+	return session.Machine(), nil
+}
+
+// RunInitialSessionCellEntry is RunInitialCellEntry for the cross-block
+// session used by normal gameplay.
+func RunInitialSessionCellEntry(session *eclvm.BlockSession, grid geometry.Grid, position Spawn) (eclvm.Result, error) {
+	if session == nil || session.Machine() == nil {
+		return eclvm.Result{}, fmt.Errorf("initial ECL session is nil")
+	}
+	machine := session.Machine()
+	cell := grid.CellWrapped(int(position.X), int(position.Y))
+	machine.Memory[0xC04B] = uint16(position.X)
+	machine.Memory[0xC04C] = uint16(position.Y)
+	machine.Memory[0xC04D] = uint16(position.Facing)
+	wall, ok := grid.WallWrapped(int(position.X), int(position.Y), int(position.Facing))
+	if !ok {
+		wall = 0
+	}
+	machine.Memory[0xC04E] = uint16(wall)
+	machine.Memory[0xC04F] = uint16(cell.Terrain)
+	if err := session.SetEntry(0); err != nil {
+		return eclvm.Result{}, err
+	}
+	return session.RunUntilEvent(4096, nil, true)
+}
+
+// RunInitialSessionSearchEntry starts command-set entry one in the current
+// block and follows any internal NEWECL transitions.
+func RunInitialSessionSearchEntry(session *eclvm.BlockSession) (eclvm.Result, error) {
+	if session == nil {
+		return eclvm.Result{}, fmt.Errorf("initial ECL session is nil")
+	}
+	if err := session.SetEntry(1); err != nil {
+		return eclvm.Result{}, err
+	}
+	return session.RunUntilEvent(4096, nil, true)
 }
 
 // RunInitialCellEntry projects the live first-person registers and executes

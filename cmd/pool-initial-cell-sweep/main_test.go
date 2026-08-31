@@ -2,6 +2,7 @@ package main
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -56,15 +57,19 @@ func TestSweepSeparatesPresentationAndPlayerBoundaries(t *testing.T) {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
 	counts := map[string]int{}
+	loadCharacterErrors := 0
 	var sune *sample
 	for index := range report.Samples {
 		item := &report.Samples[index]
 		counts[item.Boundary]++
+		if strings.Contains(item.Error, "opcode 0x0A") {
+			loadCharacterErrors++
+		}
 		if item.X == 1 && item.Y == 3 && item.Facing == 0 {
 			sune = item
 		}
 	}
-	if counts["exit"] != 840 || counts["event"] != 156 || counts["error"] != 28 {
+	if counts["exit"] != 856 || counts["event"] != 156 || counts["error"] != 12 || loadCharacterErrors != 12 {
 		t.Fatalf("boundary counts=%v", counts)
 	}
 	if sune == nil || !sune.GeometryReachable || sune.GeometryDistance != 2 || sune.Boundary != "event" || len(sune.Events) != 1 || sune.Events[0].Text != "YOU ARE WELCOMED BY PRIESTESS JOY OF SUNE." {

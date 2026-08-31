@@ -1497,10 +1497,9 @@
       "facing_wall": 2,
       "geometry_reachable": true,
       "geometry_distance": 11,
-      "boundary": "error",
-      "stop_pc": "A230",
-      "steps": 136,
-      "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 143,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1509,9 +1508,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A230",
-        "steps": 121,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 128,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1522,8 +1521,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -1534,10 +1532,9 @@
       "facing_wall": 3,
       "geometry_reachable": true,
       "geometry_distance": 11,
-      "boundary": "error",
-      "stop_pc": "A230",
-      "steps": 136,
-      "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 143,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1546,9 +1543,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A230",
-        "steps": 121,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 128,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1559,8 +1556,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -1571,10 +1567,9 @@
       "facing_wall": 3,
       "geometry_reachable": true,
       "geometry_distance": 11,
-      "boundary": "error",
-      "stop_pc": "A230",
-      "steps": 136,
-      "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 143,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1583,9 +1578,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A230",
-        "steps": 121,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 128,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1596,8 +1591,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -1608,10 +1602,9 @@
       "facing_wall": 2,
       "geometry_reachable": true,
       "geometry_distance": 11,
-      "boundary": "error",
-      "stop_pc": "A230",
-      "steps": 136,
-      "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 143,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1620,9 +1613,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A230",
-        "steps": 121,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 128,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1633,8 +1626,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2352 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -3665,10 +3657,9 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 9,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3677,9 +3668,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3690,8 +3681,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -3702,10 +3692,9 @@
       "facing_wall": 3,
       "geometry_reachable": true,
       "geometry_distance": 9,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3714,9 +3703,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3727,8 +3716,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -3739,10 +3727,9 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 9,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3751,9 +3738,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3764,8 +3751,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -3776,10 +3762,9 @@
       "facing_wall": 12,
       "geometry_reachable": true,
       "geometry_distance": 9,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3788,9 +3773,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3801,8 +3786,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -6192,10 +6176,9 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 8,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6204,9 +6187,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6217,8 +6200,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -6229,10 +6211,9 @@
       "facing_wall": 3,
       "geometry_reachable": true,
       "geometry_distance": 8,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6241,9 +6222,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6254,8 +6235,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -6266,10 +6246,9 @@
       "facing_wall": 2,
       "geometry_reachable": true,
       "geometry_distance": 8,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6278,9 +6257,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6291,8 +6270,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -6303,10 +6281,9 @@
       "facing_wall": 12,
       "geometry_reachable": true,
       "geometry_distance": 8,
-      "boundary": "error",
-      "stop_pc": "A22D",
-      "steps": 94,
-      "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "993E",
+      "steps": 101,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6315,9 +6292,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "A22D",
-        "steps": 79,
+        "boundary": "exit",
+        "stop_pc": "993E",
+        "steps": 86,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6328,8 +6305,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 2349 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -11110,10 +11086,9 @@
       "facing_wall": 3,
       "geometry_reachable": true,
       "geometry_distance": 4,
-      "boundary": "error",
-      "stop_pc": "AD7F",
-      "steps": 196,
-      "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "995C",
+      "steps": 210,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11122,9 +11097,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AD7F",
-        "steps": 181,
+        "boundary": "exit",
+        "stop_pc": "995C",
+        "steps": 195,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11135,8 +11110,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -11147,10 +11121,9 @@
       "facing_wall": 3,
       "geometry_reachable": true,
       "geometry_distance": 4,
-      "boundary": "error",
-      "stop_pc": "AD7F",
-      "steps": 196,
-      "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "995C",
+      "steps": 210,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11159,9 +11132,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AD7F",
-        "steps": 181,
+        "boundary": "exit",
+        "stop_pc": "995C",
+        "steps": 195,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11172,8 +11145,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -11184,10 +11156,9 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 4,
-      "boundary": "error",
-      "stop_pc": "AD7F",
-      "steps": 196,
-      "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "995C",
+      "steps": 210,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11196,9 +11167,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AD7F",
-        "steps": 181,
+        "boundary": "exit",
+        "stop_pc": "995C",
+        "steps": 195,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11209,8 +11180,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough"
+        ]
       }
     },
     {
@@ -11221,10 +11191,9 @@
       "facing_wall": 3,
       "geometry_reachable": true,
       "geometry_distance": 4,
-      "boundary": "error",
-      "stop_pc": "AD7F",
-      "steps": 196,
-      "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough",
+      "boundary": "exit",
+      "stop_pc": "995C",
+      "steps": 210,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11233,9 +11202,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AD7F",
-        "steps": 181,
+        "boundary": "exit",
+        "stop_pc": "995C",
+        "steps": 195,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11246,8 +11215,7 @@
             "opcode": "0E",
             "value": 255
           }
-        ],
-        "error": "opcode 0x20 at 5247 has no core handler or adapter passthrough"
+        ]
       }
     },
     {

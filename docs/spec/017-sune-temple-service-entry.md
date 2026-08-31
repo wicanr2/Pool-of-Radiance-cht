@@ -56,17 +56,16 @@ NO 分支仍由 Spec 016 的 `AA38h..AA62h` 負責，顯示 `THEN YOU MUST LEAVE
 
 TPOV manifest 與 raw far-call 掃描得到：
 
-1. opcode `24h COMBAT` handler 位於 overlay-03 entry 50、`2E90h`；它呼叫 resident
-   stub `010A:00F2`，由 MZ header `0x3B0` 換算 executable file offset `0x1542`，
-   精確反查 overlay-25 entry 42、`2C81h`。
-2. overlay-25 entry 42 再呼叫 overlay-26 entry 3；這條鏈是 combat／service
-   orchestration，但 entry 42 本身是通用選擇／鏈結處理，不得命名成 temple dispatcher。
-3. 對 38 份 overlay 的 `9A off16 seg16` 原始 bytes 全掃，只有 overlay-03 `18B9h`
+1. **2026-08-31 勘誤：**舊版把 TPOV entry index 當成 opcode dispatch index，因而把
+   `24h` 錯掛到 entry 50／`2E90h`。IDA 對主 dispatcher `32DFh..35DAh` 的逐值分派證明
+   `3451h..345Ah` 比較 `24h` 後呼叫的是 `186Ch`；`2E90h` 實際由 opcode `39h`
+   呼叫。舊的 overlay-25／26 鏈不能再作 `24h` 的證據。
+2. 對 38 份 overlay 的 `9A off16 seg16` 原始 bytes 全掃，只有 overlay-03 `18B9h`
    的 `9A 25 00 35 00` 指向 overlay-04 entry 1。該 callsite 位於 opcode `15h`
-   VERTICAL MENU handler（overlay-03 entry 35，`186Ch..19C8h`）：
+   的**舊誤稱**；正確是 opcode `24h` handler `186Ch..19C8h`：
    `18A2h..18B4h` 比較 runtime state `es:[di+5C4h] == 1`、清成 0，接著呼叫
    overlay-04 entry 1。
-4. ECL `6DE2h` 與 runtime state `+5C4h` 的作品內映射目前為 `strong inference`，
+3. ECL `6DE2h` 與 runtime state `+5C4h` 的作品內映射目前為 `strong inference`，
    依據是同一服務鏈、值 `1`、單次消費後清零，以及位址差固定為 `681Eh`；尚未取得
    operand resolver 或 runtime watchpoint 的直接映射證據。因此文件不得把這一個
    位址換算單獨寫成 `exact`，但 ECL pattern＋唯一 temple call＋原始選單字串已達
@@ -95,9 +94,9 @@ prompt 使用第一位隊員姓名加 `, how can we help you?`；沒有隊員時
 ## Typed 行為與失敗模式
 
 1. 共用 VM 對 opcode `1Ch` 記錄 `MonstersCleared=true`，不把作品位址或 UI 寫入 engine。
-2. opcode `24h` 維持 external boundary，由 Pool 明確白名單；只有同一個 boundary
+2. opcode `24h` 維持 Pool external service boundary，由 Pool 明確白名單；只有同一個 boundary
    同時具有 `MonstersCleared` 且 `Memory[6DE2h]==1` 時，Pool 才進入 Sune temple。
-   其他 COMBAT 一律繼續 pending，不得誤路由。
+   其他 `24h` 一律繼續 pending，不得因沿用 CoAB mnemonic 而誤路由或冒稱 combat。
 3. Temple menu 自己消費方向鍵與 Enter，不把其 index 當作下一個 ECL menu selection。
 4. 選 `Exit` 後清除 temple UI，從 COMBAT 的下一條 `AA6Bh` 繼續同一 VM；必須觀察
    `6DE1h=00FFh`、`PICTURE 255`，最後 `EXIT`，且玩家仍位於 `(1,3,0)`。
@@ -118,10 +117,12 @@ prompt 使用第一位隊員姓名加 `, how can we help you?`；沒有隊員時
 
 - engine commit `0819c64`：opcode `1Ch` 設定 `Result.MonstersCleared`，
   `RunUntilEvent` 會把訊號聚合到第一個 external boundary；合成測試證明 VM 在
-  opcode `24h` 後、下一條指令前停止。
-- Pool 正式相依：
+  opcode `24h` 後、下一條指令前停止。這只證明邊界時序；Pool `24h` 的原版 consumer
+  以 dispatcher `3451h..345Ah → 186Ch` 為準，不沿用 CoAB 的 mnemonic。
+- Pool 首次接線使用
   `v0.0.0-20260831065636-0819c64e451d`；module `h1` 以本機標準 file proxy 產生，並以
-  舊 commit `cf52edc` 重算得到既有 go.sum 完全相同值後才採用。
+  舊 commit `cf52edc` 重算得到既有 go.sum 完全相同值後才採用。Spec 019／020 完成後，
+  正式相依已升到 `v0.0.0-20260831122741-b9eee757e060`。
 - Pool 真實 ECL／Xvfb 正常按鍵測試通過：Rolf → `(1,3,0)` → Sune YES → 五項神殿
   選單 → Exit；驗得 `6DE2h=1`、離開後 `6DE1h=FFh`、事件不再 pending、位置與朝向
   仍為 `(1,3,0)`。

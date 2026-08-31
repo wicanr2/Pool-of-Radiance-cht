@@ -114,11 +114,11 @@ func buildReport(zipPath string) (report, error) {
 	if err != nil {
 		return report{}, err
 	}
-	base, err := gamepack.NewInitialEventMachine(event)
+	base, err := gamepack.NewInitialEventSession(event)
 	if err != nil {
 		return report{}, err
 	}
-	if err := finishRolf(base); err != nil {
+	if err := finishRolf(base.Machine()); err != nil {
 		return report{}, err
 	}
 	catalog, err := gamepack.ReadDOSGeometryCatalog(zipPath)
@@ -149,15 +149,15 @@ func buildReport(zipPath string) (report, error) {
 			for _, facing := range []int{0, 2, 4, 6} {
 				wall, _ := initial.Grid.WallWrapped(x, y, facing)
 				entry := sample{X: x, Y: y, Facing: facing, Terrain: cell.Terrain, FacingWall: wall, GeometryReachable: reachable, GeometryDistance: distance}
-				machine := base.Clone()
-				run, runErr := gamepack.RunInitialCellEntry(machine, initial.Grid, gamepack.Spawn{Map: key, X: uint8(x), Y: uint8(y), Facing: uint8(facing)})
+				session := base.Clone()
+				run, runErr := gamepack.RunInitialSessionCellEntry(session, initial.Grid, gamepack.Spawn{Map: key, X: uint8(x), Y: uint8(y), Facing: uint8(facing)})
 				entry.PerTurn = summarizePhase("9914", run, runErr)
 				final := entry.PerTurn
 				if runErr == nil && run.Exited {
-					if err := machine.SetPC(0x99EB - codeBase); err != nil {
+					if err := session.SetEntry(1); err != nil {
 						return report{}, err
 					}
-					search := runSearchAudit(machine)
+					search := runSearchAudit(session)
 					entry.Search = &search
 					final = search
 				}
@@ -198,10 +198,10 @@ func summarizePhase(entry string, run eclvm.Result, runErr error) phase {
 	return result
 }
 
-func runSearchAudit(machine *eclvm.Machine) phase {
+func runSearchAudit(session *eclvm.BlockSession) phase {
 	result := phase{Entry: "99EB"}
 	for boundaries := 0; boundaries < 64; boundaries++ {
-		run, err := machine.RunUntilEvent(4096, nil, true)
+		run, err := session.RunUntilEvent(4096, nil, true)
 		result.Steps += run.Steps
 		current := summarizePhase("99EB", run, err)
 		if err == nil && len(run.Events) == 1 && isPresentationOnly(run.Events[0]) {
@@ -216,7 +216,7 @@ func runSearchAudit(machine *eclvm.Machine) phase {
 		return result
 	}
 	result.Boundary = "boundary_limit"
-	result.StopPC = fmt.Sprintf("%04X", machine.PC+codeBase)
+	result.StopPC = fmt.Sprintf("%04X", session.Machine().PC+codeBase)
 	result.Error = "SearchLocation exceeded presentation boundary limit"
 	return result
 }

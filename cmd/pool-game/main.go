@@ -99,6 +99,7 @@ type app struct {
 	tourPage         int
 	tourDelay        int
 	eventMachine     *eclvm.Machine
+	eventSession     *eclvm.BlockSession
 	eventText        string
 	eventLabel       string
 	cellEventPending bool
@@ -257,13 +258,15 @@ func (a *app) Update() error {
 			a.spawn = a.initialEvent.Position
 			a.introWaiting, a.introDone = true, false
 			a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
-			a.eventMachine, a.eventText, a.eventLabel = nil, "", ""
+			a.eventMachine, a.eventSession, a.eventText, a.eventLabel = nil, nil, "", ""
 			a.templeActive = false
 			if len(a.initialEvent.ScriptBlock) != 0 {
-				machine, err := gamepack.NewInitialEventMachine(*a.initialEvent)
+				session, err := gamepack.NewInitialEventSession(*a.initialEvent)
 				if err != nil {
 					return err
 				}
+				machine := session.Machine()
+				a.eventSession = session
 				a.eventMachine = machine
 				result, runErr := machine.Run(2000, nil, true)
 				if runErr != nil {
@@ -444,7 +447,7 @@ func (a *app) moveInitialDungeonForward() error {
 	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
 	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 	if a.eventMachine != nil {
-		result, err := gamepack.RunInitialCellEntry(a.eventMachine, a.initialMap.Grid, a.spawn)
+		result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 		if err != nil {
 			return fmt.Errorf("dispatch Pool initial cell: %w", err)
 		}
@@ -458,7 +461,7 @@ func (a *app) moveInitialDungeonForward() error {
 }
 
 func (a *app) beginInitialSearch() error {
-	result, err := gamepack.RunInitialSearchEntry(a.eventMachine)
+	result, err := gamepack.RunInitialSessionSearchEntry(a.eventSession)
 	if err != nil {
 		return fmt.Errorf("start Pool SearchLocation: %w", err)
 	}
@@ -470,7 +473,7 @@ func (a *app) continueInitialSearch(selection *uint16) error {
 	if selection != nil {
 		selections = []uint16{*selection}
 	}
-	result, err := a.eventMachine.RunUntilEvent(4096, selections, true)
+	result, err := a.eventSession.RunUntilEvent(4096, selections, true)
 	if err != nil {
 		return fmt.Errorf("continue Pool SearchLocation: %w", err)
 	}
@@ -485,7 +488,7 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			if result.Events[0].Opcode == 0x12 {
 				a.eventText = ""
 			}
-			next, err := a.eventMachine.RunUntilEvent(4096, nil, true)
+			next, err := a.eventSession.RunUntilEvent(4096, nil, true)
 			if err != nil {
 				return fmt.Errorf("continue Pool SearchLocation presentation: %w", err)
 			}
