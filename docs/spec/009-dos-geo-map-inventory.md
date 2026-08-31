@@ -1,6 +1,6 @@
 # Spec 009：DOS GEO 地圖盤點與 Phlan 入口
 
-狀態：CONFORMED（GEO archive／block shape 與 Pool typed catalog）；DRAFT（正常新遊戲入口、第一事件與地名）
+狀態：CONFORMED（GEO archive／block shape 與 Pool typed catalog）；READY（正常新遊戲初始 map identity／座標／朝向）；DRAFT（移動變體、第一事件與地名）
 日期：2026-08-31
 
 ## 可重生結構盤點
@@ -22,17 +22,46 @@ wrapped 與 dungeon-door 哪一個適用，必須由該 ECL／area consumer 決�
 且機械斷言確認 `(archives, blocks, decoded, failed) = (8, 29, 29, 0)`、每列
 `bytes = 1026` 且沒有 `error`。
 
+## 正常新遊戲初始 map（READY）
+
+固定 DOS ZIP、overlay hashes、IDA 版本與位址空間同下節。下列垂直鏈已由原始 producer
+與 consumer 閉合；不依賴尚未恢復的 DOSBox 選單自動輸入：
+
+1. 全域初始化 `overlay-11:002Dh..06E5h` 先在 `026Dh..027Ah` 將 `DS:4933`
+   指向的 0x800-byte party record 清為 0；因此新 session 的 `party +01E4h`
+   （目前 ECL block ID）是 0。`0329h..0337h` 再設定位置／朝向
+   `DS:6A0B=15`、`6A0C=1`、`6A0D=6`。
+2. Party Creation Menu `overlay-16:0155h` 設 archive `DS:52D4=3`；Begin 分支
+   `0426h..0445h` 只將 mode 設為 4，不改上述 ECL block 或位置欄位。
+3. adventure controller `overlay-03:377Fh..3991h` 在 `37A8h..37B1h` 從
+   `party +01E4h` 讀取 ECL block ID 0，`37E0h..37E4h` 交給 overlay-07 ECL loader。
+   該 loader `0353h..0420h` 以 `DS:52D4` 選 ECL archive 3。
+4. VM 初始化從 ECL3/block 0 的第五 command-set entry `9AF2h` 執行；依修正後
+   `9900h` payload mapping base，這是 raw payload offset `01F2h`（498）。順序執行
+   到 offset `020Ah`（522）的 opcode `21h LOAD FILES 0,0,0`。
+5. `LOAD FILES` handler `overlay-03:0D80h..0ED4h` 於 `0DDBh..0DF1h` 將第一個
+   operand 0 寫入 `party +018Ah`，並呼叫 GEO loader；GEO loader
+   `overlay-30:10EAh..1225h` 以 `DS:52D4=3` 開啟 `GEO3.DAX`、載入 block 0。
+6. 第五 entry 在首次 `LOAD FILES` 前後的直接 `SAVE` destinations，以及其條件式
+   `GOSUB 9A86h`（raw offset `0186h`），均未寫 `C04Bh..C04Dh` 的位置 special
+   variables；menu 與兩個 loader 亦不寫 `6A0B..6A0D`。因此首次 map frame 保留
+   初始化值 `(x=15, y=1, facing=6)`。
+
+結論等級為 `exact`：正常新隊伍的初始資料 identity 是
+`(GEO archive 3, block 0, x 15, y 1, facing 6)`。此 READY 範圍授權 game-pack
+建立 typed spawn 並由 `B` 進入該 map；它**不授權**把 block 0 命名為 New Phlan、
+不決定 bounded／wrapped／dungeon-door 移動語意，也不宣稱第一事件已接回。
+
 ## 尚未閉合
 
 - `GEO1` 不因編號最小就自動命名為 New Phlan 或 Slums。
-- 正常玩家在 Party Creation Menu 選 Begin Adventuring 後的 ECL block、GEO archive、
-  block ID、`x/y/facing` 必須由 runtime save／trace 或 executable producer 閉合。
 - 第一個畫面事件與城內／地城 wrap 規則必須沿同一正常路徑驗證；direct-entry 只能縮小
   問題，不能作完成證據。
 - terrain ID、wall art selector 與地名是不同資料層；本 inventory 不替它們猜名稱。
 
-因此本規格目前只授權 Pool game-pack 的 GEO typed adapter 與完整 map inventory，
-尚不授權把任一 block 接成玩家出生點。
+因此本規格已授權初始 spawn 與 map identity，但目前畫面只能標成 typed geometry
+preview；在 WALLDEF／第一人稱 renderer 與正常 DOSBox 同狀態畫面閉合前，不得把它
+宣稱為原版視覺 parity。
 
 ## 正常 Begin 路徑的新增 RE 證據（仍為 DRAFT）
 
@@ -86,9 +115,9 @@ wrapped 與 dungeon-door 哪一個適用，必須由該 ECL／area consumer 決�
    從 party record `+018Ah` 取 GEO block 並呼叫 loader。這是讀檔 producer，不能
    反推尚未存檔的新隊伍 block。
 
-剩餘最小缺口已縮成：追出 Begin mode 4 在第一次 Adventure frame 前所使用的 ECL／
-GEO block，以及 `6A0B..6A0D` 是否仍為上述 default；GEO archive 已證實是 3。
-閉合 block 與座標前不實作玩家出生點。
+本節原先記錄的最小缺口已由上方「正常新遊戲初始 map」閉合。保留下列勘誤：先前
+Spec 002 把 `9914h` 誤作 ECL mapping base，導致 ECL3/block 0 的第五 entry 無法可靠
+走到 `LOAD FILES`；修正為 `9900h` 後，`9AF2h - 9900h = 01F2h`，上述控制流成立。
 
 ## Typed adapter
 

@@ -24,8 +24,10 @@
   驗收：Docker/Xvfb 有界重播，輸入序列、畫面與 metadata 齊全。
 - [x] 完成 `TITLE.DAX` typed consumer 與 PNG／總覽圖匯出；block 1 放大 2× 後
   與原版標題逐像素 AE=`0`，規格見 `docs/spec/001-dos-title-picture.md`。
-- [ ] 閉合 Pool ECL record format：既有 decoder 僅完整走過 3／29 blocks，
-  其餘 26 筆不得以 opcode 猜測補洞；先依 Spec 002 追 caller／bytes。
+- [ ] 閉合 Pool ECL record format：Spec 002 已訂正 payload mapping base
+  `9914h → 9900h`，既有 decoder 現可完整走過 26／29 blocks、14,724 條 reachable
+  instructions。只剩 ECL5/block 7、ECL7/block 17、ECL7/block 22 三筆；須逐筆判斷
+  variable record、控制流 fallthrough 或真 opcode 缺口，不得以 byte 猜命令。
 
 ## P1：第一條玩家垂直鏈
 
@@ -45,9 +47,10 @@
   icon 確認後回到 Party Creation Menu、Add／Load 與六名玩家角色上限，正常按鍵抓圖已
   走到 Party 1/6。剩餘驗收是 DOS 285-byte CHA＋多條鏈 export、完整 Party Creation Menu
   功能，以及 theme 下 sprite／tileset 同步切換。
-- [ ] 解出 Phlan 第一個地圖、入口、移動遮罩與第一個玩家事件。先從正常 DOS
-  Party Creation Menu 進入 Begin Adventuring，保存 runtime save／trace，閉合
-  ECL block、GEO archive／block、`x/y/facing`；不得以 `GEO1` 編號猜地名。
+- [ ] 解出第一張地圖的移動遮罩、WALLDEF 第一人稱畫面與第一個玩家事件。正常 Begin
+  的 ECL3/block 0 → `LOAD FILES 0,0,0` 已閉合 `GEO3/block 0, (15,1), facing 6`，
+  並接到 `B` 的 typed geometry 診斷總覽；地名、bounded／wrapped／door policy、事件
+  與同狀態 DOS 畫面仍待證明，不得因初始 identity 已知就稱為 Phlan parity。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

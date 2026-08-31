@@ -77,8 +77,9 @@ CoAB 收尾已完成下列分離，Pool 不得重做或繞過：
    本 repository 內不得建立 nested clone、gitlink 或 source 副本。
 
 現行 engine 起始 commit 為 `025eb46b28a2`。Pool 的第二作品證據已把 ECL code
-address base 從 engine 移回 title adapter：本作 DOS corpus 為 `0x9914`，不得
-沿用 CoAB 的 `0x8000`。正式相依鎖定該 commit 或更新後已
+address base 從 engine 移回 title adapter：本作 DOS raw payload 映射基準為
+`0x9900`，五個 command-set headers 後的第一條指令才是 `0x9914`；不得沿用
+CoAB 的 `0x8000`，也不得再把 `0x9914` 寫成 mapping base。正式相依鎖定該 commit 或更新後已
 推送的 module version；不得提交本機 `replace`。
 
 ## 5. 證據、反組譯與 spec 門槛

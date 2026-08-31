@@ -18,23 +18,42 @@ import (
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
 )
 
-// poolCodeAddressBase is the repeated payload-zero entry address in the fixed
-// DOS corpus. It is title data and must not be moved into the shared engine.
-const poolCodeAddressBase = 0x9914
+// poolCodeAddressBase is the address of byte zero in the decoded payload
+// buffer. The five command-set headers occupy 0x9900..0x9913, so 0x9914 is
+// the first instruction address, not the mapping base (spec 002).
+const poolCodeAddressBase = 0x9900
 
 type blockResult struct {
-	File           string   `json:"file"`
-	BlockID        uint8    `json:"block_id"`
-	Bytes          int      `json:"bytes"`
-	PrefixWord     uint16   `json:"prefix_word"`
-	EntryPoints    int      `json:"entry_points,omitempty"`
-	EntryAddresses []uint16 `json:"entry_addresses,omitempty"`
-	Instructions   int      `json:"instructions,omitempty"`
-	Error          string   `json:"error,omitempty"`
+	File           string              `json:"file"`
+	BlockID        uint8               `json:"block_id"`
+	Bytes          int                 `json:"bytes"`
+	PrefixWord     uint16              `json:"prefix_word"`
+	EntryPoints    int                 `json:"entry_points,omitempty"`
+	EntryAddresses []uint16            `json:"entry_addresses,omitempty"`
+	Instructions   int                 `json:"instructions,omitempty"`
+	DecodedPrefix  []instructionResult `json:"decoded_prefix,omitempty"`
+	Error          string              `json:"error,omitempty"`
+}
+
+type instructionResult struct {
+	Offset   int             `json:"offset"`
+	Opcode   uint8           `json:"opcode"`
+	Name     string          `json:"name"`
+	Next     int             `json:"next"`
+	Operands []operandResult `json:"operands,omitempty"`
+}
+
+type operandResult struct {
+	Code    uint8  `json:"code"`
+	Low     uint8  `json:"low"`
+	High    uint8  `json:"high,omitempty"`
+	Word    uint16 `json:"word,omitempty"`
+	WordSet bool   `json:"word_set,omitempty"`
 }
 
 type report struct {
 	ZIP              string        `json:"zip"`
+	CodeAddressBase  uint16        `json:"code_address_base"`
 	Blocks           int           `json:"blocks"`
 	DecodedBlocks    int           `json:"decoded_blocks"`
 	FailedBlocks     int           `json:"failed_blocks"`
@@ -64,12 +83,16 @@ func main() {
 }
 
 func audit(zipPath string) (report, error) {
+	return auditAtBase(zipPath, poolCodeAddressBase)
+}
+
+func auditAtBase(zipPath string, codeAddressBase uint16) (report, error) {
 	archive, err := zip.OpenReader(zipPath)
 	if err != nil {
 		return report{}, err
 	}
 	defer archive.Close()
-	result := report{ZIP: filepath.Base(zipPath)}
+	result := report{ZIP: filepath.Base(zipPath), CodeAddressBase: codeAddressBase}
 	opcodes := map[uint8]bool{}
 	for _, member := range archive.File {
 		base := strings.ToLower(filepath.Base(member.Name))
@@ -106,13 +129,32 @@ func audit(zipPath string) (report, error) {
 				row.EntryAddresses = points
 				starts := make([]int, 0, len(points))
 				for _, point := range points {
-					starts = append(starts, int(point)-poolCodeAddressBase)
+					starts = append(starts, int(point)-int(codeAddressBase))
 				}
-				graph, graphErr := ecl.TraceGraphAtBase(block.Data, starts, poolCodeAddressBase, len(block.Data)*8)
+				graph, graphErr := ecl.TraceGraphAtBase(block.Data, starts, int(codeAddressBase), len(block.Data)*8)
+				row.Instructions = len(graph.Instructions)
 				if graphErr != nil {
 					row.Error = graphErr.Error()
+					start := len(graph.Instructions) - 64
+					if start < 0 {
+						start = 0
+					}
+					for _, instruction := range graph.Instructions[start:] {
+						decoded := instructionResult{
+							Offset: instruction.Offset,
+							Opcode: instruction.Command.Opcode,
+							Name:   instruction.Command.Name,
+							Next:   instruction.Next,
+						}
+						for _, operand := range instruction.Operands {
+							decoded.Operands = append(decoded.Operands, operandResult{
+								Code: operand.Code, Low: operand.Low, High: operand.High,
+								Word: operand.Word, WordSet: operand.WordSet,
+							})
+						}
+						row.DecodedPrefix = append(row.DecodedPrefix, decoded)
+					}
 				} else {
-					row.Instructions = len(graph.Instructions)
 					result.EntryPoints += len(points)
 					result.Instructions += len(graph.Instructions)
 					result.DecodedBlocks++

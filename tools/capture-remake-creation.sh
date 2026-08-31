@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 以真實 Ebitengine 視窗與逐鍵輸入重生姓名／肖像／戰鬥圖示建角截圖。
+# 以真實 Ebitengine 視窗與逐鍵輸入重生建角、建隊與初始 typed GEO 截圖。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -42,6 +42,7 @@ until test -n "$window"; do
 done
 xdotool windowfocus "$window"
 eval "$(xdotool getwindowgeometry --shell "$window")"
+xdotool mousemove 1190 790
 pulse() {
   xdotool keydown "$1"
   sleep 0.18
@@ -79,11 +80,16 @@ pulse a
 sleep 0.8
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-party-menu.png
+pulse b
+sleep 0.8
+ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-initial-geometry.png
 sha256sum docs/screenshots/pool-remake-character-name.png \
   docs/screenshots/pool-remake-portrait-editor.png \
   docs/screenshots/pool-remake-combat-icon-editor.png \
   docs/screenshots/pool-remake-icon-confirm.png \
-  docs/screenshots/pool-remake-party-menu.png
+  docs/screenshots/pool-remake-party-menu.png \
+  docs/screenshots/pool-remake-initial-geometry.png
 if cmp -s docs/screenshots/pool-remake-portrait-editor.png docs/screenshots/pool-remake-combat-icon-editor.png; then
   echo "combat icon capture did not leave the portrait screen" >&2
   exit 1
@@ -91,6 +97,10 @@ fi
 if cmp -s docs/screenshots/pool-remake-combat-icon-editor.png docs/screenshots/pool-remake-icon-confirm.png || \
    cmp -s docs/screenshots/pool-remake-icon-confirm.png docs/screenshots/pool-remake-party-menu.png; then
   echo "creation completion capture did not advance through confirmation and party menu" >&2
+  exit 1
+fi
+if cmp -s docs/screenshots/pool-remake-party-menu.png docs/screenshots/pool-remake-initial-geometry.png; then
+  echo "Begin did not advance from the party menu to initial geometry" >&2
   exit 1
 fi
 '

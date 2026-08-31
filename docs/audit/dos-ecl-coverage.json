@@ -1,18 +1,72 @@
 {
   "zip": "Pool of Radiance (1988).zip",
+  "code_address_base": 39168,
   "blocks": 29,
-  "decoded_blocks": 3,
-  "failed_blocks": 26,
-  "entry_points": 15,
-  "instructions": 24,
+  "decoded_blocks": 26,
+  "failed_blocks": 3,
+  "entry_points": 130,
+  "instructions": 14724,
   "reachable_opcodes": [
     0,
     1,
+    2,
+    3,
+    4,
     5,
+    6,
+    7,
+    8,
     9,
     10,
+    11,
+    12,
+    13,
+    14,
     15,
-    19
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
   ],
   "block_results": [
     {
@@ -28,7 +82,7 @@
         39264,
         39281
       ],
-      "error": "unknown opcode 0x81 at payload offset 422"
+      "instructions": 629
     },
     {
       "file": "poolrad/ecl1.dax",
@@ -43,7 +97,7 @@
         46699,
         46755
       ],
-      "error": "unknown opcode 0x48 at payload offset 7567"
+      "instructions": 646
     },
     {
       "file": "poolrad/ecl2.dax",
@@ -58,7 +112,7 @@
         40372,
         41127
       ],
-      "error": "unknown opcode 0xF1 at payload offset 852"
+      "instructions": 686
     },
     {
       "file": "poolrad/ecl2.dax",
@@ -73,7 +127,7 @@
         39821,
         39822
       ],
-      "instructions": 9
+      "instructions": 449
     },
     {
       "file": "poolrad/ecl2.dax",
@@ -88,7 +142,7 @@
         39497,
         39518
       ],
-      "error": "unknown opcode 0x9C at payload offset 250"
+      "instructions": 757
     },
     {
       "file": "poolrad/ecl3.dax",
@@ -103,7 +157,7 @@
         39571,
         39666
       ],
-      "error": "unknown opcode 0xAE at payload offset 215"
+      "instructions": 734
     },
     {
       "file": "poolrad/ecl3.dax",
@@ -118,7 +172,7 @@
         39420,
         39430
       ],
-      "instructions": 6
+      "instructions": 588
     },
     {
       "file": "poolrad/ecl3.dax",
@@ -133,7 +187,7 @@
         39338,
         39448
       ],
-      "error": "unknown opcode 0x6E at payload offset 42"
+      "instructions": 286
     },
     {
       "file": "poolrad/ecl3.dax",
@@ -148,7 +202,7 @@
         46317,
         46450
       ],
-      "error": "unknown opcode 0xCD at payload offset 7262"
+      "instructions": 632
     },
     {
       "file": "poolrad/ecl4.dax",
@@ -163,7 +217,7 @@
         39255,
         39188
       ],
-      "error": "unknown opcode 0xD3 at payload offset 71"
+      "instructions": 591
     },
     {
       "file": "poolrad/ecl4.dax",
@@ -178,7 +232,7 @@
         39528,
         39538
       ],
-      "error": "unknown opcode 0xAB at payload offset 303"
+      "instructions": 924
     },
     {
       "file": "poolrad/ecl4.dax",
@@ -193,7 +247,7 @@
         39502,
         39531
       ],
-      "error": "unknown opcode 0x6E at payload offset 142"
+      "instructions": 484
     },
     {
       "file": "poolrad/ecl5.dax",
@@ -208,7 +262,7 @@
         40060,
         39928
       ],
-      "error": "unknown opcode 0xC0 at payload offset 734"
+      "instructions": 629
     },
     {
       "file": "poolrad/ecl5.dax",
@@ -223,7 +277,7 @@
         39889,
         39779
       ],
-      "error": "unknown opcode 0xB5 at payload offset 542"
+      "instructions": 532
     },
     {
       "file": "poolrad/ecl5.dax",
@@ -238,7 +292,7 @@
         44016,
         40063
       ],
-      "error": "unknown opcode 0x80 at payload offset 709"
+      "instructions": 420
     },
     {
       "file": "poolrad/ecl5.dax",
@@ -253,7 +307,7 @@
         40004,
         40008
       ],
-      "error": "unknown opcode 0xCE at payload offset 767"
+      "instructions": 405
     },
     {
       "file": "poolrad/ecl5.dax",
@@ -268,7 +322,1038 @@
         39468,
         39469
       ],
-      "error": "unknown opcode 0x54 at payload offset 93"
+      "instructions": 209,
+      "decoded_prefix": [
+        {
+          "offset": 548,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 554,
+          "operands": [
+            {
+              "code": 1,
+              "low": 114,
+              "high": 107,
+              "word": 27506,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 2
+            }
+          ]
+        },
+        {
+          "offset": 554,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 555
+        },
+        {
+          "offset": 555,
+          "opcode": 4,
+          "name": "ADD",
+          "next": 564,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 129,
+              "high": 110,
+              "word": 28289,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 129,
+              "high": 110,
+              "word": 28289,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 564,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 570,
+          "operands": [
+            {
+              "code": 1,
+              "low": 114,
+              "high": 107,
+              "word": 27506,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 4
+            }
+          ]
+        },
+        {
+          "offset": 570,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 571
+        },
+        {
+          "offset": 571,
+          "opcode": 4,
+          "name": "ADD",
+          "next": 580,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 129,
+              "high": 110,
+              "word": 28289,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 129,
+              "high": 110,
+              "word": 28289,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 580,
+          "opcode": 8,
+          "name": "RANDOM",
+          "next": 586,
+          "operands": [
+            {
+              "code": 0,
+              "low": 5
+            },
+            {
+              "code": 1,
+              "low": 128,
+              "high": 110,
+              "word": 28288,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 586,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 593,
+          "operands": [
+            {
+              "code": 1,
+              "low": 128,
+              "high": 110,
+              "word": 28288,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 129,
+              "high": 110,
+              "word": 28289,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 593,
+          "opcode": 26,
+          "name": "IF \u003c=",
+          "next": 594
+        },
+        {
+          "offset": 594,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 598,
+          "operands": [
+            {
+              "code": 1,
+              "low": 107,
+              "high": 155,
+              "word": 39787,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 598,
+          "opcode": 4,
+          "name": "ADD",
+          "next": 607,
+          "operands": [
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 607,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 613,
+          "operands": [
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 8
+            }
+          ]
+        },
+        {
+          "offset": 613,
+          "opcode": 24,
+          "name": "IF \u003c",
+          "next": 614
+        },
+        {
+          "offset": 614,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 618,
+          "operands": [
+            {
+              "code": 1,
+              "low": 255,
+              "high": 154,
+              "word": 39679,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 672,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 687,
+          "operands": [
+            {
+              "code": 128,
+              "low": 12
+            }
+          ]
+        },
+        {
+          "offset": 687,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 688
+        },
+        {
+          "offset": 688,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 701,
+          "operands": [
+            {
+              "code": 128,
+              "low": 10
+            }
+          ]
+        },
+        {
+          "offset": 701,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 702
+        },
+        {
+          "offset": 702,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 714,
+          "operands": [
+            {
+              "code": 128,
+              "low": 9
+            }
+          ]
+        },
+        {
+          "offset": 714,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 715
+        },
+        {
+          "offset": 715,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 729,
+          "operands": [
+            {
+              "code": 128,
+              "low": 11
+            }
+          ]
+        },
+        {
+          "offset": 729,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 730
+        },
+        {
+          "offset": 832,
+          "opcode": 47,
+          "name": "AND",
+          "next": 841,
+          "operands": [
+            {
+              "code": 1,
+              "low": 108,
+              "high": 74,
+              "word": 19052,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 16
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 841,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 842
+        },
+        {
+          "offset": 842,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 846,
+          "operands": [
+            {
+              "code": 1,
+              "low": 105,
+              "high": 156,
+              "word": 40041,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1250,
+          "opcode": 41,
+          "name": "ENCOUNTER MENU",
+          "next": 1306,
+          "operands": [
+            {
+              "code": 0,
+              "low": 49
+            },
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 0,
+              "low": 49
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 3
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 3
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 128,
+              "low": 26
+            },
+            {
+              "code": 128,
+              "low": 0
+            },
+            {
+              "code": 128,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 9
+            },
+            {
+              "code": 0,
+              "low": 9
+            }
+          ]
+        },
+        {
+          "offset": 1306,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 1307
+        },
+        {
+          "offset": 1321,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 1327,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 203,
+              "high": 109,
+              "word": 28107,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1327,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 1333,
+          "operands": [
+            {
+              "code": 0,
+              "low": 100
+            },
+            {
+              "code": 1,
+              "low": 198,
+              "high": 109,
+              "word": 28102,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1333,
+          "opcode": 28,
+          "name": "CLEARMONSTERS",
+          "next": 1334
+        },
+        {
+          "offset": 1334,
+          "opcode": 11,
+          "name": "LOAD MONSTER",
+          "next": 1341,
+          "operands": [
+            {
+              "code": 0,
+              "low": 49
+            },
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 0,
+              "low": 49
+            }
+          ]
+        },
+        {
+          "offset": 1341,
+          "opcode": 36,
+          "name": "COMBAT",
+          "next": 1342
+        },
+        {
+          "offset": 1342,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 1348,
+          "operands": [
+            {
+              "code": 1,
+              "low": 199,
+              "high": 109,
+              "word": 28103,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 129
+            }
+          ]
+        },
+        {
+          "offset": 1348,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 1349
+        },
+        {
+          "offset": 1349,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 1353,
+          "operands": [
+            {
+              "code": 1,
+              "low": 83,
+              "high": 158,
+              "word": 40531,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1455,
+          "opcode": 47,
+          "name": "AND",
+          "next": 1464,
+          "operands": [
+            {
+              "code": 1,
+              "low": 108,
+              "high": 74,
+              "word": 19052,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 96
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1464,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 1465
+        },
+        {
+          "offset": 1465,
+          "opcode": 0,
+          "name": "EXIT",
+          "next": 1466
+        },
+        {
+          "offset": 2105,
+          "opcode": 47,
+          "name": "AND",
+          "next": 2114,
+          "operands": [
+            {
+              "code": 1,
+              "low": 109,
+              "high": 74,
+              "word": 19053,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 3
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2114,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 2115
+        },
+        {
+          "offset": 2115,
+          "opcode": 0,
+          "name": "EXIT",
+          "next": 2116
+        },
+        {
+          "offset": 3174,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3180,
+          "operands": [
+            {
+              "code": 0,
+              "low": 12
+            },
+            {
+              "code": 1,
+              "low": 225,
+              "high": 109,
+              "word": 28129,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3180,
+          "opcode": 41,
+          "name": "ENCOUNTER MENU",
+          "next": 3288,
+          "operands": [
+            {
+              "code": 0,
+              "low": 16
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 128,
+              "low": 78
+            },
+            {
+              "code": 128,
+              "low": 0
+            },
+            {
+              "code": 128,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 9
+            },
+            {
+              "code": 0,
+              "low": 9
+            }
+          ]
+        },
+        {
+          "offset": 3288,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3294,
+          "operands": [
+            {
+              "code": 0,
+              "low": 255
+            },
+            {
+              "code": 1,
+              "low": 225,
+              "high": 109,
+              "word": 28129,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3294,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 3295
+        },
+        {
+          "offset": 3306,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3312,
+          "operands": [
+            {
+              "code": 0,
+              "low": 3
+            },
+            {
+              "code": 1,
+              "low": 75,
+              "high": 192,
+              "word": 49227,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3312,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3318,
+          "operands": [
+            {
+              "code": 0,
+              "low": 6
+            },
+            {
+              "code": 1,
+              "low": 76,
+              "high": 192,
+              "word": 49228,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3318,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3324,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 77,
+              "high": 192,
+              "word": 49229,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3324,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 3328,
+          "operands": [
+            {
+              "code": 1,
+              "low": 188,
+              "high": 154,
+              "word": 39612,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3369,
+          "opcode": 47,
+          "name": "AND",
+          "next": 3378,
+          "operands": [
+            {
+              "code": 1,
+              "low": 109,
+              "high": 74,
+              "word": 19053,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 16
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3378,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 3379
+        },
+        {
+          "offset": 3379,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 3383,
+          "operands": [
+            {
+              "code": 1,
+              "low": 188,
+              "high": 154,
+              "word": 39612,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2835,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 2848,
+          "operands": [
+            {
+              "code": 128,
+              "low": 7
+            },
+            {
+              "code": 129,
+              "low": 0,
+              "high": 107,
+              "word": 27392,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2848,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 2849
+        },
+        {
+          "offset": 2849,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 2853,
+          "operands": [
+            {
+              "code": 1,
+              "low": 63,
+              "high": 164,
+              "word": 42047,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2879,
+          "opcode": 4,
+          "name": "ADD",
+          "next": 2888,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 0,
+              "high": 152,
+              "word": 38912,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 0,
+              "high": 152,
+              "word": 38912,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2888,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 2895,
+          "operands": [
+            {
+              "code": 1,
+              "low": 0,
+              "high": 152,
+              "word": 38912,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 62,
+              "high": 110,
+              "word": 28222,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2895,
+          "opcode": 24,
+          "name": "IF \u003c",
+          "next": 2896
+        },
+        {
+          "offset": 2896,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 2900,
+          "operands": [
+            {
+              "code": 1,
+              "low": 4,
+              "high": 164,
+              "word": 41988,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 450,
+          "opcode": 33,
+          "name": "LOAD FILES",
+          "next": 457,
+          "operands": [
+            {
+              "code": 0,
+              "low": 3
+            },
+            {
+              "code": 0,
+              "low": 2
+            },
+            {
+              "code": 0,
+              "low": 255
+            }
+          ]
+        },
+        {
+          "offset": 457,
+          "opcode": 32,
+          "name": "NEWECL",
+          "next": 460,
+          "operands": [
+            {
+              "code": 0,
+              "low": 5
+            }
+          ]
+        },
+        {
+          "offset": 460,
+          "opcode": 13,
+          "name": "APPROACH",
+          "next": 461
+        },
+        {
+          "offset": 461,
+          "opcode": 11,
+          "name": "LOAD MONSTER",
+          "next": 469,
+          "operands": [
+            {
+              "code": 5,
+              "low": 5
+            },
+            {
+              "code": 5,
+              "low": 3
+            },
+            {
+              "code": 3,
+              "low": 15,
+              "high": 7,
+              "word": 1807,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 469,
+          "opcode": 4,
+          "name": "ADD",
+          "next": 476,
+          "operands": [
+            {
+              "code": 6,
+              "low": 7
+            },
+            {
+              "code": 6,
+              "low": 8
+            },
+            {
+              "code": 47,
+              "low": 1
+            }
+          ]
+        }
+      ],
+      "error": "unknown opcode 0x6C at payload offset 476"
     },
     {
       "file": "poolrad/ecl6.dax",
@@ -283,7 +1368,7 @@
         46675,
         46752
       ],
-      "error": "unknown opcode 0xF8 at payload offset 7564"
+      "instructions": 584
     },
     {
       "file": "poolrad/ecl6.dax",
@@ -298,7 +1383,7 @@
         42393,
         42394
       ],
-      "error": "unknown opcode 0x52 at payload offset 3192"
+      "instructions": 85
     },
     {
       "file": "poolrad/ecl6.dax",
@@ -313,7 +1398,7 @@
         44738,
         44749
       ],
-      "error": "unknown opcode 0x77 at payload offset 5531"
+      "instructions": 594
     },
     {
       "file": "poolrad/ecl6.dax",
@@ -328,7 +1413,7 @@
         46712,
         46739
       ],
-      "error": "unknown opcode 0xCE at payload offset 7441"
+      "instructions": 491
     },
     {
       "file": "poolrad/ecl7.dax",
@@ -343,7 +1428,884 @@
         40641,
         40663
       ],
-      "error": "unknown opcode 0xD1 at payload offset 1465"
+      "instructions": 388,
+      "decoded_prefix": [
+        {
+          "offset": 3062,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 3066,
+          "operands": [
+            {
+              "code": 1,
+              "low": 101,
+              "high": 157,
+              "word": 40293,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3066,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 3067
+        },
+        {
+          "offset": 3067,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 3071,
+          "operands": [
+            {
+              "code": 1,
+              "low": 188,
+              "high": 161,
+              "word": 41404,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3114,
+          "opcode": 48,
+          "name": "OR",
+          "next": 3123,
+          "operands": [
+            {
+              "code": 1,
+              "low": 124,
+              "high": 74,
+              "word": 19068,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 124,
+              "high": 74,
+              "word": 19068,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3123,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 3129,
+          "operands": [
+            {
+              "code": 1,
+              "low": 201,
+              "high": 73,
+              "word": 18889,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 14
+            }
+          ]
+        },
+        {
+          "offset": 3129,
+          "opcode": 24,
+          "name": "IF \u003c",
+          "next": 3130
+        },
+        {
+          "offset": 3130,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 3134,
+          "operands": [
+            {
+              "code": 1,
+              "low": 90,
+              "high": 166,
+              "word": 42586,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1402,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 1406,
+          "operands": [
+            {
+              "code": 1,
+              "low": 138,
+              "high": 169,
+              "word": 43402,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 192,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 198,
+          "operands": [
+            {
+              "code": 1,
+              "low": 201,
+              "high": 73,
+              "word": 18889,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 18
+            }
+          ]
+        },
+        {
+          "offset": 198,
+          "opcode": 24,
+          "name": "IF \u003c",
+          "next": 199
+        },
+        {
+          "offset": 199,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 205,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 205,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 206
+        },
+        {
+          "offset": 206,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 207
+        },
+        {
+          "offset": 224,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 230,
+          "operands": [
+            {
+              "code": 0,
+              "low": 4
+            },
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 230,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 236,
+          "operands": [
+            {
+              "code": 1,
+              "low": 79,
+              "high": 192,
+              "word": 49231,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 1
+            }
+          ]
+        },
+        {
+          "offset": 236,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 237
+        },
+        {
+          "offset": 237,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 243,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 243,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 244
+        },
+        {
+          "offset": 870,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 894,
+          "operands": [
+            {
+              "code": 128,
+              "low": 21
+            }
+          ]
+        },
+        {
+          "offset": 894,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 898,
+          "operands": [
+            {
+              "code": 1,
+              "low": 127,
+              "high": 157,
+              "word": 40319,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 898,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 904,
+          "operands": [
+            {
+              "code": 0,
+              "low": 3
+            },
+            {
+              "code": 1,
+              "low": 77,
+              "high": 192,
+              "word": 49229,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 904,
+          "opcode": 45,
+          "name": "CALL",
+          "next": 908,
+          "operands": [
+            {
+              "code": 1,
+              "low": 144,
+              "high": 44,
+              "word": 11408,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 908,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 909
+        },
+        {
+          "offset": 909,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 922,
+          "operands": [
+            {
+              "code": 128,
+              "low": 10
+            }
+          ]
+        },
+        {
+          "offset": 922,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 923
+        },
+        {
+          "offset": 923,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 935,
+          "operands": [
+            {
+              "code": 128,
+              "low": 9
+            }
+          ]
+        },
+        {
+          "offset": 935,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 936
+        },
+        {
+          "offset": 936,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 950,
+          "operands": [
+            {
+              "code": 128,
+              "low": 11
+            }
+          ]
+        },
+        {
+          "offset": 950,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 951
+        },
+        {
+          "offset": 951,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 966,
+          "operands": [
+            {
+              "code": 128,
+              "low": 12
+            }
+          ]
+        },
+        {
+          "offset": 966,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 967
+        },
+        {
+          "offset": 5559,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 5560
+        },
+        {
+          "offset": 5577,
+          "opcode": 12,
+          "name": "SETUP MONSTER",
+          "next": 5584,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 2
+            },
+            {
+              "code": 0,
+              "low": 0
+            }
+          ]
+        },
+        {
+          "offset": 5584,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 5590,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 126,
+              "high": 74,
+              "word": 19070,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 5590,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 5699,
+          "operands": [
+            {
+              "code": 128,
+              "low": 106
+            }
+          ]
+        },
+        {
+          "offset": 5699,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 5703,
+          "operands": [
+            {
+              "code": 1,
+              "low": 127,
+              "high": 157,
+              "word": 40319,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 5703,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 5707,
+          "operands": [
+            {
+              "code": 1,
+              "low": 20,
+              "high": 153,
+              "word": 39188,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 5707,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 5708
+        },
+        {
+          "offset": 5719,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 5723,
+          "operands": [
+            {
+              "code": 1,
+              "low": 74,
+              "high": 155,
+              "word": 39754,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 5723,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 5724
+        },
+        {
+          "offset": 5724,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 5728,
+          "operands": [
+            {
+              "code": 1,
+              "low": 77,
+              "high": 174,
+              "word": 44621,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 7140,
+          "opcode": 12,
+          "name": "SETUP MONSTER",
+          "next": 7147,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 2
+            },
+            {
+              "code": 0,
+              "low": 0
+            }
+          ]
+        },
+        {
+          "offset": 7147,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 7206,
+          "operands": [
+            {
+              "code": 128,
+              "low": 56
+            }
+          ]
+        },
+        {
+          "offset": 7206,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 7210,
+          "operands": [
+            {
+              "code": 1,
+              "low": 196,
+              "high": 180,
+              "word": 46276,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 7210,
+          "opcode": 47,
+          "name": "AND",
+          "next": 7219,
+          "operands": [
+            {
+              "code": 1,
+              "low": 124,
+              "high": 74,
+              "word": 19068,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 4
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 7219,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 7220
+        },
+        {
+          "offset": 7220,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 7224,
+          "operands": [
+            {
+              "code": 1,
+              "low": 117,
+              "high": 176,
+              "word": 45173,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 20,
+          "opcode": 41,
+          "name": "ENCOUNTER MENU",
+          "next": 51,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 192,
+              "high": 109,
+              "word": 28096,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 128,
+              "low": 0
+            },
+            {
+              "code": 128,
+              "low": 0
+            },
+            {
+              "code": 128,
+              "low": 0
+            },
+            {
+              "code": 0,
+              "low": 6
+            },
+            {
+              "code": 0,
+              "low": 6
+            }
+          ]
+        },
+        {
+          "offset": 51,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 52
+        },
+        {
+          "offset": 5732,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 5738,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 203,
+              "high": 109,
+              "word": 28107,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 5738,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 5744,
+          "operands": [
+            {
+              "code": 0,
+              "low": 80
+            },
+            {
+              "code": 1,
+              "low": 198,
+              "high": 109,
+              "word": 28102,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 5744,
+          "opcode": 28,
+          "name": "CLEARMONSTERS",
+          "next": 5745
+        },
+        {
+          "offset": 5745,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 5751,
+          "operands": [
+            {
+              "code": 1,
+              "low": 0,
+              "high": 74,
+              "word": 18944,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 0
+            }
+          ]
+        },
+        {
+          "offset": 5751,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 5752
+        },
+        {
+          "offset": 5752,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 5756,
+          "operands": [
+            {
+              "code": 1,
+              "low": 132,
+              "high": 175,
+              "word": 44932,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 586,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 592,
+          "operands": [
+            {
+              "code": 1,
+              "low": 75,
+              "high": 192,
+              "word": 49227,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 11
+            }
+          ]
+        },
+        {
+          "offset": 592,
+          "opcode": 24,
+          "name": "IF \u003c",
+          "next": 593
+        },
+        {
+          "offset": 593,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 597,
+          "operands": [
+            {
+              "code": 1,
+              "low": 135,
+              "high": 155,
+              "word": 39815,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1585,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 1669,
+          "operands": [
+            {
+              "code": 128,
+              "low": 81
+            }
+          ]
+        },
+        {
+          "offset": 1669,
+          "opcode": 43,
+          "name": "HORIZONTAL MENU",
+          "next": 1670
+        },
+        {
+          "offset": 1703,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 1704
+        },
+        {
+          "offset": 1715,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 1756,
+          "operands": [
+            {
+              "code": 128,
+              "low": 38
+            }
+          ]
+        },
+        {
+          "offset": 1756,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 1760,
+          "operands": [
+            {
+              "code": 1,
+              "low": 200,
+              "high": 157,
+              "word": 40392,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1079,
+          "opcode": 52,
+          "name": "ECL CLOCK",
+          "next": 1085,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 2,
+              "low": 1,
+              "high": 167,
+              "word": 42753,
+              "word_set": true
+            }
+          ]
+        }
+      ],
+      "error": "unknown opcode 0x9D at payload offset 1085"
     },
     {
       "file": "poolrad/ecl7.dax",
@@ -358,7 +2320,971 @@
         39939,
         39943
       ],
-      "error": "unknown opcode 0x64 at payload offset 530"
+      "instructions": 122,
+      "decoded_prefix": [
+        {
+          "offset": 2725,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 2732,
+          "operands": [
+            {
+              "code": 1,
+              "low": 76,
+              "high": 74,
+              "word": 19020,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 123,
+              "high": 110,
+              "word": 28283,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2732,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 2738,
+          "operands": [
+            {
+              "code": 1,
+              "low": 76,
+              "high": 192,
+              "word": 49228,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 8
+            }
+          ]
+        },
+        {
+          "offset": 2738,
+          "opcode": 24,
+          "name": "IF \u003c",
+          "next": 2739
+        },
+        {
+          "offset": 2739,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 2746,
+          "operands": [
+            {
+              "code": 1,
+              "low": 78,
+              "high": 74,
+              "word": 19022,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 123,
+              "high": 110,
+              "word": 28283,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2746,
+          "opcode": 8,
+          "name": "RANDOM",
+          "next": 2752,
+          "operands": [
+            {
+              "code": 0,
+              "low": 5
+            },
+            {
+              "code": 1,
+              "low": 127,
+              "high": 110,
+              "word": 28287,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2752,
+          "opcode": 42,
+          "name": "GETTABLE",
+          "next": 2762,
+          "operands": [
+            {
+              "code": 1,
+              "low": 160,
+              "high": 156,
+              "word": 40096,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 127,
+              "high": 110,
+              "word": 28287,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2762,
+          "opcode": 47,
+          "name": "AND",
+          "next": 2772,
+          "operands": [
+            {
+              "code": 1,
+              "low": 123,
+              "high": 110,
+              "word": 28283,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2772,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 2773
+        },
+        {
+          "offset": 2773,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 2777,
+          "operands": [
+            {
+              "code": 1,
+              "low": 186,
+              "high": 163,
+              "word": 41914,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 795,
+          "opcode": 33,
+          "name": "LOAD FILES",
+          "next": 802,
+          "operands": [
+            {
+              "code": 0,
+              "low": 22
+            },
+            {
+              "code": 0,
+              "low": 2
+            },
+            {
+              "code": 0,
+              "low": 255
+            }
+          ]
+        },
+        {
+          "offset": 802,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 808,
+          "operands": [
+            {
+              "code": 1,
+              "low": 242,
+              "high": 73,
+              "word": 18930,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 23
+            }
+          ]
+        },
+        {
+          "offset": 808,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 809
+        },
+        {
+          "offset": 809,
+          "opcode": 0,
+          "name": "EXIT",
+          "next": 810
+        },
+        {
+          "offset": 569,
+          "opcode": 5,
+          "name": "SUBTRACT",
+          "next": 578,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 578,
+          "opcode": 42,
+          "name": "GETTABLE",
+          "next": 588,
+          "operands": [
+            {
+              "code": 1,
+              "low": 149,
+              "high": 156,
+              "word": 40085,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 588,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 595,
+          "operands": [
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 77,
+              "high": 192,
+              "word": 49229,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 595,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 596
+        },
+        {
+          "offset": 596,
+          "opcode": 0,
+          "name": "EXIT",
+          "next": 597
+        },
+        {
+          "offset": 2161,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 2168,
+          "operands": [
+            {
+              "code": 1,
+              "low": 76,
+              "high": 74,
+              "word": 19020,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 123,
+              "high": 110,
+              "word": 28283,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2168,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 2174,
+          "operands": [
+            {
+              "code": 1,
+              "low": 76,
+              "high": 192,
+              "word": 49228,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 8
+            }
+          ]
+        },
+        {
+          "offset": 2174,
+          "opcode": 24,
+          "name": "IF \u003c",
+          "next": 2175
+        },
+        {
+          "offset": 2175,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 2182,
+          "operands": [
+            {
+              "code": 1,
+              "low": 78,
+              "high": 74,
+              "word": 19022,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 123,
+              "high": 110,
+              "word": 28283,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2182,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 2188,
+          "operands": [
+            {
+              "code": 0,
+              "low": 2
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2188,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 2194,
+          "operands": [
+            {
+              "code": 1,
+              "low": 202,
+              "high": 109,
+              "word": 28106,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 0
+            }
+          ]
+        },
+        {
+          "offset": 2194,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 2195
+        },
+        {
+          "offset": 2195,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 2201,
+          "operands": [
+            {
+              "code": 0,
+              "low": 20
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2201,
+          "opcode": 8,
+          "name": "RANDOM",
+          "next": 2208,
+          "operands": [
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2208,
+          "opcode": 3,
+          "name": "COMPARE",
+          "next": 2214,
+          "operands": [
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 0
+            }
+          ]
+        },
+        {
+          "offset": 2214,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 2215
+        },
+        {
+          "offset": 2215,
+          "opcode": 0,
+          "name": "EXIT",
+          "next": 2216
+        },
+        {
+          "offset": 267,
+          "opcode": 47,
+          "name": "AND",
+          "next": 277,
+          "operands": [
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 75,
+              "high": 74,
+              "word": 19019,
+              "word_set": true
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 277,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 278
+        },
+        {
+          "offset": 278,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 282,
+          "operands": [
+            {
+              "code": 1,
+              "low": 119,
+              "high": 154,
+              "word": 39543,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 953,
+          "opcode": 47,
+          "name": "AND",
+          "next": 962,
+          "operands": [
+            {
+              "code": 1,
+              "low": 76,
+              "high": 74,
+              "word": 19020,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 64
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 962,
+          "opcode": 23,
+          "name": "IF \u003c\u003e",
+          "next": 963
+        },
+        {
+          "offset": 963,
+          "opcode": 0,
+          "name": "EXIT",
+          "next": 964
+        },
+        {
+          "offset": 1347,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 1407,
+          "operands": [
+            {
+              "code": 128,
+              "low": 57
+            }
+          ]
+        },
+        {
+          "offset": 1407,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 1411,
+          "operands": [
+            {
+              "code": 1,
+              "low": 130,
+              "high": 153,
+              "word": 39298,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1411,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 1412
+        },
+        {
+          "offset": 1412,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 1416,
+          "operands": [
+            {
+              "code": 1,
+              "low": 15,
+              "high": 166,
+              "word": 42511,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 227,
+          "opcode": 43,
+          "name": "HORIZONTAL MENU",
+          "next": 228
+        },
+        {
+          "offset": 262,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 266,
+          "operands": [
+            {
+              "code": 128,
+              "low": 1
+            }
+          ]
+        },
+        {
+          "offset": 266,
+          "opcode": 19,
+          "name": "RETURN",
+          "next": 267
+        },
+        {
+          "offset": 1633,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 1753,
+          "operands": [
+            {
+              "code": 128,
+              "low": 117
+            }
+          ]
+        },
+        {
+          "offset": 1753,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 1759,
+          "operands": [
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 0,
+              "high": 74,
+              "word": 18944,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1759,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 1763,
+          "operands": [
+            {
+              "code": 1,
+              "low": 227,
+              "high": 153,
+              "word": 39395,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1763,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 1767,
+          "operands": [
+            {
+              "code": 1,
+              "low": 105,
+              "high": 161,
+              "word": 41321,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1828,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 1829
+        },
+        {
+          "offset": 1840,
+          "opcode": 2,
+          "name": "GOSUB",
+          "next": 1844,
+          "operands": [
+            {
+              "code": 1,
+              "low": 156,
+              "high": 153,
+              "word": 39324,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1844,
+          "opcode": 48,
+          "name": "OR",
+          "next": 1853,
+          "operands": [
+            {
+              "code": 1,
+              "low": 77,
+              "high": 74,
+              "word": 19021,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 2
+            },
+            {
+              "code": 1,
+              "low": 77,
+              "high": 74,
+              "word": 19021,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1853,
+          "opcode": 47,
+          "name": "AND",
+          "next": 1862,
+          "operands": [
+            {
+              "code": 1,
+              "low": 77,
+              "high": 74,
+              "word": 19021,
+              "word_set": true
+            },
+            {
+              "code": 0,
+              "low": 1
+            },
+            {
+              "code": 1,
+              "low": 130,
+              "high": 110,
+              "word": 28290,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1862,
+          "opcode": 22,
+          "name": "IF =",
+          "next": 1863
+        },
+        {
+          "offset": 1863,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 1867,
+          "operands": [
+            {
+              "code": 1,
+              "low": 18,
+              "high": 166,
+              "word": 42514,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 1960,
+          "opcode": 43,
+          "name": "HORIZONTAL MENU",
+          "next": 1961
+        },
+        {
+          "offset": 1993,
+          "opcode": 18,
+          "name": "PRINTCLEAR",
+          "next": 1997,
+          "operands": [
+            {
+              "code": 128,
+              "low": 1
+            }
+          ]
+        },
+        {
+          "offset": 1997,
+          "opcode": 37,
+          "name": "ON GOTO",
+          "next": 1998
+        },
+        {
+          "offset": 2012,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 2018,
+          "operands": [
+            {
+              "code": 0,
+              "low": 8
+            },
+            {
+              "code": 1,
+              "low": 121,
+              "high": 110,
+              "word": 28281,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 2018,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 2022,
+          "operands": [
+            {
+              "code": 1,
+              "low": 45,
+              "high": 153,
+              "word": 39213,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 156,
+          "opcode": 17,
+          "name": "PRINT",
+          "next": 227,
+          "operands": [
+            {
+              "code": 128,
+              "low": 68
+            }
+          ]
+        },
+        {
+          "offset": 2149,
+          "opcode": 1,
+          "name": "GOTO",
+          "next": 2153,
+          "operands": [
+            {
+              "code": 1,
+              "low": 45,
+              "high": 153,
+              "word": 39213,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3376,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3382,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 75,
+              "high": 192,
+              "word": 49227,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3382,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3388,
+          "operands": [
+            {
+              "code": 0,
+              "low": 12
+            },
+            {
+              "code": 1,
+              "low": 76,
+              "high": 192,
+              "word": 49228,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3388,
+          "opcode": 9,
+          "name": "SAVE",
+          "next": 3394,
+          "operands": [
+            {
+              "code": 0,
+              "low": 0
+            },
+            {
+              "code": 1,
+              "low": 77,
+              "high": 192,
+              "word": 49229,
+              "word_set": true
+            }
+          ]
+        },
+        {
+          "offset": 3394,
+          "opcode": 32,
+          "name": "NEWECL",
+          "next": 3397,
+          "operands": [
+            {
+              "code": 0,
+              "low": 23
+            }
+          ]
+        }
+      ],
+      "error": "unknown opcode 0xFF at payload offset 3397"
     },
     {
       "file": "poolrad/ecl7.dax",
@@ -373,7 +3299,7 @@
         39912,
         39919
       ],
-      "error": "unknown opcode 0x54 at payload offset 513"
+      "instructions": 423
     },
     {
       "file": "poolrad/ecl7.dax",
@@ -388,7 +3314,7 @@
         45319,
         45330
       ],
-      "error": "unknown opcode 0x6D at payload offset 6142"
+      "instructions": 701
     },
     {
       "file": "poolrad/ecl8.dax",
@@ -403,7 +3329,7 @@
         46170,
         39188
       ],
-      "error": "unknown opcode 0xC9 at payload offset 71"
+      "instructions": 750
     },
     {
       "file": "poolrad/ecl8.dax",
@@ -418,7 +3344,7 @@
         39913,
         39914
       ],
-      "error": "unknown opcode 0x4A at payload offset 376"
+      "instructions": 470
     },
     {
       "file": "poolrad/ecl8.dax",
@@ -433,7 +3359,7 @@
         44109,
         44120
       ],
-      "error": "unknown opcode 0x46 at payload offset 4890"
+      "instructions": 617
     },
     {
       "file": "poolrad/ecl8.dax",
@@ -448,7 +3374,7 @@
         39979,
         40006
       ],
-      "instructions": 9
+      "instructions": 617
     }
   ]
 }

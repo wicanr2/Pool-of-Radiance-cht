@@ -22,6 +22,20 @@ type MapKey struct {
 	BlockID uint8
 }
 
+// Spawn is a Pool-owned entry into one legacy geometry block. Direction uses
+// the original 0..7 facing values; movement policy remains map/ECL context.
+type Spawn struct {
+	Map    MapKey
+	X      uint8
+	Y      uint8
+	Facing uint8
+}
+
+// DOSInitialSpawn is the normal new-party entry established by Spec 009.
+func DOSInitialSpawn() Spawn {
+	return Spawn{Map: MapKey{Archive: 3, BlockID: 0}, X: 15, Y: 1, Facing: 6}
+}
+
 // GeometryMap preserves Pool's archive identity and two-byte GEO prefix.
 type GeometryMap struct {
 	Key    MapKey

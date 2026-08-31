@@ -17,6 +17,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
@@ -32,6 +33,7 @@ const (
 	modeTitle screenMode = iota
 	modeMenu
 	modeCreation
+	modeAdventure
 )
 
 type diceRoller struct{ random *rand.Rand }
@@ -70,6 +72,8 @@ type app struct {
 	state        poolsave.State
 	saveState    func(poolsave.State) error
 	loadState    func() (poolsave.State, error)
+	initialMap   *gamepack.GeometryMap
+	spawn        gamepack.Spawn
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -89,6 +93,16 @@ func newApp(zipPath string) (*app, error) {
 		keys:   ebitenKeys{},
 		state:  poolsave.NewState(),
 	}
+	catalog, err := gamepack.ReadDOSGeometryCatalog(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.spawn = gamepack.DOSInitialSpawn()
+	initialMap, ok := catalog.Map(application.spawn.Map)
+	if !ok {
+		return nil, fmt.Errorf("DOS initial map GEO%d block %d is absent", application.spawn.Map.Archive, application.spawn.Map.BlockID)
+	}
+	application.initialMap = &initialMap
 	const statePath = "saves/pool-remake-state.json"
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
@@ -187,6 +201,18 @@ func (a *app) Update() error {
 			a.mode = modeMenu
 		}
 	case modeMenu:
+		if a.justPressed(ebiten.KeyB) {
+			if len(a.state.Party) == 0 {
+				a.statusLine = "Add at least one character before beginning adventure."
+				return nil
+			}
+			if a.initialMap == nil {
+				return fmt.Errorf("Pool initial geometry is not configured")
+			}
+			a.mode = modeAdventure
+			a.statusLine = "GEO preview only; press ESC to return."
+			return nil
+		}
 		if a.justPressed(ebiten.KeyC) || a.justPressed(ebiten.KeyEnter) {
 			a.flow, a.cursor, a.rolled = creation.NewFlow(), 0, nil
 			a.mode = modeCreation
@@ -210,6 +236,11 @@ func (a *app) Update() error {
 		}
 	case modeCreation:
 		return a.updateCreation()
+	case modeAdventure:
+		if a.justPressed(ebiten.KeyEscape) {
+			a.mode = modeMenu
+			a.statusLine = "Returned from the geometry preview."
+		}
 	}
 	return nil
 }
@@ -445,19 +476,83 @@ func (a *app) Draw(screen *ebiten.Image) {
 		drawText(screen, "C  CREATE NEW CHARACTER", 176, 112, foreground)
 		drawText(screen, "A  ADD CHARACTER TO PARTY", 176, 140, foreground)
 		drawText(screen, "L  LOAD SAVED GAME", 176, 168, foreground)
-		drawText(screen, fmt.Sprintf("LIBRARY %d   PARTY %d/6", len(a.state.CharacterLibrary), len(a.state.Party)), 176, 210, accent)
+		drawText(screen, "B  BEGIN ADVENTURING", 176, 196, foreground)
+		drawText(screen, fmt.Sprintf("LIBRARY %d   PARTY %d/6", len(a.state.CharacterLibrary), len(a.state.Party)), 176, 230, accent)
 		for index, member := range a.state.Party {
-			drawText(screen, fmt.Sprintf("%d  %s", index+1, member.Name), 176, 240+index*20, foreground)
+			drawText(screen, fmt.Sprintf("%d  %s", index+1, member.Name), 176, 254+index*18, foreground)
 		}
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 72, 350, foreground)
 		}
-	} else {
+	} else if a.mode == modeCreation {
 		drawCreation(screen, a, foreground, accent)
+	} else {
+		drawAdventure(screen, a, foreground, accent)
 	}
 	drawText(screen, "F1 Help  F2 Theme  ESC Back  F10 Quit", 16, 390, foreground)
 	if a.help {
 		drawHelp(screen, background, foreground, accent)
+	}
+}
+
+func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	drawFrame(screen, foreground, accent)
+	drawText(screen, "INITIAL DOS GEOMETRY PREVIEW", 190, 52, accent)
+	if a.initialMap == nil {
+		drawText(screen, "INITIAL MAP IS NOT LOADED", 184, 190, foreground)
+		return
+	}
+	const cellSize = 14
+	const originX = 42
+	const originY = 82
+	grid := a.initialMap.Grid
+	for y := 0; y < 16; y++ {
+		for x := 0; x < 16; x++ {
+			cell := grid.Cells[y][x]
+			shade := uint8(18 + (int(cell.Terrain)&7)*8)
+			for py := 1; py < cellSize; py++ {
+				for px := 1; px < cellSize; px++ {
+					screen.Set(originX+x*cellSize+px, originY+y*cellSize+py, color.RGBA{shade, shade, shade, 255})
+				}
+			}
+			left, top := originX+x*cellSize, originY+y*cellSize
+			if cell.WallDirections[0] != 0 {
+				for px := 0; px <= cellSize; px++ {
+					screen.Set(left+px, top, accent)
+				}
+			}
+			if cell.WallDirections[1] != 0 {
+				for py := 0; py <= cellSize; py++ {
+					screen.Set(left+cellSize, top+py, accent)
+				}
+			}
+			if cell.WallDirections[2] != 0 {
+				for px := 0; px <= cellSize; px++ {
+					screen.Set(left+px, top+cellSize, accent)
+				}
+			}
+			if cell.WallDirections[3] != 0 {
+				for py := 0; py <= cellSize; py++ {
+					screen.Set(left, top+py, accent)
+				}
+			}
+		}
+	}
+	markerX := originX + int(a.spawn.X)*cellSize + cellSize/2
+	markerY := originY + int(a.spawn.Y)*cellSize + cellSize/2
+	for delta := -3; delta <= 3; delta++ {
+		screen.Set(markerX+delta, markerY, color.White)
+		screen.Set(markerX, markerY+delta, color.White)
+	}
+	drawText(screen, fmt.Sprintf("GEO%d BLOCK %d", a.spawn.Map.Archive, a.spawn.Map.BlockID), 310, 106, foreground)
+	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
+	drawText(screen, "DATA IDENTITY: EXACT", 310, 184, accent)
+	drawText(screen, "VIEW: DIAGNOSTIC TOP-DOWN", 310, 210, accent)
+	drawText(screen, "WALL ART / MOVE POLICY: PENDING", 310, 246, foreground)
+	drawText(screen, "FIRST EVENT: PENDING", 310, 272, foreground)
+	drawText(screen, "ESC: PARTY CREATION MENU", 310, 308, foreground)
+	if a.statusLine != "" {
+		drawText(screen, a.statusLine, 42, 342, foreground)
 	}
 }
 
@@ -595,6 +690,7 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 		"ESC: return to the previous screen",
 		"R: reroll on the character sheet",
 		"F2: switch original/modern presentation",
+		"B: begin adventure after adding a party member",
 		"F10: save the remake state and quit",
 	}
 	for index, line := range lines {

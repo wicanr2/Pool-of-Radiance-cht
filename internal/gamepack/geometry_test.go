@@ -48,6 +48,13 @@ func TestRealDOSGeometryCatalog(t *testing.T) {
 	if again.Grid.Cells[0][0].Terrain == anchor.Grid.Cells[0][0].Terrain {
 		t.Fatal("mutating a returned grid changed the catalog")
 	}
+	spawn := DOSInitialSpawn()
+	if spawn.Map != (MapKey{Archive: 3, BlockID: 0}) || spawn.X != 15 || spawn.Y != 1 || spawn.Facing != 6 {
+		t.Fatalf("initial spawn=%+v", spawn)
+	}
+	if _, ok := catalog.Map(spawn.Map); !ok {
+		t.Fatalf("initial spawn map %+v is absent from the fixed DOS corpus", spawn.Map)
+	}
 }
 
 func TestDOSGeometryCatalogFailsClosedWhenArchiveMissing(t *testing.T) {

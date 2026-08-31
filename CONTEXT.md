@@ -34,9 +34,10 @@
 - 未修改 DOS 程式可用固定輸入抵達標題與主選單；兩張穩定畫面及雜湊已保存。
 - `TITLE.DAX` 恰有兩個 320×200 picture blocks；block 1 經共用 engine 解碼、
   標準 EGA 色盤與最近鄰 2× 呈現後，和 DOSBox oracle 的 AE 為 0。
-- ECL block entry address 的零位移對應 `9914h`，因此 code-address base 為
-  `9914h`。既有 decoder 目前只完整走過 3／29 blocks；剩餘 26 筆是明確待研究
-  缺口，不得寫成 gameplay opcode 已知或 VM parity。
+- ECL 映射基準的舊斷言 `9914h` 已推翻：`overlay-07` loader／address classifier／
+  resolver 證明 raw payload 映射到 `9900h..B6FFh`；前五個 command-set headers
+  佔 20 bytes，所以 `9914h` 只是第一條指令。修正後既有 decoder 完整走過
+  26／29 blocks、14,724 條 reachable instructions；剩餘 3 筆才是真待研究缺口。
 - DOSBox 資料目錄必須是 `C:\POOLRAD\`；直接掛成 `C:\` 會到建角資料頁才
   假性要求 disk 3。修正掛載後，預設 Dwarf／Male／Fighter／Lawful Good 可正常
   產生非零能力值與頭像。原先誤讀成 `MAX BONUS?` 的文字經放大後訂正為
@@ -64,9 +65,12 @@
   真實素材並可調 Head、Weapon、Size 與六部位雙色。Xvfb 逐鍵截圖已涵蓋三個 editor；
   Spec 008 已另接版本化 remake 角色庫與 atomic save：icon 確認後保存角色、回到原版
   順序的 Party Creation Menu，`A` 加入最多六名玩家角色、`L` fail-closed 載入、F10 保存
-  後離開；Xvfb 正常按鍵已走到 Library 1／Party 1。DOS CHA／SPC exporter 未冒充完成：
+  後離開；Xvfb 正常按鍵已走到 Library 1／Party 1，再以 `B` 進入已證實的
+  `GEO3/block 0, (15,1), facing 6` typed geometry 診斷總覽。DOS CHA／SPC exporter
+  未冒充完成：
   33 份 CHA 均為 285 bytes，但 SPC 是 9-byte 節點鏈且 corpus 有 9／18／36 bytes，不能
-  複製單一模板。Phlan 與遊戲內存檔仍未接。
+  複製單一模板。初始 map identity 已接，但地名、原版第一人稱畫面、事件與遊戲內
+  存檔仍未接。
 - HEAD1..8／BODY1..8 共 16 archives 已全掃：109／109 blocks 可由共用 engine
   picture decoder fail-closed 解碼；Spec 006 已閉合建角固定使用 HEAD3／BODY3、
   14／12 筆稀疏 block selector，並以 DOS capture 全像素零差異證明 88×40＋88×48
@@ -76,14 +80,14 @@
 ## 尚未知／不阻擋目前盤點
 
 - DOS 發行版精確 revision、compiler／linker／overlay 精確版本（family 已有強推論）。
-- Pool 與 CoAB 的 ECL variable／instruction record 差異，以及非 TITLE picture
-  payload 語意。
+- 剩餘三個 ECL graph 失敗的 record／控制流成因，以及非 TITLE picture payload 語意。
 - 歷史中文 RAR 的字碼、修改範圍、可執行檔差異與授權狀態。
 - D64 實際平台、檔案系統內容及其與 DOS 版的關係。
 
 ## 現行驗證策略
 
 先做唯讀 inventory、雜湊與 fail-closed codec 驗證；再建立 READY spec，才實作
-玩家行為。GEO archive／block shape 已 READY；正常新遊戲入口仍須用 DOS runtime
-save／trace 閉合 ECL block、GEO archive、block ID、座標與朝向。首條玩家垂直鏈固定為
-標題 → 建角／建隊 → Phlan 第一個正常可操作地圖 → 事件／戰鬥 → 存檔／讀檔。
+玩家行為。GEO archive／block shape 與正常新遊戲初始 map identity 已 READY；地名、
+移動變體、WALLDEF 第一人稱呈現及第一事件仍須以 DOS runtime／executable 閉合。
+首條玩家垂直鏈固定為標題 → 建角／建隊 → 第一個正常可操作地圖 → 事件／戰鬥 →
+存檔／讀檔。

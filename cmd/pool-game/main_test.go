@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
@@ -170,5 +171,31 @@ func TestLoadSavedGameUsesVersionedStateSeam(t *testing.T) {
 	}
 	if application.state.Schema != poolsave.Schema {
 		t.Fatalf("loaded schema=%q", application.state.Schema)
+	}
+}
+
+func TestBeginAdventureRequiresPartyAndUsesSpec009Spawn(t *testing.T) {
+	initial := gamepack.GeometryMap{Key: gamepack.MapKey{Archive: 3, BlockID: 0}}
+	application := &app{
+		mode:       modeMenu,
+		state:      poolsave.NewState(),
+		spawn:      gamepack.DOSInitialSpawn(),
+		initialMap: &initial,
+	}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	if application.mode != modeMenu || application.statusLine == "" {
+		t.Fatalf("empty-party Begin mode=%d status=%q", application.mode, application.statusLine)
+	}
+	application.state.Party = []poolsave.Character{{Name: "HERO"}}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	if application.mode != modeAdventure || application.spawn != (gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 15, Y: 1, Facing: 6}) {
+		t.Fatalf("Begin mode=%d spawn=%+v", application.mode, application.spawn)
+	}
+	if err := press(application, ebiten.KeyEscape); err != nil || application.mode != modeMenu {
+		t.Fatalf("adventure ESC mode=%d err=%v", application.mode, err)
 	}
 }
