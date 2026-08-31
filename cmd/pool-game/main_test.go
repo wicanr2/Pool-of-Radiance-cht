@@ -272,7 +272,7 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 2 {
 		t.Fatalf("turn facing=%d err=%v", application.spawn.Facing, err)
 	}
-	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 1 || application.spawn.Y != 4 {
+	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 1 || application.spawn.Y != 4 || application.cellEventPending {
 		t.Fatalf("forward spawn=%+v err=%v", application.spawn, err)
 	}
 }

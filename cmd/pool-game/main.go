@@ -59,38 +59,39 @@ func (ebitenKeys) JustPressed(key ebiten.Key) bool { return inpututil.IsKeyJustP
 func (ebitenKeys) Chars() []rune                   { return ebiten.AppendInputChars(nil) }
 
 type app struct {
-	mode         screenMode
-	title        *ebiten.Image
-	flow         creation.Flow
-	cursor       int
-	rolled       *creation.RolledCharacter
-	roller       diceRoller
-	help         bool
-	modern       bool
-	statusLine   string
-	keys         keySource
-	nameInput    string
-	portrait     *ebiten.Image
-	iconReady    *ebiten.Image
-	iconAction   *ebiten.Image
-	loadPortrait func(head, body uint8) (*ebiten.Image, error)
-	loadIcon     func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
-	state        poolsave.State
-	saveState    func(poolsave.State) error
-	loadState    func() (poolsave.State, error)
-	initialMap   *gamepack.GeometryMap
-	initialWalls *graphics.PieceSet
-	initialEvent *gamepack.InitialEvent
-	spawn        gamepack.Spawn
-	introWaiting bool
-	introDone    bool
-	tourActive   bool
-	tourStep     int
-	tourPage     int
-	tourDelay    int
-	eventMachine *eclvm.Machine
-	eventText    string
-	eventLabel   string
+	mode             screenMode
+	title            *ebiten.Image
+	flow             creation.Flow
+	cursor           int
+	rolled           *creation.RolledCharacter
+	roller           diceRoller
+	help             bool
+	modern           bool
+	statusLine       string
+	keys             keySource
+	nameInput        string
+	portrait         *ebiten.Image
+	iconReady        *ebiten.Image
+	iconAction       *ebiten.Image
+	loadPortrait     func(head, body uint8) (*ebiten.Image, error)
+	loadIcon         func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
+	state            poolsave.State
+	saveState        func(poolsave.State) error
+	loadState        func() (poolsave.State, error)
+	initialMap       *gamepack.GeometryMap
+	initialWalls     *graphics.PieceSet
+	initialEvent     *gamepack.InitialEvent
+	spawn            gamepack.Spawn
+	introWaiting     bool
+	introDone        bool
+	tourActive       bool
+	tourStep         int
+	tourPage         int
+	tourDelay        int
+	eventMachine     *eclvm.Machine
+	eventText        string
+	eventLabel       string
+	cellEventPending bool
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -345,6 +346,10 @@ func (a *app) Update() error {
 			}
 		}
 		if a.introDone {
+			if a.cellEventPending {
+				a.statusLine = "A Pool cell event is pending implementation; movement is paused."
+				return nil
+			}
 			if a.justPressed(ebiten.KeyArrowLeft) {
 				a.spawn.Facing = uint8((int(a.spawn.Facing) + 7) % 8)
 				a.statusLine = "Turned left; Pool event dispatch remains pending."
@@ -387,7 +392,18 @@ func (a *app) moveInitialDungeonForward() error {
 	}
 	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
 	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
-	a.statusLine = "Moved using original GEO wall/door data; Pool event dispatch remains pending."
+	if a.eventMachine != nil {
+		result, err := gamepack.RunInitialCellEntry(a.eventMachine, a.initialMap.Grid, a.spawn)
+		if err != nil {
+			return fmt.Errorf("dispatch Pool initial cell: %w", err)
+		}
+		if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
+			a.cellEventPending = true
+			a.statusLine = "Entered a Pool cell event; movement paused until its frontend effect is implemented."
+			return nil
+		}
+	}
+	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
 }
 
@@ -729,7 +745,9 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 184, accent)
 	drawText(screen, "VIEW TRAVERSAL: STRONG INFERENCE", 310, 210, accent)
 	moveStatus := "MOVE POLICY: PENDING / DISABLED"
-	if a.introDone { moveStatus = "GEO WALK: ENABLED / EVENTS PENDING" }
+	if a.introDone {
+		moveStatus = "GEO WALK: ENABLED / EVENTS PENDING"
+	}
 	drawText(screen, moveStatus, 310, 246, foreground)
 	if a.initialEvent != nil {
 		drawText(screen, fmt.Sprintf("FIRST EVENT: ROLF / MONSTER %d", a.initialEvent.MonsterID), 310, 272, foreground)

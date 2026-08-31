@@ -66,6 +66,9 @@
   Spec 014 已先接 Rolf EXIT 後方向鍵轉向與 cardinal GEO forward：真實 `(0,4)` edge
   抽樣及 Xvfb `(0,4,3) → turn → (1,4,2)` 通過。仍須接每格 ECL dispatch、門選單／
   解鎖 mutation 與 DOS 同狀態按鍵對拍，才可把「基本 GEO walk」升為完整自由移動。
+  Spec 015 已再接同 session 的 ECL3/block0 entry `9914h`：第一個正式移動格 `(1,4,2)`
+  走 15 條後於 `997Dh EXIT`，無事件。其他事件格目前 fail-closed 成 pending；下一步
+  是 VM 逐 external boundary 暫停及 frontend 文字／選單／戰鬥 consumer。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；先抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED），下一步擴充跨 block session 與

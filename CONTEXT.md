@@ -138,3 +138,11 @@ Spec 014 已開放 Rolf EXIT 後的第一張地圖基本操作：左右方向鍵
 Xvfb 正常路徑已驗 `(0,4,facing3)` 左轉至 facing2，再前進到 `(1,4)`。GEO bytes、
 入口與 wrapper wrap 是 Pool exact；door detail consumer 仍是跨作品 strong inference，
 事件尚未執行，因此只能稱「基本 GEO walk」，不能稱完整自由移動。
+
+Spec 015 已把第一張地圖移動接到原始 cell lifecycle：同一 Rolf VM session 保留記憶體，
+每步同步 `C04B..C04F` 後切到 ECL3/block0 entry `9914h`。正式 `(0,4,3)` 左轉／前進至
+`(1,4,2)` 的第一格執行 15 條指令並在 `997Dh EXIT` 返回，無事件副作用。尚未接的
+事件格不再被安靜略過：一旦結果包含文字、選單或 external event，前端設 pending 並
+停止移動。engine `RunUntilEvent` 現已逐 instruction 在第一個 observable event 暫停，
+不會先跑過 COMBAT 才事後標 pending。下一步是各 boundary 的 frontend continuation，
+而不是建立座標 hardcode 表。

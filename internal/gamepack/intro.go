@@ -6,6 +6,7 @@ import (
 
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
+	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
 // InitialEvent is the first player-visible ECL3/block 0 event reached by a
@@ -237,4 +238,26 @@ func NewInitialEventMachine(event InitialEvent) (*eclvm.Machine, error) {
 		0x31: true, // SPRITE OFF
 		0x3A: true, // DELAY
 	})
+}
+
+// RunInitialCellEntry projects the live first-person registers and executes
+// ECL3/block0 lifecycle entry zero in the same session used by the Rolf event.
+func RunInitialCellEntry(machine *eclvm.Machine, grid geometry.Grid, position Spawn) (eclvm.Result, error) {
+	if machine == nil {
+		return eclvm.Result{}, fmt.Errorf("initial ECL machine is nil")
+	}
+	cell := grid.CellWrapped(int(position.X), int(position.Y))
+	machine.Memory[0xC04B] = uint16(position.X)
+	machine.Memory[0xC04C] = uint16(position.Y)
+	machine.Memory[0xC04D] = uint16(position.Facing)
+	wall, ok := grid.WallWrapped(int(position.X), int(position.Y), int(position.Facing))
+	if !ok {
+		wall = 0
+	}
+	machine.Memory[0xC04E] = uint16(wall)
+	machine.Memory[0xC04F] = uint16(cell.Terrain)
+	if err := machine.SetPC(0x9914 - 0x9900); err != nil {
+		return eclvm.Result{}, err
+	}
+	return machine.RunUntilEvent(4096, nil, true)
 }

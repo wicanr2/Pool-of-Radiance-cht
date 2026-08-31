@@ -64,4 +64,19 @@ func TestSharedVMRunsRealRolfTourToExit(t *testing.T) {
 			t.Errorf("declared passthrough opcode 0x%02X was not exercised", opcode)
 		}
 	}
+	catalog, err := ReadDOSGeometryCatalog(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	initial, ok := catalog.Map(MapKey{Archive: 3, BlockID: 0})
+	if !ok {
+		t.Fatal("initial map absent")
+	}
+	cellResult, err := RunInitialCellEntry(machine, initial.Grid, Spawn{Map: initial.Key, X: 1, Y: 4, Facing: 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !cellResult.Exited || cellResult.WaitingForMenu || cellResult.PC+0x9900 != 0x997E || cellResult.Steps != 15 || len(cellResult.Events) != 0 {
+		t.Fatalf("first moved cell result: pc=%04X exited=%v waiting=%v steps=%d events=%v menus=%v", cellResult.PC+0x9900, cellResult.Exited, cellResult.WaitingForMenu, cellResult.Steps, cellResult.Events, cellResult.Menus)
+	}
 }
