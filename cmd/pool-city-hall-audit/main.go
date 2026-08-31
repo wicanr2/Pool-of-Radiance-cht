@@ -21,12 +21,14 @@ type operand struct {
 	Low     uint8  `json:"low"`
 	Word    uint16 `json:"word,omitempty"`
 	WordSet bool   `json:"word_set,omitempty"`
+	Text    string `json:"text,omitempty"`
 }
 type instruction struct {
 	Offset   int       `json:"offset"`
 	Address  string    `json:"address"`
 	Opcode   uint8     `json:"opcode"`
 	Name     string    `json:"name"`
+	Text     string    `json:"text,omitempty"`
 	Operands []operand `json:"operands,omitempty"`
 }
 type edge struct {
@@ -56,16 +58,25 @@ type externalCall struct {
 	Opcode  uint8  `json:"opcode"`
 	Name    string `json:"name"`
 }
+type completionNotification struct {
+	Index              int    `json:"index"`
+	StateAddress       string `json:"state_address"`
+	Target             string `json:"target"`
+	Text               string `json:"text"`
+	IncrementsProgress bool   `json:"increments_4ac1"`
+	IncrementAddress   string `json:"increment_address,omitempty"`
+}
 type output struct {
-	Schema             string         `json:"schema"`
-	SourceSchema       string         `json:"source_schema"`
-	SourceBlockSHA256  string         `json:"source_block_sha256"`
-	SourceMemberSHA256 string         `json:"source_member_sha256"`
-	CodeAddressBase    string         `json:"code_address_base"`
-	RewardDispatch     dispatch       `json:"reward_dispatch"`
-	CommissionDispatch dispatch       `json:"commission_dispatch"`
-	ProgressProducers  []string       `json:"progress_4ac1_increment_producers"`
-	ExternalCalls      []externalCall `json:"external_calls"`
+	Schema             string                   `json:"schema"`
+	SourceSchema       string                   `json:"source_schema"`
+	SourceBlockSHA256  string                   `json:"source_block_sha256"`
+	SourceMemberSHA256 string                   `json:"source_member_sha256"`
+	CodeAddressBase    string                   `json:"code_address_base"`
+	RewardDispatch     dispatch                 `json:"reward_dispatch"`
+	CommissionDispatch dispatch                 `json:"commission_dispatch"`
+	ProgressProducers  []string                 `json:"progress_4ac1_increment_producers"`
+	CompletionTable    []completionNotification `json:"completion_notification_table"`
+	ExternalCalls      []externalCall           `json:"external_calls"`
 }
 
 func main() {
@@ -111,6 +122,10 @@ func audit(tr trace) (output, error) {
 	if commission.SlotCount != 16 {
 		return output{}, fmt.Errorf("commission dispatch has %d slots, want 16", commission.SlotCount)
 	}
+	completionDispatch := dispatchAt(tr, 0x9D63)
+	if completionDispatch.SlotCount != 26 {
+		return output{}, fmt.Errorf("completion dispatch has %d slots, want 26", completionDispatch.SlotCount)
+	}
 	producers := make([]string, 0, 10)
 	externals := make([]externalCall, 0)
 	for _, ins := range tr.Instructions {
@@ -124,12 +139,52 @@ func audit(tr trace) (output, error) {
 	if len(producers) != 10 {
 		return output{}, fmt.Errorf("4AC1 increment producer count=%d, want 10", len(producers))
 	}
+	completionTable, err := buildCompletionTable(tr, completionDispatch)
+	if err != nil {
+		return output{}, err
+	}
 	if len(externals) == 0 {
 		return output{}, errors.New("no external service calls found in City Hall scope")
 	}
 	return output{Schema: "pool-city-hall-structural-audit-v1", SourceSchema: tr.Schema, SourceBlockSHA256: tr.BlockSHA256,
 		SourceMemberSHA256: tr.MemberSHA256, CodeAddressBase: tr.CodeAddressBase, RewardDispatch: reward,
-		CommissionDispatch: commission, ProgressProducers: producers, ExternalCalls: externals}, nil
+		CommissionDispatch: commission, ProgressProducers: producers, CompletionTable: completionTable, ExternalCalls: externals}, nil
+}
+
+func buildCompletionTable(tr trace, dispatch dispatch) ([]completionNotification, error) {
+	byAddress := make(map[string]int, len(tr.Instructions))
+	for index, ins := range tr.Instructions {
+		byAddress[ins.Address] = index
+	}
+	result := make([]completionNotification, len(dispatch.Targets))
+	for slot, target := range dispatch.Targets {
+		start, ok := byAddress[target]
+		if !ok {
+			return nil, fmt.Errorf("completion target %s is absent from trace", target)
+		}
+		row := completionNotification{Index: slot, StateAddress: fmt.Sprintf("0x%04X", 0x4AA6+slot), Target: target}
+		end := len(tr.Instructions)
+		if slot+1 < len(dispatch.Targets) {
+			if next, found := byAddress[dispatch.Targets[slot+1]]; found && next > start {
+				end = next
+			}
+		}
+		for index := start; index < end; index++ {
+			ins := tr.Instructions[index]
+			if row.Text == "" && (ins.Name == "PRINT" || ins.Name == "PRINTCLEAR") && len(ins.Operands) != 0 {
+				row.Text = ins.Operands[0].Text
+			}
+			if isIncrementOf(ins, 0x4AC1) {
+				row.IncrementsProgress = true
+				row.IncrementAddress = ins.Address
+			}
+			if slot+1 == len(dispatch.Targets) && ins.Name == "RETURN" && row.Text != "" {
+				break
+			}
+		}
+		result[slot] = row
+	}
+	return result, nil
 }
 
 func dispatchAt(tr trace, address int) dispatch {

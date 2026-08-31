@@ -1,0 +1,1362 @@
+{
+  "schema": "pool-ecl-memory-audit-v1",
+  "zip": "Pool of Radiance (1988).zip",
+  "zip_sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633",
+  "targets": [
+    "0x4AA6",
+    "0x4AA7",
+    "0x4AA8",
+    "0x4AA9",
+    "0x4AAA",
+    "0x4AAB",
+    "0x4AAC",
+    "0x4AAD",
+    "0x4AAE",
+    "0x4AAF",
+    "0x4AB0",
+    "0x4AB1",
+    "0x4AB2",
+    "0x4AB3",
+    "0x4AB4",
+    "0x4AB5",
+    "0x4AB6",
+    "0x4AB7",
+    "0x4AB8",
+    "0x4AB9",
+    "0x4ABA",
+    "0x4ABB",
+    "0x4ABC",
+    "0x4ABD",
+    "0x4ABE",
+    "0x4ABF"
+  ],
+  "references": [
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 18,
+      "address": "0x998D",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB0"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 18,
+      "address": "0xA82B",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB0"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 18,
+      "address": "0xA86B",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB0"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 18,
+      "address": "0xAF75",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0x99FF",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA8"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0x9B3E",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA8"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xA402",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xA93B",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xAA53",
+      "opcode": 20,
+      "name": "COMPARE AND",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xABC8",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xAD50",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xAD5F",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA8"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xB63B",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL1.DAX",
+      "block_id": 24,
+      "address": "0xB646",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA8"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 9,
+      "address": "0xA6FB",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB9"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 9,
+      "address": "0xA702",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB9"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0x9FFD",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AAA"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA004",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AAA"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA0AE",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AAB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA0B5",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AAB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA108",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AAF"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA10F",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AAF"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA27B",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AAC"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA282",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AAC"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA31A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AAD"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA321",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AAD"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA3AC",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AAE"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 15,
+      "address": "0xA3B3",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AAE"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0x9A19",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0x9AA9",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0xA51F",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0xAD61",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0xB69C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0xB6A4",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0xB6A4",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0xB6AD",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL2.DAX",
+      "block_id": 20,
+      "address": "0xB6B5",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 0,
+      "address": "0x996E",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABA"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 0,
+      "address": "0x9A63",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABA"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 0,
+      "address": "0x9C5C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA7"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 0,
+      "address": "0xA108",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 0,
+      "address": "0xAB8A",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB8"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9ABD",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB8"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9AC9",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9D20",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA6"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9E80",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9EBB",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9F5A",
+      "opcode": 53,
+      "name": "SAVE TABLE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA6"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA2BA",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA3C3",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABA"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA59D",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA8AB",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABB"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA8EC",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA7"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA9B0",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB0"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAA2A",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB0"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAA3C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAA47",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB8"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAAA8",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA7"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAABE",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABD"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAB10",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA7"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAB1B",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB2"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAB7E",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB7"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xABC0",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB6"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAC21",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAC58",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB5"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAC9A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA7"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xACA5",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAD0C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAD22",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAE25",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB9"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAE30",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAEB0",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB9"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAEBB",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABA"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAF3A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAF45",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xAF7D",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xB589",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABA"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 14,
+      "address": "0x9B36",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB2"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 14,
+      "address": "0xB359",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB2"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 14,
+      "address": "0xB361",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB2"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 14,
+      "address": "0xB4D8",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB2"
+    },
+    {
+      "archive": "ECL4.DAX",
+      "block_id": 2,
+      "address": "0xAE71",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB8"
+    },
+    {
+      "archive": "ECL4.DAX",
+      "block_id": 10,
+      "address": "0xB177",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB1"
+    },
+    {
+      "archive": "ECL4.DAX",
+      "block_id": 21,
+      "address": "0xADAA",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA7"
+    },
+    {
+      "archive": "ECL4.DAX",
+      "block_id": 21,
+      "address": "0xADD0",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA7"
+    },
+    {
+      "archive": "ECL5.DAX",
+      "block_id": 3,
+      "address": "0xB19A",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4ABF"
+    },
+    {
+      "archive": "ECL5.DAX",
+      "block_id": 4,
+      "address": "0xAD9F",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL5.DAX",
+      "block_id": 4,
+      "address": "0xADA6",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4ABE"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0x9936",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0x993D",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0x9952",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0x9C9A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0x9DA1",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xA7BD",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xA862",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xA931",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xAA40",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xAF3B",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xAFAD",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xB0A6",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xB1A9",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xB57A",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xB62E",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 1,
+      "address": "0xB653",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 25,
+      "address": "0x9D39",
+      "opcode": 20,
+      "name": "COMPARE AND",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 25,
+      "address": "0x9D92",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AA9"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 25,
+      "address": "0x9E57",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 25,
+      "address": "0x9E6A",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 28,
+      "address": "0x993C",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 28,
+      "address": "0x9EA0",
+      "opcode": 20,
+      "name": "COMPARE AND",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 28,
+      "address": "0xA2F4",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 28,
+      "address": "0xB526",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 28,
+      "address": "0xB5F1",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 28,
+      "address": "0xB625",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL6.DAX",
+      "block_id": 28,
+      "address": "0xB648",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB4"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 17,
+      "address": "0xA1EF",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB7"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 17,
+      "address": "0xA1F6",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB7"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 23,
+      "address": "0xAC4C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 23,
+      "address": "0xAC53",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 26,
+      "address": "0x9A46",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 26,
+      "address": "0x9AEB",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 26,
+      "address": "0xAF52",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 26,
+      "address": "0xB130",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 13,
+      "address": "0xA502",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB6"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 16,
+      "address": "0x9CBD",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB5"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 16,
+      "address": "0x9CCF",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB5"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 16,
+      "address": "0xA35B",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB5"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 16,
+      "address": "0xA362",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB5"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 27,
+      "address": "0x9C0C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB6"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 27,
+      "address": "0xAC76",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB3"
+    },
+    {
+      "archive": "ECL8.DAX",
+      "block_id": 29,
+      "address": "0x9E02",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AA6"
+    }
+  ],
+  "failures": [
+    {
+      "archive": "ECL5.DAX",
+      "block_id": 7,
+      "error": "unknown opcode 0x6C at payload offset 476"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 17,
+      "error": "unknown opcode 0x9D at payload offset 1085"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 22,
+      "error": "unknown opcode 0xFF at payload offset 3397"
+    }
+  ]
+}

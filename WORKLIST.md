@@ -112,8 +112,9 @@
   的 TPOV entry 與 IDA Pro 9.4 bytes 閉合 Copper／Silver／Electrum／Gold／Platinum／
   Gems／Jewelry 七槽、角色 wallet、Pool／Share／Take、容量 gate 與餘額語意；remake
   已接正常寶物選單、schema 5 七槽存檔及 schema 1..4 Gold 遷移，全專案測試與 vet
-  通過。下一步逐一追 `9FAEh..A4D1h` 的真正進度 producer，並由正常 commission 狀態
-  抵達墓園服務。
+  通過。Spec 041 已進一步證明 `9D63h` 掃描 `4AA6h..4ABFh` 26 槽完成通知表，只有
+  十個分支增加 `4AC1h`；可重生矩陣及全 ECL 直接引用清冊已有缺證據負對照。下一步
+  逐槽追真正的 `FEh` producer，並由至少四條正常 commission 完成鏈抵達墓園服務。
   `4A96h` 是接受後重入
   閘門；`4AB1h` 與吸血鬼事件相連但語意尚未足夠，不可猜名。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達

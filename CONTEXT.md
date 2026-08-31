@@ -12,6 +12,12 @@
   remake 已接 View／Take／Pool／Share／Exit 正常 UI、數量輸入接縫與容量檢查；
   存檔升為 schema 5，schema 1..4 的 `gold`／`pooled_gold` 確定性遷移到索引 3，
   新舊欄位同時出現時失敗即關閉。全專案 `go test ./...` 與 `go vet ./...` 已通過。
+- Spec 041 修正 `4AC1h` 的剩餘模型：`9D63h` 是 `4AA6h..4ABFh` 的 26 槽完成通知
+  dispatcher，槽值 `FEh` 才顯示一次並在結算後改為 `FFh`；只有十個通知子程式增加
+  `4AC1h`。`cmd/pool-city-hall-audit` 現從原始有序 edge 重生狀態位址、target、文字、
+  增量位址矩陣，並有刪 edge／改 producer 的失敗即關閉測試。另以全 ECL operand
+  audit 固定各槽直接 producer／consumer 下界；三個 decoder failure 仍明列，零引用
+  不得解讀成不存在。
 
 - Spec 032 以 Pool overlay-03 dispatcher `346Eh/3474h` 與 handler `1A81h..1EA4h`
   固定 `27h TREASURE` 的八欄 numeric request。共用 engine `91801a5` 已提供 inline、

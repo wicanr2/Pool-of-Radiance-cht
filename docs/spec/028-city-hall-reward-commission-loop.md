@@ -40,7 +40,7 @@ clerk 第一頁 `9BB8h` 後：
 `TREASURE` amounts 索引 `3,4,5,6,4,5,6`，之後把對應 `4A8Fh..4A95h` ack 更新成同值。
 因此這兩張表是七種墓園戰利品累積／已結算數量，不是七項任務旗標；舊稱
 「七個 reward／quest slot」已由 runtime 證據推翻。各錢幣名稱及 View／Take／Pool／
-Share 的分配語意仍須由 overlay-05 閉合，不能只靠同系列欄位名稱外推。
+Share 的分配語意已由 Spec 040 的 overlay-21 原始 bytes 閉合並接入 remake。
 
 ## `4AC1h` producer 勘誤
 
@@ -68,7 +68,7 @@ Stojanow River、lizardmen、kobolds、nomads 與 slums；文字與增量位址�
 
 ## 尚未 READY 的行為
 
-- 七個墓園戰利品累積量的完整 producer 條件、上限、七種貨幣名稱、分配副作用與重入規則。
+- 七個墓園戰利品累積量的完整 producer 條件、上限與重入規則；七種貨幣服務本身已 READY。
 - 16 個 commission 子程式的完整條件矩陣、狀態 producer／consumer 與重入結果。
 - reward 區另在 `9F28h`／`9F3Eh` 呼叫 `TREASURE`／`COMBAT`；這是本輪機器清冊補出的
   舊規格缺項。graveyard 特別委託則會走 `A5A8h PARTYSTRENGTH`、接受選擇、
@@ -88,3 +88,7 @@ Stojanow River、lizardmen、kobolds、nomads 與 slums；文字與增量位址�
    路徑；不得用 direct-entry 結果宣稱整段可玩。
 5. 驗證 `4AC1h` 增量與 Spec 024 proclamation 分派的範圍；若十個 producer 可使值超過
    九，必須找出原版 cap／reset／排他條件，不能自行截斷。
+
+Spec 041 已先閉合 `9D63h` 的真正結構：它是 `4AA6h..4ABFh` 26 槽完成通知表，只有
+十個通知增加 `4AC1h`。後續應追各槽在其他 ECL 的 `FEh` producer，而不是再把十段
+clerk 文字當成十個獨立儲存欄位。

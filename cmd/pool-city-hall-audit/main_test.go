@@ -36,6 +36,18 @@ func TestAuditPinsCityHallStructure(t *testing.T) {
 	if !reflect.DeepEqual(r.ProgressProducers, wantProducers) {
 		t.Fatalf("4AC1 producers=%v", r.ProgressProducers)
 	}
+	if len(r.CompletionTable) != 26 || r.CompletionTable[0].StateAddress != "0x4AA6" || r.CompletionTable[0].Target != "0x9F77" || !r.CompletionTable[0].IncrementsProgress || r.CompletionTable[0].IncrementAddress != "0x9FAE" || r.CompletionTable[21].StateAddress != "0x4ABB" || r.CompletionTable[21].IncrementAddress != "0xA4D1" {
+		t.Fatalf("completion table=%+v", r.CompletionTable)
+	}
+	increments := 0
+	for _, row := range r.CompletionTable {
+		if row.IncrementsProgress {
+			increments++
+		}
+	}
+	if increments != 10 {
+		t.Fatalf("completion increments=%d", increments)
+	}
 	if len(r.ExternalCalls) < 3 {
 		t.Fatalf("external calls=%v", r.ExternalCalls)
 	}
@@ -65,5 +77,15 @@ func TestAuditRejectsMissingEvidence(t *testing.T) {
 	}
 	if _, err := audit(tr); err == nil {
 		t.Fatal("changed 4AC1 producer accepted")
+	}
+	tr = loadTrace(t)
+	for i := range tr.Edges {
+		if tr.Edges[i].From == 0x9D63-codeBase && tr.Edges[i].Kind == "ON GOSUB" {
+			tr.Edges = append(tr.Edges[:i], tr.Edges[i+1:]...)
+			break
+		}
+	}
+	if _, err := audit(tr); err == nil {
+		t.Fatal("missing completion notification route accepted")
 	}
 }
