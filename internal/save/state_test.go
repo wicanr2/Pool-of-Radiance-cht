@@ -44,7 +44,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	state.PooledMoney[3] = 123
 	state.CharacterLibrary = []Character{character}
 	state.Party = []Character{character}
-	state.Campaign = &Campaign{MapArchive: 3, MapBlock: 0, X: 5, Y: 5, Facing: 2, Session: eclvm.BlockSessionSnapshot{
+	state.Campaign = &Campaign{MapArchive: 3, MapBlock: 0, ECLArchive: 3, X: 5, Y: 5, Facing: 2, Session: eclvm.BlockSessionSnapshot{
 		Current: 8, TransitionEntries: []int{0, 4}, PendingEntries: []int{4},
 		Machine: eclvm.MachineSnapshot{PC: 3218, Memory: []eclvm.MemoryWord{{Address: 0x4A96, Value: 0}, {Address: 0x4AB1, Value: 0}, {Address: 0x4AC1, Value: 4}}, Strings: []eclvm.StringWord{{Address: 0x6100, Value: "campaign"}}, Random: randomstream.Snapshot{Seed: 1, Draws: 3}},
 	}}
@@ -55,7 +55,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Schema != Schema || got.PooledMoney[3] != 123 || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" || len(got.Party[0].Inventory) != 1 || got.Party[0].Inventory[0].Name != "Two-Handed Sword +1" || got.Campaign == nil || got.Campaign.X != 5 || got.Campaign.Session.Current != 8 || got.Campaign.Session.Machine.Memory[2] != (eclvm.MemoryWord{Address: 0x4AC1, Value: 4}) || got.Campaign.Session.Machine.Random.Draws != 3 {
+	if got.Schema != Schema || got.PooledMoney[3] != 123 || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" || len(got.Party[0].Inventory) != 1 || got.Party[0].Inventory[0].Name != "Two-Handed Sword +1" || got.Campaign == nil || got.Campaign.X != 5 || got.Campaign.ECLArchive != 3 || got.Campaign.Session.Current != 8 || got.Campaign.Session.Machine.Memory[2] != (eclvm.MemoryWord{Address: 0x4AC1, Value: 4}) || got.Campaign.Session.Machine.Random.Draws != 3 {
 		t.Fatalf("round trip = %+v", got)
 	}
 	entries, err := os.ReadDir(filepath.Dir(path))
@@ -88,7 +88,7 @@ func TestReadMigratesSchemaFourWithoutCampaign(t *testing.T) {
 	}
 }
 
-func TestReadMigratesSchemaTwoThroughFourGoldIntoSevenPools(t *testing.T) {
+func TestReadMigratesSchemaThreeThroughFiveGoldIntoSevenPools(t *testing.T) {
 	for _, schema := range []string{OlderSchema, EarlierSchema, PreviousSchema} {
 		t.Run(schema, func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "pool.json")
@@ -131,6 +131,28 @@ func TestReadRejectsAmbiguousLegacyAndSevenPoolMoney(t *testing.T) {
 	}
 }
 
+func TestReadMigratesSchemaFiveCampaignECLArchiveFromMapArchive(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	state := State{Schema: PreviousSchema, Campaign: &Campaign{
+		MapArchive: 2, MapBlock: 20, X: 1, Y: 2, Facing: 4,
+		Session: eclvm.BlockSessionSnapshot{Current: 20, TransitionEntries: []int{0, 4}, Machine: eclvm.MachineSnapshot{PC: 10, Random: randomstream.Snapshot{Seed: 1}}},
+	}}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Schema != Schema || got.Campaign == nil || got.Campaign.ECLArchive != 2 {
+		t.Fatalf("schema 5 campaign migration=%+v", got.Campaign)
+	}
+}
+
 func TestReadMigratesSchemaTwoWithEmptyInventory(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "pool.json")
 	previous := `{"schema":"pool-remake-state/2","pooled_gold":0,"character_library":[{"name":"HERO","race_id":"dwarf","gender_id":"male","class_id":"fighter","alignment_id":"lawful-good","age":20,"abilities":[10,10,10,10,10,10],"exceptional_strength":0,"gold":100,"max_hp":7,"current_hp":6,"status":0,"raw_hp":7,"portrait_head":1,"portrait_body":1,"icon_head":0,"icon_weapon":0,"icon_size":1,"icon_colors":[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]}],"party":[{"name":"HERO","race_id":"dwarf","gender_id":"male","class_id":"fighter","alignment_id":"lawful-good","age":20,"abilities":[10,10,10,10,10,10],"exceptional_strength":0,"gold":100,"max_hp":7,"current_hp":6,"status":0,"raw_hp":7,"portrait_head":1,"portrait_body":1,"icon_head":0,"icon_weapon":0,"icon_size":1,"icon_colors":[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]}]}`
@@ -169,7 +191,7 @@ func TestStateRejectsUnknownVersionAndInvalidParty(t *testing.T) {
 }
 
 func TestStateRejectsMalformedCampaign(t *testing.T) {
-	base := Campaign{MapArchive: 3, X: 1, Y: 1, Facing: 2, Session: eclvm.BlockSessionSnapshot{Current: 8, TransitionEntries: []int{0}, Machine: eclvm.MachineSnapshot{PC: 1, Random: randomstream.Snapshot{Seed: 1}}}}
+	base := Campaign{MapArchive: 3, ECLArchive: 3, X: 1, Y: 1, Facing: 2, Session: eclvm.BlockSessionSnapshot{Current: 8, TransitionEntries: []int{0}, Machine: eclvm.MachineSnapshot{PC: 1, Random: randomstream.Snapshot{Seed: 1}}}}
 	tests := []struct {
 		name string
 		edit func(*Campaign)

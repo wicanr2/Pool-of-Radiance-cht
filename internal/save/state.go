@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	Schema         = "pool-remake-state/5"
-	PreviousSchema = "pool-remake-state/4"
-	EarlierSchema  = "pool-remake-state/3"
-	OlderSchema    = "pool-remake-state/2"
+	Schema         = "pool-remake-state/6"
+	PreviousSchema = "pool-remake-state/5"
+	EarlierSchema  = "pool-remake-state/4"
+	OlderSchema    = "pool-remake-state/3"
+	OldestSchema   = "pool-remake-state/2"
 	LegacySchema   = "pool-remake-state/1"
 )
 
@@ -52,6 +53,7 @@ type Character struct {
 type Campaign struct {
 	MapArchive uint8                      `json:"map_archive"`
 	MapBlock   uint8                      `json:"map_block"`
+	ECLArchive uint8                      `json:"ecl_archive"`
 	X          uint8                      `json:"x"`
 	Y          uint8                      `json:"y"`
 	Facing     uint8                      `json:"facing"`
@@ -108,6 +110,9 @@ func (state State) Validate() error {
 func validateCampaign(campaign Campaign) error {
 	if campaign.MapArchive < 1 || campaign.MapArchive > 8 {
 		return fmt.Errorf("Pool campaign map archive %d is outside 1..8", campaign.MapArchive)
+	}
+	if campaign.ECLArchive < 1 || campaign.ECLArchive > 8 {
+		return fmt.Errorf("Pool campaign ECL archive %d is outside 1..8", campaign.ECLArchive)
 	}
 	if campaign.X > 15 || campaign.Y > 15 {
 		return fmt.Errorf("Pool campaign position (%d,%d) is outside 16x16 map", campaign.X, campaign.Y)
@@ -241,7 +246,7 @@ func Read(path string) (State, error) {
 	if header.Schema == LegacySchema {
 		return readLegacyState(raw)
 	}
-	if header.Schema == PreviousSchema || header.Schema == EarlierSchema || header.Schema == OlderSchema {
+	if header.Schema == PreviousSchema || header.Schema == EarlierSchema || header.Schema == OlderSchema || header.Schema == OldestSchema {
 		return readPreviousState(raw)
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
@@ -281,6 +286,9 @@ func readPreviousState(raw []byte) (State, error) {
 		state.PooledMoney[3] = uint32(state.PooledGold)
 	}
 	state.PooledGold = 0
+	if state.Campaign != nil && state.Campaign.ECLArchive == 0 {
+		state.Campaign.ECLArchive = state.Campaign.MapArchive
+	}
 	for index := range state.CharacterLibrary {
 		if err := migrateCharacterMoney(&state.CharacterLibrary[index]); err != nil {
 			return State{}, fmt.Errorf("legacy library character %d: %w", index, err)

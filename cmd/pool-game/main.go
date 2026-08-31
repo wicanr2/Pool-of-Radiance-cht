@@ -108,7 +108,9 @@ type app struct {
 	initialMap       *gamepack.GeometryMap
 	geometryCatalog  gamepack.GeometryCatalog
 	eclCatalog       gamepack.ECLCatalog
+	eclArchive       uint8
 	initialWalls     *graphics.PieceSet
+	loadPieceSlots   func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error)
 	initialEvent     *gamepack.InitialEvent
 	spawn            gamepack.Spawn
 	introWaiting     bool
@@ -171,11 +173,15 @@ func newApp(zipPath string) (*app, error) {
 		return nil, err
 	}
 	application.eclCatalog = eclCatalog
+	application.eclArchive = 3
 	initialWalls, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial wall set: %w", err)
 	}
 	application.initialWalls = &initialWalls
+	application.loadPieceSlots = func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
+		return gamepack.ReadDOSPieceSlots(zipPath, archive, selectors)
+	}
 	initialEvent, err := gamepack.ReadDOSInitialEvent(zipPath)
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial event: %w", err)
@@ -565,27 +571,11 @@ func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Resu
 		if len(event.Arguments) != len(event.ArgumentsValid) {
 			return result, fmt.Errorf("Pool resource event 0x%02X has mismatched argument validity", event.Opcode)
 		}
-		allValid := true
-		for _, valid := range event.ArgumentsValid {
-			allValid = allValid && valid
+		consumed, err := a.applyTransitionResource(event)
+		if err != nil {
+			return result, err
 		}
-		switch event.Opcode {
-		case 0x21:
-			if !allValid || len(event.Arguments) != 3 || event.Arguments[0] > 0xFF {
-				return result, fmt.Errorf("Pool LOAD FILES has invalid arguments %v/%v", event.Arguments, event.ArgumentsValid)
-			}
-			key := gamepack.MapKey{Archive: a.spawn.Map.Archive, BlockID: uint8(event.Arguments[0])}
-			loaded, ok := a.geometryCatalog.Map(key)
-			if !ok {
-				return result, fmt.Errorf("Pool LOAD FILES requested absent GEO%d block %d", key.Archive, key.BlockID)
-			}
-			a.initialMap = &loaded
-			a.spawn.Map = key
-		case 0x37:
-			if !allValid || !reflect.DeepEqual(event.Arguments, []uint16{127, 127, 127}) {
-				return result, fmt.Errorf("Pool LOAD PIECES %v is not READY", event.Arguments)
-			}
-		default:
+		if !consumed {
 			return result, nil
 		}
 		next, err := a.eventSession.RunUntilEvent(4096, nil, true)
@@ -595,6 +585,58 @@ func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Resu
 		result = next
 	}
 	return result, fmt.Errorf("Pool transition resource boundary limit exceeded")
+}
+
+func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
+	if len(event.Arguments) != len(event.ArgumentsValid) {
+		return false, fmt.Errorf("Pool resource event 0x%02X has mismatched argument validity", event.Opcode)
+	}
+	allValid := true
+	for _, valid := range event.ArgumentsValid {
+		allValid = allValid && valid
+	}
+	if !allValid || len(event.Arguments) != 3 {
+		if event.Opcode == 0x21 || event.Opcode == 0x37 {
+			return false, fmt.Errorf("Pool resource event 0x%02X has invalid arguments %v/%v", event.Opcode, event.Arguments, event.ArgumentsValid)
+		}
+		return false, nil
+	}
+	switch event.Opcode {
+	case 0x21:
+		if event.Arguments[0] > 0xFF {
+			return false, fmt.Errorf("Pool LOAD FILES has invalid arguments %v/%v", event.Arguments, event.ArgumentsValid)
+		}
+		key := gamepack.MapKey{Archive: a.spawn.Map.Archive, BlockID: uint8(event.Arguments[0])}
+		loaded, ok := a.geometryCatalog.Map(key)
+		if !ok {
+			return false, fmt.Errorf("Pool LOAD FILES requested absent GEO%d block %d", key.Archive, key.BlockID)
+		}
+		a.initialMap = &loaded
+		a.spawn.Map = key
+		return true, nil
+	case 0x37:
+		if reflect.DeepEqual(event.Arguments, []uint16{127, 127, 127}) {
+			return true, nil
+		}
+		selectors := [3]uint8{}
+		for index, value := range event.Arguments {
+			if value > 0xFF || value == 0xFF {
+				return false, fmt.Errorf("Pool partial LOAD PIECES %v is not READY", event.Arguments)
+			}
+			selectors[index] = uint8(value)
+		}
+		if a.loadPieceSlots == nil {
+			return false, fmt.Errorf("Pool LOAD PIECES loader is not configured")
+		}
+		loaded, err := a.loadPieceSlots(a.spawn.Map.Archive, selectors)
+		if err != nil {
+			return false, err
+		}
+		a.initialWalls = &loaded
+		return true, nil
+	default:
+		return false, nil
+	}
 }
 
 func (a *app) beginInitialSearch() error {
@@ -1011,9 +1053,14 @@ func (a *app) stateForSave() (poolsave.State, error) {
 	if err != nil {
 		return poolsave.State{}, fmt.Errorf("snapshot Pool ECL session: %w", err)
 	}
+	eclArchive := a.eclArchive
+	if eclArchive == 0 {
+		eclArchive = a.spawn.Map.Archive
+	}
 	next.Campaign = &poolsave.Campaign{
 		MapArchive: a.spawn.Map.Archive, MapBlock: a.spawn.Map.BlockID,
-		X: a.spawn.X, Y: a.spawn.Y, Facing: a.spawn.Facing, Session: snapshot,
+		ECLArchive: eclArchive,
+		X:          a.spawn.X, Y: a.spawn.Y, Facing: a.spawn.Facing, Session: snapshot,
 	}
 	return next, nil
 }
@@ -1021,9 +1068,6 @@ func (a *app) stateForSave() (poolsave.State, error) {
 func (a *app) restoreCampaign(loaded poolsave.State) error {
 	if loaded.Campaign == nil {
 		return fmt.Errorf("Pool save has no campaign")
-	}
-	if a.initialEvent == nil {
-		return fmt.Errorf("Pool campaign event catalog is not configured")
 	}
 	campaign := loaded.Campaign
 	key := gamepack.MapKey{Archive: campaign.MapArchive, BlockID: campaign.MapBlock}
@@ -1038,7 +1082,11 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 			ExceptionalStrength: character.ExceptionalStrength, CurrentHP: character.CurrentHP,
 		}
 	}
-	session, err := gamepack.NewInitialEventSession(*a.initialEvent, characters...)
+	archive, ok := a.eclCatalog.Archive(campaign.ECLArchive)
+	if !ok {
+		return fmt.Errorf("Pool save ECL archive %d is unavailable", campaign.ECLArchive)
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, campaign.Session.Current, uint16(0x9900+campaign.Session.Machine.PC), characters...)
 	if err != nil {
 		return fmt.Errorf("rebuild Pool ECL session: %w", err)
 	}
@@ -1049,6 +1097,7 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.state = cloneSaveState(loaded)
 	a.spawn = gamepack.Spawn{Map: key, X: campaign.X, Y: campaign.Y, Facing: campaign.Facing}
 	a.initialMap = &geometryMap
+	a.eclArchive = campaign.ECLArchive
 	a.eventSession, a.eventMachine = session, session.Machine()
 	a.introWaiting, a.introDone = false, true
 	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0

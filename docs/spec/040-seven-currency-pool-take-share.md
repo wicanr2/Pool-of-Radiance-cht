@@ -68,6 +68,8 @@ Spec 034 已證明主選單依 money／item presence 組成 `View Take Pool Shar
 
 - schema 5 必須保存每角色七個 uint16 wallet 與七個 uint32 pooled amount；schema 1..4
   的 `gold`／`pooled_gold` 無歧義遷移到 index 3，其他欄為零。
+- Spec 044 後現行格式為 schema 6；上述七貨幣欄位與遷移契約不變，schema 6 只另增
+  campaign 的 ECL archive identity。
 - 遷移、Pool、Share（含 remainder／超重）、Take（成功／取消／超重／溢位）、原子保存
   失敗回滾都要有 deterministic 測試。
 - 真實 Spec 039 墓園 request 必須能進入 money service，離開後才續跑原 ECL ack。

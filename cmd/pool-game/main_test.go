@@ -127,6 +127,47 @@ func TestF10AndLoadRoundTripStableCampaignSession(t *testing.T) {
 	}
 }
 
+func TestF10AndLoadRoundTripECL2SlumsNamespace(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(2)
+	if !ok {
+		t.Fatal("ECL2 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 20, 0xB69C)
+	if err != nil {
+		t.Fatal(err)
+	}
+	application.mode, application.introDone = modeAdventure, true
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 2
+	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 2, BlockID: 20}, X: 3, Y: 4, Facing: 2}
+	application.eventMachine.Memory[0x4ABB] = 24
+	var saved poolsave.State
+	application.saveState = func(state poolsave.State) error { saved = cloneSaveState(state); return state.Validate() }
+	if err := press(application, ebiten.KeyF10); !errors.Is(err, ebiten.Termination) {
+		t.Fatalf("save ECL2 campaign: %v", err)
+	}
+	if saved.Campaign == nil || saved.Campaign.ECLArchive != 2 || saved.Campaign.Session.Current != 20 {
+		t.Fatalf("saved ECL2 campaign=%+v", saved.Campaign)
+	}
+	restored, err := newApp(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	restored.mode = modeMenu
+	restored.loadState = func() (poolsave.State, error) { return cloneSaveState(saved), nil }
+	if err := press(restored, ebiten.KeyL); err != nil {
+		t.Fatal(err)
+	}
+	if restored.eclArchive != 2 || restored.eventSession.CurrentBlockID() != 20 || restored.spawn.Map != (gamepack.MapKey{Archive: 2, BlockID: 20}) || restored.eventMachine.Memory[0x4ABB] != 24 {
+		t.Fatalf("restored ECL archive/block/map/4ABB=%d/%d/%+v/%d", restored.eclArchive, restored.eventSession.CurrentBlockID(), restored.spawn.Map, restored.eventMachine.Memory[0x4ABB])
+	}
+}
+
 func TestF10RejectsTransientCampaignWithoutWriting(t *testing.T) {
 	application := &app{mode: modeAdventure, cellEventPending: true}
 	called := false
@@ -225,6 +266,28 @@ func TestGraveyardTreasureRequestEntersFiveItemService(t *testing.T) {
 	application.cellMenuCursor = 4
 	if err := application.selectTreasureOption(); err != nil || application.treasureStage != treasureConfirmExit || !strings.Contains(application.eventText, "still treasure") {
 		t.Fatalf("leave confirmation stage=%d text=%q err=%v", application.treasureStage, application.eventText, err)
+	}
+}
+
+func TestSlumsLoadPiecesResourceReplacesAllThreeWallSlots(t *testing.T) {
+	before := graphics.PieceSet{SetID: 1, Selector: 9}
+	want := graphics.PieceSet{SetID: 1, WallDefs: make([]graphics.WallDef, 3)}
+	application := &app{spawn: gamepack.Spawn{Map: gamepack.MapKey{Archive: 2, BlockID: 20}}, initialWalls: &before}
+	application.loadPieceSlots = func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
+		if archive != 2 || selectors != ([3]uint8{2, 4, 1}) {
+			t.Fatalf("LOAD PIECES archive/selectors=%d/%v", archive, selectors)
+		}
+		return want, nil
+	}
+	event := eclvm.Event{Opcode: 0x37, Arguments: []uint16{2, 4, 1}, ArgumentsValid: []bool{true, true, true}}
+	consumed, err := application.applyTransitionResource(event)
+	if err != nil || !consumed || !reflect.DeepEqual(*application.initialWalls, want) {
+		t.Fatalf("consumed=%v err=%v walls=%+v", consumed, err, application.initialWalls)
+	}
+	stable := *application.initialWalls
+	event.Arguments[1] = 0xFF
+	if consumed, err := application.applyTransitionResource(event); err == nil || consumed || !reflect.DeepEqual(*application.initialWalls, stable) {
+		t.Fatalf("partial consumed=%v err=%v walls=%+v", consumed, err, application.initialWalls)
 	}
 }
 

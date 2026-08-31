@@ -1,0 +1,1528 @@
+{
+  "schema": "pool-overlay-functions-ida/1",
+  "input": "overlay-03.bin",
+  "sha256": "5a3a18bd061c5b75bfad2fe6f9cff27ed5443aa4c2d59b026e4a05e2806ea68f",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "entry_seeds": [
+    3456
+  ],
+  "functions": [
+    {
+      "seed": 3456,
+      "start": 3456,
+      "end": 3797,
+      "instructions": [
+        {
+          "address": 3456,
+          "bytes": "55",
+          "text": "push    bp",
+          "operands": [
+            "bp",
+            ""
+          ],
+          "operand_values": [
+            5,
+            -1
+          ]
+        },
+        {
+          "address": 3457,
+          "bytes": "89e5",
+          "text": "mov     bp, sp",
+          "operands": [
+            "bp",
+            "sp"
+          ],
+          "operand_values": [
+            5,
+            4
+          ]
+        },
+        {
+          "address": 3459,
+          "bytes": "83ec0c",
+          "text": "sub     sp, 0Ch",
+          "operands": [
+            "sp",
+            "0Ch"
+          ],
+          "operand_values": [
+            4,
+            12
+          ]
+        },
+        {
+          "address": 3462,
+          "bytes": "b003",
+          "text": "mov     al, 3",
+          "operands": [
+            "al",
+            "3"
+          ],
+          "operand_values": [
+            16,
+            3
+          ]
+        },
+        {
+          "address": 3464,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3465,
+          "bytes": "9a2a004500",
+          "text": "call    far ptr loc_477+3",
+          "operands": [
+            "far ptr loc_477+3",
+            ""
+          ],
+          "operand_values": [
+            42,
+            -1
+          ]
+        },
+        {
+          "address": 3470,
+          "bytes": "c606984301",
+          "text": "mov     byte ptr ds:4398h, 1",
+          "operands": [
+            "byte ptr ds:4398h",
+            "1"
+          ],
+          "operand_values": [
+            17304,
+            1
+          ]
+        },
+        {
+          "address": 3475,
+          "bytes": "c646fc01",
+          "text": "mov     [bp+var_4], 1",
+          "operands": [
+            "[bp+var_4]",
+            "1"
+          ],
+          "operand_values": [
+            18446744073709551612,
+            1
+          ]
+        },
+        {
+          "address": 3479,
+          "bytes": "eb03",
+          "text": "jmp     short loc_D9C",
+          "operands": [
+            "loc_D9C",
+            ""
+          ],
+          "operand_values": [
+            3484,
+            -1
+          ]
+        },
+        {
+          "address": 3481,
+          "bytes": "fe46fc",
+          "text": "inc     [bp+var_4]",
+          "operands": [
+            "[bp+var_4]",
+            ""
+          ],
+          "operand_values": [
+            18446744073709551612,
+            -1
+          ]
+        },
+        {
+          "address": 3484,
+          "bytes": "8a46fc",
+          "text": "mov     al, [bp+var_4]",
+          "operands": [
+            "al",
+            "[bp+var_4]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551612
+          ]
+        },
+        {
+          "address": 3487,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3488,
+          "bytes": "9a25004500",
+          "text": "call    far ptr sub_475",
+          "operands": [
+            "far ptr sub_475",
+            ""
+          ],
+          "operand_values": [
+            37,
+            -1
+          ]
+        },
+        {
+          "address": 3493,
+          "bytes": "8ad0",
+          "text": "mov     dl, al",
+          "operands": [
+            "dl",
+            "al"
+          ],
+          "operand_values": [
+            18,
+            16
+          ]
+        },
+        {
+          "address": 3495,
+          "bytes": "8a46fc",
+          "text": "mov     al, [bp+var_4]",
+          "operands": [
+            "al",
+            "[bp+var_4]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551612
+          ]
+        },
+        {
+          "address": 3498,
+          "bytes": "30e4",
+          "text": "xor     ah, ah",
+          "operands": [
+            "ah",
+            "ah"
+          ],
+          "operand_values": [
+            20,
+            20
+          ]
+        },
+        {
+          "address": 3500,
+          "bytes": "8bf8",
+          "text": "mov     di, ax",
+          "operands": [
+            "di",
+            "ax"
+          ],
+          "operand_values": [
+            7,
+            0
+          ]
+        },
+        {
+          "address": 3502,
+          "bytes": "8853fc",
+          "text": "mov     [bp+di+var_4], dl",
+          "operands": [
+            "[bp+di+var_4]",
+            "dl"
+          ],
+          "operand_values": [
+            18446744073709551612,
+            18
+          ]
+        },
+        {
+          "address": 3505,
+          "bytes": "807efc03",
+          "text": "cmp     [bp+var_4], 3",
+          "operands": [
+            "[bp+var_4]",
+            "3"
+          ],
+          "operand_values": [
+            18446744073709551612,
+            3
+          ]
+        },
+        {
+          "address": 3509,
+          "bytes": "75e2",
+          "text": "jnz     short loc_D99",
+          "operands": [
+            "loc_D99",
+            ""
+          ],
+          "operand_values": [
+            3481,
+            -1
+          ]
+        },
+        {
+          "address": 3511,
+          "bytes": "803e456d21",
+          "text": "cmp     byte ptr ds:6D45h, 21h ; '!'",
+          "operands": [
+            "byte ptr ds:6D45h",
+            "21h"
+          ],
+          "operand_values": [
+            27973,
+            33
+          ]
+        },
+        {
+          "address": 3516,
+          "bytes": "756d",
+          "text": "jnz     short loc_E2B",
+          "operands": [
+            "loc_E2B",
+            ""
+          ],
+          "operand_values": [
+            3627,
+            -1
+          ]
+        },
+        {
+          "address": 3518,
+          "bytes": "c6069b4301",
+          "text": "mov     byte ptr ds:439Bh, 1",
+          "operands": [
+            "byte ptr ds:439Bh",
+            "1"
+          ],
+          "operand_values": [
+            17307,
+            1
+          ]
+        },
+        {
+          "address": 3523,
+          "bytes": "807efdff",
+          "text": "cmp     [bp+var_3], 0FFh",
+          "operands": [
+            "[bp+var_3]",
+            "0FFh"
+          ],
+          "operand_values": [
+            18446744073709551613,
+            255
+          ]
+        },
+        {
+          "address": 3527,
+          "bytes": "7434",
+          "text": "jz      short loc_DFD",
+          "operands": [
+            "loc_DFD",
+            ""
+          ],
+          "operand_values": [
+            3581,
+            -1
+          ]
+        },
+        {
+          "address": 3529,
+          "bytes": "807efd7f",
+          "text": "cmp     [bp+var_3], 7Fh",
+          "operands": [
+            "[bp+var_3]",
+            "7Fh"
+          ],
+          "operand_values": [
+            18446744073709551613,
+            127
+          ]
+        },
+        {
+          "address": 3533,
+          "bytes": "742e",
+          "text": "jz      short loc_DFD",
+          "operands": [
+            "loc_DFD",
+            ""
+          ],
+          "operand_values": [
+            3581,
+            -1
+          ]
+        },
+        {
+          "address": 3535,
+          "bytes": "c43e3349",
+          "text": "les     di, ds:4933h",
+          "operands": [
+            "di",
+            "ds:4933h"
+          ],
+          "operand_values": [
+            7,
+            18739
+          ]
+        },
+        {
+          "address": 3539,
+          "bytes": "2683bdcc0100",
+          "text": "cmp     word ptr es:[di+1CCh], 0",
+          "operands": [
+            "word ptr es:[di+1CCh]",
+            "0"
+          ],
+          "operand_values": [
+            460,
+            0
+          ]
+        },
+        {
+          "address": 3545,
+          "bytes": "7422",
+          "text": "jz      short loc_DFD",
+          "operands": [
+            "loc_DFD",
+            ""
+          ],
+          "operand_values": [
+            3581,
+            -1
+          ]
+        },
+        {
+          "address": 3547,
+          "bytes": "8a46fd",
+          "text": "mov     al, [bp+var_3]",
+          "operands": [
+            "al",
+            "[bp+var_3]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551613
+          ]
+        },
+        {
+          "address": 3550,
+          "bytes": "30e4",
+          "text": "xor     ah, ah",
+          "operands": [
+            "ah",
+            "ah"
+          ],
+          "operand_values": [
+            20,
+            20
+          ]
+        },
+        {
+          "address": 3552,
+          "bytes": "c43e3349",
+          "text": "les     di, ds:4933h",
+          "operands": [
+            "di",
+            "ds:4933h"
+          ],
+          "operand_values": [
+            7,
+            18739
+          ]
+        },
+        {
+          "address": 3556,
+          "bytes": "2689858a01",
+          "text": "mov     es:[di+18Ah], ax",
+          "operands": [
+            "es:[di+18Ah]",
+            "ax"
+          ],
+          "operand_values": [
+            394,
+            0
+          ]
+        },
+        {
+          "address": 3561,
+          "bytes": "8a46fd",
+          "text": "mov     al, [bp+var_3]",
+          "operands": [
+            "al",
+            "[bp+var_3]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551613
+          ]
+        },
+        {
+          "address": 3564,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3565,
+          "bytes": "9a52003101",
+          "text": "call    far ptr loc_1360+2",
+          "operands": [
+            "far ptr loc_1360+2",
+            ""
+          ],
+          "operand_values": [
+            82,
+            -1
+          ]
+        },
+        {
+          "address": 3570,
+          "bytes": "c43e3749",
+          "text": "les     di, ds:4937h",
+          "operands": [
+            "di",
+            "ds:4937h"
+          ],
+          "operand_values": [
+            7,
+            18743
+          ]
+        },
+        {
+          "address": 3574,
+          "bytes": "31c0",
+          "text": "xor     ax, ax",
+          "operands": [
+            "ax",
+            "ax"
+          ],
+          "operand_values": [
+            0,
+            0
+          ]
+        },
+        {
+          "address": 3576,
+          "bytes": "2689859205",
+          "text": "mov     es:[di+592h], ax",
+          "operands": [
+            "es:[di+592h]",
+            "ax"
+          ],
+          "operand_values": [
+            1426,
+            0
+          ]
+        },
+        {
+          "address": 3581,
+          "bytes": "807effff",
+          "text": "cmp     [bp+var_1], 0FFh",
+          "operands": [
+            "[bp+var_1]",
+            "0FFh"
+          ],
+          "operand_values": [
+            18446744073709551615,
+            255
+          ]
+        },
+        {
+          "address": 3585,
+          "bytes": "7426",
+          "text": "jz      short loc_E29",
+          "operands": [
+            "loc_E29",
+            ""
+          ],
+          "operand_values": [
+            3625,
+            -1
+          ]
+        },
+        {
+          "address": 3587,
+          "bytes": "c43e3349",
+          "text": "les     di, ds:4933h",
+          "operands": [
+            "di",
+            "ds:4933h"
+          ],
+          "operand_values": [
+            7,
+            18739
+          ]
+        },
+        {
+          "address": 3591,
+          "bytes": "2683bdcc0100",
+          "text": "cmp     word ptr es:[di+1CCh], 0",
+          "operands": [
+            "word ptr es:[di+1CCh]",
+            "0"
+          ],
+          "operand_values": [
+            460,
+            0
+          ]
+        },
+        {
+          "address": 3597,
+          "bytes": "751a",
+          "text": "jnz     short loc_E29",
+          "operands": [
+            "loc_E29",
+            ""
+          ],
+          "operand_values": [
+            3625,
+            -1
+          ]
+        },
+        {
+          "address": 3599,
+          "bytes": "8d7ef5",
+          "text": "lea     di, [bp+var_B]",
+          "operands": [
+            "di",
+            "[bp+var_B]"
+          ],
+          "operand_values": [
+            7,
+            18446744073709551605
+          ]
+        },
+        {
+          "address": 3602,
+          "bytes": "16",
+          "text": "push    ss",
+          "operands": [
+            "ss",
+            ""
+          ],
+          "operand_values": [
+            31,
+            -1
+          ]
+        },
+        {
+          "address": 3603,
+          "bytes": "57",
+          "text": "push    di",
+          "operands": [
+            "di",
+            ""
+          ],
+          "operand_values": [
+            7,
+            -1
+          ]
+        },
+        {
+          "address": 3604,
+          "bytes": "bf790d",
+          "text": "mov     di, offset loc_D79",
+          "operands": [
+            "di",
+            "offset loc_D79"
+          ],
+          "operand_values": [
+            7,
+            3449
+          ]
+        },
+        {
+          "address": 3607,
+          "bytes": "0e",
+          "text": "push    cs",
+          "operands": [
+            "cs",
+            ""
+          ],
+          "operand_values": [
+            30,
+            -1
+          ]
+        },
+        {
+          "address": 3608,
+          "bytes": "57",
+          "text": "push    di",
+          "operands": [
+            "di",
+            ""
+          ],
+          "operand_values": [
+            7,
+            -1
+          ]
+        },
+        {
+          "address": 3609,
+          "bytes": "9a3406bb05",
+          "text": "call    far ptr 5BBh:634h",
+          "operands": [
+            "far ptr 5BBh:634h",
+            ""
+          ],
+          "operand_values": [
+            1588,
+            -1
+          ]
+        },
+        {
+          "address": 3614,
+          "bytes": "b000",
+          "text": "mov     al, 0",
+          "operands": [
+            "al",
+            "0"
+          ],
+          "operand_values": [
+            16,
+            0
+          ]
+        },
+        {
+          "address": 3616,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3617,
+          "bytes": "b028",
+          "text": "mov     al, 28h ; '('",
+          "operands": [
+            "al",
+            "28h"
+          ],
+          "operand_values": [
+            16,
+            40
+          ]
+        },
+        {
+          "address": 3619,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3620,
+          "bytes": "9a2a004701",
+          "text": "call    far ptr loc_1498+2",
+          "operands": [
+            "far ptr loc_1498+2",
+            ""
+          ],
+          "operand_values": [
+            42,
+            -1
+          ]
+        },
+        {
+          "address": 3625,
+          "bytes": "eb7a",
+          "text": "jmp     short loc_EA5",
+          "operands": [
+            "loc_EA5",
+            ""
+          ],
+          "operand_values": [
+            3749,
+            -1
+          ]
+        },
+        {
+          "address": 3627,
+          "bytes": "c6069a4301",
+          "text": "mov     byte ptr ds:439Ah, 1",
+          "operands": [
+            "byte ptr ds:439Ah",
+            "1"
+          ],
+          "operand_values": [
+            17306,
+            1
+          ]
+        },
+        {
+          "address": 3632,
+          "bytes": "807efd7f",
+          "text": "cmp     [bp+var_3], 7Fh",
+          "operands": [
+            "[bp+var_3]",
+            "7Fh"
+          ],
+          "operand_values": [
+            18446744073709551613,
+            127
+          ]
+        },
+        {
+          "address": 3636,
+          "bytes": "750d",
+          "text": "jnz     short loc_E43",
+          "operands": [
+            "loc_E43",
+            ""
+          ],
+          "operand_values": [
+            3651,
+            -1
+          ]
+        },
+        {
+          "address": 3638,
+          "bytes": "b000",
+          "text": "mov     al, 0",
+          "operands": [
+            "al",
+            "0"
+          ],
+          "operand_values": [
+            16,
+            0
+          ]
+        },
+        {
+          "address": 3640,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3641,
+          "bytes": "b001",
+          "text": "mov     al, 1",
+          "operands": [
+            "al",
+            "1"
+          ],
+          "operand_values": [
+            16,
+            1
+          ]
+        },
+        {
+          "address": 3643,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3644,
+          "bytes": "9a4d003101",
+          "text": "call    far ptr sub_135D",
+          "operands": [
+            "far ptr sub_135D",
+            ""
+          ],
+          "operand_values": [
+            77,
+            -1
+          ]
+        },
+        {
+          "address": 3649,
+          "bytes": "eb62",
+          "text": "jmp     short loc_EA5",
+          "operands": [
+            "loc_EA5",
+            ""
+          ],
+          "operand_values": [
+            3749,
+            -1
+          ]
+        },
+        {
+          "address": 3651,
+          "bytes": "c43e3349",
+          "text": "les     di, ds:4933h",
+          "operands": [
+            "di",
+            "ds:4933h"
+          ],
+          "operand_values": [
+            7,
+            18739
+          ]
+        },
+        {
+          "address": 3655,
+          "bytes": "2683bdce0100",
+          "text": "cmp     word ptr es:[di+1CEh], 0",
+          "operands": [
+            "word ptr es:[di+1CEh]",
+            "0"
+          ],
+          "operand_values": [
+            462,
+            0
+          ]
+        },
+        {
+          "address": 3661,
+          "bytes": "7426",
+          "text": "jz      short loc_E75",
+          "operands": [
+            "loc_E75",
+            ""
+          ],
+          "operand_values": [
+            3701,
+            -1
+          ]
+        },
+        {
+          "address": 3663,
+          "bytes": "c43e3349",
+          "text": "les     di, ds:4933h",
+          "operands": [
+            "di",
+            "ds:4933h"
+          ],
+          "operand_values": [
+            7,
+            18739
+          ]
+        },
+        {
+          "address": 3667,
+          "bytes": "2683bdd00100",
+          "text": "cmp     word ptr es:[di+1D0h], 0",
+          "operands": [
+            "word ptr es:[di+1D0h]",
+            "0"
+          ],
+          "operand_values": [
+            464,
+            0
+          ]
+        },
+        {
+          "address": 3673,
+          "bytes": "741a",
+          "text": "jz      short loc_E75",
+          "operands": [
+            "loc_E75",
+            ""
+          ],
+          "operand_values": [
+            3701,
+            -1
+          ]
+        },
+        {
+          "address": 3675,
+          "bytes": "8a46fd",
+          "text": "mov     al, [bp+var_3]",
+          "operands": [
+            "al",
+            "[bp+var_3]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551613
+          ]
+        },
+        {
+          "address": 3678,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3679,
+          "bytes": "b001",
+          "text": "mov     al, 1",
+          "operands": [
+            "al",
+            "1"
+          ],
+          "operand_values": [
+            16,
+            1
+          ]
+        },
+        {
+          "address": 3681,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3682,
+          "bytes": "9a4d003101",
+          "text": "call    far ptr sub_135D",
+          "operands": [
+            "far ptr sub_135D",
+            ""
+          ],
+          "operand_values": [
+            77,
+            -1
+          ]
+        },
+        {
+          "address": 3687,
+          "bytes": "8a46ff",
+          "text": "mov     al, [bp+var_1]",
+          "operands": [
+            "al",
+            "[bp+var_1]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551615
+          ]
+        },
+        {
+          "address": 3690,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3691,
+          "bytes": "b003",
+          "text": "mov     al, 3",
+          "operands": [
+            "al",
+            "3"
+          ],
+          "operand_values": [
+            16,
+            3
+          ]
+        },
+        {
+          "address": 3693,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3694,
+          "bytes": "9a4d003101",
+          "text": "call    far ptr sub_135D",
+          "operands": [
+            "far ptr sub_135D",
+            ""
+          ],
+          "operand_values": [
+            77,
+            -1
+          ]
+        },
+        {
+          "address": 3699,
+          "bytes": "eb30",
+          "text": "jmp     short loc_EA5",
+          "operands": [
+            "loc_EA5",
+            ""
+          ],
+          "operand_values": [
+            3749,
+            -1
+          ]
+        },
+        {
+          "address": 3701,
+          "bytes": "c646fc01",
+          "text": "mov     [bp+var_4], 1",
+          "operands": [
+            "[bp+var_4]",
+            "1"
+          ],
+          "operand_values": [
+            18446744073709551612,
+            1
+          ]
+        },
+        {
+          "address": 3705,
+          "bytes": "eb03",
+          "text": "jmp     short loc_E7E",
+          "operands": [
+            "loc_E7E",
+            ""
+          ],
+          "operand_values": [
+            3710,
+            -1
+          ]
+        },
+        {
+          "address": 3707,
+          "bytes": "fe46fc",
+          "text": "inc     [bp+var_4]",
+          "operands": [
+            "[bp+var_4]",
+            ""
+          ],
+          "operand_values": [
+            18446744073709551612,
+            -1
+          ]
+        },
+        {
+          "address": 3710,
+          "bytes": "8a46fc",
+          "text": "mov     al, [bp+var_4]",
+          "operands": [
+            "al",
+            "[bp+var_4]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551612
+          ]
+        },
+        {
+          "address": 3713,
+          "bytes": "30e4",
+          "text": "xor     ah, ah",
+          "operands": [
+            "ah",
+            "ah"
+          ],
+          "operand_values": [
+            20,
+            20
+          ]
+        },
+        {
+          "address": 3715,
+          "bytes": "8bf8",
+          "text": "mov     di, ax",
+          "operands": [
+            "di",
+            "ax"
+          ],
+          "operand_values": [
+            7,
+            0
+          ]
+        },
+        {
+          "address": 3717,
+          "bytes": "807bfcff",
+          "text": "cmp     [bp+di+var_4], 0FFh",
+          "operands": [
+            "[bp+di+var_4]",
+            "0FFh"
+          ],
+          "operand_values": [
+            18446744073709551612,
+            255
+          ]
+        },
+        {
+          "address": 3721,
+          "bytes": "7414",
+          "text": "jz      short loc_E9F",
+          "operands": [
+            "loc_E9F",
+            ""
+          ],
+          "operand_values": [
+            3743,
+            -1
+          ]
+        },
+        {
+          "address": 3723,
+          "bytes": "8a46fc",
+          "text": "mov     al, [bp+var_4]",
+          "operands": [
+            "al",
+            "[bp+var_4]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551612
+          ]
+        },
+        {
+          "address": 3726,
+          "bytes": "30e4",
+          "text": "xor     ah, ah",
+          "operands": [
+            "ah",
+            "ah"
+          ],
+          "operand_values": [
+            20,
+            20
+          ]
+        },
+        {
+          "address": 3728,
+          "bytes": "8bf8",
+          "text": "mov     di, ax",
+          "operands": [
+            "di",
+            "ax"
+          ],
+          "operand_values": [
+            7,
+            0
+          ]
+        },
+        {
+          "address": 3730,
+          "bytes": "8a43fc",
+          "text": "mov     al, [bp+di+var_4]",
+          "operands": [
+            "al",
+            "[bp+di+var_4]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551612
+          ]
+        },
+        {
+          "address": 3733,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3734,
+          "bytes": "8a46fc",
+          "text": "mov     al, [bp+var_4]",
+          "operands": [
+            "al",
+            "[bp+var_4]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551612
+          ]
+        },
+        {
+          "address": 3737,
+          "bytes": "50",
+          "text": "push    ax",
+          "operands": [
+            "ax",
+            ""
+          ],
+          "operand_values": [
+            0,
+            -1
+          ]
+        },
+        {
+          "address": 3738,
+          "bytes": "9a4d003101",
+          "text": "call    far ptr sub_135D",
+          "operands": [
+            "far ptr sub_135D",
+            ""
+          ],
+          "operand_values": [
+            77,
+            -1
+          ]
+        },
+        {
+          "address": 3743,
+          "bytes": "807efc03",
+          "text": "cmp     [bp+var_4], 3",
+          "operands": [
+            "[bp+var_4]",
+            "3"
+          ],
+          "operand_values": [
+            18446744073709551612,
+            3
+          ]
+        },
+        {
+          "address": 3747,
+          "bytes": "75d6",
+          "text": "jnz     short loc_E7B",
+          "operands": [
+            "loc_E7B",
+            ""
+          ],
+          "operand_values": [
+            3707,
+            -1
+          ]
+        },
+        {
+          "address": 3749,
+          "bytes": "803e994300",
+          "text": "cmp     byte ptr ds:4399h, 0",
+          "operands": [
+            "byte ptr ds:4399h",
+            "0"
+          ],
+          "operand_values": [
+            17305,
+            0
+          ]
+        },
+        {
+          "address": 3754,
+          "bytes": "7425",
+          "text": "jz      short loc_ED1",
+          "operands": [
+            "loc_ED1",
+            ""
+          ],
+          "operand_values": [
+            3793,
+            -1
+          ]
+        },
+        {
+          "address": 3756,
+          "bytes": "803e9a4300",
+          "text": "cmp     byte ptr ds:439Ah, 0",
+          "operands": [
+            "byte ptr ds:439Ah",
+            "0"
+          ],
+          "operand_values": [
+            17306,
+            0
+          ]
+        },
+        {
+          "address": 3761,
+          "bytes": "741e",
+          "text": "jz      short loc_ED1",
+          "operands": [
+            "loc_ED1",
+            ""
+          ],
+          "operand_values": [
+            3793,
+            -1
+          ]
+        },
+        {
+          "address": 3763,
+          "bytes": "803e9b4300",
+          "text": "cmp     byte ptr ds:439Bh, 0",
+          "operands": [
+            "byte ptr ds:439Bh",
+            "0"
+          ],
+          "operand_values": [
+            17307,
+            0
+          ]
+        },
+        {
+          "address": 3768,
+          "bytes": "7417",
+          "text": "jz      short loc_ED1",
+          "operands": [
+            "loc_ED1",
+            ""
+          ],
+          "operand_values": [
+            3793,
+            -1
+          ]
+        },
+        {
+          "address": 3770,
+          "bytes": "9ad9000a01",
+          "text": "call    sub_1179",
+          "operands": [
+            "sub_1179",
+            ""
+          ],
+          "operand_values": [
+            217,
+            -1
+          ]
+        },
+        {
+          "address": 3775,
+          "bytes": "ff36f25c",
+          "text": "push    word ptr ds:5CF2h",
+          "operands": [
+            "word ptr ds:5CF2h",
+            ""
+          ],
+          "operand_values": [
+            23794,
+            -1
+          ]
+        },
+        {
+          "address": 3779,
+          "bytes": "ff36f05c",
+          "text": "push    word ptr ds:5CF0h",
+          "operands": [
+            "word ptr ds:5CF0h",
+            ""
+          ],
+          "operand_values": [
+            23792,
+            -1
+          ]
+        },
+        {
+          "address": 3783,
+          "bytes": "9a2a000a01",
+          "text": "call    sub_10CA",
+          "operands": [
+            "sub_10CA",
+            ""
+          ],
+          "operand_values": [
+            42,
+            -1
+          ]
+        },
+        {
+          "address": 3788,
+          "bytes": "c606994300",
+          "text": "mov     byte ptr ds:4399h, 0",
+          "operands": [
+            "byte ptr ds:4399h",
+            "0"
+          ],
+          "operand_values": [
+            17305,
+            0
+          ]
+        },
+        {
+          "address": 3793,
+          "bytes": "89ec",
+          "text": "mov     sp, bp",
+          "operands": [
+            "sp",
+            "bp"
+          ],
+          "operand_values": [
+            4,
+            5
+          ]
+        },
+        {
+          "address": 3795,
+          "bytes": "5d",
+          "text": "pop     bp",
+          "operands": [
+            "bp",
+            ""
+          ],
+          "operand_values": [
+            5,
+            -1
+          ]
+        },
+        {
+          "address": 3796,
+          "bytes": "cb",
+          "text": "retf",
+          "operands": [
+            "",
+            ""
+          ],
+          "operand_values": [
+            -1,
+            -1
+          ]
+        }
+      ]
+    }
+  ]
+}

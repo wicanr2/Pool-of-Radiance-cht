@@ -103,7 +103,7 @@
   producer 條件／上限、其他
   reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
   一級 immutable roster snapshot 換成有版本的 live derived-stat seam。
-  Spec 037 已另修正戰役持久化：schema 5（schema 4 campaign 契約加七貨幣）與
+  Spec 037／040／044 已另修正戰役持久化：現行 schema 6（schema 5 再加 ECL archive）與
   engine `142b245` 保存穩定玩家邊界的
   GEO position／完整不透明 ECL session，Load 直接回到 adventure；對話／服務／戰鬥
   中途續點仍待把前端 service state 一併版本化。
@@ -111,8 +111,9 @@
   `4A39h..4A3Fh` 是墓園七種戰利品累積量，不是七項任務。Spec 040 又以 overlay-21
   的 TPOV entry 與 IDA Pro 9.4 bytes 閉合 Copper／Silver／Electrum／Gold／Platinum／
   Gems／Jewelry 七槽、角色 wallet、Pool／Share／Take、容量 gate 與餘額語意；remake
-  已接正常寶物選單、schema 5 七槽存檔及 schema 1..4 Gold 遷移，全專案測試與 vet
-  通過。Spec 041 已進一步證明 `9D63h` 掃描 `4AA6h..4ABFh` 26 槽完成通知表，只有
+  已接正常寶物選單；七槽由 schema 5 引入、現由 schema 6 保存，schema 1..4 Gold
+  遷移與 schema 5 ECL archive 遷移均有測試。Spec 041 已進一步證明 `9D63h` 掃描
+  `4AA6h..4ABFh` 26 槽完成通知表，只有
   十個分支增加 `4AC1h`；可重生矩陣及全 ECL 直接引用清冊已有缺證據負對照。下一步
   逐槽追真正的 `FEh` producer，並由至少四條正常 commission 完成鏈抵達墓園服務。
   Spec 042 已先閉合 Slums 槽 `4ABBh`：ECL2/block20 的共用 helper 每次加一，達 25

@@ -22,7 +22,7 @@
   F1 Help、F2 theme、ESC 返回、F10 離開與視窗拉伸已接通。戰鬥圖示使用原版
   CHEAD／CBODY，支援 Head、Weapon、Size、六部位雙色及 READY／ACTION 同時預覽。
   完成確認後會寫入版本化 remake 角色庫、回到原版順序的 Party Creation Menu；
-  Add、六名玩家角色上限，以及穩定玩家邊界的 schema 5 F10／Load campaign round-trip
+  Add、六名玩家角色上限，以及穩定玩家邊界的 schema 6 F10／Load campaign round-trip
   已接通；對話／服務／戰鬥中途續點尚未完成。DOS 285-byte CHA／SPC export
   尚未完成。正常 `B` 已依原版 producer chain 接到 `GEO3/block 0, (15,1), facing 6`
   的 typed geometry 與原版 `WALLDEF3/8X8D3` 第一人稱素材。正常 Begin 隨即依

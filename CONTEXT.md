@@ -10,7 +10,8 @@
   Silver、Electrum、Gold、Platinum、Gems、Jewelry；Pool 清空各角色 wallet，Share
   依高到低幣種與隊伍順序分配且超載餘額留池，Take 依幣種／角色／數量原子轉移。
   remake 已接 View／Take／Pool／Share／Exit 正常 UI、數量輸入接縫與容量檢查；
-  存檔升為 schema 5，schema 1..4 的 `gold`／`pooled_gold` 確定性遷移到索引 3，
+  七貨幣當時將存檔升為 schema 5；現行 schema 6 保留同一欄位，schema 1..4 的
+  `gold`／`pooled_gold` 仍確定性遷移到索引 3，
   新舊欄位同時出現時失敗即關閉。全專案 `go test ./...` 與 `go vet ./...` 已通過。
 - Spec 041 修正 `4AC1h` 的剩餘模型：`9D63h` 是 `4AA6h..4ABFh` 的 26 槽完成通知
   dispatcher，槽值 `FEh` 才顯示一次並在結算後改為 `FFh`；只有十個通知子程式增加
@@ -22,8 +23,15 @@
   在值小於 `FEh` 時逐次加一，達 25 寫 `FEh`，之後保持不變。direct-entry 第 24／25
   次臨界測試已通過，但只證明 helper，不冒充正常 Slums 完成。game pack 新增八個
   archive／29 blocks 的 ECL catalog，保留 archive namespace、拒絕重複 member／block，
-  並以副本隔離 runtime mutation；`cmd/pool-game` 啟動時已載入這份 catalog。下一步是
-  將 ECL2/block20 與對應地圖入口接入目前仍以 ECL3 起始區為中心的前端 session。
+  並以副本隔離 runtime mutation；`cmd/pool-game` 啟動時已載入這份 catalog。
+- Spec 043 以 IDA Pro 9.4 的 `overlay-03:0D80h..0ED4h` 訂正 LOAD FILES／PIECES：
+  LOAD FILES 第一欄是目前 archive 的 GEO block，第二欄在該 handler 未被消費，不能
+  當 archive；Slums `LOAD PIECES 2,4,1` 則精確填 slots 1..3。game pack 與前端已接
+  三槽 WALLDEF／8X8D 載入，局部 `FFh` 替換仍在保存 slot state 前失敗即關閉。
+- Spec 044 修正跨 archive 存檔：schema 6 新增 `ecl_archive`，Load 從完整 ECL catalog
+  重建正確 namespace。ECL3 舊路徑及 ECL2/block20＋GEO2/block20＋`4ABBh=24` 的
+  F10／Load round-trip 均通過；schema 5 依其 `map_archive` 確定性遷移。下一步仍是
+  找出正常 adventure controller 的 archive producer，接通玩家從 New Phlan 到 Slums。
 
 - Spec 032 以 Pool overlay-03 dispatcher `346Eh/3474h` 與 handler `1A81h..1EA4h`
   固定 `27h TREASURE` 的八欄 numeric request。共用 engine `91801a5` 已提供 inline、
@@ -51,7 +59,8 @@
   HP、Gold 與 inventory，會遺失 map 與所有 ECL 旗標。共用 engine `142b245` 現提供
   作品中立、驗證後才原子替換的 `BlockSessionSnapshot`；Pool schema 4 保存 GEO identity、
   `(x,y,facing)`、current block、PC／stack、numeric／string memory、compare、亂數續點與
-  pending lifecycle entries；Spec 040 再把現行格式升為 schema 5 七貨幣。穩定玩家
+  pending lifecycle entries；Spec 040 加入 schema 5 七貨幣，Spec 044 再升 schema 6
+  保存獨立 ECL archive。穩定玩家
   邊界的 F10／Load round-trip 已接妥；任意對話、
   神殿、戰利品或未完成戰鬥中途續點仍為 DRAFT，不能宣稱全情境存讀檔完成。
 - Spec 038 新增全 ECL memory-reference audit，固定墓園入口的三個欄位：`4AC1h >= 4`、
