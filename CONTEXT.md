@@ -99,7 +99,7 @@
   未冒充完成：
   33 份 CHA 均為 285 bytes，但 SPC 是 9-byte 節點鏈且 corpus 有 9／18／36 bytes，不能
   複製單一模板。初始 map、wall material 與完整 Rolf 導覽已接，但地名、Pool 專屬
-  視錐／背景 oracle、Rolf 初次 APPROACH 圖像、自由移動與遊戲內存檔仍未接。
+  視錐／背景 oracle、Rolf 初次 APPROACH 圖像、地圖事件 dispatch 與遊戲內存檔仍未接。
 - HEAD1..8／BODY1..8 共 16 archives 已全掃：109／109 blocks 可由共用 engine
   picture decoder fail-closed 解碼；Spec 006 已閉合建角固定使用 HEAD3／BODY3、
   14／12 筆稀疏 block selector，並以 DOS capture 全像素零差異證明 88×40＋88×48
@@ -131,3 +131,10 @@ wrapper 是一般玩家前進或完整 collision policy；自由移動繼續失�
 語意，不再沿錯誤的「opcode 1F／CALL producer」假說追查。
 首條玩家垂直鏈固定為標題 → 建角／建隊 → 第一個正常可操作地圖 → 事件／戰鬥 →
 存檔／讀檔。
+
+Spec 014 已開放 Rolf EXIT 後的第一張地圖基本操作：左右方向鍵以八方向步進轉向，
+上方向鍵僅在 cardinal `0/2/4/6` 時以前進方向查 `CanMoveDungeonWrapped`，座標採
+16×16 wrap。Pool 真實 GEO3/block0 的 `(0,4)` 四向結果為 N/E/W 可通、S 阻擋；
+Xvfb 正常路徑已驗 `(0,4,facing3)` 左轉至 facing2，再前進到 `(1,4)`。GEO bytes、
+入口與 wrapper wrap 是 Pool exact；door detail consumer 仍是跨作品 strong inference，
+事件尚未執行，因此只能稱「基本 GEO walk」，不能稱完整自由移動。

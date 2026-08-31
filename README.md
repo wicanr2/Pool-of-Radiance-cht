@@ -29,7 +29,8 @@
   原版 ZIP packed text 與 Return 閘門已達 exact。Spec 011 另由四張原始 byte table
   閉合並實作完整 34-step scripted tour：六個停靠 selector 顯示七頁原版文字，最後在
   `(0,4), facing 3` 走到 ECL `EXIT`。每步 delay 是可重現的約 150ms approximation；
-  Pool 專屬自由移動政策尚未閉合，因此導覽結束後仍不開放移動。視錐 traversal 仍是
+  導覽結束後已可用方向鍵轉向，並以原始 GEO wall／door data 在 cardinal 朝向前進；
+  地圖事件 dispatch、鎖門互動與完整 Pool 移動政策尚未閉合。視錐 traversal 仍是
   跨作品共用引擎的 strong inference。
 - 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
   Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
@@ -92,5 +93,5 @@ tools/go.sh test ./...
 
 這仍是首條玩家垂直鏈；remake 自有角色庫、建隊與初始 map identity 已接通，但 DOS
 相容角色檔、完整 Party Creation Menu、第一人稱背景／視錐的 Pool 專屬 oracle、
-Rolf 初次 APPROACH 圖像、自由移動、戰鬥與存讀檔垂直鏈仍未完成，不能宣稱可玩版，
+Rolf 初次 APPROACH 圖像、地圖事件、鎖門互動、戰鬥與存讀檔垂直鏈仍未完成，不能宣稱可玩版，
 也尚未證實該 block 的地名。

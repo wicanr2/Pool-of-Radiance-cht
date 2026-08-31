@@ -269,6 +269,12 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if !application.introDone || application.tourActive || application.tourStep != 33 || application.spawn.X != 0 || application.spawn.Y != 4 || application.spawn.Facing != 3 {
 		t.Fatalf("final done=%v active=%v spawn=%+v step=%d", application.introDone, application.tourActive, application.spawn, application.tourStep)
 	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 2 {
+		t.Fatalf("turn facing=%d err=%v", application.spawn.Facing, err)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 1 || application.spawn.Y != 4 {
+		t.Fatalf("forward spawn=%+v err=%v", application.spawn, err)
+	}
 }
 
 func TestWrapASCIIUsesStableLineWidth(t *testing.T) {

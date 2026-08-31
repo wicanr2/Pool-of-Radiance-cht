@@ -57,6 +57,23 @@ func TestRealDOSGeometryCatalog(t *testing.T) {
 	}
 }
 
+func TestInitialMapRolfExitDungeonEdges(t *testing.T) {
+	catalog, err := ReadDOSGeometryCatalog(filepath.Join("..", "..", "Pool of Radiance (1988).zip"))
+	if err != nil {
+		t.Skip(err)
+	}
+	grid, ok := catalog.Map(MapKey{Archive: 3, BlockID: 0})
+	if !ok {
+		t.Fatal("initial map absent")
+	}
+	want := map[int]bool{0: true, 2: true, 4: false, 6: true}
+	for direction, passable := range want {
+		if got := grid.Grid.CanMoveDungeonWrapped(0, 4, direction); got != passable {
+			t.Errorf("direction %d passable=%v want %v", direction, got, passable)
+		}
+	}
+}
+
 func TestDOSGeometryCatalogFailsClosedWhenArchiveMissing(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "missing.zip")
 	writeTestZIP(t, path, []string{"poolrad/GEO1.DAX"})

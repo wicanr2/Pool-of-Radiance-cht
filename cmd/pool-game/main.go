@@ -344,7 +344,50 @@ func (a *app) Update() error {
 				a.tourPage = 0
 			}
 		}
+		if a.introDone {
+			if a.justPressed(ebiten.KeyArrowLeft) {
+				a.spawn.Facing = uint8((int(a.spawn.Facing) + 7) % 8)
+				a.statusLine = "Turned left; Pool event dispatch remains pending."
+				return nil
+			}
+			if a.justPressed(ebiten.KeyArrowRight) {
+				a.spawn.Facing = uint8((int(a.spawn.Facing) + 1) % 8)
+				a.statusLine = "Turned right; Pool event dispatch remains pending."
+				return nil
+			}
+			if a.justPressed(ebiten.KeyArrowUp) {
+				return a.moveInitialDungeonForward()
+			}
+		}
 	}
+	return nil
+}
+
+func (a *app) moveInitialDungeonForward() error {
+	if a.initialMap == nil {
+		return fmt.Errorf("Pool initial map is not configured")
+	}
+	dx, dy := 0, 0
+	switch a.spawn.Facing {
+	case 0:
+		dy = -1
+	case 2:
+		dx = 1
+	case 4:
+		dy = 1
+	case 6:
+		dx = -1
+	default:
+		a.statusLine = "Face a cardinal direction before moving forward."
+		return nil
+	}
+	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), int(a.spawn.Facing)) {
+		a.statusLine = "A wall or locked door blocks the way."
+		return nil
+	}
+	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
+	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
+	a.statusLine = "Moved using original GEO wall/door data; Pool event dispatch remains pending."
 	return nil
 }
 
@@ -685,7 +728,9 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
 	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 184, accent)
 	drawText(screen, "VIEW TRAVERSAL: STRONG INFERENCE", 310, 210, accent)
-	drawText(screen, "MOVE POLICY: PENDING / DISABLED", 310, 246, foreground)
+	moveStatus := "MOVE POLICY: PENDING / DISABLED"
+	if a.introDone { moveStatus = "GEO WALK: ENABLED / EVENTS PENDING" }
+	drawText(screen, moveStatus, 310, 246, foreground)
 	if a.initialEvent != nil {
 		drawText(screen, fmt.Sprintf("FIRST EVENT: ROLF / MONSTER %d", a.initialEvent.MonsterID), 310, 272, foreground)
 	} else {
