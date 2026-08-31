@@ -245,6 +245,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x24: true, // Pool service / encounter boundary
 		0x2D: true, // CALL
 		0x31: true, // SPRITE OFF
+		0x37: true, // LOAD PIECES / title resource boundary
 		0x3A: true, // DELAY
 	}
 }
@@ -261,6 +262,9 @@ func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) 
 	}
 	session, err := eclvm.NewBlockSession(blocks, 0, 0x9900, int(event.HandlerAddress)-0x9900, 5, initialEventPassthrough(), 1)
 	if err != nil {
+		return nil, err
+	}
+	if err := session.SetTransitionEntries(0, 4); err != nil {
 		return nil, err
 	}
 	session.Machine().SetCharacterProjector(initialCharacterProjector(characters))

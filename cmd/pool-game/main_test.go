@@ -299,7 +299,7 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	hero := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 100, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
 	state := poolsave.NewState()
 	state.CharacterLibrary, state.Party = []poolsave.Character{hero}, []poolsave.Character{hero}
-	application := &app{mode: modeMenu, state: state, roller: fixedTempleRoller(6), initialMap: &initial, initialWalls: &walls, initialEvent: &event, spawn: gamepack.DOSInitialSpawn()}
+	application := &app{mode: modeMenu, state: state, roller: fixedTempleRoller(6), initialMap: &initial, geometryCatalog: catalog, initialWalls: &walls, initialEvent: &event, spawn: gamepack.DOSInitialSpawn()}
 	var saved poolsave.State
 	application.saveState = func(state poolsave.State) error { saved = state; return nil }
 	if err := press(application, ebiten.KeyB); err != nil {
@@ -433,6 +433,12 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu {
 		t.Fatalf("City Hall return to movement pending=%v waiting=%v text=%q err=%v", application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatalf("attempt City Hall doorway: %v", err)
+	}
+	if application.spawn.Map != (gamepack.MapKey{Archive: 3, BlockID: 0}) || application.spawn.X != 4 || application.spawn.Y != 4 || application.spawn.Facing != 2 || application.eventSession.CurrentBlockID() != 8 || application.cellEventPending || application.cellWaitingMenu {
+		t.Fatalf("City Hall doorway spawn=%+v pending=%v waiting=%v text=%q script_block=%d", application.spawn, application.cellEventPending, application.cellWaitingMenu, application.eventText, application.eventSession.CurrentBlockID())
 	}
 }
 

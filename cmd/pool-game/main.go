@@ -8,6 +8,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 
@@ -89,6 +90,7 @@ type app struct {
 	saveState        func(poolsave.State) error
 	loadState        func() (poolsave.State, error)
 	initialMap       *gamepack.GeometryMap
+	geometryCatalog  gamepack.GeometryCatalog
 	initialWalls     *graphics.PieceSet
 	initialEvent     *gamepack.InitialEvent
 	spawn            gamepack.Spawn
@@ -139,6 +141,7 @@ func newApp(zipPath string) (*app, error) {
 		return nil, fmt.Errorf("DOS initial map GEO%d block %d is absent", application.spawn.Map.Archive, application.spawn.Map.BlockID)
 	}
 	application.initialMap = &initialMap
+	application.geometryCatalog = catalog
 	initialWalls, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial wall set: %w", err)
@@ -453,6 +456,10 @@ func (a *app) moveInitialDungeonForward() error {
 		if err != nil {
 			return fmt.Errorf("dispatch Pool initial cell: %w", err)
 		}
+		result, err = a.consumeInitialTransitionResources(result)
+		if err != nil {
+			return err
+		}
 		if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
 			return a.pauseInitialCellResult(result)
 		}
@@ -464,6 +471,47 @@ func (a *app) moveInitialDungeonForward() error {
 	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
+}
+
+func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Result, error) {
+	for boundary := 0; boundary < 8; boundary++ {
+		if result.Exited || result.WaitingForMenu || len(result.Events) != 1 {
+			return result, nil
+		}
+		event := result.Events[0]
+		if len(event.Arguments) != len(event.ArgumentsValid) {
+			return result, fmt.Errorf("Pool resource event 0x%02X has mismatched argument validity", event.Opcode)
+		}
+		allValid := true
+		for _, valid := range event.ArgumentsValid {
+			allValid = allValid && valid
+		}
+		switch event.Opcode {
+		case 0x21:
+			if !allValid || len(event.Arguments) != 3 || event.Arguments[0] > 0xFF {
+				return result, fmt.Errorf("Pool LOAD FILES has invalid arguments %v/%v", event.Arguments, event.ArgumentsValid)
+			}
+			key := gamepack.MapKey{Archive: a.spawn.Map.Archive, BlockID: uint8(event.Arguments[0])}
+			loaded, ok := a.geometryCatalog.Map(key)
+			if !ok {
+				return result, fmt.Errorf("Pool LOAD FILES requested absent GEO%d block %d", key.Archive, key.BlockID)
+			}
+			a.initialMap = &loaded
+			a.spawn.Map = key
+		case 0x37:
+			if !allValid || !reflect.DeepEqual(event.Arguments, []uint16{127, 127, 127}) {
+				return result, fmt.Errorf("Pool LOAD PIECES %v is not READY", event.Arguments)
+			}
+		default:
+			return result, nil
+		}
+		next, err := a.eventSession.RunUntilEvent(4096, nil, true)
+		if err != nil {
+			return result, fmt.Errorf("continue Pool transition resource 0x%02X: %w", event.Opcode, err)
+		}
+		result = next
+	}
+	return result, fmt.Errorf("Pool transition resource boundary limit exceeded")
 }
 
 func (a *app) beginInitialSearch() error {
@@ -488,6 +536,11 @@ func (a *app) continueInitialSearch(selection *uint16) error {
 
 func (a *app) consumeInitialSearch(result eclvm.Result) error {
 	for boundaries := 0; boundaries < 64; boundaries++ {
+		var err error
+		result, err = a.consumeInitialTransitionResources(result)
+		if err != nil {
+			return err
+		}
 		a.applyCellECLResult(result)
 		presentationOnly := len(result.Events) == 1 && ((result.Events[0].Opcode == 0x12 && result.Events[0].Text == "") || result.Events[0].Opcode == 0x0E)
 		if presentationOnly {

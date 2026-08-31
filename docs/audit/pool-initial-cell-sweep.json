@@ -1498,8 +1498,8 @@
       "geometry_reachable": true,
       "geometry_distance": 11,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 143,
+      "stop_pc": "99AA",
+      "steps": 151,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1509,8 +1509,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 128,
+        "stop_pc": "99AA",
+        "steps": 136,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1520,6 +1520,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -1533,8 +1542,8 @@
       "geometry_reachable": true,
       "geometry_distance": 11,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 143,
+      "stop_pc": "99AA",
+      "steps": 151,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1544,8 +1553,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 128,
+        "stop_pc": "99AA",
+        "steps": 136,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1555,6 +1564,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -1568,8 +1586,8 @@
       "geometry_reachable": true,
       "geometry_distance": 11,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 143,
+      "stop_pc": "99AA",
+      "steps": 151,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1579,8 +1597,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 128,
+        "stop_pc": "99AA",
+        "steps": 136,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1590,6 +1608,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -1603,8 +1630,8 @@
       "geometry_reachable": true,
       "geometry_distance": 11,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 143,
+      "stop_pc": "99AA",
+      "steps": 151,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -1614,8 +1641,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 128,
+        "stop_pc": "99AA",
+        "steps": 136,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -1625,6 +1652,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -3658,8 +3694,8 @@
       "geometry_reachable": true,
       "geometry_distance": 9,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3669,8 +3705,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3680,6 +3716,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -3693,8 +3738,8 @@
       "geometry_reachable": true,
       "geometry_distance": 9,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3704,8 +3749,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3715,6 +3760,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -3728,8 +3782,8 @@
       "geometry_reachable": true,
       "geometry_distance": 9,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3739,8 +3793,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3750,6 +3804,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -3763,8 +3826,8 @@
       "geometry_reachable": true,
       "geometry_distance": 9,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -3774,8 +3837,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -3785,6 +3848,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -6177,8 +6249,8 @@
       "geometry_reachable": true,
       "geometry_distance": 8,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6188,8 +6260,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6199,6 +6271,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -6212,8 +6293,8 @@
       "geometry_reachable": true,
       "geometry_distance": 8,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6223,8 +6304,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6234,6 +6315,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -6247,8 +6337,8 @@
       "geometry_reachable": true,
       "geometry_distance": 8,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6258,8 +6348,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6269,6 +6359,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -6282,8 +6381,8 @@
       "geometry_reachable": true,
       "geometry_distance": 8,
       "boundary": "exit",
-      "stop_pc": "993E",
-      "steps": 101,
+      "stop_pc": "99AA",
+      "steps": 109,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -6293,8 +6392,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "993E",
-        "steps": 86,
+        "stop_pc": "99AA",
+        "steps": 94,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -6304,6 +6403,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A18",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A1F",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -11183,8 +11291,8 @@
       "geometry_reachable": true,
       "geometry_distance": 4,
       "boundary": "exit",
-      "stop_pc": "995C",
-      "steps": 210,
+      "stop_pc": "99FC",
+      "steps": 218,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11194,8 +11302,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "995C",
-        "steps": 195,
+        "stop_pc": "99FC",
+        "steps": 203,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11205,6 +11313,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A06",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A0D",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -11218,8 +11335,8 @@
       "geometry_reachable": true,
       "geometry_distance": 4,
       "boundary": "exit",
-      "stop_pc": "995C",
-      "steps": 210,
+      "stop_pc": "99FC",
+      "steps": 218,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11229,8 +11346,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "995C",
-        "steps": 195,
+        "stop_pc": "99FC",
+        "steps": 203,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11240,6 +11357,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A06",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A0D",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -11253,8 +11379,8 @@
       "geometry_reachable": true,
       "geometry_distance": 4,
       "boundary": "exit",
-      "stop_pc": "995C",
-      "steps": 210,
+      "stop_pc": "99FC",
+      "steps": 218,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11264,8 +11390,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "995C",
-        "steps": 195,
+        "stop_pc": "99FC",
+        "steps": 203,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11275,6 +11401,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A06",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A0D",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }
@@ -11288,8 +11423,8 @@
       "geometry_reachable": true,
       "geometry_distance": 4,
       "boundary": "exit",
-      "stop_pc": "995C",
-      "steps": 210,
+      "stop_pc": "99FC",
+      "steps": 218,
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11299,8 +11434,8 @@
       "search": {
         "entry": "99EB",
         "boundary": "exit",
-        "stop_pc": "995C",
-        "steps": 195,
+        "stop_pc": "99FC",
+        "steps": 203,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11310,6 +11445,15 @@
             "pc": "99EE",
             "opcode": "0E",
             "value": 255
+          },
+          {
+            "pc": "9A06",
+            "opcode": "21"
+          },
+          {
+            "pc": "9A0D",
+            "opcode": "37",
+            "value": 127
           }
         ]
       }

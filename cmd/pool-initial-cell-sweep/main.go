@@ -222,7 +222,7 @@ func runSearchAudit(session *eclvm.BlockSession) phase {
 }
 
 func isPresentationOnly(event eclvm.Event) bool {
-	return (event.Opcode == 0x12 && event.Text == "") || event.Opcode == 0x0E
+	return (event.Opcode == 0x12 && event.Text == "") || event.Opcode == 0x0E || event.Opcode == 0x21 || event.Opcode == 0x37
 }
 
 func finishRolf(machine *eclvm.Machine) error {

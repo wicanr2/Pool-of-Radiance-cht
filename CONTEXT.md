@@ -189,8 +189,8 @@ cell event；後續 `DO YOU SEEK HEALING?`、原始 YES／NO menu 與 Sune 神�
 同一 VM 的 `AA6Bh` 續跑，寫入 `6DE1h=FFh`、消費 `PICTURE 255` 後 `EXIT`。Heal 等四項
 服務的價格、HP／狀態與金錢副作用尚未 READY，現階段保持失敗即關閉。`20h` 已依
 Pool `0CDDh` handler READY 並接入共用 block session；Spec 020 的 `14h` 亦已接入
-共用 VM；Spec 021 的 `0Ah` 與字串比較也已依真實 consumer 接線。正式引擎鎖版為
-`v0.0.0-20260831132230-0a028e0956c1`；初始地圖 sweep 已無靜態錯誤。
+共用 VM；Spec 021 的 `0Ah` 與字串比較也已依真實 consumer 接線。現行正式引擎鎖版為
+`v0.0.0-20260831161216-940ecaa8c34e`；初始地圖 sweep 已無靜態錯誤。
 
 Sune 選單後的同一 VM 分支已由 Spec 017 閉合到服務入口：YES（選單索引 0）先令
 `6E79h=0`、進入 `AA63h`，執行 opcode `1Ch CLEARMONSTERS`、
@@ -229,3 +229,14 @@ Spec 024 已接續閉合 `4AC1h=1..9` 的公告分派：`AC60h` 先減一到 `4A
 `PROCLAMATION` 與 `985Eh`。九筆真實 ECL session 均依舊格 entry 0 → 新格 entry 1
 走到 `EXIT`；第 5 與第 9 筆同為 `CXIV.` 是原始 bytes，不自行更正。這仍不證明
 clerk 在何時寫入 `4AC1h`；下一步追該 producer 與 `AD29h` Skullcrusher 離隊事件。
+
+Spec 025 推翻 Spec 019 的不完整斷言「NEWECL 目的 block 只跑 entry 0」。原版
+overlay-03 lifecycle controller 在 `3741h` 呼叫 entry 0，因 NEWECL 設定的
+`4391h=1` 於 `3778h` 回圈，再由 `3658h` 呼叫 entry 4；Pool 的 transition sequence
+因此是 `0→4`。共用 engine 保留預設 `[0]`，由 Pool adapter 設 `[0,4]`，pending
+entry 可跨玩家 boundary 與 Clone 保存。正常按鍵在 City Hall 公告後前進到 `(4,4,2)`，
+script block 變 8；block 8 entry 4 的 `LOAD FILES 0,0,0` 仍載入 GEO3/block0，證明
+script identity 不等於 geometry identity。`LOAD PIECES 127,127,127` 保留現行 wall set；
+其他 selector 尚未 READY。engine／Pool 全測試與 CoAB 玩家／game／ECL 抽樣已通過。
+共用引擎正式版本為 `v0.0.0-20260831161216-940ecaa8c34e`；Pool 已用該鎖版在斷網
+Docker／Xvfb 重跑全套測試，不再依賴本機 replace 才能通過。

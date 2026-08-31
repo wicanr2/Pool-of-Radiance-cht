@@ -64,7 +64,9 @@ code base 與 block catalog 仍由 Pool adapter 提供，不能寫進共用 engi
 3. 交接時先驗證目的 block 存在並可由 `ecl.EntryPoints(block, 5)` 解出五個入口；
    失敗即關閉，原 session 不得半切換。
 4. 成功交接時以目的 block payload 取代舊 code window，保留 code window 之外的 shared
-   memory、Strings 與 random stream，清空 GOSUB stack，從目的 block entry 0 重啟。
+   memory、Strings 與 random stream，清空 GOSUB stack。先前只寫「從目的 block
+   entry 0 重啟」並不完整；Spec 025 依 lifecycle controller 訂正 Pool 的完整序列為
+   entry `0 → 4`。共用 session 的預設仍可是 entry 0，但 Pool adapter 必須宣告兩段序列。
 5. session 可在同一次 `RunUntilEvent` 內跨過一或多個 `20h`，直到真文字、選單、
    external boundary 或 `EXIT`；結果保留 transition 記錄，adapter 可查目前 block。
 6. Pool `ReadDOSInitialEvent` 必須保存 ECL3.DAX 的完整 block catalog，不再只保存 block 0。
@@ -96,7 +98,8 @@ dispatcher `334Ah..3353h` 將 `0Ah` 路由到 `02E3h..03B0h`。handler 解析一
 ## 實作收據
 
 - 共用引擎 `eclvm.BlockSession` 已保存 shared memory、字串與亂數流，並在 `20h`
-  驗證目的 block 後更換 code window、清除 stack、由 entry 0 繼續。
+  驗證目的 block 後更換 code window、清除 stack。歷史實作只由 entry 0 繼續；
+  Spec 025 已證明 Pool 還須接 entry 4，此處保留勘誤而不再把舊行為稱作完整 lifecycle。
 - Pool adapter 已載入完整 ECL3 block catalog；正常遊戲、cell sweep 與 continuation
   都改走同一 session，不以座標表模擬交接。
 - 正式依賴已鎖定共用引擎

@@ -87,6 +87,9 @@
   Spec 024 又以非零 `4AC1h=1..9` 閉合原版 `ON GOSUB` 與九則 proclamation，逐值
   執行真實 ECL 至 `EXIT`；這只完成已持有 commission 時的公告選擇。下一步是定位並
   閉合 clerk 實際授予／更新 `4AC1h` 的玩家路徑，以及 `AD29h` Skullcrusher 離隊事件。
+  Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
+  `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
+  `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic
