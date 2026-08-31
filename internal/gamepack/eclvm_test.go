@@ -139,6 +139,79 @@ func TestRealBlock8GraveyardTreasurePrecedesCombat(t *testing.T) {
 	}
 }
 
+func TestRealBlock8GraveyardRewardAccumulatorSlots(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	event, err := ReadDOSInitialEvent(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	wants := [7]eclvm.TreasureRequest{
+		{Amounts: [7]uint16{0, 0, 0, 1, 0, 0, 0}, ItemBlock: 0xFF},
+		{Amounts: [7]uint16{0, 0, 0, 0, 1, 0, 0}, ItemBlock: 0xFF},
+		{Amounts: [7]uint16{0, 0, 0, 0, 0, 1, 0}, ItemBlock: 0xFF},
+		{Amounts: [7]uint16{0, 0, 0, 0, 0, 0, 1}, ItemBlock: 0xFF},
+		{Amounts: [7]uint16{0, 0, 0, 0, 1, 0, 0}, ItemBlock: 0xFF},
+		{Amounts: [7]uint16{0, 0, 0, 0, 0, 1, 0}, ItemBlock: 0xFF},
+		{Amounts: [7]uint16{0, 0, 0, 0, 0, 0, 1}, ItemBlock: 0xFF},
+	}
+	for slot := range wants {
+		t.Run(string(rune('0'+slot)), func(t *testing.T) {
+			fixture := event
+			fixture.HandlerAddress = 0x9C34
+			fixture.ScriptBlock = nil
+			fixture.ScriptBlocks = map[uint16][]byte{0: event.ScriptBlocks[8]}
+			session, err := NewInitialEventSession(fixture, InitialCharacter{ClassID: "fighter", Abilities: [6]int{14, 10, 10, 13, 10, 10}, CurrentHP: 8})
+			if err != nil {
+				t.Fatal(err)
+			}
+			machine := session.Machine()
+			machine.Memory[0x4A39+uint16(slot)] = 1
+			var pages []string
+			var treasures []eclvm.TreasureRequest
+			for boundary := 0; boundary < 80; boundary++ {
+				result, err := machine.RunUntilEvent(4096, nil, true)
+				if err != nil {
+					t.Fatalf("boundary %d: %v", boundary, err)
+				}
+				for _, event := range result.Events {
+					if event.Text != "" {
+						pages = append(pages, event.Text)
+					}
+				}
+				treasures = append(treasures, result.TreasureRequests...)
+				if result.WaitingForMenu {
+					result, err = machine.RunUntilEvent(4096, []uint16{0}, true)
+					if err != nil {
+						t.Fatalf("boundary %d menu: %v", boundary, err)
+					}
+					for _, event := range result.Events {
+						if event.Text != "" {
+							pages = append(pages, event.Text)
+						}
+					}
+					treasures = append(treasures, result.TreasureRequests...)
+				}
+				if result.Exited {
+					break
+				}
+			}
+			joined := strings.Join(pages, "\n")
+			if !strings.Contains(joined, "ELIMINATED SOME UNDEAD FROM THE GRAVEYARD") || !strings.Contains(joined, "HERE IS YOUR REWARD") {
+				t.Fatalf("slot %d missing graveyard reward pages: %q", slot, pages)
+			}
+			if len(treasures) != 1 || treasures[0] != wants[slot] {
+				t.Fatalf("slot %d treasures=%+v, want %+v", slot, treasures, wants[slot])
+			}
+			if machine.Memory[0x4A8F+uint16(slot)] != 1 {
+				t.Fatalf("slot %d acknowledgement was not updated", slot)
+			}
+			if machine.Memory[0x4AC1] != 0 {
+				t.Fatalf("slot %d changed later proclamation progress to %d", slot, machine.Memory[0x4AC1])
+			}
+		})
+	}
+}
+
 // This is the first second-title consumer of the shared VM core. It executes
 // the original bytes rather than replaying the typed TourStep projection.
 func TestSharedVMRunsRealRolfTourToExit(t *testing.T) {

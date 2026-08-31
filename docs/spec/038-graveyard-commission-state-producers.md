@@ -26,9 +26,13 @@ address、opcode、operand index／code 與 raw target；不把欄位名稱寫�
 
 ## 下一個實作閘門
 
-1. 逐一執行 `4AC1h` 前四個 producer 的真實 ECL 正／負分支，列出來源 table 差值、
-   玩家文字、external services、寫入後值與重入結果。
-2. 找出 `4AB1h` 初值與所有可能的 `FFh` producer，包括 SAVE TABLE、間接位址及三個
+1. `4A39h..4A3Fh` 已另由 memory audit 與真實 block8 逐槽執行證明為墓園戰利品
+   累積量，不是 `4AC1h` 的七個任務 producer；先閉合 overlay-05 的七種貨幣服務，
+   不得再用這七格推算完成了幾項委託。
+2. 逐一執行 `9FAEh..A4D1h` 十個真正 `4AC1h` producer 的正／負分支，列出各自入口
+   條件、玩家文字、external services、寫入後值與重入結果；墓園 gate 需要其中至少
+   四次正常可達進度。
+3. 找出 `4AB1h` 初值與所有可能的 `FFh` producer，包括 SAVE TABLE、間接位址及三個
    decoder 缺口；未完成前只保留 raw address。
-3. 只有玩家可正常完成足以令 `4AC1h >= 4` 的任務鏈後，才可用正常 City Hall 按鍵
+4. 只有玩家可正常完成足以令 `4AC1h >= 4` 的任務鏈後，才可用正常 City Hall 按鍵
    驗收墓園委託；禁止測試直接注入 4 當成完整主線證據。

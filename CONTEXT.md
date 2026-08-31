@@ -35,8 +35,9 @@
 - Spec 038 新增全 ECL memory-reference audit，固定墓園入口的三個欄位：`4AC1h >= 4`、
   `4AB1h != FFh`、`4A96h != FFh`。`4A96h` 在接受後由 `A792h` 寫 `FFh`；`4AB1h`
   的目前唯一直寫在 ECL4/block10 吸血鬼戰鬥結果分支寫 `FEh`，仍會通過墓園 gate，
-  不得先命名成完成旗標。正常墓園驗收真正前置是閉合足以推進 `4AC1h` 的 reward／
-  quest producer，而不是在測試直接注入 4。
+  不得先命名成完成旗標。Spec 039 已另證明 `4A39h..4A3Fh` 是墓園七種戰利品累積量，
+  不是七項任務；正常墓園驗收真正前置是閉合 `9FAEh..A4D1h` 十個 `4AC1h` 進度
+  producer，而不是在測試直接注入 4 或拿戰利品槽數代替任務數。
 
 - Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
   與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、
@@ -47,7 +48,7 @@
   與三種失敗即關閉測試；正式 pseudo-version 為
   `v0.0.0-20260831165626-7e9305036c43`。
 - `cmd/pool-city-hall-audit` 已從固定 block8 trace 重生
-  `docs/audit/dos-city-hall-structure.json`：reward 七個有序槽／四個唯一 target、commission
+  `docs/audit/dos-city-hall-structure.json`：墓園戰利品七個有序槽／四個唯一 target、commission
   十六個有序入口、十個 `4AC1h` 增量 producer，以及五個 external service call 均有
   hash gate 與刪除 evidence 的負對照。清冊補出舊規格漏列的 `9F28h TREASURE`／
   `9F3Eh COMBAT`，另三個是 `A5A8h PARTYSTRENGTH`、`A780h TREASURE`、`A791h COMBAT`。
