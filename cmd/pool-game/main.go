@@ -27,6 +27,9 @@ import (
 const (
 	logicalWidth  = 640
 	logicalHeight = 400
+	// Spec 011 permits a deterministic approximation for the original DELAY.
+	// Nine 60 Hz updates make each non-dialogue tour frame visible (~150 ms).
+	tourStepDelayTicks = 9
 )
 
 type screenMode uint8
@@ -80,6 +83,10 @@ type app struct {
 	spawn        gamepack.Spawn
 	introWaiting bool
 	introDone    bool
+	tourActive   bool
+	tourStep     int
+	tourPage     int
+	tourDelay    int
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -227,6 +234,7 @@ func (a *app) Update() error {
 			}
 			a.spawn = a.initialEvent.Position
 			a.introWaiting, a.introDone = true, false
+			a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
 			a.mode = modeAdventure
 			a.statusLine = "Original first Rolf event loaded; movement remains disabled."
 			return nil
@@ -261,8 +269,42 @@ func (a *app) Update() error {
 			return nil
 		}
 		if a.introWaiting && (a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
-			a.introWaiting, a.introDone = false, true
-			a.statusLine = "Rolf tour continuation is the next pending ECL slice."
+			a.introWaiting, a.tourActive = false, true
+			a.tourStep, a.tourPage, a.tourDelay = -1, -1, 0
+			a.statusLine = "Running the original 34-step Rolf tour; movement remains disabled."
+			return nil
+		}
+		if a.tourActive {
+			if a.initialEvent == nil {
+				return fmt.Errorf("Pool initial tour is not configured")
+			}
+			if a.tourPage >= 0 {
+				if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+					step := a.initialEvent.Tour[a.tourStep]
+					if a.tourPage+1 < len(step.Messages) {
+						a.tourPage++
+					} else {
+						a.tourPage, a.tourDelay = -1, 0
+					}
+				}
+				return nil
+			}
+			if a.tourDelay > 0 {
+				a.tourDelay--
+				return nil
+			}
+			a.tourStep++
+			if a.tourStep >= len(a.initialEvent.Tour) {
+				a.tourActive, a.introDone = false, true
+				a.statusLine = "Rolf tour reached ECL EXIT at (0,4), facing 3; player movement policy remains pending."
+				return nil
+			}
+			step := a.initialEvent.Tour[a.tourStep]
+			a.spawn = step.Position
+			a.tourDelay = tourStepDelayTicks
+			if len(step.Messages) != 0 {
+				a.tourPage = 0
+			}
 		}
 	}
 	return nil
@@ -561,12 +603,21 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		drawText(screen, "FIRST EVENT: NOT LOADED", 310, 272, foreground)
 	}
 	drawText(screen, "ESC: PARTY CREATION MENU", 310, 308, foreground)
+	if a.tourActive && a.initialEvent != nil {
+		drawText(screen, fmt.Sprintf("TOUR STEP %02d / %02d", a.tourStep+1, len(a.initialEvent.Tour)), 310, 294, accent)
+	}
+	dialogueVisible := false
 	if a.introWaiting && a.initialEvent != nil {
 		drawDialogue(screen, a.initialEvent.Message, a.initialEvent.ContinueLabel, foreground, accent)
-	} else if a.introDone {
-		drawDialogue(screen, "ROLF'S GUIDED TOUR CONTINUES HERE. THE REMAINING SEVEN PAGES AND SCRIPTED MOVEMENT ARE PENDING ECL VERIFICATION.", "ESC RETURNS TO PARTY CREATION MENU", foreground, accent)
+		dialogueVisible = true
+	} else if a.tourActive && a.tourPage >= 0 && a.initialEvent != nil && a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour) {
+		step := a.initialEvent.Tour[a.tourStep]
+		if a.tourPage < len(step.Messages) {
+			drawDialogue(screen, step.Messages[a.tourPage], a.initialEvent.ContinueLabel, foreground, accent)
+			dialogueVisible = true
+		}
 	}
-	if a.statusLine != "" && !a.introWaiting && !a.introDone {
+	if a.statusLine != "" && !dialogueVisible {
 		drawText(screen, a.statusLine, 42, 342, foreground)
 	}
 }

@@ -84,12 +84,17 @@ pulse b
 sleep 0.8
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-initial-rolf-event.png
+pulse Return
+sleep 2
+ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-rolf-tour-tyr.png
 sha256sum docs/screenshots/pool-remake-character-name.png \
   docs/screenshots/pool-remake-portrait-editor.png \
   docs/screenshots/pool-remake-combat-icon-editor.png \
   docs/screenshots/pool-remake-icon-confirm.png \
   docs/screenshots/pool-remake-party-menu.png \
-  docs/screenshots/pool-remake-initial-rolf-event.png
+  docs/screenshots/pool-remake-initial-rolf-event.png \
+  docs/screenshots/pool-remake-rolf-tour-tyr.png
 if cmp -s docs/screenshots/pool-remake-portrait-editor.png docs/screenshots/pool-remake-combat-icon-editor.png; then
   echo "combat icon capture did not leave the portrait screen" >&2
   exit 1
@@ -101,6 +106,10 @@ if cmp -s docs/screenshots/pool-remake-combat-icon-editor.png docs/screenshots/p
 fi
 if cmp -s docs/screenshots/pool-remake-party-menu.png docs/screenshots/pool-remake-initial-rolf-event.png; then
   echo "Begin did not advance from the party menu to the initial Rolf event" >&2
+  exit 1
+fi
+if cmp -s docs/screenshots/pool-remake-initial-rolf-event.png docs/screenshots/pool-remake-rolf-tour-tyr.png; then
+  echo "Rolf tour did not advance from the greeting to the Tyr stop" >&2
   exit 1
 fi
 '

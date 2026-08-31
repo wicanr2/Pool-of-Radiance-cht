@@ -1,6 +1,6 @@
 # Spec 010：DOS 初始 Rolf 導覽事件
 
-狀態：READY（首次觸發、第一頁文字來源、Return 閘門與事件設定）；DRAFT（後續七頁、導覽位移、肖像／sprite 與自由移動交接）
+狀態：READY（首次觸發、第一頁文字來源、Return 閘門與事件設定）；後續導覽已由 Spec 011 取代並升為 READY；DRAFT（初次 APPROACH 圖像與自由移動政策）
 日期：2026-08-31
 
 ## 輸入與可重生證據
@@ -42,12 +42,8 @@ Spec 009 已閉合新隊伍由第五 command-set entry `9AF2h` 進入
 game pack 暴露 typed initial-event adapter，並授權正常 `B` 路徑顯示第一頁及等待
 Return。因故事位址、monster ID 與文案均是 Pool 資料，不可移入共用 engine。
 
-## 明確停止線（DRAFT）
+## 後續切片交接（已由 Spec 011 閉合）
 
-第一頁 Return 之後，原版尚有七頁導覽文字，依序涉及 Tyr 神殿、碼頭、訓練學校、
-市政廳、Sune 神殿／公園、舊城門與導覽結束。這些頁面之間的 scripted movement、
-朝向、背景、Rolf 圖像以及最後交回自由移動的狀態尚未逐項閉合。
-
-因此目前 remake 在第一頁確認後必須停在「後續導覽待實作」狀態；不得直接放行移動，
-也不得宣稱第一張地圖事件完成。下一份 READY 規格須一次閉合七頁順序、每段位移與最後
-交接，避免只接文案卻漏掉 ECL 狀態鏈。
+Spec 011 已逐 byte 閉合 34-step scripted movement、七頁停靠與最後 ECL `EXIT`，並由
+正常玩家路徑實作。仍未閉合的是 greeting 的 Rolf APPROACH 圖像，以及 ECL `EXIT` 後
+adventure controller 採用的 Pool 專屬移動政策；因此事件可完成，但玩家自由移動仍停用。

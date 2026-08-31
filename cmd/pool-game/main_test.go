@@ -184,6 +184,10 @@ func TestBeginAdventureRequiresPartyAndRunsSpec010FirstEvent(t *testing.T) {
 		MonsterID:     12,
 		Message:       "ROLF GREETS THE PARTY IN PHLAN.",
 		ContinueLabel: "PRESS <RETURN> OR BUTTON TO CONTINUE",
+		Tour: []gamepack.TourStep{
+			{Position: gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 14, Y: 1, Facing: 3}},
+			{Position: gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 0, Y: 4, Facing: 3}, Selector: 6, Messages: []string{"OLD CITY GATE", "ON YOUR OWN NOW"}},
+		},
 	}
 	walls := graphics.PieceSet{}
 	application := &app{
@@ -207,8 +211,28 @@ func TestBeginAdventureRequiresPartyAndRunsSpec010FirstEvent(t *testing.T) {
 	if application.mode != modeAdventure || application.spawn != event.Position || !application.introWaiting {
 		t.Fatalf("Begin mode=%d spawn=%+v", application.mode, application.spawn)
 	}
-	if err := press(application, ebiten.KeyEnter); err != nil || application.introWaiting || !application.introDone || application.mode != modeAdventure {
-		t.Fatalf("Return gate mode=%d waiting=%v done=%v err=%v", application.mode, application.introWaiting, application.introDone, err)
+	if err := press(application, ebiten.KeyEnter); err != nil || application.introWaiting || !application.tourActive || application.introDone || application.mode != modeAdventure {
+		t.Fatalf("Return gate mode=%d waiting=%v active=%v done=%v err=%v", application.mode, application.introWaiting, application.tourActive, application.introDone, err)
+	}
+	if err := application.Update(); err != nil || application.tourStep != 0 || application.spawn != event.Tour[0].Position {
+		t.Fatalf("first tour frame step=%d spawn=%+v err=%v", application.tourStep, application.spawn, err)
+	}
+	for tick := 0; tick <= tourStepDelayTicks; tick++ {
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if application.tourStep != 1 || application.tourPage != 0 || application.spawn != event.Tour[1].Position {
+		t.Fatalf("final stop step=%d page=%d spawn=%+v", application.tourStep, application.tourPage, application.spawn)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.tourPage != 1 {
+		t.Fatalf("second final page=%d err=%v", application.tourPage, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.tourPage != -1 {
+		t.Fatalf("final Return page=%d err=%v", application.tourPage, err)
+	}
+	if err := application.Update(); err != nil || application.tourActive || !application.introDone {
+		t.Fatalf("tour EXIT active=%v done=%v err=%v", application.tourActive, application.introDone, err)
 	}
 	if err := press(application, ebiten.KeyEscape); err != nil || application.mode != modeMenu {
 		t.Fatalf("adventure ESC mode=%d err=%v", application.mode, err)
