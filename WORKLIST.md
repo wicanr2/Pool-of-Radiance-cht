@@ -116,7 +116,8 @@
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic
   RANDOM、VM Clone、同-session entry 切換、作品中立 `CLEARMONSTERS` 訊號，以及
   opcode `0Ah`／`20h`／`27h`／`35h` 都已有 Pool consumer；`27h` 目前只完成 raw
-  request，不冒充 ITEM payload 或戰利品 UI。engine `91801a5` 的 Pool 全套與 CoAB
+  request，ITEM payload 與戰利品 UI 則由 Pool game pack／adapter 依 Spec 033～036
+  接線，不污染共用 engine。engine `91801a5` 的 Pool 全套與 CoAB
   核心相容回歸均已通過。下一步依玩家路徑
   閉合 City Hall reward／commission 迴圈與其後尚未接妥的服務規則。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
