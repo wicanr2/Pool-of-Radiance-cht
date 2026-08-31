@@ -2,7 +2,7 @@
 
 更新日期：2026-09-01。
 
-## 2026-09-01 City Hall clerk 與共用 `SAVE TABLE`
+## 2026-09-01 City Hall clerk、結構清冊與預設委託離場
 
 - Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
   與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、
@@ -12,9 +12,15 @@
   16-bit wrap。共用 engine `7e93050` 已實作 value／base／index、write receipt
   與三種失敗即關閉測試；正式 pseudo-version 為
   `v0.0.0-20260831165626-7e9305036c43`。
-- Pool 正常按鍵已穿過 City Hall `9C9Eh`，下一個 boundary 精確為 clerk 的
-  commission 開場文字；engine／Pool 全測試與 CoAB ECL／遊戲前端回歸抽樣全通過。
-  完整 reward／commission 迴圈仍未立 READY spec，不得把這個 boundary 冒充服務完成。
+- `cmd/pool-city-hall-audit` 已從固定 block8 trace 重生
+  `docs/audit/dos-city-hall-structure.json`：reward 七個有序槽／四個唯一 target、commission
+  十六個有序入口、十個 `4AC1h` 增量 producer，以及五個 external service call 均有
+  hash gate 與刪除 evidence 的負對照。清冊補出舊規格漏列的 `9F28h TREASURE`／
+  `9F3Eh COMBAT`，另三個是 `A5A8h PARTYSTRENGTH`、`A780h TREASURE`、`A791h COMBAT`。
+- Spec 029 已把「全新隊伍、無 reward」獨立成 READY：正常按鍵由 clerk 引言依序走過
+  slums、Sokal Keep、old Phlan books/maps 三項委託、`THESE ARE ALL...` 與 `AF7Ch EXIT`，
+  並斷言回到 `(5,5)` 地城移動。完整 reward／commission 條件矩陣仍屬 DRAFT Spec 028，
+  不得把這條預設分支冒充整個 City Hall 服務完成。
 
 ## 2026-08-31 存檔生命值決定
 

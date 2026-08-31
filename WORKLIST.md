@@ -86,16 +86,19 @@
   destination 已訂正為 UI 暫存 `9801h`，不是 commission 狀態 `4AC1h`，不得建立假 alias。
   Spec 024 又以非零 `4AC1h=1..9` 閉合原版 `ON GOSUB` 與九則 proclamation，逐值
   執行真實 ECL 至 `EXIT`；這只完成已持有 commission 時的公告選擇。Spec 028 的
-  block8 全 trace 已推翻「clerk 有單一 `4AC1h` producer」：至少十個 reward 子程式
-  會各自把它加一。下一步是閉合這些 producer 的條件／上限、完整 reward／commission
-  矩陣，以及 `AD29h` Skullcrusher 離隊事件。
+  block8 全 trace 已推翻「clerk 有單一 `4AC1h` producer」：十個 reward 子程式會各自
+  把它加一。機器清冊已固定 reward 7 槽、commission 16 路與五個 external call；
+  Spec 029 已 READY 並驗收全新隊伍依序顯示三項預設委託後由 `AF7Ch EXIT` 回到移動。
+  下一步是逐槽閉合 producer 條件／上限、非預設 reward／commission 矩陣與 external
+  service，以及 `AD29h` Skullcrusher 離隊事件。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
   `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
   `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑
   接到 `(4,5)` clerk office 外與 `(5,5)` clerk 第一頁；Spec 027 又依 Pool 原始
-  handler 在共用 engine 接妥 `35h SAVE TABLE`，正常按鍵已穿過 `9C9Eh` 到 commission
-  開場文字。下一個窄切片是完整 reward／commission 迴圈及其 `4AC1h` producer，
-  不是重做 City Hall 入口或把目前單一文字 boundary 冒充服務完成。
+  handler 在共用 engine 接妥 `35h SAVE TABLE`；Spec 029 又讓正常按鍵穿過 `9C9Eh`，
+  依序顯示三項預設委託與列舉結尾，再由 `AF7Ch EXIT` 回到移動。下一個窄切片是第一個
+  非預設 reward 槽及它依賴的 external service，不是重做 City Hall 入口或把預設分支
+  冒充完整 reward／commission 服務。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic

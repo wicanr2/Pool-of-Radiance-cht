@@ -471,6 +471,27 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != "THE CLERK SHUFFLES THROUGH HER PAPERS. 'ON THE MATTER OF COMMISSION,' SHE SAYS, 'I CAN OFFER THE FOLLOWING: '" {
 		t.Fatalf("clerk commission boundary waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
 	}
+	previous := application.eventText
+	for index, want := range []string{
+		"THE SLUMS IMMEDIATELY TO OUR WEST NEED TO BE CLEARED OF MONSTERS.'",
+		"SOKAL KEEP ON THORN ISLAND MUST BE CLEARED.'",
+		"THE COUNCIL IS OFFERING A REWARD FOR BOOKS, MAPS, TOMES, ETC. WHICH PROVIDE USEFUL INFORMATION ABOUT PHLAN BEFORE THE FALL.  THE REWARD IS TIED TO THE VALUE OF THE INFORMATION.'",
+		"'THESE ARE ALL OF THE COMMISSIONS CURRENTLY AVAILABLE.'",
+	} {
+		if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || application.eventText != previous {
+			t.Fatalf("clerk commission menu %d waiting=%v text=%q want previous=%q err=%v", index, application.cellWaitingMenu, application.eventText, previous, err)
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != want {
+			t.Fatalf("clerk commission page %d text=%q want=%q err=%v", index, application.eventText, want, err)
+		}
+		previous = want
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu {
+		t.Fatalf("clerk EXIT pending=%v waiting=%v text=%q err=%v", application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
+	}
+	if application.spawn.X != 5 || application.spawn.Y != 5 || application.eventSession.CurrentBlockID() != 8 {
+		t.Fatalf("clerk EXIT spawn=%+v script_block=%d", application.spawn, application.eventSession.CurrentBlockID())
+	}
 }
 
 func TestWrapASCIIUsesStableLineWidth(t *testing.T) {

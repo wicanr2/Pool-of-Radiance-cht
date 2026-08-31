@@ -16,6 +16,10 @@
 - `docs/audit/dos-ecl3-block8-trace.json` 由
   `cmd/pool-ecl-trace -archive 3 -block 8` 直接從唯讀 DOS ZIP 重生；它保留五個 entry、
   每條 instruction、operand、packed text、menu 與控制流邊。
+- `docs/audit/dos-city-hall-structure.json` 由 `cmd/pool-city-hall-audit` 從上述 trace
+  重生，並以 block hash 失敗即關閉。它分別保留 reward 的七個**有序槽位**與四個
+  唯一目的位址、commission 的十六個有序入口、十個 `4AC1h` 增量點，以及本範圍的
+  external service 呼叫；不得用去重後的目的位址數取代槽位數。
 - 本輪只把 trace 可直接支持的位址、讀寫與文字列為 `exact`；任務名稱與旗標意義若
   尚未追到 producer／consumer，維持 `strong inference` 或 `unknown`。
 
@@ -61,7 +65,9 @@ Stojanow River、lizardmen、kobolds、nomads 與 slums；文字與增量位址�
 
 - 七個 reward table slot 的來源旗標、ack 值、金錢／物品／經驗等副作用與重入規則。
 - 16 個 commission 子程式的完整條件矩陣、狀態 producer／consumer 與重入結果。
-- graveyard 特別委託會走 `PARTYSTRENGTH`、接受選擇、`TREASURE` 與 `COMBAT` 服務；
+- reward 區另在 `9F28h`／`9F3Eh` 呼叫 `TREASURE`／`COMBAT`；這是本輪機器清冊補出的
+  舊規格缺項。graveyard 特別委託則會走 `A5A8h PARTYSTRENGTH`、接受選擇、
+  `A780h TREASURE` 與 `A791h COMBAT` 服務；
   這些外部 opcode 不能靠 passthrough 略過，須各有 READY 證據與 typed adapter 契約。
 - `AF78h` 呼叫的離場 helper 尚未分類；目前正常路徑能安全到 `EXIT`，不代表 helper
   的所有可見副作用都已證實。
