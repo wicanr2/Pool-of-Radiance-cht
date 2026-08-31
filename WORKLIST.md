@@ -85,8 +85,10 @@
   外部文字、原版單項 Return menu、公告前言與公告編號後回到移動。`AF1Ch` 的 menu
   destination 已訂正為 UI 暫存 `9801h`，不是 commission 狀態 `4AC1h`，不得建立假 alias。
   Spec 024 又以非零 `4AC1h=1..9` 閉合原版 `ON GOSUB` 與九則 proclamation，逐值
-  執行真實 ECL 至 `EXIT`；這只完成已持有 commission 時的公告選擇。下一步是定位並
-  閉合 clerk 實際授予／更新 `4AC1h` 的玩家路徑，以及 `AD29h` Skullcrusher 離隊事件。
+  執行真實 ECL 至 `EXIT`；這只完成已持有 commission 時的公告選擇。Spec 028 的
+  block8 全 trace 已推翻「clerk 有單一 `4AC1h` producer」：至少十個 reward 子程式
+  會各自把它加一。下一步是閉合這些 producer 的條件／上限、完整 reward／commission
+  矩陣，以及 `AD29h` Skullcrusher 離隊事件。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
   `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
   `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑

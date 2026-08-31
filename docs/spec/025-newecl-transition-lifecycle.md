@@ -60,6 +60,7 @@ queue；external event 同時保留所有 numeric arguments 與逐項 valid bit�
 wall selector 仍失敗即關閉。engine 全測試、Pool 全測試、CoAB
 `cmd/azure-bonds-game`／`internal/game`／`internal/ecl` 抽樣均通過。
 Pool 正式依賴已鎖定為
-`v0.0.0-20260831161216-940ecaa8c34e`，並在斷網 Docker／Xvfb 以該版本重跑全綠。
+`v0.0.0-20260831165626-7e9305036c43`；這是包含本規格 transition lifecycle 與後續
+Spec 027 `SAVE TABLE` 的相容超集，並在斷網 Docker／Xvfb 以該版本重跑全綠。
 重生 sweep 仍為 856 `EXIT`／168 玩家事件／0 error，另明列 16 筆 `LOAD FILES`
 與 16 筆 `LOAD PIECES` 為已觀察的資源 lifecycle，不再灌入玩家事件數。

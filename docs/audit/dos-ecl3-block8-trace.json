@@ -1,0 +1,9476 @@
+{
+  "schema": "pool-ecl-static-trace-v1",
+  "zip": "Pool of Radiance (1988).zip",
+  "zip_sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633",
+  "member": "poolrad/ecl3.dax",
+  "member_sha256": "db58f0c6326d400cc65902933392ce928812c7cd3baf7f68827aed0dff64d076",
+  "block_id": 8,
+  "block_sha256": "fd446439973994d9f887b8628b512054a822369eb4360769b21eb2224982f012",
+  "code_address_base": "0x9900",
+  "entry_addresses": [
+    "0x9914",
+    "0x9998",
+    "0x99D3",
+    "0x99FC",
+    "0x9A06"
+  ],
+  "instructions": [
+    {
+      "offset": 20,
+      "address": "0x9914",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 26,
+      "operands": [
+        {
+          "code": 0,
+          "low": 11
+        },
+        {
+          "code": 1,
+          "low": 2,
+          "word": 18946,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 26,
+      "address": "0x991A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 32,
+      "operands": [
+        {
+          "code": 1,
+          "low": 201,
+          "word": 18889,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 14
+        }
+      ]
+    },
+    {
+      "offset": 32,
+      "address": "0x9920",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 33
+    },
+    {
+      "offset": 33,
+      "address": "0x9921",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 39,
+      "operands": [
+        {
+          "code": 0,
+          "low": 8
+        },
+        {
+          "code": 1,
+          "low": 2,
+          "word": 18946,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 39,
+      "address": "0x9927",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 46,
+      "operands": [
+        {
+          "code": 1,
+          "low": 2,
+          "word": 18946,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 253,
+          "word": 18941,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 46,
+      "address": "0x992E",
+      "opcode": 47,
+      "name": "AND",
+      "record_end": 55,
+      "operands": [
+        {
+          "code": 0,
+          "low": 127
+        },
+        {
+          "code": 1,
+          "low": 79,
+          "word": 49231,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 130,
+          "word": 28290,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 55,
+      "address": "0x9937",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 59,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 59,
+      "address": "0x993B",
+      "opcode": 20,
+      "name": "COMPARE AND",
+      "record_end": 70,
+      "operands": [
+        {
+          "code": 1,
+          "low": 130,
+          "word": 28290,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 29
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 2
+        }
+      ]
+    },
+    {
+      "offset": 70,
+      "address": "0x9946",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 71
+    },
+    {
+      "offset": 71,
+      "address": "0x9947",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 75,
+      "operands": [
+        {
+          "code": 1,
+          "low": 128,
+          "word": 39296,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 75,
+      "address": "0x994B",
+      "opcode": 20,
+      "name": "COMPARE AND",
+      "record_end": 86,
+      "operands": [
+        {
+          "code": 1,
+          "low": 130,
+          "word": 28290,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 29
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 1
+        }
+      ]
+    },
+    {
+      "offset": 86,
+      "address": "0x9956",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 87
+    },
+    {
+      "offset": 87,
+      "address": "0x9957",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 91,
+      "operands": [
+        {
+          "code": 1,
+          "low": 140,
+          "word": 39308,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 91,
+      "address": "0x995B",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 92
+    },
+    {
+      "offset": 92,
+      "address": "0x995C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 98,
+      "operands": [
+        {
+          "code": 1,
+          "low": 7,
+          "word": 18951,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 98,
+      "address": "0x9962",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 99
+    },
+    {
+      "offset": 99,
+      "address": "0x9963",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 100
+    },
+    {
+      "offset": 100,
+      "address": "0x9964",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 118,
+      "operands": [
+        {
+          "code": 128,
+          "low": 15,
+          "packed_hex": "5081605c166025380230f0cb144b80",
+          "text": "THE WAY IS BLOCKED."
+        }
+      ]
+    },
+    {
+      "offset": 118,
+      "address": "0x9976",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 124,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 201,
+          "word": 28105,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 124,
+      "address": "0x997C",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 128,
+      "operands": [
+        {
+          "code": 1,
+          "low": 203,
+          "word": 46027,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 128,
+      "address": "0x9980",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 134,
+      "operands": [
+        {
+          "code": 1,
+          "low": 152,
+          "word": 19096,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 134,
+      "address": "0x9986",
+      "opcode": 24,
+      "name": "IF \u003c",
+      "record_end": 135
+    },
+    {
+      "offset": 135,
+      "address": "0x9987",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 139,
+      "operands": [
+        {
+          "code": 1,
+          "low": 92,
+          "word": 39260,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 139,
+      "address": "0x998B",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 140
+    },
+    {
+      "offset": 140,
+      "address": "0x998C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 146,
+      "operands": [
+        {
+          "code": 1,
+          "low": 151,
+          "word": 19095,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 146,
+      "address": "0x9992",
+      "opcode": 24,
+      "name": "IF \u003c",
+      "record_end": 147
+    },
+    {
+      "offset": 147,
+      "address": "0x9993",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 151,
+      "operands": [
+        {
+          "code": 1,
+          "low": 92,
+          "word": 39260,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 151,
+      "address": "0x9997",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 152
+    },
+    {
+      "offset": 152,
+      "address": "0x9998",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 155,
+      "operands": [
+        {
+          "code": 128,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 155,
+      "address": "0x999B",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 159,
+      "operands": [
+        {
+          "code": 1,
+          "low": 127,
+          "word": 46463,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 159,
+      "address": "0x999F",
+      "opcode": 47,
+      "name": "AND",
+      "record_end": 168,
+      "operands": [
+        {
+          "code": 0,
+          "low": 127
+        },
+        {
+          "code": 1,
+          "low": 79,
+          "word": 49231,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 130,
+          "word": 28290,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 168,
+      "address": "0x99A8",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 172,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 172,
+      "address": "0x99AC",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 178,
+      "operands": [
+        {
+          "code": 0,
+          "low": 26
+        },
+        {
+          "code": 1,
+          "low": 3,
+          "word": 18947,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 178,
+      "address": "0x99B2",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 185,
+      "operands": [
+        {
+          "code": 1,
+          "low": 3,
+          "word": 18947,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 130,
+          "word": 28290,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 185,
+      "address": "0x99B9",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 186
+    },
+    {
+      "offset": 186,
+      "address": "0x99BA",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 190,
+      "operands": [
+        {
+          "code": 1,
+          "low": 32,
+          "word": 39456,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 190,
+      "address": "0x99BE",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 196,
+      "operands": [
+        {
+          "code": 1,
+          "low": 3,
+          "word": 18947,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 34
+        }
+      ]
+    },
+    {
+      "offset": 196,
+      "address": "0x99C4",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 197
+    },
+    {
+      "offset": 197,
+      "address": "0x99C5",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 198
+    },
+    {
+      "offset": 198,
+      "address": "0x99C6",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 207,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 3,
+          "word": 18947,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 3,
+          "word": 18947,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 207,
+      "address": "0x99CF",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 211,
+      "operands": [
+        {
+          "code": 1,
+          "low": 178,
+          "word": 39346,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 211,
+      "address": "0x99D3",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 215,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 215,
+      "address": "0x99D7",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 221,
+      "operands": [
+        {
+          "code": 1,
+          "low": 192,
+          "word": 19136,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 221,
+      "address": "0x99DD",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 222
+    },
+    {
+      "offset": 222,
+      "address": "0x99DE",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 226,
+      "operands": [
+        {
+          "code": 1,
+          "low": 239,
+          "word": 39407,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 226,
+      "address": "0x99E2",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 232,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 210,
+          "word": 28114,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 232,
+      "address": "0x99E8",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 238,
+      "operands": [
+        {
+          "code": 0,
+          "low": 101
+        },
+        {
+          "code": 1,
+          "low": 211,
+          "word": 28115,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 238,
+      "address": "0x99EE",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 239
+    },
+    {
+      "offset": 239,
+      "address": "0x99EF",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 245,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 210,
+          "word": 28114,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 245,
+      "address": "0x99F5",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 251,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 211,
+          "word": 28115,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 251,
+      "address": "0x99FB",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 252
+    },
+    {
+      "offset": 252,
+      "address": "0x99FC",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 258,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 211,
+          "word": 28115,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 258,
+      "address": "0x9A02",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 262,
+      "operands": [
+        {
+          "code": 1,
+          "low": 203,
+          "word": 46027,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 262,
+      "address": "0x9A06",
+      "opcode": 33,
+      "name": "LOAD FILES",
+      "record_end": 269,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 269,
+      "address": "0x9A0D",
+      "opcode": 55,
+      "name": "LOAD PIECES",
+      "record_end": 276,
+      "operands": [
+        {
+          "code": 0,
+          "low": 127
+        },
+        {
+          "code": 0,
+          "low": 127
+        },
+        {
+          "code": 0,
+          "low": 127
+        }
+      ]
+    },
+    {
+      "offset": 276,
+      "address": "0x9A14",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 282,
+      "operands": [
+        {
+          "code": 1,
+          "low": 211,
+          "word": 28115,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 282,
+      "address": "0x9A1A",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 283
+    },
+    {
+      "offset": 283,
+      "address": "0x9A1B",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 284
+    },
+    {
+      "offset": 284,
+      "address": "0x9A1C",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 288,
+      "operands": [
+        {
+          "code": 1,
+          "low": 239,
+          "word": 39407,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 288,
+      "address": "0x9A20",
+      "opcode": 5,
+      "name": "SUBTRACT",
+      "record_end": 297,
+      "operands": [
+        {
+          "code": 0,
+          "low": 26
+        },
+        {
+          "code": 1,
+          "low": 3,
+          "word": 18947,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 3,
+          "word": 18947,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 297,
+      "address": "0x9A29",
+      "opcode": 38,
+      "name": "ON GOSUB",
+      "record_end": 330
+    },
+    {
+      "offset": 330,
+      "address": "0x9A4A",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 334,
+      "operands": [
+        {
+          "code": 1,
+          "low": 127,
+          "word": 46463,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 334,
+      "address": "0x9A4E",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 335
+    },
+    {
+      "offset": 335,
+      "address": "0x9A4F",
+      "opcode": 32,
+      "name": "NEWECL",
+      "record_end": 338,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 338,
+      "address": "0x9A52",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 342,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 342,
+      "address": "0x9A56",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 348,
+      "operands": [
+        {
+          "code": 1,
+          "low": 4,
+          "word": 18948,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 348,
+      "address": "0x9A5C",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 349
+    },
+    {
+      "offset": 349,
+      "address": "0x9A5D",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 350
+    },
+    {
+      "offset": 350,
+      "address": "0x9A5E",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 359,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 4,
+          "word": 18948,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 4,
+          "word": 18948,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 359,
+      "address": "0x9A67",
+      "opcode": 58,
+      "name": "DELAY",
+      "record_end": 360
+    },
+    {
+      "offset": 360,
+      "address": "0x9A68",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 366,
+      "operands": [
+        {
+          "code": 0,
+          "low": 2
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 366,
+      "address": "0x9A6E",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 370,
+      "operands": [
+        {
+          "code": 1,
+          "low": 144,
+          "word": 11408,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 370,
+      "address": "0x9A72",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 376,
+      "operands": [
+        {
+          "code": 1,
+          "low": 200,
+          "word": 19144,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 128
+        }
+      ]
+    },
+    {
+      "offset": 376,
+      "address": "0x9A78",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 377
+    },
+    {
+      "offset": 377,
+      "address": "0x9A79",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 381,
+      "operands": [
+        {
+          "code": 1,
+          "low": 189,
+          "word": 39613,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 381,
+      "address": "0x9A7D",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 444,
+      "operands": [
+        {
+          "code": 128,
+          "low": 60,
+          "packed_hex": "64f56014e5054a05081600c951980804c32e8200538193d580604316010f5ce81420580804c317059b2064f5604c51600601d505210512010f3d2b80",
+          "text": "YOU ENTER THE CITY HALL.  AS YOU FACE DOWN THE HALLWAY, YOU SEE A GUARDED DOOR."
+        }
+      ]
+    },
+    {
+      "offset": 444,
+      "address": "0x9ABC",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 445
+    },
+    {
+      "offset": 445,
+      "address": "0x9ABD",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 451,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 184,
+          "word": 19128,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 451,
+      "address": "0x9AC3",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 457,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 200,
+          "word": 19144,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 457,
+      "address": "0x9AC9",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 463,
+      "operands": [
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 463,
+      "address": "0x9ACF",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 464
+    },
+    {
+      "offset": 464,
+      "address": "0x9AD0",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 465
+    },
+    {
+      "offset": 465,
+      "address": "0x9AD1",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 471,
+      "operands": [
+        {
+          "code": 0,
+          "low": 55
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 471,
+      "address": "0x9AD7",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 474,
+      "operands": [
+        {
+          "code": 0,
+          "low": 31
+        }
+      ]
+    },
+    {
+      "offset": 474,
+      "address": "0x9ADA",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 563,
+      "operands": [
+        {
+          "code": 128,
+          "low": 86,
+          "packed_hex": "0cf54e0c930d04e8030443d23818033ce1923ce5138193d5ba09d93d58080561605012c53a035980604d24c6605121414d5485ba026010f3a752018f48715481354322050824e1d3ba78081604d44891054e03c61ae0",
+          "text": "COUNCILMAN CADORNA CONFRONTS YOU. 'YOU HAVE TAKEN MY FAMILY TREASURE. I DON'T FORGET SUCH THINGS.' HE STRIDES OFF."
+        }
+      ]
+    },
+    {
+      "offset": 563,
+      "address": "0x9B33",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 567,
+      "operands": [
+        {
+          "code": 1,
+          "low": 127,
+          "word": 46463,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 567,
+      "address": "0x9B37",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 568
+    },
+    {
+      "offset": 568,
+      "address": "0x9B38",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 572,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 572,
+      "address": "0x9B3C",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 650,
+      "operands": [
+        {
+          "code": 128,
+          "low": 75,
+          "packed_hex": "64f5600521603d55132441605081600cc1522e74e03c61890c5ba01d50521138103d35051200523d53848018043cf4a024e8142058133d550881704c3205c150322064f5600cc3d314c66e",
+          "text": "YOU ARE OUTSIDE THE CLERK'S OFFICE. GUARDS POSTED AROUND A DOOR IN THE SOUTH WALL WATCH YOU CLOSELY."
+        }
+      ]
+    },
+    {
+      "offset": 650,
+      "address": "0x9B8A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 656,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 6,
+          "word": 18950,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 656,
+      "address": "0x9B90",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 657
+    },
+    {
+      "offset": 657,
+      "address": "0x9B91",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 661,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 661,
+      "address": "0x9B95",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 667,
+      "operands": [
+        {
+          "code": 1,
+          "low": 6,
+          "word": 18950,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 667,
+      "address": "0x9B9B",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 668
+    },
+    {
+      "offset": 668,
+      "address": "0x9B9C",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 669
+    },
+    {
+      "offset": 669,
+      "address": "0x9B9D",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 673,
+      "operands": [
+        {
+          "code": 1,
+          "low": 102,
+          "word": 46438,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 673,
+      "address": "0x9BA1",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 679,
+      "operands": [
+        {
+          "code": 1,
+          "low": 1,
+          "word": 18945,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 679,
+      "address": "0x9BA7",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 680
+    },
+    {
+      "offset": 680,
+      "address": "0x9BA8",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 684,
+      "operands": [
+        {
+          "code": 1,
+          "low": 253,
+          "word": 43005,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 684,
+      "address": "0x9BAC",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 690,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 1,
+          "word": 18945,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 690,
+      "address": "0x9BB2",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 696,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 6,
+          "word": 18950,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 696,
+      "address": "0x9BB8",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 816,
+      "operands": [
+        {
+          "code": 128,
+          "low": 117,
+          "packed_hex": "0548193d54a014e51266c8142058033d538324c80330548b80214724e4e030f3cb24e1e050848f5472200604d40432e03c68100501524ee8209c21463d21602600c13a03c61854a004e6600cf34d2534c93ce4ec80980d5535204c51602468193d580148580454580180355248539481215705212e",
+          "text": "AT YOUR ENTRY, THE COUNCIL CLERK BEGINS LOOKING THROUGH A STACK OF PAPERS.  'BEFORE I CAN OFFER ANY COMMISSIONS, I MUST SEE IF YOU ARE DUE A CURRENT REWARD."
+        }
+      ]
+    },
+    {
+      "offset": 816,
+      "address": "0x9C30",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 820,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 820,
+      "address": "0x9C34",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 826,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 826,
+      "address": "0x9C3A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 832,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 0,
+          "word": 18944,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 832,
+      "address": "0x9C40",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 838,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 127,
+          "word": 28287,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 838,
+      "address": "0x9C46",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 844,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 124,
+          "word": 28284,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 844,
+      "address": "0x9C4C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 850,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 850,
+      "address": "0x9C52",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 856,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 126,
+          "word": 28286,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 856,
+      "address": "0x9C58",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 866,
+      "operands": [
+        {
+          "code": 1,
+          "low": 57,
+          "word": 19001,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 122,
+          "word": 28282,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 866,
+      "address": "0x9C62",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 876,
+      "operands": [
+        {
+          "code": 1,
+          "low": 143,
+          "word": 19087,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 128,
+          "word": 28288,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 876,
+      "address": "0x9C6C",
+      "opcode": 5,
+      "name": "SUBTRACT",
+      "record_end": 886,
+      "operands": [
+        {
+          "code": 1,
+          "low": 128,
+          "word": 28288,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 122,
+          "word": 28282,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 129,
+          "word": 28289,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 886,
+      "address": "0x9C76",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 892,
+      "operands": [
+        {
+          "code": 1,
+          "low": 129,
+          "word": 28289,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 892,
+      "address": "0x9C7C",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 893
+    },
+    {
+      "offset": 893,
+      "address": "0x9C7D",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 899,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 0,
+          "word": 18944,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 899,
+      "address": "0x9C83",
+      "opcode": 38,
+      "name": "ON GOSUB",
+      "record_end": 926
+    },
+    {
+      "offset": 926,
+      "address": "0x9C9E",
+      "opcode": 53,
+      "name": "SAVE TABLE",
+      "record_end": 936,
+      "operands": [
+        {
+          "code": 1,
+          "low": 122,
+          "word": 28282,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 143,
+          "word": 19087,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 936,
+      "address": "0x9CA8",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 945,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 945,
+      "address": "0x9CB1",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 951,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 7
+        }
+      ]
+    },
+    {
+      "offset": 951,
+      "address": "0x9CB7",
+      "opcode": 24,
+      "name": "IF \u003c",
+      "record_end": 952
+    },
+    {
+      "offset": 952,
+      "address": "0x9CB8",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 956,
+      "operands": [
+        {
+          "code": 1,
+          "low": 88,
+          "word": 40024,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 956,
+      "address": "0x9CBC",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 962,
+      "operands": [
+        {
+          "code": 1,
+          "low": 0,
+          "word": 18944,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 1
+        }
+      ]
+    },
+    {
+      "offset": 962,
+      "address": "0x9CC2",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 963
+    },
+    {
+      "offset": 963,
+      "address": "0x9CC3",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 967,
+      "operands": [
+        {
+          "code": 1,
+          "low": 6,
+          "word": 40198,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 967,
+      "address": "0x9CC7",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 1026,
+      "operands": [
+        {
+          "code": 128,
+          "low": 56,
+          "packed_hex": "9d71602015858021453a024e18f48d1448193d580805616014c24d24e0541448133cd16054e10504480648f3605081601d205615905212e0",
+          "text": "'WE HAVE BEEN INFORMED YOU HAVE ELIMINATED SOME UNDEAD FROM THE GRAVEYARD."
+        }
+      ]
+    },
+    {
+      "offset": 1026,
+      "address": "0x9D02",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1030,
+      "operands": [
+        {
+          "code": 1,
+          "low": 234,
+          "word": 40682,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1030,
+      "address": "0x9D06",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 1034,
+      "operands": [
+        {
+          "code": 1,
+          "low": 128,
+          "word": 40576,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1034,
+      "address": "0x9D0A",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1038,
+      "operands": [
+        {
+          "code": 1,
+          "low": 198,
+          "word": 40390,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1038,
+      "address": "0x9D0E",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1044,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1044,
+      "address": "0x9D14",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1050,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 0,
+          "word": 18944,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1050,
+      "address": "0x9D1A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1056,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 127,
+          "word": 28287,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1056,
+      "address": "0x9D20",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 1066,
+      "operands": [
+        {
+          "code": 1,
+          "low": 166,
+          "word": 19110,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 122,
+          "word": 28282,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1066,
+      "address": "0x9D2A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1072,
+      "operands": [
+        {
+          "code": 1,
+          "low": 122,
+          "word": 28282,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 1072,
+      "address": "0x9D30",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 1073
+    },
+    {
+      "offset": 1073,
+      "address": "0x9D31",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1077,
+      "operands": [
+        {
+          "code": 1,
+          "low": 81,
+          "word": 40273,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1077,
+      "address": "0x9D35",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 1086,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1086,
+      "address": "0x9D3E",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 1090,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1090,
+      "address": "0x9D42",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1096,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 25
+        }
+      ]
+    },
+    {
+      "offset": 1096,
+      "address": "0x9D48",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 1097
+    },
+    {
+      "offset": 1097,
+      "address": "0x9D49",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1101,
+      "operands": [
+        {
+          "code": 1,
+          "low": 146,
+          "word": 42386,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1101,
+      "address": "0x9D4D",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1105,
+      "operands": [
+        {
+          "code": 1,
+          "low": 26,
+          "word": 40218,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1105,
+      "address": "0x9D51",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 1123,
+      "operands": [
+        {
+          "code": 128,
+          "low": 15,
+          "packed_hex": "5081600cc1522e04d01412d3ba09c0",
+          "text": "THE CLERK SPEAKS. '"
+        }
+      ]
+    },
+    {
+      "offset": 1123,
+      "address": "0x9D63",
+      "opcode": 38,
+      "name": "ON GOSUB",
+      "record_end": 1207
+    },
+    {
+      "offset": 1207,
+      "address": "0x9DB7",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1213,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 22
+        }
+      ]
+    },
+    {
+      "offset": 1213,
+      "address": "0x9DBD",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 1214
+    },
+    {
+      "offset": 1214,
+      "address": "0x9DBE",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1218,
+      "operands": [
+        {
+          "code": 1,
+          "low": 90,
+          "word": 40794,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1218,
+      "address": "0x9DC2",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1222,
+      "operands": [
+        {
+          "code": 1,
+          "low": 194,
+          "word": 40642,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1222,
+      "address": "0x9DC6",
+      "opcode": 47,
+      "name": "AND",
+      "record_end": 1231,
+      "operands": [
+        {
+          "code": 1,
+          "low": 49,
+          "word": 18993,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 96
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1231,
+      "address": "0x9DCF",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1237,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 96
+        }
+      ]
+    },
+    {
+      "offset": 1237,
+      "address": "0x9DD5",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 1238
+    },
+    {
+      "offset": 1238,
+      "address": "0x9DD6",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1242,
+      "operands": [
+        {
+          "code": 1,
+          "low": 252,
+          "word": 40444,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1242,
+      "address": "0x9DDA",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1248,
+      "operands": [
+        {
+          "code": 1,
+          "low": 194,
+          "word": 19138,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 1248,
+      "address": "0x9DE0",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 1249
+    },
+    {
+      "offset": 1249,
+      "address": "0x9DE1",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1253,
+      "operands": [
+        {
+          "code": 1,
+          "low": 252,
+          "word": 40444,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1253,
+      "address": "0x9DE5",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1266,
+      "operands": [
+        {
+          "code": 128,
+          "low": 7,
+          "packed_hex": "30909205266e9c",
+          "text": "LIBRARY.'"
+        },
+        {
+          "code": 129,
+          "low": 144,
+          "word": 39056,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1266,
+      "address": "0x9DF2",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1272,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 194,
+          "word": 19138,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1272,
+      "address": "0x9DF8",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1276,
+      "operands": [
+        {
+          "code": 1,
+          "low": 74,
+          "word": 40522,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1276,
+      "address": "0x9DFC",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1282,
+      "operands": [
+        {
+          "code": 1,
+          "low": 231,
+          "word": 19175,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 1282,
+      "address": "0x9E02",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 1283
+    },
+    {
+      "offset": 1283,
+      "address": "0x9E03",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1287,
+      "operands": [
+        {
+          "code": 1,
+          "low": 33,
+          "word": 40481,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1287,
+      "address": "0x9E07",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1303,
+      "operands": [
+        {
+          "code": 128,
+          "low": 10,
+          "packed_hex": "40f10132040c05a06e9c",
+          "text": "PODAL PLAZA.'"
+        },
+        {
+          "code": 129,
+          "low": 144,
+          "word": 39056,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1303,
+      "address": "0x9E17",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1309,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 231,
+          "word": 19175,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1309,
+      "address": "0x9E1D",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1313,
+      "operands": [
+        {
+          "code": 1,
+          "low": 74,
+          "word": 40522,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1313,
+      "address": "0x9E21",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1319,
+      "operands": [
+        {
+          "code": 1,
+          "low": 230,
+          "word": 19174,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 1319,
+      "address": "0x9E27",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 1320
+    },
+    {
+      "offset": 1320,
+      "address": "0x9E28",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1324,
+      "operands": [
+        {
+          "code": 1,
+          "low": 124,
+          "word": 40572,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1324,
+      "address": "0x9E2C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1348,
+      "operands": [
+        {
+          "code": 128,
+          "low": 18,
+          "packed_hex": "0c110f48e06050561424c16020f55316e9c0",
+          "text": "CADORNA TEXTILE HOUSE.'"
+        },
+        {
+          "code": 129,
+          "low": 144,
+          "word": 39056,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1348,
+      "address": "0x9E44",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1354,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 230,
+          "word": 19174,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1354,
+      "address": "0x9E4A",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 1384,
+      "operands": [
+        {
+          "code": 128,
+          "low": 27,
+          "packed_hex": "9d42054858094e00604855c14848063d280330505224e1e0508160",
+          "text": "'THERE IS A REWARD FOR CLEARING THE"
+        }
+      ]
+    },
+    {
+      "offset": 1384,
+      "address": "0x9E68",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1388,
+      "operands": [
+        {
+          "code": 129,
+          "low": 144,
+          "word": 39056,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1388,
+      "address": "0x9E6C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1394,
+      "operands": [
+        {
+          "code": 0,
+          "low": 10
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1394,
+      "address": "0x9E72",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1400,
+      "operands": [
+        {
+          "code": 0,
+          "low": 2
+        },
+        {
+          "code": 1,
+          "low": 0,
+          "word": 18944,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1400,
+      "address": "0x9E78",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1404,
+      "operands": [
+        {
+          "code": 1,
+          "low": 194,
+          "word": 40642,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1404,
+      "address": "0x9E7C",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1408,
+      "operands": [
+        {
+          "code": 1,
+          "low": 14,
+          "word": 40206,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1408,
+      "address": "0x9E80",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1414,
+      "operands": [
+        {
+          "code": 1,
+          "low": 169,
+          "word": 19113,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 128
+        }
+      ]
+    },
+    {
+      "offset": 1414,
+      "address": "0x9E86",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 1415
+    },
+    {
+      "offset": 1415,
+      "address": "0x9E87",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1416
+    },
+    {
+      "offset": 1416,
+      "address": "0x9E88",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 1463,
+      "operands": [
+        {
+          "code": 128,
+          "low": 44,
+          "packed_hex": "9c26605081605c166c8193d54a009538730938781420580225604e5204854c35458080538033d3520553ba70",
+          "text": "'BY THE WAY, YOUR BUNGLING THE BIVANT RESCUE HAS COST US.'"
+        }
+      ]
+    },
+    {
+      "offset": 1463,
+      "address": "0x9EB7",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 1467,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1467,
+      "address": "0x9EBB",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1473,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 169,
+          "word": 19113,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1473,
+      "address": "0x9EC1",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1474
+    },
+    {
+      "offset": 1474,
+      "address": "0x9EC2",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 1484,
+      "operands": [
+        {
+          "code": 1,
+          "low": 237,
+          "word": 46573,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 123,
+          "word": 28283,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1484,
+      "address": "0x9ECC",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 1494,
+      "operands": [
+        {
+          "code": 1,
+          "low": 4,
+          "word": 46596,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 124,
+          "word": 28284,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1494,
+      "address": "0x9ED6",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 1504,
+      "operands": [
+        {
+          "code": 1,
+          "low": 27,
+          "word": 46619,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1504,
+      "address": "0x9EE0",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 1514,
+      "operands": [
+        {
+          "code": 1,
+          "low": 50,
+          "word": 46642,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 126,
+          "word": 28286,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1514,
+      "address": "0x9EEA",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1534,
+      "operands": [
+        {
+          "code": 128,
+          "low": 17,
+          "packed_hex": "8081521602538193d54a04855c1484ba70",
+          "text": "HERE IS YOUR REWARD.'"
+        }
+      ]
+    },
+    {
+      "offset": 1534,
+      "address": "0x9EFE",
+      "opcode": 43,
+      "name": "HORIZONTAL MENU",
+      "record_end": 1569,
+      "menu_destination": "0x9800",
+      "menu_options": [
+        "PRESS \u003cRETURN\u003e OR BUTTON TO CONTINUE"
+      ]
+    },
+    {
+      "offset": 1569,
+      "address": "0x9F21",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1575,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 192,
+          "word": 19136,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1575,
+      "address": "0x9F27",
+      "opcode": 28,
+      "name": "CLEARMONSTERS",
+      "record_end": 1576
+    },
+    {
+      "offset": 1576,
+      "address": "0x9F28",
+      "opcode": 39,
+      "name": "TREASURE",
+      "record_end": 1598,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 123,
+          "word": 28283,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 124,
+          "word": 28284,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 126,
+          "word": 28286,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 127,
+          "word": 28287,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1598,
+      "address": "0x9F3E",
+      "opcode": 36,
+      "name": "COMBAT",
+      "record_end": 1599
+    },
+    {
+      "offset": 1599,
+      "address": "0x9F3F",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1605,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 20
+        }
+      ]
+    },
+    {
+      "offset": 1605,
+      "address": "0x9F45",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 1606
+    },
+    {
+      "offset": 1606,
+      "address": "0x9F46",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 1610,
+      "operands": [
+        {
+          "code": 1,
+          "low": 102,
+          "word": 46438,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1610,
+      "address": "0x9F4A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1616,
+      "operands": [
+        {
+          "code": 1,
+          "low": 0,
+          "word": 18944,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 1
+        }
+      ]
+    },
+    {
+      "offset": 1616,
+      "address": "0x9F50",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 1617
+    },
+    {
+      "offset": 1617,
+      "address": "0x9F51",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1621,
+      "operands": [
+        {
+          "code": 1,
+          "low": 6,
+          "word": 40198,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1621,
+      "address": "0x9F55",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 1622
+    },
+    {
+      "offset": 1622,
+      "address": "0x9F56",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1626,
+      "operands": [
+        {
+          "code": 1,
+          "low": 198,
+          "word": 40390,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1626,
+      "address": "0x9F5A",
+      "opcode": 53,
+      "name": "SAVE TABLE",
+      "record_end": 1635,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 166,
+          "word": 19110,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1635,
+      "address": "0x9F63",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 1641,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 20
+        }
+      ]
+    },
+    {
+      "offset": 1641,
+      "address": "0x9F69",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 1642
+    },
+    {
+      "offset": 1642,
+      "address": "0x9F6A",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 1646,
+      "operands": [
+        {
+          "code": 1,
+          "low": 53,
+          "word": 40245,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1646,
+      "address": "0x9F6E",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 1650,
+      "operands": [
+        {
+          "code": 1,
+          "low": 127,
+          "word": 46463,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1650,
+      "address": "0x9F72",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 1654,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1654,
+      "address": "0x9F76",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 1655
+    },
+    {
+      "offset": 1655,
+      "address": "0x9F77",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1710,
+      "operands": [
+        {
+          "code": 128,
+          "low": 52,
+          "packed_hex": "5081600cf54e0c93202014e005705210512006008f3954e018f4a064f55280530934938150938780e3d24894e05081601d2059b8",
+          "text": "THE COUNCIL HAS AWARDED A BONUS FOR YOUR ELIMINATING NORRIS THE GRAY."
+        }
+      ]
+    },
+    {
+      "offset": 1710,
+      "address": "0x9FAE",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 1719,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1719,
+      "address": "0x9FB7",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1720
+    },
+    {
+      "offset": 1720,
+      "address": "0x9FB8",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1779,
+      "operands": [
+        {
+          "code": 128,
+          "low": 56,
+          "packed_hex": "5c95088133cb04c80b14542024e80f55280804e113b205c580304e8154c58023c15138143e00994014d38142058020524853a04895854ae0",
+          "text": "WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARREN RIVER."
+        }
+      ]
+    },
+    {
+      "offset": 1779,
+      "address": "0x9FF3",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 1788,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1788,
+      "address": "0x9FFC",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1789
+    },
+    {
+      "offset": 1789,
+      "address": "0x9FFD",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1830,
+      "operands": [
+        {
+          "code": 128,
+          "low": 38,
+          "packed_hex": "64f5602015858033050521448142058014850603856148143e050816015624c81414d40c16e0",
+          "text": "YOU HAVE CLEARED THE AREA NEXT TO THE EVIL TEMPLE."
+        }
+      ]
+    },
+    {
+      "offset": 1830,
+      "address": "0xA026",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1831
+    },
+    {
+      "offset": 1831,
+      "address": "0xA027",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1894,
+      "operands": [
+        {
+          "code": 128,
+          "low": 60,
+          "packed_hex": "08958139481705380414c2472141448172542205081600c824c1274e04854c3545ba08142056603051948133cd16051224e2c55138063d28193d5b80",
+          "text": "BIVANT WAS DELIGHTED WITH THE CHILD'S RESCUE.  THEY LEFT SOME TRINKETS FOR YOU."
+        }
+      ]
+    },
+    {
+      "offset": 1894,
+      "address": "0xA066",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 1900,
+      "operands": [
+        {
+          "code": 0,
+          "low": 51
+        },
+        {
+          "code": 1,
+          "low": 127,
+          "word": 28287,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 1900,
+      "address": "0xA06C",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1901
+    },
+    {
+      "offset": 1901,
+      "address": "0xA06D",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1930,
+      "operands": [
+        {
+          "code": 128,
+          "low": 26,
+          "packed_hex": "5c580624e1205081531601094c33d549315381604c54108c16e0",
+          "text": "WE FIND THESE DISCOURSES VALUABLE."
+        }
+      ]
+    },
+    {
+      "offset": 1930,
+      "address": "0xA08A",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1931
+    },
+    {
+      "offset": 1931,
+      "address": "0xA08B",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 1970,
+      "operands": [
+        {
+          "code": 128,
+          "low": 36,
+          "packed_hex": "5081600cf54e0c93205c930c80216004d5531448026605081601054c348941424f393b80",
+          "text": "THE COUNCIL WILL BE AMUSED BY THE DESCRIPTIONS."
+        }
+      ]
+    },
+    {
+      "offset": 1970,
+      "address": "0xA0B2",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 1971
+    },
+    {
+      "offset": 1971,
+      "address": "0xA0B3",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2022,
+      "operands": [
+        {
+          "code": 128,
+          "low": 48,
+          "packed_hex": "50815316034141381320f54c1202053108154e050f80c3c30541604c55854813203051c538405266009524c1093874ee",
+          "text": "THESE MAPS SHOULD HELP US TO LOCATE SEVERAL LEGENDARY BUILDINGS."
+        }
+      ]
+    },
+    {
+      "offset": 2022,
+      "address": "0xA0E6",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2023
+    },
+    {
+      "offset": 2023,
+      "address": "0xA0E7",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2062,
+      "operands": [
+        {
+          "code": 128,
+          "low": 36,
+          "packed_hex": "5081531602094d43d22454e00cf3940493a03550c88154c519532024e18f48d05424f3ae",
+          "text": "THESE HISTORIES CONTAIN MUCH USEFUL INFORMATION."
+        }
+      ]
+    },
+    {
+      "offset": 2062,
+      "address": "0xA10E",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2063
+    },
+    {
+      "offset": 2063,
+      "address": "0xA10F",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2109,
+      "operands": [
+        {
+          "code": 128,
+          "low": 43,
+          "packed_hex": "5081604850cf4844e04123d624416024e4c91c85138093943e03550c88142015205c14e041569a309387b8",
+          "text": "THE RECORDS PROVIDE INSIGHTS INTO MUCH THAT WAS PUZZLING."
+        }
+      ]
+    },
+    {
+      "offset": 2109,
+      "address": "0xA13D",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2110
+    },
+    {
+      "offset": 2110,
+      "address": "0xA13E",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2137,
+      "operands": [
+        {
+          "code": 128,
+          "low": 24,
+          "packed_hex": "50825380d05415224132025380f1a04cd04c32058131516e",
+          "text": "THIS MATERIAL IS OF SMALL VALUE."
+        }
+      ]
+    },
+    {
+      "offset": 2137,
+      "address": "0xA159",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2138
+    },
+    {
+      "offset": 2138,
+      "address": "0xA15A",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2169,
+      "operands": [
+        {
+          "code": 128,
+          "low": 28,
+          "packed_hex": "64f5528135430c54d380152040f10132040c05a06025380e3d4144b8",
+          "text": "YOUR SUCCESS AT PODAL PLAZA IS NOTED."
+        }
+      ]
+    },
+    {
+      "offset": 2169,
+      "address": "0xA179",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 2178,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2178,
+      "address": "0xA182",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2179
+    },
+    {
+      "offset": 2179,
+      "address": "0xA183",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2235,
+      "operands": [
+        {
+          "code": 128,
+          "low": 53,
+          "packed_hex": "5081600cf54e0c93202014e058f5051200604d014324132041225a16018f4a014e10938781420580748158564148480d14e04316e0",
+          "text": "THE COUNCIL HAS VOTED A SPECIAL PRIZE FOR ENDING THE GRAVEYARD MENACE."
+        }
+      ]
+    },
+    {
+      "offset": 2235,
+      "address": "0xA1BB",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 2244,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2244,
+      "address": "0xA1C4",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2245
+    },
+    {
+      "offset": 2245,
+      "address": "0xA1C5",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2305,
+      "operands": [
+        {
+          "code": 128,
+          "low": 57,
+          "packed_hex": "5081600cf54e0c93205c14e040c1414c51200998142058053093493815093ce80f1a05081605082455854e024e80b3d614c80d04e4c93ceb80",
+          "text": "THE COUNCIL WAS PLEASED BY THE ELIMINATION OF THE THIEVES IN KOVEL MANSION."
+        }
+      ]
+    },
+    {
+      "offset": 2305,
+      "address": "0xA201",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 2314,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2314,
+      "address": "0xA20A",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2315
+    },
+    {
+      "offset": 2315,
+      "address": "0xA20B",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2380,
+      "operands": [
+        {
+          "code": 128,
+          "low": 62,
+          "packed_hex": "5c950881420580330505224e1e03c681420581350f28f38f5e04895854ac8171600c13a03d014e8154205081602093941523013844e018f4a051204416e0",
+          "text": "WITH THE CLEARING OF THE STOJONOW RIVER, WE CAN OPEN UP THE HINTERLANDS FOR TRADE."
+        }
+      ]
+    },
+    {
+      "offset": 2380,
+      "address": "0xA24C",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 2389,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2389,
+      "address": "0xA255",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2390
+    },
+    {
+      "offset": 2390,
+      "address": "0xA256",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2490,
+      "operands": [
+        {
+          "code": 128,
+          "low": 97,
+          "packed_hex": "5c581715216040c1414c139431981355241225314481420152064f5600cf35030550512064f55280d2534c93ce8133e04d724650c66e8200c110f48e0605c14e05c11c54893878193d54a048551548e8173d53048021603550c880414c059144b8",
+          "text": "WE WERE PLEASANTLY SURPRISED THAT YOU COMPLETED YOUR MISSION SO SWIFTLY.  CADORNA WAS WAGERING YOUR RETURN WOULD BE MUCH DELAYED."
+        }
+      ]
+    },
+    {
+      "offset": 2490,
+      "address": "0xA2BA",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 2496,
+      "operands": [
+        {
+          "code": 0,
+          "low": 254
+        },
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2496,
+      "address": "0xA2C0",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2497
+    },
+    {
+      "offset": 2497,
+      "address": "0xA2C1",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2564,
+      "operands": [
+        {
+          "code": 128,
+          "low": 64,
+          "packed_hex": "64f5528053093493815093ce80f1a05081603096814843453a03453810c580805380748505431980935048f5851203d54a04d44815051c90e040f4c95093ceb8",
+          "text": "YOUR ELIMINATION OF THE LIZARDMEN MENACE HAS GREATLY IMPROVED OUR STRATEGIC POSITION."
+        }
+      ]
+    },
+    {
+      "offset": 2564,
+      "address": "0xA304",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 2573,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2573,
+      "address": "0xA30D",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2574
+    },
+    {
+      "offset": 2574,
+      "address": "0xA30E",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2626,
+      "operands": [
+        {
+          "code": 128,
+          "low": 49,
+          "packed_hex": "50825380c3d34e03c681420580b3c23cc12018f48315381724c32008580180d04a3d280230f5e050f814205805385359b8",
+          "text": "THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY."
+        }
+      ]
+    },
+    {
+      "offset": 2626,
+      "address": "0xA342",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 2635,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2635,
+      "address": "0xA34B",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2636
+    },
+    {
+      "offset": 2636,
+      "address": "0xA34C",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2687,
+      "operands": [
+        {
+          "code": 128,
+          "low": 48,
+          "packed_hex": "5c58171521603550c881214c24558512009981420580e1574e064f56009224e1e01923cd81420580e3cd04480304d42e",
+          "text": "WE WERE MUCH RELIEVED BY THE NEWS YOU BRING FROM THE NOMAD CAMP."
+        }
+      ]
+    },
+    {
+      "offset": 2687,
+      "address": "0xA37F",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 2696,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 2696,
+      "address": "0xA388",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2697
+    },
+    {
+      "offset": 2697,
+      "address": "0xA389",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2754,
+      "operands": [
+        {
+          "code": 128,
+          "low": 54,
+          "packed_hex": "0cf54e0c930d04e8030443d238180c1465205082538100593453948063d28133cd1604c549624316064f560201120485384152144b80",
+          "text": "COUNCILMAN CADORNA LEFT THIS PAYMENT FOR SOME SERVICE YOU HAD RENDERED."
+        }
+      ]
+    },
+    {
+      "offset": 2754,
+      "address": "0xA3C2",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2755
+    },
+    {
+      "offset": 2755,
+      "address": "0xA3C3",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 2761,
+      "operands": [
+        {
+          "code": 1,
+          "low": 186,
+          "word": 19130,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 2761,
+      "address": "0xA3C9",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 2762
+    },
+    {
+      "offset": 2762,
+      "address": "0xA3CA",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2763
+    },
+    {
+      "offset": 2763,
+      "address": "0xA3CB",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2848,
+      "operands": [
+        {
+          "code": 128,
+          "low": 82,
+          "packed_hex": "64f55281404b24e1e05081601c150581724c32014e04230580f5528063d20c54e050f8014d30553148142058053853598135123ce1c83cc12e8121545523a050815216050f80c1411205081600545010cbb8",
+          "text": "YOUR TAKING THE GATE WILL ENABLE OUR FORCES TO ASSAULT THE ENEMY STRONGHOLD. RETURN THERE TO LEAD THE ATTACK."
+        }
+      ]
+    },
+    {
+      "offset": 2848,
+      "address": "0xA420",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2849
+    },
+    {
+      "offset": 2849,
+      "address": "0xA421",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 2981,
+      "operands": [
+        {
+          "code": 128,
+          "low": 129,
+          "packed_hex": "0cf3874815153015093ce4e18193d54a045515352025380f5854a181465204e5084816154e025380414614150512181020c04e8094e01921458602468193d581725322c8193d580d0598033ce50939516050f80814c42055380330505280139981214d04938938780d3ce4d41524ee80130c81020c04e81304c5541538193d5840",
+          "text": "CONGRATULATIONS! YOUR QUEST IS OVER! TYRANTHRAXUS IS DEFEATED! PHLAN IS FREE! IF YOU WISH, YOU MAY CONTINUE TO HELP US CLEAR ANY REMAINING MONSTERS. ALL PHLAN SALUTES YOU!"
+        }
+      ]
+    },
+    {
+      "offset": 2981,
+      "address": "0xA4A5",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 2982
+    },
+    {
+      "offset": 2982,
+      "address": "0xA4A6",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 3025,
+      "operands": [
+        {
+          "code": 128,
+          "low": 40,
+          "packed_hex": "64f55280330505224e1e03c68142058133153600521414e040548d2544e05538143e0158401384b8",
+          "text": "YOUR CLEARING OF THE SLUM AREAS PERMITS US TO EXPAND."
+        }
+      ]
+    },
+    {
+      "offset": 3025,
+      "address": "0xA4D1",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 3034,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3034,
+      "address": "0xA4DA",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 3035
+    },
+    {
+      "offset": 3035,
+      "address": "0xA4DB",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 3036
+    },
+    {
+      "offset": 3036,
+      "address": "0xA4DC",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 3099,
+      "operands": [
+        {
+          "code": 128,
+          "low": 60,
+          "packed_hex": "0cf3874815153015093ce4ec8193d580d05980b14542004c32064f56018f54e12024e81420581414d40c1603c680204e16005380181215705212e9c0",
+          "text": "CONGRATULATIONS, YOU MAY KEEP ALL YOU FOUND IN THE TEMPLE OF BANE AS A REWARD.'"
+        }
+      ]
+    },
+    {
+      "offset": 3099,
+      "address": "0xA51B",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3103,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3103,
+      "address": "0xA51F",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 3104
+    },
+    {
+      "offset": 3104,
+      "address": "0xA520",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 3161,
+      "operands": [
+        {
+          "code": 128,
+          "low": 54,
+          "packed_hex": "40f4902194994e00c110f48e0602538018144812543d28143e05081600c9519ba02468193d580624e12020936c80b24c32020936e9c0",
+          "text": "PORPHYRYS CADORNA IS A TRAITOR TO THE CITY. IF YOU FIND HIM, KILL HIM.'"
+        }
+      ]
+    },
+    {
+      "offset": 3161,
+      "address": "0xA559",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3165,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3165,
+      "address": "0xA55D",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 3166
+    },
+    {
+      "offset": 3166,
+      "address": "0xA55E",
+      "opcode": 17,
+      "name": "PRINT",
+      "record_end": 3213,
+      "operands": [
+        {
+          "code": 128,
+          "low": 44,
+          "packed_hex": "5081600cf54e0c93202014e038f5051205081604014d324e1e03c68142058144812543d28030443d2381ba70",
+          "text": "THE COUNCIL HAS NOTED THE PASSING OF THE TRAITOR CADORNA.'"
+        }
+      ]
+    },
+    {
+      "offset": 3213,
+      "address": "0xA58D",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3217,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3217,
+      "address": "0xA591",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 3218
+    },
+    {
+      "offset": 3218,
+      "address": "0xA592",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3224,
+      "operands": [
+        {
+          "code": 1,
+          "low": 193,
+          "word": 19137,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 4
+        }
+      ]
+    },
+    {
+      "offset": 3224,
+      "address": "0xA598",
+      "opcode": 24,
+      "name": "IF \u003c",
+      "record_end": 3225
+    },
+    {
+      "offset": 3225,
+      "address": "0xA599",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3229,
+      "operands": [
+        {
+          "code": 1,
+          "low": 164,
+          "word": 42916,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3229,
+      "address": "0xA59D",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3235,
+      "operands": [
+        {
+          "code": 1,
+          "low": 177,
+          "word": 19121,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 3235,
+      "address": "0xA5A3",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 3236
+    },
+    {
+      "offset": 3236,
+      "address": "0xA5A4",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3240,
+      "operands": [
+        {
+          "code": 1,
+          "low": 164,
+          "word": 42916,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3240,
+      "address": "0xA5A8",
+      "opcode": 29,
+      "name": "PARTYSTRENGTH",
+      "record_end": 3244,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3244,
+      "address": "0xA5AC",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3250,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 19
+        }
+      ]
+    },
+    {
+      "offset": 3250,
+      "address": "0xA5B2",
+      "opcode": 24,
+      "name": "IF \u003c",
+      "record_end": 3251
+    },
+    {
+      "offset": 3251,
+      "address": "0xA5B3",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3255,
+      "operands": [
+        {
+          "code": 1,
+          "low": 164,
+          "word": 42916,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3255,
+      "address": "0xA5B7",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3261,
+      "operands": [
+        {
+          "code": 1,
+          "low": 150,
+          "word": 19094,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 3261,
+      "address": "0xA5BD",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 3262
+    },
+    {
+      "offset": 3262,
+      "address": "0xA5BE",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3266,
+      "operands": [
+        {
+          "code": 1,
+          "low": 164,
+          "word": 42916,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3266,
+      "address": "0xA5C2",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 3355,
+      "operands": [
+        {
+          "code": 128,
+          "low": 86,
+          "packed_hex": "41551424e1e010f5ce8142058100501524ec8132058130594ec8272603554d48024893878143e064f55280151414e5093ce8142058063cc30f5c93878033ce0c548e24e1e058130824e1c53a01d205615905213a8270",
+          "text": "PUTTING DOWN THE PAPERS, SHE SAYS, 'I MUST BRING TO YOUR ATTENTION THE FOLLOWING CONCERNING VALHINGEN GRAVEYARD: '"
+        }
+      ]
+    },
+    {
+      "offset": 3355,
+      "address": "0xA61B",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3359,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3359,
+      "address": "0xA61F",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3365,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 36
+        }
+      ]
+    },
+    {
+      "offset": 3365,
+      "address": "0xA625",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 3366
+    },
+    {
+      "offset": 3366,
+      "address": "0xA626",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3370,
+      "operands": [
+        {
+          "code": 1,
+          "low": 172,
+          "word": 42668,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3370,
+      "address": "0xA62A",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 3496,
+      "operands": [
+        {
+          "code": 128,
+          "low": 123,
+          "packed_hex": "50816054e10504480148580348f4d324e1e05081604895854a024e8083d21054e004e1202c930c24e1e03d280305249924e1e03c61a03d54a04c5514305493ba08142058033d538324c80414d04e1138142054c58015140432d38021604d43d040512e80180714e1523d54e04855c14848094e03c618548512e9c0",
+          "text": "THE UNDEAD ARE CROSSING THE RIVER IN HORDES AND KILLING OR CARRYING OFF OUR SETTLERS.  THE COUNCIL DEMANDS THESE ATTACKS BE STOPPED. A GENEROUS REWARD IS OFFERED.'"
+        }
+      ]
+    },
+    {
+      "offset": 3496,
+      "address": "0xA6A8",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3500,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 42912,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3500,
+      "address": "0xA6AC",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 3578,
+      "operands": [
+        {
+          "code": 128,
+          "low": 75,
+          "packed_hex": "54e10504480648f3605081601d205615905212020158580748f5ce80d3d21601013871523d54e050804e80130c80f1a05081603d42054a018f4831538172090c88033ce1923ce520553b80",
+          "text": "UNDEAD FROM THE GRAVEYARD HAVE GROWN MORE DANGEROUS THAN ALL OF THE OTHER FORCES WHICH CONFRONT US."
+        }
+      ]
+    },
+    {
+      "offset": 3578,
+      "address": "0xA6FA",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3582,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3582,
+      "address": "0xA6FE",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 3683,
+      "operands": [
+        {
+          "code": 128,
+          "low": 98,
+          "packed_hex": "9c980805616008514e80155420f48968512050f80725616064f56004e80538320139414481714140f3a02468193d58010c31505205081600cf34d2534c93ce8143e014e1205081601d20561590521203453810c5ba08043e064f5600430c5414fe70",
+          "text": "'I HAVE BEEN AUTHORIZED TO GIVE YOU AN ENCHANTED WEAPON IF YOU ACCEPT THE COMMISSION TO END THE GRAVEYARD MENACE.  DO YOU ACCEPT?'"
+        }
+      ]
+    },
+    {
+      "offset": 3683,
+      "address": "0xA763",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3687,
+      "operands": [
+        {
+          "code": 1,
+          "low": 85,
+          "word": 46421,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3687,
+      "address": "0xA767",
+      "opcode": 37,
+      "name": "ON GOTO",
+      "record_end": 3699
+    },
+    {
+      "offset": 3699,
+      "address": "0xA773",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 3711,
+      "operands": [
+        {
+          "code": 128,
+          "low": 9,
+          "packed_hex": "9c560314c305394ba7",
+          "text": "'EXCELLENT.'"
+        }
+      ]
+    },
+    {
+      "offset": 3711,
+      "address": "0xA77F",
+      "opcode": 28,
+      "name": "CLEARMONSTERS",
+      "record_end": 3712
+    },
+    {
+      "offset": 3712,
+      "address": "0xA780",
+      "opcode": 39,
+      "name": "TREASURE",
+      "record_end": 3729,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 51
+        }
+      ]
+    },
+    {
+      "offset": 3729,
+      "address": "0xA791",
+      "opcode": 36,
+      "name": "COMBAT",
+      "record_end": 3730
+    },
+    {
+      "offset": 3730,
+      "address": "0xA792",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 3736,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 150,
+          "word": 19094,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3736,
+      "address": "0xA798",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3740,
+      "operands": [
+        {
+          "code": 1,
+          "low": 102,
+          "word": 46438,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3740,
+      "address": "0xA79C",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3744,
+      "operands": [
+        {
+          "code": 1,
+          "low": 164,
+          "word": 42916,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3744,
+      "address": "0xA7A0",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3748,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3748,
+      "address": "0xA7A4",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 3833,
+      "operands": [
+        {
+          "code": 128,
+          "low": 82,
+          "packed_hex": "5081600cc1522e04c854618c1538142123d51c88081528100501524ee8273ce81420580d0545054a03c68033cd3494d324f3ac9e04c81604c1653b209c980304e80f1861528142058063cc30f5c9387ea09c",
+          "text": "THE CLERK SHUFFLES THROUGH HER PAPERS. 'ON THE MATTER OF COMMISSION,' SHE SAYS, 'I CAN OFFER THE FOLLOWING: '"
+        }
+      ]
+    },
+    {
+      "offset": 3833,
+      "address": "0xA7F9",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3837,
+      "operands": [
+        {
+          "code": 1,
+          "low": 59,
+          "word": 43067,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3837,
+      "address": "0xA7FD",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3843,
+      "operands": [
+        {
+          "code": 1,
+          "low": 6,
+          "word": 18950,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 3843,
+      "address": "0xA803",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 3844
+    },
+    {
+      "offset": 3844,
+      "address": "0xA804",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 3845
+    },
+    {
+      "offset": 3845,
+      "address": "0xA805",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 3851,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 6,
+          "word": 18950,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3851,
+      "address": "0xA80B",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3855,
+      "operands": [
+        {
+          "code": 1,
+          "low": 102,
+          "word": 46438,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3855,
+      "address": "0xA80F",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 3899,
+      "operands": [
+        {
+          "code": 128,
+          "low": 41,
+          "packed_hex": "9c20432e04cf8133cf3bf80980304e80f38c66048540505481420580505230915280f1861524fa8270",
+          "text": "'BACK SO SOON? I CAN ONLY REPEAT THE EARLIER OFFERS: '"
+        }
+      ]
+    },
+    {
+      "offset": 3899,
+      "address": "0xA83B",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3903,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3903,
+      "address": "0xA83F",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 3909,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3909,
+      "address": "0xA845",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3915,
+      "operands": [
+        {
+          "code": 1,
+          "low": 5,
+          "word": 18949,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 2
+        }
+      ]
+    },
+    {
+      "offset": 3915,
+      "address": "0xA84B",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 3916
+    },
+    {
+      "offset": 3916,
+      "address": "0xA84C",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3920,
+      "operands": [
+        {
+          "code": 1,
+          "low": 75,
+          "word": 44875,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3920,
+      "address": "0xA850",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 3926,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 16
+        }
+      ]
+    },
+    {
+      "offset": 3926,
+      "address": "0xA856",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 3927
+    },
+    {
+      "offset": 3927,
+      "address": "0xA857",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 3931,
+      "operands": [
+        {
+          "code": 1,
+          "low": 58,
+          "word": 44858,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3931,
+      "address": "0xA85B",
+      "opcode": 38,
+      "name": "ON GOSUB",
+      "record_end": 3985
+    },
+    {
+      "offset": 3985,
+      "address": "0xA891",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 3994,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 5,
+          "word": 18949,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 5,
+          "word": 18949,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3994,
+      "address": "0xA89A",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 3998,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 3998,
+      "address": "0xA89E",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 4007,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4007,
+      "address": "0xA8A7",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4011,
+      "operands": [
+        {
+          "code": 1,
+          "low": 69,
+          "word": 43077,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4011,
+      "address": "0xA8AB",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4017,
+      "operands": [
+        {
+          "code": 1,
+          "low": 187,
+          "word": 19131,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4017,
+      "address": "0xA8B1",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4018
+    },
+    {
+      "offset": 4018,
+      "address": "0xA8B2",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4022,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4022,
+      "address": "0xA8B6",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4075,
+      "operands": [
+        {
+          "code": 128,
+          "low": 50,
+          "packed_hex": "5081604cc54d4e024d34510905414c66050f80f5528171535203851448143e008580330505214480f1a034f393505493ba70",
+          "text": "THE SLUMS IMMEDIATELY TO OUR WEST NEED TO BE CLEARED OF MONSTERS.'"
+        }
+      ]
+    },
+    {
+      "offset": 4075,
+      "address": "0xA8EB",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4076
+    },
+    {
+      "offset": 4076,
+      "address": "0xA8EC",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4082,
+      "operands": [
+        {
+          "code": 1,
+          "low": 167,
+          "word": 19111,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4082,
+      "address": "0xA8F2",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4083
+    },
+    {
+      "offset": 4083,
+      "address": "0xA8F3",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4087,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4087,
+      "address": "0xA8F7",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4123,
+      "operands": [
+        {
+          "code": 128,
+          "low": 33,
+          "packed_hex": "4cf2c13202c515080f3a05083d23a025330138480d553520085803305052144ba7",
+          "text": "SOKAL KEEP ON THORN ISLAND MUST BE CLEARED.'"
+        }
+      ]
+    },
+    {
+      "offset": 4123,
+      "address": "0xA91B",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4124
+    },
+    {
+      "offset": 4124,
+      "address": "0xA91C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4130,
+      "operands": [
+        {
+          "code": 1,
+          "low": 194,
+          "word": 19138,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4130,
+      "address": "0xA922",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4131
+    },
+    {
+      "offset": 4131,
+      "address": "0xA923",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4135,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4135,
+      "address": "0xA927",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4271,
+      "operands": [
+        {
+          "code": 128,
+          "low": 133,
+          "packed_hex": "5081600cf54e0c932025380f18615224e1e00604855c14848063d28023cf2d3b20341413b2050f3454ec805503ba05c82432204123d624416055314654c8093863d23415093ce80108f55481020c04e8021463d216050816018130cba081420581215705212025381424512050f81420581604c54580f1a050816024e18f48d05424f3ae9c",
+          "text": "THE COUNCIL IS OFFERING A REWARD FOR BOOKS, MAPS, TOMES, ETC. WHICH PROVIDE USEFUL INFORMATION ABOUT PHLAN BEFORE THE FALL.  THE REWARD IS TIED TO THE VALUE OF THE INFORMATION.'"
+        }
+      ]
+    },
+    {
+      "offset": 4271,
+      "address": "0xA9AF",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4272
+    },
+    {
+      "offset": 4272,
+      "address": "0xA9B0",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4278,
+      "operands": [
+        {
+          "code": 1,
+          "low": 176,
+          "word": 19120,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4278,
+      "address": "0xA9B6",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4279
+    },
+    {
+      "offset": 4279,
+      "address": "0xA9B7",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4283,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4283,
+      "address": "0xA9BB",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4394,
+      "operands": [
+        {
+          "code": 128,
+          "low": 108,
+          "packed_hex": "0605c50503ce80f1a01d214152040f5c54a02538143e00858015435093ce1448143e03d54a014e14d2454ee8142094e00550d424f3a02538143e008580814c12024e8103c404c810301681ba080624e1203d55205c805481420581714140f3a02538013848121545523ae9c0",
+          "text": "A WEAPON OF GREAT POWER IS TO BE AUCTIONED TO OUR ENEMIES. THIS AUCTION IS TO BE HELD IN PODAL PLAZA.  FIND OUT WHAT THE WEAPON IS AND RETURN.'"
+        }
+      ]
+    },
+    {
+      "offset": 4394,
+      "address": "0xAA2A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 4400,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 176,
+          "word": 19120,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4400,
+      "address": "0xAA30",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4401
+    },
+    {
+      "offset": 4401,
+      "address": "0xAA31",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4407,
+      "operands": [
+        {
+          "code": 1,
+          "low": 151,
+          "word": 19095,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4407,
+      "address": "0xAA37",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4408
+    },
+    {
+      "offset": 4408,
+      "address": "0xAA38",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4412,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4412,
+      "address": "0xAA3C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4418,
+      "operands": [
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 4418,
+      "address": "0xAA42",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 4419
+    },
+    {
+      "offset": 4419,
+      "address": "0xAA43",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4423,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4423,
+      "address": "0xAA47",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4429,
+      "operands": [
+        {
+          "code": 1,
+          "low": 184,
+          "word": 19128,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4429,
+      "address": "0xAA4D",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4430
+    },
+    {
+      "offset": 4430,
+      "address": "0xAA4E",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4434,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4434,
+      "address": "0xAA52",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4513,
+      "operands": [
+        {
+          "code": 128,
+          "low": 76,
+          "packed_hex": "2953893d28033d538324c3413a00c110f48e0602014e00604d01432413200cf34d2534c93ce8063d28193d5ba08082538032013421524e005216050848f5472205081601414d48043cf4ae9c",
+          "text": "JUNIOR COUNCILMAN CADORNA HAS A SPECIAL COMMISSION FOR YOU.  HIS CHAMBERS ARE THROUGH THE EAST DOOR.'"
+        }
+      ]
+    },
+    {
+      "offset": 4513,
+      "address": "0xAAA1",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 4519,
+      "operands": [
+        {
+          "code": 0,
+          "low": 254
+        },
+        {
+          "code": 1,
+          "low": 151,
+          "word": 19095,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4519,
+      "address": "0xAAA7",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4520
+    },
+    {
+      "offset": 4520,
+      "address": "0xAAA8",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4526,
+      "operands": [
+        {
+          "code": 1,
+          "low": 167,
+          "word": 19111,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4526,
+      "address": "0xAAAE",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 4527
+    },
+    {
+      "offset": 4527,
+      "address": "0xAAAF",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4531,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4531,
+      "address": "0xAAB3",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4537,
+      "operands": [
+        {
+          "code": 1,
+          "low": 155,
+          "word": 19099,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 253
+        }
+      ]
+    },
+    {
+      "offset": 4537,
+      "address": "0xAAB9",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 4538
+    },
+    {
+      "offset": 4538,
+      "address": "0xAABA",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4542,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4542,
+      "address": "0xAABE",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4548,
+      "operands": [
+        {
+          "code": 1,
+          "low": 189,
+          "word": 19133,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4548,
+      "address": "0xAAC4",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4549
+    },
+    {
+      "offset": 4549,
+      "address": "0xAAC5",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4553,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4553,
+      "address": "0xAAC9",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4617,
+      "operands": [
+        {
+          "code": 128,
+          "low": 61,
+          "packed_hex": "64f5600521604d534d3ce1448026605081600894c83d080f1a00920430c93e03c6814652ba048540f4948143e02093600548146529d381414d40c16e9c",
+          "text": "YOU ARE SUMMONED BY THE BISHOP OF BRACCIO OF TYR. REPORT TO HIM AT TYR'S TEMPLE.'"
+        }
+      ]
+    },
+    {
+      "offset": 4617,
+      "address": "0xAB09",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 4623,
+      "operands": [
+        {
+          "code": 0,
+          "low": 254
+        },
+        {
+          "code": 1,
+          "low": 155,
+          "word": 19099,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4623,
+      "address": "0xAB0F",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4624
+    },
+    {
+      "offset": 4624,
+      "address": "0xAB10",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4630,
+      "operands": [
+        {
+          "code": 1,
+          "low": 167,
+          "word": 19111,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4630,
+      "address": "0xAB16",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 4631
+    },
+    {
+      "offset": 4631,
+      "address": "0xAB17",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4635,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4635,
+      "address": "0xAB1B",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4641,
+      "operands": [
+        {
+          "code": 1,
+          "low": 178,
+          "word": 19122,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4641,
+      "address": "0xAB21",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4642
+    },
+    {
+      "offset": 4642,
+      "address": "0xAB22",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4646,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4646,
+      "address": "0xAB26",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4733,
+      "operands": [
+        {
+          "code": 128,
+          "low": 84,
+          "packed_hex": "0603014871601d23d54203c681420915615380f4054815054e03d55203c681420580f30480b3d614c80d04e4c93ceba05081600cf54e0c93205c930c8100598143e02015858142053600cc1413851203d552e9c0",
+          "text": "A LARGE GROUP OF THIEVES OPERATES OUT OF THE OLD KOVEL MANSION. THE COUNCIL WILL PAY TO HAVE THEM CLEANED OUT.'"
+        }
+      ]
+    },
+    {
+      "offset": 4733,
+      "address": "0xAB7D",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4734
+    },
+    {
+      "offset": 4734,
+      "address": "0xAB7E",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4740,
+      "operands": [
+        {
+          "code": 1,
+          "low": 183,
+          "word": 19127,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4740,
+      "address": "0xAB84",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4741
+    },
+    {
+      "offset": 4741,
+      "address": "0xAB85",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4745,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4745,
+      "address": "0xAB89",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4799,
+      "operands": [
+        {
+          "code": 128,
+          "low": 51,
+          "packed_hex": "18938481420580e3cd0444e004e1204d43d08142053601923cd80a3c93893878063d20c54e05c950880f552805385349153ba7",
+          "text": "FIND THE NOMADS AND STOP THEM FROM JOINING FORCES WITH OUR ENEMIES.'"
+        }
+      ]
+    },
+    {
+      "offset": 4799,
+      "address": "0xABBF",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4800
+    },
+    {
+      "offset": 4800,
+      "address": "0xABC0",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4806,
+      "operands": [
+        {
+          "code": 1,
+          "low": 182,
+          "word": 19126,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4806,
+      "address": "0xABC6",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4807
+    },
+    {
+      "offset": 4807,
+      "address": "0xABC7",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4811,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4811,
+      "address": "0xABCB",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4892,
+      "operands": [
+        {
+          "code": 128,
+          "low": 78,
+          "packed_hex": "0603014871605122421603c680b3c23cc1138094e008524e1e04850d2549505120099814205805385359ba080d04b1604d548581420566010f3a752028f24e8142058053853598063d20c54ee9c0",
+          "text": "A LARGE TRIBE OF KOBOLDS IS BEING RECRUITED BY THE ENEMY.  MAKE SURE THEY DON'T JOIN THE ENEMY FORCES.'"
+        }
+      ]
+    },
+    {
+      "offset": 4892,
+      "address": "0xAC1C",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4893
+    },
+    {
+      "offset": 4893,
+      "address": "0xAC1D",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4897,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4897,
+      "address": "0xAC21",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4903,
+      "operands": [
+        {
+          "code": 1,
+          "low": 179,
+          "word": 19123,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4903,
+      "address": "0xAC27",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4904
+    },
+    {
+      "offset": 4904,
+      "address": "0xAC28",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4908,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4908,
+      "address": "0xAC2C",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 4951,
+      "operands": [
+        {
+          "code": 128,
+          "low": 40,
+          "packed_hex": "1893848142058133d54831603c68142058122561529d38103cc3155093ce80138480538480952e9c",
+          "text": "FIND THE SOURCE OF THE RIVER'S POLLUTION AND END IT.'"
+        }
+      ]
+    },
+    {
+      "offset": 4951,
+      "address": "0xAC57",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 4952
+    },
+    {
+      "offset": 4952,
+      "address": "0xAC58",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 4958,
+      "operands": [
+        {
+          "code": 1,
+          "low": 181,
+          "word": 19125,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 4958,
+      "address": "0xAC5E",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 4959
+    },
+    {
+      "offset": 4959,
+      "address": "0xAC5F",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 4963,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 4963,
+      "address": "0xAC63",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5017,
+      "operands": [
+        {
+          "code": 128,
+          "low": 51,
+          "packed_hex": "0605122421603c680c25a05210d14e8094e041215005224e1e050f80a3c93a050816014e14d66e82041215614e520508253ba7",
+          "text": "A TRIBE OF LIZARDMEN IS PREPARING TO JOIN THE ENEMY.  PREVENT THIS.'"
+        }
+      ]
+    },
+    {
+      "offset": 5017,
+      "address": "0xAC99",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 5018
+    },
+    {
+      "offset": 5018,
+      "address": "0xAC9A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5024,
+      "operands": [
+        {
+          "code": 1,
+          "low": 167,
+          "word": 19111,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5024,
+      "address": "0xACA0",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 5025
+    },
+    {
+      "offset": 5025,
+      "address": "0xACA1",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5029,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5029,
+      "address": "0xACA5",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5035,
+      "operands": [
+        {
+          "code": 1,
+          "low": 169,
+          "word": 19113,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 5035,
+      "address": "0xACAB",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 5036
+    },
+    {
+      "offset": 5036,
+      "address": "0xACAC",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5040,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5040,
+      "address": "0xACB0",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5114,
+      "operands": [
+        {
+          "code": 128,
+          "low": 71,
+          "packed_hex": "5081602052528143e050816020f5531603c680225604e5203554d48021604854c354512e8205c581724c3204016601c538548f5533198063d280825381304616048551548eba70",
+          "text": "THE HEIR TO THE HOUSE OF BIVANT MUST BE RESCUED.  WE WILL PAY GENEROUSLY FOR HIS SAFE RETURN.'"
+        }
+      ]
+    },
+    {
+      "offset": 5114,
+      "address": "0xACFA",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5120,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 140,
+          "word": 19084,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5120,
+      "address": "0xAD00",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 5121
+    },
+    {
+      "offset": 5121,
+      "address": "0xAD01",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5127,
+      "operands": [
+        {
+          "code": 1,
+          "low": 152,
+          "word": 19096,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5127,
+      "address": "0xAD07",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 5128
+    },
+    {
+      "offset": 5128,
+      "address": "0xAD08",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5132,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5132,
+      "address": "0xAD0C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5138,
+      "operands": [
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 5138,
+      "address": "0xAD12",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 5139
+    },
+    {
+      "offset": 5139,
+      "address": "0xAD13",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5143,
+      "operands": [
+        {
+          "code": 1,
+          "low": 166,
+          "word": 44454,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5143,
+      "address": "0xAD17",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5149,
+      "operands": [
+        {
+          "code": 1,
+          "low": 151,
+          "word": 19095,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5149,
+      "address": "0xAD1D",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 5150
+    },
+    {
+      "offset": 5150,
+      "address": "0xAD1E",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5154,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5154,
+      "address": "0xAD22",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5160,
+      "operands": [
+        {
+          "code": 1,
+          "low": 180,
+          "word": 19124,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5160,
+      "address": "0xAD28",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 5161
+    },
+    {
+      "offset": 5161,
+      "address": "0xAD29",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5165,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5165,
+      "address": "0xAD2D",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5279,
+      "operands": [
+        {
+          "code": 128,
+          "low": 111,
+          "packed_hex": "30f4848030443d238180805380180414c24305416010940c3cd05424380d2534c93ce8142015204854552521538193d54a040149424354c0528132c930c4ee82064f5600521604d534d3ce1448143e02094e00c804d085493ba01cf8142123d51c88142058133d55088043cf4ae9c0",
+          "text": "LORD CADORNA HAS A DELICATE DIPLOMATIC MISSION THAT REQUIRES YOUR PARTICULAR SKILLS.  YOU ARE SUMMONED TO HIS CHAMBERS. GO THROUGH THE SOUTH DOOR.'"
+        }
+      ]
+    },
+    {
+      "offset": 5279,
+      "address": "0xAD9F",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5285,
+      "operands": [
+        {
+          "code": 0,
+          "low": 254
+        },
+        {
+          "code": 1,
+          "low": 152,
+          "word": 19096,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5285,
+      "address": "0xADA5",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 5286
+    },
+    {
+      "offset": 5286,
+      "address": "0xADA6",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5406,
+      "operands": [
+        {
+          "code": 128,
+          "low": 117,
+          "packed_hex": "5c580e14512064f56050f80414c25615280180d1534c11c58143e050816068814e5093202c51508143e05081605c54d4ba008580305214654cb2050816051204950f4a00c110f48e06034166020158581404d4054851205c950881420580d1534c11c58100432c552008518f48580816018c144ba7",
+          "text": "WE NEED YOU TO DELIVER A MESSAGE TO THE ZHENTIL KEEP TO THE WEST. BE CAREFUL, THE TRAITOR CADORNA MAY HAVE TAMPERED WITH THE MESSAGE PACKET BEFORE HE FLED.'"
+        }
+      ]
+    },
+    {
+      "offset": 5406,
+      "address": "0xAE1E",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5412,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 152,
+          "word": 19096,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5412,
+      "address": "0xAE24",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 5413
+    },
+    {
+      "offset": 5413,
+      "address": "0xAE25",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5419,
+      "operands": [
+        {
+          "code": 1,
+          "low": 185,
+          "word": 19129,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 5419,
+      "address": "0xAE2B",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 5420
+    },
+    {
+      "offset": 5420,
+      "address": "0xAE2C",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5424,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5424,
+      "address": "0xAE30",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5430,
+      "operands": [
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 5430,
+      "address": "0xAE36",
+      "opcode": 24,
+      "name": "IF \u003c",
+      "record_end": 5431
+    },
+    {
+      "offset": 5431,
+      "address": "0xAE37",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5435,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5435,
+      "address": "0xAE3B",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5525,
+      "operands": [
+        {
+          "code": 128,
+          "low": 87,
+          "packed_hex": "30f48481549330938714e8172532054e05521c53943198143e04d01412e05c95088193d5ba08073e050848f5472205081604cf55422010f3d280f1a050816051204950f4a00c110f48e0674e03cc120455052505493ba7",
+          "text": "LORD URSLINGEN WISHES URGENTLY TO SPEAK WITH YOU.  GO THROUGH THE SOUTH DOOR OF THE TRAITOR CADORNA'S OLD QUARTERS.'"
+        }
+      ]
+    },
+    {
+      "offset": 5525,
+      "address": "0xAE95",
+      "opcode": 48,
+      "name": "OR",
+      "record_end": 5534,
+      "operands": [
+        {
+          "code": 1,
+          "low": 107,
+          "word": 19051,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 8
+        },
+        {
+          "code": 1,
+          "low": 107,
+          "word": 19051,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5534,
+      "address": "0xAE9E",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5540,
+      "operands": [
+        {
+          "code": 0,
+          "low": 254
+        },
+        {
+          "code": 1,
+          "low": 153,
+          "word": 19097,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5540,
+      "address": "0xAEA4",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 5541
+    },
+    {
+      "offset": 5541,
+      "address": "0xAEA5",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5547,
+      "operands": [
+        {
+          "code": 1,
+          "low": 154,
+          "word": 19098,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 5547,
+      "address": "0xAEAB",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 5548
+    },
+    {
+      "offset": 5548,
+      "address": "0xAEAC",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5552,
+      "operands": [
+        {
+          "code": 1,
+          "low": 75,
+          "word": 44875,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5552,
+      "address": "0xAEB0",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5558,
+      "operands": [
+        {
+          "code": 1,
+          "low": 185,
+          "word": 19129,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5558,
+      "address": "0xAEB6",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 5559
+    },
+    {
+      "offset": 5559,
+      "address": "0xAEB7",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5563,
+      "operands": [
+        {
+          "code": 1,
+          "low": 75,
+          "word": 44875,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5563,
+      "address": "0xAEBB",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5569,
+      "operands": [
+        {
+          "code": 1,
+          "low": 186,
+          "word": 19130,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5569,
+      "address": "0xAEC1",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 5570
+    },
+    {
+      "offset": 5570,
+      "address": "0xAEC2",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5574,
+      "operands": [
+        {
+          "code": 1,
+          "low": 158,
+          "word": 43166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5574,
+      "address": "0xAEC6",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5676,
+      "operands": [
+        {
+          "code": 128,
+          "low": 99,
+          "packed_hex": "64f5600521604d534d3ce1448143e00604d01432413200cf54e0c932034515424e1ee82064f56005216050f8021600570521051200605813150423058033cd3494d324f3ae8142058032546601d505211381724c3204c83d78193d5814205817059ba7",
+          "text": "YOU ARE SUMMONED TO A SPECIAL COUNCIL MEETING.  YOU ARE TO BE AWARDED A VALUABLE COMMISSION. THE CITY GUARDS WILL SHOW YOU THE WAY.'"
+        }
+      ]
+    },
+    {
+      "offset": 5676,
+      "address": "0xAF2C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5682,
+      "operands": [
+        {
+          "code": 0,
+          "low": 254
+        },
+        {
+          "code": 1,
+          "low": 154,
+          "word": 19098,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5682,
+      "address": "0xAF32",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 5686,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5686,
+      "address": "0xAF36",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5690,
+      "operands": [
+        {
+          "code": 1,
+          "low": 190,
+          "word": 46270,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5690,
+      "address": "0xAF3A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5696,
+      "operands": [
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 5696,
+      "address": "0xAF40",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 5697
+    },
+    {
+      "offset": 5697,
+      "address": "0xAF41",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 5701,
+      "operands": [
+        {
+          "code": 1,
+          "low": 75,
+          "word": 44875,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5701,
+      "address": "0xAF45",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5707,
+      "operands": [
+        {
+          "code": 0,
+          "low": 254
+        },
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5707,
+      "address": "0xAF4B",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5752,
+      "operands": [
+        {
+          "code": 128,
+          "low": 42,
+          "packed_hex": "9d42054c580148580130c80f1a05081600cf34d2534c93ce4e00d549214e50c66005604930108c16e9c0",
+          "text": "'THESE ARE ALL OF THE COMMISSIONS CURRENTLY AVAILABLE.'"
+        }
+      ]
+    },
+    {
+      "offset": 5752,
+      "address": "0xAF78",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 5756,
+      "operands": [
+        {
+          "code": 1,
+          "low": 127,
+          "word": 46463,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5756,
+      "address": "0xAF7C",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 5757
+    },
+    {
+      "offset": 5757,
+      "address": "0xAF7D",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5763,
+      "operands": [
+        {
+          "code": 1,
+          "low": 190,
+          "word": 19134,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5763,
+      "address": "0xAF83",
+      "opcode": 27,
+      "name": "IF \u003e=",
+      "record_end": 5764
+    },
+    {
+      "offset": 5764,
+      "address": "0xAF84",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 5765
+    },
+    {
+      "offset": 5765,
+      "address": "0xAF85",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 5771,
+      "operands": [
+        {
+          "code": 1,
+          "low": 151,
+          "word": 19095,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 5771,
+      "address": "0xAF8B",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 5772
+    },
+    {
+      "offset": 5772,
+      "address": "0xAF8C",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 5773
+    },
+    {
+      "offset": 5773,
+      "address": "0xAF8D",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5779,
+      "operands": [
+        {
+          "code": 0,
+          "low": 55
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5779,
+      "address": "0xAF93",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 5782,
+      "operands": [
+        {
+          "code": 0,
+          "low": 31
+        }
+      ]
+    },
+    {
+      "offset": 5782,
+      "address": "0xAF96",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5864,
+      "operands": [
+        {
+          "code": 128,
+          "low": 79,
+          "packed_hex": "9d72053a03cc1204083013a05c14e03d61524953ac80180604d24c6605121414d54858170538082441053a024e81420581715350548e80254930424e1e03c68142058141585093058033cd40c158b8",
+          "text": "'WHEN OLD PHLAN WAS OVERRUN, A FAMILY TREASURE WAS HIDDEN IN THE WESTERN BUILDING OF THE TEXTILE COMPLEX."
+        }
+      ]
+    },
+    {
+      "offset": 5864,
+      "address": "0xAFE8",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 5868,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5868,
+      "address": "0xAFEC",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 5988,
+      "operands": [
+        {
+          "code": 128,
+          "low": 117,
+          "packed_hex": "9d42058060495081953204c549604e5204c53948143e018550322025480e15615281215455238512e8205081600cf35030562025380a5535204cf5542203c68103c43cc810301681ba080248938781420581448505355216050f80d16004e12064f5605c930c8021605c530c81215705210512e9c0",
+          "text": "'THE FAITHFUL SERVANT SENT TO FETCH IT NEVER RETURNED.  THE COMPLEX IS JUST SOUTH OF PODOL PLAZA.  BRING THE TREASURE TO ME AND YOU WILL BE WELL REWARDED.'"
+        }
+      ]
+    },
+    {
+      "offset": 5988,
+      "address": "0xB064",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 5992,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5992,
+      "address": "0xB068",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5998,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 151,
+          "word": 19095,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5998,
+      "address": "0xB06E",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6002,
+      "operands": [
+        {
+          "code": 1,
+          "low": 127,
+          "word": 46463,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6002,
+      "address": "0xB072",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 6003
+    },
+    {
+      "offset": 6003,
+      "address": "0xB073",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6007,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6007,
+      "address": "0xB077",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 6013,
+      "operands": [
+        {
+          "code": 1,
+          "low": 152,
+          "word": 19096,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 6013,
+      "address": "0xB07D",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 6014
+    },
+    {
+      "offset": 6014,
+      "address": "0xB07E",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 6015
+    },
+    {
+      "offset": 6015,
+      "address": "0xB07F",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6021,
+      "operands": [
+        {
+          "code": 0,
+          "low": 55
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6021,
+      "address": "0xB085",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 6024,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        }
+      ]
+    },
+    {
+      "offset": 6024,
+      "address": "0xB088",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6118,
+      "operands": [
+        {
+          "code": 128,
+          "low": 91,
+          "packed_hex": "9c952025380935015205425616050805480180d1534c11c580216010530958548512050f81420581a20539424c80f55440f4d48143e05081605c54d4ba08098013604c538424e1e064f56005380425030f3415090e014e58f653b8",
+          "text": "'IT IS IMPERATIVE THAT A MESSAGE BE DELIVERED TO THE ZHENTIL OUTPOST TO THE WEST.  I AM SENDING YOU AS DIPLOMATIC ENVOYS."
+        }
+      ]
+    },
+    {
+      "offset": 6118,
+      "address": "0xB0E6",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6122,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6122,
+      "address": "0xB0EA",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6221,
+      "operands": [
+        {
+          "code": 128,
+          "low": 96,
+          "packed_hex": "9d72053a064f5601c552050f81a2053942413202c5150b2041215314e5205082538100432c552050f8095138033cd34138404e52e82010f80e3d480248504b81420581314131380f4a064f5605c930c8021604c525a1448014e04d02454ee9c0",
+          "text": "'WHEN YOU GET TO ZHENTIAL KEEP, PRESENT THIS PACKET TO ITS COMMANDANT.  DO NOT BREAK THE SEALS OR YOU WILL BE SEIZED AS SPIES.'"
+        }
+      ]
+    },
+    {
+      "offset": 6221,
+      "address": "0xB14D",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6225,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6225,
+      "address": "0xB151",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6231,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 152,
+          "word": 19096,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6231,
+      "address": "0xB157",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6232
+    },
+    {
+      "offset": 6232,
+      "address": "0xB158",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 6238,
+      "operands": [
+        {
+          "code": 1,
+          "low": 153,
+          "word": 19097,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 6238,
+      "address": "0xB15E",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 6239
+    },
+    {
+      "offset": 6239,
+      "address": "0xB15F",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 6240
+    },
+    {
+      "offset": 6240,
+      "address": "0xB160",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6246,
+      "operands": [
+        {
+          "code": 0,
+          "low": 16
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6246,
+      "address": "0xB166",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 6249,
+      "operands": [
+        {
+          "code": 0,
+          "low": 7
+        }
+      ]
+    },
+    {
+      "offset": 6249,
+      "address": "0xB169",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6390,
+      "operands": [
+        {
+          "code": 128,
+          "low": 138,
+          "packed_hex": "9d420138b8193d58063d28033cd24e1ee8202603554d48021600922451a018f4a03d54a03851448094e05521c5394ba080f55280f38580320138316050f80414614152050816014e14d6602538142123d51c88013a00534c154c5203ce81420580305350c16e8143e010f8142094ec8171603554d48062524d48131435521604d43ca04e3d780705416e",
+          "text": "'THANK YOU FOR COMING.  I MUST BE BRIEF FOR OUR NEED IS URGENT.  OUR ONE CHANCE TO DEFEAT THE ENEMY IS THROUGH AN ASSAULT ON THE CASTLE. TO DO THIS, WE MUST FIRST SECURE STOJANOW GATE."
+        }
+      ]
+    },
+    {
+      "offset": 6390,
+      "address": "0xB1F6",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6394,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6394,
+      "address": "0xB1FA",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6542,
+      "operands": [
+        {
+          "code": 128,
+          "low": 145,
+          "packed_hex": "9d42058070541602538143cf8135123ce1e050f8021605012c53a009981350f48dba00604cd04c32008138480d5535204cc25080939324416004e12020f30481539424c81214c24558512e8193d580148581420580215352004e12050816009205615352e8142058033d538324c8080538093935125435051203458143e014e5125535205081605014cb8143e064f56e9c",
+          "text": "'THE GATE IS TOO STRONG TO BE TAKEN BY STORM. A SMALL BAND MUST SLIP INSIDE AND HOLD UNTIL RELIEVED. YOU ARE THE BEST AND THE BRAVEST. THE COUNCIL HAS INSTRUCTED ME TO ENTRUST THE TASK TO YOU.'"
+        }
+      ]
+    },
+    {
+      "offset": 6542,
+      "address": "0xB28E",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6546,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6546,
+      "address": "0xB292",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6552,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 153,
+          "word": 19097,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6552,
+      "address": "0xB298",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6553
+    },
+    {
+      "offset": 6553,
+      "address": "0xB299",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 6559,
+      "operands": [
+        {
+          "code": 1,
+          "low": 154,
+          "word": 19098,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 254
+        }
+      ]
+    },
+    {
+      "offset": 6559,
+      "address": "0xB29F",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 6560
+    },
+    {
+      "offset": 6560,
+      "address": "0xB2A0",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 6561
+    },
+    {
+      "offset": 6561,
+      "address": "0xB2A1",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6567,
+      "operands": [
+        {
+          "code": 0,
+          "low": 16
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6567,
+      "address": "0xB2A7",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 6570,
+      "operands": [
+        {
+          "code": 0,
+          "low": 2
+        }
+      ]
+    },
+    {
+      "offset": 6570,
+      "address": "0xB2AA",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6705,
+      "operands": [
+        {
+          "code": 128,
+          "low": 132,
+          "packed_hex": "24e8142058033d538324c8032013421524ec8142058053942521600c95198033d538324c8094e05c125424e1e018f4a064f56e81420580c3d21202091c880d0593d2b2054c4890c880508548805212c81340504b4fa8273d54a018f48315380148580d0524c804c30512018f4a05081600534c154c5203ce81604c28558f80305350c16e",
+          "text": "IN THE COUNCIL CHAMBERS, THE ENTIRE CITY COUNCIL IS WAITING FOR YOU. THE LORD HIGH MAYOR, ULRICH EBERHARD, SPEAKS: 'OUR FORCES ARE MARSHALLED FOR THE ASSAULT ON VALJEVO CASTLE."
+        }
+      ]
+    },
+    {
+      "offset": 6705,
+      "address": "0xB331",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6709,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6709,
+      "address": "0xB335",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6844,
+      "operands": [
+        {
+          "code": 128,
+          "low": 132,
+          "packed_hex": "9c952025381420581538138934f5538121515454d480f1a05081600cf54e0c93205080548193d580c1411205081600545010cbba064f5528132c930c8013848024815854998080561605cf3a05081600443494815093ce80f1a004c3204083013ae8205c580c3cf2e050f8193d58143e02053108154e05c93a03d54a019214510f36e9c0",
+          "text": "'IT IS THE UNANIMOUS REQUEST OF THE COUNCIL THAT YOU LEAD THE ATTACK. YOUR SKILL AND BRAVERY HAVE WON THE ADMIRATION OF ALL PHLAN.  WE LOOK TO YOU TO HELP US WIN OUR FREEDOM.'"
+        }
+      ]
+    },
+    {
+      "offset": 6844,
+      "address": "0xB3BC",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6848,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6848,
+      "address": "0xB3C0",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6854,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 154,
+          "word": 19098,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6854,
+      "address": "0xB3C6",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6855
+    },
+    {
+      "offset": 6855,
+      "address": "0xB3C7",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6859,
+      "operands": [
+        {
+          "code": 1,
+          "low": 137,
+          "word": 46473,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6859,
+      "address": "0xB3CB",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 6865,
+      "operands": [
+        {
+          "code": 1,
+          "low": 7,
+          "word": 18951,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 6865,
+      "address": "0xB3D1",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 6866
+    },
+    {
+      "offset": 6866,
+      "address": "0xB3D2",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 6867
+    },
+    {
+      "offset": 6867,
+      "address": "0xB3D3",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6873,
+      "operands": [
+        {
+          "code": 0,
+          "low": 57
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6873,
+      "address": "0xB3D9",
+      "opcode": 12,
+      "name": "SETUP MONSTER",
+      "record_end": 6880,
+      "operands": [
+        {
+          "code": 0,
+          "low": 27
+        },
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 0,
+          "low": 1
+        }
+      ]
+    },
+    {
+      "offset": 6880,
+      "address": "0xB3E0",
+      "opcode": 13,
+      "name": "APPROACH",
+      "record_end": 6881
+    },
+    {
+      "offset": 6881,
+      "address": "0xB3E1",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6964,
+      "operands": [
+        {
+          "code": 128,
+          "low": 80,
+          "packed_hex": "64f56005216024e5054831505051200998142058033d538324c807541484ba09c804c52e82064f5528104854c538316025380e3d480155420f48968512e82030505616e9e08043e064f56030505617f0",
+          "text": "YOU ARE INTERCEPTED BY THE COUNCIL GUARD. 'HALT.  YOUR PRESENCE IS NOT AUTHORIZED.  LEAVE.'  DO YOU LEAVE?"
+        }
+      ]
+    },
+    {
+      "offset": 6964,
+      "address": "0xB434",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6968,
+      "operands": [
+        {
+          "code": 1,
+          "low": 85,
+          "word": 46421,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6968,
+      "address": "0xB438",
+      "opcode": 37,
+      "name": "ON GOTO",
+      "record_end": 6980
+    },
+    {
+      "offset": 6980,
+      "address": "0xB444",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6986,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6986,
+      "address": "0xB44A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6992,
+      "operands": [
+        {
+          "code": 0,
+          "low": 4
+        },
+        {
+          "code": 1,
+          "low": 75,
+          "word": 49227,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6992,
+      "address": "0xB450",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6998,
+      "operands": [
+        {
+          "code": 0,
+          "low": 5
+        },
+        {
+          "code": 1,
+          "low": 76,
+          "word": 49228,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6998,
+      "address": "0xB456",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 7002,
+      "operands": [
+        {
+          "code": 1,
+          "low": 144,
+          "word": 11408,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7002,
+      "address": "0xB45A",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 7003
+    },
+    {
+      "offset": 7003,
+      "address": "0xB45B",
+      "opcode": 29,
+      "name": "PARTYSTRENGTH",
+      "record_end": 7007,
+      "operands": [
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7007,
+      "address": "0xB45F",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7013,
+      "operands": [
+        {
+          "code": 0,
+          "low": 99
+        },
+        {
+          "code": 1,
+          "low": 198,
+          "word": 28102,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7013,
+      "address": "0xB465",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7019,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 203,
+          "word": 28107,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7019,
+      "address": "0xB46B",
+      "opcode": 28,
+      "name": "CLEARMONSTERS",
+      "record_end": 7020
+    },
+    {
+      "offset": 7020,
+      "address": "0xB46C",
+      "opcode": 11,
+      "name": "LOAD MONSTER",
+      "record_end": 7027,
+      "operands": [
+        {
+          "code": 0,
+          "low": 94
+        },
+        {
+          "code": 0,
+          "low": 3
+        },
+        {
+          "code": 0,
+          "low": 14
+        }
+      ]
+    },
+    {
+      "offset": 7027,
+      "address": "0xB473",
+      "opcode": 11,
+      "name": "LOAD MONSTER",
+      "record_end": 7034,
+      "operands": [
+        {
+          "code": 0,
+          "low": 53
+        },
+        {
+          "code": 0,
+          "low": 6
+        },
+        {
+          "code": 0,
+          "low": 11
+        }
+      ]
+    },
+    {
+      "offset": 7034,
+      "address": "0xB47A",
+      "opcode": 11,
+      "name": "LOAD MONSTER",
+      "record_end": 7041,
+      "operands": [
+        {
+          "code": 0,
+          "low": 85
+        },
+        {
+          "code": 0,
+          "low": 5
+        },
+        {
+          "code": 0,
+          "low": 16
+        }
+      ]
+    },
+    {
+      "offset": 7041,
+      "address": "0xB481",
+      "opcode": 11,
+      "name": "LOAD MONSTER",
+      "record_end": 7049,
+      "operands": [
+        {
+          "code": 0,
+          "low": 54
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 15
+        }
+      ]
+    },
+    {
+      "offset": 7049,
+      "address": "0xB489",
+      "opcode": 36,
+      "name": "COMBAT",
+      "record_end": 7050
+    },
+    {
+      "offset": 7050,
+      "address": "0xB48A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7056,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 192,
+          "word": 19136,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7056,
+      "address": "0xB490",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7062,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 7,
+          "word": 18951,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7062,
+      "address": "0xB496",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 7101,
+      "operands": [
+        {
+          "code": 128,
+          "low": 36,
+          "packed_hex": "50816048534124e24e1e01d505211380414324416050f80c1415858193d580130f385b80",
+          "text": "THE REMAINING GUARDS DECIDE TO LEAVE YOU ALONE."
+        }
+      ]
+    },
+    {
+      "offset": 7101,
+      "address": "0xB4BD",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 7102
+    },
+    {
+      "offset": 7102,
+      "address": "0xB4BE",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7108,
+      "operands": [
+        {
+          "code": 0,
+          "low": 57
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7108,
+      "address": "0xB4C4",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 7111,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        }
+      ]
+    },
+    {
+      "offset": 7111,
+      "address": "0xB4C7",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 7164,
+      "operands": [
+        {
+          "code": 128,
+          "low": 50,
+          "packed_hex": "5081601d50521200c14140493a04d41504e018f49705212e82740c1414c580c1548154e04c83d78193d5814205817059ba70",
+          "text": "THE GUARD CAPTAIN STEPS FORWARD. 'PLEASE LET US SHOW YOU THE WAY.'"
+        }
+      ]
+    },
+    {
+      "offset": 7164,
+      "address": "0xB4FC",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7168,
+      "operands": [
+        {
+          "code": 1,
+          "low": 160,
+          "word": 46496,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7168,
+      "address": "0xB500",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7172,
+      "operands": [
+        {
+          "code": 1,
+          "low": 127,
+          "word": 46463,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7172,
+      "address": "0xB504",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7178,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7178,
+      "address": "0xB50A",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7182,
+      "operands": [
+        {
+          "code": 1,
+          "low": 112,
+          "word": 46448,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7182,
+      "address": "0xB50E",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7188,
+      "operands": [
+        {
+          "code": 0,
+          "low": 3
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7188,
+      "address": "0xB514",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7192,
+      "operands": [
+        {
+          "code": 1,
+          "low": 112,
+          "word": 46448,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7192,
+      "address": "0xB518",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7198,
+      "operands": [
+        {
+          "code": 0,
+          "low": 4
+        },
+        {
+          "code": 1,
+          "low": 75,
+          "word": 49227,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7198,
+      "address": "0xB51E",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7202,
+      "operands": [
+        {
+          "code": 1,
+          "low": 112,
+          "word": 46448,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7202,
+      "address": "0xB522",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7208,
+      "operands": [
+        {
+          "code": 0,
+          "low": 2
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7208,
+      "address": "0xB528",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7212,
+      "operands": [
+        {
+          "code": 1,
+          "low": 112,
+          "word": 46448,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7212,
+      "address": "0xB52C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7218,
+      "operands": [
+        {
+          "code": 0,
+          "low": 6
+        },
+        {
+          "code": 1,
+          "low": 76,
+          "word": 49228,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7218,
+      "address": "0xB532",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7222,
+      "operands": [
+        {
+          "code": 1,
+          "low": 112,
+          "word": 46448,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7222,
+      "address": "0xB536",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7228,
+      "operands": [
+        {
+          "code": 0,
+          "low": 7
+        },
+        {
+          "code": 1,
+          "low": 76,
+          "word": 49228,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7228,
+      "address": "0xB53C",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7232,
+      "operands": [
+        {
+          "code": 1,
+          "low": 112,
+          "word": 46448,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7232,
+      "address": "0xB540",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7238,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7238,
+      "address": "0xB546",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7242,
+      "operands": [
+        {
+          "code": 1,
+          "low": 112,
+          "word": 46448,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7242,
+      "address": "0xB54A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7248,
+      "operands": [
+        {
+          "code": 0,
+          "low": 5
+        },
+        {
+          "code": 1,
+          "low": 75,
+          "word": 49227,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7248,
+      "address": "0xB550",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 7252,
+      "operands": [
+        {
+          "code": 1,
+          "low": 144,
+          "word": 11408,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7252,
+      "address": "0xB554",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 7253
+    },
+    {
+      "offset": 7253,
+      "address": "0xB555",
+      "opcode": 43,
+      "name": "HORIZONTAL MENU",
+      "record_end": 7268,
+      "menu_destination": "0x6E79",
+      "menu_options": [
+        "YES",
+        "NO"
+      ]
+    },
+    {
+      "offset": 7268,
+      "address": "0xB564",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7269
+    },
+    {
+      "offset": 7270,
+      "address": "0xB566",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7276,
+      "operands": [
+        {
+          "code": 0,
+          "low": 24
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7276,
+      "address": "0xB56C",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 7279,
+      "operands": [
+        {
+          "code": 0,
+          "low": 32
+        }
+      ]
+    },
+    {
+      "offset": 7279,
+      "address": "0xB56F",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7280
+    },
+    {
+      "offset": 7280,
+      "address": "0xB570",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 7284,
+      "operands": [
+        {
+          "code": 1,
+          "low": 144,
+          "word": 11408,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7284,
+      "address": "0xB574",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7290,
+      "operands": [
+        {
+          "code": 0,
+          "low": 8
+        },
+        {
+          "code": 1,
+          "low": 222,
+          "word": 990,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7290,
+      "address": "0xB57A",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 7294,
+      "operands": [
+        {
+          "code": 1,
+          "low": 3,
+          "word": 47619,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7294,
+      "address": "0xB57E",
+      "opcode": 58,
+      "name": "DELAY",
+      "record_end": 7295
+    },
+    {
+      "offset": 7295,
+      "address": "0xB57F",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7301,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7301,
+      "address": "0xB585",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 7304,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 7304,
+      "address": "0xB588",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7305
+    },
+    {
+      "offset": 7305,
+      "address": "0xB589",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 7311,
+      "operands": [
+        {
+          "code": 1,
+          "low": 186,
+          "word": 19130,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 7311,
+      "address": "0xB58F",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 7312
+    },
+    {
+      "offset": 7312,
+      "address": "0xB590",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7313
+    },
+    {
+      "offset": 7313,
+      "address": "0xB591",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 7319,
+      "operands": [
+        {
+          "code": 0,
+          "low": 26
+        },
+        {
+          "code": 1,
+          "low": 130,
+          "word": 28290,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7319,
+      "address": "0xB597",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 7320
+    },
+    {
+      "offset": 7320,
+      "address": "0xB598",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 7324,
+      "operands": [
+        {
+          "code": 1,
+          "low": 79,
+          "word": 39503,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7324,
+      "address": "0xB59C",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 7328,
+      "operands": [
+        {
+          "code": 1,
+          "low": 239,
+          "word": 39407,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7328,
+      "address": "0xB5A0",
+      "opcode": 43,
+      "name": "HORIZONTAL MENU",
+      "record_end": 7363,
+      "menu_destination": "0x9800",
+      "menu_options": [
+        "PRESS \u003cRETURN\u003e OR BUTTON TO CONTINUE"
+      ]
+    },
+    {
+      "offset": 7363,
+      "address": "0xB5C3",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7364
+    },
+    {
+      "offset": 7364,
+      "address": "0xB5C4",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 7371,
+      "operands": [
+        {
+          "code": 1,
+          "low": 129,
+          "word": 28289,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 123,
+          "word": 28283,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7371,
+      "address": "0xB5CB",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7372
+    },
+    {
+      "offset": 7372,
+      "address": "0xB5CC",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 7382,
+      "operands": [
+        {
+          "code": 1,
+          "low": 129,
+          "word": 28289,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 124,
+          "word": 28284,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 124,
+          "word": 28284,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7382,
+      "address": "0xB5D6",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7383
+    },
+    {
+      "offset": 7383,
+      "address": "0xB5D7",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 7393,
+      "operands": [
+        {
+          "code": 1,
+          "low": 129,
+          "word": 28289,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7393,
+      "address": "0xB5E1",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7394
+    },
+    {
+      "offset": 7394,
+      "address": "0xB5E2",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 7404,
+      "operands": [
+        {
+          "code": 1,
+          "low": 129,
+          "word": 28289,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 126,
+          "word": 28286,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 126,
+          "word": 28286,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7404,
+      "address": "0xB5EC",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7405
+    }
+  ],
+  "edges": [
+    {
+      "From": 55,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 71,
+      "To": 128,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 87,
+      "To": 140,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 124,
+      "To": 6859,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 135,
+      "To": 92,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 147,
+      "To": 92,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 155,
+      "To": 7295,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 168,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 186,
+      "To": 288,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 207,
+      "To": 178,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 211,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 222,
+      "To": 239,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 258,
+      "To": 6859,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 284,
+      "To": 239,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 297,
+      "To": 335,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 338,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 568,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 657,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 5757,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 6003,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 6232,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 6553,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 297,
+      "To": 6855,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 330,
+      "To": 7295,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 338,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 377,
+      "To": 445,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 563,
+      "To": 7295,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 568,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 657,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 669,
+      "To": 7270,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 680,
+      "To": 3837,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 816,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 899,
+      "To": 7364,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 899,
+      "To": 7372,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 899,
+      "To": 7372,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 899,
+      "To": 7383,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 899,
+      "To": 7383,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 899,
+      "To": 7394,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 899,
+      "To": 7394,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 952,
+      "To": 856,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 963,
+      "To": 1030,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1026,
+      "To": 1514,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1030,
+      "To": 1408,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 1034,
+      "To": 1222,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1073,
+      "To": 1105,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1086,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 1097,
+      "To": 3218,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1101,
+      "To": 1050,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1123,
+      "To": 1655,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 1720,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 1789,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 1831,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 1901,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 1931,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 1971,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2023,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2063,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2110,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2138,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2179,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2245,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2315,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2390,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2497,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2574,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2636,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2697,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2755,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2849,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 2982,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 3035,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 3036,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 3104,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1123,
+      "To": 3166,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 1214,
+      "To": 1626,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1218,
+      "To": 1474,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1238,
+      "To": 1276,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1249,
+      "To": 1276,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1272,
+      "To": 1354,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1283,
+      "To": 1313,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1309,
+      "To": 1354,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1320,
+      "To": 1404,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1400,
+      "To": 1474,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1404,
+      "To": 1038,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1463,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 1606,
+      "To": 7270,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 1617,
+      "To": 1030,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1622,
+      "To": 1222,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1642,
+      "To": 1077,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 1646,
+      "To": 7295,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 1650,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3099,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3161,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3213,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3225,
+      "To": 3748,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3236,
+      "To": 3748,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3251,
+      "To": 3748,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3262,
+      "To": 3748,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3355,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3366,
+      "To": 3500,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3496,
+      "To": 3744,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3578,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3683,
+      "To": 7253,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3687,
+      "To": 3699,
+      "Kind": "ON GOTO"
+    },
+    {
+      "From": 3687,
+      "To": 3748,
+      "Kind": "ON GOTO"
+    },
+    {
+      "From": 3736,
+      "To": 7270,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3740,
+      "To": 3748,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3744,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3833,
+      "To": 3899,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3851,
+      "To": 7270,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3899,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 3916,
+      "To": 5707,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3927,
+      "To": 5690,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 3931,
+      "To": 4011,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4076,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4124,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4272,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4401,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4520,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4624,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4734,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4800,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4893,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4897,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 4952,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 5018,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 5121,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 5413,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3931,
+      "To": 5541,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 3994,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 4007,
+      "To": 3909,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4018,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4083,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4131,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4279,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4408,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4419,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4430,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4527,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4538,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4549,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4631,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4642,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4741,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4807,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4893,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4904,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 4959,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5025,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5036,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5128,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5139,
+      "To": 5286,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5150,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5161,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5420,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5431,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5548,
+      "To": 5707,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5559,
+      "To": 5707,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5570,
+      "To": 3998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5682,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 5686,
+      "To": 7102,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5697,
+      "To": 5707,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 5752,
+      "To": 7295,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 5864,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 5988,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 5998,
+      "To": 7295,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6003,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6118,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6221,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6390,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6542,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6705,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6844,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6855,
+      "To": 7305,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6964,
+      "To": 7253,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6968,
+      "To": 6980,
+      "Kind": "ON GOTO"
+    },
+    {
+      "From": 6968,
+      "To": 7003,
+      "Kind": "ON GOTO"
+    },
+    {
+      "From": 7164,
+      "To": 7328,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7168,
+      "To": 7295,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7178,
+      "To": 7280,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7188,
+      "To": 7280,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7198,
+      "To": 7280,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7208,
+      "To": 7280,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7218,
+      "To": 7280,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7228,
+      "To": 7280,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7238,
+      "To": 7280,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7320,
+      "To": 335,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 7324,
+      "To": 239,
+      "Kind": "GOTO"
+    }
+  ]
+}
