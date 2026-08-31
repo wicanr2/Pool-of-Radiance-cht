@@ -139,7 +139,7 @@ func buildReport(zipPath string) (report, error) {
 		Map:          mapKey{Archive: key.Archive, BlockID: key.BlockID},
 		EntryAddress: "9914",
 		Start:        point{X: 0, Y: 4},
-		Scope:        "isolated post-Rolf execution of entry 0 (per-turn) followed by entry 1 (SearchLocation); five-entry roles are cross-title strong inference pending Pool executable confirmation; geometry reachability is separate and does not execute intervening ECL events",
+		Scope:        "isolated same-cell corpus execution of entry 0 followed by entry 1; Pool overlay-03 proves normal play calls entry 0 on the old cell, applies movement, then entry 1 on the new cell; geometry reachability is separate and does not execute intervening ECL events",
 		Samples:      make([]sample, 0, geometry.Width*geometry.Height*4),
 	}
 	for y := 0; y < geometry.Height; y++ {

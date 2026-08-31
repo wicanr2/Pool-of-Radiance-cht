@@ -448,8 +448,6 @@ func (a *app) moveInitialDungeonForward() error {
 		a.statusLine = "A wall or locked door blocks the way."
 		return nil
 	}
-	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
-	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 	if a.eventMachine != nil {
 		result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 		if err != nil {
@@ -458,14 +456,18 @@ func (a *app) moveInitialDungeonForward() error {
 		if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
 			return a.pauseInitialCellResult(result)
 		}
+		a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
+		a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 		return a.beginInitialSearch()
 	}
+	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
+	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
 }
 
 func (a *app) beginInitialSearch() error {
-	result, err := gamepack.RunInitialSessionSearchEntry(a.eventSession)
+	result, err := gamepack.RunInitialSessionSearchEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 	if err != nil {
 		return fmt.Errorf("start Pool SearchLocation: %w", err)
 	}

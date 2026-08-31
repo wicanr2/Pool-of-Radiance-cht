@@ -80,13 +80,15 @@
   回滾已 CONFORMED。其餘狀態治療與 View／Pool／Appraise 仍須各自 READY。`20h`
   NEWECL 已由 Pool dispatcher／handler 閉合並接入共用 engine；opcode `14h` 亦已
   CONFORMED；Spec 021 已閉合 `0Ah` 本輪所需的 active-character 三欄投影。下一步是
-  Pool executable 的 entry 0→1 呼叫順序 exact 確認，以及 City Hall 事件後續 continuation。
+  Spec 022 已由 Pool overlay-03 精確閉合 entry 0（舊格）→ movement → entry 1（新格）
+  的順序並修正正常玩家接線；正常按鍵亦由 Sune 走到 City Hall，兩次 Return 後續到
+  proclamations 文字。下一步是 proclamations 後的 clerk／commission 分支與原版同狀態抽樣。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
-  Rolf VM boundary consumer（Spec 013 已 CONFORMED），下一步擴充跨 block session 與
-  deterministic RANDOM、VM Clone、同-session entry 切換與作品中立
-  `CLEARMONSTERS` 訊號。Sune service boundary 已由 Pool 成為第一個 consumer，且 CoAB
-  唯讀回歸通過；下一步依玩家路徑處理 Heal 規則及 opcode `0Ah`／`20h`。
+  Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic
+  RANDOM、VM Clone、同-session entry 切換、作品中立 `CLEARMONSTERS` 訊號，以及
+  opcode `0Ah`／`20h` 都已有 Pool consumer 且 CoAB 唯讀回歸通過。下一步依玩家路徑
+  處理 City Hall continuation 與其後尚未接妥的服務規則。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

@@ -202,14 +202,16 @@ Sune 選單後的同一 VM 分支已由 Spec 017 閉合到服務入口：YES（�
 
 已推翻的斷言：`CALL 2C90h` **不是神殿 healing 本體**。它在 Rolf 34-step 導覽的
 每一步及 Sune NO 分支都出現，現階段只能列為 redraw／movement service 候選；未追完
-overlay dispatcher 前不得命名，也不得把所有 `CALL` 自動續跑。opcode `24h COMBAT`
-對應 overlay-03 entry 50（`2E90h`），其 far call `010A:00F2` 已由 MZ header
-`0x3B0` 與 TPOV manifest 精確反查至 overlay-25 entry 42（`2C81h`）。後續證據訂正：
-entry 42 是通用選擇／鏈結處理，不是 temple dispatcher。38 份 overlay 的 raw far-call
-全掃只有 overlay-03 `18B9h` 的 `9A 25 00 35 00` 指向 overlay-04 entry 1；該 callsite
-位於 opcode `15h VERTICAL MENU` handler，先檢查並清除 runtime state `+5C4h`。
+overlay dispatcher 前不得命名，也不得把所有 `CALL` 自動續跑。先前把 opcode `24h`
+掛到 overlay-03 `2E90h`／entry 50，再追到 overlay-25 entry 42 的鏈條已被原始 dispatcher
+推翻：Spec 017／019 證明 `24h` 呼叫 `186Ch`，`2E90h` 是 opcode `39h` handler。
+因此 overlay-25 entry 42 只保留通用選擇／鏈結處理證據，不能再當 temple 或 COMBAT
+consumer。38 份 overlay 的 raw far-call 全掃只有 overlay-03 `18B9h` 的
+`9A 25 00 35 00` 指向 overlay-04 entry 1；該 callsite 位於 opcode `15h VERTICAL MENU`
+handler，先檢查並清除 runtime state `+5C4h`。
 ECL `6DE2h` 對 `+5C4h` 的映射仍是 `strong inference`，不可單獨冒稱 exact；但
 ECL pattern、唯一 temple call 與原始 Pascal 選單字串已足以完成 Spec 017 的服務入口。
-engine／Pool 全測試與 CoAB 唯讀 `internal/ecl`、`internal/game` 回歸均通過。下一步是
-逐項閉合 overlay-04 的 Heal／View／Pool／Appraise 規則，優先完成玩家可見的 Heal
-價格、HP／狀態與 Gold 垂直鏈；不是繼續把 overlay-25 誤當神殿 dispatcher。
+engine／Pool 全測試與 CoAB 唯讀 `internal/ecl`、`internal/game` 回歸均通過。Heal
+價格、HP／狀態與 Gold 垂直鏈已由 Spec 018 閉合；下一步是 City Hall proclamations
+之後的 clerk／commission 分支，以及神殿 View／Pool／Appraise，而不是繼續把
+overlay-25 誤當神殿 dispatcher。

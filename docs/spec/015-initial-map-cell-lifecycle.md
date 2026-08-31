@@ -1,14 +1,14 @@
 # Spec 015：第一張地圖 cell lifecycle 接線
 
-狀態：PARTIAL（第一個空事件格 CONFORMED；玩家事件 effects DRAFT）
+狀態：CONFORMED（入口順序勘誤與實作見 Spec 022）
 日期：2026-08-31
 
 ## 入口與暫存器
 
 `ECL3.DAX` block 0 的五個 command-set entries 為 `9914h/99EBh/9A5Eh/9A93h/9AF2h`。
-第五入口是已完成的載入／Rolf 流程。依系列五入口 ABI，第一入口 `9914h` 是 per-turn，
-第二入口 `99EBh` 是 SearchLocation；Pool block shape 與資料流吻合，但 Pool executable
-呼叫順序仍標為 `strong inference`。
+第五入口是已完成的載入／Rolf 流程。Pool executable 已由 Spec 022 精確證明第一入口
+`9914h` 在移動前執行，第二入口 `99EBh` 在移動後執行；舊的跨作品
+`strong inference` 已被本作 controller 證據取代。
 
 Pool 與 CoAB 的 executable／GEO consumer 共同支持以下 bridge；Pool 本輪以真實
 `ECL3/block0` 再驗證 consumer：
@@ -25,8 +25,9 @@ Pool 與 CoAB 的 executable／GEO consumer 共同支持以下 bridge；Pool 本
 ## 同 session 實作與驗證
 
 共用 engine `eclvm.Machine.SetPC` 可在保留 memory 的情況下切到同 block 另一 lifecycle
-entry，並清除 GOSUB stack。Pool `RunInitialCellEntry` 在每次成功移動後同步上述五格，
-將 PC 設為 `9914h` 後執行。
+entry，並清除 GOSUB stack。Pool `RunInitialCellEntry` 會同步上述五格並將 PC 設為
+`9914h` 後執行。舊版曾在先改座標後才呼叫它；Spec 022 證明這個順序錯誤，現行正常
+路徑已改為入口 0 看舊座標、入口 1 看新座標。
 
 真實正常路徑：Rolf handler `B06Eh` 跑到 `AE85h EXIT` → 左轉 facing 2 → 從 `(0,4)`
 前進到 `(1,4)` → 同一 VM 執行 entry 0。結果精確為 15 instructions、無文字／選單／

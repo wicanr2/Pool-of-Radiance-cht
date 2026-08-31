@@ -301,7 +301,14 @@ func RunInitialSessionCellEntry(session *eclvm.BlockSession, grid geometry.Grid,
 	if session == nil || session.Machine() == nil {
 		return eclvm.Result{}, fmt.Errorf("initial ECL session is nil")
 	}
-	machine := session.Machine()
+	projectInitialPosition(session.Machine(), grid, position)
+	if err := session.SetEntry(0); err != nil {
+		return eclvm.Result{}, err
+	}
+	return session.RunUntilEvent(4096, nil, true)
+}
+
+func projectInitialPosition(machine *eclvm.Machine, grid geometry.Grid, position Spawn) {
 	cell := grid.CellWrapped(int(position.X), int(position.Y))
 	machine.Memory[0xC04B] = uint16(position.X)
 	machine.Memory[0xC04C] = uint16(position.Y)
@@ -312,18 +319,16 @@ func RunInitialSessionCellEntry(session *eclvm.BlockSession, grid geometry.Grid,
 	}
 	machine.Memory[0xC04E] = uint16(wall)
 	machine.Memory[0xC04F] = uint16(cell.Terrain)
-	if err := session.SetEntry(0); err != nil {
-		return eclvm.Result{}, err
-	}
-	return session.RunUntilEvent(4096, nil, true)
 }
 
 // RunInitialSessionSearchEntry starts command-set entry one in the current
-// block and follows any internal NEWECL transitions.
-func RunInitialSessionSearchEntry(session *eclvm.BlockSession) (eclvm.Result, error) {
-	if session == nil {
+// block after projecting the post-move position, and follows any internal
+// NEWECL transitions.
+func RunInitialSessionSearchEntry(session *eclvm.BlockSession, grid geometry.Grid, position Spawn) (eclvm.Result, error) {
+	if session == nil || session.Machine() == nil {
 		return eclvm.Result{}, fmt.Errorf("initial ECL session is nil")
 	}
+	projectInitialPosition(session.Machine(), grid, position)
 	if err := session.SetEntry(1); err != nil {
 		return eclvm.Result{}, err
 	}

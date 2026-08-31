@@ -393,6 +393,45 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if application.templeActive || application.cellEventPending || application.cellWaitingMenu || application.eventMachine.Memory[0x6DE1] != 0xFF || application.spawn.X != 1 || application.spawn.Y != 3 || application.spawn.Facing != 0 {
 		t.Fatalf("temple exit active=%v pending=%v waiting=%v flag=%04X spawn=%+v", application.templeActive, application.cellEventPending, application.cellWaitingMenu, application.eventMachine.Memory[0x6DE1], application.spawn)
 	}
+	for turn := 0; turn < 4; turn++ {
+		if err := press(application, ebiten.KeyArrowRight); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if application.spawn.Facing != 4 {
+		t.Fatalf("City Hall south facing=%d", application.spawn.Facing)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 1 || application.spawn.Y != 4 {
+		t.Fatalf("City Hall south step spawn=%+v err=%v", application.spawn, err)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 2 {
+		t.Fatalf("City Hall east facing=%d err=%v", application.spawn.Facing, err)
+	}
+	for wantX := uint8(2); wantX <= 3; wantX++ {
+		if err := press(application, ebiten.KeyArrowUp); err != nil {
+			t.Fatalf("move toward City Hall x=%d: %v", wantX, err)
+		}
+		if application.spawn.X != wantX || application.spawn.Y != 4 {
+			t.Fatalf("City Hall route spawn=%+v want=(%d,4)", application.spawn, wantX)
+		}
+	}
+	if !application.cellEventPending || !strings.Contains(application.eventText, "OUTSIDE THE CITY HALL") {
+		t.Fatalf("City Hall pending=%v text=%q", application.cellEventPending, application.eventText)
+	}
+	cityHallText := application.eventText
+	cityHallReturns := 0
+	for ; cityHallReturns < 16 && application.eventText == cityHallText; cityHallReturns++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatalf("continue City Hall page %d: %v", cityHallReturns, err)
+		}
+	}
+	if application.eventText == cityHallText {
+		t.Fatalf("City Hall did not advance after Return: pending=%v text=%q", application.cellEventPending, application.eventText)
+	}
+	t.Logf("City Hall advanced after %d Return boundary/boundaries: pending=%v text=%q", cityHallReturns, application.cellEventPending, application.eventText)
 }
 
 func TestWrapASCIIUsesStableLineWidth(t *testing.T) {

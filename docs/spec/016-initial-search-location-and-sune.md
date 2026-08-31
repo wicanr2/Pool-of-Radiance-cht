@@ -8,8 +8,8 @@
 - DOS ZIP SHA-256：`1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633`。
 - ECL3/block0 SHA-256：`b0fe79c56c36d6cf9a7af1bc8e4825f0d195988bc3578072d7486855c4cf0631`。
 - 位址空間：payload base `9900h`；entry 0=`9914h`、entry 1=`99EBh`。
-- `entry 0=per-turn`、`entry 1=SearchLocation` 的 ABI：Pool block shape／dataflow加上
-  CoAB executable 跨作品證據，現為 `strong inference`；尚未升為 Pool executable exact。
+- `entry 0=移動前 lifecycle`、`entry 1=移動後 SearchLocation` 的 ABI 與呼叫順序：
+  Pool overlay-03 controller 的本作 executable 證據，`exact`；詳見 Spec 022。
 - Pool ECL bytes、GEO3/block0 terrain、VM 執行結果與正常按鍵路徑：`exact`。
 
 ## 可重生掃描
@@ -17,8 +17,9 @@
 `cmd/pool-initial-cell-sweep` 先跑完整 Rolf handler 到 `(0,4,3)`，再對每個
 `x=0..15`、`y=0..15`、`facing=0/2/4/6` 複製 VM。每個樣本依序：
 
-1. 同步 `C04B..C04F`，執行 entry 0；
-2. entry 0 正常 `EXIT` 才以同一副本執行 entry 1；
+1. 對同一個目標格同步 `C04B..C04F`，隔離執行 entry 0；
+2. entry 0 正常 `EXIT` 才以同一副本執行 entry 1；此為 cell corpus 掃描，不冒充
+   原版「舊格 entry 0 → 移動 → 新格 entry 1」的時間序列；
 3. 空 `PRINTCLEAR` 與 `PICTURE` 分列為 observed presentation，不計作玩家事件；
 4. 另以 `CanMoveDungeonWrapped` 從 `(0,4)` 做純幾何 BFS。
 
