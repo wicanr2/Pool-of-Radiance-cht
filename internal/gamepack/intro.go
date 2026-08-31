@@ -261,3 +261,17 @@ func RunInitialCellEntry(machine *eclvm.Machine, grid geometry.Grid, position Sp
 	}
 	return machine.RunUntilEvent(4096, nil, true)
 }
+
+// RunInitialSearchEntry starts command-set entry one after the per-turn entry
+// has completed. The five-entry role is supported by the Pool block shape and
+// cross-title executable evidence; Pool executable confirmation remains a
+// separate evidence task.
+func RunInitialSearchEntry(machine *eclvm.Machine) (eclvm.Result, error) {
+	if machine == nil {
+		return eclvm.Result{}, fmt.Errorf("initial ECL machine is nil")
+	}
+	if err := machine.SetPC(0x99EB - 0x9900); err != nil {
+		return eclvm.Result{}, err
+	}
+	return machine.RunUntilEvent(4096, nil, true)
+}

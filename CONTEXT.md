@@ -28,7 +28,7 @@
   handler table 高度重疊，證明重用方向成立；剩餘三個 graph failure 與每項作品副作用
   仍須各自閉合。engine 第一個新增切片是作品中立 operand numeric／address／text 求值，
   CoAB 現行程式未修改。
-- 共用 engine `f344e07963d6` 新增 fail-closed `eclvm` 核心：控制流、比較、算術、
+- 共用 engine `cf52edc` 已提供 fail-closed `eclvm` 核心：控制流、比較、算術、
   SAVE／GETTABLE、ON branch、文字與選單 continuation。Pool production seam
   `gamepack.NewInitialEventMachine` 已只白名單 Rolf 路徑實際走到的 `0C/0D/0E/2D/31/3A`；
   真實 `ECL3/block0 B06Eh` 測試逐次提供 Return 後可跑到 `AE85h EXIT`，七頁文字與
@@ -36,6 +36,14 @@
   存在時逐 VM boundary 消費：SAVE 更新位置、Return menu 等按鍵、DELAY 形成 34 frame、
   文字更新 dialogue、EXIT 才完成導覽；Docker／Xvfb 正常 Begin 測試跑到 `(0,4,3)`。
   手寫 `TourStep` 僅保留給無原始 script 的合成 UI fixture，不是正式遊戲路徑。
+  engine 後續已加入同一 VM 的 entry 切換與 `RunUntilEvent`：後者逐 instruction 在
+  第一個 observable event／menu／EXIT 邊界停下，避免先跨過 COMBAT 再事後標記。
+  Pool `3b17d57` 已將此契約接到初始 map cell lifecycle；未處理的事件會設為 pending
+  並停止移動。pending 只代表失敗即關閉，尚不代表該事件已可遊玩。
+  未提交或只用於稽核的 VM clone／全圖 sweep 不列為現行完成度，必須待 deterministic
+  報表、測試與正常玩家可達性分開驗收後再更新本節。
+  後續已補 deterministic opcode `08h RANDOM` 與可複製 RNG continuation；Pool 原始
+  `9A0Eh RANDOM 19 → 6E79h` 不再需要 passthrough。全 engine 測試已通過。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
 - `GEO1.DAX..GEO8.DAX` 合計 29 blocks；29／29 payload 均為 `0x402` bytes，
@@ -140,9 +148,23 @@ Xvfb 正常路徑已驗 `(0,4,facing3)` 左轉至 facing2，再前進到 `(1,4)`
 事件尚未執行，因此只能稱「基本 GEO walk」，不能稱完整自由移動。
 
 Spec 015 已把第一張地圖移動接到原始 cell lifecycle：同一 Rolf VM session 保留記憶體，
-每步同步 `C04B..C04F` 後切到 ECL3/block0 entry `9914h`。正式 `(0,4,3)` 左轉／前進至
+每次成功移動同步 `C04B..C04F` 後切到 ECL3/block0 entry `9914h`。正式 `(0,4,3)` 左轉／前進至
 `(1,4,2)` 的第一格執行 15 條指令並在 `997Dh EXIT` 返回，無事件副作用。尚未接的
 事件格不再被安靜略過：一旦結果包含文字、選單或 external event，前端設 pending 並
 停止移動。engine `RunUntilEvent` 現已逐 instruction 在第一個 observable event 暫停，
 不會先跑過 COMBAT 才事後標 pending。下一步是各 boundary 的 frontend continuation，
 而不是建立座標 hardcode 表。
+
+Spec 016 與 `docs/audit/pool-initial-cell-sweep.json` 已完成隔離的 16×16×四方向掃描：
+entry 0 的 1,024 樣本全在 `997Dh EXIT`；這推翻「entry 0 單獨完成 terrain dispatch」。
+以同一副本接 entry 1、seed 1 後為 840 `EXIT`、156 個真文字／external event、28 個
+fail-closed error；另有每格一致的空 `PRINTCLEAR`／`PICTURE 255`，已分列為表現事件，
+不灌進玩家事件數。幾何 BFS 可達 226／256 格；它不執行途中 ECL，不能冒充玩家可達性。
+
+正常按鍵路徑已從 Rolf 結束 `(0,4,3)` 前進至 `(1,4,2)`，再轉北前進至 `(1,3,0)`；
+同一 VM 的第二次 RANDOM 為 7，entry 1 依 terrain `87h` 顯示
+`YOU ARE WELCOMED BY PRIESTESS JOY OF SUNE.`。空 `PRINTCLEAR` 與 `PICTURE` 由前端
+消費後續跑，真文字會暫停移動並等待 Return。這是第一個正常玩家可達的 post-Rolf
+cell event；後續 `DO YOU SEEK HEALING?` 與原始 YES／NO menu 已可逐段繼續並用方向鍵
+選擇，menu 後的 healing／combat service 尚未完成。剩餘 28 個靜態錯誤集中於 opcode
+`0Ah` 與 `20h`，仍維持失敗即關閉。

@@ -66,13 +66,19 @@
   Spec 014 已先接 Rolf EXIT 後方向鍵轉向與 cardinal GEO forward：真實 `(0,4)` edge
   抽樣及 Xvfb `(0,4,3) → turn → (1,4,2)` 通過。仍須接每格 ECL dispatch、門選單／
   解鎖 mutation 與 DOS 同狀態按鍵對拍，才可把「基本 GEO walk」升為完整自由移動。
-  Spec 015 已再接同 session 的 ECL3/block0 entry `9914h`：第一個正式移動格 `(1,4,2)`
-  走 15 條後於 `997Dh EXIT`，無事件。其他事件格目前 fail-closed 成 pending；下一步
-  是 VM 逐 external boundary 暫停及 frontend 文字／選單／戰鬥 consumer。
-- [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；先抽
+  Spec 015 已再接同 session 的 ECL3/block0 entry 0 `9914h`；Spec 016 進一步依五入口
+  ABI 接 entry 1 `99EBh` SearchLocation。deterministic sweep 的 1,024 樣本已分出
+  840 EXIT／156 event／28 error，且不把空 PRINTCLEAR／PICTURE 灌成事件。正常按鍵已從
+  `(0,4)` 經 `(1,4)` 走到 `(1,3)`，顯示 Sune 女祭司原始文字與 healing 問句，並接上
+  原始 YES／NO menu 游標。下一步接 menu 後的 service／combat 分支，並解出目前
+  fail-closed 的 opcode `0Ah`／`20h`；Pool executable 的
+  entry 0→1 呼叫順序仍須另作 exact 確認。
+- [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED），下一步擴充跨 block session 與
-  其餘 opcode 副作用。Pool 先成為 consumer；CoAB source 不修改，只跑唯讀回歸測試。
+  deterministic RANDOM、VM Clone 與同-session entry 切換。下一步依玩家路徑處理 opcode
+  `0Ah`／`20h` 與 Sune service boundary。Pool 先成為 consumer；CoAB source 不修改，
+  只跑唯讀回歸測試。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

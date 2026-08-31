@@ -76,11 +76,24 @@ CoAB 收尾已完成下列分離，Pool 不得重做或繞過：
 4. engine 固定使用同層 `/home/anr2/cht/golden_box/golden-box-remake-engine`；
    本 repository 內不得建立 nested clone、gitlink 或 source 副本。
 
-現行 engine 起始 commit 為 `025eb46b28a2`。Pool 的第二作品證據已把 ECL code
+現行已驗證的 engine 基準為 `cf52edc`。Pool 的第二作品證據已把 ECL code
 address base 從 engine 移回 title adapter：本作 DOS raw payload 映射基準為
 `0x9900`，五個 command-set headers 後的第一條指令才是 `0x9914`；不得沿用
 CoAB 的 `0x8000`，也不得再把 `0x9914` 寫成 mapping base。正式相依鎖定該 commit 或更新後已
 推送的 module version；不得提交本機 `replace`。
+
+Pool 的 ECL 玩家路徑必須保留同一個 VM session：Rolf 導覽結束後不能另建一台
+只帶座標的新 VM；後續地圖 entry 必須沿用既有 memory、旗標與 continuation 狀態，
+同步 `C04B..C04F` 後再切換入口。引擎的 `RunUntilEvent` 只負責在第一個玩家可見
+事件、選單或 `EXIT` 邊界停下；它不替 game pack 解釋作品位址，也不得跨過戰鬥等
+事件後才回報。前端必須明確續跑或處理該 boundary，不能把 pending 當成完成。
+
+初始地圖每次成功前進目前依五入口 lifecycle ABI 執行 ECL3/block0 entry 0
+`9914h`（per-turn），正常 `EXIT` 後再執行 entry 1 `99EBh`（SearchLocation）。入口角色
+已有 Pool block shape／dataflow 與 CoAB executable 證據，Pool executable 呼叫順序仍是
+`strong inference`，不可寫成 Pool exact。掃描每格時可從已完成 Rolf 的基準狀態複製
+VM 以隔離樣本，但靜態 sweep 只證明「給定狀態下執行入口」；不能證明玩家從入口
+走得到該格，也不能取代正常按鍵路徑。
 
 ### CoAB 程式沿用與零干擾規則（2026-08-31 使用者決定）
 

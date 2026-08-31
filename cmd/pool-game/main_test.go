@@ -246,7 +246,14 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
-	initial := gamepack.GeometryMap{Key: event.Position.Map}
+	catalog, err := gamepack.ReadDOSGeometryCatalog(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	initial, ok := catalog.Map(event.Position.Map)
+	if !ok {
+		t.Fatal("initial GEO map is absent")
+	}
 	walls := graphics.PieceSet{}
 	application := &app{mode: modeMenu, state: poolsave.NewState(), initialMap: &initial, initialWalls: &walls, initialEvent: &event, spawn: gamepack.DOSInitialSpawn()}
 	application.state.Party = []poolsave.Character{{Name: "HERO"}}
@@ -274,6 +281,27 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	}
 	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 1 || application.spawn.Y != 4 || application.cellEventPending {
 		t.Fatalf("forward spawn=%+v err=%v", application.spawn, err)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 1 {
+		t.Fatalf("first north turn facing=%d err=%v", application.spawn.Facing, err)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 0 {
+		t.Fatalf("second north turn facing=%d err=%v", application.spawn.Facing, err)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	if application.spawn.X != 1 || application.spawn.Y != 3 || !application.cellEventPending || !strings.Contains(application.eventText, "PRIESTESS JOY OF SUNE") {
+		t.Fatalf("Sune event spawn=%+v pending=%v text=%q", application.spawn, application.cellEventPending, application.eventText)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || !strings.Contains(application.eventText, "DO YOU SEEK HEALING") {
+		t.Fatalf("Sune question pending=%v text=%q err=%v", application.cellEventPending, application.eventText, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || !reflect.DeepEqual(application.cellMenuOptions, []string{"YES", "NO"}) || application.cellMenuCursor != 0 {
+		t.Fatalf("Sune menu waiting=%v options=%v cursor=%d label=%q err=%v", application.cellWaitingMenu, application.cellMenuOptions, application.cellMenuCursor, application.eventLabel, err)
+	}
+	if err := press(application, ebiten.KeyArrowRight); err != nil || application.cellMenuCursor != 1 || !strings.Contains(application.eventLabel, "> NO") {
+		t.Fatalf("Sune NO selection cursor=%d label=%q err=%v", application.cellMenuCursor, application.eventLabel, err)
 	}
 }
 

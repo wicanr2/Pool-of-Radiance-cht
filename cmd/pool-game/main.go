@@ -92,6 +92,9 @@ type app struct {
 	eventText        string
 	eventLabel       string
 	cellEventPending bool
+	cellWaitingMenu  bool
+	cellMenuOptions  []string
+	cellMenuCursor   int
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -347,7 +350,29 @@ func (a *app) Update() error {
 		}
 		if a.introDone {
 			if a.cellEventPending {
-				a.statusLine = "A Pool cell event is pending implementation; movement is paused."
+				if a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
+					if a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp) {
+						a.cellMenuCursor = (a.cellMenuCursor + len(a.cellMenuOptions) - 1) % len(a.cellMenuOptions)
+						a.eventLabel = a.cellMenuLabel()
+						return nil
+					}
+					if a.justPressed(ebiten.KeyArrowRight) || a.justPressed(ebiten.KeyArrowDown) {
+						a.cellMenuCursor = (a.cellMenuCursor + 1) % len(a.cellMenuOptions)
+						a.eventLabel = a.cellMenuLabel()
+						return nil
+					}
+				}
+				if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+					var selection *uint16
+					if a.cellWaitingMenu {
+						value := uint16(a.cellMenuCursor)
+						selection = &value
+					}
+					a.cellEventPending, a.cellWaitingMenu = false, false
+					a.cellMenuOptions, a.cellMenuCursor = nil, 0
+					return a.continueInitialSearch(selection)
+				}
+				a.statusLine = "A Pool cell event is active; press ENTER to continue."
 				return nil
 			}
 			if a.justPressed(ebiten.KeyArrowLeft) {
@@ -398,13 +423,116 @@ func (a *app) moveInitialDungeonForward() error {
 			return fmt.Errorf("dispatch Pool initial cell: %w", err)
 		}
 		if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
-			a.cellEventPending = true
-			a.statusLine = "Entered a Pool cell event; movement paused until its frontend effect is implemented."
-			return nil
+			return a.pauseInitialCellResult(result)
 		}
+		return a.beginInitialSearch()
 	}
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
+}
+
+func (a *app) beginInitialSearch() error {
+	result, err := gamepack.RunInitialSearchEntry(a.eventMachine)
+	if err != nil {
+		return fmt.Errorf("start Pool SearchLocation: %w", err)
+	}
+	return a.consumeInitialSearch(result)
+}
+
+func (a *app) continueInitialSearch(selection *uint16) error {
+	var selections []uint16
+	if selection != nil {
+		selections = []uint16{*selection}
+	}
+	result, err := a.eventMachine.RunUntilEvent(4096, selections, true)
+	if err != nil {
+		return fmt.Errorf("continue Pool SearchLocation: %w", err)
+	}
+	return a.consumeInitialSearch(result)
+}
+
+func (a *app) consumeInitialSearch(result eclvm.Result) error {
+	for boundaries := 0; boundaries < 64; boundaries++ {
+		a.applyCellECLResult(result)
+		presentationOnly := len(result.Events) == 1 && ((result.Events[0].Opcode == 0x12 && result.Events[0].Text == "") || result.Events[0].Opcode == 0x0E)
+		if presentationOnly {
+			if result.Events[0].Opcode == 0x12 {
+				a.eventText = ""
+			}
+			next, err := a.eventMachine.RunUntilEvent(4096, nil, true)
+			if err != nil {
+				return fmt.Errorf("continue Pool SearchLocation presentation: %w", err)
+			}
+			result = next
+			continue
+		}
+		if result.Exited && !result.WaitingForMenu && len(result.Events) == 0 {
+			a.cellEventPending, a.cellWaitingMenu = false, false
+			a.cellMenuOptions, a.cellMenuCursor = nil, 0
+			a.eventText, a.eventLabel = "", ""
+			a.statusLine = "Moved using original GEO data; per-turn and SearchLocation returned normally."
+			return nil
+		}
+		return a.pauseInitialCellResult(result)
+	}
+	return fmt.Errorf("Pool SearchLocation exceeded presentation boundary limit")
+}
+
+func (a *app) pauseInitialCellResult(result eclvm.Result) error {
+	a.applyCellECLResult(result)
+	a.cellEventPending = true
+	a.cellWaitingMenu = result.WaitingForMenu
+	if result.WaitingForMenu && len(result.Menus) != 0 {
+		menu := result.Menus[len(result.Menus)-1]
+		a.cellMenuOptions = append(a.cellMenuOptions[:0], menu.Options...)
+		a.cellMenuCursor = 0
+		if menu.Prompt != "" {
+			a.eventText = menu.Prompt
+		}
+		a.eventLabel = a.cellMenuLabel()
+	}
+	if a.eventLabel == "" {
+		a.eventLabel = "RETURN"
+	}
+	if a.eventText != "" {
+		a.statusLine = "Original Pool cell text is waiting for RETURN."
+	} else {
+		a.statusLine = "A Pool external event boundary is pending implementation."
+	}
+	return nil
+}
+
+func (a *app) cellMenuLabel() string {
+	if len(a.cellMenuOptions) == 0 {
+		return "RETURN"
+	}
+	parts := make([]string, len(a.cellMenuOptions))
+	for index, option := range a.cellMenuOptions {
+		if index == a.cellMenuCursor {
+			parts[index] = "> " + option
+		} else {
+			parts[index] = "  " + option
+		}
+	}
+	return strings.Join(parts, "   ")
+}
+
+func (a *app) applyCellECLResult(result eclvm.Result) {
+	for _, write := range result.Writes {
+		switch write.Address {
+		case 0xC04B:
+			a.spawn.X = uint8(write.Value)
+		case 0xC04C:
+			a.spawn.Y = uint8(write.Value)
+		case 0xC04D:
+			a.spawn.Facing = uint8(write.Value)
+		}
+	}
+	for _, event := range result.Events {
+		if event.Text != "" {
+			a.eventText = event.Text
+		}
+	}
 }
 
 func (a *app) applyECLResult(result eclvm.Result) {
@@ -775,6 +903,9 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 			drawDialogue(screen, step.Messages[a.tourPage], a.initialEvent.ContinueLabel, foreground, accent)
 			dialogueVisible = true
 		}
+	} else if a.cellEventPending && a.eventText != "" {
+		drawDialogue(screen, a.eventText, a.eventLabel, foreground, accent)
+		dialogueVisible = true
 	}
 	if a.statusLine != "" && !dialogueVisible {
 		drawText(screen, a.statusLine, 42, 342, foreground)
