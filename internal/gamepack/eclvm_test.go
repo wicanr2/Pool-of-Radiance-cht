@@ -115,6 +115,30 @@ func TestRealBlock8GraveyardStrengthGateUsesInlineResolver(t *testing.T) {
 	}
 }
 
+func TestRealBlock8GraveyardTreasurePrecedesCombat(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	event, err := ReadDOSInitialEvent(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	fixture := event
+	fixture.HandlerAddress = 0xA780
+	fixture.ScriptBlock = nil
+	fixture.ScriptBlocks = map[uint16][]byte{0: event.ScriptBlocks[8]}
+	session, err := NewInitialEventSession(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result, err := session.Machine().RunUntilEvent(8, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := eclvm.TreasureRequest{ItemBlock: 0x33}
+	if len(result.TreasureRequests) != 1 || result.TreasureRequests[0] != want || len(result.Events) != 1 || result.Events[0].Opcode != 0x24 {
+		t.Fatalf("result=%+v, want graveyard TREASURE then COMBAT", result)
+	}
+}
+
 // This is the first second-title consumer of the shared VM core. It executes
 // the original bytes rather than replaying the typed TourStep projection.
 func TestSharedVMRunsRealRolfTourToExit(t *testing.T) {

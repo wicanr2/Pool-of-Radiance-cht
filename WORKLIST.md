@@ -90,8 +90,10 @@
   把它加一。機器清冊已固定 reward 7 槽、commission 16 路與五個 external call；
   Spec 029 已 READY 並驗收全新隊伍依序顯示三項預設委託後由 `AF7Ch EXIT` 回到移動。
   Spec 030／031 已接第一個 external query `PARTYSTRENGTH`：真實 handler、五欄公式、
-  三份一級 class oracle 與 block8 強度 18／19 正負門檻均通過。下一步是 graveyard YES
-  分支的 `TREASURE`／`COMBAT` typed service，以及逐槽 producer 條件／上限、其他
+  三份一級 class oracle 與 block8 強度 18／19 正負門檻均通過。Spec 032 已接作品中立
+  `TREASURE` 八欄請求，真實墓園 `A780h` 的全零／`33h` 會依序到 `A791h COMBAT`。
+  下一步是先解 Pool `ITEM3.DAX/33h` consumer，再接戰利品分配與墓園戰鬥；另有逐槽
+  producer 條件／上限、其他
   reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
   一級 immutable roster snapshot 換成有版本的 live derived-stat seam。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
@@ -106,7 +108,9 @@
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic
   RANDOM、VM Clone、同-session entry 切換、作品中立 `CLEARMONSTERS` 訊號，以及
-  opcode `0Ah`／`20h`／`35h` 都已有 Pool consumer 且 CoAB 回歸通過。下一步依玩家路徑
+  opcode `0Ah`／`20h`／`27h`／`35h` 都已有 Pool consumer；`27h` 目前只完成 raw
+  request，不冒充 ITEM payload 或戰利品 UI。engine `91801a5` 的 Pool 全套與 CoAB
+  核心相容回歸均已通過。下一步依玩家路徑
   閉合 City Hall reward／commission 迴圈與其後尚未接妥的服務規則。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
