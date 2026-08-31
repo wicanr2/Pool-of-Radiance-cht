@@ -28,6 +28,12 @@
   handler table 高度重疊，證明重用方向成立；剩餘三個 graph failure 與每項作品副作用
   仍須各自閉合。engine 第一個新增切片是作品中立 operand numeric／address／text 求值，
   CoAB 現行程式未修改。
+- 共用 engine `f344e07963d6` 新增 fail-closed `eclvm` 核心：控制流、比較、算術、
+  SAVE／GETTABLE、ON branch、文字與選單 continuation。Pool production seam
+  `gamepack.NewInitialEventMachine` 已只白名單 Rolf 路徑實際走到的 `0C/0D/0E/2D/31/3A`；
+  真實 `ECL3/block0 B06Eh` 測試逐次提供 Return 後可跑到 `AE85h EXIT`，七頁文字與
+  最後 `C04B/C04C/C04D = 0/4/3` 均吻合。這證明共用 VM 可執行該路徑，但前端仍待由
+  手寫 `tourStep` 播放改為逐 VM boundary 消費，不能先宣稱 production 已完全切換。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
 - `GEO1.DAX..GEO8.DAX` 合計 29 blocks；29／29 payload 均為 `0x402` bytes，

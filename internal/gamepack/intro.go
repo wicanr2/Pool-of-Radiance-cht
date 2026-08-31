@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 )
 
 // InitialEvent is the first player-visible ECL3/block 0 event reached by a
@@ -19,6 +20,7 @@ type InitialEvent struct {
 	Message        string
 	ContinueLabel  string
 	Tour           []TourStep
+	ScriptBlock    []byte
 }
 
 // TourStep is one original scripted position frame. Most steps only move the
@@ -216,5 +218,23 @@ func ReadDOSInitialEvent(zipPath string) (InitialEvent, error) {
 		Message:       ecl.DecodePackedText(message.Operands[0].Packed),
 		ContinueLabel: menu.OptionTexts[0],
 		Tour:          tour,
+		ScriptBlock:   append([]byte(nil), block...),
 	}, nil
+}
+
+// NewInitialEventMachine executes the original Pool bytecode through the
+// shared VM. Only the six external effects observed on the READY Rolf path
+// are acknowledged; their title-specific effects remain frontend work.
+func NewInitialEventMachine(event InitialEvent) (*eclvm.Machine, error) {
+	if len(event.ScriptBlock) == 0 {
+		return nil, fmt.Errorf("initial event has no ECL block")
+	}
+	return eclvm.NewWithPassthrough(event.ScriptBlock, 0x9900, int(event.HandlerAddress)-0x9900, map[byte]bool{
+		0x0C: true, // SETUP MONSTER
+		0x0D: true, // APPROACH
+		0x0E: true, // PICTURE
+		0x2D: true, // CALL
+		0x31: true, // SPRITE OFF
+		0x3A: true, // DELAY
+	})
 }
