@@ -106,6 +106,9 @@
   Spec 037 已另修正戰役持久化：schema 4 與 engine `142b245` 保存穩定玩家邊界的
   GEO position／完整不透明 ECL session，Load 直接回到 adventure；對話／服務／戰鬥
   中途續點仍待把前端 service state 一併版本化。
+  Spec 038 的全 ECL 引用清冊再證明墓園正常 gate 依賴 `4AC1h >= 4`；下一步必須逐一
+  閉合前四個 reward producer 的玩家路徑與 external services。`4A96h` 是接受後重入
+  閘門；`4AB1h` 與吸血鬼事件相連但語意尚未足夠，不可猜名。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
   `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
   `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑

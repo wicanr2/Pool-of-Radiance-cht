@@ -32,6 +32,11 @@
   `(x,y,facing)`、current block、PC／stack、numeric／string memory、compare、亂數續點與
   pending lifecycle entries。穩定玩家邊界的 F10／Load round-trip 已接妥；任意對話、
   神殿、戰利品或未完成戰鬥中途續點仍為 DRAFT，不能宣稱全情境存讀檔完成。
+- Spec 038 新增全 ECL memory-reference audit，固定墓園入口的三個欄位：`4AC1h >= 4`、
+  `4AB1h != FFh`、`4A96h != FFh`。`4A96h` 在接受後由 `A792h` 寫 `FFh`；`4AB1h`
+  的目前唯一直寫在 ECL4/block10 吸血鬼戰鬥結果分支寫 `FEh`，仍會通過墓園 gate，
+  不得先命名成完成旗標。正常墓園驗收真正前置是閉合足以推進 `4AC1h` 的 reward／
+  quest producer，而不是在測試直接注入 4。
 
 - Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
   與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、

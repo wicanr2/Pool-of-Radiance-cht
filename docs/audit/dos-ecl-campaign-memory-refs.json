@@ -1,0 +1,299 @@
+{
+  "schema": "pool-ecl-memory-audit-v1",
+  "zip": "Pool of Radiance (1988).zip",
+  "zip_sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633",
+  "targets": [
+    "0x4A96",
+    "0x4AB1",
+    "0x4AC1"
+  ],
+  "references": [
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 0,
+      "address": "0xAC55",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 0,
+      "address": "0xAC60",
+      "opcode": 5,
+      "name": "SUBTRACT",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9FAE",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9FAE",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9FF3",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0x9FF3",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA179",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA179",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA1BB",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA1BB",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA201",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA201",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA24C",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA24C",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA304",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA304",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA342",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA342",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA37F",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA37F",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA4D1",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA4D1",
+      "opcode": 4,
+      "name": "ADD",
+      "operand": 2,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA592",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AC1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA59D",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4AB1"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA5B7",
+      "opcode": 3,
+      "name": "COMPARE",
+      "operand": 0,
+      "operand_code": 1,
+      "target": "0x4A96"
+    },
+    {
+      "archive": "ECL3.DAX",
+      "block_id": 8,
+      "address": "0xA792",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4A96"
+    },
+    {
+      "archive": "ECL4.DAX",
+      "block_id": 10,
+      "address": "0xB177",
+      "opcode": 9,
+      "name": "SAVE",
+      "operand": 1,
+      "operand_code": 1,
+      "target": "0x4AB1"
+    }
+  ],
+  "failures": [
+    {
+      "archive": "ECL5.DAX",
+      "block_id": 7,
+      "error": "unknown opcode 0x6C at payload offset 476"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 17,
+      "error": "unknown opcode 0x9D at payload offset 1085"
+    },
+    {
+      "archive": "ECL7.DAX",
+      "block_id": 22,
+      "error": "unknown opcode 0xFF at payload offset 3397"
+    }
+  ]
+}
