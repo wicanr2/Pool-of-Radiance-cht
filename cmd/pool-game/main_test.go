@@ -422,16 +422,18 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 		t.Fatalf("City Hall pending=%v text=%q", application.cellEventPending, application.eventText)
 	}
 	cityHallText := application.eventText
-	cityHallReturns := 0
-	for ; cityHallReturns < 16 && application.eventText == cityHallText; cityHallReturns++ {
-		if err := press(application, ebiten.KeyEnter); err != nil {
-			t.Fatalf("continue City Hall page %d: %v", cityHallReturns, err)
-		}
+	if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || application.eventText != cityHallText {
+		t.Fatalf("City Hall continue menu waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
 	}
-	if application.eventText == cityHallText {
-		t.Fatalf("City Hall did not advance after Return: pending=%v text=%q", application.cellEventPending, application.eventText)
+	if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE" {
+		t.Fatalf("City Hall proclamation intro waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
 	}
-	t.Logf("City Hall advanced after %d Return boundary/boundaries: pending=%v text=%q", cityHallReturns, application.cellEventPending, application.eventText)
+	if err := press(application, ebiten.KeyEnter); err != nil || application.eventText != "PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX." {
+		t.Fatalf("City Hall proclamation list text=%q err=%v", application.eventText, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu {
+		t.Fatalf("City Hall return to movement pending=%v waiting=%v text=%q err=%v", application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
+	}
 }
 
 func TestWrapASCIIUsesStableLineWidth(t *testing.T) {

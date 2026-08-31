@@ -27,15 +27,17 @@ type operandRow struct {
 	Word      uint16 `json:"word,omitempty"`
 	WordSet   bool   `json:"word_set,omitempty"`
 	PackedHex string `json:"packed_hex,omitempty"`
+	Text      string `json:"text,omitempty"`
 }
 type instructionRow struct {
-	Offset      int          `json:"offset"`
-	Address     string       `json:"address"`
-	Opcode      uint8        `json:"opcode"`
-	Name        string       `json:"name"`
-	RecordEnd   int          `json:"record_end"`
-	Operands    []operandRow `json:"operands,omitempty"`
-	MenuOptions []string     `json:"menu_options,omitempty"`
+	Offset          int          `json:"offset"`
+	Address         string       `json:"address"`
+	Opcode          uint8        `json:"opcode"`
+	Name            string       `json:"name"`
+	RecordEnd       int          `json:"record_end"`
+	Operands        []operandRow `json:"operands,omitempty"`
+	MenuDestination string       `json:"menu_destination,omitempty"`
+	MenuOptions     []string     `json:"menu_options,omitempty"`
 }
 type report struct {
 	Schema          string           `json:"schema"`
@@ -164,10 +166,19 @@ func trace(zipPath string, archiveNumber, blockID, entryIndex int) (report, erro
 			if err != nil {
 				return report{}, err
 			}
+			destination, err := ecl.WordAddress(menu.Header[0])
+			if err != nil {
+				return report{}, fmt.Errorf("menu destination at 0x%04X: %w", codeBase+ins.Offset, err)
+			}
+			row.MenuDestination = fmt.Sprintf("0x%04X", destination)
 			row.MenuOptions = menu.OptionTexts
 		}
 		for _, op := range ins.Operands {
-			row.Operands = append(row.Operands, operandRow{Code: op.Code, Low: op.Low, Word: op.Word, WordSet: op.WordSet, PackedHex: hex.EncodeToString(op.Packed)})
+			operand := operandRow{Code: op.Code, Low: op.Low, Word: op.Word, WordSet: op.WordSet, PackedHex: hex.EncodeToString(op.Packed)}
+			if op.Code == 0x80 {
+				operand.Text, _ = ecl.TextValue(op, nil)
+			}
+			row.Operands = append(row.Operands, operand)
 		}
 		rows = append(rows, row)
 	}

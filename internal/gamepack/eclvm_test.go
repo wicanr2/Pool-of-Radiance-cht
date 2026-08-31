@@ -111,3 +111,59 @@ func TestSharedVMRunsRealRolfTourToExit(t *testing.T) {
 		t.Fatalf("first moved cell result: pc=%04X exited=%v waiting=%v steps=%d events=%v menus=%v", cellResult.PC+0x9900, cellResult.Exited, cellResult.WaitingForMenu, cellResult.Steps, cellResult.Events, cellResult.Menus)
 	}
 }
+
+func TestCityHallCommissionSelectsOriginalProclamation(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	event, err := ReadDOSInitialEvent(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	catalog, err := ReadDOSGeometryCatalog(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	initial, ok := catalog.Map(MapKey{Archive: 3, BlockID: 0})
+	if !ok {
+		t.Fatal("initial map absent")
+	}
+	want := []string{"CI.", "CXXVI AND CX.", "CXXXIV.", "CLIV.", "CXIV.", "CCIV.", "CXXIX.", "CCI.", "CXIV."}
+	for commission, numeral := range want {
+		session, err := NewInitialEventSession(event)
+		if err != nil {
+			t.Fatal(err)
+		}
+		session.Machine().Memory[0x4AC5] = 1
+		session.Machine().Memory[0x4AC1] = uint16(commission + 1)
+		entry, err := RunInitialSessionCellEntry(session, initial.Grid, Spawn{Map: initial.Key, X: 2, Y: 4, Facing: 2})
+		if err != nil || !entry.Exited || entry.WaitingForMenu || len(entry.Events) != 0 {
+			t.Fatalf("commission %d old-cell entry=%+v err=%v", commission+1, entry, err)
+		}
+		result, err := RunInitialSessionSearchEntry(session, initial.Grid, Spawn{Map: initial.Key, X: 3, Y: 4, Facing: 2})
+		if err != nil {
+			t.Fatalf("commission %d entry: %v", commission+1, err)
+		}
+		var pages []string
+		for boundary := 0; boundary < 12; boundary++ {
+			for _, event := range result.Events {
+				if event.Text != "" {
+					pages = append(pages, event.Text)
+				}
+			}
+			if result.Exited {
+				break
+			}
+			var choices []uint16
+			if result.WaitingForMenu {
+				choices = []uint16{0}
+			}
+			result, err = session.RunUntilEvent(4096, choices, true)
+			if err != nil {
+				t.Fatalf("commission %d boundary %d: %v", commission+1, boundary, err)
+			}
+		}
+		joined := strings.Join(pages, "\n")
+		if !result.Exited || !strings.Contains(joined, "PROCLAMATIONS ARE POSTED ON THE WALLS") || !strings.Contains(joined, "PROCLAMATION\n"+numeral) {
+			t.Fatalf("commission %d exited=%v pages=%q, want numeral %q", commission+1, result.Exited, pages, numeral)
+		}
+	}
+}

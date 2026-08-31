@@ -81,8 +81,12 @@
   NEWECL 已由 Pool dispatcher／handler 閉合並接入共用 engine；opcode `14h` 亦已
   CONFORMED；Spec 021 已閉合 `0Ah` 本輪所需的 active-character 三欄投影。下一步是
   Spec 022 已由 Pool overlay-03 精確閉合 entry 0（舊格）→ movement → entry 1（新格）
-  的順序並修正正常玩家接線；正常按鍵亦由 Sune 走到 City Hall，兩次 Return 後續到
-  proclamations 文字。下一步是 proclamations 後的 clerk／commission 分支與原版同狀態抽樣。
+  的順序並修正正常玩家接線；Spec 023 已把正常按鍵由 Sune 接到 City Hall，精確走過
+  外部文字、原版單項 Return menu、公告前言與公告編號後回到移動。`AF1Ch` 的 menu
+  destination 已訂正為 UI 暫存 `9801h`，不是 commission 狀態 `4AC1h`，不得建立假 alias。
+  Spec 024 又以非零 `4AC1h=1..9` 閉合原版 `ON GOSUB` 與九則 proclamation，逐值
+  執行真實 ECL 至 `EXIT`；這只完成已持有 commission 時的公告選擇。下一步是定位並
+  閉合 clerk 實際授予／更新 `4AC1h` 的玩家路徑，以及 `AD29h` Skullcrusher 離隊事件。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic

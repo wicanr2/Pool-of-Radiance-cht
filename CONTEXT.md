@@ -215,3 +215,17 @@ engine／Pool 全測試與 CoAB 唯讀 `internal/ecl`、`internal/game` 回歸�
 價格、HP／狀態與 Gold 垂直鏈已由 Spec 018 閉合；下一步是 City Hall proclamations
 之後的 clerk／commission 分支，以及神殿 View／Pool／Appraise，而不是繼續把
 overlay-25 誤當神殿 dispatcher。
+
+Spec 023 已關閉 City Hall 的預設公告分支。正常按鍵由 Sune 離開後走到 `(3,4)`，
+依序停在 `ABD2h` 外部文字、`AF1Ch` 單項 Return menu、`AC22h` 公告前言與
+`AC9Bh` 公告編號，最後由 `ACBEh EXIT` 回到移動。trace 新增可重生的
+`menu_destination`，證明 `AF1Ch` 寫入 `9801h`。IDA Pro 9.4 的 overlay-07
+classifier／完整 resolver 又證明 `9801h`（bank 2）與 `4AC1h`（bank 0）是不同
+storage；先前「兩者可能 alias」的工作假說已推翻，不得據此改共用引擎。預設
+`4AC1h=0` 略過 clerk／commission 是原版控制流；下一個切片才以非零狀態閉合該分支。
+
+Spec 024 已接續閉合 `4AC1h=1..9` 的公告分派：`AC60h` 先減一到 `4A18h`，
+`AC69h ON GOSUB` 選九個 literal 子程式，回來由 `AC8Ah/AC96h` 印出
+`PROCLAMATION` 與 `985Eh`。九筆真實 ECL session 均依舊格 entry 0 → 新格 entry 1
+走到 `EXIT`；第 5 與第 9 筆同為 `CXIV.` 是原始 bytes，不自行更正。這仍不證明
+clerk 在何時寫入 `4AC1h`；下一步追該 producer 與 `AD29h` Skullcrusher 離隊事件。
