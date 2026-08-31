@@ -1,6 +1,7 @@
 package temple
 
 import (
+	"reflect"
 	"testing"
 
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -21,7 +22,7 @@ func TestCureWoundsPaysCharacterFirstAndCapsHP(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if result.PaidFrom != "character" || result.Cost != 600 || result.Healed != 18 || state.Party[0].Gold != 0 || state.PooledGold != 900 || state.Party[0].CurrentHP != 20 || state.CharacterLibrary[0] != state.Party[0] {
+	if result.PaidFrom != "character" || result.Cost != 600 || result.Healed != 18 || state.Party[0].Gold != 0 || state.PooledGold != 900 || state.Party[0].CurrentHP != 20 || !reflect.DeepEqual(state.CharacterLibrary[0], state.Party[0]) {
 		t.Fatalf("result=%+v state=%+v", result, state)
 	}
 }

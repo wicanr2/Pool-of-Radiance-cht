@@ -13,6 +13,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
 
@@ -119,6 +120,108 @@ func TestSuneTempleFailedSaveRollsBackCure(t *testing.T) {
 	}
 	if application.state.PooledGold != 100 || application.state.Party[0].CurrentHP != 2 || application.state.CharacterLibrary[0].CurrentHP != 2 {
 		t.Fatalf("failed save did not roll back: %+v", application.state)
+	}
+}
+
+func treasureRecord(name string, weight uint16) gamepack.TreasureItemRecord {
+	var record gamepack.TreasureItemRecord
+	record.Name = name
+	record.Raw[0] = byte(len(name))
+	copy(record.Raw[1:], name)
+	record.Raw[0x37] = byte(weight)
+	record.Raw[0x38] = byte(weight >> 8)
+	return record
+}
+
+func TestTreasureTakePersistsBeforeRemovingPendingItem(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Abilities: [6]int{10, 10, 10, 10, 10, 10}, MaxHP: 8, CurrentHP: 8, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	record := treasureRecord("Two-Handed Sword +1", 250)
+	application := &app{
+		state:          poolsave.State{Schema: poolsave.Schema, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}},
+		treasureActive: true, treasureStage: treasureCharacter, treasureItems: []gamepack.TreasureItemRecord{record}, treasureSelected: 0,
+	}
+	var saved poolsave.State
+	application.saveState = func(state poolsave.State) error { saved = state; return nil }
+	if err := application.giveTreasureItem(0); err != nil {
+		t.Fatal(err)
+	}
+	if len(application.treasureItems) != 0 || len(application.state.Party[0].Inventory) != 1 || len(application.state.CharacterLibrary[0].Inventory) != 1 || len(saved.Party[0].Inventory) != 1 {
+		t.Fatalf("state=%+v saved=%+v pending=%v", application.state, saved, application.treasureItems)
+	}
+	if got := application.state.Party[0].Inventory[0]; got.Name != record.Name || !reflect.DeepEqual(got.Raw, record.Raw[:]) {
+		t.Fatalf("inventory item=%+v", got)
+	}
+}
+
+func TestGraveyardTreasureRequestEntersFiveItemService(t *testing.T) {
+	items := []gamepack.TreasureItemRecord{
+		treasureRecord("Scroll 1", 10), treasureRecord("Scroll 2", 10),
+		treasureRecord("Scroll 3", 10), treasureRecord("Scroll 4", 10),
+		treasureRecord("Two-Handed Sword +1 +3 vs. Undead", 250),
+	}
+	application := &app{spawn: gamepack.Spawn{Map: gamepack.MapKey{Archive: 3}}}
+	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
+		if archive != 3 || block != 0x33 {
+			t.Fatalf("load identity ITEM%d/%02X", archive, block)
+		}
+		return append([]gamepack.TreasureItemRecord(nil), items...), nil
+	}
+	if err := application.enterTreasure([]eclvm.TreasureRequest{{ItemBlock: 0x33}}); err != nil {
+		t.Fatal(err)
+	}
+	if !application.treasureActive || application.treasureStage != treasureMain || !application.cellEventPending || !application.cellWaitingMenu || len(application.treasureItems) != 5 || !reflect.DeepEqual(application.cellMenuOptions, []string{"View", "Take", "Exit"}) {
+		t.Fatalf("treasure service=%+v options=%v", application, application.cellMenuOptions)
+	}
+	application.cellMenuCursor = 2
+	if err := application.selectTreasureOption(); err != nil || application.treasureStage != treasureConfirmExit || !strings.Contains(application.eventText, "still treasure") {
+		t.Fatalf("leave confirmation stage=%d text=%q err=%v", application.treasureStage, application.eventText, err)
+	}
+}
+
+func TestRealGraveyardTreasureBytesEnterFiveItemService(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	event, err := gamepack.ReadDOSInitialEvent(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	fixture := event
+	fixture.HandlerAddress = 0xA780
+	fixture.ScriptBlock = nil
+	fixture.ScriptBlocks = map[uint16][]byte{0: event.ScriptBlocks[8]}
+	session, err := gamepack.NewInitialEventSession(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result, err := session.Machine().RunUntilEvent(8, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	application := &app{eventSession: session, eventMachine: session.Machine(), spawn: gamepack.Spawn{Map: gamepack.MapKey{Archive: 3}}}
+	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
+		return gamepack.ReadDOSTreasureItemBlock(zipPath, archive, block)
+	}
+	if err := application.consumeInitialSearch(result); err != nil {
+		t.Fatal(err)
+	}
+	if !application.treasureActive || len(application.treasureItems) != 5 || application.treasureItems[4].Name != "Two-Handed Sword +1 +3 vs. Undead" || len(result.Events) != 1 || result.Events[0].Opcode != 0x24 {
+		t.Fatalf("result=%+v active=%v items=%v", result, application.treasureActive, application.treasureItems)
+	}
+}
+
+func TestTreasureTakeOverloadAndSaveFailureKeepPendingItem(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Abilities: [6]int{3, 10, 10, 10, 10, 10}, MaxHP: 8, CurrentHP: 8, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	heavy := treasureRecord("Heavy", 1151)
+	application := &app{state: poolsave.State{Schema: poolsave.Schema, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}, treasureStage: treasureCharacter, treasureItems: []gamepack.TreasureItemRecord{heavy}}
+	called := false
+	application.saveState = func(poolsave.State) error { called = true; return nil }
+	if err := application.giveTreasureItem(0); err != nil || called || len(application.treasureItems) != 1 || len(application.state.Party[0].Inventory) != 0 || application.eventText != "OverLoaded" {
+		t.Fatalf("overload err=%v called=%v pending=%d state=%+v text=%q", err, called, len(application.treasureItems), application.state, application.eventText)
+	}
+	light := treasureRecord("Light", 1)
+	application.treasureItems = []gamepack.TreasureItemRecord{light}
+	application.saveState = func(poolsave.State) error { return errors.New("disk full") }
+	if err := application.giveTreasureItem(0); err == nil || len(application.treasureItems) != 1 || len(application.state.Party[0].Inventory) != 0 {
+		t.Fatalf("save rollback err=%v pending=%d state=%+v", err, len(application.treasureItems), application.state)
 	}
 }
 

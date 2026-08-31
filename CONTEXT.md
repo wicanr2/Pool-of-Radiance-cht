@@ -7,19 +7,25 @@
 - Spec 032 以 Pool overlay-03 dispatcher `346Eh/3474h` 與 handler `1A81h..1EA4h`
   固定 `27h TREASURE` 的八欄 numeric request。共用 engine `91801a5` 已提供 inline、
   fail-closed 的 typed request；Pool 真 block8 `A780h` 抽樣得到七欄全零、
-  `ItemBlock=33h`，再停於 `A791h COMBAT`。`ITEM3/33h` payload、附魔物品名稱、
-  戰利品 UI 與存檔仍未閉合，不得把 raw request 寫成玩家已取得物品。
+  `ItemBlock=33h`，再停於 `A791h COMBAT`。Spec 033～036 已把該 request 接到五筆
+  `ITEM3/33h` record、原版式 Take／Exit 服務、負重檢查與 schema 3 inventory；
+  raw request 本身仍只代表待領戰利品，必須成功 Take 並存檔後才算玩家取得。
 - Spec 012 已勘誤：overlay-07 **entry 27** 與 ECL **opcode `27h`** 只是編號碰巧相同，
   前者為座標 wrapper、後者為 TREASURE；舊的合併追查指示已刪除，後續分兩條證據鏈。
 - Spec 033 固定 `ITEM3.DAX` 雜湊與 block `33h` 的 315-byte payload；Pool handler 的
   `3Fh` 複製迴圈及真檔共同證明它是五筆 63-byte record。四筆名稱是
   `Clerical Scroll With 2 Spells`，第五筆是
   `Two-Handed Sword +1 +3 vs. Undead`。typed loader 已接妥；未證實欄位、卷軸法術、
-  裝備規則與 take UI 仍維持 DRAFT。
+  裝備規則仍維持 DRAFT；Take UI 已依 Spec 034～036 接妥。
 - Spec 034 由 Pool `overlay-05` 原始 bytes 固定戰後戰利品選單：`0E85h` 提供
   View／Take／Pool／Share，Take Items 走 `0CF0h → 0BCAh`；成功後才從 `DS:676Eh`
-  的 `+2Ah` next chain 移除並釋放 63-byte 節點。角色接收 helper 尚未閉合，故目前
-  不允許 UI 提前刪除或無條件塞入裝備。
+  的 `+2Ah` next chain 移除並釋放 63-byte 節點。Spec 035 已閉合角色接收 helper；
+  remake 同樣只在容量檢查與存檔成功後移除 pending loot。
+- Spec 035 已沿 TPOV runtime segment/control record 鏈定位 overlay-06 item receiver、
+  overlay-19 overload predicate 與 overlay-25 carry table。remake 現保存完整 63-byte
+  inventory record，依 16 格與力量負重判斷；存檔升為 schema 3，schema 2 確定性遷移，
+  Take 只有在持久化成功後才移除 pending loot。Spec 036 又證明墓園的 `24h COMBAT`
+  在該狀態呼叫 overlay-05 post-combat，因此 UI 結束後從 COMBAT 後方續跑而不重播 loot。
 
 - Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
   與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、

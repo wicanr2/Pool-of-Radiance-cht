@@ -93,10 +93,13 @@
   三份一級 class oracle 與 block8 強度 18／19 正負門檻均通過。Spec 032 已接作品中立
   `TREASURE` 八欄請求，真實墓園 `A780h` 的全零／`33h` 會依序到 `A791h COMBAT`。
   Spec 033 又閉合 `ITEM3.DAX/33h`：五筆 63-byte record 是四張兩法術牧師卷軸與一把
-  `Two-Handed Sword +1 +3 vs. Undead`，typed loader 保留原始 record 與順序。下一步是
+  `Two-Handed Sword +1 +3 vs. Undead`，typed loader 保留原始 record 與順序。
   Spec 034 已再閉合 overlay-05 的戰利品主選單、`Take → Items`、`+2Ah` 物品鏈移除與
-  `FreeMem(3Fh)`；角色接收 helper 仍待追。下一步先閉合接收成功／容量／重量，再接
-  exactly-once 戰利品分配與墓園戰鬥；另有逐槽
+  `FreeMem(3Fh)`；Spec 035 進一步閉合 overlay-06/19/25 的 `OverLoaded`、16 格、重量與
+  力量容量，schema 3 inventory 與原子 Take 已接妥。Spec 036 亦證明墓園的 `COMBAT`
+  在零 encounter／服務旗標時分派 overlay-05 post-combat，不是假戰鬥。真實 block8
+  `A780h → A791h` 位元組測試已進入五件物品服務；下一步是以正常 clerk/commission
+  狀態從地圖抵達此服務並驗收退出 continuation；另有逐槽
   producer 條件／上限、其他
   reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
   一級 immutable roster snapshot 換成有版本的 live derived-stat seam。

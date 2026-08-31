@@ -18,6 +18,7 @@ import (
 	"golang.org/x/image/font/basicfont"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
+	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -39,12 +40,21 @@ const (
 type screenMode uint8
 
 type templeStage uint8
+type treasureStage uint8
 
 const (
 	modeTitle screenMode = iota
 	modeMenu
 	modeCreation
 	modeAdventure
+)
+
+const (
+	treasureMain treasureStage = iota
+	treasureView
+	treasureItems
+	treasureCharacter
+	treasureConfirmExit
 )
 
 const (
@@ -112,6 +122,11 @@ type app struct {
 	templeStage      templeStage
 	templeParty      int
 	templeService    int
+	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
+	treasureActive   bool
+	treasureStage    treasureStage
+	treasureItems    []gamepack.TreasureItemRecord
+	treasureSelected int
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -155,6 +170,9 @@ func newApp(zipPath string) (*app, error) {
 	const statePath = "saves/pool-remake-state.json"
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
+	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
+		return gamepack.ReadDOSTreasureItemBlock(zipPath, archive, block)
+	}
 	application.loadPortrait = func(head, body uint8) (*ebiten.Image, error) {
 		parts, err := assets.ReadCreationPortraitParts(zipPath, head, body)
 		if err != nil {
@@ -378,6 +396,23 @@ func (a *app) Update() error {
 		}
 		if a.introDone {
 			if a.cellEventPending {
+				if a.treasureActive && a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
+					if a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp) {
+						a.cellMenuCursor = (a.cellMenuCursor + len(a.cellMenuOptions) - 1) % len(a.cellMenuOptions)
+						a.eventLabel = a.cellMenuLabel()
+						return nil
+					}
+					if a.justPressed(ebiten.KeyArrowRight) || a.justPressed(ebiten.KeyArrowDown) {
+						a.cellMenuCursor = (a.cellMenuCursor + 1) % len(a.cellMenuOptions)
+						a.eventLabel = a.cellMenuLabel()
+						return nil
+					}
+					if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+						return a.selectTreasureOption()
+					}
+					a.statusLine = "A Pool treasure menu is active; choose an option."
+					return nil
+				}
 				if a.templeActive && a.templeStage != templeConfirm {
 					for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
 						if index < len(a.state.Party) && a.justPressed(key) {
@@ -545,6 +580,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			return err
 		}
 		a.applyCellECLResult(result)
+		if len(result.TreasureRequests) != 0 {
+			return a.enterTreasure(result.TreasureRequests)
+		}
 		presentationOnly := len(result.Events) == 1 && ((result.Events[0].Opcode == 0x12 && result.Events[0].Text == "") || result.Events[0].Opcode == 0x0E)
 		if presentationOnly {
 			if result.Events[0].Opcode == 0x12 {
@@ -583,6 +621,205 @@ func (a *app) isSuneTempleBoundary(result eclvm.Result) bool {
 		}
 	}
 	return false
+}
+
+func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
+	if a.loadTreasure == nil {
+		return fmt.Errorf("Pool treasure loader is not configured")
+	}
+	loaded := make([]gamepack.TreasureItemRecord, 0)
+	for _, request := range requests {
+		if request.Amounts != ([7]uint16{}) {
+			return fmt.Errorf("Pool money treasure %v is not READY", request.Amounts)
+		}
+		if request.ItemBlock > 0xFF {
+			return fmt.Errorf("Pool treasure item block 0x%X exceeds byte range", request.ItemBlock)
+		}
+		items, err := a.loadTreasure(a.spawn.Map.Archive, uint8(request.ItemBlock))
+		if err != nil {
+			return err
+		}
+		loaded = append(loaded, items...)
+	}
+	a.treasureActive, a.treasureStage = true, treasureMain
+	a.treasureItems, a.treasureSelected = loaded, 0
+	a.cellEventPending, a.cellWaitingMenu = true, true
+	a.cellMenuOptions, a.cellMenuCursor = []string{"View", "Take", "Exit"}, 0
+	a.eventText = "The party has found treasure!"
+	a.eventLabel = a.cellMenuLabel()
+	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s).", len(loaded))
+	return nil
+}
+
+func (a *app) enterTreasureMain() {
+	a.treasureStage = treasureMain
+	a.cellMenuOptions, a.cellMenuCursor = []string{"View", "Take", "Exit"}, 0
+	a.eventText = "The party has found treasure!"
+	a.eventLabel = a.cellMenuLabel()
+}
+
+func (a *app) selectTreasureOption() error {
+	switch a.treasureStage {
+	case treasureMain:
+		switch a.cellMenuCursor {
+		case 0:
+			a.treasureStage = treasureView
+			names := make([]string, len(a.treasureItems))
+			for index := range a.treasureItems {
+				names[index] = a.treasureItems[index].Name
+			}
+			a.eventText = strings.Join(names, " / ")
+			a.cellMenuOptions, a.cellMenuCursor = []string{"Return"}, 0
+			a.eventLabel = a.cellMenuLabel()
+			return nil
+		case 1:
+			if len(a.treasureItems) == 0 {
+				a.eventText = "There are no items left."
+				return nil
+			}
+			a.treasureStage = treasureItems
+			a.cellMenuOptions = make([]string, 0, len(a.treasureItems)+1)
+			for _, item := range a.treasureItems {
+				a.cellMenuOptions = append(a.cellMenuOptions, item.Name)
+			}
+			a.cellMenuOptions = append(a.cellMenuOptions, "Exit")
+			a.cellMenuCursor = 0
+			a.eventText = "Take: Items"
+			a.eventLabel = a.cellMenuLabel()
+			return nil
+		case 2:
+			if len(a.treasureItems) == 0 {
+				return a.exitTreasure()
+			}
+			a.treasureStage = treasureConfirmExit
+			a.cellMenuOptions, a.cellMenuCursor = []string{"Yes", "No"}, 0
+			a.eventText = "There is still treasure left. Do you want to leave it?"
+			a.eventLabel = a.cellMenuLabel()
+			return nil
+		}
+	case treasureView:
+		a.enterTreasureMain()
+		return nil
+	case treasureItems:
+		if a.cellMenuCursor == len(a.treasureItems) {
+			a.enterTreasureMain()
+			return nil
+		}
+		a.treasureSelected = a.cellMenuCursor
+		a.treasureStage = treasureCharacter
+		a.cellMenuOptions = make([]string, 0, len(a.state.Party)+1)
+		for _, member := range a.state.Party {
+			a.cellMenuOptions = append(a.cellMenuOptions, member.Name)
+		}
+		a.cellMenuOptions = append(a.cellMenuOptions, "Cancel")
+		a.cellMenuCursor = 0
+		a.eventText = "Who will take " + a.treasureItems[a.treasureSelected].Name + "?"
+		a.eventLabel = a.cellMenuLabel()
+		return nil
+	case treasureCharacter:
+		if a.cellMenuCursor == len(a.state.Party) {
+			a.treasureStage = treasureItems
+			return a.rebuildTreasureItemMenu()
+		}
+		return a.giveTreasureItem(a.cellMenuCursor)
+	case treasureConfirmExit:
+		if a.cellMenuCursor == 0 {
+			return a.exitTreasure()
+		}
+		a.enterTreasureMain()
+		return nil
+	}
+	return fmt.Errorf("unknown Pool treasure stage %d", a.treasureStage)
+}
+
+func (a *app) rebuildTreasureItemMenu() error {
+	if len(a.treasureItems) == 0 {
+		a.enterTreasureMain()
+		return nil
+	}
+	a.cellMenuOptions = a.cellMenuOptions[:0]
+	for _, item := range a.treasureItems {
+		a.cellMenuOptions = append(a.cellMenuOptions, item.Name)
+	}
+	a.cellMenuOptions = append(a.cellMenuOptions, "Exit")
+	a.cellMenuCursor = 0
+	a.eventText = "Take: Items"
+	a.eventLabel = a.cellMenuLabel()
+	return nil
+}
+
+func (a *app) giveTreasureItem(partyIndex int) error {
+	if partyIndex < 0 || partyIndex >= len(a.state.Party) || a.treasureSelected < 0 || a.treasureSelected >= len(a.treasureItems) {
+		return fmt.Errorf("Pool treasure selection is outside party/item range")
+	}
+	member := a.state.Party[partyIndex]
+	rawInventory := make([][]byte, len(member.Inventory))
+	for index := range member.Inventory {
+		rawInventory[index] = member.Inventory[index].Raw
+	}
+	record := a.treasureItems[a.treasureSelected]
+	ok, err := poolcharacter.CanReceiveItem(member.Abilities[0], member.ExceptionalStrength, rawInventory, record.Raw[:])
+	if err != nil {
+		return err
+	}
+	if !ok {
+		a.eventText = "OverLoaded"
+		a.statusLine = member.Name + " cannot carry that item."
+		return nil
+	}
+	next := cloneSaveState(a.state)
+	item := poolsave.Item{Name: record.Name, Raw: append([]byte(nil), record.Raw[:]...)}
+	next.Party[partyIndex].Inventory = append(next.Party[partyIndex].Inventory, item)
+	found := false
+	for index := range next.CharacterLibrary {
+		if next.CharacterLibrary[index].Name == member.Name {
+			next.CharacterLibrary[index].Inventory = append(next.CharacterLibrary[index].Inventory, item)
+			found = true
+			break
+		}
+	}
+	if !found {
+		return fmt.Errorf("Pool party member %q is absent from character library", member.Name)
+	}
+	if a.saveState == nil {
+		return fmt.Errorf("Pool save writer is not configured")
+	}
+	if err := a.saveState(next); err != nil {
+		return fmt.Errorf("save Pool treasure transfer: %w", err)
+	}
+	a.state = next
+	a.treasureItems = append(a.treasureItems[:a.treasureSelected], a.treasureItems[a.treasureSelected+1:]...)
+	a.treasureStage = treasureItems
+	a.statusLine = member.Name + " takes " + record.Name + "."
+	return a.rebuildTreasureItemMenu()
+}
+
+func cloneSaveState(state poolsave.State) poolsave.State {
+	cloneCharacters := func(values []poolsave.Character) []poolsave.Character {
+		out := append([]poolsave.Character(nil), values...)
+		for index := range out {
+			out[index].Inventory = append([]poolsave.Item(nil), values[index].Inventory...)
+			for item := range out[index].Inventory {
+				out[index].Inventory[item].Raw = append([]byte(nil), values[index].Inventory[item].Raw...)
+			}
+		}
+		return out
+	}
+	state.CharacterLibrary = cloneCharacters(state.CharacterLibrary)
+	state.Party = cloneCharacters(state.Party)
+	return state
+}
+
+func (a *app) exitTreasure() error {
+	a.treasureActive, a.treasureStage = false, treasureMain
+	a.treasureItems, a.cellMenuOptions = nil, nil
+	a.cellEventPending, a.cellWaitingMenu = false, false
+	a.eventText, a.eventLabel = "", ""
+	result, err := a.eventSession.RunUntilEvent(4096, nil, true)
+	if err != nil {
+		return fmt.Errorf("continue after Pool treasure service: %w", err)
+	}
+	return a.consumeInitialSearch(result)
 }
 
 func (a *app) enterSuneTemple() error {

@@ -10,9 +10,15 @@ import (
 )
 
 const (
-	Schema       = "pool-remake-state/2"
-	LegacySchema = "pool-remake-state/1"
+	Schema         = "pool-remake-state/3"
+	PreviousSchema = "pool-remake-state/2"
+	LegacySchema   = "pool-remake-state/1"
 )
+
+type Item struct {
+	Name string `json:"name"`
+	Raw  []byte `json:"raw"`
+}
 
 type Character struct {
 	Name                string      `json:"name"`
@@ -34,6 +40,7 @@ type Character struct {
 	IconWeapon          uint8       `json:"icon_weapon"`
 	IconSize            uint8       `json:"icon_size"`
 	IconColors          [6][2]uint8 `json:"icon_colors"`
+	Inventory           []Item      `json:"inventory,omitempty"`
 }
 
 type State struct {
@@ -88,6 +95,28 @@ func validateCharacter(character Character) error {
 	}
 	if character.MaxHP < 1 || character.CurrentHP < 0 || character.CurrentHP > character.MaxHP {
 		return fmt.Errorf("Pool character %q has invalid HP %d/%d", character.Name, character.CurrentHP, character.MaxHP)
+	}
+	if len(character.Inventory) > 16 {
+		return fmt.Errorf("Pool character %q has %d items, maximum is 16", character.Name, len(character.Inventory))
+	}
+	for index, item := range character.Inventory {
+		if err := validateItem(item); err != nil {
+			return fmt.Errorf("Pool character %q item %d: %w", character.Name, index, err)
+		}
+	}
+	return nil
+}
+
+func validateItem(item Item) error {
+	if len(item.Raw) != 63 {
+		return fmt.Errorf("raw record has %d bytes, want 63", len(item.Raw))
+	}
+	nameLength := int(item.Raw[0])
+	if nameLength < 1 || nameLength > 40 || 1+nameLength > len(item.Raw) {
+		return fmt.Errorf("raw name length %d is invalid", nameLength)
+	}
+	if item.Name != string(item.Raw[1:1+nameLength]) {
+		return fmt.Errorf("display name does not match raw Pascal string")
 	}
 	return nil
 }
@@ -149,6 +178,9 @@ func Read(path string) (State, error) {
 	if header.Schema == LegacySchema {
 		return readLegacyState(raw)
 	}
+	if header.Schema == PreviousSchema {
+		return readPreviousState(raw)
+	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
 	var state State
@@ -159,6 +191,24 @@ func Read(path string) (State, error) {
 	if err := decoder.Decode(&trailing); err != io.EOF {
 		return State{}, fmt.Errorf("Pool save has trailing JSON")
 	}
+	if err := state.Validate(); err != nil {
+		return State{}, err
+	}
+	return state, nil
+}
+
+func readPreviousState(raw []byte) (State, error) {
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	var state State
+	if err := decoder.Decode(&state); err != nil {
+		return State{}, fmt.Errorf("decode schema 2 Pool save: %w", err)
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		return State{}, fmt.Errorf("schema 2 Pool save has trailing JSON")
+	}
+	state.Schema = Schema
 	if err := state.Validate(); err != nil {
 		return State{}, err
 	}
