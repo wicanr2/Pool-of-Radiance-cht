@@ -11,6 +11,11 @@
   戰利品 UI 與存檔仍未閉合，不得把 raw request 寫成玩家已取得物品。
 - Spec 012 已勘誤：overlay-07 **entry 27** 與 ECL **opcode `27h`** 只是編號碰巧相同，
   前者為座標 wrapper、後者為 TREASURE；舊的合併追查指示已刪除，後續分兩條證據鏈。
+- Spec 033 固定 `ITEM3.DAX` 雜湊與 block `33h` 的 315-byte payload；Pool handler 的
+  `3Fh` 複製迴圈及真檔共同證明它是五筆 63-byte record。四筆名稱是
+  `Clerical Scroll With 2 Spells`，第五筆是
+  `Two-Handed Sword +1 +3 vs. Undead`。typed loader 已接妥；未證實欄位、卷軸法術、
+  裝備規則與 take UI 仍維持 DRAFT。
 
 - Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
   與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、

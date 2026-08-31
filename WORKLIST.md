@@ -92,7 +92,9 @@
   Spec 030／031 已接第一個 external query `PARTYSTRENGTH`：真實 handler、五欄公式、
   三份一級 class oracle 與 block8 強度 18／19 正負門檻均通過。Spec 032 已接作品中立
   `TREASURE` 八欄請求，真實墓園 `A780h` 的全零／`33h` 會依序到 `A791h COMBAT`。
-  下一步是先解 Pool `ITEM3.DAX/33h` consumer，再接戰利品分配與墓園戰鬥；另有逐槽
+  Spec 033 又閉合 `ITEM3.DAX/33h`：五筆 63-byte record 是四張兩法術牧師卷軸與一把
+  `Two-Handed Sword +1 +3 vs. Undead`，typed loader 保留原始 record 與順序。下一步是
+  先解 item take/display consumer，再接戰利品分配與墓園戰鬥；另有逐槽
   producer 條件／上限、其他
   reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
   一級 immutable roster snapshot 換成有版本的 live derived-stat seam。
