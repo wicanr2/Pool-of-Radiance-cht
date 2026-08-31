@@ -28,7 +28,7 @@
   handler table 高度重疊，證明重用方向成立；剩餘三個 graph failure 與每項作品副作用
   仍須各自閉合。engine 第一個新增切片是作品中立 operand numeric／address／text 求值，
   CoAB 現行程式未修改。
-- 共用 engine `cf52edc` 已提供 fail-closed `eclvm` 核心：控制流、比較、算術、
+- 共用 engine `0819c64` 已提供 fail-closed `eclvm` 核心：控制流、比較、算術、
   SAVE／GETTABLE、ON branch、文字與選單 continuation。Pool production seam
   `gamepack.NewInitialEventMachine` 已只白名單 Rolf 路徑實際走到的 `0C/0D/0E/2D/31/3A`；
   真實 `ECL3/block0 B06Eh` 測試逐次提供 Return 後可跑到 `AE85h EXIT`，七頁文字與
@@ -165,6 +165,30 @@ fail-closed error；另有每格一致的空 `PRINTCLEAR`／`PICTURE 255`，已�
 同一 VM 的第二次 RANDOM 為 7，entry 1 依 terrain `87h` 顯示
 `YOU ARE WELCOMED BY PRIESTESS JOY OF SUNE.`。空 `PRINTCLEAR` 與 `PICTURE` 由前端
 消費後續跑，真文字會暫停移動並等待 Return。這是第一個正常玩家可達的 post-Rolf
-cell event；後續 `DO YOU SEEK HEALING?` 與原始 YES／NO menu 已可逐段繼續並用方向鍵
-選擇，menu 後的 healing／combat service 尚未完成。剩餘 28 個靜態錯誤集中於 opcode
-`0Ah` 與 `20h`，仍維持失敗即關閉。
+cell event；後續 `DO YOU SEEK HEALING?`、原始 YES／NO menu 與 Sune 神殿服務入口
+已可逐段繼續。YES 會進入原版 `Heal／View／Pool／Appraise／Exit` 五項選單；Exit 從
+同一 VM 的 `AA6Bh` 續跑，寫入 `6DE1h=FFh`、消費 `PICTURE 255` 後 `EXIT`。Heal 等四項
+服務的價格、HP／狀態與金錢副作用尚未 READY，現階段保持失敗即關閉。剩餘 28 個
+靜態錯誤集中於 opcode `0Ah` 與 `20h`，仍維持失敗即關閉。
+
+Sune 選單後的同一 VM 分支已由 Spec 017 閉合到服務入口：YES（選單索引 0）先令
+`6E79h=0`、進入 `AA63h`，執行 opcode `1Ch CLEARMONSTERS`、
+`SAVE 1 → 6DE2h`，再抵達 opcode `24h COMBAT`。共用 engine 現以作品中立的
+`MonstersCleared` 訊號聚合到 external boundary；Pool 只有在該訊號與 `6DE2h=1`
+同時成立時才進 Sune 神殿，其他 COMBAT 不會誤路由。NO（索引 1）則顯示
+`THEN YOU MUST LEAVE.`，保存 `49F0h → C04Bh`、`49F1h → C04Ch`、
+`FFh → 6DE1h`，呼叫 `2C90h` 後 `EXIT`。
+
+已推翻的斷言：`CALL 2C90h` **不是神殿 healing 本體**。它在 Rolf 34-step 導覽的
+每一步及 Sune NO 分支都出現，現階段只能列為 redraw／movement service 候選；未追完
+overlay dispatcher 前不得命名，也不得把所有 `CALL` 自動續跑。opcode `24h COMBAT`
+對應 overlay-03 entry 50（`2E90h`），其 far call `010A:00F2` 已由 MZ header
+`0x3B0` 與 TPOV manifest 精確反查至 overlay-25 entry 42（`2C81h`）。後續證據訂正：
+entry 42 是通用選擇／鏈結處理，不是 temple dispatcher。38 份 overlay 的 raw far-call
+全掃只有 overlay-03 `18B9h` 的 `9A 25 00 35 00` 指向 overlay-04 entry 1；該 callsite
+位於 opcode `15h VERTICAL MENU` handler，先檢查並清除 runtime state `+5C4h`。
+ECL `6DE2h` 對 `+5C4h` 的映射仍是 `strong inference`，不可單獨冒稱 exact；但
+ECL pattern、唯一 temple call 與原始 Pascal 選單字串已足以完成 Spec 017 的服務入口。
+engine／Pool 全測試與 CoAB 唯讀 `internal/ecl`、`internal/game` 回歸均通過。下一步是
+逐項閉合 overlay-04 的 Heal／View／Pool／Appraise 規則，優先完成玩家可見的 Heal
+價格、HP／狀態與 Gold 垂直鏈；不是繼續把 overlay-25 誤當神殿 dispatcher。

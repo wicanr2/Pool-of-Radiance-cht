@@ -95,6 +95,7 @@ type app struct {
 	cellWaitingMenu  bool
 	cellMenuOptions  []string
 	cellMenuCursor   int
+	templeActive     bool
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -244,6 +245,7 @@ func (a *app) Update() error {
 			a.introWaiting, a.introDone = true, false
 			a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
 			a.eventMachine, a.eventText, a.eventLabel = nil, "", ""
+			a.templeActive = false
 			if len(a.initialEvent.ScriptBlock) != 0 {
 				machine, err := gamepack.NewInitialEventMachine(*a.initialEvent)
 				if err != nil {
@@ -363,6 +365,13 @@ func (a *app) Update() error {
 					}
 				}
 				if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+					if a.templeActive {
+						if a.cellMenuCursor != len(a.cellMenuOptions)-1 {
+							a.statusLine = "This temple service remains fail-closed until its DOS rules are READY."
+							return nil
+						}
+						return a.leaveSuneTemple()
+					}
 					var selection *uint16
 					if a.cellWaitingMenu {
 						value := uint16(a.cellMenuCursor)
@@ -468,18 +477,57 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if result.Exited && !result.WaitingForMenu && len(result.Events) == 0 {
 			a.cellEventPending, a.cellWaitingMenu = false, false
+			a.templeActive = false
 			a.cellMenuOptions, a.cellMenuCursor = nil, 0
 			a.eventText, a.eventLabel = "", ""
 			a.statusLine = "Moved using original GEO data; per-turn and SearchLocation returned normally."
 			return nil
+		}
+		if a.isSuneTempleBoundary(result) {
+			return a.enterSuneTemple()
 		}
 		return a.pauseInitialCellResult(result)
 	}
 	return fmt.Errorf("Pool SearchLocation exceeded presentation boundary limit")
 }
 
+func (a *app) isSuneTempleBoundary(result eclvm.Result) bool {
+	if !result.MonstersCleared || a.eventMachine == nil || a.eventMachine.Memory[0x6DE2] != 1 {
+		return false
+	}
+	for _, event := range result.Events {
+		if event.Opcode == 0x24 {
+			return true
+		}
+	}
+	return false
+}
+
+func (a *app) enterSuneTemple() error {
+	if len(a.state.Party) == 0 || strings.TrimSpace(a.state.Party[0].Name) == "" {
+		return fmt.Errorf("Sune temple requires a named first party member")
+	}
+	a.templeActive = true
+	a.cellEventPending, a.cellWaitingMenu = true, true
+	a.cellMenuOptions = []string{"Heal", "View", "Pool", "Appraise", "Exit"}
+	a.cellMenuCursor = 0
+	a.eventText = strings.TrimSpace(a.state.Party[0].Name) + ", how can we help you?"
+	a.eventLabel = a.cellMenuLabel()
+	a.statusLine = "Original Sune temple service menu is active."
+	return nil
+}
+
+func (a *app) leaveSuneTemple() error {
+	a.templeActive = false
+	a.cellEventPending, a.cellWaitingMenu = false, false
+	a.cellMenuOptions, a.cellMenuCursor = nil, 0
+	a.eventText, a.eventLabel = "", ""
+	return a.continueInitialSearch(nil)
+}
+
 func (a *app) pauseInitialCellResult(result eclvm.Result) error {
 	a.applyCellECLResult(result)
+	a.templeActive = false
 	a.cellEventPending = true
 	a.cellWaitingMenu = result.WaitingForMenu
 	if result.WaitingForMenu && len(result.Menus) != 0 {

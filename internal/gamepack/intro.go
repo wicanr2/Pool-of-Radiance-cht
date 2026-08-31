@@ -234,6 +234,7 @@ func NewInitialEventMachine(event InitialEvent) (*eclvm.Machine, error) {
 		0x0C: true, // SETUP MONSTER
 		0x0D: true, // APPROACH
 		0x0E: true, // PICTURE
+		0x24: true, // COMBAT / title service boundary
 		0x2D: true, // CALL
 		0x31: true, // SPRITE OFF
 		0x3A: true, // DELAY

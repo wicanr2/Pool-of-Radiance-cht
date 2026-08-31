@@ -76,7 +76,7 @@ CoAB 收尾已完成下列分離，Pool 不得重做或繞過：
 4. engine 固定使用同層 `/home/anr2/cht/golden_box/golden-box-remake-engine`；
    本 repository 內不得建立 nested clone、gitlink 或 source 副本。
 
-現行已驗證的 engine 基準為 `cf52edc`。Pool 的第二作品證據已把 ECL code
+現行已驗證的 engine 基準為 `0819c64`。Pool 的第二作品證據已把 ECL code
 address base 從 engine 移回 title adapter：本作 DOS raw payload 映射基準為
 `0x9900`，五個 command-set headers 後的第一條指令才是 `0x9914`；不得沿用
 CoAB 的 `0x8000`，也不得再把 `0x9914` 寫成 mapping base。正式相依鎖定該 commit 或更新後已
@@ -125,6 +125,13 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
 - IDA 資料庫、交叉參照與資料流為主，攤平 `.asm` 只作搜尋線索。
   far pointer、段前綴、間接讀寫、overlay entry 與 compiler helper 必須單獨追蹤，
   不得因 direct xref 為零就宣稱沒有 consumer。
+- 追 Borland TPOV far call 時保留原始 `segment:offset`，先用 MZ header size 換算
+  executable file offset，再與 `docs/audit/dos-ovr-manifest.json` 的
+  `executable_file_offset` 精確反查 overlay／entry；每次匯出同時記錄輸入 overlay
+  SHA-256、IDA 版本、位址空間與原始 bytes。IDA 自動命名與人工猜測不可取代這條鏈。
+- ECL external `CALL` 的位址只能先視為服務邊界。即使它出現在神殿、商店或戰鬥
+  流程附近，也必須比較同一呼叫在其他分支／步驟的出現方式，並追到 overlay
+  dispatcher 後才能命名；不能把「在某流程看見」直接升格成該服務本體。
 - 先辨識 compiler、linker、overlay、runtime、圖形／音訊 driver 與檔案工具，
   再用未知函式數量評估玩法缺口。stack check、RTL、記憶體與檔案 helper
   必須有具體分類理由，不可當成未實作玩法。

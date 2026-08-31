@@ -70,15 +70,17 @@
   ABI 接 entry 1 `99EBh` SearchLocation。deterministic sweep 的 1,024 樣本已分出
   840 EXIT／156 event／28 error，且不把空 PRINTCLEAR／PICTURE 灌成事件。正常按鍵已從
   `(0,4)` 經 `(1,4)` 走到 `(1,3)`，顯示 Sune 女祭司原始文字與 healing 問句，並接上
-  原始 YES／NO menu 游標。下一步接 menu 後的 service／combat 分支，並解出目前
-  fail-closed 的 opcode `0Ah`／`20h`；Pool executable 的
+  原始 YES／NO menu 游標。Spec 017 已接 `CLEARMONSTERS → SAVE 6DE2h → COMBAT`
+  服務邊界、原版 `Heal／View／Pool／Appraise／Exit` 神殿選單與 Exit 後同 VM 續行；
+  Heal 等四項的價格、HP／狀態與 Gold 副作用仍須依 overlay-04 分別 READY。其後再解出
+  目前 fail-closed 的 opcode `0Ah`／`20h`；Pool executable 的
   entry 0→1 呼叫順序仍須另作 exact 確認。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED），下一步擴充跨 block session 與
-  deterministic RANDOM、VM Clone 與同-session entry 切換。下一步依玩家路徑處理 opcode
-  `0Ah`／`20h` 與 Sune service boundary。Pool 先成為 consumer；CoAB source 不修改，
-  只跑唯讀回歸測試。
+  deterministic RANDOM、VM Clone、同-session entry 切換與作品中立
+  `CLEARMONSTERS` 訊號。Sune service boundary 已由 Pool 成為第一個 consumer，且 CoAB
+  唯讀回歸通過；下一步依玩家路徑處理 Heal 規則及 opcode `0Ah`／`20h`。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

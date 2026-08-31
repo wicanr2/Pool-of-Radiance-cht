@@ -1,6 +1,6 @@
 # Spec 016：初始地圖 SearchLocation 與 Sune 第一個事件
 
-狀態：PARTIAL（正常玩家文字與 YES／NO menu CONFORMED；後續 service 未完成）
+狀態：CONFORMED（正常玩家文字與 YES／NO menu；後續服務入口見 Spec 017）
 日期：2026-08-31
 
 ## 證據與信心
@@ -47,8 +47,9 @@ entry 1 經 `PICTURE 24` 後於 `A0D0h PRINTCLEAR` 顯示：
 
 前端會消費空清畫面／圖片事件並續跑；非空文字會顯示 dialogue、停止移動並等待
 Return。下一段原始文字是 `' DO YOU SEEK HEALING?'`，其後 `AE5Ah HORIZONTAL MENU`
-提供 `YES／NO`；前端可用方向鍵選擇並以 Enter 提交原始 0-based index。menu 後的
-healing／combat service 尚未接，不能宣稱整個神殿事件完成。
+提供 `YES／NO`；前端可用方向鍵選擇並以 Enter 提交原始 0-based index。本規格到選單
+提交為止已完成；YES 後的服務路由、神殿選單與 Exit continuation 由 Spec 017 管理，
+治療規則不屬於本規格。
 
 ## 驗收
 

@@ -303,6 +303,27 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyArrowRight); err != nil || application.cellMenuCursor != 1 || !strings.Contains(application.eventLabel, "> NO") {
 		t.Fatalf("Sune NO selection cursor=%d label=%q err=%v", application.cellMenuCursor, application.eventLabel, err)
 	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.cellMenuCursor != 0 {
+		t.Fatalf("Sune YES reselection cursor=%d err=%v", application.cellMenuCursor, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if !application.templeActive || !application.cellEventPending || !application.cellWaitingMenu || !reflect.DeepEqual(application.cellMenuOptions, []string{"Heal", "View", "Pool", "Appraise", "Exit"}) || !strings.Contains(application.eventText, "HERO, how can we help you?") {
+		t.Fatalf("temple active=%v pending=%v waiting=%v options=%v text=%q", application.templeActive, application.cellEventPending, application.cellWaitingMenu, application.cellMenuOptions, application.eventText)
+	}
+	if application.eventMachine.Memory[0x6DE2] != 1 {
+		t.Fatalf("temple flag=%d, want 1", application.eventMachine.Memory[0x6DE2])
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.cellMenuCursor != 4 || !strings.Contains(application.eventLabel, "> Exit") {
+		t.Fatalf("temple Exit selection cursor=%d label=%q err=%v", application.cellMenuCursor, application.eventLabel, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if application.templeActive || application.cellEventPending || application.cellWaitingMenu || application.eventMachine.Memory[0x6DE1] != 0xFF || application.spawn.X != 1 || application.spawn.Y != 3 || application.spawn.Facing != 0 {
+		t.Fatalf("temple exit active=%v pending=%v waiting=%v flag=%04X spawn=%+v", application.templeActive, application.cellEventPending, application.cellWaitingMenu, application.eventMachine.Memory[0x6DE1], application.spawn)
+	}
 }
 
 func TestWrapASCIIUsesStableLineWidth(t *testing.T) {
