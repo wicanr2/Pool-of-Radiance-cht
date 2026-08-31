@@ -17,7 +17,7 @@
   magic 是 RAR4。它只作歷史中文化線索，不是 DOS 行為 oracle。
 - `amiga/` 中八檔實際大小都是 174,848 bytes，符合 D64 容器形狀；檔名中的
   `amiga` 尚未由內容證明，不把它當平台事實。
-- 共用 engine `025eb46b28a2` 已提供 `dax` 與 `ecl` codec；Pool 是第二作品
+- 共用 engine `947d9b0cfa74` 已提供 `dax`、`ecl` 與通用 `tpov` codec；Pool 是第二作品
   consumer，作品位址、文字與劇情不得回填 engine。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
@@ -66,11 +66,17 @@
   Spec 008 已另接版本化 remake 角色庫與 atomic save：icon 確認後保存角色、回到原版
   順序的 Party Creation Menu，`A` 加入最多六名玩家角色、`L` fail-closed 載入、F10 保存
   後離開；Xvfb 正常按鍵已走到 Library 1／Party 1，再以 `B` 進入已證實的
-  `GEO3/block 0, (15,1), facing 6` typed geometry 診斷總覽。DOS CHA／SPC exporter
+  `GEO3/block 0, (15,1), facing 6`。初始 `LOAD PIECES 127,127,127` 已由
+  overlay-03 handler、overlay-30 `LoadWallSet` 原始字串／bytes 與真實 DAX 共同閉合為
+  `WALLDEF3 block 0, slot 1`；其三筆 records 對應 `8X8D3 blocks 101/102/103`。
+  共用 engine 已補上原版多-record selector `0→10` 工作值特例，Pool typed adapter
+  與正常 `B` 畫面現在可解析 42 個可見 8×8 wall stamps。Xvfb 截圖已改為
+  `pool-remake-initial-first-person.png`；GEO／wall source 是 exact，wrapped traversal
+  目前僅是跨作品 strong inference，移動與第一事件仍停用。DOS CHA／SPC exporter
   未冒充完成：
   33 份 CHA 均為 285 bytes，但 SPC 是 9-byte 節點鏈且 corpus 有 9／18／36 bytes，不能
-  複製單一模板。初始 map identity 已接，但地名、原版第一人稱畫面、事件與遊戲內
-  存檔仍未接。
+  複製單一模板。初始 map 與 wall material identity 已接，但地名、Pool 專屬視錐／
+  背景 oracle、移動、事件與遊戲內存檔仍未接。
 - HEAD1..8／BODY1..8 共 16 archives 已全掃：109／109 blocks 可由共用 engine
   picture decoder fail-closed 解碼；Spec 006 已閉合建角固定使用 HEAD3／BODY3、
   14／12 筆稀疏 block selector，並以 DOS capture 全像素零差異證明 88×40＋88×48
@@ -87,7 +93,8 @@
 ## 現行驗證策略
 
 先做唯讀 inventory、雜湊與 fail-closed codec 驗證；再建立 READY spec，才實作
-玩家行為。GEO archive／block shape 與正常新遊戲初始 map identity 已 READY；地名、
-移動變體、WALLDEF 第一人稱呈現及第一事件仍須以 DOS runtime／executable 閉合。
+玩家行為。GEO archive／block shape、正常新遊戲初始 map identity 與初始
+WALLDEF／8X8D 素材 identity 已 READY；地名、移動變體、Pool 專屬第一人稱視錐／
+背景及第一事件仍須以 DOS runtime／executable 閉合。
 首條玩家垂直鏈固定為標題 → 建角／建隊 → 第一個正常可操作地圖 → 事件／戰鬥 →
 存檔／讀檔。

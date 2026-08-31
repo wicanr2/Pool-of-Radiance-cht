@@ -24,7 +24,9 @@
   完成確認後會寫入版本化 remake 角色庫、回到原版順序的 Party Creation Menu；
   Add、Load、六名玩家角色上限及 F10 原子保存已接通。DOS 285-byte CHA／SPC export
   尚未完成。正常 `B` 已依原版 producer chain 接到 `GEO3/block 0, (15,1), facing 6`
-  的 typed geometry 診斷總覽；WALLDEF 第一人稱畫面、移動規則與第一事件仍未完成。
+  的 typed geometry 與原版 `WALLDEF3/8X8D3` 第一人稱素材畫面；GEO／wall source
+  identity 已達 exact，視錐 traversal 目前是跨作品共用引擎的 strong inference。
+  移動規則與第一事件仍未完成，因此尚未開放移動。
 - 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
   Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
   原版職業清單已進 typed catalog，並有 Race→Gender→Class→Alignment＋ESC 狀態機。
@@ -67,9 +69,9 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![Pool remake icon 最終確認](docs/screenshots/pool-remake-icon-confirm.png) | ![Pool remake Party Creation Menu](docs/screenshots/pool-remake-party-menu.png) |
 
-| 建隊後正常按 `B` 進入初始 typed GEO（診斷總覽，非原版第一人稱畫面） |
+| 建隊後正常按 `B` 進入初始第一人稱素材畫面（移動／事件尚未開放） |
 |---|
-| ![Pool remake 初始 GEO3 block 0](docs/screenshots/pool-remake-initial-geometry.png) |
+| ![Pool remake 初始 GEO3 block 0 第一人稱素材](docs/screenshots/pool-remake-initial-first-person.png) |
 
 目前以 Docker／Xvfb 做離線測試與煙霧擷取：
 
@@ -81,5 +83,5 @@ tools/go.sh test ./...
 主機 X11 socket 掛入開發容器，也不把只在背景 Xvfb 執行的入口寫成玩家啟動方式。
 
 這仍是首條玩家垂直鏈；remake 自有角色庫、建隊與初始 map identity 已接通，但 DOS
-相容角色檔、完整 Party Creation Menu、原版第一人稱呈現、移動／事件仍未完成，
-不能宣稱可玩版，也尚未證實該 block 的地名。
+相容角色檔、完整 Party Creation Menu、第一人稱背景／視錐的 Pool 專屬 oracle、
+移動與事件仍未完成，不能宣稱可玩版，也尚未證實該 block 的地名。

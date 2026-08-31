@@ -1,6 +1,6 @@
 # Spec 009：DOS GEO 地圖盤點與 Phlan 入口
 
-狀態：CONFORMED（GEO archive／block shape 與 Pool typed catalog）；READY（正常新遊戲初始 map identity／座標／朝向）；DRAFT（移動變體、第一事件與地名）
+狀態：CONFORMED（GEO archive／block shape 與 Pool typed catalog）；READY（正常新遊戲初始 map identity／座標／朝向、初始 WALLDEF／8X8D 素材 identity）；DRAFT（移動變體、第一事件與地名）
 日期：2026-08-31
 
 ## 可重生結構盤點
@@ -51,6 +51,41 @@ wrapped 與 dungeon-door 哪一個適用，必須由該 ECL／area consumer 決�
 `(GEO archive 3, block 0, x 15, y 1, facing 6)`。此 READY 範圍授權 game-pack
 建立 typed spawn 並由 `B` 進入該 map；它**不授權**把 block 0 命名為 New Phlan、
 不決定 bounded／wrapped／dungeon-door 移動語意，也不宣稱第一事件已接回。
+
+## 初始 WALLDEF／8X8D 素材（READY）
+
+可重生 overlay 清冊由 `cmd/pool-ovr-manifest` 直接讀取同一原版 ZIP 內的
+`START.EXE`（SHA-256 `12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f`）與
+`GAME.OVR`（SHA-256 `bc4e3c32daf04b87db0c0a9508bb67b94d9f138aa39ed1dae7e32911b3171638`），
+經共用 engine `tpov.Decode` 產生 `docs/audit/dos-ovr-manifest.json`。overlay ID 明確採
+Turbo Pascal 原版一致的**零起算 0..37**；測試固定 38 overlays／774 resident entries，
+避免把 control chain ordinal 誤標成 1..38。
+
+初始素材 consumer 鏈：
+
+1. ECL3/block 0 的 `LOAD PIECES 127,127,127` 進入
+   `overlay-03:0D80h..0ED4h`；`0E30h..0E3Ch` 的 sentinel 分支以原始 bytes
+   `9A 4D 00 31 01` 呼叫 `0131:004Dh`。
+2. MZ header／resident control 對照將 `0131:004Dh` 閉合為零起算 overlay-30
+   entry 9、code-local `0E25h`。該函式鄰接原始 Pascal short strings 是
+   `WALLDEF`、`.dax`、`Unable to load wallset in LoadWallSet.`；因此語意為已證實，
+   不是依函式名猜測。
+3. sentinel 分支實際傳入 `(slot=1, selector=0)`；同一路徑保留
+   `DS:52D4=3`，故來源是 `WALLDEF3.DAX block 0`。
+4. `overlay-30:1037h..1043h` 對多-record selector 0 暫時改用 10，接著以
+   `selector*10+record` 載入 symbol blocks；`1084h..108Ah` 完成後把 selector
+   恢復為 0。因此三筆 records 對應 `8X8D3.DAX blocks 101/102/103`，不能錯算成
+   1/2/3。
+5. 真實 ZIP typed adapter 測試確認 `WALLDEF3 block 0` 解碼為三筆 780-byte
+   WALLDEF records；`8X8D3 blocks 101/102/103` 均存在，每 block 是 70 個 8×8 items。
+
+結論等級為 `exact`，已授權 `internal/gamepack.ReadDOSPieceSet(zip, 3, 1, 0)`
+載入初始原版 wall art。這仍只證明素材 identity 與 loader mapping；第一人稱 traversal
+使用 bounded 或 wrapped、玩家可否移動及第一事件何時觸發，仍須另行閉合。
+目前正常 `B` 畫面允許在**移動完全停用**的條件下，以共用 SSI renderer 的
+`TraverseWallViewWrapped` 顯示可丟棄的視覺切片；其標示固定為 `strong inference`，
+不可作 Pool parity、移動政策或事件完成證據。真實 ZIP 測試固定初始狀態可解析 42 個
+裁切後可見 wall stamps，僅證明 GEO → traversal candidate → WALLDEF → 8X8 的垂直接線。
 
 ## 尚未閉合
 

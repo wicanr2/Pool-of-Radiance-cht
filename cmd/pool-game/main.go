@@ -19,7 +19,9 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
+	"github.com/wicanr2/golden-box-remake-engine/viewport"
 )
 
 const (
@@ -73,6 +75,7 @@ type app struct {
 	saveState    func(poolsave.State) error
 	loadState    func() (poolsave.State, error)
 	initialMap   *gamepack.GeometryMap
+	initialWalls *graphics.PieceSet
 	spawn        gamepack.Spawn
 }
 
@@ -103,6 +106,11 @@ func newApp(zipPath string) (*app, error) {
 		return nil, fmt.Errorf("DOS initial map GEO%d block %d is absent", application.spawn.Map.Archive, application.spawn.Map.BlockID)
 	}
 	application.initialMap = &initialMap
+	initialWalls, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
+	if err != nil {
+		return nil, fmt.Errorf("load DOS initial wall set: %w", err)
+	}
+	application.initialWalls = &initialWalls
 	const statePath = "saves/pool-remake-state.json"
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
@@ -210,7 +218,7 @@ func (a *app) Update() error {
 				return fmt.Errorf("Pool initial geometry is not configured")
 			}
 			a.mode = modeAdventure
-			a.statusLine = "GEO preview only; press ESC to return."
+			a.statusLine = "Original wall material loaded; movement and first event remain disabled."
 			return nil
 		}
 		if a.justPressed(ebiten.KeyC) || a.justPressed(ebiten.KeyEnter) {
@@ -497,63 +505,67 @@ func (a *app) Draw(screen *ebiten.Image) {
 
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	drawFrame(screen, foreground, accent)
-	drawText(screen, "INITIAL DOS GEOMETRY PREVIEW", 190, 52, accent)
-	if a.initialMap == nil {
-		drawText(screen, "INITIAL MAP IS NOT LOADED", 184, 190, foreground)
+	drawText(screen, "INITIAL DOS FIRST-PERSON VIEW", 176, 52, accent)
+	if a.initialMap == nil || a.initialWalls == nil {
+		drawText(screen, "INITIAL MAP OR WALL ART IS NOT LOADED", 150, 190, foreground)
 		return
 	}
-	const cellSize = 14
-	const originX = 42
-	const originY = 82
-	grid := a.initialMap.Grid
-	for y := 0; y < 16; y++ {
-		for x := 0; x < 16; x++ {
-			cell := grid.Cells[y][x]
-			shade := uint8(18 + (int(cell.Terrain)&7)*8)
-			for py := 1; py < cellSize; py++ {
-				for px := 1; px < cellSize; px++ {
-					screen.Set(originX+x*cellSize+px, originY+y*cellSize+py, color.RGBA{shade, shade, shade, 255})
-				}
-			}
-			left, top := originX+x*cellSize, originY+y*cellSize
-			if cell.WallDirections[0] != 0 {
-				for px := 0; px <= cellSize; px++ {
-					screen.Set(left+px, top, accent)
-				}
-			}
-			if cell.WallDirections[1] != 0 {
-				for py := 0; py <= cellSize; py++ {
-					screen.Set(left+cellSize, top+py, accent)
-				}
-			}
-			if cell.WallDirections[2] != 0 {
-				for px := 0; px <= cellSize; px++ {
-					screen.Set(left+px, top+cellSize, accent)
-				}
-			}
-			if cell.WallDirections[3] != 0 {
-				for py := 0; py <= cellSize; py++ {
-					screen.Set(left, top+py, accent)
-				}
-			}
+	viewLeft, viewTop := 48, 86
+	for y := 0; y < 176; y++ {
+		shade := color.RGBA{0, 0, 170, 255}
+		if y >= 88 {
+			shade = color.RGBA{85, 85, 85, 255}
+		}
+		for x := 0; x < 176; x++ {
+			screen.Set(viewLeft+x, viewTop+y, shade)
 		}
 	}
-	markerX := originX + int(a.spawn.X)*cellSize + cellSize/2
-	markerY := originY + int(a.spawn.Y)*cellSize + cellSize/2
-	for delta := -3; delta <= 3; delta++ {
-		screen.Set(markerX+delta, markerY, color.White)
-		screen.Set(markerX, markerY+delta, color.White)
+	stamps, err := initialWallStamps(a.initialMap.Grid, *a.initialWalls, a.spawn)
+	if err != nil {
+		drawText(screen, "WALL VIEW ERROR", 72, 180, accent)
+	} else {
+		for _, stamp := range stamps {
+			rgba, renderErr := stamp.Picture.RGBA(stamp.Item, graphics.EGA16)
+			if renderErr != nil {
+				continue
+			}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(2, 2)
+			op.GeoM.Translate(float64(viewLeft+stamp.Column*16), float64(viewTop+stamp.Row*16))
+			screen.DrawImage(ebiten.NewImageFromImage(rgba), op)
+		}
 	}
 	drawText(screen, fmt.Sprintf("GEO%d BLOCK %d", a.spawn.Map.Archive, a.spawn.Map.BlockID), 310, 106, foreground)
 	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
-	drawText(screen, "DATA IDENTITY: EXACT", 310, 184, accent)
-	drawText(screen, "VIEW: DIAGNOSTIC TOP-DOWN", 310, 210, accent)
-	drawText(screen, "WALL ART / MOVE POLICY: PENDING", 310, 246, foreground)
+	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 184, accent)
+	drawText(screen, "VIEW TRAVERSAL: STRONG INFERENCE", 310, 210, accent)
+	drawText(screen, "MOVE POLICY: PENDING / DISABLED", 310, 246, foreground)
 	drawText(screen, "FIRST EVENT: PENDING", 310, 272, foreground)
 	drawText(screen, "ESC: PARTY CREATION MENU", 310, 308, foreground)
 	if a.statusLine != "" {
 		drawText(screen, a.statusLine, 42, 342, foreground)
 	}
+}
+
+func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepack.Spawn) ([]graphics.WallStamp, error) {
+	view, err := viewport.TraverseWallViewWrapped(grid, spawn.Facing, int(spawn.X), int(spawn.Y))
+	if err != nil {
+		return nil, err
+	}
+	var result []graphics.WallStamp
+	for _, call := range view.Calls {
+		stamps, err := graphics.BuildWallLayout(piece, call.WallType, call.Layout, call.RowStart, call.ColStart)
+		if err != nil {
+			continue
+		}
+		for _, stamp := range stamps {
+			if stamp.Row < 0 || stamp.Row > 10 || stamp.Column < 0 || stamp.Column > 10 {
+				continue
+			}
+			result = append(result, stamp)
+		}
+	}
+	return result, nil
 }
 
 func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) {

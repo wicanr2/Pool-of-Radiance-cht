@@ -19,7 +19,8 @@
   MZ／`TPOV!` 與 family 強推論已記於 `docs/re/dos-toolchain-baseline.md`；仍須以
   startup code、RTL helper bytes、overlay directory 與 IDA 位址空間交叉驗證。
   TPOV 結構層已可重生解出 38 overlays／774 entries；角色 overlay 的 IDA 9.4
-  窄切片已完成，但 compiler／RTL fingerprint 仍未閉合。
+  窄切片已完成。清冊現由共用 engine `tpov` 與 `cmd/pool-ovr-manifest` 直接從 ZIP
+  重生，overlay ID 固定零起算 0..37；compiler／RTL fingerprint 仍未閉合。
 - [x] 建立 DOSBox 正常啟動 oracle 與未縮放標題／主選單截圖。
   驗收：Docker/Xvfb 有界重播，輸入序列、畫面與 metadata 齊全。
 - [x] 完成 `TITLE.DAX` typed consumer 與 PNG／總覽圖匯出；block 1 放大 2× 後
@@ -47,10 +48,13 @@
   icon 確認後回到 Party Creation Menu、Add／Load 與六名玩家角色上限，正常按鍵抓圖已
   走到 Party 1/6。剩餘驗收是 DOS 285-byte CHA＋多條鏈 export、完整 Party Creation Menu
   功能，以及 theme 下 sprite／tileset 同步切換。
-- [ ] 解出第一張地圖的移動遮罩、WALLDEF 第一人稱畫面與第一個玩家事件。正常 Begin
+- [ ] 解出第一張地圖的移動遮罩、第一人稱背景／視錐與第一個玩家事件。正常 Begin
   的 ECL3/block 0 → `LOAD FILES 0,0,0` 已閉合 `GEO3/block 0, (15,1), facing 6`，
-  並接到 `B` 的 typed geometry 診斷總覽；地名、bounded／wrapped／door policy、事件
-  與同狀態 DOS 畫面仍待證明，不得因初始 identity 已知就稱為 Phlan parity。
+  初始 `LOAD PIECES` 又閉合 `WALLDEF3 block 0` 與 `8X8D3 blocks 101/102/103`，
+  並由正常 `B` 畫面解析 42 個可見原版 wall stamps。GEO／wall material identity 是
+  exact；wrapped traversal 仍是跨作品 strong inference。地名、bounded／wrapped／
+  door movement policy、背景、事件與同狀態 DOS 畫面仍待證明，不得因素材可見就稱為
+  Phlan parity。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

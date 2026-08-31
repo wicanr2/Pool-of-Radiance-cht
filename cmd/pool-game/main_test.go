@@ -4,6 +4,7 @@ import (
 	"errors"
 	"image/color"
 	"math/rand"
+	"path/filepath"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -198,4 +199,34 @@ func TestBeginAdventureRequiresPartyAndUsesSpec009Spawn(t *testing.T) {
 	if err := press(application, ebiten.KeyEscape); err != nil || application.mode != modeMenu {
 		t.Fatalf("adventure ESC mode=%d err=%v", application.mode, err)
 	}
+}
+
+func TestInitialDOSFirstPersonViewResolvesOriginalWallStamps(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	catalog, err := gamepack.ReadDOSGeometryCatalog(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	spawn := gamepack.DOSInitialSpawn()
+	initial, ok := catalog.Map(spawn.Map)
+	if !ok {
+		t.Fatal("initial GEO map is absent")
+	}
+	piece, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stamps, err := initialWallStamps(initial.Grid, piece, spawn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(stamps) == 0 {
+		t.Fatal("initial first-person view resolved no wall stamps")
+	}
+	for _, stamp := range stamps {
+		if stamp.Row < 0 || stamp.Row > 10 || stamp.Column < 0 || stamp.Column > 10 {
+			t.Fatalf("unclipped stamp=%+v", stamp)
+		}
+	}
+	t.Logf("initial DOS first-person view resolved %d visible 8x8 wall stamps", len(stamps))
 }
