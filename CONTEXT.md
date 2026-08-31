@@ -20,6 +20,14 @@
 - 共用 engine `0d6de308a19c` 已提供 `dax`、`ecl` packed text／menu record 與通用
   `tpov` codec；Pool 是第二作品
   consumer，作品位址、文字與劇情不得回填 engine。
+- 2026-08-31 使用者確認：ECL／runtime 應以系列共用 engine 沿用，並授權參考或複製
+  CoAB 程式加速；硬限制是不能干擾現行 CoAB remake。實施順序固定為「只在獨立
+  engine 新增相容 API與測試 → Pool 先使用 → CoAB 測試只讀回歸」，不得把 CoAB
+  game code 直接搬進 Pool，也不得把 CoAB 位址／旗標誤升格為 Gold Box 通則。
+  Pool 全 corpus 現有 26 個完整解碼 block、14,724 條可達指令，opcode 集合與 CoAB
+  handler table 高度重疊，證明重用方向成立；剩餘三個 graph failure 與每項作品副作用
+  仍須各自閉合。engine 第一個新增切片是作品中立 operand numeric／address／text 求值，
+  CoAB 現行程式未修改。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
 - `GEO1.DAX..GEO8.DAX` 合計 29 blocks；29／29 payload 均為 `0x402` bytes，
@@ -104,9 +112,14 @@
 WALLDEF／8X8D 素材 identity 與完整 Rolf 34-step 導覽已 READY；地名、移動變體、
 Pool 專屬第一人稱視錐／背景與 Rolf 初次 APPROACH 圖像仍須以 DOS runtime／
 executable 閉合。
-Spec 012 已用 IDA Pro 9.4 另證實 overlay-03 `30FAh` 的 `401Fh` dispatch 唯一呼叫
+Spec 012 已用 IDA Pro 9.4 證實 overlay-03 `30FAh` 的 `401Fh` dispatch 唯一呼叫
 overlay-07 entry 27；後者依 facing `0/2/4/6` 將 X／Y 在 `0..15` 間 wrap，並更新
-`6A0Fh/6A0Eh`。該函式沒有 collision check，因此目前缺口已縮小成 upstream `401Fh`
-producer 與牆／門 gate；不能用座標 wrapper 支持「自由移動已完成」。
+`6A0Fh/6A0Eh`。2026-08-31 後續 corpus 掃描推翻「401Fh 是尚待尋找的玩家輸入
+producer」：dispatcher 的 helper 以 low byte `40h`、high byte `1Fh` 反向組成
+`401Fh`，原始 ECL operand 是 `1F40h`；唯一 decoder-validated 候選位於
+`ECL7.DAX` block 17、payload `B69Ah` 的 opcode `27h` 第四運算元。這仍未證明該
+wrapper 是一般玩家前進或完整 collision policy；自由移動繼續失敗即關閉，下一步改為
+確認 opcode 27 handler 在 Pool 的 operand consumer 與 overlay-07 entry 27 的座標
+語意，不再沿錯誤的「opcode 1F／CALL producer」假說追查。
 首條玩家垂直鏈固定為標題 → 建角／建隊 → 第一個正常可操作地圖 → 事件／戰鬥 →
 存檔／讀檔。

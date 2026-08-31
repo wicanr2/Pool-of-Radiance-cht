@@ -57,9 +57,15 @@
   selector／七頁文字與最終 ECL `EXIT`；正常按鍵已走到 Tyr 停靠畫面。wrapped traversal
   仍是跨作品 strong inference；Rolf 初次 APPROACH 圖像、自由移動交接、地名、
   bounded／wrapped／door policy、背景與同狀態 DOS 畫面仍待證明。
-  Spec 012 已再閉合 overlay-03 `401Fh` dispatch → overlay-07 entry 27，以及 cardinal
-  座標的 16×16 wrap；該 wrapper 無 collision check，所以下一個窄切片是回追 `401Fh`
-  producer／牆與門 gate，不能直接把 wrapper 當完整 movement policy。
+  Spec 012 已再閉合 overlay-03 `401Fh` dispatch → overlay-07 entry 27，以及一組
+  cardinal 座標的 16×16 wrap。後續已訂正 `401Fh` 來源：原始 ECL operand 是
+  `ECL7/block17 B69Ah` opcode `27h` 第四參數 `1F40h`，經 helper 反向組成；不是
+  opcode `1Fh` 或一般玩家 `CALL` producer。下一個窄切片改追 opcode 27 handler、
+  `1F40h` operand consumer 與 `6A0Bh/6A0Ch` 座標用途，再閉合牆／門 gate；不能直接
+  把該 wrapper 當完整 movement policy。
+- [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；先抽
+  operand 求值（已完成於 engine 工作樹），再抽控制流／算術／選單／session。Pool
+  先成為 consumer；CoAB source 不修改，只跑唯讀回歸測試。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

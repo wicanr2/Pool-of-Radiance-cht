@@ -1,6 +1,6 @@
 # Spec 012：DOS cardinal coordinate wrapper 與 401Fh dispatch
 
-狀態：READY（cardinal 座標更新、16×16 wrap、dispatcher call chain）；DRAFT（401Fh producer、牆／門 collision gate、玩家輸入 mapping）
+狀態：READY（cardinal 座標更新、16×16 wrap、dispatcher call chain、1F40h ECL operand 唯一候選）；DRAFT（entry 27 座標用途、牆／門 collision gate、玩家輸入 mapping）
 日期：2026-08-31
 
 ## 工具、輸入與位址空間
@@ -18,17 +18,31 @@
   offset `1A17h`。overlay-03 全 corpus 直掃只找到一個 `9A A7 00 45 00` caller，位於
   `30FFh`。
 
-## 401Fh dispatcher（READY）
+## 401Fh dispatcher 與 1F40h operand 勘誤（READY）
 
-overlay-03 entry 53（seed `3026h`）先由 resident command resolver 取得 dispatch value。
+overlay-03 entry 53（seed `3026h`）先由 resident operand resolver 取得 dispatch value。
 `30FAh` 原始 bytes `3D 1F 40` 比對 `401Fh`；相等時 `30FFh` 原始 bytes
 `9A A7 00 45 00` 呼叫 overlay-07 entry 27 的 resident stub。另一個相鄰值 `4019h`
 在 `3106h` 走不同分支，只更新 view detail，不得和 movement wrapper 合併。
 
-這證明 `401Fh → overlay-07 entry 27` 的 dispatch chain，推論等級為 `exact`；目前尚未
-閉合「哪一個玩家輸入／牆判斷 producer 會產生 401Fh」。
+這證明 `401Fh → overlay-07 entry 27` 的 dispatch chain，推論等級為 `exact`。
 
-## overlay-07 entry 27（READY）
+2026-08-31 的舊工作假說曾把 `401Fh` 當成待尋找的 ECL opcode／`CALL` selector；
+overlay-07 entry 2 與 entry 10 的資料流否定該說法。entry 2 把 operand 的 code、low、
+high bytes 分別放入陣列，entry 10 以 `low << 8 | high` 組成 dispatcher 值。因此原始
+ECL bytes `02 40 1F` 解碼為 code `02h`、word `1F40h`，再被 helper 反向組成 `401Fh`。
+
+全八份 ECL 的逐位移候選掃描只找到一處 `02 40 1F`；以共用 decoder 驗證指令邊界後為：
+
+- `ECL7.DAX` block 17；
+- payload offset `1D9Ah`、address `B69Ah`（mapping base `9900h`）；
+- opcode `27h` 的第四個 operand，word `1F40h`；record end `1DACh`。
+
+此項把 producer 從「未知玩家命令」訂正成「opcode 27 operand resolver 的唯一候選」，
+但尚未證明 opcode 27 在 Pool 的完整副作用，也未證明 `6A0Bh/6A0Ch` 是一般第一人稱
+隊伍座標。不能因函式形狀像移動就把候選升格成玩家自由移動政策。
+
+## overlay-07 entry 27 的座標運算（READY；座標用途 DRAFT）
 
 函式範圍 `1A17h..1AA8h`，讀取朝向 `DS:6A0Dh`，只處理 cardinal `0/2/4/6`：
 
@@ -45,7 +59,8 @@ overlay-03 entry 53（seed `3026h`）先由 resident command resolver 取得 dis
 - `1A92h..1AA2h` 以 `(X,Y,Facing)` 呼叫 resident `0131:0034h`，結果寫 `DS:6A0Eh`；
 - `1AA8h` `retf`。
 
-因此 16×16 cardinal wrap 與 post-move refresh 是 `exact`，而不是從 CoAB engine 猜來。
+因此「這組欄位的 16×16 cardinal wrap 與更新後 refresh」是 `exact`，而不是從 CoAB
+engine 猜來；「這組欄位就是一般地城隊伍位置」仍需 consumer／runtime anchor。
 
 ## 不能越級的結論
 
@@ -54,12 +69,11 @@ overlay-03 entry 53（seed `3026h`）先由 resident command resolver 取得 dis
 remake 接成 `geometry.CanMoveWrapped` 或 `CanMoveDungeonWrapped`，會漏掉 upstream
 collision gate。
 
-下一個 READY 切片必須從 overlay-03 entry 53 使用的 resident command resolver 往
-`401Fh` producer 回追，閉合：
+下一個 READY 切片必須從 opcode `27h` handler 與 operand `1F40h` consumer 回追，閉合：
 
 1. 玩家 forward／turn input 如何映射；
 2. current／target cell 哪一個 plane 與 direction bits 被檢查；
 3. door／locked door 是否另有旗標或 mutation；
-4. gate 成功才送出 `401Fh`，失敗時的玩家可見結果。
+4. entry 27 是否真在一般移動 gate 成功後執行，以及失敗時的玩家可見結果。
 
 在這四項完成前，remake 只可保留 Spec 011 的 scripted tour；不得開放自由移動。

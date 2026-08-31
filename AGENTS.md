@@ -82,6 +82,20 @@ address base 從 engine 移回 title adapter：本作 DOS raw payload 映射基�
 CoAB 的 `0x8000`，也不得再把 `0x9914` 寫成 mapping base。正式相依鎖定該 commit 或更新後已
 推送的 module version；不得提交本機 `replace`。
 
+### CoAB 程式沿用與零干擾規則（2026-08-31 使用者決定）
+
+- CoAB 與 Pool 同屬 Gold Box 系列；已由 Pool 真實 corpus 證實的 ECL framing、
+  opcode 形狀與作品中立 runtime 機制，優先沿用共用 engine，不另造 Pool-only VM。
+- 使用者已授權參考或複製 CoAB 程式以加速，但複製後必須先移除 CoAB 位址、劇情、
+  旗標、文字與 UI 假設，泛化後提交到獨立 `golden-box-remake-engine`；Pool 只引用
+  engine API，不把 CoAB source 複製進本 repository。
+- **不得干擾原有 CoAB remake。** 抽取順序固定為：engine 新增向後相容 API與測試 →
+  Pool 先成為新 consumer → 以 CoAB 現行測試做唯讀回歸驗證。未經另行授權，不修改
+  CoAB adapter、game pack、玩家行為或既有 API 呼叫。
+- CoAB 的 ECL 記憶體 map、external selector、戰鬥服務旗標與 opcode 副作用只能當
+  跨作品候選；Pool 必須以自己的 DOS bytes／runtime 證明後才能寫進 Pool adapter。
+  「兩作共用 opcode」不等於「每個位址與副作用也相同」。
+
 ## 5. 證據、反組譯與 spec 門槛
 
 正式行為依以下單向流程：
