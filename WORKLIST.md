@@ -103,6 +103,9 @@
   producer 條件／上限、其他
   reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
   一級 immutable roster snapshot 換成有版本的 live derived-stat seam。
+  Spec 037 已另修正戰役持久化：schema 4 與 engine `142b245` 保存穩定玩家邊界的
+  GEO position／完整不透明 ECL session，Load 直接回到 adventure；對話／服務／戰鬥
+  中途續點仍待把前端 service state 一併版本化。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
   `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
   `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑
@@ -117,7 +120,8 @@
   RANDOM、VM Clone、同-session entry 切換、作品中立 `CLEARMONSTERS` 訊號，以及
   opcode `0Ah`／`20h`／`27h`／`35h` 都已有 Pool consumer；`27h` 目前只完成 raw
   request，ITEM payload 與戰利品 UI 則由 Pool game pack／adapter 依 Spec 033～036
-  接線，不污染共用 engine。engine `91801a5` 的 Pool 全套與 CoAB
+  接線，不污染共用 engine。現行 engine `142b245`（含 `91801a5` 的 TREASURE 契約與
+  Spec 037 session snapshot）的 Pool 全套與 CoAB
   核心相容回歸均已通過。下一步依玩家路徑
   閉合 City Hall reward／commission 迴圈與其後尚未接妥的服務規則。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。

@@ -1,9 +1,13 @@
 package save
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
+	"github.com/wicanr2/golden-box-remake-engine/randomstream"
 )
 
 func validCharacter(name string) Character {
@@ -40,6 +44,10 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	state.PooledGold = 123
 	state.CharacterLibrary = []Character{character}
 	state.Party = []Character{character}
+	state.Campaign = &Campaign{MapArchive: 3, MapBlock: 0, X: 5, Y: 5, Facing: 2, Session: eclvm.BlockSessionSnapshot{
+		Current: 8, TransitionEntries: []int{0, 4}, PendingEntries: []int{4},
+		Machine: eclvm.MachineSnapshot{PC: 3218, Memory: []eclvm.MemoryWord{{Address: 0x4A96, Value: 0}, {Address: 0x4AB1, Value: 0}, {Address: 0x4AC1, Value: 4}}, Strings: []eclvm.StringWord{{Address: 0x6100, Value: "campaign"}}, Random: randomstream.Snapshot{Seed: 1, Draws: 3}},
+	}}
 	if err := WriteAtomic(path, state); err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +55,7 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Schema != Schema || got.PooledGold != 123 || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" || len(got.Party[0].Inventory) != 1 || got.Party[0].Inventory[0].Name != "Two-Handed Sword +1" {
+	if got.Schema != Schema || got.PooledGold != 123 || len(got.CharacterLibrary) != 1 || len(got.Party) != 1 || got.Party[0].Name != "HERO" || len(got.Party[0].Inventory) != 1 || got.Party[0].Inventory[0].Name != "Two-Handed Sword +1" || got.Campaign == nil || got.Campaign.X != 5 || got.Campaign.Session.Current != 8 || got.Campaign.Session.Machine.Memory[2] != (eclvm.MemoryWord{Address: 0x4AC1, Value: 4}) || got.Campaign.Session.Machine.Random.Draws != 3 {
 		t.Fatalf("round trip = %+v", got)
 	}
 	entries, err := os.ReadDir(filepath.Dir(path))
@@ -56,6 +64,27 @@ func TestStateAtomicRoundTrip(t *testing.T) {
 	}
 	if len(entries) != 1 || entries[0].Name() != "pool.json" {
 		t.Fatalf("save directory = %v", entries)
+	}
+}
+
+func TestReadMigratesSchemaThreeWithoutCampaign(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	character := validCharacter("HERO")
+	character.Inventory = []Item{validItem("Sword")}
+	state := State{Schema: PreviousSchema, CharacterLibrary: []Character{character}, Party: []Character{character}}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Schema != Schema || got.Campaign != nil || len(got.Party[0].Inventory) != 1 {
+		t.Fatalf("schema 3 migration=%+v", got)
 	}
 }
 
@@ -93,5 +122,32 @@ func TestStateRejectsUnknownVersionAndInvalidParty(t *testing.T) {
 	state.CharacterLibrary = []Character{bad}
 	if err := WriteAtomic(path, state); err == nil {
 		t.Fatal("malformed inventory item accepted")
+	}
+}
+
+func TestStateRejectsMalformedCampaign(t *testing.T) {
+	base := Campaign{MapArchive: 3, X: 1, Y: 1, Facing: 2, Session: eclvm.BlockSessionSnapshot{Current: 8, TransitionEntries: []int{0}, Machine: eclvm.MachineSnapshot{PC: 1, Random: randomstream.Snapshot{Seed: 1}}}}
+	tests := []struct {
+		name string
+		edit func(*Campaign)
+	}{
+		{name: "archive", edit: func(c *Campaign) { c.MapArchive = 0 }},
+		{name: "position", edit: func(c *Campaign) { c.X = 16 }},
+		{name: "facing", edit: func(c *Campaign) { c.Facing = 1 }},
+		{name: "pc", edit: func(c *Campaign) { c.Session.Machine.PC = -1 }},
+		{name: "entries", edit: func(c *Campaign) { c.Session.TransitionEntries = nil }},
+		{name: "memory order", edit: func(c *Campaign) { c.Session.Machine.Memory = []eclvm.MemoryWord{{Address: 2}, {Address: 1}} }},
+		{name: "random", edit: func(c *Campaign) { c.Session.Machine.Random.Draws = randomstream.MaxReplayDraws + 1 }},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			campaign := base
+			test.edit(&campaign)
+			state := NewState()
+			state.Campaign = &campaign
+			if err := state.Validate(); err == nil {
+				t.Fatal("invalid campaign accepted")
+			}
+		})
 	}
 }

@@ -86,6 +86,56 @@ func TestGlobalHelpThemeAndQuitKeys(t *testing.T) {
 	}
 }
 
+func TestF10AndLoadRoundTripStableCampaignSession(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Abilities: [6]int{14, 10, 10, 13, 10, 10}, MaxHP: 8, CurrentHP: 8, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}
+	session, err := gamepack.NewInitialEventSession(*application.initialEvent, gamepack.InitialCharacter{Name: "HERO", ClassID: "fighter", Abilities: character.Abilities, CurrentHP: 8})
+	if err != nil {
+		t.Fatal(err)
+	}
+	application.mode = modeAdventure
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 5, Y: 5, Facing: 2}
+	application.eventMachine.Memory[0x4AC1] = 4
+	application.eventMachine.Memory[0x4AB1] = 0
+	application.eventMachine.Memory[0x4A96] = 0
+	var saved poolsave.State
+	application.saveState = func(state poolsave.State) error { saved = cloneSaveState(state); return nil }
+	if err := press(application, ebiten.KeyF10); !errors.Is(err, ebiten.Termination) {
+		t.Fatalf("F10 campaign save=%v", err)
+	}
+	if saved.Campaign == nil || saved.Campaign.X != 5 || saved.Campaign.Session.Machine.Memory == nil {
+		t.Fatalf("saved campaign=%+v", saved.Campaign)
+	}
+
+	restored, err := newApp(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	restored.mode = modeMenu
+	restored.loadState = func() (poolsave.State, error) { return cloneSaveState(saved), nil }
+	if err := press(restored, ebiten.KeyL); err != nil {
+		t.Fatal(err)
+	}
+	if restored.mode != modeAdventure || restored.spawn.X != 5 || restored.spawn.Y != 5 || restored.spawn.Facing != 2 || restored.introWaiting || restored.eventMachine.Memory[0x4AC1] != 4 || restored.eventSession.CurrentBlockID() != saved.Campaign.Session.Current {
+		t.Fatalf("restored mode=%d spawn=%+v intro=%v block=%d flags=%d", restored.mode, restored.spawn, restored.introWaiting, restored.eventSession.CurrentBlockID(), restored.eventMachine.Memory[0x4AC1])
+	}
+}
+
+func TestF10RejectsTransientCampaignWithoutWriting(t *testing.T) {
+	application := &app{mode: modeAdventure, cellEventPending: true}
+	called := false
+	application.saveState = func(poolsave.State) error { called = true; return nil }
+	if err := press(application, ebiten.KeyF10); err == nil || called {
+		t.Fatalf("transient F10 err=%v called=%v", err, called)
+	}
+}
+
 func TestSuneTempleCureUsesCurrentCharacterAndPersists(t *testing.T) {
 	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", Gold: 100, MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
 	application := &app{

@@ -26,14 +26,15 @@
 在 DOS exporter 的角色主體全部衍生欄位，以及 `.SPC` session 鏈 key／生命週期尚未
 閉合前，remake 使用作品專屬、版本化 JSON：
 
-- schema 固定為 `pool-remake-state/1`；未知版本 fail-closed。
+- 本規格實作當時 schema 固定為 `pool-remake-state/1`；現行 schema 4 與 1→2→3→4
+  遷移由 Spec 018／035／037 管理，未知版本仍 fail-closed。
 - `character_library` 保存已完成但尚未入隊的角色；`party` 保存已加入角色。
 - 每個角色保存姓名、race／gender／class／alignment IDs、擲值結果、portrait selectors、
   combat icon selectors、size 與六部位雙色。
 - 寫檔採同目錄 temporary file → rename，避免 F10 自動保存留下半份 JSON。
 - 建角確認後先寫入角色庫，保存成功才回 Party Creation Menu；保存失敗留在確認頁並
   顯示錯誤，不得假裝角色已建立。
-- F10 在可保存狀態先保存再離開。`LOAD SAVED GAME` 只接受上述 schema；它不是 DOS
+- F10 在可保存狀態先保存再離開。`LOAD SAVED GAME` 只接受現行或明訂可遷移的 schema；它不是 DOS
   `.CHA/.SPC` importer，也不得標示成原版相容存檔。
 
 ## DOS exporter 停止線

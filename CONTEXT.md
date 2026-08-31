@@ -8,7 +8,7 @@
   固定 `27h TREASURE` 的八欄 numeric request。共用 engine `91801a5` 已提供 inline、
   fail-closed 的 typed request；Pool 真 block8 `A780h` 抽樣得到七欄全零、
   `ItemBlock=33h`，再停於 `A791h COMBAT`。Spec 033～036 已把該 request 接到五筆
-  `ITEM3/33h` record、原版式 Take／Exit 服務、負重檢查與 schema 3 inventory；
+  `ITEM3/33h` record、原版式 Take／Exit 服務、負重檢查與 schema 3 引入的 inventory；
   raw request 本身仍只代表待領戰利品，必須成功 Take 並存檔後才算玩家取得。
 - Spec 012 已勘誤：overlay-07 **entry 27** 與 ECL **opcode `27h`** 只是編號碰巧相同，
   前者為座標 wrapper、後者為 TREASURE；舊的合併追查指示已刪除，後續分兩條證據鏈。
@@ -23,9 +23,15 @@
   remake 同樣只在容量檢查與存檔成功後移除 pending loot。
 - Spec 035 已沿 TPOV runtime segment/control record 鏈定位 overlay-06 item receiver、
   overlay-19 overload predicate 與 overlay-25 carry table。remake 現保存完整 63-byte
-  inventory record，依 16 格與力量負重判斷；存檔升為 schema 3，schema 2 確定性遷移，
+  inventory record，依 16 格與力量負重判斷；schema 3 的 schema 2 遷移仍保留，
   Take 只有在持久化成功後才移除 pending loot。Spec 036 又證明墓園的 `24h COMBAT`
   在該狀態呼叫 overlay-05 post-combat，因此 UI 結束後從 COMBAT 後方續跑而不重播 loot。
+- Spec 037 修正「F10／Load 已足以保存戰役」的過期斷言：schema 3 實際只有 roster、
+  HP、Gold 與 inventory，會遺失 map 與所有 ECL 旗標。共用 engine `142b245` 現提供
+  作品中立、驗證後才原子替換的 `BlockSessionSnapshot`；Pool schema 4 保存 GEO identity、
+  `(x,y,facing)`、current block、PC／stack、numeric／string memory、compare、亂數續點與
+  pending lifecycle entries。穩定玩家邊界的 F10／Load round-trip 已接妥；任意對話、
+  神殿、戰利品或未完成戰鬥中途續點仍為 DRAFT，不能宣稱全情境存讀檔完成。
 
 - Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
   與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、
@@ -153,8 +159,9 @@
   184／184 blocks 全部 fail-closed 解碼，remake 由正常玩家路徑顯示 READY／ACTION
   真實素材並可調 Head、Weapon、Size 與六部位雙色。Xvfb 逐鍵截圖已涵蓋三個 editor；
   Spec 008 已另接版本化 remake 角色庫與 atomic save：icon 確認後保存角色、回到原版
-  順序的 Party Creation Menu，`A` 加入最多六名玩家角色、`L` fail-closed 載入、F10 保存
-  後離開；Xvfb 正常按鍵已走到 Library 1／Party 1，再以 `B` 進入已證實的
+  順序的 Party Creation Menu，`A` 加入最多六名玩家角色；`L`／F10 現依 Spec 037 在
+  穩定玩家邊界恢復／保存 schema 4 campaign。Xvfb 正常按鍵已走到 Library 1／Party 1，
+  再以 `B` 進入已證實的
   `GEO3/block 0, (15,1), facing 6`。初始 `LOAD PIECES 127,127,127` 已由
   overlay-03 handler、overlay-30 `LoadWallSet` 原始字串／bytes 與真實 DAX 共同閉合為
   `WALLDEF3 block 0, slot 1`；其三筆 records 對應 `8X8D3 blocks 101/102/103`。

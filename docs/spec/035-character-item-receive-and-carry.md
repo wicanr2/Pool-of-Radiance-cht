@@ -59,7 +59,8 @@ percentile 失敗即關閉，不能 clamp。
 
 - 角色 inventory 每件保存 display name 與完整 63 raw bytes；raw bytes 才是未來欄位
   解碼的權威，名稱不能取代 record identity。
-- 存檔升為 schema 3；schema 2 以空 inventory 確定性遷移，schema 1 先依既有 HP 遷移
-  再得到空 inventory。讀取時驗證 63 bytes、Pascal name 與顯示名稱一致。
+- 本規格把存檔升為 schema 3；現行已由 Spec 037 升為 schema 4。schema 2 仍以空
+  inventory 確定性遷移，schema 1 先依既有 HP 遷移再得到空 inventory。讀取時驗證
+  63 bytes、Pascal name 與顯示名稱一致。
 - Take 必須是原子操作：容量檢查失敗不改角色、不移除 pending loot；成功才同時加入
   inventory 並移除一筆 pending loot。寫檔失敗要回滾兩側。

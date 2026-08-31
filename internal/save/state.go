@@ -7,11 +7,15 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
+	"github.com/wicanr2/golden-box-remake-engine/randomstream"
 )
 
 const (
-	Schema         = "pool-remake-state/3"
-	PreviousSchema = "pool-remake-state/2"
+	Schema         = "pool-remake-state/4"
+	PreviousSchema = "pool-remake-state/3"
+	EarlierSchema  = "pool-remake-state/2"
 	LegacySchema   = "pool-remake-state/1"
 )
 
@@ -43,11 +47,21 @@ type Character struct {
 	Inventory           []Item      `json:"inventory,omitempty"`
 }
 
+type Campaign struct {
+	MapArchive uint8                      `json:"map_archive"`
+	MapBlock   uint8                      `json:"map_block"`
+	X          uint8                      `json:"x"`
+	Y          uint8                      `json:"y"`
+	Facing     uint8                      `json:"facing"`
+	Session    eclvm.BlockSessionSnapshot `json:"session"`
+}
+
 type State struct {
 	Schema           string      `json:"schema"`
 	PooledGold       int         `json:"pooled_gold"`
 	CharacterLibrary []Character `json:"character_library"`
 	Party            []Character `json:"party"`
+	Campaign         *Campaign   `json:"campaign,omitempty"`
 }
 
 func NewState() State { return State{Schema: Schema} }
@@ -61,6 +75,11 @@ func (state State) Validate() error {
 	}
 	if state.PooledGold < 0 {
 		return fmt.Errorf("Pool pooled gold cannot be negative: %d", state.PooledGold)
+	}
+	if state.Campaign != nil {
+		if err := validateCampaign(*state.Campaign); err != nil {
+			return err
+		}
 	}
 	seen := make(map[string]bool)
 	for _, character := range state.CharacterLibrary {
@@ -79,6 +98,44 @@ func (state State) Validate() error {
 		if !seen[character.Name] {
 			return fmt.Errorf("party character %q is absent from the library", character.Name)
 		}
+	}
+	return nil
+}
+
+func validateCampaign(campaign Campaign) error {
+	if campaign.MapArchive < 1 || campaign.MapArchive > 8 {
+		return fmt.Errorf("Pool campaign map archive %d is outside 1..8", campaign.MapArchive)
+	}
+	if campaign.X > 15 || campaign.Y > 15 {
+		return fmt.Errorf("Pool campaign position (%d,%d) is outside 16x16 map", campaign.X, campaign.Y)
+	}
+	if campaign.Facing > 6 || campaign.Facing%2 != 0 {
+		return fmt.Errorf("Pool campaign facing %d is not cardinal", campaign.Facing)
+	}
+	snapshot := campaign.Session
+	if snapshot.Machine.PC < 0 {
+		return fmt.Errorf("Pool campaign ECL PC %d is negative", snapshot.Machine.PC)
+	}
+	if len(snapshot.TransitionEntries) == 0 {
+		return fmt.Errorf("Pool campaign transition entry sequence is empty")
+	}
+	for _, entry := range append(append([]int(nil), snapshot.TransitionEntries...), snapshot.PendingEntries...) {
+		if entry < 0 {
+			return fmt.Errorf("Pool campaign ECL entry %d is negative", entry)
+		}
+	}
+	for index, word := range snapshot.Machine.Memory {
+		if index != 0 && word.Address <= snapshot.Machine.Memory[index-1].Address {
+			return fmt.Errorf("Pool campaign ECL memory is not strictly ordered at 0x%04X", word.Address)
+		}
+	}
+	for index, word := range snapshot.Machine.Strings {
+		if index != 0 && word.Address <= snapshot.Machine.Strings[index-1].Address {
+			return fmt.Errorf("Pool campaign ECL strings are not strictly ordered at 0x%04X", word.Address)
+		}
+	}
+	if snapshot.Machine.Random.Draws > randomstream.MaxReplayDraws {
+		return fmt.Errorf("Pool campaign random draw count %d exceeds limit", snapshot.Machine.Random.Draws)
 	}
 	return nil
 }
@@ -178,7 +235,7 @@ func Read(path string) (State, error) {
 	if header.Schema == LegacySchema {
 		return readLegacyState(raw)
 	}
-	if header.Schema == PreviousSchema {
+	if header.Schema == PreviousSchema || header.Schema == EarlierSchema {
 		return readPreviousState(raw)
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))

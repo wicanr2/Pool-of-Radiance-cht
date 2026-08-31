@@ -63,7 +63,9 @@ remake 目前以 `Gold`／`pooled_gold` 保存已換算 Gold 等值，不假稱�
 
 ## schema 2 與遷移
 
-正式 schema 為 `pool-remake-state/2`。每名角色保存 `max_hp`、`current_hp`、`status`，
+本規格實作當時的正式 schema 為 `pool-remake-state/2`；現行格式已由 Spec 035／037
+依序升為 schema 3／4，但下列 HP 欄位與遷移契約仍有效。每名角色保存
+`max_hp`、`current_hp`、`status`，
 隊伍狀態另存非負的 `pooled_gold`；
 合法條件為 `max_hp >= 1`、`0 <= current_hp <= max_hp`。新建角色三者初始化為
 `rolled HP`、`rolled HP`、`0`。
@@ -76,7 +78,8 @@ current_hp = hp
 status = 0
 ```
 
-遷移只發生在記憶體；下一次原子寫檔輸出 schema 2。未知 schema、未知 JSON 欄位、
+遷移只發生在記憶體；當時下一次原子寫檔輸出 schema 2，現行則輸出 schema 4。
+未知 schema、未知 JSON 欄位、
 不合法 HP 仍失敗即關閉。CoAB 已有 `HitPoints`、`MaxHitPoints` 與健康狀態，不套用這份
 Pool schema；它只需升級到本輪共用 engine commit 並重編譯回歸。
 

@@ -244,9 +244,14 @@ func (a *app) reloadIcons() error {
 func (a *app) Update() error {
 	if a.justPressed(ebiten.KeyF10) {
 		if a.saveState != nil {
-			if err := a.saveState(a.state); err != nil {
+			state, err := a.stateForSave()
+			if err != nil {
 				return err
 			}
+			if err := a.saveState(state); err != nil {
+				return err
+			}
+			a.state = state
 		}
 		return ebiten.Termination
 	}
@@ -327,8 +332,15 @@ func (a *app) Update() error {
 				a.statusLine = err.Error()
 				return nil
 			}
+			if loaded.Campaign != nil {
+				if err := a.restoreCampaign(loaded); err != nil {
+					a.statusLine = err.Error()
+					return nil
+				}
+				return nil
+			}
 			a.state = loaded
-			a.statusLine = fmt.Sprintf("Loaded %d library / %d party characters.", len(loaded.CharacterLibrary), len(loaded.Party))
+			a.statusLine = fmt.Sprintf("Loaded %d library / %d party characters; no campaign was saved.", len(loaded.CharacterLibrary), len(loaded.Party))
 		}
 	case modeCreation:
 		return a.updateCreation()
@@ -807,7 +819,80 @@ func cloneSaveState(state poolsave.State) poolsave.State {
 	}
 	state.CharacterLibrary = cloneCharacters(state.CharacterLibrary)
 	state.Party = cloneCharacters(state.Party)
+	if state.Campaign != nil {
+		campaign := *state.Campaign
+		campaign.Session.TransitionEntries = append([]int(nil), campaign.Session.TransitionEntries...)
+		campaign.Session.PendingEntries = append([]int(nil), campaign.Session.PendingEntries...)
+		campaign.Session.Machine.Stack = append([]int(nil), campaign.Session.Machine.Stack...)
+		campaign.Session.Machine.Memory = append([]eclvm.MemoryWord(nil), campaign.Session.Machine.Memory...)
+		campaign.Session.Machine.Strings = append([]eclvm.StringWord(nil), campaign.Session.Machine.Strings...)
+		state.Campaign = &campaign
+	}
 	return state
+}
+
+func (a *app) stateForSave() (poolsave.State, error) {
+	next := cloneSaveState(a.state)
+	if a.mode != modeAdventure {
+		return next, nil
+	}
+	if a.eventSession == nil {
+		return poolsave.State{}, fmt.Errorf("cannot save Pool campaign without an ECL session")
+	}
+	if a.introWaiting || a.tourActive || a.cellEventPending || a.cellWaitingMenu || a.templeActive || a.treasureActive {
+		return poolsave.State{}, fmt.Errorf("finish the current Pool dialogue or service before saving")
+	}
+	snapshot, err := a.eventSession.Snapshot()
+	if err != nil {
+		return poolsave.State{}, fmt.Errorf("snapshot Pool ECL session: %w", err)
+	}
+	next.Campaign = &poolsave.Campaign{
+		MapArchive: a.spawn.Map.Archive, MapBlock: a.spawn.Map.BlockID,
+		X: a.spawn.X, Y: a.spawn.Y, Facing: a.spawn.Facing, Session: snapshot,
+	}
+	return next, nil
+}
+
+func (a *app) restoreCampaign(loaded poolsave.State) error {
+	if loaded.Campaign == nil {
+		return fmt.Errorf("Pool save has no campaign")
+	}
+	if a.initialEvent == nil {
+		return fmt.Errorf("Pool campaign event catalog is not configured")
+	}
+	campaign := loaded.Campaign
+	key := gamepack.MapKey{Archive: campaign.MapArchive, BlockID: campaign.MapBlock}
+	geometryMap, ok := a.geometryCatalog.Map(key)
+	if !ok {
+		return fmt.Errorf("Pool save map GEO%d block %d is unavailable", key.Archive, key.BlockID)
+	}
+	characters := make([]gamepack.InitialCharacter, len(loaded.Party))
+	for index, character := range loaded.Party {
+		characters[index] = gamepack.InitialCharacter{
+			Name: character.Name, ClassID: character.ClassID, Abilities: character.Abilities,
+			ExceptionalStrength: character.ExceptionalStrength, CurrentHP: character.CurrentHP,
+		}
+	}
+	session, err := gamepack.NewInitialEventSession(*a.initialEvent, characters...)
+	if err != nil {
+		return fmt.Errorf("rebuild Pool ECL session: %w", err)
+	}
+	if err := session.Restore(campaign.Session); err != nil {
+		return fmt.Errorf("restore Pool ECL session: %w", err)
+	}
+	// Commit only after every catalog and snapshot check succeeds.
+	a.state = cloneSaveState(loaded)
+	a.spawn = gamepack.Spawn{Map: key, X: campaign.X, Y: campaign.Y, Facing: campaign.Facing}
+	a.initialMap = &geometryMap
+	a.eventSession, a.eventMachine = session, session.Machine()
+	a.introWaiting, a.introDone = false, true
+	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
+	a.cellEventPending, a.cellWaitingMenu = false, false
+	a.templeActive, a.treasureActive = false, false
+	a.eventText, a.eventLabel, a.cellMenuOptions = "", "", nil
+	a.mode = modeAdventure
+	a.statusLine = fmt.Sprintf("Campaign restored at GEO%d block %d (%d,%d).", key.Archive, key.BlockID, campaign.X, campaign.Y)
+	return nil
 }
 
 func (a *app) exitTreasure() error {
