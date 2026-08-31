@@ -69,8 +69,9 @@
   Spec 015 已再接同 session 的 ECL3/block0 entry 0 `9914h`；Spec 016 進一步依五入口
   ABI 接 entry 1 `99EBh` SearchLocation。deterministic sweep 的 1,024 樣本在 Spec 019
   接妥 `20h` 跨 block session 後首次為 852 EXIT／156 event／16 error；Spec 020
-  接妥 `14h COMPARE AND` 後現行為 856 EXIT／156 event／12 error，剩餘全是
-  fail-closed 的 `0Ah LOAD CHARACTER`，且不把空 PRINTCLEAR／PICTURE 灌成事件。正常按鍵已從
+  接妥 `14h COMPARE AND` 後為 856 EXIT／156 event／12 error；Spec 021 再接通
+  `0Ah LOAD CHARACTER` 與 string-memory `COMPARE` 後現行為 856 EXIT／168 event／0 error，
+  新增 12 筆皆為 City Hall 真文字，且不把空 PRINTCLEAR／PICTURE 灌成事件。正常按鍵已從
   `(0,4)` 經 `(1,4)` 走到 `(1,3)`，顯示 Sune 女祭司原始文字與 healing 問句，並接上
   原始 YES／NO menu 游標。Spec 017 已接 `CLEARMONSTERS → SAVE 6DE2h → COMBAT`
   服務邊界、原版 `Heal／View／Pool／Appraise／Exit` 神殿選單與 Exit 後同 VM 續行；
@@ -78,8 +79,8 @@
   提供無歧義遷移；三種 Wounds 治療、個人優先／pool fallback 付款、正常 UI 與存檔
   回滾已 CONFORMED。其餘狀態治療與 View／Pool／Appraise 仍須各自 READY。`20h`
   NEWECL 已由 Pool dispatcher／handler 閉合並接入共用 engine；opcode `14h` 亦已
-  CONFORMED。下一步解出仍 fail-closed 的 opcode `0Ah`；Pool executable 的
-  entry 0→1 呼叫順序仍須另作 exact 確認。
+  CONFORMED；Spec 021 已閉合 `0Ah` 本輪所需的 active-character 三欄投影。下一步是
+  Pool executable 的 entry 0→1 呼叫順序 exact 確認，以及 City Hall 事件後續 continuation。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED），下一步擴充跨 block session 與

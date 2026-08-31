@@ -8462,10 +8462,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -8474,9 +8480,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -8488,7 +8494,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -8499,10 +8511,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -8511,9 +8529,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -8525,7 +8543,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -8536,10 +8560,16 @@
       "facing_wall": 11,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -8548,9 +8578,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -8562,7 +8592,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -8573,10 +8609,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -8585,9 +8627,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -8599,7 +8641,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -10938,10 +10986,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 3,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -10950,9 +11004,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -10964,7 +11018,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -10975,10 +11035,16 @@
       "facing_wall": 11,
       "geometry_reachable": true,
       "geometry_distance": 3,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -10987,9 +11053,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11001,7 +11067,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -11012,10 +11084,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 3,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11024,9 +11102,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11038,7 +11116,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -11049,10 +11133,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 3,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11061,9 +11151,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11075,7 +11165,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -11226,10 +11322,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11238,9 +11340,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11252,7 +11354,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -11263,10 +11371,16 @@
       "facing_wall": 0,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11275,9 +11389,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11289,7 +11403,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -11300,10 +11420,16 @@
       "facing_wall": 8,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11312,9 +11438,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11326,7 +11452,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {
@@ -11337,10 +11469,16 @@
       "facing_wall": 11,
       "geometry_reachable": true,
       "geometry_distance": 5,
-      "boundary": "error",
-      "stop_pc": "AF59",
-      "steps": 195,
-      "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough",
+      "boundary": "event",
+      "stop_pc": "AC11",
+      "steps": 272,
+      "events": [
+        {
+          "pc": "ABD2",
+          "opcode": "12",
+          "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+        }
+      ],
       "per_turn": {
         "entry": "9914",
         "boundary": "exit",
@@ -11349,9 +11487,9 @@
       },
       "search": {
         "entry": "99EB",
-        "boundary": "error",
-        "stop_pc": "AF59",
-        "steps": 180,
+        "boundary": "event",
+        "stop_pc": "AC11",
+        "steps": 257,
         "observed_presentation_events": [
           {
             "pc": "99EB",
@@ -11363,7 +11501,13 @@
             "value": 255
           }
         ],
-        "error": "opcode 0x0A at 5721 has no core handler or adapter passthrough"
+        "events": [
+          {
+            "pc": "ABD2",
+            "opcode": "12",
+            "text": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS."
+          }
+        ]
       }
     },
     {

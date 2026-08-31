@@ -62,6 +62,7 @@ compare flags 設為：
 - Pool 初始地圖 sweep 已由 852 `EXIT`／156 event／16 error 收斂為
   856 `EXIT`／156 event／12 error；四筆 `14h` 錯誤歸零，剩餘 12 筆全為
   `0Ah LOAD CHARACTER`，沒有用 passthrough 或改期望值掩蓋。
-- 正式鎖定引擎 `v0.0.0-20260831122741-b9eee757e060` 後 Pool 全套測試通過；CoAB
+- 首次正式鎖定引擎 `v0.0.0-20260831122741-b9eee757e060` 後 Pool 全套測試通過；
+  Spec 021 後的現行鎖版為 `v0.0.0-20260831132230-0a028e0956c1`。CoAB
   玩家與 ECL 核心路徑亦通過。CoAB 全儲存庫仍有兩項與本切片無關的既存稽核失敗，
   已分開記錄，不把它們誤報成 opcode 回歸。

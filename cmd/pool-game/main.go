@@ -261,7 +261,11 @@ func (a *app) Update() error {
 			a.eventMachine, a.eventSession, a.eventText, a.eventLabel = nil, nil, "", ""
 			a.templeActive = false
 			if len(a.initialEvent.ScriptBlock) != 0 {
-				session, err := gamepack.NewInitialEventSession(*a.initialEvent)
+				characters := make([]gamepack.InitialCharacter, len(a.state.Party))
+				for index, character := range a.state.Party {
+					characters[index] = gamepack.InitialCharacter{Name: character.Name}
+				}
+				session, err := gamepack.NewInitialEventSession(*a.initialEvent, characters...)
 				if err != nil {
 					return err
 				}

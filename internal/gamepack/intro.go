@@ -25,6 +25,13 @@ type InitialEvent struct {
 	ScriptBlocks   map[uint16][]byte
 }
 
+// InitialCharacter is the narrow active-character projection required by the
+// currently READY Pool ECL path. Full DOS character records remain game data.
+type InitialCharacter struct {
+	Name          string
+	ControlMorale uint8
+}
+
 // TourStep is one original scripted position frame. Most steps only move the
 // view; the six non-zero selectors pause for one or two text pages.
 type TourStep struct {
@@ -244,7 +251,7 @@ func initialEventPassthrough() map[byte]bool {
 
 // NewInitialEventSession owns all ECL3 blocks and follows original NEWECL
 // transitions without resetting shared memory or the random stream.
-func NewInitialEventSession(event InitialEvent) (*eclvm.BlockSession, error) {
+func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) (*eclvm.BlockSession, error) {
 	blocks := event.ScriptBlocks
 	if len(blocks) == 0 && len(event.ScriptBlock) != 0 {
 		blocks = map[uint16][]byte{0: event.ScriptBlock}
@@ -252,7 +259,29 @@ func NewInitialEventSession(event InitialEvent) (*eclvm.BlockSession, error) {
 	if len(blocks) == 0 {
 		return nil, fmt.Errorf("initial event has no ECL blocks")
 	}
-	return eclvm.NewBlockSession(blocks, 0, 0x9900, int(event.HandlerAddress)-0x9900, 5, initialEventPassthrough(), 1)
+	session, err := eclvm.NewBlockSession(blocks, 0, 0x9900, int(event.HandlerAddress)-0x9900, 5, initialEventPassthrough(), 1)
+	if err != nil {
+		return nil, err
+	}
+	session.Machine().SetCharacterProjector(initialCharacterProjector(characters))
+	return session, nil
+}
+
+func initialCharacterProjector(characters []InitialCharacter) eclvm.CharacterProjector {
+	snapshot := append([]InitialCharacter(nil), characters...)
+	return func(selected eclvm.CharacterSelection, memory map[uint16]uint16, strings map[uint16]string) error {
+		index := int(selected.Index)
+		if index < 0 || index >= len(snapshot) {
+			// The DOS handler leaves DS:5CF0/5CF2 unchanged when the linked-list
+			// walk reaches nil, so the prior projection must remain intact.
+			return nil
+		}
+		character := snapshot[index]
+		strings[0x6B00] = character.Name
+		memory[0x6C00] = 1
+		memory[0x6BB8] = uint16(character.ControlMorale)
+		return nil
+	}
 }
 
 // NewInitialEventMachine executes the original Pool bytecode through the

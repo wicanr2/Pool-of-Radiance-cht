@@ -173,8 +173,9 @@ entry 0 的 1,024 樣本全在 `997Dh EXIT`；這推翻「entry 0 單獨完成 t
 28 個 fail-closed error。Spec 019 以 Pool dispatcher 訂正 opcode handler 後，`20h`
 跨 block session 已使 12 個錯誤歸零，首次重跑為 852 `EXIT`／156 event／16 error；
 其中 4 筆在目的 block 新暴露的 `14h COMPARE AND` 已由 Spec 020 的 Pool handler
-證據閉合並接入共用 VM。現行為 856 `EXIT`／156 event／12 error，剩餘錯誤全是仍
-fail-closed 的 `0Ah LOAD CHARACTER`。
+證據閉合並接入共用 VM。Spec 021 再接通 `0Ah LOAD CHARACTER` 與 string-memory
+`COMPARE` 後，現行為 856 `EXIT`／168 event／0 error；新增的 12 筆是真實 City Hall
+文字事件，不是空表現事件或放寬錯誤。
 另有每格一致的空
 `PRINTCLEAR`／`PICTURE 255`，已分列為表現事件，
 不灌進玩家事件數。幾何 BFS 可達 226／256 格；它不執行途中 ECL，不能冒充玩家可達性。
@@ -188,8 +189,8 @@ cell event；後續 `DO YOU SEEK HEALING?`、原始 YES／NO menu 與 Sune 神�
 同一 VM 的 `AA6Bh` 續跑，寫入 `6DE1h=FFh`、消費 `PICTURE 255` 後 `EXIT`。Heal 等四項
 服務的價格、HP／狀態與金錢副作用尚未 READY，現階段保持失敗即關閉。`20h` 已依
 Pool `0CDDh` handler READY 並接入共用 block session；Spec 020 的 `14h` 亦已接入
-共用 VM，正式鎖定引擎 `v0.0.0-20260831122741-b9eee757e060`。剩餘靜態錯誤為
-12 個 opcode `0Ah`，仍維持失敗即關閉。
+共用 VM；Spec 021 的 `0Ah` 與字串比較也已依真實 consumer 接線。正式引擎鎖版為
+`v0.0.0-20260831132230-0a028e0956c1`；初始地圖 sweep 已無靜態錯誤。
 
 Sune 選單後的同一 VM 分支已由 Spec 017 閉合到服務入口：YES（選單索引 0）先令
 `6E79h=0`、進入 `AA63h`，執行 opcode `1Ch CLEARMONSTERS`、

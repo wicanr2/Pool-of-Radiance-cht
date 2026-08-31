@@ -4,7 +4,38 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 )
+
+func TestInitialCharacterProjectorSelectsAndPreservesPreviousCharacter(t *testing.T) {
+	project := initialCharacterProjector([]InitialCharacter{{Name: "ALICE", ControlMorale: 0x12}, {Name: "NPC", ControlMorale: 0x80}})
+	memory := map[uint16]uint16{}
+	stringsMemory := map[uint16]string{}
+	if err := project(eclvm.CharacterSelection{Index: 1}, memory, stringsMemory); err != nil {
+		t.Fatal(err)
+	}
+	if stringsMemory[0x6B00] != "NPC" || memory[0x6C00] != 1 || memory[0x6BB8] != 0x80 {
+		t.Fatalf("selected projection memory=%v strings=%v", memory, stringsMemory)
+	}
+	if err := project(eclvm.CharacterSelection{Index: 7}, memory, stringsMemory); err != nil {
+		t.Fatal(err)
+	}
+	if stringsMemory[0x6B00] != "NPC" || memory[0x6C00] != 1 || memory[0x6BB8] != 0x80 {
+		t.Fatalf("missing selector changed prior projection: memory=%v strings=%v", memory, stringsMemory)
+	}
+}
+
+func TestInitialCharacterProjectorLeavesEmptyPartyUnprojected(t *testing.T) {
+	memory := map[uint16]uint16{}
+	stringsMemory := map[uint16]string{}
+	if err := initialCharacterProjector(nil)(eclvm.CharacterSelection{Index: 0}, memory, stringsMemory); err != nil {
+		t.Fatal(err)
+	}
+	if memory[0x6C00] != 0 || stringsMemory[0x6B00] != "" {
+		t.Fatalf("empty party projection memory=%v strings=%v", memory, stringsMemory)
+	}
+}
 
 // This is the first second-title consumer of the shared VM core. It executes
 // the original bytes rather than replaying the typed TourStep projection.

@@ -100,7 +100,8 @@ dispatcher `334Ah..3353h` 將 `0Ah` 路由到 `02E3h..03B0h`。handler 解析一
 - Pool adapter 已載入完整 ECL3 block catalog；正常遊戲、cell sweep 與 continuation
   都改走同一 session，不以座標表模擬交接。
 - 正式依賴已鎖定共用引擎
-  `v0.0.0-20260831122741-b9eee757e060`；Pool 全套測試在斷網 Docker／Xvfb 通過。
+  `v0.0.0-20260831122741-b9eee757e060` 時完成本切片驗收；Spec 021 後的現行鎖版為
+  `v0.0.0-20260831132230-0a028e0956c1`。Pool 全套測試在斷網 Docker／Xvfb 通過。
 - CoAB 以同版引擎重跑後，`cmd/azure-bonds-game`、`internal/game`、`internal/ecl`、
   `gamepack` 等玩家與 ECL 路徑通過。全儲存庫另有既存的 save ledger 對帳與
   `dist-all/` build 產物稽核失敗，兩者與本次引擎變更無關，未冒稱全綠。
