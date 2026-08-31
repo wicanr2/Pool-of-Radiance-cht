@@ -799,7 +799,7 @@ func (a *app) finishCharacter() error {
 		Name: a.flow.Name, RaceID: a.flow.SelectedRace().ID, GenderID: a.flow.SelectedGender().ID,
 		ClassID: a.flow.SelectedClass().ID, AlignmentID: a.flow.SelectedAlignment().ID,
 		Age: rolled.Age, Abilities: rolled.Abilities, ExceptionalStrength: rolled.ExceptionalStrength,
-		Gold: rolled.Gold, HP: rolled.HP, RawHP: rolled.RawHP,
+		Gold: rolled.Gold, MaxHP: rolled.HP, CurrentHP: rolled.HP, RawHP: rolled.RawHP,
 		PortraitHead: a.flow.PortraitHead, PortraitBody: a.flow.PortraitBody,
 		IconHead: a.flow.IconHead, IconWeapon: a.flow.IconWeapon, IconSize: a.flow.IconSize, IconColors: a.flow.IconColors,
 	}
@@ -1043,7 +1043,7 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 			}
 			drawText(screen, fmt.Sprintf("%-3s %2d%s", name, value.Abilities[index], extra), 48+(index/3)*180, 150+(index%3)*28, foreground)
 		}
-		drawText(screen, fmt.Sprintf("GOLD %d     HP %d", value.Gold, value.HP), 48, 252, foreground)
+		drawText(screen, fmt.Sprintf("GOLD %d     HP %d/%d", value.Gold, value.HP, value.HP), 48, 252, foreground)
 		drawText(screen, "KEEP THIS CHARACTER?  ENTER/Y = YES   R = REROLL", 48, 302, accent)
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 48, 334, foreground)

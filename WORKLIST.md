@@ -72,7 +72,9 @@
   `(0,4)` 經 `(1,4)` 走到 `(1,3)`，顯示 Sune 女祭司原始文字與 healing 問句，並接上
   原始 YES／NO menu 游標。Spec 017 已接 `CLEARMONSTERS → SAVE 6DE2h → COMBAT`
   服務邊界、原版 `Heal／View／Pool／Appraise／Exit` 神殿選單與 Exit 後同 VM 續行；
-  Heal 等四項的價格、HP／狀態與 Gold 副作用仍須依 overlay-04 分別 READY。其後再解出
+  Spec 018 已將存檔升為 schema 2，分開最大／目前 HP 與 raw status，並對 schema 1
+  提供無歧義遷移；三種 Wounds 治療的價格與骰式已 READY。下一步只須閉合付款 helper
+  如何選擇個人／pooled money，才可把 Heal 接進正常 UI；其餘狀態治療仍須各自 READY。其後再解出
   目前 fail-closed 的 opcode `0Ah`／`20h`；Pool executable 的
   entry 0→1 呼叫順序仍須另作 exact 確認。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽

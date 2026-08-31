@@ -1,6 +1,6 @@
 # Spec 017：Sune 神殿服務入口與離開續行
 
-狀態：CONFORMED（服務路由、初始選單、Exit 後 ECL continuation）；DRAFT（Heal／View／Pool／Appraise 的完整規則與金錢副作用）
+狀態：CONFORMED（服務路由、初始選單、Exit 後 ECL continuation）；READY（Heal 的三種傷勢治療，見 Spec 018）；DRAFT（其餘 Heal／View／Pool／Appraise）
 日期：2026-08-31
 
 ## 範圍與停止線

@@ -2,6 +2,17 @@
 
 更新日期：2026-08-31。
 
+## 2026-08-31 存檔生命值決定
+
+- 使用者採用 schema 2：Pool 角色明確保存 `max_hp`、`current_hp` 與未臆測命名的
+  原版 `status` byte；schema 1 的 `hp` 讀取時確定性遷移成最大／目前 HP 相同、狀態 0。
+  新建角色以滿血建立，建角預覽顯示 `HP current/max`。契約與原版 Heal 證據見 Spec 018。
+- CoAB 本來就有 `HitPoints`、`MaxHitPoints` 與健康狀態，不套用 Pool schema；依使用者
+  授權已把正式 engine 相依升到 `0819c64` 並完成全套回歸與實際遊戲編譯。
+- Cure Light／Serious／Critical Wounds 的 100／350／600 GP 與 `1d8`／`2d8+1`／
+  `3d8+3` 已達 READY；但原版付款 helper 在個人與 pooled money 間的選擇尚未閉合，
+  所以玩家 Heal UI 仍維持失敗即關閉，不先實作錯誤扣款。
+
 ## 已證實
 
 - DOS 來源 ZIP SHA-256：

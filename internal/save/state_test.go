@@ -7,7 +7,22 @@ import (
 )
 
 func validCharacter(name string) Character {
-	return Character{Name: name, RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	return Character{Name: name, RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", MaxHP: 8, CurrentHP: 8, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+}
+
+func TestReadMigratesSchemaOneHPWithoutAmbiguity(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	legacy := `{"schema":"pool-remake-state/1","character_library":[{"name":"HERO","race_id":"dwarf","gender_id":"male","class_id":"fighter","alignment_id":"lawful-good","age":20,"abilities":[10,10,10,10,10,10],"exceptional_strength":0,"gold":100,"hp":7,"raw_hp":7,"portrait_head":1,"portrait_body":1,"icon_head":0,"icon_weapon":0,"icon_size":1,"icon_colors":[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]}],"party":[{"name":"HERO","race_id":"dwarf","gender_id":"male","class_id":"fighter","alignment_id":"lawful-good","age":20,"abilities":[10,10,10,10,10,10],"exceptional_strength":0,"gold":100,"hp":7,"raw_hp":7,"portrait_head":1,"portrait_body":1,"icon_head":0,"icon_weapon":0,"icon_size":1,"icon_colors":[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]}]}`
+	if err := os.WriteFile(path, []byte(legacy), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Schema != Schema || got.Party[0].MaxHP != 7 || got.Party[0].CurrentHP != 7 || got.Party[0].Status != 0 {
+		t.Fatalf("migration=%+v", got.Party[0])
+	}
 }
 
 func TestStateAtomicRoundTrip(t *testing.T) {
