@@ -94,7 +94,9 @@
   `TREASURE` 八欄請求，真實墓園 `A780h` 的全零／`33h` 會依序到 `A791h COMBAT`。
   Spec 033 又閉合 `ITEM3.DAX/33h`：五筆 63-byte record 是四張兩法術牧師卷軸與一把
   `Two-Handed Sword +1 +3 vs. Undead`，typed loader 保留原始 record 與順序。下一步是
-  先解 item take/display consumer，再接戰利品分配與墓園戰鬥；另有逐槽
+  Spec 034 已再閉合 overlay-05 的戰利品主選單、`Take → Items`、`+2Ah` 物品鏈移除與
+  `FreeMem(3Fh)`；角色接收 helper 仍待追。下一步先閉合接收成功／容量／重量，再接
+  exactly-once 戰利品分配與墓園戰鬥；另有逐槽
   producer 條件／上限、其他
   reward／commission 矩陣與 `AD29h` Skullcrusher 離隊事件。訓練／升級完成時還須把
   一級 immutable roster snapshot 換成有版本的 live derived-stat seam。

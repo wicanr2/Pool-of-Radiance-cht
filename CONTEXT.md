@@ -16,6 +16,10 @@
   `Clerical Scroll With 2 Spells`，第五筆是
   `Two-Handed Sword +1 +3 vs. Undead`。typed loader 已接妥；未證實欄位、卷軸法術、
   裝備規則與 take UI 仍維持 DRAFT。
+- Spec 034 由 Pool `overlay-05` 原始 bytes 固定戰後戰利品選單：`0E85h` 提供
+  View／Take／Pool／Share，Take Items 走 `0CF0h → 0BCAh`；成功後才從 `DS:676Eh`
+  的 `+2Ah` next chain 移除並釋放 63-byte 節點。角色接收 helper 尚未閉合，故目前
+  不允許 UI 提前刪除或無條件塞入裝備。
 
 - Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
   與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、
