@@ -17,7 +17,8 @@
   magic 是 RAR4。它只作歷史中文化線索，不是 DOS 行為 oracle。
 - `amiga/` 中八檔實際大小都是 174,848 bytes，符合 D64 容器形狀；檔名中的
   `amiga` 尚未由內容證明，不把它當平台事實。
-- 共用 engine `947d9b0cfa74` 已提供 `dax`、`ecl` 與通用 `tpov` codec；Pool 是第二作品
+- 共用 engine `0d6de308a19c` 已提供 `dax`、`ecl` packed text／menu record 與通用
+  `tpov` codec；Pool 是第二作品
   consumer，作品位址、文字與劇情不得回填 engine。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
@@ -70,13 +71,16 @@
   overlay-03 handler、overlay-30 `LoadWallSet` 原始字串／bytes 與真實 DAX 共同閉合為
   `WALLDEF3 block 0, slot 1`；其三筆 records 對應 `8X8D3 blocks 101/102/103`。
   共用 engine 已補上原版多-record selector `0→10` 工作值特例，Pool typed adapter
-  與正常 `B` 畫面現在可解析 42 個可見 8×8 wall stamps。Xvfb 截圖已改為
-  `pool-remake-initial-first-person.png`；GEO／wall source 是 exact，wrapped traversal
-  目前僅是跨作品 strong inference，移動與第一事件仍停用。DOS CHA／SPC exporter
+  與正常 `B` 畫面現在可解析原版 wall stamps。Spec 010 又由 ECL3/block 0 閉合
+  `COMPARE [4AC5h],1` 首次閘門、handler `B06Eh`、事件位置 `(15,1), facing 3`、
+  monster 12、Rolf 第一頁 packed text 與單一 Return 選項。Xvfb 正常按鍵截圖為
+  `pool-remake-initial-rolf-event.png`；GEO／wall／第一頁事件來源是 exact，wrapped
+  traversal 目前僅是跨作品 strong inference。Return 後的七頁導覽與 scripted movement
+  尚未閉合，remake 會明確停住而不提前放行自由移動。DOS CHA／SPC exporter
   未冒充完成：
   33 份 CHA 均為 285 bytes，但 SPC 是 9-byte 節點鏈且 corpus 有 9／18／36 bytes，不能
-  複製單一模板。初始 map 與 wall material identity 已接，但地名、Pool 專屬視錐／
-  背景 oracle、移動、事件與遊戲內存檔仍未接。
+  複製單一模板。初始 map、wall material 與 Rolf 第一頁已接，但地名、Pool 專屬視錐／
+  背景 oracle、後續導覽、移動與遊戲內存檔仍未接。
 - HEAD1..8／BODY1..8 共 16 archives 已全掃：109／109 blocks 可由共用 engine
   picture decoder fail-closed 解碼；Spec 006 已閉合建角固定使用 HEAD3／BODY3、
   14／12 筆稀疏 block selector，並以 DOS capture 全像素零差異證明 88×40＋88×48
@@ -94,7 +98,7 @@
 
 先做唯讀 inventory、雜湊與 fail-closed codec 驗證；再建立 READY spec，才實作
 玩家行為。GEO archive／block shape、正常新遊戲初始 map identity 與初始
-WALLDEF／8X8D 素材 identity 已 READY；地名、移動變體、Pool 專屬第一人稱視錐／
-背景及第一事件仍須以 DOS runtime／executable 閉合。
+WALLDEF／8X8D 素材 identity 與 Rolf 第一頁已 READY；地名、移動變體、Pool 專屬
+第一人稱視錐／背景及其餘導覽仍須以 DOS runtime／executable 閉合。
 首條玩家垂直鏈固定為標題 → 建角／建隊 → 第一個正常可操作地圖 → 事件／戰鬥 →
 存檔／讀檔。

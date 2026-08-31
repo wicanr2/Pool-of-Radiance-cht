@@ -76,7 +76,10 @@ type app struct {
 	loadState    func() (poolsave.State, error)
 	initialMap   *gamepack.GeometryMap
 	initialWalls *graphics.PieceSet
+	initialEvent *gamepack.InitialEvent
 	spawn        gamepack.Spawn
+	introWaiting bool
+	introDone    bool
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -111,6 +114,11 @@ func newApp(zipPath string) (*app, error) {
 		return nil, fmt.Errorf("load DOS initial wall set: %w", err)
 	}
 	application.initialWalls = &initialWalls
+	initialEvent, err := gamepack.ReadDOSInitialEvent(zipPath)
+	if err != nil {
+		return nil, fmt.Errorf("load DOS initial event: %w", err)
+	}
+	application.initialEvent = &initialEvent
 	const statePath = "saves/pool-remake-state.json"
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
@@ -214,11 +222,13 @@ func (a *app) Update() error {
 				a.statusLine = "Add at least one character before beginning adventure."
 				return nil
 			}
-			if a.initialMap == nil {
-				return fmt.Errorf("Pool initial geometry is not configured")
+			if a.initialMap == nil || a.initialWalls == nil || a.initialEvent == nil {
+				return fmt.Errorf("Pool initial adventure data is not configured")
 			}
+			a.spawn = a.initialEvent.Position
+			a.introWaiting, a.introDone = true, false
 			a.mode = modeAdventure
-			a.statusLine = "Original wall material loaded; movement and first event remain disabled."
+			a.statusLine = "Original first Rolf event loaded; movement remains disabled."
 			return nil
 		}
 		if a.justPressed(ebiten.KeyC) || a.justPressed(ebiten.KeyEnter) {
@@ -247,7 +257,12 @@ func (a *app) Update() error {
 	case modeAdventure:
 		if a.justPressed(ebiten.KeyEscape) {
 			a.mode = modeMenu
-			a.statusLine = "Returned from the geometry preview."
+			a.statusLine = "Returned from the initial event."
+			return nil
+		}
+		if a.introWaiting && (a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
+			a.introWaiting, a.introDone = false, true
+			a.statusLine = "Rolf tour continuation is the next pending ECL slice."
 		}
 	}
 	return nil
@@ -540,11 +555,64 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 184, accent)
 	drawText(screen, "VIEW TRAVERSAL: STRONG INFERENCE", 310, 210, accent)
 	drawText(screen, "MOVE POLICY: PENDING / DISABLED", 310, 246, foreground)
-	drawText(screen, "FIRST EVENT: PENDING", 310, 272, foreground)
+	if a.initialEvent != nil {
+		drawText(screen, fmt.Sprintf("FIRST EVENT: ROLF / MONSTER %d", a.initialEvent.MonsterID), 310, 272, foreground)
+	} else {
+		drawText(screen, "FIRST EVENT: NOT LOADED", 310, 272, foreground)
+	}
 	drawText(screen, "ESC: PARTY CREATION MENU", 310, 308, foreground)
-	if a.statusLine != "" {
+	if a.introWaiting && a.initialEvent != nil {
+		drawDialogue(screen, a.initialEvent.Message, a.initialEvent.ContinueLabel, foreground, accent)
+	} else if a.introDone {
+		drawDialogue(screen, "ROLF'S GUIDED TOUR CONTINUES HERE. THE REMAINING SEVEN PAGES AND SCRIPTED MOVEMENT ARE PENDING ECL VERIFICATION.", "ESC RETURNS TO PARTY CREATION MENU", foreground, accent)
+	}
+	if a.statusLine != "" && !a.introWaiting && !a.introDone {
 		drawText(screen, a.statusLine, 42, 342, foreground)
 	}
+}
+
+func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
+	panel := ebiten.NewImage(560, 142)
+	panel.Fill(color.RGBA{0, 0, 0, 255})
+	screen.DrawImage(panel, &ebiten.DrawImageOptions{GeoM: translated(40, 198)})
+	for x := 40; x < 600; x++ {
+		screen.Set(x, 198, accent)
+		screen.Set(x, 339, accent)
+	}
+	for y := 198; y <= 339; y++ {
+		screen.Set(40, y, accent)
+		screen.Set(599, y, accent)
+	}
+	for index, line := range wrapASCII(message, 74) {
+		if index >= 6 {
+			break
+		}
+		drawText(screen, line, 52, 218+index*16, foreground)
+	}
+	drawText(screen, label, 52, 326, accent)
+}
+
+func translated(x, y float64) ebiten.GeoM {
+	var result ebiten.GeoM
+	result.Translate(x, y)
+	return result
+}
+
+func wrapASCII(value string, width int) []string {
+	words := strings.Fields(value)
+	if len(words) == 0 || width < 1 {
+		return nil
+	}
+	lines := []string{words[0]}
+	for _, word := range words[1:] {
+		last := len(lines) - 1
+		if len(lines[last])+1+len(word) <= width {
+			lines[last] += " " + word
+			continue
+		}
+		lines = append(lines, word)
+	}
+	return lines
 }
 
 func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepack.Spawn) ([]graphics.WallStamp, error) {

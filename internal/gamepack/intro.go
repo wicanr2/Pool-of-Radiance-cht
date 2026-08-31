@@ -1,0 +1,124 @@
+package gamepack
+
+import (
+	"archive/zip"
+	"fmt"
+
+	"github.com/wicanr2/golden-box-remake-engine/ecl"
+)
+
+// InitialEvent is the first player-visible ECL3/block 0 event reached by a
+// newly created party. Text stays sourced from the user's original ZIP.
+type InitialEvent struct {
+	TriggerAddress uint16
+	TriggerLimit   uint16
+	EntryAddress   uint16
+	HandlerAddress uint16
+	Position       Spawn
+	MonsterID      uint16
+	Message        string
+	ContinueLabel  string
+}
+
+// ReadDOSInitialEvent closes only Spec 010's first Rolf page and Return gate.
+// The subsequent guided tour is deliberately outside this adapter until its
+// scripted movement and all seven later pages are implemented together.
+func ReadDOSInitialEvent(zipPath string) (InitialEvent, error) {
+	zr, err := zip.OpenReader(zipPath)
+	if err != nil {
+		return InitialEvent{}, fmt.Errorf("open DOS ZIP: %w", err)
+	}
+	defer zr.Close()
+	member, err := uniqueMember(zr.File, "ECL3.DAX")
+	if err != nil {
+		return InitialEvent{}, err
+	}
+	blocks, err := readDAXBlocks(member)
+	if err != nil {
+		return InitialEvent{}, fmt.Errorf("ECL3.DAX: %w", err)
+	}
+	block, ok := blocks[0]
+	if !ok {
+		return InitialEvent{}, fmt.Errorf("ECL3.DAX has no block 0")
+	}
+	if len(block) < 2 {
+		return InitialEvent{}, fmt.Errorf("ECL3.DAX block 0 has %d bytes, want prefix and payload", len(block))
+	}
+	payload := block[2:]
+	decode := func(offset int, opcode byte) (ecl.Instruction, error) {
+		instruction, err := ecl.DecodeInstruction(payload, offset)
+		if err != nil {
+			return ecl.Instruction{}, err
+		}
+		if instruction.Command.Opcode != opcode {
+			return ecl.Instruction{}, fmt.Errorf("ECL3/block0 offset 0x%X opcode 0x%02X, want 0x%02X", offset, instruction.Command.Opcode, opcode)
+		}
+		return instruction, nil
+	}
+	compare, err := decode(576, 0x03)
+	if err != nil {
+		return InitialEvent{}, err
+	}
+	if len(compare.Operands) != 2 || compare.Operands[0].Word != 0x4AC5 || compare.Operands[1].Low != 1 {
+		return InitialEvent{}, fmt.Errorf("initial event trigger operands changed")
+	}
+	if _, err := decode(582, 0x18); err != nil {
+		return InitialEvent{}, err
+	}
+	jump, err := decode(583, 0x01)
+	if err != nil {
+		return InitialEvent{}, err
+	}
+	if len(jump.Operands) != 1 || jump.Operands[0].Word != 0xB06E {
+		return InitialEvent{}, fmt.Errorf("initial event handler jump changed")
+	}
+	positionOffsets := []int{6030, 6036, 6042}
+	wantAddresses := []uint16{0xC04B, 0xC04C, 0xC04D}
+	values := [3]uint8{}
+	for index, offset := range positionOffsets {
+		instruction, err := decode(offset, 0x09)
+		if err != nil {
+			return InitialEvent{}, err
+		}
+		if len(instruction.Operands) != 2 || instruction.Operands[1].Word != wantAddresses[index] {
+			return InitialEvent{}, fmt.Errorf("position SAVE at 0x%X changed", offset)
+		}
+		values[index] = instruction.Operands[0].Low
+	}
+	monster, err := decode(6058, 0x0C)
+	if err != nil {
+		return InitialEvent{}, err
+	}
+	if len(monster.Operands) != 3 || monster.Operands[0].Low != 12 {
+		return InitialEvent{}, fmt.Errorf("Rolf setup changed")
+	}
+	message, err := decode(6070, 0x12)
+	if err != nil {
+		return InitialEvent{}, err
+	}
+	if len(message.Operands) != 1 || len(message.Operands[0].Packed) == 0 {
+		return InitialEvent{}, fmt.Errorf("Rolf greeting is absent")
+	}
+	menu, err := ecl.DecodeMenuRecord(block, 5660)
+	if err != nil {
+		return InitialEvent{}, err
+	}
+	if len(menu.OptionTexts) != 1 {
+		return InitialEvent{}, fmt.Errorf("continue menu has %d options", len(menu.OptionTexts))
+	}
+	return InitialEvent{
+		TriggerAddress: 0x4AC5,
+		TriggerLimit:   1,
+		EntryAddress:   0x9AF2,
+		HandlerAddress: 0xB06E,
+		Position: Spawn{
+			Map:    MapKey{Archive: 3, BlockID: 0},
+			X:      values[0],
+			Y:      values[1],
+			Facing: values[2],
+		},
+		MonsterID:     uint16(monster.Operands[0].Low),
+		Message:       ecl.DecodePackedText(message.Operands[0].Packed),
+		ContinueLabel: menu.OptionTexts[0],
+	}, nil
+}

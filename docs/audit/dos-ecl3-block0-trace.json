@@ -1,0 +1,1478 @@
+{
+  "schema": "pool-ecl-static-trace-v1",
+  "zip": "Pool of Radiance (1988).zip",
+  "zip_sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633",
+  "member": "poolrad/ecl3.dax",
+  "member_sha256": "db58f0c6326d400cc65902933392ce928812c7cd3baf7f68827aed0dff64d076",
+  "block_id": 0,
+  "block_sha256": "b0fe79c56c36d6cf9a7af1bc8e4825f0d195988bc3578072d7486855c4cf0631",
+  "code_address_base": "0x9900",
+  "entry_addresses": [
+    "0x9AF2"
+  ],
+  "instructions": [
+    {
+      "offset": 390,
+      "address": "0x9A86",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 396,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 210,
+          "word": 28114,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 396,
+      "address": "0x9A8C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 402,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 211,
+          "word": 28115,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 402,
+      "address": "0x9A92",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 403
+    },
+    {
+      "offset": 498,
+      "address": "0x9AF2",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 504,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 196,
+          "word": 19140,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 504,
+      "address": "0x9AF8",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 510,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 235,
+          "word": 18923,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 510,
+      "address": "0x9AFE",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 516,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 251,
+          "word": 18939,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 516,
+      "address": "0x9B04",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 522,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 251,
+          "word": 18939,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 522,
+      "address": "0x9B0A",
+      "opcode": 33,
+      "name": "LOAD FILES",
+      "record_end": 529,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 529,
+      "address": "0x9B11",
+      "opcode": 55,
+      "name": "LOAD PIECES",
+      "record_end": 536,
+      "operands": [
+        {
+          "code": 0,
+          "low": 127
+        },
+        {
+          "code": 0,
+          "low": 127
+        },
+        {
+          "code": 0,
+          "low": 127
+        }
+      ]
+    },
+    {
+      "offset": 536,
+      "address": "0x9B18",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 542,
+      "operands": [
+        {
+          "code": 1,
+          "low": 211,
+          "word": 28115,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 542,
+      "address": "0x9B1E",
+      "opcode": 23,
+      "name": "IF \u003c\u003e",
+      "record_end": 543
+    },
+    {
+      "offset": 543,
+      "address": "0x9B1F",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 547,
+      "operands": [
+        {
+          "code": 1,
+          "low": 134,
+          "word": 39558,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 547,
+      "address": "0x9B23",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 553,
+      "operands": [
+        {
+          "code": 1,
+          "low": 23,
+          "word": 18967,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 553,
+      "address": "0x9B29",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 554
+    },
+    {
+      "offset": 554,
+      "address": "0x9B2A",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 558,
+      "operands": [
+        {
+          "code": 1,
+          "low": 134,
+          "word": 39558,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 558,
+      "address": "0x9B2E",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 564,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 23,
+          "word": 18967,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 564,
+      "address": "0x9B34",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 570,
+      "operands": [
+        {
+          "code": 0,
+          "low": 72
+        },
+        {
+          "code": 1,
+          "low": 184,
+          "word": 184,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 570,
+      "address": "0x9B3A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 576,
+      "operands": [
+        {
+          "code": 0,
+          "low": 189
+        },
+        {
+          "code": 1,
+          "low": 185,
+          "word": 185,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 576,
+      "address": "0x9B40",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 582,
+      "operands": [
+        {
+          "code": 1,
+          "low": 197,
+          "word": 19141,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 1
+        }
+      ]
+    },
+    {
+      "offset": 582,
+      "address": "0x9B46",
+      "opcode": 24,
+      "name": "IF \u003c",
+      "record_end": 583
+    },
+    {
+      "offset": 583,
+      "address": "0x9B47",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 587,
+      "operands": [
+        {
+          "code": 1,
+          "low": 110,
+          "word": 45166,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 587,
+      "address": "0x9B4B",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 588
+    },
+    {
+      "offset": 5482,
+      "address": "0xAE6A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5488,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 7,
+          "word": 18951,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5488,
+      "address": "0xAE70",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5494,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 15,
+          "word": 18959,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5494,
+      "address": "0xAE76",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5500,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 17,
+          "word": 18961,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5500,
+      "address": "0xAE7C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 5506,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 16,
+          "word": 18960,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 5506,
+      "address": "0xAE82",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 5509,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 5509,
+      "address": "0xAE85",
+      "opcode": 0,
+      "name": "EXIT",
+      "record_end": 5510
+    },
+    {
+      "offset": 5660,
+      "address": "0xAF1C",
+      "opcode": 43,
+      "name": "HORIZONTAL MENU",
+      "record_end": 5695,
+      "menu_options": [
+        "PRESS \u003cRETURN\u003e OR BUTTON TO CONTINUE"
+      ]
+    },
+    {
+      "offset": 5695,
+      "address": "0xAF3F",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 5696
+    },
+    {
+      "offset": 5998,
+      "address": "0xB06E",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6004,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 197,
+          "word": 19141,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6004,
+      "address": "0xB074",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6010,
+      "operands": [
+        {
+          "code": 0,
+          "low": 11
+        },
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6010,
+      "address": "0xB07A",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 6016,
+      "operands": [
+        {
+          "code": 1,
+          "low": 201,
+          "word": 18889,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 14
+        }
+      ]
+    },
+    {
+      "offset": 6016,
+      "address": "0xB080",
+      "opcode": 25,
+      "name": "IF \u003e",
+      "record_end": 6017
+    },
+    {
+      "offset": 6017,
+      "address": "0xB081",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6023,
+      "operands": [
+        {
+          "code": 0,
+          "low": 8
+        },
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6023,
+      "address": "0xB087",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6030,
+      "operands": [
+        {
+          "code": 1,
+          "low": 125,
+          "word": 28285,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 253,
+          "word": 18941,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6030,
+      "address": "0xB08E",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6036,
+      "operands": [
+        {
+          "code": 0,
+          "low": 15
+        },
+        {
+          "code": 1,
+          "low": 75,
+          "word": 49227,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6036,
+      "address": "0xB094",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6042,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 76,
+          "word": 49228,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6042,
+      "address": "0xB09A",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6048,
+      "operands": [
+        {
+          "code": 0,
+          "low": 3
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6048,
+      "address": "0xB0A0",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 6052,
+      "operands": [
+        {
+          "code": 1,
+          "low": 144,
+          "word": 11408,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6052,
+      "address": "0xB0A4",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6058,
+      "operands": [
+        {
+          "code": 0,
+          "low": 8
+        },
+        {
+          "code": 1,
+          "low": 225,
+          "word": 28129,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6058,
+      "address": "0xB0AA",
+      "opcode": 12,
+      "name": "SETUP MONSTER",
+      "record_end": 6065,
+      "operands": [
+        {
+          "code": 0,
+          "low": 12
+        },
+        {
+          "code": 0,
+          "low": 2
+        },
+        {
+          "code": 0,
+          "low": 9
+        }
+      ]
+    },
+    {
+      "offset": 6065,
+      "address": "0xB0B1",
+      "opcode": 58,
+      "name": "DELAY",
+      "record_end": 6066
+    },
+    {
+      "offset": 6066,
+      "address": "0xB0B2",
+      "opcode": 13,
+      "name": "APPROACH",
+      "record_end": 6067
+    },
+    {
+      "offset": 6067,
+      "address": "0xB0B3",
+      "opcode": 58,
+      "name": "DELAY",
+      "record_end": 6068
+    },
+    {
+      "offset": 6068,
+      "address": "0xB0B4",
+      "opcode": 13,
+      "name": "APPROACH",
+      "record_end": 6069
+    },
+    {
+      "offset": 6069,
+      "address": "0xB0B5",
+      "opcode": 58,
+      "name": "DELAY",
+      "record_end": 6070
+    },
+    {
+      "offset": 6070,
+      "address": "0xB0B6",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6196,
+      "operands": [
+        {
+          "code": 128,
+          "low": 123,
+          "packed_hex": "9c748515424e1d3b200cf55204714f55380f3854ec80980136048f306b2005040f24e5051200998142058033d538324c8143e024e5123c45431603855c33cd1524e050f8142058060494a00c951980f1a04083013ae8091a064f5605c930c8010c33cd40139980d16c80981724c3204d405252050816050f552ba7"
+        }
+      ]
+    },
+    {
+      "offset": 6196,
+      "address": "0xB134",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6200,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6200,
+      "address": "0xB138",
+      "opcode": 49,
+      "name": "SPRITE OFF",
+      "record_end": 6201
+    },
+    {
+      "offset": 6201,
+      "address": "0xB139",
+      "opcode": 14,
+      "name": "PICTURE",
+      "record_end": 6204,
+      "operands": [
+        {
+          "code": 0,
+          "low": 255
+        }
+      ]
+    },
+    {
+      "offset": 6204,
+      "address": "0xB13C",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6210,
+      "operands": [
+        {
+          "code": 0,
+          "low": 0
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6210,
+      "address": "0xB142",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6213,
+      "operands": [
+        {
+          "code": 128,
+          "low": 0
+        }
+      ]
+    },
+    {
+      "offset": 6213,
+      "address": "0xB145",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 6223,
+      "operands": [
+        {
+          "code": 1,
+          "low": 177,
+          "word": 46513,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 122,
+          "word": 28282,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6223,
+      "address": "0xB14F",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 6233,
+      "operands": [
+        {
+          "code": 1,
+          "low": 211,
+          "word": 46547,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 123,
+          "word": 28283,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6233,
+      "address": "0xB159",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 6243,
+      "operands": [
+        {
+          "code": 1,
+          "low": 245,
+          "word": 46581,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 77,
+          "word": 49229,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6243,
+      "address": "0xB163",
+      "opcode": 42,
+      "name": "GETTABLE",
+      "record_end": 6253,
+      "operands": [
+        {
+          "code": 1,
+          "low": 143,
+          "word": 46479,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 124,
+          "word": 28284,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6253,
+      "address": "0xB16D",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6257,
+      "operands": [
+        {
+          "code": 1,
+          "low": 164,
+          "word": 45476,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6257,
+      "address": "0xB171",
+      "opcode": 38,
+      "name": "ON GOSUB",
+      "record_end": 6284
+    },
+    {
+      "offset": 6284,
+      "address": "0xB18C",
+      "opcode": 3,
+      "name": "COMPARE",
+      "record_end": 6290,
+      "operands": [
+        {
+          "code": 1,
+          "low": 124,
+          "word": 28284,
+          "word_set": true
+        },
+        {
+          "code": 0,
+          "low": 6
+        }
+      ]
+    },
+    {
+      "offset": 6290,
+      "address": "0xB192",
+      "opcode": 22,
+      "name": "IF =",
+      "record_end": 6291
+    },
+    {
+      "offset": 6291,
+      "address": "0xB193",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 6295,
+      "operands": [
+        {
+          "code": 1,
+          "low": 106,
+          "word": 44650,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6295,
+      "address": "0xB197",
+      "opcode": 4,
+      "name": "ADD",
+      "record_end": 6304,
+      "operands": [
+        {
+          "code": 0,
+          "low": 1
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 121,
+          "word": 28281,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6304,
+      "address": "0xB1A0",
+      "opcode": 1,
+      "name": "GOTO",
+      "record_end": 6308,
+      "operands": [
+        {
+          "code": 1,
+          "low": 66,
+          "word": 45378,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6308,
+      "address": "0xB1A4",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6315,
+      "operands": [
+        {
+          "code": 1,
+          "low": 122,
+          "word": 28282,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 75,
+          "word": 49227,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6315,
+      "address": "0xB1AB",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6322,
+      "operands": [
+        {
+          "code": 1,
+          "low": 123,
+          "word": 28283,
+          "word_set": true
+        },
+        {
+          "code": 1,
+          "low": 76,
+          "word": 49228,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6322,
+      "address": "0xB1B2",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 6326,
+      "operands": [
+        {
+          "code": 1,
+          "low": 144,
+          "word": 11408,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6326,
+      "address": "0xB1B6",
+      "opcode": 9,
+      "name": "SAVE",
+      "record_end": 6332,
+      "operands": [
+        {
+          "code": 0,
+          "low": 8
+        },
+        {
+          "code": 1,
+          "low": 222,
+          "word": 990,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6332,
+      "address": "0xB1BC",
+      "opcode": 45,
+      "name": "CALL",
+      "record_end": 6336,
+      "operands": [
+        {
+          "code": 1,
+          "low": 3,
+          "word": 47619,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6336,
+      "address": "0xB1C0",
+      "opcode": 58,
+      "name": "DELAY",
+      "record_end": 6337
+    },
+    {
+      "offset": 6337,
+      "address": "0xB1C1",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6338
+    },
+    {
+      "offset": 6338,
+      "address": "0xB1C2",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6482,
+      "operands": [
+        {
+          "code": 128,
+          "low": 141,
+          "packed_hex": "9d93d580e3d780604316004e80539448138316050f81420581414d40c1603c6814652ba081420548580148581421214581414d40c1538093a04083013ba8146529d3b204d53859d3b2004e120505350553ba05194a74e025381420580c0521c54d48013848083d54c54e00894c83d08024810c324fba02468193d581724c32051548e80148f54e12038f5ec827"
+        }
+      ]
+    },
+    {
+      "offset": 6482,
+      "address": "0xB252",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6486,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6486,
+      "address": "0xB256",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6487
+    },
+    {
+      "offset": 6487,
+      "address": "0xB257",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6638,
+      "operands": [
+        {
+          "code": 128,
+          "low": 148,
+          "packed_hex": "9d93d581724c3204c516050816014e51204e0c58143e05081604014d314e1c54a010f0cb8014850605c580a553520105401494144ba080615781320941380405216050816040548930f5538100534c11c580815216c8025548142058033d538324c8094e010558530f4093878018103013a050f80f4053a055081420581314180c04e153ba081030505316018f30c3d780d16e9c"
+        }
+      ]
+    },
+    {
+      "offset": 6638,
+      "address": "0xB2EE",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6642,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6642,
+      "address": "0xB2F2",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6643
+    },
+    {
+      "offset": 6643,
+      "address": "0xB2F3",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6757,
+      "operands": [
+        {
+          "code": 128,
+          "low": 111,
+          "packed_hex": "9c214824e12050815316010f3d24e00521605081604d01432413205120493893878130c83cf3138205c81521600445853945521524e024e0d21414c58142052528132c930c4ee80c1548154e038f5e01cf8143e05081600c95199d380d3d352024d40f49404e52009524c109387ba7"
+        }
+      ]
+    },
+    {
+      "offset": 6757,
+      "address": "0xB365",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6761,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6761,
+      "address": "0xB369",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6762
+    },
+    {
+      "offset": 6762,
+      "address": "0xB36A",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 6907,
+      "operands": [
+        {
+          "code": 128,
+          "low": 142,
+          "packed_hex": "9d71600521602954d480f5544c910581420580325466020130cba04123c33013415093ce4e005216040f4d414480f3a05081531605c130c4ee80939324416c8142058032546600cc1522e00570521138142058033d538324c9d38033cd3494d324f393ba08033cd3494d324f3938014858142058115490cb1535205c166050f80604d16004e12018f49454e16e9c"
+        }
+      ]
+    },
+    {
+      "offset": 6907,
+      "address": "0xB3FB",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 6911,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 6911,
+      "address": "0xB3FF",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 6912
+    },
+    {
+      "offset": 6912,
+      "address": "0xB400",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 7050,
+      "operands": [
+        {
+          "code": 128,
+          "low": 135,
+          "packed_hex": "9cf3a064f5528122472148094e03ce1603c68142058053944813831674e050f81354e1674e0505350305ba005381725422004c3204083013a74e05053503054ec81605224f5538033054890c13204c549624315380148580f18615214480939324416e8203ce8193d54a03051948094e004e80539448138316050f81420580325466040148bba7"
+        }
+      ]
+    },
+    {
+      "offset": 7050,
+      "address": "0xB48A",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7054,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7054,
+      "address": "0xB48E",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7055
+    },
+    {
+      "offset": 7055,
+      "address": "0xB48F",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 7192,
+      "operands": [
+        {
+          "code": 128,
+          "low": 134,
+          "packed_hex": "9c21593ce12050825380705416005216050816034f3935054ad48910414e80148505380f1a05081603cc1200c95198171600521604cc3d73198104854014893878063d281315450c14d14e52e8205081600cf54e0c93203c618549380180714e1523d54e04855c14848143e05083d31605c83e00cc1414a00521414e03c680d3ce4d41524ee0"
+        }
+      ]
+    },
+    {
+      "offset": 7192,
+      "address": "0xB518",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7196,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7196,
+      "address": "0xB51C",
+      "opcode": 18,
+      "name": "PRINTCLEAR",
+      "record_end": 7306,
+      "operands": [
+        {
+          "code": 128,
+          "low": 107,
+          "packed_hex": "9cf5528143d54a0253805384144ba00470493ac80c15480d1605521c58193d58143e005040c66050f8142058032546600cc1522e018f4a00600cf34d2534c93ceba08073cf12d09916004e1201cf3c48063d2515385ba782864f5600521603ce8193d54a03d73a038f5e90"
+        }
+      ]
+    },
+    {
+      "offset": 7306,
+      "address": "0xB58A",
+      "opcode": 2,
+      "name": "GOSUB",
+      "record_end": 7310,
+      "operands": [
+        {
+          "code": 1,
+          "low": 28,
+          "word": 44828,
+          "word_set": true
+        }
+      ]
+    },
+    {
+      "offset": 7310,
+      "address": "0xB58E",
+      "opcode": 19,
+      "name": "RETURN",
+      "record_end": 7311
+    }
+  ],
+  "edges": [
+    {
+      "From": 543,
+      "To": 390,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 554,
+      "To": 390,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 583,
+      "To": 5998,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 6196,
+      "To": 5660,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6253,
+      "To": 6308,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6257,
+      "To": 6337,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 6257,
+      "To": 6338,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 6257,
+      "To": 6487,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 6257,
+      "To": 6643,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 6257,
+      "To": 6762,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 6257,
+      "To": 6912,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 6257,
+      "To": 7055,
+      "Kind": "ON GOSUB"
+    },
+    {
+      "From": 6291,
+      "To": 5482,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 6304,
+      "To": 6210,
+      "Kind": "GOTO"
+    },
+    {
+      "From": 6482,
+      "To": 5660,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6638,
+      "To": 5660,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6757,
+      "To": 5660,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 6907,
+      "To": 5660,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7050,
+      "To": 5660,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7192,
+      "To": 5660,
+      "Kind": "GOSUB"
+    },
+    {
+      "From": 7306,
+      "To": 5660,
+      "Kind": "GOSUB"
+    }
+  ]
+}

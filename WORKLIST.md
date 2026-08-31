@@ -52,9 +52,10 @@
   的 ECL3/block 0 → `LOAD FILES 0,0,0` 已閉合 `GEO3/block 0, (15,1), facing 6`，
   初始 `LOAD PIECES` 又閉合 `WALLDEF3 block 0` 與 `8X8D3 blocks 101/102/103`，
   並由正常 `B` 畫面解析 42 個可見原版 wall stamps。GEO／wall material identity 是
-  exact；wrapped traversal 仍是跨作品 strong inference。地名、bounded／wrapped／
-  door movement policy、背景、事件與同狀態 DOS 畫面仍待證明，不得因素材可見就稱為
-  Phlan parity。
+  exact；Spec 010 已閉合首次旗標、Rolf 第一頁、事件位置／朝向、monster 12 與 Return
+  閘門，正常 `B` 路徑會顯示原版 ZIP 解出的第一頁。wrapped traversal 仍是跨作品
+  strong inference；後續七頁導覽、scripted movement、Rolf 圖像、自由移動交接、地名、
+  bounded／wrapped／door policy、背景與同狀態 DOS 畫面仍待證明。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

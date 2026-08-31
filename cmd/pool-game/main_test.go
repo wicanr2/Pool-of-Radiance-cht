@@ -5,12 +5,14 @@ import (
 	"image/color"
 	"math/rand"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
 
 type scriptedKeys map[ebiten.Key]bool
@@ -175,13 +177,22 @@ func TestLoadSavedGameUsesVersionedStateSeam(t *testing.T) {
 	}
 }
 
-func TestBeginAdventureRequiresPartyAndUsesSpec009Spawn(t *testing.T) {
+func TestBeginAdventureRequiresPartyAndRunsSpec010FirstEvent(t *testing.T) {
 	initial := gamepack.GeometryMap{Key: gamepack.MapKey{Archive: 3, BlockID: 0}}
+	event := gamepack.InitialEvent{
+		Position:      gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 15, Y: 1, Facing: 3},
+		MonsterID:     12,
+		Message:       "ROLF GREETS THE PARTY IN PHLAN.",
+		ContinueLabel: "PRESS <RETURN> OR BUTTON TO CONTINUE",
+	}
+	walls := graphics.PieceSet{}
 	application := &app{
-		mode:       modeMenu,
-		state:      poolsave.NewState(),
-		spawn:      gamepack.DOSInitialSpawn(),
-		initialMap: &initial,
+		mode:         modeMenu,
+		state:        poolsave.NewState(),
+		spawn:        gamepack.DOSInitialSpawn(),
+		initialMap:   &initial,
+		initialWalls: &walls,
+		initialEvent: &event,
 	}
 	if err := press(application, ebiten.KeyB); err != nil {
 		t.Fatal(err)
@@ -193,11 +204,22 @@ func TestBeginAdventureRequiresPartyAndUsesSpec009Spawn(t *testing.T) {
 	if err := press(application, ebiten.KeyB); err != nil {
 		t.Fatal(err)
 	}
-	if application.mode != modeAdventure || application.spawn != (gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 15, Y: 1, Facing: 6}) {
+	if application.mode != modeAdventure || application.spawn != event.Position || !application.introWaiting {
 		t.Fatalf("Begin mode=%d spawn=%+v", application.mode, application.spawn)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.introWaiting || !application.introDone || application.mode != modeAdventure {
+		t.Fatalf("Return gate mode=%d waiting=%v done=%v err=%v", application.mode, application.introWaiting, application.introDone, err)
 	}
 	if err := press(application, ebiten.KeyEscape); err != nil || application.mode != modeMenu {
 		t.Fatalf("adventure ESC mode=%d err=%v", application.mode, err)
+	}
+}
+
+func TestWrapASCIIUsesStableLineWidth(t *testing.T) {
+	lines := wrapASCII("ONE TWO THREE FOUR FIVE", 9)
+	want := []string{"ONE TWO", "THREE", "FOUR FIVE"}
+	if !reflect.DeepEqual(lines, want) {
+		t.Fatalf("lines=%q want=%q", lines, want)
 	}
 }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 以真實 Ebitengine 視窗與逐鍵輸入重生建角、建隊與初始第一人稱素材截圖。
+# 以真實 Ebitengine 視窗與逐鍵輸入重生建角、建隊與初始 Rolf 事件截圖。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -83,13 +83,13 @@ ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT
 pulse b
 sleep 0.8
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
-  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-initial-first-person.png
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-initial-rolf-event.png
 sha256sum docs/screenshots/pool-remake-character-name.png \
   docs/screenshots/pool-remake-portrait-editor.png \
   docs/screenshots/pool-remake-combat-icon-editor.png \
   docs/screenshots/pool-remake-icon-confirm.png \
   docs/screenshots/pool-remake-party-menu.png \
-  docs/screenshots/pool-remake-initial-first-person.png
+  docs/screenshots/pool-remake-initial-rolf-event.png
 if cmp -s docs/screenshots/pool-remake-portrait-editor.png docs/screenshots/pool-remake-combat-icon-editor.png; then
   echo "combat icon capture did not leave the portrait screen" >&2
   exit 1
@@ -99,8 +99,8 @@ if cmp -s docs/screenshots/pool-remake-combat-icon-editor.png docs/screenshots/p
   echo "creation completion capture did not advance through confirmation and party menu" >&2
   exit 1
 fi
-if cmp -s docs/screenshots/pool-remake-party-menu.png docs/screenshots/pool-remake-initial-first-person.png; then
-  echo "Begin did not advance from the party menu to initial first-person material" >&2
+if cmp -s docs/screenshots/pool-remake-party-menu.png docs/screenshots/pool-remake-initial-rolf-event.png; then
+  echo "Begin did not advance from the party menu to the initial Rolf event" >&2
   exit 1
 fi
 '

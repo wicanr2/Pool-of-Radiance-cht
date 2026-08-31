@@ -24,9 +24,11 @@
   完成確認後會寫入版本化 remake 角色庫、回到原版順序的 Party Creation Menu；
   Add、Load、六名玩家角色上限及 F10 原子保存已接通。DOS 285-byte CHA／SPC export
   尚未完成。正常 `B` 已依原版 producer chain 接到 `GEO3/block 0, (15,1), facing 6`
-  的 typed geometry 與原版 `WALLDEF3/8X8D3` 第一人稱素材畫面；GEO／wall source
-  identity 已達 exact，視錐 traversal 目前是跨作品共用引擎的 strong inference。
-  移動規則與第一事件仍未完成，因此尚未開放移動。
+  的 typed geometry 與原版 `WALLDEF3/8X8D3` 第一人稱素材。正常 Begin 隨即依
+  ECL3/block 0 進入 Rolf 導覽第一頁：首次旗標、`(15,1), facing 3`、monster 12、
+  原版 ZIP packed text 與 Return 閘門已達 exact。確認後的七頁導覽與 scripted
+  movement 尚未閉合，因此停在待實作畫面且不開放自由移動。視錐 traversal 仍是
+  跨作品共用引擎的 strong inference。
 - 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
   Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
   原版職業清單已進 typed catalog，並有 Race→Gender→Class→Alignment＋ESC 狀態機。
@@ -69,9 +71,9 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![Pool remake icon 最終確認](docs/screenshots/pool-remake-icon-confirm.png) | ![Pool remake Party Creation Menu](docs/screenshots/pool-remake-party-menu.png) |
 
-| 建隊後正常按 `B` 進入初始第一人稱素材畫面（移動／事件尚未開放） |
+| 建隊後正常按 `B` 進入原版 Rolf 導覽第一頁（後續導覽／移動尚未開放） |
 |---|
-| ![Pool remake 初始 GEO3 block 0 第一人稱素材](docs/screenshots/pool-remake-initial-first-person.png) |
+| ![Pool remake 初始 Rolf 導覽事件](docs/screenshots/pool-remake-initial-rolf-event.png) |
 
 目前以 Docker／Xvfb 做離線測試與煙霧擷取：
 
@@ -84,4 +86,4 @@ tools/go.sh test ./...
 
 這仍是首條玩家垂直鏈；remake 自有角色庫、建隊與初始 map identity 已接通，但 DOS
 相容角色檔、完整 Party Creation Menu、第一人稱背景／視錐的 Pool 專屬 oracle、
-移動與事件仍未完成，不能宣稱可玩版，也尚未證實該 block 的地名。
+Rolf 後續七頁與移動仍未完成，不能宣稱可玩版，也尚未證實該 block 的地名。
