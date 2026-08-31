@@ -440,6 +440,37 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if application.spawn.Map != (gamepack.MapKey{Archive: 3, BlockID: 0}) || application.spawn.X != 4 || application.spawn.Y != 4 || application.spawn.Facing != 2 || application.eventSession.CurrentBlockID() != 8 || application.cellEventPending || application.cellWaitingMenu {
 		t.Fatalf("City Hall doorway spawn=%+v pending=%v waiting=%v text=%q script_block=%d", application.spawn, application.cellEventPending, application.cellWaitingMenu, application.eventText, application.eventSession.CurrentBlockID())
 	}
+	if err := press(application, ebiten.KeyArrowRight); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyArrowRight); err != nil || application.spawn.Facing != 4 {
+		t.Fatalf("turn toward clerk corridor facing=%d err=%v", application.spawn.Facing, err)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 4 || application.spawn.Y != 5 || !application.cellEventPending || !strings.Contains(application.eventText, "OUTSIDE THE CLERK'S OFFICE") {
+		t.Fatalf("clerk outside spawn=%+v pending=%v text=%q err=%v", application.spawn, application.cellEventPending, application.eventText, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending {
+		t.Fatalf("leave clerk outside boundary pending=%v text=%q err=%v", application.cellEventPending, application.eventText, err)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 2 {
+		t.Fatalf("turn into clerk office facing=%d err=%v", application.spawn.Facing, err)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 5 || application.spawn.Y != 5 || !application.cellEventPending || !strings.Contains(application.eventText, "COUNCIL CLERK BEGINS LOOKING") {
+		t.Fatalf("clerk entry spawn=%+v pending=%v text=%q err=%v", application.spawn, application.cellEventPending, application.eventText, err)
+	}
+	if application.eventMachine.Memory[0x4A01] != 1 || application.eventMachine.Memory[0x4A06] != 1 {
+		t.Fatalf("clerk entry flags 4A01=%d 4A06=%d", application.eventMachine.Memory[0x4A01], application.eventMachine.Memory[0x4A06])
+	}
+	clerkEntryText := application.eventText
+	if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || application.eventText != clerkEntryText {
+		t.Fatalf("clerk entry continue menu waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != "THE CLERK SHUFFLES THROUGH HER PAPERS. 'ON THE MATTER OF COMMISSION,' SHE SAYS, 'I CAN OFFER THE FOLLOWING: '" {
+		t.Fatalf("clerk commission boundary waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
+	}
 }
 
 func TestWrapASCIIUsesStableLineWidth(t *testing.T) {

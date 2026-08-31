@@ -1,6 +1,20 @@
 # Pool of Radiance remake 現況
 
-更新日期：2026-08-31。
+更新日期：2026-09-01。
+
+## 2026-09-01 City Hall clerk 與共用 `SAVE TABLE`
+
+- Spec 026 已由同一正常按鍵 session 從標題、原版建角、Rolf、Sune、City Hall 公告
+  與 `NEWECL 8` 走到 clerk office：`(4,5)` 外部提示、`(5,5)` clerk 第一頁、
+  `4A01h=1`／`4A06h=1`、script block 8 與 GEO3/block0 均有精確斷言。
+- Spec 027 以 Pool overlay-03 `0FA2h..0FEEh` 的 IDA Pro 9.4 bytes 閉合 opcode
+  `35h SAVE TABLE`：`memory[wordAddress(op1)+numeric(op2)] = numeric(op0)`，位址採
+  16-bit wrap。共用 engine `7e93050` 已實作 value／base／index、write receipt
+  與三種失敗即關閉測試；正式 pseudo-version 為
+  `v0.0.0-20260831165626-7e9305036c43`。
+- Pool 正常按鍵已穿過 City Hall `9C9Eh`，下一個 boundary 精確為 clerk 的
+  commission 開場文字；engine／Pool 全測試與 CoAB ECL／遊戲前端回歸抽樣全通過。
+  完整 reward／commission 迴圈仍未立 READY spec，不得把這個 boundary 冒充服務完成。
 
 ## 2026-08-31 存檔生命值決定
 
@@ -190,7 +204,7 @@ cell event；後續 `DO YOU SEEK HEALING?`、原始 YES／NO menu 與 Sune 神�
 服務的價格、HP／狀態與金錢副作用尚未 READY，現階段保持失敗即關閉。`20h` 已依
 Pool `0CDDh` handler READY 並接入共用 block session；Spec 020 的 `14h` 亦已接入
 共用 VM；Spec 021 的 `0Ah` 與字串比較也已依真實 consumer 接線。現行正式引擎鎖版為
-`v0.0.0-20260831161216-940ecaa8c34e`；初始地圖 sweep 已無靜態錯誤。
+`v0.0.0-20260831165626-7e9305036c43`；初始地圖 sweep 已無靜態錯誤。
 
 Sune 選單後的同一 VM 分支已由 Spec 017 閉合到服務入口：YES（選單索引 0）先令
 `6E79h=0`、進入 `AA63h`，執行 opcode `1Ch CLEARMONSTERS`、
@@ -238,5 +252,5 @@ entry 可跨玩家 boundary 與 Clone 保存。正常按鍵在 City Hall 公告�
 script block 變 8；block 8 entry 4 的 `LOAD FILES 0,0,0` 仍載入 GEO3/block0，證明
 script identity 不等於 geometry identity。`LOAD PIECES 127,127,127` 保留現行 wall set；
 其他 selector 尚未 READY。engine／Pool 全測試與 CoAB 玩家／game／ECL 抽樣已通過。
-共用引擎正式版本為 `v0.0.0-20260831161216-940ecaa8c34e`；Pool 已用該鎖版在斷網
+共用引擎正式版本現為 `v0.0.0-20260831165626-7e9305036c43`；Pool 已用該鎖版在斷網
 Docker／Xvfb 重跑全套測試，不再依賴本機 replace 才能通過。

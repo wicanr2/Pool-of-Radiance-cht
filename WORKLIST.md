@@ -89,13 +89,17 @@
   閉合 clerk 實際授予／更新 `4AC1h` 的玩家路徑，以及 `AD29h` Skullcrusher 離隊事件。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
   `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
-  `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。
+  `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑
+  接到 `(4,5)` clerk office 外與 `(5,5)` clerk 第一頁；Spec 027 又依 Pool 原始
+  handler 在共用 engine 接妥 `35h SAVE TABLE`，正常按鍵已穿過 `9C9Eh` 到 commission
+  開場文字。下一個窄切片是完整 reward／commission 迴圈及其 `4AC1h` producer，
+  不是重做 City Hall 入口或把目前單一文字 boundary 冒充服務完成。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic
   RANDOM、VM Clone、同-session entry 切換、作品中立 `CLEARMONSTERS` 訊號，以及
-  opcode `0Ah`／`20h` 都已有 Pool consumer 且 CoAB 唯讀回歸通過。下一步依玩家路徑
-  處理 City Hall continuation 與其後尚未接妥的服務規則。
+  opcode `0Ah`／`20h`／`35h` 都已有 Pool consumer 且 CoAB 回歸通過。下一步依玩家路徑
+  閉合 City Hall reward／commission 迴圈與其後尚未接妥的服務規則。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 
