@@ -19,6 +19,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
 	"github.com/wicanr2/golden-box-remake-engine/viewport"
@@ -87,6 +88,9 @@ type app struct {
 	tourStep     int
 	tourPage     int
 	tourDelay    int
+	eventMachine *eclvm.Machine
+	eventText    string
+	eventLabel   string
 }
 
 func newApp(zipPath string) (*app, error) {
@@ -235,6 +239,22 @@ func (a *app) Update() error {
 			a.spawn = a.initialEvent.Position
 			a.introWaiting, a.introDone = true, false
 			a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
+			a.eventMachine, a.eventText, a.eventLabel = nil, "", ""
+			if len(a.initialEvent.ScriptBlock) != 0 {
+				machine, err := gamepack.NewInitialEventMachine(*a.initialEvent)
+				if err != nil {
+					return err
+				}
+				a.eventMachine = machine
+				result, runErr := machine.Run(2000, nil, true)
+				if runErr != nil {
+					return fmt.Errorf("start Pool initial ECL: %w", runErr)
+				}
+				a.applyECLResult(result)
+				if !a.introWaiting {
+					return fmt.Errorf("Pool initial ECL did not reach its Return menu")
+				}
+			}
 			a.mode = modeAdventure
 			a.statusLine = "Original first Rolf event loaded; movement remains disabled."
 			return nil
@@ -268,6 +288,14 @@ func (a *app) Update() error {
 			a.statusLine = "Returned from the initial event."
 			return nil
 		}
+		if a.eventMachine != nil && a.introWaiting && (a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
+			selection := uint16(0)
+			a.introWaiting = false
+			if !a.tourActive {
+				a.tourActive, a.tourStep = true, -1
+			}
+			return a.runECLUntilBoundary(&selection)
+		}
 		if a.introWaiting && (a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
 			a.introWaiting, a.tourActive = false, true
 			a.tourStep, a.tourPage, a.tourDelay = -1, -1, 0
@@ -275,6 +303,16 @@ func (a *app) Update() error {
 			return nil
 		}
 		if a.tourActive {
+			if a.eventMachine != nil {
+				if a.introWaiting {
+					return nil
+				}
+				if a.tourDelay > 0 {
+					a.tourDelay--
+					return nil
+				}
+				return a.runECLUntilBoundary(nil)
+			}
 			if a.initialEvent == nil {
 				return fmt.Errorf("Pool initial tour is not configured")
 			}
@@ -308,6 +346,57 @@ func (a *app) Update() error {
 		}
 	}
 	return nil
+}
+
+func (a *app) applyECLResult(result eclvm.Result) {
+	for _, write := range result.Writes {
+		switch write.Address {
+		case 0xC04B:
+			a.spawn.X = uint8(write.Value)
+		case 0xC04C:
+			a.spawn.Y = uint8(write.Value)
+		case 0xC04D:
+			a.spawn.Facing = uint8(write.Value)
+		}
+	}
+	for _, event := range result.Events {
+		if event.Text != "" {
+			a.eventText = event.Text
+		}
+		if event.Opcode == 0x3A {
+			a.tourStep++
+			a.tourDelay = tourStepDelayTicks
+		}
+	}
+	if result.WaitingForMenu {
+		a.introWaiting = true
+		if len(result.Menus) != 0 && len(result.Menus[len(result.Menus)-1].Options) != 0 {
+			a.eventLabel = result.Menus[len(result.Menus)-1].Options[0]
+		}
+	}
+	if result.Exited {
+		a.tourActive, a.introWaiting, a.introDone = false, false, true
+		a.statusLine = "Rolf tour reached ECL EXIT at (0,4), facing 3; player movement policy remains pending."
+	}
+}
+
+func (a *app) runECLUntilBoundary(selection *uint16) error {
+	for step := 0; step < 4096; step++ {
+		var selections []uint16
+		if selection != nil {
+			selections = []uint16{*selection}
+			selection = nil
+		}
+		result, err := a.eventMachine.Run(1, selections, true)
+		if err != nil {
+			return fmt.Errorf("run Pool initial ECL: %w", err)
+		}
+		a.applyECLResult(result)
+		if result.WaitingForMenu || result.Exited || a.tourDelay > 0 {
+			return nil
+		}
+	}
+	return fmt.Errorf("Pool initial ECL did not reach a bounded frontend boundary")
 }
 
 func (a *app) updateCreation() error {
@@ -608,7 +697,14 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	}
 	dialogueVisible := false
 	if a.introWaiting && a.initialEvent != nil {
-		drawDialogue(screen, a.initialEvent.Message, a.initialEvent.ContinueLabel, foreground, accent)
+		message, label := a.initialEvent.Message, a.initialEvent.ContinueLabel
+		if a.eventText != "" {
+			message = a.eventText
+		}
+		if a.eventLabel != "" {
+			label = a.eventLabel
+		}
+		drawDialogue(screen, message, label, foreground, accent)
 		dialogueVisible = true
 	} else if a.tourActive && a.tourPage >= 0 && a.initialEvent != nil && a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour) {
 		step := a.initialEvent.Tour[a.tourStep]

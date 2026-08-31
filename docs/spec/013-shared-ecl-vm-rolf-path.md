@@ -1,7 +1,7 @@
 # Spec 013：共用 ECL VM 與 Rolf 真實 bytecode 路徑
 
-狀態：READY（VM 核心、外部效果失敗即關閉、Rolf handler 至 EXIT）；
-DRAFT（前端逐 boundary 接管、完整 Pool opcode 副作用）
+狀態：CONFORMED（VM 核心、外部效果失敗即關閉、Rolf handler 至 EXIT、前端逐 boundary 接管）；
+DRAFT（完整 Pool opcode 副作用）
 日期：2026-08-31
 
 ## 決策與邊界
@@ -41,5 +41,11 @@ base `9900h`，handler `B06Eh`。`gamepack.NewInitialEventMachine` 從
 真實 corpus 測試逐次提供唯一 Return selection，VM 由 `B06Eh` 執行至 `AE85h EXIT`。
 驗收結果：八次選單 continuation、七頁導覽文字錨點、最後寫入
 `C04Bh=0／C04Ch=4／C04Dh=3`，且六個 passthrough opcode 均在同一路徑被實際走到。
-這證明共用 VM 能驅動 Rolf bytecode；尚未證明前端已逐 boundary 使用 VM，因此前端
-手寫 tour 狀態機的替換仍是下一項實作，不可將本規格冒稱為完整遊戲 ECL runtime。
+前端在真實 `ScriptBlock` 存在時，Begin 即建立 production machine：SAVE 寫入直接更新
+畫面座標，Return menu 暫停等待按鍵，`3Ah DELAY` 形成 34 個約 150ms frame，文字事件
+驅動 dialogue，`EXIT` 才結束 tour。Xvfb 測試從 Begin 逐次按 Return／推進 update，驗證
+第 34 frame 後到 `(0,4,3)` 且 `introDone=true`。舊 typed `TourStep` 播放只保留給沒有
+原始 script 的合成 UI fixture，不是正式遊戲路徑。
+
+這證明共用 VM 已驅動 production Rolf bytecode；仍不可將本規格冒稱為完整遊戲 ECL
+runtime，因為其他 block 與 passthrough opcode 的作品副作用尚未逐項接完。

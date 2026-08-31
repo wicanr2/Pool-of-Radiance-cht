@@ -32,8 +32,10 @@
   SAVE／GETTABLE、ON branch、文字與選單 continuation。Pool production seam
   `gamepack.NewInitialEventMachine` 已只白名單 Rolf 路徑實際走到的 `0C/0D/0E/2D/31/3A`；
   真實 `ECL3/block0 B06Eh` 測試逐次提供 Return 後可跑到 `AE85h EXIT`，七頁文字與
-  最後 `C04B/C04C/C04D = 0/4/3` 均吻合。這證明共用 VM 可執行該路徑，但前端仍待由
-  手寫 `tourStep` 播放改為逐 VM boundary 消費，不能先宣稱 production 已完全切換。
+  最後 `C04B/C04C/C04D = 0/4/3` 均吻合。production 前端現已在真實 ScriptBlock
+  存在時逐 VM boundary 消費：SAVE 更新位置、Return menu 等按鍵、DELAY 形成 34 frame、
+  文字更新 dialogue、EXIT 才完成導覽；Docker／Xvfb 正常 Begin 測試跑到 `(0,4,3)`。
+  手寫 `TourStep` 僅保留給無原始 script 的合成 UI fixture，不是正式遊戲路徑。
 - 113／113 個 DOS DAX 已由 engine `dax.Parse` 成功解析，合計 1,245 blocks；
   這只關閉 container shape 閘門，不代表 payload semantic parity。
 - `GEO1.DAX..GEO8.DAX` 合計 29 blocks；29／29 payload 均為 `0x402` bytes，

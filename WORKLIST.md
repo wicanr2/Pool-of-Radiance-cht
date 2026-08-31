@@ -64,10 +64,9 @@
   `1F40h` operand consumer 與 `6A0Bh/6A0Ch` 座標用途，再閉合牆／門 gate；不能直接
   把該 wrapper 當完整 movement policy。
 - [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；先抽
-  operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation（Spec 013 已完成），
-  再把 Pool 前端的手寫 Rolf tour 狀態機換成 VM boundary consumer，之後擴充完整
-  session 與其餘 opcode 副作用。Pool 先成為 consumer；CoAB source 不修改，只跑
-  唯讀回歸測試。
+  operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
+  Rolf VM boundary consumer（Spec 013 已 CONFORMED），下一步擴充跨 block session 與
+  其餘 opcode 副作用。Pool 先成為 consumer；CoAB source 不修改，只跑唯讀回歸測試。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

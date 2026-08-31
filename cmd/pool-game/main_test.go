@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -236,6 +237,37 @@ func TestBeginAdventureRequiresPartyAndRunsSpec010FirstEvent(t *testing.T) {
 	}
 	if err := press(application, ebiten.KeyEscape); err != nil || application.mode != modeMenu {
 		t.Fatalf("adventure ESC mode=%d err=%v", application.mode, err)
+	}
+}
+
+func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	event, err := gamepack.ReadDOSInitialEvent(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	initial := gamepack.GeometryMap{Key: event.Position.Map}
+	walls := graphics.PieceSet{}
+	application := &app{mode: modeMenu, state: poolsave.NewState(), initialMap: &initial, initialWalls: &walls, initialEvent: &event, spawn: gamepack.DOSInitialSpawn()}
+	application.state.Party = []poolsave.Character{{Name: "HERO"}}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	if application.eventMachine == nil || !application.introWaiting || !strings.Contains(application.eventText, "GREETINGS, COURAGEOUS ONES") {
+		t.Fatalf("initial VM state waiting=%v text=%q", application.introWaiting, application.eventText)
+	}
+	for tick := 0; tick < 2000 && !application.introDone; tick++ {
+		if application.introWaiting {
+			err = press(application, ebiten.KeyEnter)
+		} else {
+			err = application.Update()
+		}
+		if err != nil {
+			t.Fatalf("tick %d: %v", tick, err)
+		}
+	}
+	if !application.introDone || application.tourActive || application.tourStep != 33 || application.spawn.X != 0 || application.spawn.Y != 4 || application.spawn.Facing != 3 {
+		t.Fatalf("final done=%v active=%v spawn=%+v step=%d", application.introDone, application.tourActive, application.spawn, application.tourStep)
 	}
 }
 
