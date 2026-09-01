@@ -2,6 +2,7 @@ package gamepack
 
 import (
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -139,6 +140,32 @@ func TestRealBlock8GraveyardTreasurePrecedesCombat(t *testing.T) {
 	}
 }
 
+func TestRealSlumsEncounterCarriesMonsterRosterToCombatBoundary(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	archive, err := ReadDOSECLArchive(zipPath, 2)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	session, err := NewDOSECLArchiveSession(archive, 20, 0x9E5D)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result, err := session.RunUntilEvent(16, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []eclvm.MonsterSpawn{{MonsterID: 13, Count: 1, IconBlock: 4}, {MonsterID: 4, Count: 3, IconBlock: 4}}
+	if !result.CombatRequested || !result.MonstersCleared || !reflect.DeepEqual(result.MonsterSpawns, want) {
+		t.Fatalf("Slums combat boundary=%+v, want roster=%+v", result, want)
+	}
+	if got := uint16(0x9900 + session.Machine().PC); got != 0x9E6D {
+		t.Fatalf("continuation PC=0x%04X, want 0x9E6D", got)
+	}
+	if session.Machine().Memory[0x4ABB] != 0 {
+		t.Fatalf("combat request prematurely changed Slums progress to %d", session.Machine().Memory[0x4ABB])
+	}
+}
+
 func TestRealBlock8GraveyardRewardAccumulatorSlots(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	event, err := ReadDOSInitialEvent(zipPath)
@@ -265,7 +292,7 @@ func TestSharedVMRunsRealRolfTourToExit(t *testing.T) {
 	if writes[0xC04B] != 0 || writes[0xC04C] != 4 || writes[0xC04D] != 3 {
 		t.Fatalf("final position writes=(%d,%d,%d)", writes[0xC04B], writes[0xC04C], writes[0xC04D])
 	}
-	for _, opcode := range []byte{0x0C, 0x0D, 0x0E, 0x2D, 0x31, 0x3A} {
+	for _, opcode := range []byte{0x0D, 0x0E, 0x2D, 0x31, 0x3A} {
 		if !opcodes[opcode] {
 			t.Errorf("declared passthrough opcode 0x%02X was not exercised", opcode)
 		}

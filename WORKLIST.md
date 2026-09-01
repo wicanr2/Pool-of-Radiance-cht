@@ -57,6 +57,10 @@
   selector／七頁文字與最終 ECL `EXIT`；正常按鍵已走到 Tyr 停靠畫面。wrapped traversal
   仍是跨作品 strong inference；Rolf 初次 APPROACH 圖像、自由移動交接、地名、
   bounded／wrapped／door policy、背景與同狀態 DOS 畫面仍待證明。
+  Spec 047 已將第一人稱內容填滿內框的三層繪製契約抽到共用 engine
+  `viewport.FillBackgroundToStageInset`；Pool 與 CoAB 都只宣告各自的 viewport 幾何，
+  共用 engine 負責背景外擴與牆片之後的上緣補層。兩作的整合測試已通過；Pool 的
+  同狀態 DOS 畫面對拍仍屬本項其餘驗收，不因共用機制完成而自動升格。
   Spec 012 已再閉合 overlay-03 `401Fh` dispatch → overlay-07 entry 27，以及一組
   cardinal 座標的 16×16 wrap。後續已訂正 `401Fh` 來源：原始 ECL operand 是
   `ECL7/block17 B69Ah` opcode `27h` 第四參數 `1F40h`，經 helper 反向組成；不是
@@ -139,7 +143,7 @@
   RANDOM、VM Clone、同-session entry 切換、作品中立 `CLEARMONSTERS` 訊號，以及
   opcode `0Ah`／`20h`／`27h`／`35h` 都已有 Pool consumer；`27h` 目前只完成 raw
   request，ITEM payload 與戰利品 UI 則由 Pool game pack／adapter 依 Spec 033～036
-  接線，不污染共用 engine。現行 engine `142b245`（含 `91801a5` 的 TREASURE 契約與
+  接線，不污染共用 engine。現行 engine `d59f339`（含 `91801a5` 的 TREASURE 契約與
   Spec 037 session snapshot）的 Pool 全套與 CoAB
   核心相容回歸均已通過。下一步依玩家路徑
   閉合 City Hall reward／commission 迴圈與其後尚未接妥的服務規則。

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"image"
 	"image/color"
 	"math/rand"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
+	"github.com/wicanr2/golden-box-remake-engine/viewport"
 )
 
 type scriptedKeys map[ebiten.Key]bool
@@ -824,4 +826,33 @@ func TestInitialDOSFirstPersonViewResolvesOriginalWallStamps(t *testing.T) {
 		}
 	}
 	t.Logf("initial DOS first-person view resolved %d visible 8x8 wall stamps", len(stamps))
+}
+
+func TestPoolFirstPersonUsesSharedStageInsetFill(t *testing.T) {
+	fill, err := poolFirstPersonStageFill()
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantPostWall := []viewport.BackgroundRect{{X: 24, Y: 24, Width: 88, Height: 16, PaletteIndex: 1}}
+	if len(fill.Backdrop) != 3 || !reflect.DeepEqual(fill.PostWall, wantPostWall) {
+		t.Fatalf("Pool stage fill=%+v, want three bands and post-wall=%+v", fill, wantPostWall)
+	}
+	if fill.Backdrop[0].PaletteIndex != 1 || fill.Backdrop[2].PaletteIndex != 8 || fill.Backdrop[2].Y+fill.Backdrop[2].Height != 112 {
+		t.Fatalf("Pool stage palettes/bounds changed: %+v", fill.Backdrop)
+	}
+}
+
+func TestPoolPostWallLayerMapsOverTheRenderedTopCorners(t *testing.T) {
+	fill, err := poolFirstPersonStageFill()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(fill.PostWall) != 1 {
+		t.Fatalf("Pool post-wall layers=%v", fill.PostWall)
+	}
+	got := poolStageScreenRect(fill.PostWall[0], 48, 86)
+	want := image.Rect(48, 86, 224, 118)
+	if got != want {
+		t.Fatalf("Pool top fill screen rect=%v, want %v", got, want)
+	}
 }

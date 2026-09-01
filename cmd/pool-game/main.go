@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"image"
 	"image/color"
 	"log"
 	"math/rand"
@@ -1666,15 +1667,12 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		return
 	}
 	viewLeft, viewTop := 48, 86
-	for y := 0; y < 176; y++ {
-		shade := color.RGBA{0, 0, 170, 255}
-		if y >= 88 {
-			shade = color.RGBA{85, 85, 85, 255}
-		}
-		for x := 0; x < 176; x++ {
-			screen.Set(viewLeft+x, viewTop+y, shade)
-		}
+	stageFill, err := poolFirstPersonStageFill()
+	if err != nil {
+		drawText(screen, "FIRST-PERSON STAGE ERROR", 72, 180, accent)
+		return
 	}
+	drawPoolStageRects(screen, stageFill.Backdrop, viewLeft, viewTop)
 	stamps, err := initialWallStamps(a.initialMap.Grid, *a.initialWalls, a.spawn)
 	if err != nil {
 		drawText(screen, "WALL VIEW ERROR", 72, 180, accent)
@@ -1690,6 +1688,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 			screen.DrawImage(ebiten.NewImageFromImage(rgba), op)
 		}
 	}
+	drawPoolStageRects(screen, stageFill.PostWall, viewLeft, viewTop)
 	drawText(screen, fmt.Sprintf("GEO%d BLOCK %d", a.spawn.Map.Archive, a.spawn.Map.BlockID), 310, 106, foreground)
 	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
 	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 184, accent)
@@ -1732,6 +1731,33 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	if a.statusLine != "" && !dialogueVisible {
 		drawText(screen, a.statusLine, 42, 342, foreground)
 	}
+}
+
+func poolFirstPersonStageFill() (viewport.StageInsetFill, error) {
+	background := viewport.Background{SkyPalette: 1, Rects: []viewport.BackgroundRect{
+		{X: 24, Y: 24, Width: 88, Height: 44, PaletteIndex: 1},
+		{X: 24, Y: 68, Width: 88, Height: 0, PaletteIndex: 0},
+		{X: 24, Y: 68, Width: 88, Height: 44, PaletteIndex: 8},
+	}}
+	return viewport.FillBackgroundToStageInset(background, viewport.StageInset{X: 24, Y: 24, Width: 88, Height: 88, WallTop: 40})
+}
+
+func drawPoolStageRects(screen *ebiten.Image, rectangles []viewport.BackgroundRect, viewLeft, viewTop int) {
+	for _, rectangle := range rectangles {
+		shade := graphics.EGA16[rectangle.PaletteIndex]
+		target := poolStageScreenRect(rectangle, viewLeft, viewTop)
+		for y := target.Min.Y; y < target.Max.Y; y++ {
+			for x := target.Min.X; x < target.Max.X; x++ {
+				screen.Set(x, y, shade)
+			}
+		}
+	}
+}
+
+func poolStageScreenRect(rectangle viewport.BackgroundRect, viewLeft, viewTop int) image.Rectangle {
+	left := viewLeft + (rectangle.X-24)*2
+	top := viewTop + (rectangle.Y-24)*2
+	return image.Rect(left, top, left+rectangle.Width*2, top+rectangle.Height*2)
 }
 
 func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
