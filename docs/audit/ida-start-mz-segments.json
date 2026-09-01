@@ -1,0 +1,495 @@
+{
+  "schema": "pool-mz-segments-ida/1",
+  "input": "start.exe",
+  "sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+  "ida_version": "9.4",
+  "address_space": "IDA MZ loader linear address",
+  "segments": [
+    {
+      "selector": 4096,
+      "start": 65536,
+      "end": 65888,
+      "name": "seg000",
+      "class": "CODE",
+      "file_offset_start": 944,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4118,
+      "start": 65888,
+      "end": 65936,
+      "name": "seg001",
+      "class": "CODE",
+      "file_offset_start": 1296,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4121,
+      "start": 65936,
+      "end": 66000,
+      "name": "seg002",
+      "class": "CODE",
+      "file_offset_start": 1344,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4125,
+      "start": 66000,
+      "end": 66048,
+      "name": "seg003",
+      "class": "CODE",
+      "file_offset_start": 1408,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4128,
+      "start": 66048,
+      "end": 66384,
+      "name": "seg004",
+      "class": "CODE",
+      "file_offset_start": 1456,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4149,
+      "start": 66384,
+      "end": 66480,
+      "name": "seg005",
+      "class": "CODE",
+      "file_offset_start": 1792,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4155,
+      "start": 66480,
+      "end": 66576,
+      "name": "seg006",
+      "class": "CODE",
+      "file_offset_start": 1888,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4161,
+      "start": 66576,
+      "end": 66640,
+      "name": "seg007",
+      "class": "CODE",
+      "file_offset_start": 1984,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4165,
+      "start": 66640,
+      "end": 66832,
+      "name": "seg008",
+      "class": "CODE",
+      "file_offset_start": 2048,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4177,
+      "start": 66832,
+      "end": 66944,
+      "name": "seg009",
+      "class": "CODE",
+      "file_offset_start": 2240,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4184,
+      "start": 66944,
+      "end": 67056,
+      "name": "seg010",
+      "class": "CODE",
+      "file_offset_start": 2352,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4191,
+      "start": 67056,
+      "end": 67216,
+      "name": "seg011",
+      "class": "CODE",
+      "file_offset_start": 2464,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4201,
+      "start": 67216,
+      "end": 67264,
+      "name": "seg012",
+      "class": "CODE",
+      "file_offset_start": 2624,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4204,
+      "start": 67264,
+      "end": 67936,
+      "name": "seg013",
+      "class": "CODE",
+      "file_offset_start": 2672,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4246,
+      "start": 67936,
+      "end": 68176,
+      "name": "seg014",
+      "class": "CODE",
+      "file_offset_start": 3344,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4261,
+      "start": 68176,
+      "end": 68288,
+      "name": "seg015",
+      "class": "CODE",
+      "file_offset_start": 3584,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4268,
+      "start": 68288,
+      "end": 68448,
+      "name": "seg016",
+      "class": "CODE",
+      "file_offset_start": 3696,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4278,
+      "start": 68448,
+      "end": 68576,
+      "name": "seg017",
+      "class": "CODE",
+      "file_offset_start": 3856,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4286,
+      "start": 68576,
+      "end": 68688,
+      "name": "seg018",
+      "class": "CODE",
+      "file_offset_start": 3984,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4293,
+      "start": 68688,
+      "end": 68752,
+      "name": "seg019",
+      "class": "CODE",
+      "file_offset_start": 4096,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4297,
+      "start": 68752,
+      "end": 68896,
+      "name": "seg020",
+      "class": "CODE",
+      "file_offset_start": 4160,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4306,
+      "start": 68896,
+      "end": 69008,
+      "name": "seg021",
+      "class": "CODE",
+      "file_offset_start": 4304,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4313,
+      "start": 69008,
+      "end": 69152,
+      "name": "seg022",
+      "class": "CODE",
+      "file_offset_start": 4416,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4322,
+      "start": 69152,
+      "end": 69568,
+      "name": "seg023",
+      "class": "CODE",
+      "file_offset_start": 4560,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4348,
+      "start": 69568,
+      "end": 69632,
+      "name": "seg024",
+      "class": "CODE",
+      "file_offset_start": 4976,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4352,
+      "start": 69632,
+      "end": 69792,
+      "name": "seg025",
+      "class": "CODE",
+      "file_offset_start": 5040,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4362,
+      "start": 69792,
+      "end": 70096,
+      "name": "seg026",
+      "class": "CODE",
+      "file_offset_start": 5200,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4381,
+      "start": 70096,
+      "end": 70208,
+      "name": "seg027",
+      "class": "CODE",
+      "file_offset_start": 5504,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4388,
+      "start": 70208,
+      "end": 70272,
+      "name": "seg028",
+      "class": "CODE",
+      "file_offset_start": 5616,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4392,
+      "start": 70272,
+      "end": 70320,
+      "name": "seg029",
+      "class": "CODE",
+      "file_offset_start": 5680,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4395,
+      "start": 70320,
+      "end": 70416,
+      "name": "seg030",
+      "class": "CODE",
+      "file_offset_start": 5728,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4401,
+      "start": 70416,
+      "end": 70528,
+      "name": "seg031",
+      "class": "CODE",
+      "file_offset_start": 5824,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4408,
+      "start": 70528,
+      "end": 70608,
+      "name": "seg032",
+      "class": "CODE",
+      "file_offset_start": 5936,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4413,
+      "start": 70608,
+      "end": 70768,
+      "name": "seg033",
+      "class": "CODE",
+      "file_offset_start": 6016,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4423,
+      "start": 70768,
+      "end": 70848,
+      "name": "seg034",
+      "class": "CODE",
+      "file_offset_start": 6176,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4428,
+      "start": 70848,
+      "end": 70864,
+      "name": "seg035",
+      "class": "CODE",
+      "file_offset_start": 6256,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4429,
+      "start": 70864,
+      "end": 70912,
+      "name": "seg036",
+      "class": "CODE",
+      "file_offset_start": 6272,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4432,
+      "start": 70912,
+      "end": 71840,
+      "name": "seg037",
+      "class": "CODE",
+      "file_offset_start": 6320,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4490,
+      "start": 71840,
+      "end": 71904,
+      "name": "seg038",
+      "class": "CODE",
+      "file_offset_start": 7248,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4494,
+      "start": 71904,
+      "end": 72064,
+      "name": "seg039",
+      "class": "CODE",
+      "file_offset_start": 7312,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4504,
+      "start": 72064,
+      "end": 72192,
+      "name": "seg040",
+      "class": "CODE",
+      "file_offset_start": 7472,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4512,
+      "start": 72192,
+      "end": 73072,
+      "name": "seg041",
+      "class": "CODE",
+      "file_offset_start": 7600,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4567,
+      "start": 73072,
+      "end": 75440,
+      "name": "seg042",
+      "class": "CODE",
+      "file_offset_start": 8480,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4715,
+      "start": 75440,
+      "end": 75760,
+      "name": "seg043",
+      "class": "CODE",
+      "file_offset_start": 10848,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 4735,
+      "start": 75760,
+      "end": 85472,
+      "name": "seg044",
+      "class": "CODE",
+      "file_offset_start": 11168,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5342,
+      "start": 85472,
+      "end": 86048,
+      "name": "seg045",
+      "class": "CODE",
+      "file_offset_start": 20880,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5378,
+      "start": 86048,
+      "end": 86064,
+      "name": "seg046",
+      "class": "CODE",
+      "file_offset_start": 21456,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5379,
+      "start": 86064,
+      "end": 86080,
+      "name": "seg047",
+      "class": "CODE",
+      "file_offset_start": 21472,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5380,
+      "start": 86080,
+      "end": 86304,
+      "name": "seg048",
+      "class": "CODE",
+      "file_offset_start": 21488,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5394,
+      "start": 86304,
+      "end": 87872,
+      "name": "seg049",
+      "class": "CODE",
+      "file_offset_start": 21712,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5492,
+      "start": 87872,
+      "end": 89008,
+      "name": "seg050",
+      "class": "CODE",
+      "file_offset_start": 23280,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5563,
+      "start": 89008,
+      "end": 95232,
+      "name": "seg051",
+      "class": "CODE",
+      "file_offset_start": 24416,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 5952,
+      "start": 95232,
+      "end": 129312,
+      "name": "dseg",
+      "class": "DATA",
+      "file_offset_start": 30640,
+      "entry_ds_selector": 5952
+    },
+    {
+      "selector": 8082,
+      "start": 129312,
+      "end": 137504,
+      "name": "seg053",
+      "class": "STACK",
+      "file_offset_start": -1,
+      "entry_ds_selector": 5952
+    }
+  ]
+}

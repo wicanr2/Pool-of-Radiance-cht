@@ -1,0 +1,86 @@
+{
+  "schema": "pool-overlay-word-references-ida/1",
+  "input": "overlay-10.bin",
+  "sha256": "b929c7040aaa399ba803911c8630e06a8e21b9e7d64a67def69c700d7fe14439",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "word": 10075,
+  "matches": [
+    {
+      "address": 59,
+      "bytes": "80bd5b2716",
+      "text": "cmp     byte ptr [di+275Bh], 16h",
+      "operands": [
+        "byte ptr [di+275Bh]",
+        "16h"
+      ],
+      "operand_values": [
+        10075,
+        22
+      ],
+      "function_start": 0,
+      "function_end": 312
+    },
+    {
+      "address": 3637,
+      "bytes": "80bd5b2716",
+      "text": "cmp     byte ptr [di+275Bh], 16h",
+      "operands": [
+        "byte ptr [di+275Bh]",
+        "16h"
+      ],
+      "operand_values": [
+        10075,
+        22
+      ],
+      "function_start": 3504,
+      "function_end": 3903
+    },
+    {
+      "address": 3683,
+      "bytes": "80bd5b2716",
+      "text": "cmp     byte ptr [di+275Bh], 16h",
+      "operands": [
+        "byte ptr [di+275Bh]",
+        "16h"
+      ],
+      "operand_values": [
+        10075,
+        22
+      ],
+      "function_start": 3504,
+      "function_end": 3903
+    },
+    {
+      "address": 4054,
+      "bytes": "80bd5b2716",
+      "text": "cmp     byte ptr [di+275Bh], 16h",
+      "operands": [
+        "byte ptr [di+275Bh]",
+        "16h"
+      ],
+      "operand_values": [
+        10075,
+        22
+      ],
+      "function_start": 3903,
+      "function_end": 4143
+    },
+    {
+      "address": 4151,
+      "bytes": "80bd5b2716",
+      "text": "cmp     byte ptr [di+275Bh], 16h",
+      "operands": [
+        "byte ptr [di+275Bh]",
+        "16h"
+      ],
+      "operand_values": [
+        10075,
+        22
+      ],
+      "function_start": 4143,
+      "function_end": 4168
+    }
+  ]
+}

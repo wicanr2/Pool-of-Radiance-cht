@@ -1,0 +1,189 @@
+{
+  "schema": "pool-overlay-functions-ida/1",
+  "input": "overlay-25.bin",
+  "sha256": "9fede24be1e64821c62ab2421783b004a06fa9d305aa57919bd15a9577b50c0e",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "entry_seeds": [
+    9205
+  ],
+  "functions": [
+    {
+      "seed": 9205,
+      "start": 9205,
+      "end": 9241,
+      "instructions": [
+        {
+          "address": 9205,
+          "bytes": "55",
+          "text": "push    bp",
+          "operands": [
+            "bp",
+            ""
+          ],
+          "operand_values": [
+            5,
+            -1
+          ]
+        },
+        {
+          "address": 9206,
+          "bytes": "89e5",
+          "text": "mov     bp, sp",
+          "operands": [
+            "bp",
+            "sp"
+          ],
+          "operand_values": [
+            5,
+            4
+          ]
+        },
+        {
+          "address": 9208,
+          "bytes": "83ec02",
+          "text": "sub     sp, 2",
+          "operands": [
+            "sp",
+            "2"
+          ],
+          "operand_values": [
+            4,
+            2
+          ]
+        },
+        {
+          "address": 9211,
+          "bytes": "c47e06",
+          "text": "les     di, [bp+arg_0]",
+          "operands": [
+            "di",
+            "[bp+arg_0]"
+          ],
+          "operand_values": [
+            7,
+            6
+          ]
+        },
+        {
+          "address": 9214,
+          "bytes": "2680bd0e0100",
+          "text": "cmp     byte ptr es:[di+10Eh], 0",
+          "operands": [
+            "byte ptr es:[di+10Eh]",
+            "0"
+          ],
+          "operand_values": [
+            270,
+            0
+          ]
+        },
+        {
+          "address": 9220,
+          "bytes": "7506",
+          "text": "jnz     short loc_240C",
+          "operands": [
+            "loc_240C",
+            ""
+          ],
+          "operand_values": [
+            9228,
+            -1
+          ]
+        },
+        {
+          "address": 9222,
+          "bytes": "c646ff01",
+          "text": "mov     [bp+var_1], 1",
+          "operands": [
+            "[bp+var_1]",
+            "1"
+          ],
+          "operand_values": [
+            18446744073709551615,
+            1
+          ]
+        },
+        {
+          "address": 9226,
+          "bytes": "eb04",
+          "text": "jmp     short loc_2410",
+          "operands": [
+            "loc_2410",
+            ""
+          ],
+          "operand_values": [
+            9232,
+            -1
+          ]
+        },
+        {
+          "address": 9228,
+          "bytes": "c646ff00",
+          "text": "mov     [bp+var_1], 0",
+          "operands": [
+            "[bp+var_1]",
+            "0"
+          ],
+          "operand_values": [
+            18446744073709551615,
+            0
+          ]
+        },
+        {
+          "address": 9232,
+          "bytes": "8a46ff",
+          "text": "mov     al, [bp+var_1]",
+          "operands": [
+            "al",
+            "[bp+var_1]"
+          ],
+          "operand_values": [
+            16,
+            18446744073709551615
+          ]
+        },
+        {
+          "address": 9235,
+          "bytes": "89ec",
+          "text": "mov     sp, bp",
+          "operands": [
+            "sp",
+            "bp"
+          ],
+          "operand_values": [
+            4,
+            5
+          ]
+        },
+        {
+          "address": 9237,
+          "bytes": "5d",
+          "text": "pop     bp",
+          "operands": [
+            "bp",
+            ""
+          ],
+          "operand_values": [
+            5,
+            -1
+          ]
+        },
+        {
+          "address": 9238,
+          "bytes": "ca0400",
+          "text": "retf    4",
+          "operands": [
+            "4",
+            ""
+          ],
+          "operand_values": [
+            4,
+            -1
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -45,6 +45,11 @@ type screenMode uint8
 type templeStage uint8
 type treasureStage uint8
 
+type stagedMonster struct {
+	Spawn  eclvm.MonsterSpawn
+	Record gamepack.MonsterRecord
+}
+
 const (
 	modeTitle screenMode = iota
 	modeMenu
@@ -133,6 +138,9 @@ type app struct {
 	templeParty      int
 	templeService    int
 	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
+	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
+	combatActive     bool
+	combatMonsters   []stagedMonster
 	treasureActive   bool
 	treasureStage    treasureStage
 	treasureItems    []gamepack.TreasureItemRecord
@@ -193,6 +201,9 @@ func newApp(zipPath string) (*app, error) {
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
 	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
 		return gamepack.ReadDOSTreasureItemBlock(zipPath, archive, block)
+	}
+	application.loadMonster = func(archive, block uint8) (gamepack.MonsterRecord, error) {
+		return gamepack.ReadDOSMonsterRecord(zipPath, archive, block)
 	}
 	application.loadPortrait = func(head, body uint8) (*ebiten.Image, error) {
 		parts, err := assets.ReadCreationPortraitParts(zipPath, head, body)
@@ -306,7 +317,8 @@ func (a *app) Update() error {
 			a.introWaiting, a.introDone = true, false
 			a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
 			a.eventMachine, a.eventSession, a.eventText, a.eventLabel = nil, nil, "", ""
-			a.templeActive = false
+			a.templeActive, a.combatActive = false, false
+			a.combatMonsters = nil
 			if len(a.initialEvent.ScriptBlock) != 0 {
 				characters := make([]gamepack.InitialCharacter, len(a.state.Party))
 				for index, character := range a.state.Party {
@@ -432,6 +444,10 @@ func (a *app) Update() error {
 		}
 		if a.introDone {
 			if a.cellEventPending {
+				if a.combatActive {
+					a.statusLine = "A real Pool encounter is staged; tactical combat remains fail-closed."
+					return nil
+				}
 				if a.treasureActive && a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
 					if a.treasureStage == treasureMoneyAmount {
 						if a.justPressed(ebiten.KeyEscape) {
@@ -719,6 +735,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		if len(result.TreasureRequests) != 0 {
 			return a.enterTreasure(result.TreasureRequests)
 		}
+		if result.CombatRequested && len(result.MonsterSpawns) != 0 {
+			return a.enterCombatStaging(result.MonsterSpawns)
+		}
 		presentationOnly := len(result.Events) == 1 && ((result.Events[0].Opcode == 0x12 && result.Events[0].Text == "") || result.Events[0].Opcode == 0x0E)
 		if presentationOnly {
 			if result.Events[0].Opcode == 0x12 {
@@ -745,6 +764,37 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		return a.pauseInitialCellResult(result)
 	}
 	return fmt.Errorf("Pool SearchLocation exceeded presentation boundary limit")
+}
+
+func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
+	if a.loadMonster == nil {
+		return fmt.Errorf("Pool monster loader is not configured")
+	}
+	archive := a.eclArchive
+	if archive == 0 {
+		archive = a.spawn.Map.Archive
+	}
+	staged := make([]stagedMonster, 0, len(spawns))
+	labels := make([]string, 0, len(spawns))
+	for _, spawn := range spawns {
+		if spawn.Count == 0 {
+			return fmt.Errorf("Pool monster %d has zero encounter count", spawn.MonsterID)
+		}
+		record, err := a.loadMonster(archive, spawn.MonsterID)
+		if err != nil {
+			return fmt.Errorf("load Pool monster archive %d block %d: %w", archive, spawn.MonsterID, err)
+		}
+		staged = append(staged, stagedMonster{Spawn: spawn, Record: record})
+		labels = append(labels, fmt.Sprintf("%s ×%d", record.Name, spawn.Count))
+	}
+	a.combatActive = true
+	a.combatMonsters = staged
+	a.cellEventPending, a.cellWaitingMenu = true, false
+	a.cellMenuOptions, a.cellMenuCursor = nil, 0
+	a.eventText = "Encounter: " + strings.Join(labels, " / ")
+	a.eventLabel = "TACTICAL COMBAT PENDING"
+	a.statusLine = "Original monster records loaded; tactical combat remains fail-closed."
+	return nil
 }
 
 func (a *app) isSuneTempleBoundary(result eclvm.Result) bool {
@@ -1154,7 +1204,8 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.introWaiting, a.introDone = false, true
 	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
 	a.cellEventPending, a.cellWaitingMenu = false, false
-	a.templeActive, a.treasureActive = false, false
+	a.templeActive, a.treasureActive, a.combatActive = false, false, false
+	a.combatMonsters = nil
 	a.eventText, a.eventLabel, a.cellMenuOptions = "", "", nil
 	a.mode = modeAdventure
 	a.statusLine = fmt.Sprintf("Campaign restored at GEO%d block %d (%d,%d).", key.Archive, key.BlockID, campaign.X, campaign.Y)

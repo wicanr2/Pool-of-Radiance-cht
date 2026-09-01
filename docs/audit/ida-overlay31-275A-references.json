@@ -1,0 +1,26 @@
+{
+  "schema": "pool-overlay-word-references-ida/1",
+  "input": "overlay-31.bin",
+  "sha256": "64f1f7b8d8de27f5440391134f563eedf12e35e686d554de9af9afd35bc151df",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "word": 10074,
+  "matches": [
+    {
+      "address": 1278,
+      "bytes": "8a855a27",
+      "text": "mov     al, [di+275Ah]",
+      "operands": [
+        "al",
+        "[di+275Ah]"
+      ],
+      "operand_values": [
+        16,
+        10074
+      ],
+      "function_start": 1049,
+      "function_end": 1401
+    }
+  ]
+}

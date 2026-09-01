@@ -129,6 +129,30 @@
   存讀回歸通過。尚待把 25 個實際戰鬥完成呼叫與返回 City Hall 接成正常玩家鏈。
   `4A96h` 是接受後重入
   閘門；`4AB1h` 與吸血鬼事件相連但語意尚未足夠，不可猜名。
+  Spec 046／048／049 已再接通第一場真實 Slums 遭遇的戰鬥前鏈：共用 VM 保留
+  `LOAD MONSTER 13,1,4` 與 `4,3,4`，Pool 依目前 ECL archive 從
+  `MON2CHA.DAX` 精確載入兩筆 285-byte `ORC` record，正常前端 staging 顯示
+  `ORC ×1 / ORC ×3`。ECL PC 保持在戰後第一條 `9E6Dh`，Enter 不會自動勝利，
+  `4ABBh` 也不會預先增加。Pool 原版角色資料頁 consumer 已閉合 285-byte record 的
+  max/current HP、AC、THAC0、第一組 damage dice／signed bonus 與 movement；真實兩筆
+  ORC 抽樣已固定。Spec 050 又由 overlay-13 attack caller 與 overlay-24 hit／dice
+  consumer 閉合並實作 roll 1 miss／roll 20→100 score、internal THAC0／AC 比較及
+  NdS＋signed bonus 的純規則。Spec 051 再閉合雙 attack slot 的 `+A1h/+A2h` base
+  source、`+113h/+114h` phase count、slot 2→1 消耗順序及交錯 damage offsets；兩筆
+  ORC 的 primary/secondary base rate 是 `2/0`。
+  phase counter 生命週期亦已閉合：combat setup 清零、每個回合邊界 byte 增一，並有
+  `255→0` wrap 測試。Spec 052 已接先攻候選選擇、DEX／casting-time modifier 與 Delay；
+  Spec 053 已接移動初始化、effect code 12 的 `27h→2Ah→3Ah` accumulator 及八方向
+  2／3 半步成本；START.EXE 的 66×4 戰術格位類別表已有嚴格 typed parser，四欄 raw
+  shape、entry threshold、presentation consumer 與八方向 byte-wrap 座標 delta 已閉合。
+  速度效果的玩家可見語意已有分級證據，法術 selector 與 effect ID 則保持分離。
+  移動後反應攻擊目前只證實「附近敵對側＋runtime `+7`＋兩道 predicate」，尚須追完
+  `+7` producer、overlay-25 entry 6 與 overlay-32 entry 13，才能接 tactical runtime。
+  下一步不再重做基礎命中／傷害、rate rounding、phase counter、先攻選擇、cell table
+  raw parser 或純移動預算，而是閉合裝備／effect 覆寫、命中 modifier 來源、地形／碰撞、
+  防禦與死亡分支的先攻值消耗、
+  特殊攻擊與 status transition，再接戰術畫面及勝敗／全滅 continuation；在該範圍 READY
+  前保持失敗即關閉。
   Spec 025 已先修正進門 lifecycle：`NEWECL 8` 後依原版跑 entry `0→4`，正常按鍵抵達
   `(4,4,2)`、script block 8，但依 `LOAD FILES 0` 正確保留 GEO3/block0；sentinel
   `LOAD PIECES` 已消費，非 sentinel 選圖仍失敗即關閉。Spec 026 已把同一正常路徑

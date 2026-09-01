@@ -170,6 +170,48 @@ func TestF10AndLoadRoundTripECL2SlumsNamespace(t *testing.T) {
 	}
 }
 
+func TestRealSlumsCombatStagesMonsterRecordsWithoutContinuing(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(2)
+	if !ok {
+		t.Fatal("ECL2 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 20, 0x9E5D)
+	if err != nil {
+		t.Fatal(err)
+	}
+	application.mode, application.introDone = modeAdventure, true
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 2
+	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 2, BlockID: 20}, X: 3, Y: 4, Facing: 2}
+	result, err := session.RunUntilEvent(16, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := application.consumeInitialSearch(result); err != nil {
+		t.Fatal(err)
+	}
+	if !application.combatActive || !application.cellEventPending || application.cellWaitingMenu || len(application.combatMonsters) != 2 {
+		t.Fatalf("combat active/pending/menu/monsters=%t/%t/%t/%+v", application.combatActive, application.cellEventPending, application.cellWaitingMenu, application.combatMonsters)
+	}
+	if application.combatMonsters[0].Record.Name != "ORC" || application.combatMonsters[0].Spawn.Count != 1 || application.combatMonsters[0].Spawn.IconBlock != 4 || application.combatMonsters[1].Record.Name != "ORC" || application.combatMonsters[1].Spawn.Count != 3 || !strings.Contains(application.eventText, "ORC ×1 / ORC ×3") {
+		t.Fatalf("staged combat=%+v text=%q", application.combatMonsters, application.eventText)
+	}
+	if got := uint16(0x9900 + session.Machine().PC); got != 0x9E6D || session.Machine().Memory[0x4ABB] != 0 {
+		t.Fatalf("combat staging advanced PC/state to 0x%04X / %d", got, session.Machine().Memory[0x4ABB])
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if got := uint16(0x9900 + session.Machine().PC); got != 0x9E6D {
+		t.Fatalf("ENTER advanced fail-closed combat PC to 0x%04X", got)
+	}
+}
+
 func TestF10RejectsTransientCampaignWithoutWriting(t *testing.T) {
 	application := &app{mode: modeAdventure, cellEventPending: true}
 	called := false

@@ -188,7 +188,7 @@
   正常 UI 的同源畫面／CHA 配對閉合，不以排列猜測。
 - 通用 TPOV parser 已對本 build 解出 38 overlays／774 entries；IDA Pro 9.4
   最小探針通過後，角色建立定位到 overlay-16，角色資料顯示定位到 overlay-19。
-  `.CHA +10h..+15h` 六能力、`+30h` age、`+32h` HP 與 word `+8Eh` Gold 已由
+  `.CHA +10h..+15h` 六能力、`+30h` age、`+32h` max HP 與 word `+8Eh` Gold 已由
   同一次原版資料頁＋最終 CHA 與直接存取交叉證實。早先將 `+32h／+B1h` 推作
   Gold／HP 的說法已被 runtime anchor 否定並在 Spec 004 保留勘誤；`+B1h` 現只作
   raw class HP accumulator，最後除以 active class count。七種多職代碼已由 Half-Elf
@@ -291,8 +291,8 @@ cell event；後續 `DO YOU SEEK HEALING?`、原始 YES／NO menu 與 Sune 神�
 同一 VM 的 `AA6Bh` 續跑，寫入 `6DE1h=FFh`、消費 `PICTURE 255` 後 `EXIT`。Heal 等四項
 服務的價格、HP／狀態與金錢副作用尚未 READY，現階段保持失敗即關閉。`20h` 已依
 Pool `0CDDh` handler READY 並接入共用 block session；Spec 020 的 `14h` 亦已接入
-共用 VM；Spec 021 的 `0Ah` 與字串比較也已依真實 consumer 接線。現行正式引擎鎖版為
-`v0.0.0-20260831165626-7e9305036c43`；初始地圖 sweep 已無靜態錯誤。
+共用 VM；Spec 021 的 `0Ah` 與字串比較也已依真實 consumer 接線。初始地圖 sweep
+已無靜態錯誤；現行正式引擎版本統一見本節末，不再把當時鎖版冒充目前版本。
 
 Sune 選單後的同一 VM 分支已由 Spec 017 閉合到服務入口：YES（選單索引 0）先令
 `6E79h=0`、進入 `AA63h`，執行 opcode `1Ch CLEARMONSTERS`、
@@ -340,5 +340,123 @@ entry 可跨玩家 boundary 與 Clone 保存。正常按鍵在 City Hall 公告�
 script block 變 8；block 8 entry 4 的 `LOAD FILES 0,0,0` 仍載入 GEO3/block0，證明
 script identity 不等於 geometry identity。`LOAD PIECES 127,127,127` 保留現行 wall set；
 其他 selector 尚未 READY。engine／Pool 全測試與 CoAB 玩家／game／ECL 抽樣已通過。
-共用引擎正式版本現為 `v0.0.0-20260831165626-7e9305036c43`；Pool 已用該鎖版在斷網
-Docker／Xvfb 重跑全套測試，不再依賴本機 replace 才能通過。
+共用引擎正式版本現為 `v0.0.0-20260901045011-d59f339e7600`；Pool 的 `go.mod` 已鎖定
+該已推送版本。本機隔離回歸以同 commit 的唯讀 engine mount 驗證，未把未提交來源
+混入結果。
+
+Spec 046／048／049 已把 Slums 第一個真實 `COMBAT` 邊界接到 Pool 前端，但沒有假造
+戰鬥結果。八個 `MON*CHA` archive 全掃共 172 blocks，全部是 285-byte record，
+Pascal name 皆合法；`ECL2/block20 9E5Dh` 的 ID 13 與 4 在 `MON2CHA.DAX` 均精確為
+`ORC`。Pool 現依目前 ECL archive 載入 raw-preserving typed record，staging 顯示
+`ORC ×1 / ORC ×3`，PC 留在 `9E6Dh`、`4ABBh` 不變，Enter 亦不能越過。IDA Pro 9.4
+已從 Pool 自己的角色資料頁 consumer 閉合 unified 285-byte record 的 max/current HP、
+AC、THAC0、第一組 damage dice／signed bonus 與 movement；兩筆 ORC 的真檔抽樣分別是
+`5/5 HP, AC 6, THAC0 20, 2d4-1, move 9` 與
+`5/5 HP, AC 6, THAC0 19, 1d8, move 9`。基礎命中／傷害已由後述 Spec 050 閉合；
+裝備／effect modifier、initiative、特殊攻擊、勝利／逃跑／全滅與戰後 continuation
+仍是下一個 READY 切片；
+真實全滅時依專案規則停止測試，不強求通過。
+
+Spec 050 已沿 Pool `overlay-13:1404h..1883h` 的 attack span 與
+`overlay-24:0CB5h／0DE5h／0E30h` 閉合基礎命中、dice core 與傷害公式。typed primitive
+保留原版 internal THAC0／AC encoding：roll 1 直接 miss、roll 20 改成 score 100，
+再比較 `score + THAC0Internal + signedModifier >= effectiveACInternal`；傷害依序消耗 NdS、加
+signed bonus、負值歸零後才套 caller 明示倍率。狀態／法術 modifier、attack rate 的
+裝備／effect 覆寫、initiative、特殊攻擊與 status transition 尚未閉合，所以 combat staging 仍不會自動
+勝利或續跑 ECL。全專案 Docker／Xvfb `go test ./...` 與 `go vet ./...` 已通過。
+
+Spec 051 又閉合雙 attack slot 的 base source 與 phase rounding：record `+A1h/+A2h`
+分別供 slot 1／2，經裝備／effect（仍 DRAFT）後，以
+`(encodedRate + DS:6CD7h bit0) / 2` 寫入本 phase 的 `+113h/+114h` remaining count；
+攻擊迴圈由 slot 2 倒走到 slot 1。typed game-pack 現可 fail-closed 取得兩槽 base rate
+及交錯排列的 damage dice，combat primitive 保留 byte wrap。Slums 兩筆 ORC 真檔皆為
+base rate `2/0`，任一 phase 得到 primary 1、secondary 0；這仍不取代 initiative、effect、
+deployment 與玩家／AI 回合。
+
+同一 Spec 051 已補閉 phase counter 生命週期：overlay-10 combat setup 在建立 combatant
+runtime 前把 `DS:6CD7h` 清零；overlay-08 回合邊界 `0879h` 以 byte `inc` 增加一次，
+再重算全體 combatants。該函式同時持有 `Your Teammate is Dying`／`Continue Battle:`
+提示，支持回合語境；typed `AdvanceAttackPhase` 固定 `255→0` wrap。戰鬥中途仍禁止
+存檔，因此未增加 campaign schema；將來若開放，counter 必須保存為 combat continuation。
+
+Spec 052 已再閉合先攻排序的可實作核心。overlay-13 entry 1 對有效 combatant 取一個
+DEX signed modifier 加 `1d6`，先做 minimum-one，再依驚訝旗標減 6，最後把
+`<0` 或 `>20` 轉成 0。overlay-08 沿 combatant 鏈選 runtime `+3` 最大者，同值以每筆
+`1d100` 決勝，較大或完全相等都由後者取代；全零才回傳無行動者並進回合邊界。
+`ResolveInitiativeScore` 與 `SelectInitiativeActor` 已依此加入純規則，但各種行動如何
+消耗／重設 `+3`、玩家／AI 行動與勝敗 continuation 仍未 READY，不能因
+先攻排序已完成就自動結算 Slums 戰鬥。
+
+同一 Spec 052 隨後以原始 far call `010A:0057`、MZ header `3B0h` 與 TPOV control table
+把 modifier producer 精確映射到 overlay-25 entry 11：它讀已由 Spec 004 證實的
+record `+13h` DEX，依原版分段表回傳 `-4..+5`。overlay-13 entry 19 亦證實施法時以
+spell table byte `/3` 為 casting cost；目前先攻大於 cost 時相減，否則固定留 1。
+typed `DexterityInitiativeModifier`／`ApplyCastingTimeInitiative` 已接妥。另已確認
+overlay-08 combat command 的 `D` 會把先攻設為 1；但通用 runtime-clear entry 34 同時被
+攻擊、移動與死亡分支呼叫，尚不能把每個 callsite 都當成攻擊者消耗。下一輪必須先辨認
+各參數是 attacker 或 target，再閉合一般攻擊／移動／防禦的生命週期。
+
+攻擊參數身分現已由 overlay-13 `1404h` 與 `1883h` 兩層閉合：內層 `arg_A` 與 wrapper
+`arg_E` 都是 attacker，target pointer 會被寫入 attacker runtime `+0Ah/+0Ch`。每次攻擊
+後掃描 `+113h/+114h`；任一 remaining attack slot 非零就保留目前先攻，兩槽皆零才對
+attacker 呼叫 entry 34，讓 `+3` 歸零。`InitiativeAfterAttackSlots` 已實作這個 initiative
+投影；entry 34 還會清 `+0/+7/+6`，完整 tactical runtime 接線時必須同步處理。下一個
+未閉合範圍縮為移動／防禦及死亡 callsites，不能再把一般攻擊列為未知。
+
+Spec 053 已把移動預算從 base record 接到每步扣除：record `+11Ch`（Spec 049 已證實為
+base movement）在特定角色類別先加一個尚未命名的 combat global word，結果經 byte
+wrap、1..96 clamp、乘 2，再交給 effect code 12，最後成為 runtime `+6`。Move 畫面以
+`+6/2` 顯示；direction 0..7 中偶數 cardinal 扣 2、奇數 diagonal 扣 3，不足則歸零。
+正常走一步不修改 initiative `+3`，仍回到同一角色 command loop。typed
+`InitialMovementBudgetBeforeEffects` 與 `SpendMovementStep` 已接妥；effect code 12
+與目的格 attack／entry-threshold 分派亦已由本節後文閉合。剩餘是 global bonus 語意、
+`2758h` 兩個路徑欄的玩家語意、移動後反應攻擊完整 gate 與戰術 runtime 位置提交。
+
+Spec 053 的 effect code 12 accumulator 亦已閉合。overlay-24 dispatcher 對 code `12h`
+固定依序套 effect IDs `27h/2Ah/3Ah`；overlay-12 handler table 與三支原始 handler 證實
+它們分別對 movement accumulator 做 byte double、整數 halve、zero。ID `27h` 另有 effect
+record bit 與 actor word side effect，ID `3Ah` 也會清 runtime movement，因此 typed
+`ApplyMovementEffectIDs` 只明確承諾 accumulator 投影。三個 ID 的 spell／item producer
+尚未閉合，不把它們猜名為 Haste／Slow／Hold。移動剩餘缺口是 global bonus 語意、
+地形成本、碰撞與移動觸發 attack wrapper，不再把 effect code 12 accumulator 列為未知。
+
+effect producer 再追後，ID `3Ah` 已 exact 閉合為 held 狀態：新增 `3Ah` 的同一函式顯示
+`is held fast`，但具體 Hold spell／怪物能力仍未區分。IDs `27h/2Ah` 分別有 Haste／Slow
+的 strong inference：`is Slowed` 路徑移除 `27h`、`is Hasted` 路徑移除 `2Ah`，且數值
+handler 正好是 double／halve；因尚缺新增 ID 與 spell 名稱的同一條 call chain，程式與
+schema 繼續保留數字，避免把強推論偽裝成 exact 名稱。速度效果移除後會立即重跑
+effect code `12h`，未來 effect runtime 不能只在 combat setup 時計算一次。
+
+overlay-22 的另一層 `DS:6A78h` far-pointer table 已證實採 selector × 4 分派；
+`is Hasted`／`is Slowed` handlers 分別位於槽 48／55。這兩個 selector 不是 effect
+IDs `27h/2Ah`，不可拿表槽位替 effect 命名。現有 strong inference 等級不變；
+若要升格 exact，仍須找到「法術選擇 → 新增 effect ID」的同一條 producer chain。
+
+Spec 053 也已閉合目的格 probe 的玩家 Move 分派。overlay-13 entry 6 回傳目標與格位
+類別；目標 ID 非零時，overlay-08 先經 `DS:6517h` 取目標並進 attack wrapper，不經
+`2758h` gate。無目標時才查 `[格位類別×4+2758h]` 第一 byte，只有 entry threshold
+`<= runtime movement +6` 才提交方向步；threshold 太高便阻擋。實際提交仍只扣
+cardinal 2／diagonal 3，不能把 threshold 重複扣除。typed `ResolveMovementProbe`
+已固定攻擊優先、相等可進、超額與 `FFh` 阻擋。
+
+START.EXE 的 MZ loader 映射已把 `DS:2758h` 固定到 file offset 40712；該處是完整
+`66×4 = 264` bytes 戰術格位類別表，戰術地圖 cell record `+7` 保存其索引。四欄現依
+原始位置保留為 entry threshold、兩個尚未命名的 path bytes 與 presentation code：
+`+0` 的 Move gate 與 `+3` 傳入 tactical tile drawing service 是 exact；`+1/+2` 的
+原始值及 overlay-31 consumer 已證實，但玩家語意仍 DRAFT。Pool game pack 新增嚴格
+66×4 typed parser 與完整原始 table fixture，不接受其他版本或截短形狀。
+
+overlay-13 entry 5 的位置提交另已閉合八方向 delta：
+X=`[0,+1,+1,+1,0,-1,-1,-1]`、Y=`[-1,-1,0,+1,+1,+1,0,-1]`，typed
+`AdvanceTacticalCoordinate` 保留原版 byte wrap。Y 表最後三 bytes 與第一筆 cell class
+的 `01 00 FF` 共用原始儲存位置，已在 Spec 053 明示，不能誤判為擷取錯位。位置提交後
+確會呼叫反應攻擊掃描：候選是附近敵對側、須有 runtime `+7`，成功時先清該 byte 再以
+候選攻擊 mover；但 `+7` producer、overlay-25 entry 6 與 overlay-32 entry 13 的兩道
+predicate 尚未閉合。故目前只完成資料／規則 primitive，戰術畫面、occupancy、反應攻擊
+與勝敗 continuation 仍保持失敗即關閉。
+
+2026-09-01 暫停恢復後已用同一 `coab-go-ebiten:1.24` 容器、Xvfb、唯讀 Pool／engine
+掛載重跑 `go test -p 1 ./...` 與 `go vet ./...`，全數通過。第一次 `--network none`
+因空的 module cache 無法取得已鎖定的 Ebiten／`x/image` 而在 setup 階段停止；開放網路
+下載同一鎖定版本後乾淨重跑成功，該次失敗分類為工具環境，不是產品測試失敗。本收據
+只證明目前 remake 內部與編譯期檢查通過，不升格 DOS 同狀態 parity 或完整戰鬥可玩性。

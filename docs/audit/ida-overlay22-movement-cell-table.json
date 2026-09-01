@@ -1,0 +1,56 @@
+{
+  "schema": "pool-overlay-word-references-ida/1",
+  "input": "overlay-22.bin",
+  "sha256": "967065cc35975465a7250026c63b8a5ae06b812b228abcfbbbd83d636538dda8",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "word": 10072,
+  "matches": [
+    {
+      "address": 7276,
+      "bytes": "80bd5827ff",
+      "text": "cmp     byte ptr [di+2758h], 0FFh",
+      "operands": [
+        "byte ptr [di+2758h]",
+        "0FFh"
+      ],
+      "operand_values": [
+        10072,
+        255
+      ],
+      "function_start": null,
+      "function_end": null
+    },
+    {
+      "address": 10417,
+      "bytes": "80bd5827ff",
+      "text": "cmp     byte ptr [di+2758h], 0FFh",
+      "operands": [
+        "byte ptr [di+2758h]",
+        "0FFh"
+      ],
+      "operand_values": [
+        10072,
+        255
+      ],
+      "function_start": 10364,
+      "function_end": 10521
+    },
+    {
+      "address": 10867,
+      "bytes": "80bd582701",
+      "text": "cmp     byte ptr [di+2758h], 1",
+      "operands": [
+        "byte ptr [di+2758h]",
+        "1"
+      ],
+      "operand_values": [
+        10072,
+        1
+      ],
+      "function_start": 10521,
+      "function_end": 11125
+    }
+  ]
+}

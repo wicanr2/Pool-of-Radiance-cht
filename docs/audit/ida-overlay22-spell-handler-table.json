@@ -1,0 +1,3751 @@
+{
+  "schema": "pool-overlay-functions-ida/1",
+  "input": "overlay-22.bin",
+  "sha256": "967065cc35975465a7250026c63b8a5ae06b812b228abcfbbbd83d636538dda8",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "entry_seeds": [
+    13260
+  ],
+  "functions": [
+    {
+      "seed": 13260,
+      "start": 13260,
+      "end": 14187,
+      "instructions": [
+        {
+          "address": 13260,
+          "bytes": "55",
+          "text": "push    bp",
+          "operands": [
+            "bp",
+            ""
+          ],
+          "operand_values": [
+            5,
+            -1
+          ]
+        },
+        {
+          "address": 13261,
+          "bytes": "89e5",
+          "text": "mov     bp, sp",
+          "operands": [
+            "bp",
+            "sp"
+          ],
+          "operand_values": [
+            5,
+            4
+          ]
+        },
+        {
+          "address": 13263,
+          "bytes": "b83400",
+          "text": "mov     ax, 34h ; '4'",
+          "operands": [
+            "ax",
+            "34h"
+          ],
+          "operand_values": [
+            0,
+            52
+          ]
+        },
+        {
+          "address": 13266,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13269,
+          "bytes": "a3786a",
+          "text": "mov     ds:6A78h, ax",
+          "operands": [
+            "ds:6A78h",
+            "ax"
+          ],
+          "operand_values": [
+            27256,
+            0
+          ]
+        },
+        {
+          "address": 13272,
+          "bytes": "89167a6a",
+          "text": "mov     ds:6A7Ah, dx",
+          "operands": [
+            "ds:6A7Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27258,
+            2
+          ]
+        },
+        {
+          "address": 13276,
+          "bytes": "c6067d6700",
+          "text": "mov     byte ptr ds:677Dh, 0",
+          "operands": [
+            "byte ptr ds:677Dh",
+            "0"
+          ],
+          "operand_values": [
+            26493,
+            0
+          ]
+        },
+        {
+          "address": 13281,
+          "bytes": "c606b36c00",
+          "text": "mov     byte ptr ds:6CB3h, 0",
+          "operands": [
+            "byte ptr ds:6CB3h",
+            "0"
+          ],
+          "operand_values": [
+            27827,
+            0
+          ]
+        },
+        {
+          "address": 13286,
+          "bytes": "31c0",
+          "text": "xor     ax, ax",
+          "operands": [
+            "ax",
+            "ax"
+          ],
+          "operand_values": [
+            0,
+            0
+          ]
+        },
+        {
+          "address": 13288,
+          "bytes": "a3a96c",
+          "text": "mov     ds:6CA9h, ax",
+          "operands": [
+            "ds:6CA9h",
+            "ax"
+          ],
+          "operand_values": [
+            27817,
+            0
+          ]
+        },
+        {
+          "address": 13291,
+          "bytes": "a3ab6c",
+          "text": "mov     ds:6CABh, ax",
+          "operands": [
+            "ds:6CABh",
+            "ax"
+          ],
+          "operand_values": [
+            27819,
+            0
+          ]
+        },
+        {
+          "address": 13294,
+          "bytes": "c6067f6701",
+          "text": "mov     byte ptr ds:677Fh, 1",
+          "operands": [
+            "byte ptr ds:677Fh",
+            "1"
+          ],
+          "operand_values": [
+            26495,
+            1
+          ]
+        },
+        {
+          "address": 13299,
+          "bytes": "b87500",
+          "text": "mov     ax, 75h ; 'u'",
+          "operands": [
+            "ax",
+            "75h"
+          ],
+          "operand_values": [
+            0,
+            117
+          ]
+        },
+        {
+          "address": 13302,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13305,
+          "bytes": "a37c6a",
+          "text": "mov     ds:6A7Ch, ax",
+          "operands": [
+            "ds:6A7Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27260,
+            0
+          ]
+        },
+        {
+          "address": 13308,
+          "bytes": "89167e6a",
+          "text": "mov     ds:6A7Eh, dx",
+          "operands": [
+            "ds:6A7Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27262,
+            2
+          ]
+        },
+        {
+          "address": 13312,
+          "bytes": "b87a00",
+          "text": "mov     ax, 7Ah ; 'z'",
+          "operands": [
+            "ax",
+            "7Ah"
+          ],
+          "operand_values": [
+            0,
+            122
+          ]
+        },
+        {
+          "address": 13315,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13318,
+          "bytes": "a3806a",
+          "text": "mov     ds:6A80h, ax",
+          "operands": [
+            "ds:6A80h",
+            "ax"
+          ],
+          "operand_values": [
+            27264,
+            0
+          ]
+        },
+        {
+          "address": 13321,
+          "bytes": "8916826a",
+          "text": "mov     ds:6A82h, dx",
+          "operands": [
+            "ds:6A82h",
+            "dx"
+          ],
+          "operand_values": [
+            27266,
+            2
+          ]
+        },
+        {
+          "address": 13325,
+          "bytes": "b87f00",
+          "text": "mov     ax, 7Fh",
+          "operands": [
+            "ax",
+            "7Fh"
+          ],
+          "operand_values": [
+            0,
+            127
+          ]
+        },
+        {
+          "address": 13328,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13331,
+          "bytes": "a3846a",
+          "text": "mov     ds:6A84h, ax",
+          "operands": [
+            "ds:6A84h",
+            "ax"
+          ],
+          "operand_values": [
+            27268,
+            0
+          ]
+        },
+        {
+          "address": 13334,
+          "bytes": "8916866a",
+          "text": "mov     ds:6A86h, dx",
+          "operands": [
+            "ds:6A86h",
+            "dx"
+          ],
+          "operand_values": [
+            27270,
+            2
+          ]
+        },
+        {
+          "address": 13338,
+          "bytes": "b88400",
+          "text": "mov     ax, 84h",
+          "operands": [
+            "ax",
+            "84h"
+          ],
+          "operand_values": [
+            0,
+            132
+          ]
+        },
+        {
+          "address": 13341,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13344,
+          "bytes": "a3886a",
+          "text": "mov     ds:6A88h, ax",
+          "operands": [
+            "ds:6A88h",
+            "ax"
+          ],
+          "operand_values": [
+            27272,
+            0
+          ]
+        },
+        {
+          "address": 13347,
+          "bytes": "89168a6a",
+          "text": "mov     ds:6A8Ah, dx",
+          "operands": [
+            "ds:6A8Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27274,
+            2
+          ]
+        },
+        {
+          "address": 13351,
+          "bytes": "b88900",
+          "text": "mov     ax, 89h",
+          "operands": [
+            "ax",
+            "89h"
+          ],
+          "operand_values": [
+            0,
+            137
+          ]
+        },
+        {
+          "address": 13354,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13357,
+          "bytes": "a38c6a",
+          "text": "mov     ds:6A8Ch, ax",
+          "operands": [
+            "ds:6A8Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27276,
+            0
+          ]
+        },
+        {
+          "address": 13360,
+          "bytes": "89168e6a",
+          "text": "mov     ds:6A8Eh, dx",
+          "operands": [
+            "ds:6A8Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27278,
+            2
+          ]
+        },
+        {
+          "address": 13364,
+          "bytes": "b88e00",
+          "text": "mov     ax, 8Eh",
+          "operands": [
+            "ax",
+            "8Eh"
+          ],
+          "operand_values": [
+            0,
+            142
+          ]
+        },
+        {
+          "address": 13367,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13370,
+          "bytes": "a3906a",
+          "text": "mov     ds:6A90h, ax",
+          "operands": [
+            "ds:6A90h",
+            "ax"
+          ],
+          "operand_values": [
+            27280,
+            0
+          ]
+        },
+        {
+          "address": 13373,
+          "bytes": "8916926a",
+          "text": "mov     ds:6A92h, dx",
+          "operands": [
+            "ds:6A92h",
+            "dx"
+          ],
+          "operand_values": [
+            27282,
+            2
+          ]
+        },
+        {
+          "address": 13377,
+          "bytes": "b88e00",
+          "text": "mov     ax, 8Eh",
+          "operands": [
+            "ax",
+            "8Eh"
+          ],
+          "operand_values": [
+            0,
+            142
+          ]
+        },
+        {
+          "address": 13380,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13383,
+          "bytes": "a3946a",
+          "text": "mov     ds:6A94h, ax",
+          "operands": [
+            "ds:6A94h",
+            "ax"
+          ],
+          "operand_values": [
+            27284,
+            0
+          ]
+        },
+        {
+          "address": 13386,
+          "bytes": "8916966a",
+          "text": "mov     ds:6A96h, dx",
+          "operands": [
+            "ds:6A96h",
+            "dx"
+          ],
+          "operand_values": [
+            27286,
+            2
+          ]
+        },
+        {
+          "address": 13390,
+          "bytes": "b89300",
+          "text": "mov     ax, 93h",
+          "operands": [
+            "ax",
+            "93h"
+          ],
+          "operand_values": [
+            0,
+            147
+          ]
+        },
+        {
+          "address": 13393,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13396,
+          "bytes": "a3986a",
+          "text": "mov     ds:6A98h, ax",
+          "operands": [
+            "ds:6A98h",
+            "ax"
+          ],
+          "operand_values": [
+            27288,
+            0
+          ]
+        },
+        {
+          "address": 13399,
+          "bytes": "89169a6a",
+          "text": "mov     ds:6A9Ah, dx",
+          "operands": [
+            "ds:6A9Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27290,
+            2
+          ]
+        },
+        {
+          "address": 13403,
+          "bytes": "b89800",
+          "text": "mov     ax, 98h",
+          "operands": [
+            "ax",
+            "98h"
+          ],
+          "operand_values": [
+            0,
+            152
+          ]
+        },
+        {
+          "address": 13406,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13409,
+          "bytes": "a39c6a",
+          "text": "mov     ds:6A9Ch, ax",
+          "operands": [
+            "ds:6A9Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27292,
+            0
+          ]
+        },
+        {
+          "address": 13412,
+          "bytes": "89169e6a",
+          "text": "mov     ds:6A9Eh, dx",
+          "operands": [
+            "ds:6A9Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27294,
+            2
+          ]
+        },
+        {
+          "address": 13416,
+          "bytes": "b89d00",
+          "text": "mov     ax, 9Dh",
+          "operands": [
+            "ax",
+            "9Dh"
+          ],
+          "operand_values": [
+            0,
+            157
+          ]
+        },
+        {
+          "address": 13419,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13422,
+          "bytes": "a3a06a",
+          "text": "mov     ds:6AA0h, ax",
+          "operands": [
+            "ds:6AA0h",
+            "ax"
+          ],
+          "operand_values": [
+            27296,
+            0
+          ]
+        },
+        {
+          "address": 13425,
+          "bytes": "8916a26a",
+          "text": "mov     ds:6AA2h, dx",
+          "operands": [
+            "ds:6AA2h",
+            "dx"
+          ],
+          "operand_values": [
+            27298,
+            2
+          ]
+        },
+        {
+          "address": 13429,
+          "bytes": "b88900",
+          "text": "mov     ax, 89h",
+          "operands": [
+            "ax",
+            "89h"
+          ],
+          "operand_values": [
+            0,
+            137
+          ]
+        },
+        {
+          "address": 13432,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13435,
+          "bytes": "a3a46a",
+          "text": "mov     ds:6AA4h, ax",
+          "operands": [
+            "ds:6AA4h",
+            "ax"
+          ],
+          "operand_values": [
+            27300,
+            0
+          ]
+        },
+        {
+          "address": 13438,
+          "bytes": "8916a66a",
+          "text": "mov     ds:6AA6h, dx",
+          "operands": [
+            "ds:6AA6h",
+            "dx"
+          ],
+          "operand_values": [
+            27302,
+            2
+          ]
+        },
+        {
+          "address": 13442,
+          "bytes": "b8a200",
+          "text": "mov     ax, 0A2h",
+          "operands": [
+            "ax",
+            "0A2h"
+          ],
+          "operand_values": [
+            0,
+            162
+          ]
+        },
+        {
+          "address": 13445,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13448,
+          "bytes": "a3a86a",
+          "text": "mov     ds:6AA8h, ax",
+          "operands": [
+            "ds:6AA8h",
+            "ax"
+          ],
+          "operand_values": [
+            27304,
+            0
+          ]
+        },
+        {
+          "address": 13451,
+          "bytes": "8916aa6a",
+          "text": "mov     ds:6AAAh, dx",
+          "operands": [
+            "ds:6AAAh",
+            "dx"
+          ],
+          "operand_values": [
+            27306,
+            2
+          ]
+        },
+        {
+          "address": 13455,
+          "bytes": "b8a700",
+          "text": "mov     ax, 0A7h",
+          "operands": [
+            "ax",
+            "0A7h"
+          ],
+          "operand_values": [
+            0,
+            167
+          ]
+        },
+        {
+          "address": 13458,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13461,
+          "bytes": "a3ac6a",
+          "text": "mov     ds:6AACh, ax",
+          "operands": [
+            "ds:6AACh",
+            "ax"
+          ],
+          "operand_values": [
+            27308,
+            0
+          ]
+        },
+        {
+          "address": 13464,
+          "bytes": "8916ae6a",
+          "text": "mov     ds:6AAEh, dx",
+          "operands": [
+            "ds:6AAEh",
+            "dx"
+          ],
+          "operand_values": [
+            27310,
+            2
+          ]
+        },
+        {
+          "address": 13468,
+          "bytes": "b8ac00",
+          "text": "mov     ax, 0ACh",
+          "operands": [
+            "ax",
+            "0ACh"
+          ],
+          "operand_values": [
+            0,
+            172
+          ]
+        },
+        {
+          "address": 13471,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13474,
+          "bytes": "a3b06a",
+          "text": "mov     ds:6AB0h, ax",
+          "operands": [
+            "ds:6AB0h",
+            "ax"
+          ],
+          "operand_values": [
+            27312,
+            0
+          ]
+        },
+        {
+          "address": 13477,
+          "bytes": "8916b26a",
+          "text": "mov     ds:6AB2h, dx",
+          "operands": [
+            "ds:6AB2h",
+            "dx"
+          ],
+          "operand_values": [
+            27314,
+            2
+          ]
+        },
+        {
+          "address": 13481,
+          "bytes": "b8b100",
+          "text": "mov     ax, 0B1h",
+          "operands": [
+            "ax",
+            "0B1h"
+          ],
+          "operand_values": [
+            0,
+            177
+          ]
+        },
+        {
+          "address": 13484,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13487,
+          "bytes": "a3b46a",
+          "text": "mov     ds:6AB4h, ax",
+          "operands": [
+            "ds:6AB4h",
+            "ax"
+          ],
+          "operand_values": [
+            27316,
+            0
+          ]
+        },
+        {
+          "address": 13490,
+          "bytes": "8916b66a",
+          "text": "mov     ds:6AB6h, dx",
+          "operands": [
+            "ds:6AB6h",
+            "dx"
+          ],
+          "operand_values": [
+            27318,
+            2
+          ]
+        },
+        {
+          "address": 13494,
+          "bytes": "b88e00",
+          "text": "mov     ax, 8Eh",
+          "operands": [
+            "ax",
+            "8Eh"
+          ],
+          "operand_values": [
+            0,
+            142
+          ]
+        },
+        {
+          "address": 13497,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13500,
+          "bytes": "a3b86a",
+          "text": "mov     ds:6AB8h, ax",
+          "operands": [
+            "ds:6AB8h",
+            "ax"
+          ],
+          "operand_values": [
+            27320,
+            0
+          ]
+        },
+        {
+          "address": 13503,
+          "bytes": "8916ba6a",
+          "text": "mov     ds:6ABAh, dx",
+          "operands": [
+            "ds:6ABAh",
+            "dx"
+          ],
+          "operand_values": [
+            27322,
+            2
+          ]
+        },
+        {
+          "address": 13507,
+          "bytes": "b88e00",
+          "text": "mov     ax, 8Eh",
+          "operands": [
+            "ax",
+            "8Eh"
+          ],
+          "operand_values": [
+            0,
+            142
+          ]
+        },
+        {
+          "address": 13510,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13513,
+          "bytes": "a3bc6a",
+          "text": "mov     ds:6ABCh, ax",
+          "operands": [
+            "ds:6ABCh",
+            "ax"
+          ],
+          "operand_values": [
+            27324,
+            0
+          ]
+        },
+        {
+          "address": 13516,
+          "bytes": "8916be6a",
+          "text": "mov     ds:6ABEh, dx",
+          "operands": [
+            "ds:6ABEh",
+            "dx"
+          ],
+          "operand_values": [
+            27326,
+            2
+          ]
+        },
+        {
+          "address": 13520,
+          "bytes": "b88900",
+          "text": "mov     ax, 89h",
+          "operands": [
+            "ax",
+            "89h"
+          ],
+          "operand_values": [
+            0,
+            137
+          ]
+        },
+        {
+          "address": 13523,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13526,
+          "bytes": "a3c06a",
+          "text": "mov     ds:6AC0h, ax",
+          "operands": [
+            "ds:6AC0h",
+            "ax"
+          ],
+          "operand_values": [
+            27328,
+            0
+          ]
+        },
+        {
+          "address": 13529,
+          "bytes": "8916c26a",
+          "text": "mov     ds:6AC2h, dx",
+          "operands": [
+            "ds:6AC2h",
+            "dx"
+          ],
+          "operand_values": [
+            27330,
+            2
+          ]
+        },
+        {
+          "address": 13533,
+          "bytes": "b8b600",
+          "text": "mov     ax, 0B6h",
+          "operands": [
+            "ax",
+            "0B6h"
+          ],
+          "operand_values": [
+            0,
+            182
+          ]
+        },
+        {
+          "address": 13536,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13539,
+          "bytes": "a3c46a",
+          "text": "mov     ds:6AC4h, ax",
+          "operands": [
+            "ds:6AC4h",
+            "ax"
+          ],
+          "operand_values": [
+            27332,
+            0
+          ]
+        },
+        {
+          "address": 13542,
+          "bytes": "8916c66a",
+          "text": "mov     ds:6AC6h, dx",
+          "operands": [
+            "ds:6AC6h",
+            "dx"
+          ],
+          "operand_values": [
+            27334,
+            2
+          ]
+        },
+        {
+          "address": 13546,
+          "bytes": "b8bb00",
+          "text": "mov     ax, 0BBh",
+          "operands": [
+            "ax",
+            "0BBh"
+          ],
+          "operand_values": [
+            0,
+            187
+          ]
+        },
+        {
+          "address": 13549,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13552,
+          "bytes": "a3c86a",
+          "text": "mov     ds:6AC8h, ax",
+          "operands": [
+            "ds:6AC8h",
+            "ax"
+          ],
+          "operand_values": [
+            27336,
+            0
+          ]
+        },
+        {
+          "address": 13555,
+          "bytes": "8916ca6a",
+          "text": "mov     ds:6ACAh, dx",
+          "operands": [
+            "ds:6ACAh",
+            "dx"
+          ],
+          "operand_values": [
+            27338,
+            2
+          ]
+        },
+        {
+          "address": 13559,
+          "bytes": "b8c000",
+          "text": "mov     ax, 0C0h",
+          "operands": [
+            "ax",
+            "0C0h"
+          ],
+          "operand_values": [
+            0,
+            192
+          ]
+        },
+        {
+          "address": 13562,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13565,
+          "bytes": "a3cc6a",
+          "text": "mov     ds:6ACCh, ax",
+          "operands": [
+            "ds:6ACCh",
+            "ax"
+          ],
+          "operand_values": [
+            27340,
+            0
+          ]
+        },
+        {
+          "address": 13568,
+          "bytes": "8916ce6a",
+          "text": "mov     ds:6ACEh, dx",
+          "operands": [
+            "ds:6ACEh",
+            "dx"
+          ],
+          "operand_values": [
+            27342,
+            2
+          ]
+        },
+        {
+          "address": 13572,
+          "bytes": "b88900",
+          "text": "mov     ax, 89h",
+          "operands": [
+            "ax",
+            "89h"
+          ],
+          "operand_values": [
+            0,
+            137
+          ]
+        },
+        {
+          "address": 13575,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13578,
+          "bytes": "a3d06a",
+          "text": "mov     ds:6AD0h, ax",
+          "operands": [
+            "ds:6AD0h",
+            "ax"
+          ],
+          "operand_values": [
+            27344,
+            0
+          ]
+        },
+        {
+          "address": 13581,
+          "bytes": "8916d26a",
+          "text": "mov     ds:6AD2h, dx",
+          "operands": [
+            "ds:6AD2h",
+            "dx"
+          ],
+          "operand_values": [
+            27346,
+            2
+          ]
+        },
+        {
+          "address": 13585,
+          "bytes": "b8c500",
+          "text": "mov     ax, 0C5h",
+          "operands": [
+            "ax",
+            "0C5h"
+          ],
+          "operand_values": [
+            0,
+            197
+          ]
+        },
+        {
+          "address": 13588,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13591,
+          "bytes": "a3d46a",
+          "text": "mov     ds:6AD4h, ax",
+          "operands": [
+            "ds:6AD4h",
+            "ax"
+          ],
+          "operand_values": [
+            27348,
+            0
+          ]
+        },
+        {
+          "address": 13594,
+          "bytes": "8916d66a",
+          "text": "mov     ds:6AD6h, dx",
+          "operands": [
+            "ds:6AD6h",
+            "dx"
+          ],
+          "operand_values": [
+            27350,
+            2
+          ]
+        },
+        {
+          "address": 13598,
+          "bytes": "b8ca00",
+          "text": "mov     ax, 0CAh",
+          "operands": [
+            "ax",
+            "0CAh"
+          ],
+          "operand_values": [
+            0,
+            202
+          ]
+        },
+        {
+          "address": 13601,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13604,
+          "bytes": "a3d86a",
+          "text": "mov     ds:6AD8h, ax",
+          "operands": [
+            "ds:6AD8h",
+            "ax"
+          ],
+          "operand_values": [
+            27352,
+            0
+          ]
+        },
+        {
+          "address": 13607,
+          "bytes": "8916da6a",
+          "text": "mov     ds:6ADAh, dx",
+          "operands": [
+            "ds:6ADAh",
+            "dx"
+          ],
+          "operand_values": [
+            27354,
+            2
+          ]
+        },
+        {
+          "address": 13611,
+          "bytes": "b8cf00",
+          "text": "mov     ax, 0CFh",
+          "operands": [
+            "ax",
+            "0CFh"
+          ],
+          "operand_values": [
+            0,
+            207
+          ]
+        },
+        {
+          "address": 13614,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13617,
+          "bytes": "a3dc6a",
+          "text": "mov     ds:6ADCh, ax",
+          "operands": [
+            "ds:6ADCh",
+            "ax"
+          ],
+          "operand_values": [
+            27356,
+            0
+          ]
+        },
+        {
+          "address": 13620,
+          "bytes": "8916de6a",
+          "text": "mov     ds:6ADEh, dx",
+          "operands": [
+            "ds:6ADEh",
+            "dx"
+          ],
+          "operand_values": [
+            27358,
+            2
+          ]
+        },
+        {
+          "address": 13624,
+          "bytes": "b8d400",
+          "text": "mov     ax, 0D4h",
+          "operands": [
+            "ax",
+            "0D4h"
+          ],
+          "operand_values": [
+            0,
+            212
+          ]
+        },
+        {
+          "address": 13627,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13630,
+          "bytes": "a3e06a",
+          "text": "mov     ds:6AE0h, ax",
+          "operands": [
+            "ds:6AE0h",
+            "ax"
+          ],
+          "operand_values": [
+            27360,
+            0
+          ]
+        },
+        {
+          "address": 13633,
+          "bytes": "8916e26a",
+          "text": "mov     ds:6AE2h, dx",
+          "operands": [
+            "ds:6AE2h",
+            "dx"
+          ],
+          "operand_values": [
+            27362,
+            2
+          ]
+        },
+        {
+          "address": 13637,
+          "bytes": "b8d900",
+          "text": "mov     ax, 0D9h",
+          "operands": [
+            "ax",
+            "0D9h"
+          ],
+          "operand_values": [
+            0,
+            217
+          ]
+        },
+        {
+          "address": 13640,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13643,
+          "bytes": "a3e46a",
+          "text": "mov     ds:6AE4h, ax",
+          "operands": [
+            "ds:6AE4h",
+            "ax"
+          ],
+          "operand_values": [
+            27364,
+            0
+          ]
+        },
+        {
+          "address": 13646,
+          "bytes": "8916e66a",
+          "text": "mov     ds:6AE6h, dx",
+          "operands": [
+            "ds:6AE6h",
+            "dx"
+          ],
+          "operand_values": [
+            27366,
+            2
+          ]
+        },
+        {
+          "address": 13650,
+          "bytes": "b8de00",
+          "text": "mov     ax, 0DEh",
+          "operands": [
+            "ax",
+            "0DEh"
+          ],
+          "operand_values": [
+            0,
+            222
+          ]
+        },
+        {
+          "address": 13653,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13656,
+          "bytes": "a3e86a",
+          "text": "mov     ds:6AE8h, ax",
+          "operands": [
+            "ds:6AE8h",
+            "ax"
+          ],
+          "operand_values": [
+            27368,
+            0
+          ]
+        },
+        {
+          "address": 13659,
+          "bytes": "8916ea6a",
+          "text": "mov     ds:6AEAh, dx",
+          "operands": [
+            "ds:6AEAh",
+            "dx"
+          ],
+          "operand_values": [
+            27370,
+            2
+          ]
+        },
+        {
+          "address": 13663,
+          "bytes": "b88900",
+          "text": "mov     ax, 89h",
+          "operands": [
+            "ax",
+            "89h"
+          ],
+          "operand_values": [
+            0,
+            137
+          ]
+        },
+        {
+          "address": 13666,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13669,
+          "bytes": "a3ec6a",
+          "text": "mov     ds:6AECh, ax",
+          "operands": [
+            "ds:6AECh",
+            "ax"
+          ],
+          "operand_values": [
+            27372,
+            0
+          ]
+        },
+        {
+          "address": 13672,
+          "bytes": "8916ee6a",
+          "text": "mov     ds:6AEEh, dx",
+          "operands": [
+            "ds:6AEEh",
+            "dx"
+          ],
+          "operand_values": [
+            27374,
+            2
+          ]
+        },
+        {
+          "address": 13676,
+          "bytes": "b8e300",
+          "text": "mov     ax, 0E3h",
+          "operands": [
+            "ax",
+            "0E3h"
+          ],
+          "operand_values": [
+            0,
+            227
+          ]
+        },
+        {
+          "address": 13679,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13682,
+          "bytes": "a3f06a",
+          "text": "mov     ds:6AF0h, ax",
+          "operands": [
+            "ds:6AF0h",
+            "ax"
+          ],
+          "operand_values": [
+            27376,
+            0
+          ]
+        },
+        {
+          "address": 13685,
+          "bytes": "8916f26a",
+          "text": "mov     ds:6AF2h, dx",
+          "operands": [
+            "ds:6AF2h",
+            "dx"
+          ],
+          "operand_values": [
+            27378,
+            2
+          ]
+        },
+        {
+          "address": 13689,
+          "bytes": "b8e800",
+          "text": "mov     ax, 0E8h",
+          "operands": [
+            "ax",
+            "0E8h"
+          ],
+          "operand_values": [
+            0,
+            232
+          ]
+        },
+        {
+          "address": 13692,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13695,
+          "bytes": "a3f46a",
+          "text": "mov     ds:6AF4h, ax",
+          "operands": [
+            "ds:6AF4h",
+            "ax"
+          ],
+          "operand_values": [
+            27380,
+            0
+          ]
+        },
+        {
+          "address": 13698,
+          "bytes": "8916f66a",
+          "text": "mov     ds:6AF6h, dx",
+          "operands": [
+            "ds:6AF6h",
+            "dx"
+          ],
+          "operand_values": [
+            27382,
+            2
+          ]
+        },
+        {
+          "address": 13702,
+          "bytes": "b8ed00",
+          "text": "mov     ax, 0EDh",
+          "operands": [
+            "ax",
+            "0EDh"
+          ],
+          "operand_values": [
+            0,
+            237
+          ]
+        },
+        {
+          "address": 13705,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13708,
+          "bytes": "a3f86a",
+          "text": "mov     ds:6AF8h, ax",
+          "operands": [
+            "ds:6AF8h",
+            "ax"
+          ],
+          "operand_values": [
+            27384,
+            0
+          ]
+        },
+        {
+          "address": 13711,
+          "bytes": "8916fa6a",
+          "text": "mov     ds:6AFAh, dx",
+          "operands": [
+            "ds:6AFAh",
+            "dx"
+          ],
+          "operand_values": [
+            27386,
+            2
+          ]
+        },
+        {
+          "address": 13715,
+          "bytes": "b8f200",
+          "text": "mov     ax, 0F2h",
+          "operands": [
+            "ax",
+            "0F2h"
+          ],
+          "operand_values": [
+            0,
+            242
+          ]
+        },
+        {
+          "address": 13718,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13721,
+          "bytes": "a3fc6a",
+          "text": "mov     ds:6AFCh, ax",
+          "operands": [
+            "ds:6AFCh",
+            "ax"
+          ],
+          "operand_values": [
+            27388,
+            0
+          ]
+        },
+        {
+          "address": 13724,
+          "bytes": "8916fe6a",
+          "text": "mov     ds:6AFEh, dx",
+          "operands": [
+            "ds:6AFEh",
+            "dx"
+          ],
+          "operand_values": [
+            27390,
+            2
+          ]
+        },
+        {
+          "address": 13728,
+          "bytes": "b8f700",
+          "text": "mov     ax, 0F7h",
+          "operands": [
+            "ax",
+            "0F7h"
+          ],
+          "operand_values": [
+            0,
+            247
+          ]
+        },
+        {
+          "address": 13731,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13734,
+          "bytes": "a3006b",
+          "text": "mov     ds:6B00h, ax",
+          "operands": [
+            "ds:6B00h",
+            "ax"
+          ],
+          "operand_values": [
+            27392,
+            0
+          ]
+        },
+        {
+          "address": 13737,
+          "bytes": "8916026b",
+          "text": "mov     ds:6B02h, dx",
+          "operands": [
+            "ds:6B02h",
+            "dx"
+          ],
+          "operand_values": [
+            27394,
+            2
+          ]
+        },
+        {
+          "address": 13741,
+          "bytes": "b8fc00",
+          "text": "mov     ax, 0FCh",
+          "operands": [
+            "ax",
+            "0FCh"
+          ],
+          "operand_values": [
+            0,
+            252
+          ]
+        },
+        {
+          "address": 13744,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13747,
+          "bytes": "a3046b",
+          "text": "mov     ds:6B04h, ax",
+          "operands": [
+            "ds:6B04h",
+            "ax"
+          ],
+          "operand_values": [
+            27396,
+            0
+          ]
+        },
+        {
+          "address": 13750,
+          "bytes": "8916066b",
+          "text": "mov     ds:6B06h, dx",
+          "operands": [
+            "ds:6B06h",
+            "dx"
+          ],
+          "operand_values": [
+            27398,
+            2
+          ]
+        },
+        {
+          "address": 13754,
+          "bytes": "b80101",
+          "text": "mov     ax, 101h",
+          "operands": [
+            "ax",
+            "101h"
+          ],
+          "operand_values": [
+            0,
+            257
+          ]
+        },
+        {
+          "address": 13757,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13760,
+          "bytes": "a3086b",
+          "text": "mov     ds:6B08h, ax",
+          "operands": [
+            "ds:6B08h",
+            "ax"
+          ],
+          "operand_values": [
+            27400,
+            0
+          ]
+        },
+        {
+          "address": 13763,
+          "bytes": "89160a6b",
+          "text": "mov     ds:6B0Ah, dx",
+          "operands": [
+            "ds:6B0Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27402,
+            2
+          ]
+        },
+        {
+          "address": 13767,
+          "bytes": "b80601",
+          "text": "mov     ax, 106h",
+          "operands": [
+            "ax",
+            "106h"
+          ],
+          "operand_values": [
+            0,
+            262
+          ]
+        },
+        {
+          "address": 13770,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13773,
+          "bytes": "a30c6b",
+          "text": "mov     ds:6B0Ch, ax",
+          "operands": [
+            "ds:6B0Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27404,
+            0
+          ]
+        },
+        {
+          "address": 13776,
+          "bytes": "89160e6b",
+          "text": "mov     ds:6B0Eh, dx",
+          "operands": [
+            "ds:6B0Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27406,
+            2
+          ]
+        },
+        {
+          "address": 13780,
+          "bytes": "b80b01",
+          "text": "mov     ax, 10Bh",
+          "operands": [
+            "ax",
+            "10Bh"
+          ],
+          "operand_values": [
+            0,
+            267
+          ]
+        },
+        {
+          "address": 13783,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13786,
+          "bytes": "a3106b",
+          "text": "mov     ds:6B10h, ax",
+          "operands": [
+            "ds:6B10h",
+            "ax"
+          ],
+          "operand_values": [
+            27408,
+            0
+          ]
+        },
+        {
+          "address": 13789,
+          "bytes": "8916126b",
+          "text": "mov     ds:6B12h, dx",
+          "operands": [
+            "ds:6B12h",
+            "dx"
+          ],
+          "operand_values": [
+            27410,
+            2
+          ]
+        },
+        {
+          "address": 13793,
+          "bytes": "b81501",
+          "text": "mov     ax, 115h",
+          "operands": [
+            "ax",
+            "115h"
+          ],
+          "operand_values": [
+            0,
+            277
+          ]
+        },
+        {
+          "address": 13796,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13799,
+          "bytes": "a3146b",
+          "text": "mov     ds:6B14h, ax",
+          "operands": [
+            "ds:6B14h",
+            "ax"
+          ],
+          "operand_values": [
+            27412,
+            0
+          ]
+        },
+        {
+          "address": 13802,
+          "bytes": "8916166b",
+          "text": "mov     ds:6B16h, dx",
+          "operands": [
+            "ds:6B16h",
+            "dx"
+          ],
+          "operand_values": [
+            27414,
+            2
+          ]
+        },
+        {
+          "address": 13806,
+          "bytes": "b81a01",
+          "text": "mov     ax, 11Ah",
+          "operands": [
+            "ax",
+            "11Ah"
+          ],
+          "operand_values": [
+            0,
+            282
+          ]
+        },
+        {
+          "address": 13809,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13812,
+          "bytes": "a3186b",
+          "text": "mov     ds:6B18h, ax",
+          "operands": [
+            "ds:6B18h",
+            "ax"
+          ],
+          "operand_values": [
+            27416,
+            0
+          ]
+        },
+        {
+          "address": 13815,
+          "bytes": "89161a6b",
+          "text": "mov     ds:6B1Ah, dx",
+          "operands": [
+            "ds:6B1Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27418,
+            2
+          ]
+        },
+        {
+          "address": 13819,
+          "bytes": "b81f01",
+          "text": "mov     ax, 11Fh",
+          "operands": [
+            "ax",
+            "11Fh"
+          ],
+          "operand_values": [
+            0,
+            287
+          ]
+        },
+        {
+          "address": 13822,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13825,
+          "bytes": "a31c6b",
+          "text": "mov     ds:6B1Ch, ax",
+          "operands": [
+            "ds:6B1Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27420,
+            0
+          ]
+        },
+        {
+          "address": 13828,
+          "bytes": "89161e6b",
+          "text": "mov     ds:6B1Eh, dx",
+          "operands": [
+            "ds:6B1Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27422,
+            2
+          ]
+        },
+        {
+          "address": 13832,
+          "bytes": "b82401",
+          "text": "mov     ax, 124h",
+          "operands": [
+            "ax",
+            "124h"
+          ],
+          "operand_values": [
+            0,
+            292
+          ]
+        },
+        {
+          "address": 13835,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13838,
+          "bytes": "a3206b",
+          "text": "mov     ds:6B20h, ax",
+          "operands": [
+            "ds:6B20h",
+            "ax"
+          ],
+          "operand_values": [
+            27424,
+            0
+          ]
+        },
+        {
+          "address": 13841,
+          "bytes": "8916226b",
+          "text": "mov     ds:6B22h, dx",
+          "operands": [
+            "ds:6B22h",
+            "dx"
+          ],
+          "operand_values": [
+            27426,
+            2
+          ]
+        },
+        {
+          "address": 13845,
+          "bytes": "b84d00",
+          "text": "mov     ax, 4Dh ; 'M'",
+          "operands": [
+            "ax",
+            "4Dh"
+          ],
+          "operand_values": [
+            0,
+            77
+          ]
+        },
+        {
+          "address": 13848,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13851,
+          "bytes": "a3246b",
+          "text": "mov     ds:6B24h, ax",
+          "operands": [
+            "ds:6B24h",
+            "ax"
+          ],
+          "operand_values": [
+            27428,
+            0
+          ]
+        },
+        {
+          "address": 13854,
+          "bytes": "8916266b",
+          "text": "mov     ds:6B26h, dx",
+          "operands": [
+            "ds:6B26h",
+            "dx"
+          ],
+          "operand_values": [
+            27430,
+            2
+          ]
+        },
+        {
+          "address": 13858,
+          "bytes": "b82901",
+          "text": "mov     ax, 129h",
+          "operands": [
+            "ax",
+            "129h"
+          ],
+          "operand_values": [
+            0,
+            297
+          ]
+        },
+        {
+          "address": 13861,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13864,
+          "bytes": "a3286b",
+          "text": "mov     ds:6B28h, ax",
+          "operands": [
+            "ds:6B28h",
+            "ax"
+          ],
+          "operand_values": [
+            27432,
+            0
+          ]
+        },
+        {
+          "address": 13867,
+          "bytes": "89162a6b",
+          "text": "mov     ds:6B2Ah, dx",
+          "operands": [
+            "ds:6B2Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27434,
+            2
+          ]
+        },
+        {
+          "address": 13871,
+          "bytes": "b82e01",
+          "text": "mov     ax, 12Eh",
+          "operands": [
+            "ax",
+            "12Eh"
+          ],
+          "operand_values": [
+            0,
+            302
+          ]
+        },
+        {
+          "address": 13874,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13877,
+          "bytes": "a32c6b",
+          "text": "mov     ds:6B2Ch, ax",
+          "operands": [
+            "ds:6B2Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27436,
+            0
+          ]
+        },
+        {
+          "address": 13880,
+          "bytes": "89162e6b",
+          "text": "mov     ds:6B2Eh, dx",
+          "operands": [
+            "ds:6B2Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27438,
+            2
+          ]
+        },
+        {
+          "address": 13884,
+          "bytes": "b81f01",
+          "text": "mov     ax, 11Fh",
+          "operands": [
+            "ax",
+            "11Fh"
+          ],
+          "operand_values": [
+            0,
+            287
+          ]
+        },
+        {
+          "address": 13887,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13890,
+          "bytes": "a3306b",
+          "text": "mov     ds:6B30h, ax",
+          "operands": [
+            "ds:6B30h",
+            "ax"
+          ],
+          "operand_values": [
+            27440,
+            0
+          ]
+        },
+        {
+          "address": 13893,
+          "bytes": "8916326b",
+          "text": "mov     ds:6B32h, dx",
+          "operands": [
+            "ds:6B32h",
+            "dx"
+          ],
+          "operand_values": [
+            27442,
+            2
+          ]
+        },
+        {
+          "address": 13897,
+          "bytes": "b83301",
+          "text": "mov     ax, 133h",
+          "operands": [
+            "ax",
+            "133h"
+          ],
+          "operand_values": [
+            0,
+            307
+          ]
+        },
+        {
+          "address": 13900,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13903,
+          "bytes": "a3346b",
+          "text": "mov     ds:6B34h, ax",
+          "operands": [
+            "ds:6B34h",
+            "ax"
+          ],
+          "operand_values": [
+            27444,
+            0
+          ]
+        },
+        {
+          "address": 13906,
+          "bytes": "8916366b",
+          "text": "mov     ds:6B36h, dx",
+          "operands": [
+            "ds:6B36h",
+            "dx"
+          ],
+          "operand_values": [
+            27446,
+            2
+          ]
+        },
+        {
+          "address": 13910,
+          "bytes": "b83d01",
+          "text": "mov     ax, 13Dh",
+          "operands": [
+            "ax",
+            "13Dh"
+          ],
+          "operand_values": [
+            0,
+            317
+          ]
+        },
+        {
+          "address": 13913,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13916,
+          "bytes": "a3386b",
+          "text": "mov     ds:6B38h, ax",
+          "operands": [
+            "ds:6B38h",
+            "ax"
+          ],
+          "operand_values": [
+            27448,
+            0
+          ]
+        },
+        {
+          "address": 13919,
+          "bytes": "89163a6b",
+          "text": "mov     ds:6B3Ah, dx",
+          "operands": [
+            "ds:6B3Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27450,
+            2
+          ]
+        },
+        {
+          "address": 13923,
+          "bytes": "b8c500",
+          "text": "mov     ax, 0C5h",
+          "operands": [
+            "ax",
+            "0C5h"
+          ],
+          "operand_values": [
+            0,
+            197
+          ]
+        },
+        {
+          "address": 13926,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13929,
+          "bytes": "a33c6b",
+          "text": "mov     ds:6B3Ch, ax",
+          "operands": [
+            "ds:6B3Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27452,
+            0
+          ]
+        },
+        {
+          "address": 13932,
+          "bytes": "89163e6b",
+          "text": "mov     ds:6B3Eh, dx",
+          "operands": [
+            "ds:6B3Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27454,
+            2
+          ]
+        },
+        {
+          "address": 13936,
+          "bytes": "b8e300",
+          "text": "mov     ax, 0E3h",
+          "operands": [
+            "ax",
+            "0E3h"
+          ],
+          "operand_values": [
+            0,
+            227
+          ]
+        },
+        {
+          "address": 13939,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13942,
+          "bytes": "a3406b",
+          "text": "mov     ds:6B40h, ax",
+          "operands": [
+            "ds:6B40h",
+            "ax"
+          ],
+          "operand_values": [
+            27456,
+            0
+          ]
+        },
+        {
+          "address": 13945,
+          "bytes": "8916426b",
+          "text": "mov     ds:6B42h, dx",
+          "operands": [
+            "ds:6B42h",
+            "dx"
+          ],
+          "operand_values": [
+            27458,
+            2
+          ]
+        },
+        {
+          "address": 13949,
+          "bytes": "b84c01",
+          "text": "mov     ax, 14Ch",
+          "operands": [
+            "ax",
+            "14Ch"
+          ],
+          "operand_values": [
+            0,
+            332
+          ]
+        },
+        {
+          "address": 13952,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13955,
+          "bytes": "a3446b",
+          "text": "mov     ds:6B44h, ax",
+          "operands": [
+            "ds:6B44h",
+            "ax"
+          ],
+          "operand_values": [
+            27460,
+            0
+          ]
+        },
+        {
+          "address": 13958,
+          "bytes": "8916466b",
+          "text": "mov     ds:6B46h, dx",
+          "operands": [
+            "ds:6B46h",
+            "dx"
+          ],
+          "operand_values": [
+            27462,
+            2
+          ]
+        },
+        {
+          "address": 13962,
+          "bytes": "b88e00",
+          "text": "mov     ax, 8Eh",
+          "operands": [
+            "ax",
+            "8Eh"
+          ],
+          "operand_values": [
+            0,
+            142
+          ]
+        },
+        {
+          "address": 13965,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13968,
+          "bytes": "a3486b",
+          "text": "mov     ds:6B48h, ax",
+          "operands": [
+            "ds:6B48h",
+            "ax"
+          ],
+          "operand_values": [
+            27464,
+            0
+          ]
+        },
+        {
+          "address": 13971,
+          "bytes": "89164a6b",
+          "text": "mov     ds:6B4Ah, dx",
+          "operands": [
+            "ds:6B4Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27466,
+            2
+          ]
+        },
+        {
+          "address": 13975,
+          "bytes": "b88e00",
+          "text": "mov     ax, 8Eh",
+          "operands": [
+            "ax",
+            "8Eh"
+          ],
+          "operand_values": [
+            0,
+            142
+          ]
+        },
+        {
+          "address": 13978,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13981,
+          "bytes": "a34c6b",
+          "text": "mov     ds:6B4Ch, ax",
+          "operands": [
+            "ds:6B4Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27468,
+            0
+          ]
+        },
+        {
+          "address": 13984,
+          "bytes": "89164e6b",
+          "text": "mov     ds:6B4Eh, dx",
+          "operands": [
+            "ds:6B4Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27470,
+            2
+          ]
+        },
+        {
+          "address": 13988,
+          "bytes": "b88e00",
+          "text": "mov     ax, 8Eh",
+          "operands": [
+            "ax",
+            "8Eh"
+          ],
+          "operand_values": [
+            0,
+            142
+          ]
+        },
+        {
+          "address": 13991,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 13994,
+          "bytes": "a3506b",
+          "text": "mov     ds:6B50h, ax",
+          "operands": [
+            "ds:6B50h",
+            "ax"
+          ],
+          "operand_values": [
+            27472,
+            0
+          ]
+        },
+        {
+          "address": 13997,
+          "bytes": "8916526b",
+          "text": "mov     ds:6B52h, dx",
+          "operands": [
+            "ds:6B52h",
+            "dx"
+          ],
+          "operand_values": [
+            27474,
+            2
+          ]
+        },
+        {
+          "address": 14001,
+          "bytes": "b85101",
+          "text": "mov     ax, 151h",
+          "operands": [
+            "ax",
+            "151h"
+          ],
+          "operand_values": [
+            0,
+            337
+          ]
+        },
+        {
+          "address": 14004,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14007,
+          "bytes": "a3546b",
+          "text": "mov     ds:6B54h, ax",
+          "operands": [
+            "ds:6B54h",
+            "ax"
+          ],
+          "operand_values": [
+            27476,
+            0
+          ]
+        },
+        {
+          "address": 14010,
+          "bytes": "8916566b",
+          "text": "mov     ds:6B56h, dx",
+          "operands": [
+            "ds:6B56h",
+            "dx"
+          ],
+          "operand_values": [
+            27478,
+            2
+          ]
+        },
+        {
+          "address": 14014,
+          "bytes": "b85601",
+          "text": "mov     ax, 156h",
+          "operands": [
+            "ax",
+            "156h"
+          ],
+          "operand_values": [
+            0,
+            342
+          ]
+        },
+        {
+          "address": 14017,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14020,
+          "bytes": "a3586b",
+          "text": "mov     ds:6B58h, ax",
+          "operands": [
+            "ds:6B58h",
+            "ax"
+          ],
+          "operand_values": [
+            27480,
+            0
+          ]
+        },
+        {
+          "address": 14023,
+          "bytes": "89165a6b",
+          "text": "mov     ds:6B5Ah, dx",
+          "operands": [
+            "ds:6B5Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27482,
+            2
+          ]
+        },
+        {
+          "address": 14027,
+          "bytes": "b85b01",
+          "text": "mov     ax, 15Bh",
+          "operands": [
+            "ax",
+            "15Bh"
+          ],
+          "operand_values": [
+            0,
+            347
+          ]
+        },
+        {
+          "address": 14030,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14033,
+          "bytes": "a35c6b",
+          "text": "mov     ds:6B5Ch, ax",
+          "operands": [
+            "ds:6B5Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27484,
+            0
+          ]
+        },
+        {
+          "address": 14036,
+          "bytes": "89165e6b",
+          "text": "mov     ds:6B5Eh, dx",
+          "operands": [
+            "ds:6B5Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27486,
+            2
+          ]
+        },
+        {
+          "address": 14040,
+          "bytes": "b86001",
+          "text": "mov     ax, 160h",
+          "operands": [
+            "ax",
+            "160h"
+          ],
+          "operand_values": [
+            0,
+            352
+          ]
+        },
+        {
+          "address": 14043,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14046,
+          "bytes": "a3606b",
+          "text": "mov     ds:6B60h, ax",
+          "operands": [
+            "ds:6B60h",
+            "ax"
+          ],
+          "operand_values": [
+            27488,
+            0
+          ]
+        },
+        {
+          "address": 14049,
+          "bytes": "8916626b",
+          "text": "mov     ds:6B62h, dx",
+          "operands": [
+            "ds:6B62h",
+            "dx"
+          ],
+          "operand_values": [
+            27490,
+            2
+          ]
+        },
+        {
+          "address": 14053,
+          "bytes": "b86501",
+          "text": "mov     ax, 165h",
+          "operands": [
+            "ax",
+            "165h"
+          ],
+          "operand_values": [
+            0,
+            357
+          ]
+        },
+        {
+          "address": 14056,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14059,
+          "bytes": "a3646b",
+          "text": "mov     ds:6B64h, ax",
+          "operands": [
+            "ds:6B64h",
+            "ax"
+          ],
+          "operand_values": [
+            27492,
+            0
+          ]
+        },
+        {
+          "address": 14062,
+          "bytes": "8916666b",
+          "text": "mov     ds:6B66h, dx",
+          "operands": [
+            "ds:6B66h",
+            "dx"
+          ],
+          "operand_values": [
+            27494,
+            2
+          ]
+        },
+        {
+          "address": 14066,
+          "bytes": "b86a01",
+          "text": "mov     ax, 16Ah",
+          "operands": [
+            "ax",
+            "16Ah"
+          ],
+          "operand_values": [
+            0,
+            362
+          ]
+        },
+        {
+          "address": 14069,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14072,
+          "bytes": "a3686b",
+          "text": "mov     ds:6B68h, ax",
+          "operands": [
+            "ds:6B68h",
+            "ax"
+          ],
+          "operand_values": [
+            27496,
+            0
+          ]
+        },
+        {
+          "address": 14075,
+          "bytes": "89166a6b",
+          "text": "mov     ds:6B6Ah, dx",
+          "operands": [
+            "ds:6B6Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27498,
+            2
+          ]
+        },
+        {
+          "address": 14079,
+          "bytes": "b86f01",
+          "text": "mov     ax, 16Fh",
+          "operands": [
+            "ax",
+            "16Fh"
+          ],
+          "operand_values": [
+            0,
+            367
+          ]
+        },
+        {
+          "address": 14082,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14085,
+          "bytes": "a36c6b",
+          "text": "mov     ds:6B6Ch, ax",
+          "operands": [
+            "ds:6B6Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27500,
+            0
+          ]
+        },
+        {
+          "address": 14088,
+          "bytes": "89166e6b",
+          "text": "mov     ds:6B6Eh, dx",
+          "operands": [
+            "ds:6B6Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27502,
+            2
+          ]
+        },
+        {
+          "address": 14092,
+          "bytes": "b87401",
+          "text": "mov     ax, 174h",
+          "operands": [
+            "ax",
+            "174h"
+          ],
+          "operand_values": [
+            0,
+            372
+          ]
+        },
+        {
+          "address": 14095,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14098,
+          "bytes": "a3706b",
+          "text": "mov     ds:6B70h, ax",
+          "operands": [
+            "ds:6B70h",
+            "ax"
+          ],
+          "operand_values": [
+            27504,
+            0
+          ]
+        },
+        {
+          "address": 14101,
+          "bytes": "8916726b",
+          "text": "mov     ds:6B72h, dx",
+          "operands": [
+            "ds:6B72h",
+            "dx"
+          ],
+          "operand_values": [
+            27506,
+            2
+          ]
+        },
+        {
+          "address": 14105,
+          "bytes": "b87901",
+          "text": "mov     ax, 179h",
+          "operands": [
+            "ax",
+            "179h"
+          ],
+          "operand_values": [
+            0,
+            377
+          ]
+        },
+        {
+          "address": 14108,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14111,
+          "bytes": "a3746b",
+          "text": "mov     ds:6B74h, ax",
+          "operands": [
+            "ds:6B74h",
+            "ax"
+          ],
+          "operand_values": [
+            27508,
+            0
+          ]
+        },
+        {
+          "address": 14114,
+          "bytes": "8916766b",
+          "text": "mov     ds:6B76h, dx",
+          "operands": [
+            "ds:6B76h",
+            "dx"
+          ],
+          "operand_values": [
+            27510,
+            2
+          ]
+        },
+        {
+          "address": 14118,
+          "bytes": "b83301",
+          "text": "mov     ax, 133h",
+          "operands": [
+            "ax",
+            "133h"
+          ],
+          "operand_values": [
+            0,
+            307
+          ]
+        },
+        {
+          "address": 14121,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14124,
+          "bytes": "a3786b",
+          "text": "mov     ds:6B78h, ax",
+          "operands": [
+            "ds:6B78h",
+            "ax"
+          ],
+          "operand_values": [
+            27512,
+            0
+          ]
+        },
+        {
+          "address": 14127,
+          "bytes": "89167a6b",
+          "text": "mov     ds:6B7Ah, dx",
+          "operands": [
+            "ds:6B7Ah",
+            "dx"
+          ],
+          "operand_values": [
+            27514,
+            2
+          ]
+        },
+        {
+          "address": 14131,
+          "bytes": "b87e01",
+          "text": "mov     ax, 17Eh",
+          "operands": [
+            "ax",
+            "17Eh"
+          ],
+          "operand_values": [
+            0,
+            382
+          ]
+        },
+        {
+          "address": 14134,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14137,
+          "bytes": "a37c6b",
+          "text": "mov     ds:6B7Ch, ax",
+          "operands": [
+            "ds:6B7Ch",
+            "ax"
+          ],
+          "operand_values": [
+            27516,
+            0
+          ]
+        },
+        {
+          "address": 14140,
+          "bytes": "89167e6b",
+          "text": "mov     ds:6B7Eh, dx",
+          "operands": [
+            "ds:6B7Eh",
+            "dx"
+          ],
+          "operand_values": [
+            27518,
+            2
+          ]
+        },
+        {
+          "address": 14144,
+          "bytes": "b88301",
+          "text": "mov     ax, 183h",
+          "operands": [
+            "ax",
+            "183h"
+          ],
+          "operand_values": [
+            0,
+            387
+          ]
+        },
+        {
+          "address": 14147,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14150,
+          "bytes": "a3806b",
+          "text": "mov     ds:6B80h, ax",
+          "operands": [
+            "ds:6B80h",
+            "ax"
+          ],
+          "operand_values": [
+            27520,
+            0
+          ]
+        },
+        {
+          "address": 14153,
+          "bytes": "8916826b",
+          "text": "mov     ds:6B82h, dx",
+          "operands": [
+            "ds:6B82h",
+            "dx"
+          ],
+          "operand_values": [
+            27522,
+            2
+          ]
+        },
+        {
+          "address": 14157,
+          "bytes": "b88801",
+          "text": "mov     ax, 188h",
+          "operands": [
+            "ax",
+            "188h"
+          ],
+          "operand_values": [
+            0,
+            392
+          ]
+        },
+        {
+          "address": 14160,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14163,
+          "bytes": "a3846b",
+          "text": "mov     ds:6B84h, ax",
+          "operands": [
+            "ds:6B84h",
+            "ax"
+          ],
+          "operand_values": [
+            27524,
+            0
+          ]
+        },
+        {
+          "address": 14166,
+          "bytes": "8916866b",
+          "text": "mov     ds:6B86h, dx",
+          "operands": [
+            "ds:6B86h",
+            "dx"
+          ],
+          "operand_values": [
+            27526,
+            2
+          ]
+        },
+        {
+          "address": 14170,
+          "bytes": "b88d01",
+          "text": "mov     ax, 18Dh",
+          "operands": [
+            "ax",
+            "18Dh"
+          ],
+          "operand_values": [
+            0,
+            397
+          ]
+        },
+        {
+          "address": 14173,
+          "bytes": "bae200",
+          "text": "mov     dx, 0E2h",
+          "operands": [
+            "dx",
+            "0E2h"
+          ],
+          "operand_values": [
+            2,
+            226
+          ]
+        },
+        {
+          "address": 14176,
+          "bytes": "a3e668",
+          "text": "mov     ds:68E6h, ax",
+          "operands": [
+            "ds:68E6h",
+            "ax"
+          ],
+          "operand_values": [
+            26854,
+            0
+          ]
+        },
+        {
+          "address": 14179,
+          "bytes": "8916e868",
+          "text": "mov     ds:68E8h, dx",
+          "operands": [
+            "ds:68E8h",
+            "dx"
+          ],
+          "operand_values": [
+            26856,
+            2
+          ]
+        },
+        {
+          "address": 14183,
+          "bytes": "89ec",
+          "text": "mov     sp, bp",
+          "operands": [
+            "sp",
+            "bp"
+          ],
+          "operand_values": [
+            4,
+            5
+          ]
+        },
+        {
+          "address": 14185,
+          "bytes": "5d",
+          "text": "pop     bp",
+          "operands": [
+            "bp",
+            ""
+          ],
+          "operand_values": [
+            5,
+            -1
+          ]
+        },
+        {
+          "address": 14186,
+          "bytes": "cb",
+          "text": "retf",
+          "operands": [
+            "",
+            ""
+          ],
+          "operand_values": [
+            -1,
+            -1
+          ]
+        }
+      ]
+    }
+  ]
+}

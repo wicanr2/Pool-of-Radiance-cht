@@ -1,0 +1,41 @@
+{
+  "schema": "pool-overlay-word-references-ida/1",
+  "input": "overlay-09.bin",
+  "sha256": "6b47e49d1a2e73427b9863560350965d6d5b43d3dd89df89d9b7f43a68409258",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "word": 10072,
+  "matches": [
+    {
+      "address": 1785,
+      "bytes": "8a855827",
+      "text": "mov     al, [di+2758h]",
+      "operands": [
+        "al",
+        "[di+2758h]"
+      ],
+      "operand_values": [
+        16,
+        10072
+      ],
+      "function_start": 1646,
+      "function_end": 1996
+    },
+    {
+      "address": 1832,
+      "bytes": "8a855827",
+      "text": "mov     al, [di+2758h]",
+      "operands": [
+        "al",
+        "[di+2758h]"
+      ],
+      "operand_values": [
+        16,
+        10072
+      ],
+      "function_start": 1646,
+      "function_end": 1996
+    }
+  ]
+}

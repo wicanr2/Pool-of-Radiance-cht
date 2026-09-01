@@ -42,10 +42,10 @@ IDA 由 TPOV entry seeds 加保守 sweep 匯出 overlay-16 38 functions、overla
 | --- | --- | --- | --- |
 | `10h..15h` | 六個 byte | overlay-16 以能力索引加到 record base，再讀寫 `[es:di+10h]`；原版角色樣本逐 byte 對應畫面六能力順序 | STR、INT、WIS、DEX、CON、CHA；`exact` |
 | `30h` | little-endian word | overlay-16 `0F23h／0F86h／0FD9h／107Fh／1178h／11CAh` 寫 `[es:di+30h]`；overlay-19 `0184h` push 同一 word 到顯示鏈 | age 欄位；`exact` 欄位，公式 DRAFT |
-| `32h` | byte | overlay-16 `1CC6h` 初始化、`1D3Ch` 從 `B1h` 複製，後續依 modifier 調整；同一次 Elf／Thief 資料頁顯示 HP `7`，最終 `.CHA +32h` 也是 `7` | 畫面 HP；`exact` |
+| `32h` | byte | overlay-16 `1CC6h` 初始化、`1D3Ch` 從 `B1h` 複製，後續依 modifier 調整；overlay-25 `0978h` HP formatter 以 current `+11Bh` 與此欄比較 | max HP；`exact`（consumer closure 見 Spec 049） |
 | `8Eh` | little-endian word | overlay-16 `1D00h..1D17h` 計算後寫 `[es:di+8Eh]`；同一次資料頁顯示 GOLD `100`，`.CHA +8Eh` 是 word `100` | 畫面 Gold；`exact`，產生公式 DRAFT |
 | `B1h` | byte | overlay-16 `1D2Ch` 寫入 local `4209h` 回傳值，`1D34h` 讀回；同一角色為 `5`，其畫面 HP 是 `7`；`1DDEh..1DE1h` 另依 divisor 調整 | 未套完整 modifier 的 HP roll／class HP accumulator；`strong inference`，精確公式 DRAFT |
-| `11Bh` | byte | overlay-16 `1DBEh..1DC5h` 複製調整後 `32h`；同一角色兩者同為 `7` | max/current HP 鏡像候選；`strong inference` |
+| `11Bh` | byte | overlay-16 `1DBEh..1DC5h` 複製調整後 `32h`；overlay-25 `0978h` HP formatter 顯示此欄，並以 `+32h` 判斷受傷顏色 | current HP；`exact`（consumer closure 見 Spec 049） |
 
 `1D00h..1DE1h` 明確分成 Gold 與 HP 兩條鏈：前段把計算結果寫入 word `8Eh`；
 local `4209h` 的回傳再寫 `B1h` 並複製到 `32h`，local `3F01h` 的 signed 結果只
@@ -58,7 +58,9 @@ local `4209h` 的回傳再寫 `B1h` 並複製到 `32h`，local `3F01h` 的 signe
 runtime anchor（資料頁 SHA-256
 `865e4612c68a93aeacf712d6f307fc3d5f871dbf3ac7cfbf00aa5f26eb5adabc`；CHA
 SHA-256 `cc8febdd1f9f8c2dc0ee7c752bddca90b1960b0b9cce8a33f6cdb19f66c9471a`）
-直接否定舊解釋：HP `7`=`+32h`，Gold `100`=word `+8Eh`，而 `+B1h`=`5`。
+直接否定舊解釋：建角 HP `7` 同時寫入 `+32h`／`+11Bh`，Gold `100`=word
+`+8Eh`，而 `+B1h`=`5`。該單一未受傷樣本不能分辨 current／max；Spec 049 以
+原版 HP formatter 閉合 `+11Bh=current`、`+32h=max`。
 舊推論形成原因保留於此，後續不得再引用它。
 
 ## READY 公式與執行順序

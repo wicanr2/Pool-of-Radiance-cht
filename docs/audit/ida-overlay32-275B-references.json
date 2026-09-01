@@ -1,0 +1,71 @@
+{
+  "schema": "pool-overlay-word-references-ida/1",
+  "input": "overlay-32.bin",
+  "sha256": "efc22ba82144187c4bfc5deadb2bb10a868c13e45f2f7ca63f54d7387b22dfc8",
+  "ida_version": "9.4",
+  "address_space": "overlay-local file offset, base 0",
+  "segment_bitness": 0,
+  "word": 10075,
+  "matches": [
+    {
+      "address": 512,
+      "bytes": "8a855b27",
+      "text": "mov     al, [di+275Bh]",
+      "operands": [
+        "al",
+        "[di+275Bh]"
+      ],
+      "operand_values": [
+        16,
+        10075
+      ],
+      "function_start": 299,
+      "function_end": 727
+    },
+    {
+      "address": 1655,
+      "bytes": "8a855b27",
+      "text": "mov     al, [di+275Bh]",
+      "operands": [
+        "al",
+        "[di+275Bh]"
+      ],
+      "operand_values": [
+        16,
+        10075
+      ],
+      "function_start": 1327,
+      "function_end": 1769
+    },
+    {
+      "address": 1750,
+      "bytes": "8a855b27",
+      "text": "mov     al, [di+275Bh]",
+      "operands": [
+        "al",
+        "[di+275Bh]"
+      ],
+      "operand_values": [
+        16,
+        10075
+      ],
+      "function_start": 1327,
+      "function_end": 1769
+    },
+    {
+      "address": 2398,
+      "bytes": "8a855b27",
+      "text": "mov     al, [di+275Bh]",
+      "operands": [
+        "al",
+        "[di+275Bh]"
+      ],
+      "operand_values": [
+        16,
+        10075
+      ],
+      "function_start": 2004,
+      "function_end": 2454
+    }
+  ]
+}
