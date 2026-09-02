@@ -17,8 +17,12 @@
   （種族、性別、四種職業、九個陣營、六項屬性），不是重新翻譯。字型用倚天
   16x15 點陣字，屬第三方資產、不進 repo，執行時以 `-eten-font` 指定；
   `-lang zh` 沒有字型會失敗即關閉，不會默默用英文跑。截圖見
-  `docs/screenshots/pool-remake-chinese-*.png`。遊戲內的敘述文字、戰鬥畫面與
-  Journal 仍是英文。
+  `docs/screenshots/pool-remake-chinese-*.png`。
+- 遊戲內的敘述文字也開始接線：原版的 ECL 文字全部盤點過，共 **1,731 句、
+  110,473 個字元**（`docs/audit/dos-ecl-text-inventory.json`），那就是遊戲內文字的
+  翻譯總量。譯文以原文整句為鍵放在 `internal/gametext`，原版檔案一個位元組都不改；
+  目前翻了 15 句——羅夫導覽全部八頁、四種續行提示與三個常見選單選項。
+  戰鬥畫面與 Journal 仍是英文。
 - 已固定 DOS ZIP、歷史中文 RAR 與八張 D64 輸入雜湊。
 - 已盤點 DOS ZIP 168 個檔案；包含 `START.EXE`、`GAME.OVR`、八組
   ECL／GEO／WALLDEF／PIC／SPRIT DAX 與角色存檔樣本。

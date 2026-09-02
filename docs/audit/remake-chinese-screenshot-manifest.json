@@ -1,9 +1,9 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-02",
-  "source_commit": "c60e9eb56b9aba6ee2b428d71f7ea6f9042df510",
+  "source_commit": "a57bc15cd3a918d9e64b399737140887e3d1292d",
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
-  "state_relation": "normal-remake-player-path: title, ENTER, C, then the creation flow. Run with -lang zh and the ETen font mounted read-only from the host.",
+  "state_relation": "normal-remake-player-path: title, ENTER, C, the whole creation flow, A, then B. Run with -lang zh and the ETen font mounted read-only from the host.",
   "font": {
     "family": "ETen 16x15 Big5 bitmap",
     "files_present": [
@@ -13,7 +13,7 @@
     "files_absent": [
       "spcfont.15"
     ],
-    "note": "spcfont.15 holds the full-width punctuation block. It was not in the font directory for this capture, so full-width commas and periods fell back to the built-in half-width glyphs. The text is otherwise the ETen face.",
+    "note": "spcfont.15 holds the full-width punctuation block. It was not in the font directory for this capture, so full-width quotes, commas and periods fell back to the built-in half-width glyphs.",
     "in_repository": false
   },
   "screenshots": [
@@ -40,10 +40,17 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "941ba34f7098f5b2ba6ef4bd051d2d2190ec4197b4b0ff6cae179152e5aa741a",
+      "sha256": "1fc6a852deffcd05aa439bf00c63acf2ab768f8642f15ddca293745a5d2d893b",
       "width": 960,
       "height": 600,
       "screen": "rolled character sheet"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-tour.png",
+      "sha256": "7f687cb7b73a158af891d772e040fbe21f10ea14f86269d8eeab500489d1a2ce",
+      "width": 960,
+      "height": 600,
+      "screen": "Rolf's tour, the first original narrative text shown in Chinese"
     }
   ]
 }
