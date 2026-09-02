@@ -1,12 +1,24 @@
 package combat
 
-import "testing"
+import (
+	"testing"
 
-// 地形碼 5 的 EntryThreshold 是 1（可進入），碼 1 是 0FFh（進不去）。
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+)
+
+// 測試用的類別碼：5 可進入（EntryThreshold 1），1 進不去（0FFh）。
+// 兩個值取自原始表的同名索引，見 gamepack 的 66 筆 fixture。
 const (
 	openTerrain    = 5
 	blockedTerrain = 1
 )
+
+func destinationTestClasses() CellClasses {
+	var classes CellClasses
+	classes[openTerrain] = gamepack.CombatCellClass{EntryThreshold: 1, PresentationCode: 4}
+	classes[blockedTerrain] = gamepack.CombatCellClass{EntryThreshold: 0xFF, PathByte2: 2}
+	return classes
+}
 
 func newTacticalState(moverClass uint8, moverX, moverY uint8) TacticalState {
 	cellCount := TacticalRowStride * (TacticalMaxY + 1)
@@ -21,7 +33,7 @@ func newTacticalState(moverClass uint8, moverX, moverY uint8) TacticalState {
 			{},
 			{X: moverX, Y: moverY, FootprintClass: moverClass},
 		},
-		Rules: OriginalTerrainRules(),
+		Classes: destinationTestClasses(),
 	}
 	return state
 }

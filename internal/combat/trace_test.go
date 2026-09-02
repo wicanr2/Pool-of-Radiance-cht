@@ -1,6 +1,10 @@
 package combat
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+)
 
 func newTestGrid(ignoreTerrain bool) TacticalGrid {
 	return TacticalGrid{
@@ -9,10 +13,13 @@ func newTestGrid(ignoreTerrain bool) TacticalGrid {
 	}
 }
 
-// 測試用的地形規則：碼 0 可通行，碼 1 擋住。真正的表由 game pack 依原始資料提供。
-var testTerrainRules = []TerrainRule{
-	{Level: 0, Block: 0},
-	{Level: 0, Block: 2},
+// 測試用的類別表：碼 0 可通行，碼 1 擋住。真正的 66 筆由
+// gamepack.ParseCombatCellClassTable 依原始 START.EXE bytes 解出。
+func testCellClasses() CellClasses {
+	var classes CellClasses
+	classes[0] = gamepack.CombatCellClass{EntryThreshold: 1}
+	classes[1] = gamepack.CombatCellClass{EntryThreshold: 0xFF, PathByte2: 2}
+	return classes
 }
 
 // 主軸上的直走每步 2，副軸同時前進的斜走每步 3。
@@ -94,7 +101,7 @@ func TestStepWalkerAtGoalDoesNotMove(t *testing.T) {
 }
 
 func TestTraceMovementCompletesWithinBudget(t *testing.T) {
-	result, err := TraceMovement(newTestGrid(false), testTerrainRules, 0, 0, 4, 2, 5)
+	result, err := TraceMovement(newTestGrid(false), testCellClasses(), 0, 0, 4, 2, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,7 +115,7 @@ func TestTraceMovementCompletesWithinBudget(t *testing.T) {
 
 // 預算上限是 budget*2+1；成本 10 需要 budget 5，budget 4 會在半路停下。
 func TestTraceMovementStopsWhenBudgetRunsOut(t *testing.T) {
-	result, err := TraceMovement(newTestGrid(false), testTerrainRules, 0, 0, 4, 2, 4)
+	result, err := TraceMovement(newTestGrid(false), testCellClasses(), 0, 0, 4, 2, 4)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,7 +130,7 @@ func TestTraceMovementStopsWhenBudgetRunsOut(t *testing.T) {
 func TestTraceMovementStopsOnBlockingTerrain(t *testing.T) {
 	grid := newTestGrid(false)
 	grid.Terrain[1*TacticalRowStride+2] = 1
-	result, err := TraceMovement(grid, testTerrainRules, 0, 0, 4, 2, 20)
+	result, err := TraceMovement(grid, testCellClasses(), 0, 0, 4, 2, 20)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,7 +146,7 @@ func TestTraceMovementStopsOnBlockingTerrain(t *testing.T) {
 func TestTraceMovementIgnoresTerrainWhenTheMapSaysSo(t *testing.T) {
 	grid := newTestGrid(true)
 	grid.Terrain[1*TacticalRowStride+2] = 1
-	result, err := TraceMovement(grid, testTerrainRules, 0, 0, 4, 2, 20)
+	result, err := TraceMovement(grid, testCellClasses(), 0, 0, 4, 2, 20)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -152,7 +159,7 @@ func TestTraceMovementIgnoresTerrainWhenTheMapSaysSo(t *testing.T) {
 func TestTraceMovementStopsImmediatelyOnAnImpassableStart(t *testing.T) {
 	grid := newTestGrid(false)
 	grid.Terrain[0] = 1
-	result, err := TraceMovement(grid, testTerrainRules, 0, 0, 4, 2, 20)
+	result, err := TraceMovement(grid, testCellClasses(), 0, 0, 4, 2, 20)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,10 +168,10 @@ func TestTraceMovementStopsImmediatelyOnAnImpassableStart(t *testing.T) {
 	}
 }
 
-func TestTraceMovementRejectsUnknownTerrainCode(t *testing.T) {
+func TestTraceMovementRejectsCodesPastTheClassTable(t *testing.T) {
 	grid := newTestGrid(false)
-	grid.Terrain[0] = 200
-	if _, err := TraceMovement(grid, testTerrainRules, 0, 0, 4, 2, 20); err == nil {
-		t.Fatal("a terrain code with no rule was accepted")
+	grid.Terrain[0] = gamepack.CombatCellClassCount
+	if _, err := TraceMovement(grid, testCellClasses(), 0, 0, 4, 2, 20); err == nil {
+		t.Fatal("a cell class past the end of the table was accepted")
 	}
 }

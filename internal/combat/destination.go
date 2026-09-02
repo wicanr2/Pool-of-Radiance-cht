@@ -30,7 +30,7 @@ type TacticalState struct {
 	Map       TacticalGrid
 	Occupancy []uint8
 	Cells     []CombatantCell
-	Rules     []TerrainRule
+	Classes   CellClasses
 }
 
 // CellAt 重現 overlay-32 `04C0h`：盤面外時兩個輸出都是 0，否則回報該格的
@@ -96,14 +96,14 @@ func ProbeDestination(state TacticalState, moverIndex uint8, direction uint8) (t
 			class = StickyDestinationClass
 			continue
 		}
-		rule, err := TerrainRuleAt(state.Rules, cellClass)
+		record, err := CellClassAt(state.Classes, cellClass)
 		if err != nil {
 			return 0, 0, err
 		}
-		if rule.EntryThreshold < best {
+		if record.EntryThreshold < best {
 			continue
 		}
-		best = rule.EntryThreshold
+		best = record.EntryThreshold
 		class = cellClass
 	}
 	return target, class, nil
@@ -123,9 +123,9 @@ func ResolveDestination(state TacticalState, moverIndex uint8, direction uint8, 
 	if class == OffBoardDestinationClass {
 		return MovementBlocked, true, nil
 	}
-	rule, err := TerrainRuleAt(state.Rules, class)
+	cellClass, err := CellClassAt(state.Classes, class)
 	if err != nil {
 		return MovementBlocked, false, err
 	}
-	return ResolveMovementProbe(budget, 0, rule.EntryThreshold), false, nil
+	return ResolveMovementProbe(budget, 0, cellClass.EntryThreshold), false, nil
 }

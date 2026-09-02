@@ -1,6 +1,10 @@
 package combat
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+)
 
 // 每步的成本，取自 overlay-31 `02C4h` 對走訪器 +18h 的兩種累加
 // （spec 057）。原版把成本記在半格單位上，所以直走是 2 而不是 1。
@@ -100,16 +104,20 @@ func (walker *StepWalker) Step() bool {
 	return moved
 }
 
-// TerrainRule 是 DS:2758h 地形表的一筆，四個欄位全數保留。
-//
-// EntryThreshold（+0）是 overlay-08 Move handler 的准入門檻，交給
-// ResolveMovementProbe 與剩餘步數比較（spec 053）；Level（+1）與 Block（+2）
-// 是 overlay-31 0419h 直線追蹤讀的兩欄（spec 057）；Field3（+3）的語意未定。
-type TerrainRule struct {
-	EntryThreshold uint8 // +0
-	Level          uint8 // +1
-	Block          uint8 // +2
-	Field3         uint8 // +3
+// CellClasses 是 DS:2758h 的 66 筆戰術格位類別表，由
+// gamepack.ParseCombatCellClassTable 依原始 START.EXE bytes 解出（spec 053）。
+// 直線追蹤讀的是每筆的 PathByte1 與 PathByte2（spec 057），
+// Move handler 讀的是 EntryThreshold。
+type CellClasses = [gamepack.CombatCellClassCount]gamepack.CombatCellClass
+
+// CellClassAt 取出一筆類別。原版對超出表尾的索引會讀進緊接著的佔格偏移表，
+// 那是資料佈局的巧合，這裡失敗即關閉。
+func CellClassAt(classes CellClasses, code uint8) (gamepack.CombatCellClass, error) {
+	if int(code) >= len(classes) {
+		return gamepack.CombatCellClass{}, fmt.Errorf(
+			"Pool combat cell class %d is outside the table (0..%d)", code, len(classes)-1)
+	}
+	return classes[code], nil
 }
 
 // TacticalGrid 是 overlay-31 `0419h` 收到的地圖：`+6` 非 0 時整段地形判定被跳過，
@@ -145,22 +153,19 @@ type TraceResult struct {
 // (toX, toY)，每格先判地形再判預算，走得完回報 Complete。
 //
 // 原版的預算上限是 budget*2+1，因為成本記在半格單位上。地形判定是
-// 「目的格的 Block 大於起點格的 Level 就擋住」；原版另外建了一支水平的
-// 走訪器來取那個 Level，但它的兩個端點同高，逐步走訪不會改變它，
+// 「目的格的 PathByte2 大於起點格的 PathByte1 就擋住」；原版另外建了一支
+// 水平的走訪器來取那個 PathByte1，但它的兩個端點同高，逐步走訪不會改變它，
 // 所以這裡直接用常數。
 //
 // 走不完時回傳停下來的格子與當下成本，Complete 為 false，與原版寫回
 // 參數的行為一致。
-func TraceMovement(grid TacticalGrid, rules []TerrainRule, fromX, fromY, toX, toY int, budget uint16) (TraceResult, error) {
-	lookup := func(x, y int) (TerrainRule, error) {
+func TraceMovement(grid TacticalGrid, classes CellClasses, fromX, fromY, toX, toY int, budget uint16) (TraceResult, error) {
+	lookup := func(x, y int) (gamepack.CombatCellClass, error) {
 		code, err := grid.TerrainAt(x, y)
 		if err != nil {
-			return TerrainRule{}, err
+			return gamepack.CombatCellClass{}, err
 		}
-		if int(code) >= len(rules) {
-			return TerrainRule{}, fmt.Errorf("Pool terrain code %d at (%d,%d) has no rule", code, x, y)
-		}
-		return rules[code], nil
+		return CellClassAt(classes, code)
 	}
 
 	start, err := lookup(fromX, fromY)
@@ -175,7 +180,7 @@ func TraceMovement(grid TacticalGrid, rules []TerrainRule, fromX, fromY, toX, to
 			if err != nil {
 				return TraceResult{}, err
 			}
-			if here.Block > start.Level {
+			if here.PathByte2 > start.PathByte1 {
 				return TraceResult{X: walker.X, Y: walker.Y, Cost: walker.Cost}, nil
 			}
 		}
