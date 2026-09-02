@@ -175,3 +175,8 @@ func TestTraceMovementRejectsCodesPastTheClassTable(t *testing.T) {
 		t.Fatal("a cell class past the end of the table was accepted")
 	}
 }
+
+// 原始表裡 17h 這一筆：可進入、不擋路徑。
+func cellClassOpenGround() gamepack.CombatCellClass {
+	return gamepack.CombatCellClass{EntryThreshold: 1, PresentationCode: 0x16}
+}
