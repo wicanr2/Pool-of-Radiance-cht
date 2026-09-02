@@ -180,3 +180,8 @@ func TestTraceMovementRejectsCodesPastTheClassTable(t *testing.T) {
 func cellClassOpenGround() gamepack.CombatCellClass {
 	return gamepack.CombatCellClass{EntryThreshold: 1, PresentationCode: 0x16}
 }
+
+// 原始表裡 EntryThreshold 為 0FFh 的那一類：進不去。
+func blockedCellClass() gamepack.CombatCellClass {
+	return gamepack.CombatCellClass{EntryThreshold: 0xFF, PathByte2: 2}
+}
