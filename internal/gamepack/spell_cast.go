@@ -83,6 +83,7 @@ func CasterLevelFor(parameters SpellParameters, clericLevel, magicUserLevel int,
 // 已經讀出處理常式的法術編號。每一條都標了 overlay-22 裡的位址。
 const (
 	SpellIDBless          = 1  // 0FF5h
+	SpellIDCurse          = 2  // 1026h
 	SpellIDCureLightWound = 3  // 1051h
 	SpellIDCauseLightWound = 4  // 108Fh
 	SpellIDBurningHands   = 9  // 1178h
@@ -171,6 +172,7 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 // 逐條的出處：
 //
 //	01h Bless          0FF5h  推施法者的 `+10Eh`（哪一邊）給 0F35h，整邊掛效果
+//	02h Curse          1026h  同上，訊息是 "is Cursed"，作用在另一邊
 //	03h Cure Light     1051h  Roll(1, 8) 的治療，直接呼叫 0100h:0089h，不走 08BCh
 //	09h Burning Hands  1178h  傷害＝施法者等級，沒有擲骰
 //	0Fh Magic Missile  1429h  Roll(等級÷2, 4) ＋ 等級÷2
@@ -192,7 +194,9 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 	}
 	effect := CastEffect{EffectCode: parameters[id].EffectCode()}
 	switch id {
-	case SpellIDBless:
+	case SpellIDBless, SpellIDCurse:
+		// 兩支都走 0F35h 那條整邊的路，差別只在訊息（"is Blessed" 與
+		// "is Cursed"）與作用在哪一邊。
 		effect.WholeSide = true
 	case SpellIDCureLightWound:
 		effect.Heal = roller.Roll(1, 8)
@@ -233,7 +237,7 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 // 一條法術能不能選，而不是讓玩家選了才失敗。
 func SpellIsImplemented(id uint8) bool {
 	switch id {
-	case SpellIDBless, SpellIDCureLightWound, SpellIDCauseLightWound,
+	case SpellIDBless, SpellIDCurse, SpellIDCureLightWound, SpellIDCauseLightWound,
 		SpellIDBurningHands, SpellIDMagicMissile, SpellIDShockingGrasp,
 		SpellIDSleep, SpellIDMirrorImage, SpellIDCauseDisease,
 		SpellIDFireball, SpellIDLightningBolt:

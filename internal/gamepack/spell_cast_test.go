@@ -258,3 +258,21 @@ func TestLaterSpellFormulas(t *testing.T) {
 		t.Errorf("致病術的效果碼應該來自參數表")
 	}
 }
+
+// 詛咒術與祝福術走同一條整邊的路。
+func TestCurseMatchesBless(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	curse, err := CastSpell(SpellIDCurse, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !curse.WholeSide || curse.Damage != 0 {
+		t.Errorf("詛咒術應該是整邊、沒有傷害，算出 %+v", curse)
+	}
+	if !SpellIsImplemented(SpellIDCurse) {
+		t.Error("詛咒術應該算已實作")
+	}
+}
