@@ -502,3 +502,19 @@ Magic-User＝魔法師、Thief＝賊。另外分開 Yarash（巫師，亞拉斯�
 TURN＝普通回合（10 分鐘），下冊 p.42 的混用不採。轉錄正文一律維持原書用字，本表只
 約束 game pack 與 UI。專案程式碼與 JSON 目前尚無任何中文譯名，因此本次定案沒有既有
 實作要回改。怪物 42 種的中文譯名與「遊戲內實際字串是否與說明書一致」仍待原版證據。
+
+2026-09-02 任務系統與戰術 occupancy 各推進一段。ECL 側：對 29 個 block 全部展開靜態
+trace（26 成功，失敗三筆與既有 `failed_blocks` 一致），以「自載 `LOAD FILES`＋原始
+字串」定位出城內八區腳本（spec 055），再由各區找出寫 `FEh` 的指令，補上 City Hall
+十二個槽的 producer 端（spec 041 由此升為 READY）。`MENDOR` 只出現於 `ECL4/21`、
+`MANTOR` 全無，遊戲原始資料只認 Mendor。程式碼側：`internal/gamepack/cityhall.go`
+直接由 `ECL3/block 8` 的 `9D63h ON GOSUB` 解出二十六條通知分支並提供
+pending／acknowledge／增量判定，八個測試通過；既有的 commission 測試測的是派發端
+（`4AC1h` → 公告字號），兩者合成完整循環，且其期望字號全部落在說明書第四章轉錄的
+18 則公告內，這是說明書 corpus 第一次被原版資料證明可接線。戰鬥側：由既有的
+`ida-overlay25-nearby-opponents.json` 閉合 overlay-25 entry 32 的完整資料流
+（spec 056）——鄰近格位表 `6674h` 每筆 3 bytes、筆數在 `6678h`、combatant record 由
+`6517h` far pointer 表取得、依 `+10Eh` 篩對立陣營、命中者原地前移壓縮、index 匯出到
+`6CD7h`；`internal/combat/occupancy.go` 實作篩選與壓縮並通過測試。occupancy 的另一半
+`sub_13BE`（鄰近格位如何列舉）仍未解，那是把 `attackTargetID` 接進 `ResolveMovementProbe`
+的前提，也是戰術戰鬥的下一個關鍵路徑。
