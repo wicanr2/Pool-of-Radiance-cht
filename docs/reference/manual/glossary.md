@@ -400,6 +400,37 @@
 | Thief | 賊 | 小偷、神偷 | 原則 1：下冊整章用賊 |
 | Twilight Marsh | 黃昏之界（河流作黃昏之界河）| — | 原書只給這個譯名；英文正名 Marsh，Twilight Mash 是誤拼 |
 
+### 原版資料反查
+
+說明書是第二來源，遊戲自己的文字才是。`cmd/pool-name-audit` 掃過 ZIP 裡全部
+1,245 個 DAX block 的兩種文字：怪物名等明碼 ASCII，以及 ECL 敘述用的 6-bit
+packed 字串（`0x80` 長度前綴）。只掃前者會得到整片假的零——ECL block 裡一個
+明碼句子都沒有。結果固定在 `docs/audit/dos-original-name-strings.json`。
+
+| 對象 | 遊戲文字 | 出處抽樣 |
+|---|---|---|
+| Phlan | `PHLAN`、`NEW PHLAN` | `ECL2/9`「…BEFORE ASSAULTING PHLAN.」|
+| Braccio | `BISHOP BRACCIO` | `ECL3/0`「YOU ARE USHERED INTO THE BISHOP'S STUDY.」|
+| Valjevo | `VALJEVO CASTLE` | `ECL3/8`「…THE ASSAULT ON VALJEVO CASTLE.」|
+| Werner von Urslingen | `LORD URSLINGEN` | `ECL3/8`「LORD URSLINGEN WISHES URGENTLY TO SPEAK WITH YOU.」|
+| Sokal Keep | `SOKAL KEEP` | `ECL3/0` 港務長的航線清單 |
+| Kobold | `KOBOLD`／`KOBOLDS` | `ECL2/15`「LOOKING UP FROM A TABLE ARE FIVE KOBOLDS.」|
+| Magic-User | **`MAGIC USERS`（空格，沒有連字號）** | `ECL3/11` 訓練所公告 |
+| Thief | `THIEF` | `ECL2/15` 幽魂的斥責 |
+| Yarash | `YARASH` | `ECL7/23`「YOU MUST BE THE SERVANTS OF YARASH!」|
+
+兩件事跟著定下來：
+
+- **`Sokal Keep` 在遊戲文字裡就是這個拼法**，下冊 p.31 的 `Kosal Keep` 確定是誤拼。
+- **遊戲寫 `MAGIC USERS`，不是 `Magic-User`。** 中譯仍是魔法師，但英文原文出現在
+  畫面上時（例如訓練所公告）要照遊戲的拼法，不要照說明書的。同一則公告還出現
+  `'ROGUES'`（原文帶引號），說明書沒有這個詞，中譯待定。
+
+以下八個只出現在說明書，遊戲文字裡一次都沒有：Sembia、Thentia、Mulmaster、
+Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景設定與
+探險者手冊的用詞，遊戲畫面不會顯示，所以**它們的譯名不受遊戲文字約束，也不能
+拿遊戲資料當佐證**。定案照舊，依據仍是說明書本身。
+
 ### 撞名與定義衝突
 
 - **Yarash（巫師）＝亞拉斯；Yulash（城市）＝尤拉斯。** 上冊 p.11 把城市寫成

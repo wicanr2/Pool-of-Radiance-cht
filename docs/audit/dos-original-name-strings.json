@@ -1,0 +1,519 @@
+{
+  "zip": "Pool of Radiance (1988).zip",
+  "archives": 113,
+  "blocks": 1245,
+  "strings": 45934,
+  "plain_strings": 24256,
+  "packed_strings": 21678,
+  "minimum_run": 4,
+  "sample_limit": 6,
+  "terms": [
+    {
+      "english": "Phlan",
+      "settled": "菲蘭",
+      "occurrences": 61,
+      "readable_occurrences": 60,
+      "samples": [
+        {
+          "file": "ecl2.dax",
+          "block_id": 9,
+          "offset": 2267,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "YOU OVERHEAR THE MAGE TELL HIS COMPANION, 'HOW MUCH LONGER MUST WE WAIT BEFORE ASSAULTING PHLAN. I AM EAGER TO BECOME A BARON.'"
+        },
+        {
+          "file": "ecl2.dax",
+          "block_id": 15,
+          "offset": 2299,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "YOU FIND LEX GEOGRAPHICA, AN ATLAS DRAWN BY TOMARUS. IT HAS A MAP OF PHLAN WHICH, THOUGH OLD, STILL COULD BE USEFUL. IT BECOMES ENTRY 37 IN YOUR JOURNAL."
+        },
+        {
+          "file": "ecl2.dax",
+          "block_id": 20,
+          "offset": 443,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "YOU HAVE ENTERED THE MONSTER-CRAWLING SLUMS OF PHLAN.  SMALL, UGLY THINGS SCURRY FROM BENEATH YOUR FEET.  IN THE DISTANCE, AN ALARM SOUNDS."
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 6073,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "'GREETINGS, COURAGEOUS ONES, I AM ROLF, APPOINTED BY THE COUNCIL TO INTRODUCE NEWCOMERS TO THE FAIR CITY OF PHLAN. IF YOU WILL ACCOMPANY ME, I WILL START THE TOUR.'"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 6341,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 6915,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "'ON YOUR RIGHT IS ONE OF THE ENTRANCE'S TO SUNE'S TEMPLE. AS WITH ALL PHLAN'S TEMPLES, VARIOUS CLERICAL SERVICES ARE OFFERED INSIDE.  ON YOUR LEFT IS AN ENTRANCE TO THE CITY PARK.'"
+        }
+      ]
+    },
+    {
+      "english": "Sembia",
+      "settled": "桑比亞",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    },
+    {
+      "english": "Braccio",
+      "settled": "巴西歐",
+      "occurrences": 10,
+      "readable_occurrences": 10,
+      "samples": [
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 1364,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "8C#5HD!P1RU\"S!8E\"T2UC4$8UHEBBT8EBSQ[(HE2UHAC8FS5XAC?0+PFXJACAPU!RC1#4 1XFS5T(E0VXDT5BTAY  EY(FB+PLA'D( AXAZ\u003e_BPM^E-C AD(ATYOU ARE USHERED INTO THE BISHOP'S STUDY. BISHOP BRACCIO S"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 1469,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "YOU ARE USHERED INTO THE BISHOP'S STUDY. BISHOP BRACCIO SPEAKS, 'ALLOW ME TO INTRODUCE DIRTEN, PRIEST OF ILMAR."
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 6341,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 4484,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "T82SP!T$8T!XEBD#5Q2HEBAXAPT5HAC34+)0IO8A%4(S0F'R C?E0DA'* CY-JO4YPF^*LA/T(?1XAY:(D(=YOU ARE SUMMONED BY THE BISHOP OF BRACCIO OF TYR. REPORT TO HIM AT TYR'S TEMP"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 4556,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "YOU ARE SUMMONED BY THE BISHOP OF BRACCIO OF TYR. REPORT TO HIM AT TYR'S TEMPLE.'"
+        },
+        {
+          "file": "ecl6.dax",
+          "block_id": 28,
+          "offset": 4676,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "AS YOU TALK ABOUT NEW PHLAN THE COMMANDANT LISTENS CAREFULLY.  THE COMMANDANT SAYS 'IS IT TRUE THAT THE REAL POWER IN NEW PHLAN IS BISHOP BRACCIO?'"
+        }
+      ]
+    },
+    {
+      "english": "Valjevo",
+      "settled": "瓦傑渥",
+      "occurrences": 2,
+      "readable_occurrences": 2,
+      "samples": [
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 6573,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "IN THE COUNCIL CHAMBERS, THE ENTIRE CITY COUNCIL IS WAITING FOR YOU. THE LORD HIGH MAYOR, ULRICH EBERHARD, SPEAKS: 'OUR FORCES ARE MARSHALLED FOR THE ASSAULT ON VALJEVO CASTLE."
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 6651,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "D, SPEAKS: 'OUR FORCES ARE MARSHALLED FOR THE ASSAULT ON VALJEVO CASTLE. F -QJ!I2UHBT8EBAXES S\"SS5T8D!TUQT5"
+        }
+      ]
+    },
+    {
+      "english": "Urslingen",
+      "settled": "烏斯林根",
+      "occurrences": 3,
+      "readable_occurrences": 3,
+      "samples": [
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 5309,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "T40Q1XEC8EBAXF\"AS%BSHB1QTHEC8EBAXE1T5K(!X0T!Q%SKHEBAXED RUC4(0QC4# XCPVXBU!XESTAT!QHE2UBHEBAXCQT40Q1XDP21UH!Q#4!XBAXA#AQK)0$?0FXR!LC[%JO8[PF^*LA/$(?! AY:(D(AWLORD URSLINGEN WISHES URGENTLY TO SPEAK WITH YOU.  GO THROUGH THE SOUTH DOOR OF THE TRAITOR CADORNA'S OLD"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 5384,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "T40Q1XDP21UH!Q#4!XBAXA#AQK)0$?0FXR!LC[%JO8[PF^*LA/$(?! AY:(D(AWLORD URSLINGEN WISHES URGENTLY TO SPEAK WITH YOU.  GO THROUGH THE SOUTH DOOR OF THE TRAITOR CADORNA'S OLD QUARTERS.'LE+R HV-JBPC\u003eY%JD0LA\u0026$(?!,AT./0F9R C?E0DAR:\u003cC[)JO\u003cVPF^*AJX6S5XT!XD5SSS3!QHEC8"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 5438,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "LORD URSLINGEN WISHES URGENTLY TO SPEAK WITH YOU.  GO THROUGH THE SOUTH DOOR OF THE TRAITOR CADORNA'S OLD QUARTERS.'"
+        }
+      ]
+    },
+    {
+      "english": "Thentia",
+      "settled": "珊提亞",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    },
+    {
+      "english": "Mulmaster",
+      "settled": "馬爾瑪斯特",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    },
+    {
+      "english": "Lis",
+      "settled": "里斯河",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    },
+    {
+      "english": "Tesh",
+      "settled": "塔斯河",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    },
+    {
+      "english": "Stormy Bay",
+      "settled": "暴風灣",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    },
+    {
+      "english": "Sokal",
+      "settled": "索卡爾城堡",
+      "occurrences": 11,
+      "readable_occurrences": 9,
+      "samples": [
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 874,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "THE HARBOR MASTER TELLS YOU BOATS LEAVE FOR THE WEST, THE EAST, SOKAL KEEP, AND THE NORTH SIDE OF THE BAY.  'ROUND TRIP PASSAGE IS 1 PLATINUM PIECE. WHAT PASSAGE CAN I SELL YOU?'"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 0,
+          "offset": 1111,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "'BY ORDER OF THE CITY COUNCIL,' THE HARBOR MASTER SAYS, 'THE ONLY BOAT OUT IS GOING TO SOKAL KEEP.  YOU CAN CATCH IT AT THE END OF THE PIER.'"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 1690,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "BSRS UBS!8C#4$\"T8EBAXA4 V[ DDA0T(A0T(SDX8WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARRE"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 1699,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "4$\"T8EBAXA4 V[ DDA0T(A0T(SDX8WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARREN RIVER.DDA0T(A0T(SDX\u0026YOU HAVE CLEARED THE AREA NEXT TO THE EVIL TEMPLE.SDX\u003cBIVANT WAS DELIGHTED WITH THE CHILD'S RESCUE.  THEY LEFT SOME TRINKETS FOR YOU.BP3W=.D1FF%1XA\"S!HEBAT1XABT035T$1T8E SE"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 1723,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARREN RIVER."
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 4045,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "T(E1T5HC!QQHEC8!X3APT!QHC1(CS3$5AT$;)0D0LA)4(?1XAY:(D(!SOKAL KEEP ON THORN ISLAND MUST BE CLEARED.'D0LA0$(?1XAY:(D(BETHE COUNCIL IS OFFERING A REWARD FOR BOOKS, MAPS, TOMES, ETC. WHICH PROVIDE USEFUL INFORMATION ABOUT PHLAN BEFORE THE FALL.  THE REWARD IS TIED TO THE VALUE OF THE INFORMATION.'ALC[AJO\u003cVPF^*AJ[XE1P"
+        }
+      ]
+    },
+    {
+      "english": "Kobold",
+      "settled": "小妖魔",
+      "occurrences": 103,
+      "readable_occurrences": 82,
+      "samples": [
+        {
+          "file": "ecl2.dax",
+          "block_id": 15,
+          "offset": 5134,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "LOOKING UP FROM A TABLE ARE FIVE KOBOLDS."
+        },
+        {
+          "file": "ecl2.dax",
+          "block_id": 15,
+          "offset": 5278,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "ONE OF THE KOBOLDS SAYS, 'IF YOU SPARE OUR LIVES WE WILL TELL YOU ALL WE KNOW ABOUT THIS AREA!' WILL YOU SPARE THEM?"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 2514,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "(EBAXCBV T!CQS(CQS P1XBT8A4!PUCFXBSTD#5!QHC5T(D5D UAQ2P8DC42UBS3+ DDA0T(A0T(SDX1THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.PPGAR GAR!LQ CA\\VA\\UHV5TL\"AHT0$UXTRI\u0026AP V8U]NA$=VIH$8^YH\u003c6AP V8\u003c4DRLD5B8DDA0T(A0T(SDX6COUNCILMAN CADORNA LEFT THIS PAYMENT FOR SOME SERVICE YOU HAD RENDERED.D"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 2532,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "T8A4!PUCFXBSTD#5!QHC5T(D5D UAQ2P8DC42UBS3+ DDA0T(A0T(SDX1THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.PPGAR GAR!LQ CA\\VA\\UHV5TL\"AHT0$UXTRI\u0026AP"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 2535,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "!PUCFXBSTD#5!QHC5T(D5D UAQ2P8DC42UBS3+ DDA0T(A0T(SDX1THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.PPGAR GAR!LQ CA\\VA\\UHV5TL\"AHT"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 2541,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "TD#5!QHC5T(D5D UAQ2P8DC42UBS3+ DDA0T(A0T(SDX1THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.PPGAR GAR!LQ CA\\VA\\UHV5TL\"AHT0$UXTRI\u0026AP V8U]NA$=VIH$8^YH\u003c6AP V8\u003c4DRLD5B8D"
+        }
+      ]
+    },
+    {
+      "english": "Magic-User",
+      "settled": "魔法師",
+      "occurrences": 15,
+      "readable_occurrences": 14,
+      "samples": [
+        {
+          "file": "ecl3.dax",
+          "block_id": 11,
+          "offset": 375,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "NOTICES FOR TEACHERS AND STUDENTS ARE POSTED ON THE WALLS.  A NOTE DIRECTS MAGIC USERS AND CLERICS TO GO NORTH AND FIGHTERS AND 'ROGUES' TO GO EAST."
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 11,
+          "offset": 507,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "A SIGN ON THE WALL DIRECTS MAGIC USERS TO GO THROUGH THE EAST DOOR AND CLERICS TO GO THROUGH THE WEST DOOR."
+        },
+        {
+          "file": "item1.dax",
+          "block_id": 8,
+          "offset": 1,
+          "encoding": "plain",
+          "readable": true,
+          "text": "Magic User Scroll"
+        },
+        {
+          "file": "item2.dax",
+          "block_id": 42,
+          "offset": 1,
+          "encoding": "plain",
+          "readable": true,
+          "text": "Magic User Scroll With 1 Spell"
+        },
+        {
+          "file": "item3.dax",
+          "block_id": 25,
+          "offset": 1,
+          "encoding": "plain",
+          "readable": true,
+          "text": "Magic User Scroll"
+        },
+        {
+          "file": "item3.dax",
+          "block_id": 25,
+          "offset": 64,
+          "encoding": "plain",
+          "readable": true,
+          "text": "Magic User Scroll"
+        }
+      ]
+    },
+    {
+      "english": "Thief",
+      "settled": "賊",
+      "occurrences": 35,
+      "readable_occurrences": 30,
+      "samples": [
+        {
+          "file": "ecl2.dax",
+          "block_id": 15,
+          "offset": 319,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "A SPECTRE SUDDENLY APPEARS BEFORE YOU. 'THIEF! I DEFENDED THESE BOOKS IN LIFE AND I WILL DEFEND THEM IN DEATH!' IT ATTACKS YOU."
+        },
+        {
+          "file": "ecl2.dax",
+          "block_id": 20,
+          "offset": 4387,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "SOME HOBGOBLINS ARE ARGUING OVER A PILE OF GOLD.  'THIEVES!' THEY SCREAM WHEN THEY SEE YOU."
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 2248,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "THE COUNCIL WAS PLEASED BY THE ELIMINATION OF THE THIEVES IN KOVEL MANSION."
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 8,
+          "offset": 4649,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "A LARGE GROUP OF THIEVES OPERATES OUT OF THE OLD KOVEL MANSION. THE COUNCIL WILL PAY TO HAVE THEM CLEANED OUT.'"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 14,
+          "offset": 627,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "AS YOU ENTER THE ROOM A THIEF WITH A SWORD COMES OUT OF NOWHERE"
+        },
+        {
+          "file": "ecl3.dax",
+          "block_id": 14,
+          "offset": 4398,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "AS YOU NEAR THE PILE OF WEAPONS AN AWFUL SMELLING CLOUD OF GAS FORMS.  THIS FOUL SMELLING GAS STUNS THE PARTY ALLOWING A GROUP OF THIEVES TO JUMP OUT OF THE SHADOWS AND ATTACK AT WILL!"
+        }
+      ]
+    },
+    {
+      "english": "Twilight",
+      "settled": "黃昏之界",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    },
+    {
+      "english": "Yarash",
+      "settled": "亞拉斯",
+      "occurrences": 9,
+      "readable_occurrences": 8,
+      "samples": [
+        {
+          "file": "ecl7.dax",
+          "block_id": 23,
+          "offset": 1446,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "STANDING READY THEIR LEADER SAYS 'YOU MUST BE THE SERVANTS OF YARASH!'"
+        },
+        {
+          "file": "ecl7.dax",
+          "block_id": 23,
+          "offset": 1527,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "(FPT T2HY0E;[ E;[#ATT(PEQR\"TA \u002680G#\u00260FT'0DF(B0C0OA8L XI.AFB[ GO[PFB[ LA \u00268R1 AYR_D(AN'SINCE YOU ARE NOT THE SERVANTS OF YARASH, WE WILL NOT KILL YOU. THE ENEMY OF MY ENEMY IS NOT MY ENEMY!'PG#\u00261JUI3UUBSUBS!8D05SXXE1XE2SCHABQX!Q#4!XE1XCAUHFS5XEE2T5HET8T8FS5XBU!XC5T(C5BAT(DAS4CAXX%UHFS5XE2SCHABQXA\"T$"
+        },
+        {
+          "file": "ecl7.dax",
+          "block_id": 23,
+          "offset": 1602,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "'SINCE YOU ARE NOT THE SERVANTS OF YARASH, WE WILL NOT KILL YOU. THE ENEMY OF MY ENEMY IS NOT MY ENEMY!'"
+        },
+        {
+          "file": "ecl7.dax",
+          "block_id": 23,
+          "offset": 4348,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "HBTA \u002680G#\u00260F;* DT\u0026R0DPXI.IPFB[ A[.*D(A\u003eAS YOU FREE THEM THEY TELL YOU ALL ABOUT WHAT YARASH IS DOING AND HOW YOU CAN GET HELP FROM THEIR TRIBE IN"
+        },
+        {
+          "file": "ecl7.dax",
+          "block_id": 23,
+          "offset": 4396,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "AS YOU FREE THEM THEY TELL YOU ALL ABOUT WHAT YARASH IS DOING AND HOW YOU CAN GET HELP FROM THEIR TRIBE IN THE SWAMP. YOU COPY ALL THEY SAY AS ENTRY 35 OF YOUR JOURNAL."
+        },
+        {
+          "file": "ecl7.dax",
+          "block_id": 23,
+          "offset": 5200,
+          "encoding": "packed6",
+          "readable": true,
+          "text": "THIS IS THE DESK OF YARASH. ON IT IS A LITTER OF PAPERS."
+        }
+      ]
+    },
+    {
+      "english": "Yulash",
+      "settled": "尤拉斯",
+      "occurrences": 0,
+      "readable_occurrences": 0
+    }
+  ],
+  "missing_terms": [
+    "Sembia",
+    "Thentia",
+    "Mulmaster",
+    "Lis",
+    "Tesh",
+    "Stormy Bay",
+    "Twilight",
+    "Yulash"
+  ],
+  "scanned_format": "every DAX block in the ZIP: printable ASCII runs and 0x80-prefixed 6-bit packed text"
+}

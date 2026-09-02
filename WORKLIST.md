@@ -21,8 +21,13 @@
   Magic-User＝魔法師等），並分開 Yarash（亞拉斯）與 Yulash（尤拉斯）、固定
   ROUND／TURN 的定義。轉錄正文維持原書用字不動，本表只約束 game pack 與 UI。
 - [ ] 怪物一覽表 42 種的中文譯名：說明書只給英文，須由遊戲內文字或戰鬥訊息確認後再定。
-- [ ] 用原版資料反查定案譯名：遊戲內實際顯示的地名字串是否與說明書一致（說明書是
-  第二來源，不是 oracle）。
+- [x] 用原版資料反查定案譯名：`cmd/pool-name-audit` 掃全部 1,245 個 DAX block 的
+  明碼與 6-bit packed 字串，結果在 `docs/audit/dos-original-name-strings.json`。
+  九個專名由遊戲文字證實（Phlan、Bishop Braccio、Valjevo Castle、Lord Urslingen、
+  Sokal Keep、Kobold、Magic Users、Thief、Yarash）；另外八個只在說明書出現，
+  遊戲畫面不顯示，譯名不受遊戲文字約束。兩處訂正已寫進 glossary 的「原版資料反查」：
+  `Sokal Keep` 拼法確定、遊戲寫 `MAGIC USERS` 而非 `Magic-User`。同一則公告出現
+  `'ROGUES'`，說明書沒有這個詞，中譯待定。
 - [ ] corpus 接進遊戲內 Journal／UI 之前，不得宣稱遊戲內中文化完成；接線前先確認
   遊戲實際引用的條目編號與說明書編號一致。
 
