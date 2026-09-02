@@ -39,6 +39,14 @@ const (
 // 不是重新翻譯。說明書沒有對應字串的（畫面提示、功能鍵列）才自行擬定，
 // 用詞依 `docs/reference/manual/glossary.md` 的定案譯名。
 var messages = map[messageID][2]string{
+	msgEquipmentTitle:       {"PARTY EQUIPMENT", "隊伍裝備"},
+	msgEquipmentEmptyParty:  {"The party is empty.", "隊伍裡沒有人。"},
+	msgEquipmentNoItems:     {"This character carries nothing.", "這名角色身上沒有東西。"},
+	msgEquipmentReadyMark:   {"* ", "＊"},
+	msgEquipmentUnreadyable: {"That item cannot be readied.", "這件東西不能裝備。"},
+	msgEquipmentUnarmed:     {"Unarmed: the original leaves the damage dice alone.", "徒手：原版此時不動傷害骰。"},
+	msgEquipmentStats:       {"Readied: THAC0 %d, damage %dd%d%+d", "已裝備：THAC0 %d，傷害 %dd%d%+d"},
+	msgEquipmentFooter:      {"TAB switch character  UP/DOWN choose  ENTER ready  I/ESC close", "TAB 換人　上下選物品　ENTER 裝備／卸下　I／ESC 關閉"},
 	// 標題畫面的按鍵提示，說明書沒有，鍵名保持原文。
 	msgTitleHint: {"ENTER / SPACE", "ENTER／空白鍵"},
 	// 說明書 p.8：「螢幕上便會出現人物管理選擇項」。
@@ -364,6 +372,18 @@ func utf8DecodeLast(value string) (rune, bool) {
 }
 
 // 戰術畫面的字串。戰鬥用語依說明書第五章與 glossary 的定案（ROUND＝戰鬥回合）。
+// 裝備畫面的字串。
+const (
+	msgEquipmentTitle messageID = iota + 400
+	msgEquipmentEmptyParty
+	msgEquipmentNoItems
+	msgEquipmentReadyMark
+	msgEquipmentUnreadyable
+	msgEquipmentUnarmed
+	msgEquipmentStats
+	msgEquipmentFooter
+)
+
 const (
 	msgTacticalTitle messageID = iota + 200
 	msgTacticalNoMap

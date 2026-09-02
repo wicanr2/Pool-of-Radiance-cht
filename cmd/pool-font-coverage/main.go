@@ -11,8 +11,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"os"
+	"path/filepath"
 	"sort"
+	"strconv"
 
 	"golang.org/x/image/font/basicfont"
 
@@ -72,6 +77,13 @@ func main() {
 			note(entry.Text, fmt.Sprintf("journal %s %s", entry.Kind, entry.ID))
 		}
 	}
+	// 畫面上的字不只來自那兩份資料檔：UI 的字串直接寫在程式碼裡。
+	// 只掃字串常值（不掃註解），因為只有它們會被畫出來。
+	if err := noteSourceStrings(note); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	catalogue, err := gametext.TraditionalChinese()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -100,6 +112,43 @@ func main() {
 	if len(report) > 0 {
 		os.Exit(1)
 	}
+}
+
+// noteSourceStrings 走過 repo 裡每個 .go 檔的字串常值。
+func noteSourceStrings(note func(text, label string)) error {
+	return filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			switch info.Name() {
+			case "workplace", "docs", ".git":
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if filepath.Ext(path) != ".go" {
+			return nil
+		}
+		fileSet := token.NewFileSet()
+		parsed, err := parser.ParseFile(fileSet, path, nil, 0)
+		if err != nil {
+			return fmt.Errorf("parse %s: %w", path, err)
+		}
+		ast.Inspect(parsed, func(node ast.Node) bool {
+			literal, ok := node.(*ast.BasicLit)
+			if !ok || literal.Kind != token.STRING {
+				return true
+			}
+			value, err := strconv.Unquote(literal.Value)
+			if err != nil {
+				return true
+			}
+			note(value, path)
+			return true
+		})
+		return nil
+	})
 }
 
 func sum(counts map[rune]int) int {

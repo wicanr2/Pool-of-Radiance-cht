@@ -200,8 +200,16 @@
   `+108h` 結構的 `+3`／`+0Fh` 旁路旗標，以及查詢碼 `4Bh`／`4Ah` 的玩家語意。
   地形／碰撞已由 Spec 057／058 閉合（直線追蹤、格位類別表的 PathByte1／
   PathByte2、目的格探測與戰術層 DS 版面）。
+  裝備覆寫已由 Spec 065 閉合一半：物品型別表不在 START.EXE 裡（`DS:54E0h` 那段是
+  未初始化的，匯出來整片 FF），來源是 ZIP 的 `poolrad/items`（2-byte 檔頭加 128 筆
+  × 16 bytes）；索引就是物品記錄的 `+2Eh`，由墓園那把 Two-Handed Sword +1
+  （`+2Eh = 26h`，表的第 26h 筆是 1d10／3d6）正對照釘住。三張能力值修正表
+  （力量索引、力量命中、力量傷害、敏捷投射）已逐分支照抄，overlay-25 entry 1 的
+  十一個步驟已實作，玩家可在遊戲裡按 `I` 裝備武器，戰術戰鬥的 THAC0 與傷害骰
+  改由武器決定。仍未閉合：記錄 `+0AAh` 與 `+2Eh` 的 producer、裝備之後的 AC
+  重算鏈（`sub_281`／`sub_39F`）。
   下一步不再重做基礎命中／傷害、rate rounding、phase counter、先攻選擇、cell table
-  raw parser、純移動預算或地形／碰撞，而是閉合裝備／effect 覆寫、命中 modifier 來源、
+  raw parser、純移動預算或地形／碰撞，而是閉合命中 modifier 的其餘來源、
   防禦與死亡分支的先攻值消耗、
   特殊攻擊與 status transition，再接戰術畫面及勝敗／全滅 continuation；在該範圍 READY
   前保持失敗即關閉。

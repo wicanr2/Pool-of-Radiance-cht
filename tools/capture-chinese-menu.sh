@@ -162,5 +162,17 @@ if cmp -s docs/screenshots/pool-remake-chinese-journal.png docs/screenshots/pool
   tail -20 /tmp/game.log >&2 || true
   exit 1
 fi
+# ESC 關手冊，I 開裝備頁。這一隊剛建好、身上沒有東西，所以看到的是空清單——
+# 拍它是為了確認版面與字型，物品邏輯由 cmd/pool-game 的測試顧。
+pulse Escape
+sleep 0.5
+pulse i
+sleep 0.8
+shot docs/screenshots/pool-remake-chinese-equipment.png
+if cmp -s docs/screenshots/pool-remake-chinese-journal-46.png docs/screenshots/pool-remake-chinese-equipment.png; then
+  echo "I did not open the equipment screen" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
 sha256sum docs/screenshots/pool-remake-chinese-*.png
 '

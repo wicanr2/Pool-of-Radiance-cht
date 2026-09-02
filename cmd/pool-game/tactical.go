@@ -433,6 +433,17 @@ func (a *app) enterTacticalPreview() error {
 			state.THAC0[index] = thac0
 			state.ArmorClass[index] = armor
 			state.BaseMovement[index] = movement
+			// 手上有裝備好的武器時，THAC0 與傷害改由武器決定（spec 065）。
+			if weapon, ok := readiedWeapon(member); ok {
+				stats, err := a.weaponCombatStats(weapon, member, thac0)
+				if err != nil {
+					return err
+				}
+				state.THAC0[index] = stats.Thac0Internal
+				state.Damage[index] = combat.DamageDice{
+					Count: stats.DamageCount, Sides: stats.DamageSides, Bonus: stats.DamageBonus,
+				}
+			}
 			party++
 			continue
 		}
@@ -624,6 +635,53 @@ func partyCombatStats(member poolsave.Character) (thac0Internal uint8, armorInte
 		return 0, 0, 0, err
 	}
 	return thac0Internal, creationArmorClassInternal, creationBaseMovement, nil
+}
+
+// 物品記錄裡本規格用到的三個欄位（spec 033／035／063）。
+const (
+	itemTypeOffset  = 0x2e // 物品型別索引，查 DS:54E0h 那張表用
+	itemPlusOffset  = 0x32 // 附魔值，武器的 +1／+2
+	itemReadyOffset = 0x34 // 非零代表這件已經裝備上
+)
+
+// readiedWeapon 取出角色裝備好的那一件。原版的角色記錄只有一個
+// `+0CCh` 武器槽，所以這裡也只認第一件標成裝備的物品。
+func readiedWeapon(member poolsave.Character) (poolsave.Item, bool) {
+	for _, item := range member.Inventory {
+		if len(item.Raw) <= itemReadyOffset {
+			continue
+		}
+		if item.Raw[itemReadyOffset] != 0 {
+			return item, true
+		}
+	}
+	return poolsave.Item{}, false
+}
+
+// weaponCombatStats 是畫面與戰鬥共用的那一條規則：兩邊分開算，會出現
+// 裝備頁顯示一組數字、打起來卻是另一組。
+func (a *app) weaponCombatStats(weapon poolsave.Item, member poolsave.Character, baseThac0Internal uint8) (gamepack.WeaponStats, error) {
+	if len(weapon.Raw) <= itemPlusOffset {
+		return gamepack.WeaponStats{}, fmt.Errorf("Pool item %q is too short to be a weapon", weapon.Name)
+	}
+	return gamepack.WeaponCombatStats(a.itemTypes,
+		weapon.Raw[itemTypeOffset], int(int8(weapon.Raw[itemPlusOffset])),
+		weaponBearerFor(member, baseThac0Internal))
+}
+
+// weaponBearerFor 把角色接成武器規則要的形狀。
+//
+// `AbilityBonusesEnabled` 對應角色記錄的 `+0AAh`：原版以它決定要不要套用兩個
+// 力量修正，但那個 byte 由誰寫、代表什麼還沒閉合。remake 的角色都是正常
+// 建角出來的，所以先照「開著」接；等 `+0AAh` 的 producer 讀出來再改。
+func weaponBearerFor(member poolsave.Character, baseThac0Internal uint8) gamepack.WeaponBearer {
+	return gamepack.WeaponBearer{
+		BaseThac0Internal:     baseThac0Internal,
+		Strength:              member.Abilities[0],
+		ExceptionalStrength:   member.ExceptionalStrength,
+		Dexterity:             member.Abilities[dexterityAbilityIndex],
+		AbilityBonusesEnabled: true,
+	}
 }
 
 // rollDice 把 app 的骰子接成回合流程要的形狀。

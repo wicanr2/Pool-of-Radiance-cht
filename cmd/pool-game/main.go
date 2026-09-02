@@ -104,6 +104,9 @@ type app struct {
 	gameText         *gametext.Catalogue
 	tactical         *tacticalState
 	journal          *journalState
+	itemTypes        *gamepack.ItemTypeTable
+	equipment        *equipmentState
+	equipmentOpen    bool
 	journalOpen      bool
 	modern           bool
 	statusLine       string
@@ -197,11 +200,16 @@ func newApp(zipPath string) (*app, error) {
 	application.loadPieceSlots = func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
 		return gamepack.ReadDOSPieceSlots(zipPath, archive, selectors)
 	}
+	itemTypes, err := gamepack.ReadDOSItemTypeTable(zipPath)
+	if err != nil {
+		return nil, err
+	}
 	initialEvent, err := gamepack.ReadDOSInitialEvent(zipPath)
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial event: %w", err)
 	}
 	application.initialEvent = &initialEvent
+	application.itemTypes = itemTypes
 	const statePath = "saves/pool-remake-state.json"
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
@@ -310,6 +318,14 @@ func (a *app) Update() error {
 	}
 	if a.journalOpen {
 		a.journalInput()
+		return nil
+	}
+	if a.equipmentOpen {
+		a.equipmentInput()
+		return nil
+	}
+	if a.justPressed(ebiten.KeyI) && a.mode == modeAdventure && !a.help {
+		a.openEquipment()
 		return nil
 	}
 	if a.justPressed(ebiten.KeyJ) && a.mode == modeAdventure && !a.help {
@@ -1759,6 +1775,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.journalOpen && a.journal != nil {
 		drawJournal(screen, a, background, foreground, accent)
 	}
+	if a.equipmentOpen && a.equipment != nil {
+		drawEquipment(screen, a, background, foreground, accent)
+	}
 }
 
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
@@ -2076,6 +2095,7 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 		"B: begin adventure after adding a party member",
 		"F10: save the remake state and quit",
 		"J: open the adventurer's journal (-lang zh)",
+		"I: ready or unready a party member's items",
 	}
 	for index, line := range lines {
 		drawText(screen, line, 104, 120+index*30, foreground)
