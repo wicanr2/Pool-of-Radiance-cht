@@ -170,10 +170,17 @@
   2／3 半步成本；START.EXE 的 66×4 戰術格位類別表已有嚴格 typed parser，四欄 raw
   shape、entry threshold、presentation consumer 與八方向 byte-wrap 座標 delta 已閉合。
   速度效果的玩家可見語意已有分級證據，法術 selector 與 effect ID 則保持分離。
-  移動後反應攻擊目前只證實「附近敵對側＋runtime `+7`＋兩道 predicate」，尚須追完
-  `+7` producer、overlay-25 entry 6 與 overlay-32 entry 13，才能接 tactical runtime。
+  移動後反應攻擊已由 Spec 059 閉合觸發條件與閘門順序：候選是「移動前鄰接、
+  移動後不鄰接」的差集（原版暫時移動、查詢、再復原），不是全部鄰接敵人；
+  overlay-25 entry 6 是「對手身上有沒有 `DS:2880h` 那四個致能效果碼」，
+  entry 27 是效果串列的線性搜尋（頭在 record `+7Fh`、節點 `+5` 是 next）；
+  朝向窗是目前朝向的前後兩格；攻擊槽依 `+A1h` 與 `+113h`／`+114h` 選出。
+  仍未閉合的是 overlay-13 entry 11 背後的 `DS:677Ch` 否決旗標 producer、
+  `+108h` 結構的 `+3`／`+0Fh` 旁路旗標，以及查詢碼 `4Bh`／`4Ah` 的玩家語意。
+  地形／碰撞已由 Spec 057／058 閉合（直線追蹤、格位類別表的 PathByte1／
+  PathByte2、目的格探測與戰術層 DS 版面）。
   下一步不再重做基礎命中／傷害、rate rounding、phase counter、先攻選擇、cell table
-  raw parser 或純移動預算，而是閉合裝備／effect 覆寫、命中 modifier 來源、地形／碰撞、
+  raw parser、純移動預算或地形／碰撞，而是閉合裝備／effect 覆寫、命中 modifier 來源、
   防禦與死亡分支的先攻值消耗、
   特殊攻擊與 status transition，再接戰術畫面及勝敗／全滅 continuation；在該範圍 READY
   前保持失敗即關閉。

@@ -546,3 +546,12 @@ mover 的四個佔格各推一格，回報撞到的 combatant 與最難進的目
 `6517h` 的 combatant 遠指標表第一筆，而 `6674h` 是戰術地圖的遠指標。
 `internal/combat/destination.go` 實作逐格查詢、目的格探測與
 `ResolveDestination`，全部測試通過。
+
+反應攻擊的閘門同日閉合（spec 059）。候選是差集而不是鄰接：原版把 mover 暫時
+往該方向推一格、再查一次鄰近敵人、然後復原，兩份名單相減。閘門依序是
+mover 的 `+10Dh`、對手身上沒有 `DS:2880h` 那四個致能效果碼（`33h`／`34h`／
+`35h`／`1Fh`，由 overlay-25 entry 27 沿 record `+7Fh` 的效果串列搜尋）、
+overlay-13 entry 11 的效果否決查詢、兩個狀態碼查詢，最後在「目前朝向的前後
+兩格」這五個朝向裡找一個讓 mover 落進朝向弧。攻擊槽依 `+A1h` 與
+`+113h`／`+114h` 選出，每個對手最多打一次。`internal/combat/reaction.go`
+實作可測的那幾段；`DS:677Ch` 否決旗標的 producer 仍未閉合。
