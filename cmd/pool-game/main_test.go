@@ -993,3 +993,32 @@ func TestGlobalHotkeysDoNotConsumeKeysOutsideAdventure(t *testing.T) {
 		}
 	}
 }
+
+// 同一頁裡的多則訊息要拼起來，`33h PRINT RETURN` 是頁內換行、
+// `3Dh CLEAR BOX` 清掉已經拼好的部分（spec 082）。
+// 先前每則訊息蓋掉上一則，一頁印三行只看得到最後一行。
+func TestCellTextBuildsOnePageFromEveryMessage(t *testing.T) {
+	application := &app{}
+	application.applyCellECLResult(eclvm.Result{Events: []eclvm.Event{
+		{Opcode: 0x12, Text: "FIRST LINE"},
+		{Opcode: gamepack.PrintReturnOpcode},
+		{Opcode: 0x12, Text: "SECOND LINE"},
+	}})
+	if application.eventText != "FIRST LINE\nSECOND LINE" {
+		t.Fatalf("page is %q", application.eventText)
+	}
+	// CLEAR BOX 之後的才算數。
+	application.applyCellECLResult(eclvm.Result{Events: []eclvm.Event{
+		{Opcode: 0x12, Text: "DISCARDED"},
+		{Opcode: gamepack.ClearBoxOpcode},
+		{Opcode: 0x12, Text: "KEPT"},
+	}})
+	if application.eventText != "KEPT" {
+		t.Fatalf("after CLEAR BOX the page is %q", application.eventText)
+	}
+	// 沒有文字的 result 不動文字框：頁與頁之間靠有文字的那一頁取代。
+	application.applyCellECLResult(eclvm.Result{Events: []eclvm.Event{{Opcode: 0x0E}}})
+	if application.eventText != "KEPT" {
+		t.Fatalf("an empty result changed the page to %q", application.eventText)
+	}
+}

@@ -355,10 +355,11 @@
   各 21、`10h INPUT STRING` 20、`33h PRINT RETURN` 20、`28h ROB` 14、
   `3Ch PROTECTION` 12、`39h WHO` 11、`36h ADD NPC` 7、`32h FIND ITEM` 7、
   `1Eh CHECKPARTY` 4、`0Fh INPUT NUMBER` 2、`34h ECL CLOCK` 1、`3Bh SPELL` 1。
-  起始地圖上走得到的是 `39h`（ECL3/b0 兩處、b11 一處）與 `36h`（各一處），
-  所以那兩條擋在最前面。
-  `33h PRINT RETURN` 與 `3Dh CLEAR BOX` 是純呈現（前者 `5D82h`／`5D83h` 換行、
-  後者清文字框再設 `82A4h`），兩條加起來 47 個呼叫點，成本最低。
+  起始地圖上走得到的是 `39h WHO`（ECL3/b0 兩處、b11 一處）與 `36h ADD NPC`
+  （各一處），所以那兩條擋在最前面。`39h` 的提示字串來自 `DS:6E8Eh`，
+  那段在 START.EXE 的檔案映像之外（BSS），是執行時才填的，靜態讀不到。
+  `33h PRINT RETURN` 與 `3Dh CLEAR BOX` 已接（spec 082），待辦從 16 條 253 處
+  降到 14 條 206 處。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家

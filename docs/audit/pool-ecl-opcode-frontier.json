@@ -43,10 +43,12 @@
     "0x2F",
     "0x30",
     "0x31",
+    "0x33",
     "0x35",
     "0x37",
     "0x38",
-    "0x3A"
+    "0x3A",
+    "0x3D"
   ],
   "unhandled": [
     {
@@ -983,113 +985,6 @@
       ]
     },
     {
-      "opcode": "0x33",
-      "name": "PRINT RETURN",
-      "arity": 0,
-      "sites": [
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 947
-        },
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 2737
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 5790
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 732
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 737
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 1407
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 2689
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 4477
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 4701
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 1600
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 4391
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 4964
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 5047
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 1431
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 2940
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 4195
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 5502
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 4669
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 2921
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 2976
-        }
-      ]
-    },
-    {
       "opcode": "0x34",
       "name": "ECL CLOCK",
       "arity": 2,
@@ -1283,150 +1178,8 @@
           "offset": 2922
         }
       ]
-    },
-    {
-      "opcode": "0x3D",
-      "name": "CLEAR BOX",
-      "arity": 0,
-      "sites": [
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 727
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 684
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 1050
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 1181
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 1397
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 1710
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 1889
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 1920
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 2461
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 3087
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 759
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 861
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 1054
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 1342
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 1681
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 1839
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 1959
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 2501
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 3210
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 617
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 849
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 897
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 1023
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 1247
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 1396
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 1925
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 2542
-        }
-      ]
     }
   ],
-  "unhandled_site_total": 253,
+  "unhandled_site_total": 206,
   "blocks_scanned": 29
 }

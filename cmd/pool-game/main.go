@@ -1526,10 +1526,27 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 			a.spawn.Facing = uint8(write.Value)
 		}
 	}
+	// 同一個 result 裡的訊息屬於同一頁，要拼起來；`33h PRINT RETURN` 是頁內
+	// 換行，`3Dh CLEAR BOX` 把已經拼好的部分清掉（spec 082）。一頁只印一則的
+	// 情況與先前相同，印兩則以上的先前只看得到最後一則。
+	//
+	// **頁與頁之間仍是取代**：原版靠什麼在兩頁之間清框還沒讀出來（這幾個
+	// block 沒有 `3Dh`），所以維持已經對過原版的逐頁行為，不改成跨頁累積。
+	page := ""
 	for _, event := range result.Events {
-		if event.Text != "" {
-			a.eventText = a.gameText.Translate(event.Text)
+		switch event.Opcode {
+		case gamepack.ClearBoxOpcode:
+			page = ""
+		case gamepack.PrintReturnOpcode:
+			page += "\n"
+		default:
+			if event.Text != "" {
+				page += a.gameText.Translate(event.Text)
+			}
 		}
+	}
+	if page = strings.Trim(page, "\n"); page != "" {
+		a.eventText = page
 	}
 }
 

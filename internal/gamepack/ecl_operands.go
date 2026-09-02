@@ -45,6 +45,11 @@ const (
 	// ProgramAskThenManage（值 9）先問一句，答應才開同一個畫面，然後結束
 	// 這個 block（overlay-03 `312Ah`）。
 	ProgramAskThenManage = 9
+
+	// PrintReturnOpcode 是 `33h PRINT RETURN`（spec 082）：文字框換行。
+	PrintReturnOpcode = 0x33
+	// ClearBoxOpcode 是 `3Dh CLEAR BOX`（spec 082）：清掉文字框。
+	ClearBoxOpcode = 0x3D
 )
 
 // EncounterMenuChoices 是選單的四個選項，順序即畫面順序。第四項依情境在
