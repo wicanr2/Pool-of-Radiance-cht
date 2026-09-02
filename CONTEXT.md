@@ -491,3 +491,14 @@ Journal／UI，不得據此宣稱遊戲內中文化完成。
 九種陣營、六種人物狀況、各畫面指令與法術譯名。跨冊譯名衝突（Phlan 的菲蘭／弗蘭／
 蘭城、Sokal Keep 在下冊拼成 Kosal Keep、戰鬥回合 ROUND／TURN 混用）已就地註記未統一，
 取捨列為 WORKLIST 待辦。corpus 仍未接進遊戲內 Journal／UI。
+
+2026-09-02 跨冊譯名已定案（`docs/reference/manual/glossary.md` 的「定案譯名」）。
+取捨用四條依序套用的原則：出現次數多者勝、次數相同取音近且不撞字者、再相同時內文
+優於地圖標註、最後取較短者。14 組決定包含 Phlan＝菲蘭、Sembia＝桑比亞、
+Braccio＝巴西歐、Valjevo＝瓦傑渥（城堡同字）、Werner von Urslingen＝魏納·烏斯林根、
+Thentia＝珊提亞（避免與「蘭」撞字）、Sokal Keep＝索卡爾城堡、Kobold＝小妖魔、
+Magic-User＝魔法師、Thief＝賊。另外分開 Yarash（巫師，亞拉斯）與 Yulash（城市，
+尤拉斯）——上冊 p.11 把城市寫成亞拉斯是原書誤譯；並固定 ROUND＝戰鬥回合（1 分鐘）、
+TURN＝普通回合（10 分鐘），下冊 p.42 的混用不採。轉錄正文一律維持原書用字，本表只
+約束 game pack 與 UI。專案程式碼與 JSON 目前尚無任何中文譯名，因此本次定案沒有既有
+實作要回改。怪物 42 種的中文譯名與「遊戲內實際字串是否與說明書一致」仍待原版證據。
