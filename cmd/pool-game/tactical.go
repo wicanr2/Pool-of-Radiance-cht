@@ -195,16 +195,23 @@ func deploymentCandidates(grid combat.TacticalGrid, classes combat.CellClasses, 
 	return candidates
 }
 
-// provisionalRoster 把隊伍與已 staged 的怪物擺上戰場，回傳 1-based 的位置表
-// 與各筆屬於哪一方。放不下的就不放——不擠、不重疊、不自行擴大範圍。
-func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) ([]combat.CombatantCell, []bool) {
+// provisionalRoster 把隊伍與已 staged 的怪物擺上戰場，回傳 1-based 的位置表、
+// 各筆屬於哪一方，以及每一格對回哪一個隊伍成員（不是隊伍成員的是 −1）。
+// 放不下的就不放——不擠、不重疊、不自行擴大範圍。
+//
+// **陣營是逐人看的**：`36h ADD NPC` 加進來的 NPC 記錄 `+10Eh` 非零時站在
+// 對面（spec 091），所以不能整批當成我方；隊伍索引也因此要另外記，
+// 不能靠「友方槽依序對應隊伍」那個假設。
+func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) ([]combat.CombatantCell, []bool, []int) {
 	cells := []combat.CombatantCell{{}}
 	friendly := []bool{false}
+	partySlot := []int{-1}
 	taken := map[[2]int]bool{}
 
-	assign := func(count, offsetX int, isParty bool) {
+	assign := func(members []int, offsetX int, isParty bool) {
+		next := 0
 		for _, spot := range deploymentCandidates(grid, classes, offsetX, taken) {
-			if count == 0 {
+			if next >= len(members) {
 				return
 			}
 			taken[[2]int{spot[0], spot[1]}] = true
@@ -212,17 +219,30 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 				X: uint8(spot[0]), Y: uint8(spot[1]), FootprintClass: 1,
 			})
 			friendly = append(friendly, isParty)
-			count--
+			partySlot = append(partySlot, members[next])
+			next++
 		}
 	}
 
-	assign(len(a.state.Party), provisionalPartyOffsetX, true)
+	allies, traitors := make([]int, 0, len(a.state.Party)), make([]int, 0, 1)
+	for index, member := range a.state.Party {
+		if member.Side != 0 {
+			traitors = append(traitors, index)
+			continue
+		}
+		allies = append(allies, index)
+	}
+	assign(allies, provisionalPartyOffsetX, true)
 	foes := 0
 	for _, monster := range a.combatMonsters {
 		foes += int(monster.Spawn.Count)
 	}
-	assign(foes, provisionalFoeOffsetX, false)
-	return cells, friendly
+	opposing := append([]int(nil), traitors...)
+	for index := 0; index < foes; index++ {
+		opposing = append(opposing, -1)
+	}
+	assign(opposing, provisionalFoeOffsetX, false)
+	return cells, friendly, partySlot
 }
 
 // tacticalState 是戰術預覽跨影格保留的狀態。Scores 對應原版 runtime 的 `+3`
@@ -387,7 +407,7 @@ func (a *app) enterTacticalPreview() error {
 		return err
 	}
 	classes := gamepack.OriginalCombatCellClassTable()
-	roster, friendly := provisionalRoster(a, grid, classes)
+	roster, friendly, partySlot := provisionalRoster(a, grid, classes)
 
 	base, source := uint8(placeholderBaseMovement), a.text(msgBudgetPlaceholder)
 	if len(a.combatMonsters) > 0 {
@@ -412,7 +432,6 @@ func (a *app) enterTacticalPreview() error {
 	state.THAC0 = make([]uint8, size)
 	state.ArmorClass = make([]int, size)
 	state.Damage = make([]combat.DamageDice, size)
-	party := 0
 	for index := 1; index < size; index++ {
 		state.BaseMovement[index] = base
 		state.Dexterity[index] = placeholderDexterity
@@ -420,8 +439,15 @@ func (a *app) enterTacticalPreview() error {
 		state.THAC0[index] = placeholderInternalTHAC0
 		state.ArmorClass[index] = placeholderInternalArmorClass
 		state.Damage[index] = combat.DamageDice{Count: 1, Sides: 8}
-		if friendly[index] && party < len(a.state.Party) {
+		if party := partySlot[index]; party >= 0 && party < len(a.state.Party) {
 			member := a.state.Party[party]
+			// NPC 沒有走過建角，戰鬥數值直接讀它帶著的原版記錄。
+			if member.NPC {
+				if err := applyNPCCombatStats(state, index, member); err != nil {
+					return err
+				}
+				continue
+			}
 			state.Dexterity[index] = uint8(member.Abilities[dexterityAbilityIndex])
 			if member.CurrentHP > 0 {
 				state.HitPoints[index] = member.CurrentHP
@@ -450,7 +476,6 @@ func (a *app) enterTacticalPreview() error {
 					Count: stats.DamageCount, Sides: stats.DamageSides, Bonus: stats.DamageBonus,
 				}
 			}
-			party++
 			continue
 		}
 		if record, ok := a.stagedRecordFor(index, friendly); ok {
@@ -718,6 +743,28 @@ func (a *app) memberDefenceStats(member poolsave.Character, baseArmor int, baseM
 		return 0, 0, fmt.Errorf("Pool character %q movement: %w", member.Name, err)
 	}
 	return armour.Internal, uint8(movement), nil
+}
+
+// applyNPCCombatStats 用 NPC 自己帶的 285-byte 記錄填戰鬥數值，做法與已
+// staged 的怪物同一套（spec 091）。NPC 不走建角那一組欄位，硬套會得到
+// 一個「一級戰士」，而那與原版差很多。
+func applyNPCCombatStats(state *tacticalState, index int, member poolsave.Character) error {
+	if len(member.Record) != poolsave.NPCRecordSize {
+		return fmt.Errorf("Pool NPC %q has a %d-byte record", member.Name, len(member.Record))
+	}
+	var record gamepack.MonsterRecord
+	copy(record.Raw[:], member.Record)
+	record.Name = member.Name
+	state.BaseMovement[index] = record.Movement()
+	state.HitPoints[index] = int(record.CurrentHitPoints())
+	state.THAC0[index] = uint8(60 - record.THAC0())
+	state.ArmorClass[index] = 60 - record.ArmorClass()
+	state.Damage[index] = combat.DamageDice{
+		Count: record.DamageDiceCount(),
+		Sides: record.DamageDieSides(),
+		Bonus: record.DamageBonus(),
+	}
+	return nil
 }
 
 // partyClassLevels 把角色攤成原版記錄 `+96h` 起那八個職業等級。THAC0

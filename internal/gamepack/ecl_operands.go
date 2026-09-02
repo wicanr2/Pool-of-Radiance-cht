@@ -46,6 +46,14 @@ const (
 	// 這個 block（overlay-03 `312Ah`）。
 	ProgramAskThenManage = 9
 
+	// AddNPCOpcode 是 `36h ADD NPC`（spec 091）。
+	AddNPCOpcode = 0x36
+	// AddNPCOperands 是它吃幾個運算元。
+	AddNPCOperands = 2
+	// AddNPCHostileID 是唯一會站到對面的 NPC 編號（overlay-03 `2F2Ah`
+	// 只比這一個值）。
+	AddNPCHostileID = 0x18
+
 	// WhoOpcode 是 `39h WHO`（spec 083／090）：讓玩家挑一個隊伍成員，
 	// 挑到的那個存進「目前角色」槽（原版的 `DS:5CF0h`）。
 	WhoOpcode = 0x39
@@ -94,6 +102,15 @@ const (
 // EncounterMenuChoices 是選單的四個選項，順序即畫面順序。第四項依情境在
 // PARLAY 與 ADVANCE 之間切換（overlay-03 `2333h`）。
 var EncounterMenuChoices = []string{"COMBAT", "WAIT", "FLEE", "PARLAY"}
+
+// AddNPCSide 是 `36h` 寫進記錄 `+10Eh` 的陣營：只有編號 18h 得到 1，
+// 其餘都是 0（overlay-03 `2F2Ah` 的單一比較）。
+func AddNPCSide(id uint8) uint8 {
+	if id == AddNPCHostileID {
+		return 1
+	}
+	return 0
+}
 
 // ParlayChoices 是交涉選單的五種語氣，順序即畫面順序，也就是結果表
 // 運算元 1..5 的索引。字面值來自 overlay-03 `2785h` 的

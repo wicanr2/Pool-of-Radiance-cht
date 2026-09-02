@@ -20,6 +20,14 @@ const (
 	OlderSchema    = "pool-remake-state/3"
 	OldestSchema   = "pool-remake-state/2"
 	LegacySchema   = "pool-remake-state/1"
+
+	// PartyMaximum 是戰場上的隊伍上限，含 NPC。原版在 overlay-17 entry 9
+	// 擋「人數大於 7」，所以是八。
+	PartyMaximum = 8
+	// PlayerCharacterMaximum 是玩家自己建的角色能佔幾格。
+	PlayerCharacterMaximum = 6
+	// NPCRecordSize 是 MON*CHA 一筆記錄的大小。
+	NPCRecordSize = 285
 )
 
 type Item struct {
@@ -49,6 +57,15 @@ type Character struct {
 	IconSize            uint8       `json:"icon_size"`
 	IconColors          [6][2]uint8 `json:"icon_colors"`
 	Inventory           []Item      `json:"inventory,omitempty"`
+	// NPC 為真代表這一位是 `36h ADD NPC` 加進來的，不是玩家建的
+	// （spec 091）。原版隊伍上限八人，玩家角色只佔得了六格。
+	NPC bool `json:"npc,omitempty"`
+	// Side 是原版記錄的 `+10Eh`：0 與隊伍同一邊，非 0 是另一邊。
+	// 有一個 NPC 編號（18h）加進來就是敵方。
+	Side uint8 `json:"side,omitempty"`
+	// Record 是 NPC 的 285-byte MON*CHA 記錄。戰鬥數值直接讀它，
+	// 不硬把 NPC 塞進建角那一套欄位。
+	Record []byte `json:"record,omitempty"`
 }
 
 type Campaign struct {
@@ -76,8 +93,20 @@ func (state State) Validate() error {
 	if state.Schema != Schema {
 		return fmt.Errorf("Pool save schema %q, want %q", state.Schema, Schema)
 	}
-	if len(state.Party) > 6 {
-		return fmt.Errorf("Pool party has %d characters, maximum is 6", len(state.Party))
+	// 原版的隊伍上限是八（overlay-17 entry 9 擋人數大於 7），但玩家自己
+	// 建的角色只佔得了六格，多出來的兩格留給 `36h ADD NPC` 的 NPC。
+	if len(state.Party) > PartyMaximum {
+		return fmt.Errorf("Pool party has %d characters, maximum is %d", len(state.Party), PartyMaximum)
+	}
+	players := 0
+	for _, character := range state.Party {
+		if !character.NPC {
+			players++
+		}
+	}
+	if players > PlayerCharacterMaximum {
+		return fmt.Errorf("Pool party has %d player characters, maximum is %d",
+			players, PlayerCharacterMaximum)
 	}
 	if state.PooledGold != 0 {
 		return fmt.Errorf("Pool schema 5 retains legacy pooled_gold %d", state.PooledGold)
@@ -100,6 +129,11 @@ func (state State) Validate() error {
 	for _, character := range state.Party {
 		if err := validateCharacter(character); err != nil {
 			return err
+		}
+		if character.NPC {
+			// NPC 不進角色庫：它是劇情加進來的，不是玩家建的，
+			// 也不該出現在「加入隊伍」的清單裡。
+			continue
 		}
 		if !seen[character.Name] {
 			return fmt.Errorf("party character %q is absent from the library", character.Name)
@@ -157,6 +191,19 @@ func validateCharacter(character Character) error {
 	if len(character.Name) < 1 || len(character.Name) > 15 {
 		return fmt.Errorf("Pool character name length %d, want 1..15", len(character.Name))
 	}
+	if character.NPC {
+		// NPC 沒有走過建角，肖像與戰鬥造形不在那些範圍裡；它帶的是原版的
+		// 整筆記錄，戰鬥數值從那裡讀。
+		if len(character.Record) != NPCRecordSize {
+			return fmt.Errorf("Pool NPC %q has a %d-byte record, want %d",
+				character.Name, len(character.Record), NPCRecordSize)
+		}
+		return validateInventory(character)
+	}
+	if len(character.Record) != 0 {
+		return fmt.Errorf("Pool character %q is not an NPC but carries a %d-byte record",
+			character.Name, len(character.Record))
+	}
 	if character.PortraitHead < 1 || character.PortraitHead > 14 || character.PortraitBody < 1 || character.PortraitBody > 12 {
 		return fmt.Errorf("Pool character %q has invalid portrait", character.Name)
 	}
@@ -166,6 +213,10 @@ func validateCharacter(character Character) error {
 	if character.MaxHP < 1 || character.CurrentHP < 0 || character.CurrentHP > character.MaxHP {
 		return fmt.Errorf("Pool character %q has invalid HP %d/%d", character.Name, character.CurrentHP, character.MaxHP)
 	}
+	return validateInventory(character)
+}
+
+func validateInventory(character Character) error {
 	if len(character.Inventory) > 16 {
 		return fmt.Errorf("Pool character %q has %d items, maximum is 16", character.Name, len(character.Inventory))
 	}

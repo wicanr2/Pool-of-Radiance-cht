@@ -1215,3 +1215,84 @@ func TestWhoSetsTheCurrentCharacter(t *testing.T) {
 		t.Fatal("resolving a WHO choice that was never asked for succeeded")
 	}
 }
+
+// NPC 加進隊伍之後，戰鬥數值要讀它自己的記錄，不是套建角那一組欄位
+// （spec 091）。硬套會得到一個「一級戰士」，與原版差很多。
+func TestNPCCombatStatsComeFromItsOwnRecord(t *testing.T) {
+	state := &tacticalState{
+		BaseMovement: make([]uint8, 2),
+		HitPoints:    make([]int, 2),
+		THAC0:        make([]uint8, 2),
+		ArmorClass:   make([]int, 2),
+		Damage:       make([]combat.DamageDice, 2),
+	}
+	record := make([]byte, poolsave.NPCRecordSize)
+	record[0x11C] = 9  // 移動力
+	record[0x11B] = 33 // 目前生命值
+	record[0x110] = 60 - 14
+	record[0x111] = 60 - 3
+	record[0x115] = 2
+	record[0x117] = 6
+	record[0x119] = 1
+	member := poolsave.Character{Name: "NPC", NPC: true, Record: record}
+	if err := applyNPCCombatStats(state, 1, member); err != nil {
+		t.Fatal(err)
+	}
+	if state.BaseMovement[1] != 9 || state.HitPoints[1] != 33 {
+		t.Fatalf("movement=%d hp=%d", state.BaseMovement[1], state.HitPoints[1])
+	}
+	if state.THAC0[1] != 60-14 || state.ArmorClass[1] != 60-3 {
+		t.Fatalf("thac0=%d ac=%d", state.THAC0[1], state.ArmorClass[1])
+	}
+	if state.Damage[1] != (combat.DamageDice{Count: 2, Sides: 6, Bonus: 1}) {
+		t.Fatalf("damage=%+v", state.Damage[1])
+	}
+	// 記錄長度不對就要失敗，不能靜靜用零值打。
+	if err := applyNPCCombatStats(state, 1, poolsave.Character{Name: "X", NPC: true}); err == nil {
+		t.Fatal("an NPC without a record was accepted")
+	}
+}
+
+// 只有編號 18h 的 NPC 站到對面（spec 091）。
+func TestAddNPCSideOnlyFlipsForOneID(t *testing.T) {
+	if gamepack.AddNPCSide(gamepack.AddNPCHostileID) != 1 {
+		t.Fatal("編號 18h 應該站到對面")
+	}
+	for _, id := range []uint8{0, 0x17, 0x19, 0x68, 0x6B, 0xFF} {
+		if gamepack.AddNPCSide(id) != 0 {
+			t.Fatalf("編號 %#x 不該站到對面", id)
+		}
+	}
+}
+
+// 存檔的隊伍上限是八，但玩家自己建的只佔得了六格。
+func TestPartyAllowsTwoNPCsBeyondTheSixPlayers(t *testing.T) {
+	state := poolsave.NewState()
+	newPlayer := func(name string) poolsave.Character {
+		return poolsave.Character{Name: name, MaxHP: 8, CurrentHP: 8,
+			PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	}
+	newNPC := func(name string) poolsave.Character {
+		return poolsave.Character{Name: name, NPC: true, MaxHP: 8, CurrentHP: 8,
+			Record: make([]byte, poolsave.NPCRecordSize)}
+	}
+	for index := 0; index < 7; index++ {
+		state.CharacterLibrary = append(state.CharacterLibrary, newPlayer(string(rune('A'+index))))
+	}
+	for index := 0; index < 6; index++ {
+		state.Party = append(state.Party, newPlayer(string(rune('A'+index))))
+	}
+	state.Party = append(state.Party, newNPC("NPC1"), newNPC("NPC2"))
+	if err := state.Validate(); err != nil {
+		t.Fatalf("六名玩家加兩個 NPC 應該過：%v", err)
+	}
+	state.Party = append(state.Party, newNPC("NPC3"))
+	if err := state.Validate(); err == nil {
+		t.Fatal("九個人不該過")
+	}
+	state.Party = state.Party[:6]
+	state.Party = append(state.Party, newPlayer("G"))
+	if err := state.Validate(); err == nil {
+		t.Fatal("七名玩家角色不該過")
+	}
+}

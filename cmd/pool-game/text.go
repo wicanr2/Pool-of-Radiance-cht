@@ -85,6 +85,7 @@ var messages = map[messageID][2]string{
 	msgEclInputPrompt:       {"Type your answer, then ENTER.", "打完之後按 ENTER。"},
 	msgRobbed:               {"The party has been robbed.", "隊伍被洗劫了。"},
 	msgWhoPrompt:            {"Who?", "誰？"},
+	msgNPCJoined:            {"%s joins the party.", "%s 加入了隊伍。"},
 	msgParlayHaughty:        {"HAUGHTY", "傲慢"},
 	msgParlaySly:            {"SLY", "狡猾"},
 	msgParlayNice:           {"NICE", "友善"},
@@ -472,6 +473,7 @@ const (
 	msgEclInputPrompt
 	msgRobbed
 	msgWhoPrompt
+	msgNPCJoined
 	msgParlayHaughty
 	msgParlaySly
 	msgParlayNice

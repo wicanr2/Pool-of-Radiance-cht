@@ -53,6 +53,7 @@
     "0x32",
     "0x33",
     "0x35",
+    "0x36",
     "0x37",
     "0x38",
     "0x39",
@@ -101,48 +102,6 @@
       ]
     },
     {
-      "opcode": "0x36",
-      "name": "ADD NPC",
-      "arity": 2,
-      "sites": [
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 4340
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 0,
-          "offset": 1862
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 11,
-          "offset": 1564
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 2,
-          "offset": 3256
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 10,
-          "offset": 5505
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 13,
-          "offset": 4056
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 13,
-          "offset": 6609
-        }
-      ]
-    },
-    {
       "opcode": "0x3B",
       "name": "SPELL",
       "arity": 3,
@@ -155,6 +114,6 @@
       ]
     }
   ],
-  "unhandled_site_total": 13,
+  "unhandled_site_total": 6,
   "blocks_scanned": 29
 }

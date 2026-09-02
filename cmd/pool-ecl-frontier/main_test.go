@@ -46,7 +46,8 @@ func TestPassthroughStaysExplicit(t *testing.T) {
 		0x24: "service boundary", 0x28: "ROB", 0x29: "ENCOUNTER MENU",
 		0x2C: "PARLAY", 0x2D: "CALL", 0x2E: "DAMAGE", 0x31: "SPRITE OFF",
 		0x32: "FIND ITEM", 0x33: "PRINT RETURN", 0x37: "LOAD PIECES",
-		0x38: "PROGRAM", 0x39: "WHO", 0x3A: "DELAY", 0x3C: "PROTECTION",
+		0x36: "ADD NPC", 0x38: "PROGRAM", 0x39: "WHO", 0x3A: "DELAY",
+		0x3C: "PROTECTION",
 		0x3D: "CLEAR BOX",
 	}
 	got := gamepack.InitialEventPassthrough()
