@@ -49,7 +49,7 @@ func TestRealDOSGeometryCatalog(t *testing.T) {
 		t.Fatal("mutating a returned grid changed the catalog")
 	}
 	spawn := DOSInitialSpawn()
-	if spawn.Map != (MapKey{Archive: 3, BlockID: 0}) || spawn.X != 15 || spawn.Y != 1 || spawn.Facing != 6 {
+	if spawn.Map != (MapKey{Archive: 3, BlockID: 0}) || spawn.X != 15 || spawn.Y != 1 || spawn.Facing != 3 {
 		t.Fatalf("initial spawn=%+v", spawn)
 	}
 	if _, ok := catalog.Map(spawn.Map); !ok {

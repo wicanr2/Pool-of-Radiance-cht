@@ -198,7 +198,7 @@ func TestStateRejectsMalformedCampaign(t *testing.T) {
 	}{
 		{name: "archive", edit: func(c *Campaign) { c.MapArchive = 0 }},
 		{name: "position", edit: func(c *Campaign) { c.X = 16 }},
-		{name: "facing", edit: func(c *Campaign) { c.Facing = 1 }},
+		{name: "facing", edit: func(c *Campaign) { c.Facing = 4 }},
 		{name: "pc", edit: func(c *Campaign) { c.Session.Machine.PC = -1 }},
 		{name: "entries", edit: func(c *Campaign) { c.Session.TransitionEntries = nil }},
 		{name: "memory order", edit: func(c *Campaign) { c.Session.Machine.Memory = []eclvm.MemoryWord{{Address: 2}, {Address: 1}} }},
@@ -214,5 +214,48 @@ func TestStateRejectsMalformedCampaign(t *testing.T) {
 				t.Fatal("invalid campaign accepted")
 			}
 		})
+	}
+}
+
+// schema 6 把朝向存成共用 engine 的 0/2/4/6，讀進來要除以 2 回到原版的 0..3
+// （spec 076）。
+func TestReadMigratesSchemaSixFacing(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	state := State{Schema: FacingSchema, Campaign: &Campaign{
+		MapArchive: 3, MapBlock: 0, ECLArchive: 3, X: 1, Y: 4, Facing: 6,
+		Session: eclvm.BlockSessionSnapshot{Current: 8, TransitionEntries: []int{0}, Machine: eclvm.MachineSnapshot{PC: 1, Random: randomstream.Snapshot{Seed: 1}}},
+	}}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Schema != Schema || got.Campaign == nil || got.Campaign.Facing != 3 {
+		t.Fatalf("schema 6 facing migration=%+v", got.Campaign)
+	}
+}
+
+// schema 6 不可能存下奇數朝向；出現了就是檔案壞了，不要猜。
+func TestReadRejectsSchemaSixOddFacing(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	state := State{Schema: FacingSchema, Campaign: &Campaign{
+		MapArchive: 3, MapBlock: 0, ECLArchive: 3, X: 1, Y: 4, Facing: 3,
+		Session: eclvm.BlockSessionSnapshot{Current: 8, TransitionEntries: []int{0}, Machine: eclvm.MachineSnapshot{PC: 1, Random: randomstream.Snapshot{Seed: 1}}},
+	}}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Read(path); err == nil {
+		t.Fatal("schema 6 odd facing accepted")
 	}
 }

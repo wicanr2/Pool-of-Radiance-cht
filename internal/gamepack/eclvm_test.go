@@ -336,11 +336,11 @@ func TestCityHallCommissionSelectsOriginalProclamation(t *testing.T) {
 		}
 		session.Machine().Memory[0x4AC5] = 1
 		session.Machine().Memory[0x4AC1] = uint16(commission + 1)
-		entry, err := RunInitialSessionCellEntry(session, initial.Grid, Spawn{Map: initial.Key, X: 2, Y: 4, Facing: 2})
+		entry, err := RunInitialSessionCellEntry(session, initial.Grid, Spawn{Map: initial.Key, X: 2, Y: 4, Facing: 1})
 		if err != nil || !entry.Exited || entry.WaitingForMenu || len(entry.Events) != 0 {
 			t.Fatalf("commission %d old-cell entry=%+v err=%v", commission+1, entry, err)
 		}
-		result, err := RunInitialSessionSearchEntry(session, initial.Grid, Spawn{Map: initial.Key, X: 3, Y: 4, Facing: 2})
+		result, err := RunInitialSessionSearchEntry(session, initial.Grid, Spawn{Map: initial.Key, X: 3, Y: 4, Facing: 1})
 		if err != nil {
 			t.Fatalf("commission %d entry: %v", commission+1, err)
 		}

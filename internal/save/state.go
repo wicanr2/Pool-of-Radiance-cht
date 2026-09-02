@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	Schema         = "pool-remake-state/6"
+	Schema         = "pool-remake-state/7"
+	FacingSchema   = "pool-remake-state/6"
 	PreviousSchema = "pool-remake-state/5"
 	EarlierSchema  = "pool-remake-state/4"
 	OlderSchema    = "pool-remake-state/3"
@@ -117,8 +118,9 @@ func validateCampaign(campaign Campaign) error {
 	if campaign.X > 15 || campaign.Y > 15 {
 		return fmt.Errorf("Pool campaign position (%d,%d) is outside 16x16 map", campaign.X, campaign.Y)
 	}
-	if campaign.Facing > 6 || campaign.Facing%2 != 0 {
-		return fmt.Errorf("Pool campaign facing %d is not cardinal", campaign.Facing)
+	// 0 北、1 東、2 南、3 西（spec 076）。原版 35 個位置只出現這四個值。
+	if campaign.Facing > 3 {
+		return fmt.Errorf("Pool campaign facing %d is outside 0..3", campaign.Facing)
 	}
 	snapshot := campaign.Session
 	if snapshot.Machine.PC < 0 {
@@ -246,6 +248,9 @@ func Read(path string) (State, error) {
 	if header.Schema == LegacySchema {
 		return readLegacyState(raw)
 	}
+	if header.Schema == FacingSchema {
+		return readFacingSchemaState(raw)
+	}
 	if header.Schema == PreviousSchema || header.Schema == EarlierSchema || header.Schema == OlderSchema || header.Schema == OldestSchema {
 		return readPreviousState(raw)
 	}
@@ -259,6 +264,32 @@ func Read(path string) (State, error) {
 	if err := decoder.Decode(&trailing); err != io.EOF {
 		return State{}, fmt.Errorf("Pool save has trailing JSON")
 	}
+	if err := state.Validate(); err != nil {
+		return State{}, err
+	}
+	return state, nil
+}
+
+// readFacingSchemaState 讀 schema 6。那個版本把隊伍朝向存成共用 engine 的
+// 0/2/4/6，除以 2 就回到原版的 0..3（spec 076）。
+func readFacingSchemaState(raw []byte) (State, error) {
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	var state State
+	if err := decoder.Decode(&state); err != nil {
+		return State{}, fmt.Errorf("decode schema 6 Pool save: %w", err)
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		return State{}, fmt.Errorf("schema 6 Pool save has trailing JSON")
+	}
+	if state.Campaign != nil {
+		if state.Campaign.Facing > 6 || state.Campaign.Facing%2 != 0 {
+			return State{}, fmt.Errorf("schema 6 Pool campaign facing %d is not one of 0, 2, 4, 6", state.Campaign.Facing)
+		}
+		state.Campaign.Facing /= 2
+	}
+	state.Schema = Schema
 	if err := state.Validate(); err != nil {
 		return State{}, err
 	}
@@ -298,6 +329,12 @@ func readPreviousState(raw []byte) (State, error) {
 		if err := migrateCharacterMoney(&state.Party[index]); err != nil {
 			return State{}, fmt.Errorf("legacy party character %d: %w", index, err)
 		}
+	}
+	if state.Campaign != nil {
+		if state.Campaign.Facing > 6 || state.Campaign.Facing%2 != 0 {
+			return State{}, fmt.Errorf("legacy Pool campaign facing %d is not one of 0, 2, 4, 6", state.Campaign.Facing)
+		}
+		state.Campaign.Facing /= 2
 	}
 	state.Schema = Schema
 	if err := state.Validate(); err != nil {

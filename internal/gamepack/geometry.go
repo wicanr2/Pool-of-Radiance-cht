@@ -22,8 +22,9 @@ type MapKey struct {
 	BlockID uint8
 }
 
-// Spawn is a Pool-owned entry into one legacy geometry block. Direction uses
-// the original 0..7 facing values; movement policy remains map/ECL context.
+// Spawn is a Pool-owned entry into one legacy geometry block. Facing keeps the
+// original 0..3 values（0 北、1 東、2 南、3 西，spec 076）; movement policy
+// remains map/ECL context.
 type Spawn struct {
 	Map    MapKey
 	X      uint8
@@ -31,9 +32,13 @@ type Spawn struct {
 	Facing uint8
 }
 
+// Direction 把 Pool 的 0..3 朝向換成共用 engine 牆面查詢用的 0/2/4/6。
+// engine 服務兩個作品，換算要留在 Pool 這一側。
+func (s Spawn) Direction() int { return int(s.Facing&3) * 2 }
+
 // DOSInitialSpawn is the normal new-party entry established by Spec 009.
 func DOSInitialSpawn() Spawn {
-	return Spawn{Map: MapKey{Archive: 3, BlockID: 0}, X: 15, Y: 1, Facing: 6}
+	return Spawn{Map: MapKey{Archive: 3, BlockID: 0}, X: 15, Y: 1, Facing: 3}
 }
 
 // GeometryMap preserves Pool's archive identity and two-byte GEO prefix.

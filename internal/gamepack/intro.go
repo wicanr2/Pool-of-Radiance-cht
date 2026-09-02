@@ -386,7 +386,7 @@ func projectInitialPosition(machine *eclvm.Machine, grid geometry.Grid, position
 	machine.Memory[0xC04B] = uint16(position.X)
 	machine.Memory[0xC04C] = uint16(position.Y)
 	machine.Memory[0xC04D] = uint16(position.Facing)
-	wall, ok := grid.WallWrapped(int(position.X), int(position.Y), int(position.Facing))
+	wall, ok := grid.WallWrapped(int(position.X), int(position.Y), position.Direction())
 	if !ok {
 		wall = 0
 	}
@@ -418,7 +418,7 @@ func RunInitialCellEntry(machine *eclvm.Machine, grid geometry.Grid, position Sp
 	machine.Memory[0xC04B] = uint16(position.X)
 	machine.Memory[0xC04C] = uint16(position.Y)
 	machine.Memory[0xC04D] = uint16(position.Facing)
-	wall, ok := grid.WallWrapped(int(position.X), int(position.Y), int(position.Facing))
+	wall, ok := grid.WallWrapped(int(position.X), int(position.Y), position.Direction())
 	if !ok {
 		wall = 0
 	}

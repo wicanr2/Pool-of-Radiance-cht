@@ -431,7 +431,7 @@ func TestRealNewPhlanControllerCrossesFromECL3ToSlumsECL2(t *testing.T) {
 	}
 	application.eventSession, application.eventMachine = session, session.Machine()
 	application.eclArchive = 3
-	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 0, Y: 4, Facing: 6}
+	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 0, Y: 4, Facing: 3}
 	if err := application.configureEventSession(session); err != nil {
 		t.Fatal(err)
 	}
@@ -739,17 +739,18 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if !application.introDone || application.tourActive || application.tourStep != 33 || application.spawn.X != 0 || application.spawn.Y != 4 || application.spawn.Facing != 3 {
 		t.Fatalf("final done=%v active=%v spawn=%+v step=%d", application.introDone, application.tourActive, application.spawn, application.tourStep)
 	}
+	// 導覽在 (0,4) 結束時朝西（3）。左轉兩次到東（1）才能往 +x 走。
 	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 2 {
 		t.Fatalf("turn facing=%d err=%v", application.spawn.Facing, err)
+	}
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 1 {
+		t.Fatalf("second turn facing=%d err=%v", application.spawn.Facing, err)
 	}
 	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 1 || application.spawn.Y != 4 || application.cellEventPending {
 		t.Fatalf("forward spawn=%+v err=%v", application.spawn, err)
 	}
-	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 1 {
-		t.Fatalf("first north turn facing=%d err=%v", application.spawn.Facing, err)
-	}
 	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 0 {
-		t.Fatalf("second north turn facing=%d err=%v", application.spawn.Facing, err)
+		t.Fatalf("north turn facing=%d err=%v", application.spawn.Facing, err)
 	}
 	if err := press(application, ebiten.KeyArrowUp); err != nil {
 		t.Fatal(err)
@@ -811,21 +812,20 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if application.templeActive || application.cellEventPending || application.cellWaitingMenu || application.eventMachine.Memory[0x6DE1] != 0xFF || application.spawn.X != 1 || application.spawn.Y != 3 || application.spawn.Facing != 0 {
 		t.Fatalf("temple exit active=%v pending=%v waiting=%v flag=%04X spawn=%+v", application.templeActive, application.cellEventPending, application.cellWaitingMenu, application.eventMachine.Memory[0x6DE1], application.spawn)
 	}
-	for turn := 0; turn < 4; turn++ {
+	// 北（0）右轉兩次是南（2）。
+	for turn := 0; turn < 2; turn++ {
 		if err := press(application, ebiten.KeyArrowRight); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if application.spawn.Facing != 4 {
+	if application.spawn.Facing != 2 {
 		t.Fatalf("City Hall south facing=%d", application.spawn.Facing)
 	}
 	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 1 || application.spawn.Y != 4 {
 		t.Fatalf("City Hall south step spawn=%+v err=%v", application.spawn, err)
 	}
-	if err := press(application, ebiten.KeyArrowLeft); err != nil {
-		t.Fatal(err)
-	}
-	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 2 {
+	// 南（2）左轉一次是東（1）。
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 1 {
 		t.Fatalf("City Hall east facing=%d err=%v", application.spawn.Facing, err)
 	}
 	for wantX := uint8(2); wantX <= 3; wantX++ {
@@ -855,13 +855,11 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyArrowUp); err != nil {
 		t.Fatalf("attempt City Hall doorway: %v", err)
 	}
-	if application.spawn.Map != (gamepack.MapKey{Archive: 3, BlockID: 0}) || application.spawn.X != 4 || application.spawn.Y != 4 || application.spawn.Facing != 2 || application.eventSession.CurrentBlockID() != 8 || application.cellEventPending || application.cellWaitingMenu {
+	if application.spawn.Map != (gamepack.MapKey{Archive: 3, BlockID: 0}) || application.spawn.X != 4 || application.spawn.Y != 4 || application.spawn.Facing != 1 || application.eventSession.CurrentBlockID() != 8 || application.cellEventPending || application.cellWaitingMenu {
 		t.Fatalf("City Hall doorway spawn=%+v pending=%v waiting=%v text=%q script_block=%d", application.spawn, application.cellEventPending, application.cellWaitingMenu, application.eventText, application.eventSession.CurrentBlockID())
 	}
-	if err := press(application, ebiten.KeyArrowRight); err != nil {
-		t.Fatal(err)
-	}
-	if err := press(application, ebiten.KeyArrowRight); err != nil || application.spawn.Facing != 4 {
+	// 東（1）右轉一次是南（2）。
+	if err := press(application, ebiten.KeyArrowRight); err != nil || application.spawn.Facing != 2 {
 		t.Fatalf("turn toward clerk corridor facing=%d err=%v", application.spawn.Facing, err)
 	}
 	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 4 || application.spawn.Y != 5 || !application.cellEventPending || !strings.Contains(application.eventText, "OUTSIDE THE CLERK'S OFFICE") {
@@ -870,10 +868,8 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending {
 		t.Fatalf("leave clerk outside boundary pending=%v text=%q err=%v", application.cellEventPending, application.eventText, err)
 	}
-	if err := press(application, ebiten.KeyArrowLeft); err != nil {
-		t.Fatal(err)
-	}
-	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 2 {
+	// 南（2）左轉一次是東（1）。
+	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 1 {
 		t.Fatalf("turn into clerk office facing=%d err=%v", application.spawn.Facing, err)
 	}
 	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 5 || application.spawn.Y != 5 || !application.cellEventPending || !strings.Contains(application.eventText, "COUNCIL CLERK BEGINS LOOKING") {

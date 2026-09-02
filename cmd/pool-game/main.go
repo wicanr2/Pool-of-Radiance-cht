@@ -618,12 +618,12 @@ func (a *app) Update() error {
 				return nil
 			}
 			if a.justPressed(ebiten.KeyArrowLeft) {
-				a.spawn.Facing = uint8((int(a.spawn.Facing) + 7) % 8)
+				a.spawn.Facing = uint8((int(a.spawn.Facing) + 3) % 4)
 				a.statusLine = "Turned left; Pool event dispatch remains pending."
 				return nil
 			}
 			if a.justPressed(ebiten.KeyArrowRight) {
-				a.spawn.Facing = uint8((int(a.spawn.Facing) + 1) % 8)
+				a.spawn.Facing = uint8((int(a.spawn.Facing) + 1) % 4)
 				a.statusLine = "Turned right; Pool event dispatch remains pending."
 				return nil
 			}
@@ -639,21 +639,22 @@ func (a *app) moveInitialDungeonForward() error {
 	if a.initialMap == nil {
 		return fmt.Errorf("Pool initial map is not configured")
 	}
+	// 0 北、1 東、2 南、3 西（spec 076）。
 	dx, dy := 0, 0
 	switch a.spawn.Facing {
 	case 0:
 		dy = -1
-	case 2:
+	case 1:
 		dx = 1
-	case 4:
+	case 2:
 		dy = 1
-	case 6:
+	case 3:
 		dx = -1
 	default:
 		a.statusLine = "Face a cardinal direction before moving forward."
 		return nil
 	}
-	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), int(a.spawn.Facing)) {
+	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
 		a.statusLine = "A wall or locked door blocks the way."
 		return nil
 	}
@@ -1977,7 +1978,7 @@ func wrapASCII(value string, width int) []string {
 }
 
 func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepack.Spawn) ([]graphics.WallStamp, error) {
-	view, err := viewport.TraverseWallViewWrapped(grid, spawn.Facing, int(spawn.X), int(spawn.Y))
+	view, err := viewport.TraverseWallViewWrapped(grid, uint8(spawn.Direction()), int(spawn.X), int(spawn.Y))
 	if err != nil {
 		return nil, err
 	}
