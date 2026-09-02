@@ -260,6 +260,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x10: true, // INPUT STRING（spec 087）
 		0x22: true, // PARTY SURPRISE（spec 085）
 		0x23: true, // SURPRISE（spec 085）
+		0x28: true, // ROB（spec 088；前端要接，接不到隊伍不會掉東西）
 		0x2C: true, // PARLAY（spec 086；前端要接，接不到會靜靜跳過一段交涉）
 		0x2E: true, // DAMAGE（spec 084；前端要接，接不到會靜靜不扣血）
 		0x32: true, // FIND ITEM（spec 085）
