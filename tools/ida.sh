@@ -15,6 +15,11 @@
 #   2. 輸出路徑要落在 /work 裡面；寫到 /work 之外的容器路徑會隨容器一起消失。
 #   3. 平行跑多顆 overlay 時，每個 run 要有自己的目錄。共用一個目錄會讓 IDA 的
 #      資料庫與鎖檔互相踩到，症狀是隨機幾顆「沒有任何訊息、也沒有輸出檔」。
+#   4. span 匯出（ida-export-overlay-span.py）**起點必須落在真的指令邊界上**。
+#      它逐位元組 create_insn，碰到解不開的位元組就丟例外——而例外的症狀與
+#      規則 1 一樣：沒有訊息、沒有輸出檔，只留下沒打包的資料庫。overlay 開頭
+#      常常是資料，從 0 開始就會這樣。先用 ida-export-operand-pattern.py 找出
+#      函式起點（它會回報 function_start），再拿那個位址當 span 的起點。
 set -euo pipefail
 
 IMAGE="${POOL_IDA_IMAGE:-ida-pro-9.4-idapython:locked-v1}"
