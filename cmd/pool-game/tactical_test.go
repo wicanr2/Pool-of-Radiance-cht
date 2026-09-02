@@ -5,6 +5,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
@@ -365,5 +366,32 @@ func TestFinishCombatDoesNotRunAScriptForThePreviewBoard(t *testing.T) {
 	}
 	if a.tacticalPreview || a.tactical != nil {
 		t.Fatal("the tactical screen stayed open after the preview combat ended")
+	}
+}
+
+// spec 063：隊伍的 THAC0 由職業查表得到，AC 與移動用建角寫下的基礎值。
+// 1 級的每個職業 THAC0 都是 20，所以這個測試釘住的是來源，不是數字大小。
+func TestPartyCombatStatsComeFromTheClassTable(t *testing.T) {
+	for _, classID := range []string{"fighter", "cleric", "magic-user", "thief", "fighter-magic-user-thief"} {
+		thac0, armor, movement, err := partyCombatStats(poolsave.Character{Name: "HERO", ClassID: classID})
+		if err != nil {
+			t.Fatalf("%s: %v", classID, err)
+		}
+		if 60-int(thac0) != 20 {
+			t.Fatalf("%s THAC0 %d, want 20 at level 1", classID, 60-int(thac0))
+		}
+		if 60-armor != 10 {
+			t.Fatalf("%s armour class %d, want 10", classID, 60-armor)
+		}
+		if movement != creationBaseMovement {
+			t.Fatalf("%s movement %d, want %d", classID, movement, creationBaseMovement)
+		}
+	}
+}
+
+// 不認得的職業要失敗即關閉，不能默默當成單職業硬解。
+func TestPartyCombatStatsRejectsAnUnknownClass(t *testing.T) {
+	if _, _, _, err := partyCombatStats(poolsave.Character{Name: "HERO", ClassID: "bard"}); err == nil {
+		t.Fatal("an unknown class was given combat stats")
 	}
 }

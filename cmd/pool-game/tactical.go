@@ -6,7 +6,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
@@ -145,7 +147,8 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	drawText(screen, fmt.Sprintf("ROUND %d  MOVER %d  SCORE %d  BUDGET %d (%s)  %s",
 		a.tactical.Round, a.tactical.Mover, a.tactical.Scores[a.tactical.Mover],
 		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 344, foreground)
-	drawText(screen, fmt.Sprintf("PROVISIONAL AI  %s", a.tactical.FoeLog), 70, 358, foreground)
+	drawText(screen, fmt.Sprintf("PROVISIONAL: AI, DEPLOYMENT, PARTY DAMAGE   %s",
+		a.tactical.FoeLog), 70, 358, foreground)
 	hint := "H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY"
 	if a.tactical.Prompt {
 		hint = "Y: FIGHT ON   N: END THE BATTLE"
@@ -236,7 +239,6 @@ type tacticalState struct {
 	THAC0         []uint8
 	ArmorClass    []int
 	Damage        []combat.DamageDice
-	StatsSource   string
 	Round         int
 	Mover         uint8
 	Finished      bool
@@ -391,10 +393,6 @@ func (a *app) enterTacticalPreview() error {
 	state.THAC0 = make([]uint8, size)
 	state.ArmorClass = make([]int, size)
 	state.Damage = make([]combat.DamageDice, size)
-	state.StatsSource = "PARTY PLACEHOLDER"
-	if len(a.combatMonsters) > 0 {
-		state.StatsSource = "MONSTER RECORD / PARTY PLACEHOLDER"
-	}
 	party := 0
 	for index := 1; index < size; index++ {
 		state.BaseMovement[index] = base
@@ -409,6 +407,13 @@ func (a *app) enterTacticalPreview() error {
 			if member.CurrentHP > 0 {
 				state.HitPoints[index] = member.CurrentHP
 			}
+			thac0, armor, movement, err := partyCombatStats(member)
+			if err != nil {
+				return err
+			}
+			state.THAC0[index] = thac0
+			state.ArmorClass[index] = armor
+			state.BaseMovement[index] = movement
 			party++
 			continue
 		}
@@ -560,6 +565,46 @@ func (a *app) foeTurn(state *tacticalState) error {
 	state.FoeLog = fmt.Sprintf("FOE %d CLOSED %d STEPS ON %d", mover, steps, target)
 	state.endTurn(a.rollDice, false)
 	return nil
+}
+
+// 建角寫下的三個基礎值，逐一取自 overlay-16（spec 063）：AC internal 32h
+// （typed 10）、THAC0 internal 28h（typed 20）、基礎移動 0Ch。
+const (
+	creationArmorClassInternal = 0x32
+	creationThac0Internal      = 0x28
+	creationBaseMovement       = 0x0C
+)
+
+// remakeCharacterLevel 是隊伍成員目前一律的等級。原版的升級還沒接，
+// 建角出來的角色就是 1 級，所以查 THAC0 表時全部以 1 級計。
+const remakeCharacterLevel = 1
+
+// partyCombatStats 依 spec 063 由職業算出隊伍成員的基礎戰鬥數值：THAC0 逐個
+// component 查 DS:3C16h 的表取最好的一個，AC 與移動用建角寫下的基礎值。
+//
+// 裝備尚未接進戰鬥，所以這裡回的是「沒有裝備」的角色——原版穿上裝備之後還會
+// 重算 AC，那條鏈（overlay-25 的 sub_281／sub_39F）還沒閉合。
+func partyCombatStats(member poolsave.Character) (thac0Internal uint8, armorInternal int, movement uint8, err error) {
+	components, ok := creation.ClassComponents(member.ClassID)
+	if !ok {
+		return 0, 0, 0, fmt.Errorf("Pool character %q has unknown class %q", member.Name, member.ClassID)
+	}
+	var levels [gamepack.ClassThac0ClassCount]uint8
+	for _, component := range components {
+		index, ok := creation.ComponentClassIndex(component)
+		if !ok {
+			return 0, 0, 0, fmt.Errorf("Pool class component %q has no index", component)
+		}
+		if int(index) >= len(levels) {
+			return 0, 0, 0, fmt.Errorf("Pool class component %q index %d is outside the table", component, index)
+		}
+		levels[index] = remakeCharacterLevel
+	}
+	thac0Internal, err = gamepack.BaseThac0Internal(levels)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	return thac0Internal, creationArmorClassInternal, creationBaseMovement, nil
 }
 
 // rollDice 把 app 的骰子接成回合流程要的形狀。

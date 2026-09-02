@@ -9,8 +9,12 @@
 #   tools/ida.sh binary16 <raw.bin>          以 16-bit 8086、base 0 建 .i64
 #   tools/ida.sh py <i64|bin> <script.py>    跑 tools/ 裡的 IDAPython 腳本
 #
-# 硬規則：headless 的 print 不進 stdout，exit code 也不可信。腳本一律把結果
-# 寫檔，收工前驗檔案存在且非空。
+# 硬規則：
+#   1. headless 的 print 不進 stdout，exit code 也不可信。腳本一律把結果寫檔，
+#      收工前驗檔案存在且非空。
+#   2. 輸出路徑要落在 /work 裡面；寫到 /work 之外的容器路徑會隨容器一起消失。
+#   3. 平行跑多顆 overlay 時，每個 run 要有自己的目錄。共用一個目錄會讓 IDA 的
+#      資料庫與鎖檔互相踩到，症狀是隨機幾顆「沒有任何訊息、也沒有輸出檔」。
 set -euo pipefail
 
 IMAGE="${POOL_IDA_IMAGE:-ida-pro-9.4-idapython:locked-v1}"

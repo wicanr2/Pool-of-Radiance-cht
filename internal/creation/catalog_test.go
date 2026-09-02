@@ -69,3 +69,29 @@ func TestClassDOSCodesMatchPairedOriginalCharacterFiles(t *testing.T) {
 		t.Fatalf("covered %d class identities, want %d", len(seen), len(want))
 	}
 }
+
+// 單職業的 DOS 碼就是 THAC0 表的列索引：牧師 0、戰士 2、法師 5、賊 6。
+func TestComponentClassIndexMatchesTheOriginalCodes(t *testing.T) {
+	for component, want := range map[string]uint8{
+		"cleric": 0, "fighter": 2, "magic-user": 5, "thief": 6,
+	} {
+		got, ok := ComponentClassIndex(component)
+		if !ok || got != want {
+			t.Fatalf("%s index %d (ok %v), want %d", component, got, ok, want)
+		}
+	}
+	if _, ok := ComponentClassIndex("bard"); ok {
+		t.Fatal("an unknown component was given an index")
+	}
+}
+
+// 組合職業要拆成 component，不能拿組合職業自己的碼去查表。
+func TestClassComponentsSplitsAMulticlassID(t *testing.T) {
+	components, ok := ClassComponents("fighter-magic-user-thief")
+	if !ok || len(components) != 3 {
+		t.Fatalf("got %v (ok %v), want three components", components, ok)
+	}
+	if _, ok := ClassComponents("paladin"); ok {
+		t.Fatal("an unknown class ID returned components")
+	}
+}

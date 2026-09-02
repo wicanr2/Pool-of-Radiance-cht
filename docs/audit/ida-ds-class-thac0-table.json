@@ -1,0 +1,15 @@
+{
+  "schema": "pool-mz-ds-range-ida/1",
+  "input": "START.EXE",
+  "sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+  "ida_version": "9.4",
+  "address_space": "entry DS-relative offset mapped by the IDA MZ loader",
+  "ds_selector": 5952,
+  "segment_start": 95232,
+  "segment_name": "dseg",
+  "ds_offset": 15382,
+  "length": 88,
+  "linear_address": 110614,
+  "file_offset": 46022,
+  "bytes": "282828282a2a2a2c2c2c2e282828282a2a2a2c2c2c2e2828292a2b2c2d2e2f30312828292a2b2c2d2e2f30312828292a2b2c2d2e2f303128282828282829292929292828282828292929292c2c282828282a2a2a2c2c2c2e"
+}
