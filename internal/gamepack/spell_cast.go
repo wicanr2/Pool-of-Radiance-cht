@@ -31,7 +31,18 @@ type CastEffect struct {
 	// EffectParameter 是第二個覆寫參數（`[bp+0Eh]`），掛效果時一起傳給
 	// 效果常式（`0A3Dh`）。致病術傳 1，其餘多半是 0；完整語意未閉合。
 	EffectParameter int
+	// RemoveEffects 是要從目標身上拿掉的效果碼。解病術走的是這條路，
+	// 不掛新效果（overlay-22 `225Bh`）。
+	RemoveEffects []uint8
 }
+
+// SlowEffectCode 是緩速術掛上去的效果碼（`2BCDh` 推的 27h）。
+// overlay-15 的名稱鏈沒有它，所以它沒有顯示名稱。
+const SlowEffectCode = 0x27
+
+// CureDiseaseEffectCodes 是解病術會拿掉的效果碼（overlay-22 `225Bh`）。
+// 2Ch 是致病、32h 是木乃伊惡疾、1Fh 是無助，與 overlay-15 的名稱鏈相符。
+var CureDiseaseEffectCodes = [6]uint8{0x22, 0x2b, 0x2c, 0x1f, 0x32, 0x39}
 
 // SleepEffectCode 是催眠術掛上去的效果碼（`15DEh` 推的 35h）。
 // overlay-15 的名稱鏈把它叫 "Funky--"（spec 069）。
@@ -92,6 +103,10 @@ const (
 	SpellIDSleep          = 21 // 1513h
 	SpellIDMirrorImage    = 32 // 1A6Fh
 	SpellIDCauseDisease   = 40 // 231Dh
+	SpellIDCureDisease    = 39 // 2300h → 225Bh
+	SpellIDPrayer         = 42 // 249Dh
+	SpellIDSpiritHammer   = 28 // 19A8h
+	SpellIDSlow           = 55 // 2BC7h → 2724h
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -180,6 +195,10 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	14h Shocking Grasp 14BFh  Roll(1, 8) ＋ 等級
 //	20h Mirror Image   1A6Fh  Roll(1, 4) 推在施法者等級那一格
 //	28h Cause Disease  231Dh  四個覆寫參數 0／1／0／0，只掛效果
+//	27h Cure Disease   2300h  轉呼叫 225Bh：拿掉六個病痛類的效果碼
+//	2Ah Prayer         249Dh  `(哪一邊 << 4) + 等級` 推在等級覆寫那一格
+//	1Ch Spiritual H.   19A8h  四個覆寫參數 0／1／0／0（生出鎚子那段未讀）
+//	37h Slow           2BC7h  推效果碼 27h 走 2724h，範圍法術
 //	15h Sleep          1513h  額度 Roll(4, 4) 生命骰，逐個目標依 HD 扣
 //	2Fh Fireball       262Eh  Roll(等級, 6)
 //	33h Lightning Bolt 2B75h  Roll(等級, 6)
@@ -214,6 +233,24 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `2323h` 推的四個覆寫參數是 0／1／0／0：沒有傷害，
 		// 只把參數表的效果碼掛上去，第二個覆寫參數是 1。
 		effect.EffectParameter = 1
+	case SpellIDPrayer:
+		// `24A7h` 把 `(施法者的 +10Eh << 4) + 施法者等級` 推在等級覆寫那一格。
+		// 隊伍這一邊的 `+10Eh` 是 0，所以對玩家而言就等於施法者等級本身；
+		// 高四位只有怪物施展時才不是零。
+		effect.CasterLevelOverride = casterLevel
+	case SpellIDSpiritHammer:
+		// `19AEh` 的四個覆寫參數是 0／1／0／0。08BCh 之後還有一段
+		// （`19D1h` 起，推效果碼 17h）還沒讀，那是把鎚子生出來的部分。
+		effect.EffectParameter = 1
+	case SpellIDSlow:
+		// `2BCDh` 先推效果碼 27h 再走 `2724h`——那一支會設 `DS:677Eh = 1`，
+		// 是範圍法術。
+		effect.Area, effect.EffectCode = true, SlowEffectCode
+	case SpellIDCureDisease:
+		// `225Bh` 逐個問 `0100h:006Bh(目標, 碼)`，中了就用 `0100h:002Ah`
+		// 拿掉。碼與 overlay-15 的名稱鏈對得上：2Ch 是致病、32h 是
+		// 木乃伊惡疾、1Fh 是無助。
+		effect.RemoveEffects = append([]uint8(nil), CureDiseaseEffectCodes[:]...)
 	case SpellIDMirrorImage:
 		// `1A79h` 把 Roll(1, 4) 推在**第一個**覆寫參數的位置——那一格是
 		// 施法者等級的覆寫（`08BCh` 的 `08F2h`），所以鏡影的數量是借
@@ -239,7 +276,8 @@ func SpellIsImplemented(id uint8) bool {
 	switch id {
 	case SpellIDBless, SpellIDCurse, SpellIDCureLightWound, SpellIDCauseLightWound,
 		SpellIDBurningHands, SpellIDMagicMissile, SpellIDShockingGrasp,
-		SpellIDSleep, SpellIDMirrorImage, SpellIDCauseDisease,
+		SpellIDSleep, SpellIDMirrorImage, SpellIDCauseDisease, SpellIDCureDisease,
+		SpellIDPrayer, SpellIDSpiritHammer, SpellIDSlow,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}

@@ -276,3 +276,53 @@ func TestCurseMatchesBless(t *testing.T) {
 		t.Error("詛咒術應該算已實作")
 	}
 }
+
+// 第三批：祈禱術、靈魂鎚、緩速術、解病術。
+func TestThirdBatchSpellFormulas(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	prayer, err := CastSpell(SpellIDPrayer, parameters, 5, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if prayer.Damage != 0 || prayer.CasterLevelOverride != 5 {
+		t.Errorf("祈禱術應該沒有傷害、等級覆寫是 5，算出 %+v", prayer)
+	}
+	hammer, _ := CastSpell(SpellIDSpiritHammer, parameters, 6, maxRoller{})
+	if hammer.Damage != 0 || hammer.EffectParameter != 1 {
+		t.Errorf("靈魂鎚的第二個覆寫參數應該是 1，算出 %+v", hammer)
+	}
+	slow, _ := CastSpell(SpellIDSlow, parameters, 6, maxRoller{})
+	if !slow.Area || slow.EffectCode != SlowEffectCode {
+		t.Errorf("緩速術應該是範圍、效果碼 %#02x，算出 %+v", SlowEffectCode, slow)
+	}
+	cure, _ := CastSpell(SpellIDCureDisease, parameters, 6, maxRoller{})
+	if len(cure.RemoveEffects) != len(CureDiseaseEffectCodes) {
+		t.Fatalf("解病術要拿掉 %d 個效果碼，算出 %d 個",
+			len(CureDiseaseEffectCodes), len(cure.RemoveEffects))
+	}
+	// 拿掉的碼要與 overlay-15 的名稱鏈對得上：2Ch 致病、32h 木乃伊惡疾、1Fh 無助。
+	for code, want := range map[uint8]string{
+		0x2c: "Cause Disease", 0x32: "Dreaded Mummy Disease", 0x1f: "Helpless",
+	} {
+		found := false
+		for _, value := range cure.RemoveEffects {
+			if value == code {
+				found = true
+			}
+		}
+		if !found {
+			t.Errorf("解病術應該拿掉 %#02x（%s）", code, want)
+			continue
+		}
+		if entry, ok := EffectNameFor(code); !ok || entry.Name != want {
+			t.Errorf("效果碼 %#02x 的名稱應該是 %q，拿到 %+v", code, want, entry)
+		}
+	}
+	// 解病術不掛新效果、也沒有傷害。
+	if cure.Damage != 0 || cure.Heal != 0 {
+		t.Errorf("解病術不該有傷害或治療，算出 %+v", cure)
+	}
+}

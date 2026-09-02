@@ -122,6 +122,22 @@ func (a *app) resolveCast() error {
 	syncTrainedLibraryCharacter(&a.state, *member)
 
 	switch {
+	case len(effect.RemoveEffects) > 0:
+		// 解病術這一類：從施法者身上拿掉那幾個效果碼。原版問的是選中的目標，
+		// remake 還沒有瞄準那一層，所以先對自己。
+		removed := 0
+		for _, code := range effect.RemoveEffects {
+			for index, value := range member.Effects {
+				if value == code {
+					member.Effects = append(member.Effects[:index], member.Effects[index+1:]...)
+					removed++
+					break
+				}
+			}
+		}
+		syncTrainedLibraryCharacter(&a.state, *member)
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured),
+			strings.TrimSpace(member.Name), removed))
 	case effect.SleepBudget > 0:
 		a.applySleep(state, member.Name, option.Label, effect.SleepBudget)
 	case effect.Heal > 0:

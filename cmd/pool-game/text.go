@@ -102,6 +102,7 @@ var messages = map[messageID][2]string{
 	msgCastHint:             {"C cast", "C 施法"},
 	msgCastSlept:            {"%s puts %d foes to sleep.", "%s 催眠了 %d 個敵人。"},
 	msgCastSleptNone:        {"%s puts nobody to sleep.", "%s 沒有催眠到任何人。"},
+	msgCastCured:            {"%s is cured of %d afflictions.", "%s 解掉了 %d 個病痛。"},
 	msgCampNeedsParty:       {"Make camp with a party first.", "先有隊伍才紮得了營。"},
 	msgCampRest:             {"REST", "休息"},
 	msgCampMemorise:         {"MEMORIZE SPELLS", "記憶法術"},
@@ -524,6 +525,7 @@ const (
 	msgCastHint
 	msgCastSlept
 	msgCastSleptNone
+	msgCastCured
 	msgCampNeedsParty
 	msgCampRest
 	msgCampMemorise
