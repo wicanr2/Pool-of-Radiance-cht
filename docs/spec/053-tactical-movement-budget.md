@@ -3,9 +3,9 @@
 狀態：CONFORMED（初始化、effect code 12 accumulator、顯示單位、
 cardinal／diagonal 扣除 primitive、八方向座標 delta、目的格 probe 分派、
 `2758h` raw typed table）；
-DRAFT（effect IDs 的 spell 名、全域 bonus 語意、`2759h/275Ah` 玩家語意、
-post-move reaction 的全部 predicates 與戰術畫面）。
-日期：2026-09-01。
+DRAFT（effect IDs 的 spell 名、全域 bonus 語意、reaction 的個別 predicate
+與戰術畫面）。日期：2026-09-01，2026-09-02 依 spec 057／058 修訂目的格
+probe 的歸屬與 `2758h` 四欄語意。
 
 ## 證據
 
@@ -16,7 +16,7 @@ post-move reaction 的全部 predicates 與戰術畫面）。
 - IDA Pro 9.4、overlay-local file offset、base 0、16-bit metapc：
   `docs/audit/ida-overlay13-move-budget-init.json` 保存 `0123h..018Eh`；
   `docs/audit/ida-overlay13-move-budget-step.json` 保存 entry 5 `0719h..08B6h`；
-  `docs/audit/ida-overlay13-move-probe.json` 保存 entry 6 `08B9h..0C51h`；
+  `docs/audit/ida-overlay13-opportunity-attack.json` 保存 entry 6 `08B9h..0C51h`；
   `docs/audit/ida-overlay08-move-command.json` 保存 `09C3h..0D18h`。
 - `docs/audit/ida-overlay24-effect-dispatch.json` 與
   `docs/audit/ida-overlay24-effect-apply-one.json` 保存 effect dispatcher entry 3；
@@ -67,13 +67,18 @@ post-move reaction 的全部 predicates 與戰術畫面）。
 5. Move handler 只有 runtime `+6 > 1` 才繼續讀方向；函式結束時若 `+6 < 2`，把它寫 0。
    正常走一步沒有修改 initiative `+3`，而是回到同一角色的命令流程。因此 remake
    不得把每次移動錯接成回合結束。
-6. overlay-13 entry 6 檢查目的格並產生兩個 byte。Move handler 先看第一個 byte：
-   非零即把它當索引，經 `DS:6517h` far-pointer table 取得目標並進 attack wrapper；
-   這條分支先於任何 `2758h` threshold 檢查。它是「碰到目標便攻擊」，不是自由穿越。
-7. 第一個 byte 為零時，第二個 byte 乘 4 後查 `[index+2758h]` 的第一 byte；該 threshold
-   `<= runtime +6` 才呼叫 overlay-13 entry 5 提交方向步。threshold 太高會顯示訊息並
-   結束本次 Move。`2758h` 的第一 byte 可精確稱為 entry threshold；其他 consumers
-   會把它乘上 2／3 作路徑成本，並以 `FFh` 判不可用，但完整四欄語意仍 DRAFT。
+6. 目的格的兩個 byte 由 **overlay-32 entry 19（`0CB9h`）** 產生，細節見 spec 058。
+   Move handler 先看第一個 byte：非零即把它當索引，經 `DS:6517h` far-pointer table
+   取得目標並進 attack wrapper；這條分支先於任何 `2758h` threshold 檢查。
+   它是「碰到目標便攻擊」，不是自由穿越。第一個 byte 為零且第二個也為零時，
+   目的格在盤面外，Move handler 詢問玩家是否離開戰鬥（overlay-13 entry 7），
+   那不是「擋住」。overlay-13 entry 6（`08B9h`）做的是離開威脅區的反應攻擊，
+   在門檻通過之後才呼叫。
+7. 第一個 byte 為零、第二個非零時，第二個 byte 乘 4 後查 `[index+2758h]` 的第一 byte；
+   該 threshold `<= runtime +6` 才呼叫 overlay-13 entry 5 提交方向步。threshold 太高會
+   顯示訊息並結束本次 Move。`2758h` 的第一 byte 是 entry threshold；同一筆的第二、
+   第三 byte 是直線追蹤用的 Level 與 Block（spec 057），第四 byte 語意仍未定。
+   表共 32 筆，索引 0 與方向表尾端共用儲存空間。
 8. entry threshold 只負責准入；真正提交時仍由 entry 5 扣 cardinal 2／diagonal 3。
    不得自行把 threshold 再扣一次，也不得以 2／3 成本取代 threshold gate。
 9. entry 5 由 direction 查 signed-byte delta：

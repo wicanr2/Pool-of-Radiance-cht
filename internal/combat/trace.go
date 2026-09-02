@@ -100,11 +100,16 @@ func (walker *StepWalker) Step() bool {
 	return moved
 }
 
-// TerrainRule 是 DS:2758h 地形表的一筆，只取原版真正讀到的兩個欄位
-// （折疊常數 2759h 與 275Ah）。
+// TerrainRule 是 DS:2758h 地形表的一筆，四個欄位全數保留。
+//
+// EntryThreshold（+0）是 overlay-08 Move handler 的准入門檻，交給
+// ResolveMovementProbe 與剩餘步數比較（spec 053）；Level（+1）與 Block（+2）
+// 是 overlay-31 0419h 直線追蹤讀的兩欄（spec 057）；Field3（+3）的語意未定。
 type TerrainRule struct {
-	Level uint8 // +1
-	Block uint8 // +2
+	EntryThreshold uint8 // +0
+	Level          uint8 // +1
+	Block          uint8 // +2
+	Field3         uint8 // +3
 }
 
 // TacticalGrid 是 overlay-31 `0419h` 收到的地圖：`+6` 非 0 時整段地形判定被跳過，
