@@ -162,6 +162,14 @@ func drawEquipment(screen *ebiten.Image, a *app, background, foreground, accent 
 			}
 		}
 	}
+	// AC 與腳程同理：裝了盔甲卻看不到數字動，就分不出「規則沒接上」與
+	// 「這件盔甲本來就沒比較好」。同一行放得下，就不另外佔一行——下面
+	// 那行是 footer，中間沒有空間。
+	if armor, movement, err := a.memberDefenceStats(member, creationArmorClassInternal, creationBaseMovement); err != nil {
+		line = err.Error()
+	} else {
+		line += fmt.Sprintf(a.text(msgEquipmentDefence), 60-armor, movement)
+	}
 	drawText(screen, line, equipmentTextLeft, 336, accent)
 
 	footer := a.text(msgEquipmentFooter)

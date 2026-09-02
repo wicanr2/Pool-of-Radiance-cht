@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -144,5 +146,65 @@ func TestEquipmentStaysClosedWithAnEmptyParty(t *testing.T) {
 	}
 	if a.statusLine == "" {
 		t.Fatal("nothing explained why it did not open")
+	}
+}
+
+// 空手的角色也要吃到敏捷的 AC 調整。原版的重算不看物品鏈就先把敏捷加進去，
+// 提早返回會讓「還沒買裝備」的隊伍平白差 4 點 AC。
+func TestDexterityReachesTheArmourClassWithoutItems(t *testing.T) {
+	a := newEquipmentApp(t)
+	member := poolsave.Character{Name: "HERO", ClassID: "fighter",
+		Abilities: [6]int{18, 10, 10, 18, 10, 10}, ExceptionalStrength: 100}
+	armor, movement, err := a.memberDefenceStats(member, creationArmorClassInternal, creationBaseMovement)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if armor != 54 {
+		t.Fatalf("internal AC %d, want 54（敏捷 18 的 +4）", armor)
+	}
+	if movement != creationBaseMovement {
+		t.Fatalf("movement %d, want %d", movement, creationBaseMovement)
+	}
+}
+
+// 穿上原版的板甲之後 AC 與腳程都要動。兩件事共用同一條物品鏈，只接一半
+// 會出現「AC 算了裝備、腳程沒算」這種只在特定隊伍才看得出來的偏差。
+func TestReadiedArmourDrivesTheDefenceStats(t *testing.T) {
+	a := newEquipmentApp(t)
+	raw, err := os.ReadFile(filepath.Join("..", "..", "workplace", "oracle", "dos", "chrdatd2.itm"))
+	if err != nil {
+		t.Skipf("original item records unavailable: %v", err)
+	}
+	var plate []byte
+	for offset := 0; offset+63 <= len(raw); offset += 63 {
+		item := raw[offset : offset+63]
+		entry, err := a.itemTypes.Entry(item[gamepack.ItemTypeOffset])
+		if err != nil || entry.Category() != gamepack.ItemCategoryArmour {
+			continue
+		}
+		if entry.Raw[gamepack.ItemTypeArmourClassOffset]&0x80 != 0 {
+			plate = append([]byte(nil), item...)
+			break
+		}
+	}
+	if plate == nil {
+		t.Fatal("chrdatd2 has no armour item")
+	}
+	plate[gamepack.ItemReadiedOffset] = 1
+	member := poolsave.Character{Name: "HERO", ClassID: "fighter",
+		Abilities: [6]int{18, 10, 10, 18, 10, 10}, ExceptionalStrength: 100,
+		Inventory: []poolsave.Item{{Name: "PLATE MAIL +2", Raw: plate}}}
+
+	armor, movement, err := a.memberDefenceStats(member, creationArmorClassInternal, creationBaseMovement)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// 板甲 +2 是 39h＋2 ＝ 59，加敏捷 4 ＝ 63，檯面上是 AC -3。
+	if armor != 63 {
+		t.Fatalf("internal AC %d, want 63", armor)
+	}
+	// 重 450 又有加值：spec 079 的 6 加 3。
+	if movement != 9 {
+		t.Fatalf("movement %d, want 9", movement)
 	}
 }

@@ -74,6 +74,7 @@ var messages = map[messageID][2]string{
 	msgEquipmentUnreadyable: {"That item cannot be readied.", "這件東西不能裝備。"},
 	msgEquipmentUnarmed:     {"Unarmed: the original leaves the damage dice alone.", "徒手：原版此時不動傷害骰。"},
 	msgEquipmentStats:       {"Readied: THAC0 %d, damage %dd%d%+d", "已裝備：THAC0 %d，傷害 %dd%d%+d"},
+	msgEquipmentDefence:     {"; armour class %d, movement %d", "；護甲 %d，移動 %d"},
 	msgEquipmentFooter:      {"TAB switch character  UP/DOWN choose  ENTER ready  I/ESC close", "TAB 換人　上下選物品　ENTER 裝備／卸下　I／ESC 關閉"},
 	// 標題畫面的按鍵提示，說明書沒有，鍵名保持原文。
 	msgTitleHint: {"ENTER / SPACE", "ENTER／空白鍵"},
@@ -445,6 +446,7 @@ const (
 	msgEquipmentUnreadyable
 	msgEquipmentUnarmed
 	msgEquipmentStats
+	msgEquipmentDefence
 	msgEquipmentFooter
 )
 

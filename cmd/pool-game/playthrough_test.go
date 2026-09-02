@@ -300,9 +300,8 @@ func TestPassiveCombatTerminates(t *testing.T) {
 // 以及怪物只肯往方向表要的那一格走、撞到地形就原地不動。任何一個回來，
 // 這場戰鬥就會變成永遠打不完。
 //
-// **不斷言誰贏**：隊伍的戰鬥數值目前還是建角基礎值，裝備沒接進戰鬥
-//（`partyCombatStats` 回的是「沒有裝備」的角色），勝負要等那條鏈接上
-// 才有意義。
+// **不斷言誰贏**：這一隊是空手的一級戰士，勝負取決於怪物強度，不是規則
+// 對不對。AC 那條鏈有沒有接上另外驗（見底下對 ArmorClass 的斷言）。
 func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
@@ -361,6 +360,16 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 	}
 	if application.tactical == nil {
 		t.Fatalf("tactical state absent: %q", application.statusLine)
+	}
+	// 敏捷 16 的 AC 調整是 +2，內部值 52。規則寫在 gamepack 卻沒接進戰鬥時，
+	// 這裡會停在建角的 50——而戰鬥報表上看不出差別，只會讓隊伍挨打。
+	for index := 1; index <= len(application.state.Party) && index < len(application.tactical.ArmorClass); index++ {
+		if !application.tactical.Friendly[index] {
+			continue
+		}
+		if got := application.tactical.ArmorClass[index]; got != 52 {
+			t.Fatalf("party slot %d internal AC %d, want 52", index, got)
+		}
 	}
 	foesAtStart := 0
 	for index := 1; index < len(application.tactical.Roster); index++ {

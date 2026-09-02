@@ -431,6 +431,12 @@ func (a *app) enterTacticalPreview() error {
 				return err
 			}
 			state.THAC0[index] = thac0
+			// 穿在身上的東西改 AC 與腳程（spec 079／080）：`partyCombatStats`
+			// 回的是建角值，那是「脫光了」的角色。
+			armor, movement, err = a.memberDefenceStats(member, armor, movement)
+			if err != nil {
+				return err
+			}
 			state.ArmorClass[index] = armor
 			state.BaseMovement[index] = movement
 			// 手上有裝備好的武器時，THAC0 與傷害改由武器決定（spec 065）。
@@ -696,6 +702,33 @@ func partyCombatStats(member poolsave.Character) (thac0Internal uint8, armorInte
 		return 0, 0, 0, err
 	}
 	return thac0Internal, creationArmorClassInternal, creationBaseMovement, nil
+}
+
+// memberDefenceStats 把角色身上的東西算進 AC 與移動力（spec 079／080）。
+// 兩者共用同一條物品鏈，原版也是在同一支 overlay-25 `0C17h` 裡一起算的，
+// 分開走會出現「AC 算了裝備、腳程沒算」這種只在特定隊伍才看得出來的偏差。
+func (a *app) memberDefenceStats(member poolsave.Character, baseArmor int, baseMovement uint8) (int, uint8, error) {
+	// 沒有任何物品也要走完：敏捷的 AC 調整與硬幣的重量都不看物品鏈，
+	// 提早返回會讓空手的角色少掉敏捷那一項。
+	items := make([][]byte, 0, len(member.Inventory))
+	for _, item := range member.Inventory {
+		items = append(items, item.Raw)
+	}
+	armour, err := gamepack.ArmourClassFor(baseArmor,
+		member.Abilities[dexterityAbilityIndex], items, a.itemTypes)
+	if err != nil {
+		return 0, 0, fmt.Errorf("Pool character %q armour class: %w", member.Name, err)
+	}
+	carried, err := gamepack.CarriedWeight(items, member.Money)
+	if err != nil {
+		return 0, 0, fmt.Errorf("Pool character %q carried weight: %w", member.Name, err)
+	}
+	movement, err := gamepack.MovementRateFor(int(baseMovement), member.Abilities[0],
+		member.ExceptionalStrength, carried, items, a.itemTypes)
+	if err != nil {
+		return 0, 0, fmt.Errorf("Pool character %q movement: %w", member.Name, err)
+	}
+	return armour.Internal, uint8(movement), nil
 }
 
 // 物品記錄裡本規格用到的三個欄位（spec 033／035／063）。
