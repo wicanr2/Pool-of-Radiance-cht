@@ -89,6 +89,11 @@
       "note": "港務長。"
     },
     {
+      "source": "'COME, LET THERE BE GAMES FOR OUR GUESTS.' HE LEADS YOU TO THE CAMP'S CENTRAL CLEARING.",
+      "text": "「來，為我們的客人辦幾場競技。」他領著你們走向營地中央的空地。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "'DO YOU SEEK A PARTNER FOR YOUR ADVENTURING?'",
       "text": "「你們是來找冒險同伴的嗎？」",
       "note": "訓練所與競技場。"
@@ -209,6 +214,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "'HERE YOU MAY REST.'",
+      "text": "「各位可以在這裡歇息。」",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "'HERE YOU SEE ONE OF OUR FINE WATCH TOWERS WHICH WERE BUILT BY THE FINEST STONE MASONS IN THE LAND.'",
       "text": "「各位看到的是我們出色的瞭望塔之一，由全國最好的石匠所建。」",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -252,6 +262,11 @@
       "source": "'I AM SORRY,' THE MAN SAYS, 'I CANNOT HELP YOU.'",
       "text": "那人說：「抱歉，我幫不上忙。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I AND MY PEOPLE THANK YOU. AND KNOW THAT WE HAVE HONOR. YOU SHALL BE RICHLY REWARDED FOR YOUR GENEROUS AID.'",
+      "text": "「我和我的族人感謝各位。請相信我們知恩圖報，你們的慷慨相助必有厚報。」",
+      "note": "遊牧民營地。"
     },
     {
       "source": "'I DON'T LIKE YOUR TONE.'",
@@ -384,6 +399,16 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "'MUTILATING SCUM! WE WILL DIE BEFORE WE LET YOU TWIST US AS YOU HAVE OUR OTHER PEOPLE! BUT YOU WILL DIE FIRST!'",
+      "text": "「殘害同類的渣滓！我們寧死也不讓你們像對付其他族人那樣扭曲我們！不過你們得先死！」",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "'MY SCOUTS HAVE SEEN EVIDENCE OF A LARGE BAND OF KOBOLDS IN THE VICINITY. I WORRY ABOUT MY PEOPLE. IF YOU WOULD STAY UNTIL THEY PASS I WOULD APPRECIATE IT.",
+      "text": "「我的斥候在附近發現大批小妖魔的行跡。我擔心族人的安危。各位若肯留到牠們離開，我會很感激。",
+      "note": "遊牧民營地。接下一段。"
+    },
+    {
       "source": "'NORTH WALL.  RI  T FRONT GLAS . SE'",
       "text": "「北牆。右　前　玻璃　。看」",
       "note": "牆上被刮花的訊息，原版就是殘缺的，譯文照樣留空。"
@@ -454,6 +479,11 @@
       "note": "紡織行與巨人占據一帶的事件。接下一段。"
     },
     {
+      "source": "'PLEASE THINK ABOUT IT OVERNIGHT.' AFTER A WHILE THE FESTIVITIES END AND YOU ARE ESCORTED TO YOUR LODGING.",
+      "text": "「請各位考慮一晚。」過了一陣子慶典散了，你們被送回住處。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "'PLEASURE DOING BUSINESS WITH YOU. HERE'S YOUR WAGON.'",
       "text": "「跟你們做生意真愉快。貨車給你們。」",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -462,6 +492,11 @@
       "source": "'PUNY CREATURES,' HE BELLOWS.'I ALLOWED YOU TO TOY WITH MY MINIONS, BUT NOW I'LL CRUSH THE LIFE FROM YOUR LIMBS.'",
       "text": "「渺小的東西。」他咆哮，「我讓你們玩弄我的爪牙，現在該把你們的命從四肢裡捏出來了。」",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "'SINCE YOU ARE NOT THE SERVANTS OF YARASH, WE WILL NOT KILL YOU. THE ENEMY OF MY ENEMY IS NOT MY ENEMY!'",
+      "text": "「既然你們不是亞拉斯的走狗，我們就不殺你們。敵人的敵人不是我的敵人！」",
+      "note": "野外。"
     },
     {
       "source": "'SKULLCRUSHER WAS HERE' IS CARVED INTO THE NORTH WALL.",
@@ -567,6 +602,11 @@
       "source": "'THEN DIE YOU SCUM,' THE MAN SPITS.",
       "text": "「那就去死吧，渣滓。」那人啐道。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "'THEN YOU MUST LEAVE US,' HE RESPONDS WITH AS MUCH DIGNITY AS HE CAN MUSTER. DO YOU LEAVE?",
+      "text": "「那你們得離開我們了。」他盡可能保住體面地回話。要走嗎？",
+      "note": "遊牧民營地。"
     },
     {
       "source": "'THERE IS A FINE",
@@ -814,6 +854,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "'YOU MAY WANDER AS YOU WILL OR YOU MAY STAY HERE AND REST AND STUDY. FORGIVE ME, I MUST SEE TO MY PEOPLE.' HE LEAVES.",
+      "text": "「各位可以隨意走動，也可以留在這裡歇息、鑽研。恕我失陪，我得去照看族人。」說完他便離開了。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "'YOU NO HURT THEM. THEM MY BUDDIES!' THEY ARGUE FOR A LITTLE BIT AND THEN ONE SAYS, 'HEY, WHAT WE FIGHTING FOR? IT'S ALL FAULT OF THEM!' 'YEH!' THEY TURN AND ATTACK YOU.",
       "text": "「你不准傷他們。他們是我朋友！」牠們爭了一會兒，其中一個說：「喂，我們吵什麼？都是他們害的！」「對啊！」牠們轉身攻向你們。",
       "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
@@ -879,6 +924,11 @@
       "note": "紡織行與巨人占據一帶的事件。片段。"
     },
     {
+      "source": ". WILL YOU JOIN US?'",
+      "text": "。要不要加入我們？」",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "... THE GANG IS OPERATING FROM THE CATACOMBS BY THE WELL...",
       "text": "……那幫人以井邊的地下墓穴為據點……",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -919,6 +969,11 @@
       "note": "同上。"
     },
     {
+      "source": "?",
+      "text": "？",
+      "note": "介面提示。"
+    },
+    {
       "source": "A",
       "text": "甲",
       "note": "選項編號，原版以 A～D 標示四個小箱。"
@@ -942,6 +997,11 @@
       "source": "A BUGBEAR WALKS UP TO YOU. 'OKAY, LETS HAVE THE 15 GOLD.' DO YOU PAY HIM?",
       "text": "一隻熊地精走上前來：「好啦，十五枚金幣拿來。」你們要付嗎？",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A CROWD OF SCRUFFY LOOKING NOMADS GATHERS AS HIDDEN SENTRIES GIVE WORD OF YOUR APPROACH. THERE ARE ABOUT AN EQUAL NUMBER OF MEN AND WOMEN.",
+      "text": "暗處的哨兵通報了你們的到來，一群衣衫襤褸的遊牧民圍了過來，男女人數相當。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "A DECAYED BUILDING LEFT TO THE RATS.",
@@ -989,6 +1049,11 @@
       "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
+      "source": "A GROUP OF NOMADS SPOT YOU. THEY SHOUT AND CHARGE. AS THEY COME CLOSER THEIR NUMBERS SWELL WITH ARRIVALS.",
+      "text": "一群遊牧民發現了你們，喊著衝上來。愈靠近，趕來的人愈多。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "A GUARD COMES BY AND SAYS 'IF YOU WISH TO CAMP, GO TO THE MERCHANTS AREA!'",
       "text": "一名守衛走過來說：「要紮營就去商人區！」",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -997,6 +1062,16 @@
       "source": "A HEALTHY-LOOKING GOBLIN IS INSTRUCTING A GROUP OF YOUNG WARRIORS.  HE SMILES AND SAYS, 'I SEE OUR OPPONENTS HAVE ARRIVED.'",
       "text": "一隻壯碩的哥布林正在指導一群年輕戰士。牠笑著說：「看來對手到了。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A HORDE OF KOBOLDS IS ATTACKING THE CAMP.",
+      "text": "一大群小妖魔正在攻擊營地。",
+      "note": "遊牧民營地。"
+    },
+    {
+      "source": "A HORDE OF KOBOLDS IS ATTACKING THE CAMP. A LONE SENTRY CHARGES BUT IS QUICKLY CUT DOWN. A FAMILY EMERGES FROM A HUT AND CHARGES THE KOBOLDS.",
+      "text": "一大群小妖魔正在攻擊營地。一名哨兵獨自衝上去，很快就被砍倒。一家人從帳篷裡出來，迎頭撲向小妖魔。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "A LARGE GROUP OF MEN LED BY A DWARF RUNS FOWARD TO ATTACK",
@@ -1024,6 +1099,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "A LETTER FROM THE BOSS, TELLING YARASH TO JOIN OR DIE. (ENTRY 33)",
+      "text": "一封來自首領的信，要亞拉斯歸順，否則就死。（線索報導 33）",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "A LOUD COMMOTION RISES FROM THE COURTYARD.  BASHING OPEN THE DOOR, A LARGE FORCE OF ORCS AND HOBGOBLINS RUSHES YOU.",
       "text": "中庭傳來一陣喧鬧。門被撞開，一大群半獸人與大哥布林朝你們衝來。",
       "note": "索卡爾城堡的事件與敘述。"
@@ -1049,19 +1129,29 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "A MESSAGE TO THE BUCCANEERS OFFERING A BOUNTY FOR A REAL SAHUAGIN. (ENTRY 27)",
+      "text": "一則給海盜的訊息，懸賞一隻真正的 Sahuagin。（線索報導 27）",
+      "note": "亞拉斯的金字塔。Sahuagin 依說明書線索 27 保留原文。"
+    },
+    {
       "source": "A MIST RISES AND THICKENS INTO NUMEROUS SHADOWING FIGURES.  FROM THESE FIGURES RISES A LOW MOANING.",
       "text": "霧氣升起，凝成無數暗影般的身形，其間傳出低沉的呻吟。",
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "A MUSCULAR MAN LOCKED IN CHAINS LIES HERE. NEAR HIM IS A PAGE THAT YOU PLACE IN YOUR JOURNAL UNDER ENTRY 47.",
-      "text": "一個被鎖鏈綁著的壯漢躺在這裡。他旁邊有一頁紙，你們把它放進手札第 47 條。",
+      "text": "一個被鎖鏈綁著的壯漢躺在這裡。他旁邊有一頁紙，你們把它放進手冊，成為線索報導 47。",
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "A NET ENTANGLES YOU.",
       "text": "一張網把你們纏住了。",
       "note": "遭遇敘述。"
+    },
+    {
+      "source": "A NOTE TO A TRAPPER ABOUT KOBOLDS AND HOBGOBLINS. (ENTRY 40)",
+      "text": "一張給獵人的字條，講的是小妖魔與大哥布林。（線索報導 40）",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "A PACK OF HUNGRY GHOULS LOPES TOWARD YOU.",
@@ -1179,6 +1269,11 @@
       "note": "舊繩索公會的圖書室。"
     },
     {
+      "source": "A SWARM OF STIRGES SWOOPS DOWN AND ATTACKS THE PARTY!",
+      "text": "一群吸血鳥俯衝下來攻擊隊伍！",
+      "note": "野外。"
+    },
+    {
       "source": "A THICK CARPET OF FUNGUS COVERS THE FLOOR OF THIS ROOM.",
       "text": "這房間的地板上鋪著一層厚厚的真菌。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -1212,6 +1307,11 @@
       "source": "A VOLLEY OF BOULDERS ARE THROWN AT YOU...",
       "text": "一陣巨石朝你們砸來……",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "A WARNING TO AN AGENT ABOUT THE DANGERS IN THE MOUNTAINS TO THE NORTHWEST. (ENTRY 56)",
+      "text": "一封給某名密探的警告，講的是西北山區的危險。（線索報導 56）",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "A WEAPON OF GREAT POWER IS TO BE AUCTIONED TO OUR ENEMIES. THIS AUCTION IS TO BE HELD IN PODAL PLAZA.  FIND OUT WHAT THE WEAPON IS AND RETURN.'",
@@ -1257,6 +1357,11 @@
       "source": "ADVANCE CAUTIOUSLY",
       "text": "小心前進",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "ADVANCING ON YOU IS A LARGE BAND OF KOBOLDS WITH BLOOD LUST IN THEIR EYES.",
+      "text": "一大群小妖魔朝你們逼近，眼裡滿是嗜血。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "AFTER DEFEATING THE FIRST WAVE OF BUCCANEERS,  YOU SEE ANOTHER WAVE FORMING IN THE DISTANCE.  WITH A LOUD ROAR THEY ATTACK YOU IN FULL FORCE.",
@@ -1329,6 +1434,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "ALL THE NOMADS HOLD THEIR SWORDS AT THE READY, WATCHING YOU WARILY. MORE NOMADS APPEAR FROM OUT OF TENTS IN THE CAMP.",
+      "text": "所有遊牧民都按著刀戒備地盯著你們，營地的帳篷裡還不斷有人出來。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "AMBUSH AND KILL HIM",
       "text": "伏擊殺了他",
       "note": "遭遇選單。"
@@ -1352,6 +1462,11 @@
       "source": "AMID THEIR PROTESTS YOU TIE THEM UP. THESE PROTESTS DIMINSH IN VOLUME AS YOU GAG THE WOMEN AND HIDE THEM IN A CORNER.",
       "text": "你們在她們的抗議聲中把人綁了起來。塞住嘴、藏進角落之後，抗議聲也小了下去。",
       "note": "紡織行與巨人占據一帶的事件。原版把 DIMINISH 拼成 DIMINSH。"
+    },
+    {
+      "source": "AMONG THE PAPERS ON THE DESK YOU FIND THE FOLLOWING AND SLIP THEM INTO YOUR JOURNAL:",
+      "text": "你們在桌上的文件裡找到下面這些，把它們夾進手冊：",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "AN ABANDONED SHOP. BROKEN SHELVES ARE ALL THAT REMAIN.",
@@ -1384,6 +1499,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "AN ANCIENT MAGE LOOKS UP FROM HIS STUDIES, 'AH, GOOD, I NEED MORE SPECIMENS AS CONTROLS.' HE TURNS TO HIS MUTATED GUARDS, 'SUBDUE THEM!'",
+      "text": "一名年邁的法師從研究中抬起頭：「啊，正好，我還缺幾個對照組的樣本。」他轉向那些變異的守衛：「拿下他們！」",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "AN AWFUL STENCH IS COMING FROM THE WEST.",
+      "text": "西邊飄來一陣惡臭。",
+      "note": "野外。"
+    },
+    {
       "source": "AN OFFICER LOOKS AT YOU, 'WHAT ARE YOU DOING HERE?'",
       "text": "一名軍官看向你們：「你們在這裡做什麼？」",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -1397,6 +1522,11 @@
       "source": "AN UNDEAD PATROL CONFRONTS YOU.  DO YOU GIVE THE PASSWORD?",
       "text": "一支不死怪物的巡邏隊攔住你們。要說出通關密語嗎？",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "AN UNSENT REPLY TO THIS LETTER. (ENTRY 49)",
+      "text": "這封信一封沒寄出的回信。（線索報導 49）",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "AND DEMAND, 'WHO ARE YOU?'",
@@ -1434,6 +1564,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "ANOTHER PIPE, RUNNING FROM THE WALL ACROSS AND TO YOUR RIGHT, PUMPS IN STREAMS OF THE FOUL LIQUID. ALL ABOUT THE ROOM ARE VALVES, GAUGES, PETCOCKS, AND PIPES.",
+      "text": "另一條管線從牆邊橫過來、通向你們右手邊，不斷灌入那種惡臭的液體。屋裡到處是閥門、量表、旋塞與管路。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "ANOTHER WAVE OF MEN ATTACK YOU.",
       "text": "又一波人攻了上來。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -1462,6 +1597,11 @@
       "source": "AS HE COMES THROUGH THE DOOR YOU SLIT HIS THROAT. THE BODY IS DRAGGED INTO A CORNER.",
       "text": "他一走進門，喉嚨就被你們割開。屍體被拖進角落。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS NIGHT FALLS, THE NOMADS BUILD A HUGE CAMPFIRE IN THE CENTER OF THE CAMP. THE WHOLE TRIBE GATHERS FOR THE FEAST. AFTER THE FEAST THERE IS DANCING AND WILD CELEBRATIONS.",
+      "text": "入夜後，遊牧民在營地中央升起一堆大火，全族聚來赴宴。宴罷是舞蹈與盡情的慶祝。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "AS SOON AS YOU OPEN THE GATE THE ANIMALS INSIDE CHARGE OUT.  THEY STAMPEDE ACROSS THE COMPOUND.",
@@ -1504,6 +1644,11 @@
       "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
+      "source": "AS YOU ARE POKING AROUND IN THE VATS, A PAIN CRAZED LIZARD MAN SURFACES AND ATTACKS YOU! TWO OTHERS QUICKLY JOIN HIM FROM OTHER VATS.",
+      "text": "你們在缸裡翻找時，一名痛得發狂的蜥蜴人破水而出撲向你們！另外兩缸也隨即冒出兩名。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "AS YOU ATTEMPT TO DEACTIVATE THE TRAP YOU SET IT OFF.  A POSIONED NEEDLE SHOOTS OUT AND PLUNGES INTO A PARTY MEMBER.",
       "text": "你們試著解除陷阱卻反而觸發了它，一根毒針射出，扎進一名隊員身上。",
       "note": "柯威大樓的盜賊據點。原版此處把 POISONED 拼成 POSIONED。"
@@ -1527,6 +1672,11 @@
       "source": "AS YOU BREAK THROUGH THE DOOR INTO A WELL FITTED APARTMENT, TWO GIANTS COME LUMBERING UP TO YOU. YOU TURN TO FACE THEM.",
       "text": "你們破門進入一間陳設講究的居室，兩名巨人笨重地走了過來。你們轉身迎戰。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS YOU CAREFULLY SEARCH THE ROOM YOU FEEL A STRANGE TINGLE AS YOU GET CLOSE TO A BARE AREA.",
+      "text": "你們仔細搜索房間，靠近一塊空無一物的地方時，感到一陣奇異的刺麻。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "AS YOU DEFEAT THE GUARDS SOME MORE MEN RUN IN AND ATTACK.",
@@ -1574,6 +1724,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "AS YOU ENTER THE ROOM YOU SEE FOUR KOBOLDS CHAINED TO THE WALL.  ONE OF THEM SAYS 'RELEASE US, OR THE LIZARD MEN WILL EAT US!'  WHAT WILL YOU DO?",
+      "text": "你們一進屋，看見四隻小妖魔被鎖鏈拴在牆上。其中一隻說：「放了我們，不然蜥蜴人會把我們吃掉！」你們要怎麼做？",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "AS YOU ENTER THE ROOM YOU SEE SIX ORCS LED BY A LARGE OGRE.  THEY LUNGE FOWARD AND ATTACK.",
       "text": "你們一進房就看到六隻半獸人，由一隻高大的食人鬼帶領。牠們撲上前來攻擊。",
       "note": "邪惡神廟（Temple of Bane）一帶。原版把 FORWARD 拼成 FOWARD。"
@@ -1599,6 +1754,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "AS YOU FREE THEM THEY TELL YOU ALL ABOUT WHAT YARASH IS DOING AND HOW YOU CAN GET HELP FROM THEIR TRIBE IN THE SWAMP. YOU COPY ALL THEY SAY AS ENTRY 35 OF YOUR JOURNAL.",
+      "text": "你們鬆開牠們的鎖鏈，牠們便把亞拉斯的所作所為，以及如何向沼澤裡的族人求援，一五一十說了出來。你們把這些全抄進手冊，成為線索報導 35。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "AS YOU HIKE THROUGH THE MOUNTAINS YOU SEE A LARGE CAVE.",
       "text": "你們在山間跋涉時看到一個大洞穴。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -1609,13 +1769,18 @@
       "note": "野外與漢提爾前哨一帶的事件。原版把 FLIES 拼成 FLYS。"
     },
     {
+      "source": "AS YOU LEAVE THE SORCERER'S PYRAMID BEHIND YOU CAN SEE THAT THE LAND IS ALREADY BEGINNING TO RECOVER FROM THE ALCHEMICAL POLLUTION CAUSED BY THE PYRAMID.",
+      "text": "把巫師的金字塔拋在身後時，你們看得出這片土地已經開始從它造成的煉金污染中復原。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "AS YOU MENTION POLITICS THE COMMANDANT SAYS 'I'VE HEARD THAT PHLAN'S TOWN COUNCIL IS CORRUPT, SPECIFICALLY ULRICH EBERHARD.  IS THIS TRUE?",
       "text": "你們一提到政治，指揮官便說：「我聽說菲蘭城的市議會貪腐，尤其是亞爾瑞屈·艾伯哈德。是真的嗎？",
       "note": "野外與漢提爾前哨一帶的事件。接下一段。"
     },
     {
       "source": "AS YOU MENTION THE POOL OF RADIANCE THE COMMANDANT TELLS YOU A STORY ABOUT THAT VERY POOL.  YOU ENJOY THE STORY AND COPY IT INTO YOUR JOURNAL UNDER ENTRY 46.",
-      "text": "你們一提到光芒之池，指揮官便說了一個關於那池子的故事。你們聽得津津有味，把它抄進手札第 46 條。",
+      "text": "你們一提到光芒之池，指揮官便說了一個關於那池子的故事。你們聽得津津有味，把它抄進手冊，成為線索報導 46。",
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
@@ -1627,6 +1792,16 @@
       "source": "AS YOU MOVE THROUGH THE GARDEN",
       "text": "你們穿過花園時",
       "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "AS YOU MOVE THROUGH THE ROOM THERE IS A FLASH AND YOU SUDDENLY FIND YOURSELF ELSEWHERE.",
+      "text": "你們走過房間時眼前一閃，人忽然到了別的地方。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "AS YOU MOVE THROUGH THE ROOM THERE IS A FLASH, AND YOU SUDDENLY FIND YOURSELVES ELSEWHERE.",
+      "text": "你們走過房間時眼前一閃，一行人忽然到了別的地方。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "AS YOU MOVE YOU OVERHEAR SOME",
@@ -1724,6 +1899,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "AS YOU WALK THROUGH THE TRESS YOU ARE AMBUSHED BY TWO DISPLACER BEASTS.",
+      "text": "你們穿過林間時，兩頭移位獸從旁伏擊。",
+      "note": "野外。原版把 TREES 拼成 TRESS。"
+    },
+    {
       "source": "AS YOU WALK THROUGH THIS AREA TWO ANHKHEGS ERUPT FROM THE GROUND BENEATH YOU.",
       "text": "你們走過這一帶時，兩隻掘地蟲從腳下的地裡竄了出來。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -1819,6 +1999,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "BANDITS",
+      "text": "盜匪",
+      "note": "野外。"
+    },
+    {
       "source": "BAY",
       "text": "海灣",
       "note": "港務長航線選項。"
@@ -1890,7 +2075,7 @@
     },
     {
       "source": "BENEATH A FLOORBOARD YOU FIND SOME GEMS AND A FEW PAGES OF A DIARY.  YOU COPY THESE PAGES INTO YOUR JOURNAL AS ENTRY 3.",
-      "text": "地板底下有幾顆寶石和幾頁日記。你們把這幾頁抄進手札第 3 條。",
+      "text": "地板底下有幾顆寶石和幾頁日記。你們把這幾頁抄進手冊，成為線索報導 3。",
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
@@ -1902,6 +2087,21 @@
       "source": "BLOOD AND VIOLENCE ARE WRIT BOLDLY IN YOUR FUTURE.  LOOK FOR FRIENDS WHERE YOU EXPECT ENEMIES AND ENEMIES WHERE YOU EXPECT ALLIES.",
       "text": "你們的未來上，血與暴力寫得斗大。在以為是敵人的地方找朋友，在以為是盟友的地方防敵人。",
       "note": "貧民區（Slums）的事件與敘述。算命內容。"
+    },
+    {
+      "source": "BLUE",
+      "text": "藍",
+      "note": "亞拉斯的金字塔。轉盤的四色之一。"
+    },
+    {
+      "source": "BLUE.",
+      "text": "藍。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "BOAT",
+      "text": "小船",
+      "note": "城郊出入口。"
     },
     {
       "source": "BREAD AND MEAT LIE ABOUT, AS WELL AS PIECES OF HUMAN ANATOMY.",
@@ -1969,6 +2169,16 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "CCI.",
+      "text": "CCI。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
+    },
+    {
+      "source": "CCIV.",
+      "text": "CCIV。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
+    },
+    {
       "source": "CENTAURS",
       "text": "半人馬",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -1984,9 +2194,19 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "CHANGE TO WHAT SETTING?",
+      "text": "要轉到哪一格？",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "CHRONICLES OF ARRAM.",
       "text": "《阿蘭姆編年史》。",
       "note": "書名，出現在搜書的敘述裡。Arram 為新增譯名。"
+    },
+    {
+      "source": "CI.",
+      "text": "CI。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
     },
     {
       "source": "CITY",
@@ -2014,6 +2234,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "CLIV.",
+      "text": "CLIV。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
+    },
+    {
       "source": "COMBAT",
       "text": "戰鬥",
       "note": "選項。"
@@ -2027,6 +2252,16 @@
       "source": "CONGRATULATIONS, YOU MAY KEEP ALL YOU FOUND IN THE TEMPLE OF BANE AS A REWARD.'",
       "text": "恭喜，邪惡神廟裡找到的東西全歸你們，就當作報酬。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "COPPER",
+      "text": "銅",
+      "note": "亞拉斯的金字塔。轉盤的四色之一。"
+    },
+    {
+      "source": "COPPER.",
+      "text": "銅。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "COUNCILMAN CADORNA CONFRONTS YOU. 'YOU HAVE TAKEN MY FAMILY TREASURE. I DON'T FORGET SUCH THINGS.' HE STRIDES OFF.",
@@ -2047,6 +2282,26 @@
       "source": "CURATE",
       "text": "教士",
       "note": "AD&D 等級稱號（牧師）。"
+    },
+    {
+      "source": "CXIV.",
+      "text": "CXIV。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
+    },
+    {
+      "source": "CXXIX.",
+      "text": "CXXIX。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
+    },
+    {
+      "source": "CXXVI AND CX.",
+      "text": "CXXVI 與 CX。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
+    },
+    {
+      "source": "CXXXIV.",
+      "text": "CXXXIV。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
     },
     {
       "source": "D",
@@ -2074,6 +2329,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "DESTROY THE EQUIPMENT",
+      "text": "搗毀設備",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "DIRTEN",
       "text": "迪爾騰",
       "note": "NPC 名，依 glossary。"
@@ -2099,6 +2359,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "DISPLACER BEASTS",
+      "text": "移位獸",
+      "note": "野外。"
+    },
+    {
       "source": "DO NOT RESCUE BOY NOW",
       "text": "現在不救那個男孩",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -2117,6 +2382,11 @@
       "source": "DO YOU READ THE SCROLL?",
       "text": "要讀那卷卷軸嗎？",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DO YOU REALLY MEAN",
+      "text": "你們真的要",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "DO YOU TAKE IT?",
@@ -2164,6 +2434,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "DO YOU WISH TO CHANGE THE SETTING?",
+      "text": "要更動這一格的設定嗎？",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "DO YOU WISH TO SPEND HOURS READING THE RECORDS?",
       "text": "要花上幾個小時把這些檔案讀完嗎？",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -2199,9 +2474,19 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "DRIDERS",
+      "text": "蜘蛛精靈",
+      "note": "野外。依怪物一覽表第 6 項。"
+    },
+    {
       "source": "DRINK HEAVILY",
       "text": "放開喝",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "DURING THE FESTIVITIES THE CHIEF (HIS TONGUE LOOSENED BY DRINK) TELLS YOU OF THE DANGERS OF THE REGION. YOU MAKE HASSAD AHWAL'S TALK ENTRY 55 IN YOUR JOURNAL.",
+      "text": "慶典上酋長酒後話多，跟你們說起這一帶的凶險。你們把哈薩德·阿瓦爾這番話寫進手冊，成為線索報導 55。",
+      "note": "遊牧民營地。Hassad Ahwal 為新增譯名。"
     },
     {
       "source": "EAST",
@@ -2419,6 +2704,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "GOLD",
+      "text": "金",
+      "note": "亞拉斯的金字塔。轉盤的四色之一。"
+    },
+    {
+      "source": "GOLD.",
+      "text": "金。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "GOTO SLEEP",
       "text": "去睡覺",
       "note": "野外與漢提爾前哨一帶的事件。原版把 GO TO 連寫成 GOTO。"
@@ -2434,6 +2729,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "GRAVEYARD",
+      "text": "墳場",
+      "note": "城郊出入口。"
+    },
+    {
       "source": "GREET",
       "text": "打招呼",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -2442,6 +2742,11 @@
       "source": "GREET YOU AND YOU EXCHANGE PLEASANTRIES.  THE",
       "text": "向你們打招呼，雙方寒暄了幾句。",
       "note": "野外與漢提爾前哨一帶的事件。片段。"
+    },
+    {
+      "source": "GREET YOU AND YOU EXCHANGE PLESANTRIES.  THE",
+      "text": "向你們問好，彼此寒暄了幾句。",
+      "note": "遊牧民營地。原版把 PLEASANTRIES 拼成 PLESANTRIES；此為句子片段。"
     },
     {
       "source": "GRUMBLE, AND TURN AWAY.",
@@ -2485,7 +2790,7 @@
     },
     {
       "source": "HE QUICKLY LEAVES. YOU ARE LEFT WITH THE NOTES OF AL-HYAM DHAZID, WHICH TELL QUITE A LOT ABOUT THE POOL OF RADIANCE. YOU COPY THEM INTO YOUR JOURNAL AS ENTRY 30.",
-      "text": "他匆匆離去，留下阿爾-海姆·達齊德的筆記，裡面提到不少關於光芒之池的事。你們把它抄進手札第 30 條。",
+      "text": "他匆匆離去，留下阿爾-海姆·達齊德的筆記，裡面提到不少關於光芒之池的事。你們把它抄進手冊，成為線索報導 30。",
       "note": "紡織行與巨人占據一帶的事件。Al-Hyam Dhazid 為新增譯名。"
     },
     {
@@ -2539,6 +2844,11 @@
       "note": "書名，出現在搜書的敘述裡。"
     },
     {
+      "source": "HIT <RETURN> OR BUTTON TO CONTINUE",
+      "text": "按 <RETURN> 或按鈕繼續",
+      "note": "介面提示；原版此處與別處拼法不同，逐一對應。"
+    },
+    {
       "source": "HOBGOBLINS",
       "text": "大哥布林",
       "note": "怪物名；與哥布林成對，取「大」以示體型。"
@@ -2557,6 +2867,16 @@
       "source": "HOW WILL YOU FREE HIM?",
       "text": "你們要怎麼放他自由？",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "HOWEVER, HIDDEN AMIDST ALL THIS JUNK YOU FIND SOME TREASURE.",
+      "text": "不過在這堆雜物之中，你們翻出了一些財寶。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "HOWEVER, YOU FIND A BOOK UNDER THE BODY. IT IS THE JOURNAL OF TYRMOR.  IT IS FACINATING AND YOU INCLUDE MUCH OF ITS INFORMATION IN YOUR JOURNAL AS ENTRY 26.",
+      "text": "不過你們在屍體下找到一本書，是提爾莫的日記。內容引人入勝，你們把其中不少寫進手冊，成為線索報導 26。",
+      "note": "野外。Tyrmor 為新增譯名；原版把 FASCINATING 拼成 FACINATING。"
     },
     {
       "source": "I AM SORRY, BUT I HAVE NOTHING TO SELL NOW.  COME BACK SOME OTHER TIME.",
@@ -2664,6 +2984,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "IN THIS ROOM THERE ARE FOUR LARGE LIZARD MEN.  AS YOU ENTER ONE OF THEM YELLS 'KILL' AND THEY ATTACK.",
+      "text": "這間屋裡有四名高大的蜥蜴人。你們一進去，其中一個大喊「殺」，牠們便攻了上來。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "INSIDE THE CABINET YOU FIND EIGHTEEN SACKS FILLED WITH GOLD PIECES.",
       "text": "櫃子裡有十八袋金幣。",
       "note": "柯威大樓的盜賊據點。"
@@ -2675,7 +3000,7 @@
     },
     {
       "source": "INSIDE THE CABINET YOU FIND SOME FILES.  YOU STUFF THE PAPERS INTO YOUR JOURNAL UNDER ENTRIES 23 AND 14.",
-      "text": "櫃子裡有幾份卷宗。你們把文件塞進手札第 23 與第 14 條。",
+      "text": "櫃子裡有幾份卷宗。你們把文件塞進手冊，成為線索報導 23 與 14。",
       "note": "柯威大樓的盜賊據點。"
     },
     {
@@ -2694,6 +3019,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "INSIDE THIS HUT ARE FOUR LIZARD MEN.  THEY ATTACK YOU IMMEDIATELY.",
+      "text": "這間棚屋裡有四名蜥蜴人，牠們立刻撲了上來。",
+      "note": "野外。"
+    },
+    {
       "source": "INSIDE THIS ROOM YOU FIND A LARGE PILE OF WEAPONS AND SHIELDS.  THEY APPEAR TO BE IN GOOD CONDITION AND OF FINE QUALITY.  WHAT WILL YOU DO?",
       "text": "房裡堆著大量武器與盾牌，看起來狀況良好、品質不錯。你們要怎麼做？",
       "note": "柯威大樓的盜賊據點。"
@@ -2702,6 +3032,11 @@
       "source": "INSULT BACK",
       "text": "回敬幾句",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "INVESTIGATE",
+      "text": "查看",
+      "note": "野外。"
     },
     {
       "source": "IT HISSES AT YOU.",
@@ -2859,6 +3194,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "LIX.",
+      "text": "LIX。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
+    },
+    {
       "source": "LIZARD MEN",
       "text": "蜥蜴人",
       "note": "怪物名，遊戲文字證實。"
@@ -2867,6 +3207,11 @@
       "source": "LOOK FOR THE MAN IN PLAIN CLOTHES",
       "text": "找那個穿便服的人",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "LOOKING DISAPPOINTED THE HEADMAN SAYS, 'GOOD LUCK IN YOUR TRAVELS.'",
+      "text": "首領面露失望：「祝各位一路順風。」",
+      "note": "遊牧民營地。"
     },
     {
       "source": "LOOKING UP FROM A TABLE ARE FIVE KOBOLDS.",
@@ -2949,6 +3294,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "MERCHANTS",
+      "text": "商人",
+      "note": "野外。"
+    },
+    {
       "source": "MIX WITH MONSTERS",
       "text": "混進怪物裡",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -2994,6 +3344,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "MOVE QUICKLY AWAY",
+      "text": "快步走開",
+      "note": "野外。"
+    },
+    {
       "source": "MOVE QUIETLY AWAY",
       "text": "悄悄走開",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -3007,6 +3362,11 @@
       "source": "NEAR YOU IS A LARGE, WILD BOAR SOW FEEDING HER YOUNG.  AS YOU NEAR SHE GROWLS A WARNING TO STAY AWAY.  WHAT WILL YOU DO?",
       "text": "旁邊有一頭大母野豬正在餵幼崽。你們一靠近，牠就低吼著要你們走開。你們要怎麼做？",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "NEAR YOU IS A POOL OF WATER.  SOMEONE OR THING IS SPLASHING IN THE POOL.  WILL YOU APPROACH THE POOL?",
+      "text": "附近有一池水，有什麼人或東西在裡面撲騰。要靠過去嗎？",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "NEW",
@@ -3037,6 +3397,16 @@
       "source": "NO TROUBLE",
       "text": "不找麻煩",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "NOKNOK",
+      "text": "諾克諾克",
+      "note": "亞拉斯的金字塔。矮人符文拼出的通關密語，音譯。"
+    },
+    {
+      "source": "NOMADS",
+      "text": "遊牧民",
+      "note": "遊牧民營地。"
     },
     {
       "source": "NONE",
@@ -3100,12 +3470,12 @@
     },
     {
       "source": "ON A HOBGOBLIN BODY, YOU FIND A NOTE THAT YOU COPY INTO YOUR JOURNAL AS ENTRY 57.",
-      "text": "你們在一具大哥布林屍體上找到一張字條，抄進手札第 57 條。",
+      "text": "你們在一具大哥布林屍體上找到一張字條，抄進手冊，成為線索報導 57。",
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "ON A NEARBY WALL IS A SLATE.  DRAWN ON THE SLATE IS A COMPLEX MAZE WITH THE WORDS 'NW CASTLE' UNDER IT.  YOU COPY THE CASTLE INTO YOUR JOURNAL UNDER JOURNAL ENTRY 41.",
-      "text": "旁邊牆上有一塊石板，上頭畫著一座複雜的迷宮，底下寫著「城堡西北」。你們把它抄進手札第 41 條。",
+      "text": "旁邊牆上有一塊石板，上頭畫著一座複雜的迷宮，底下寫著「城堡西北」。你們把它抄進手冊，成為線索報導 41。",
       "note": "柯威大樓的盜賊據點。"
     },
     {
@@ -3115,17 +3485,17 @@
     },
     {
       "source": "ON THE DEAD BODY OF THE HALF-ORC CLERIC YOU FIND A PIECE OF PAPER.  YOU PUT THE PAPER IN YOUR JOURNAL UNDER ENTRY 25.",
-      "text": "你們在半獸人牧師的屍體上找到一張紙，把它放進手札第 25 條。",
+      "text": "你們在半獸人牧師的屍體上找到一張紙，把它放進手冊，成為線索報導 25。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "ON THE FLOOR HERE YOU FIND SOME IMPORTANT LOOKING FILES.  YOU STUFF THE FILES INTO YOUR JOURNAL UNDER ENTRIES 38 AND 51.",
-      "text": "地上有幾份看來要緊的卷宗。你們把它們塞進手札第 38 與第 51 條。",
+      "text": "地上有幾份看來要緊的卷宗。你們把它們塞進手冊，成為線索報導 38 與 51。",
       "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "ON THE FLOOR IS A CRUDE MAP.  IT IS A MAP OF A COMPLEX MAZE WITH THE WORDS 'NE CASTLE' UNDER IT.  YOU TAKE THE MAP AND PUT IT IN YOUR JOURNAL UNDER JOURNAL ENTRY 29.",
-      "text": "地上有一張粗糙的地圖，畫的是一座複雜的迷宮，底下寫著「城堡東北」。你們收起地圖，放進手札第 29 條。",
+      "text": "地上有一張粗糙的地圖，畫的是一座複雜的迷宮，底下寫著「城堡東北」。你們收起地圖，放進手冊，成為線索報導 29。",
       "note": "柯威大樓的盜賊據點。"
     },
     {
@@ -3315,18 +3685,18 @@
     },
     {
       "source": "PROCLAMATION",
-      "text": "公告",
-      "note": "市政廳的公告，依 glossary 用詞。"
+      "text": "公告字號",
+      "note": "接在後面的公告編號之前，與手冊的「公告字號」欄位同一個詞。"
     },
     {
       "source": "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE",
-      "text": "牆上貼著公告，你們把編號記進手札：",
-      "note": "市政廳外；journal 依專案用詞作手札。"
+      "text": "牆上貼著公告，你們把編號記進手冊：",
+      "note": "市政廳外；journal 依專案用詞作手冊。"
     },
     {
       "source": "PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX.",
-      "text": "第六十四、七十八、一〇九與五十九號公告。",
-      "note": "公告編號，原版以羅馬數字書寫；譯文改用中文數字以便閱讀。"
+      "text": "公告字號 LXIV、LXXVIII、CIX 與 LIX。",
+      "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
     },
     {
       "source": "PUNCH MERCHANT",
@@ -3519,6 +3889,16 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "SILVER",
+      "text": "銀",
+      "note": "亞拉斯的金字塔。轉盤的四色之一。"
+    },
+    {
+      "source": "SILVER.",
+      "text": "銀。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "SKELETONS SILENTLY ATTACK.",
       "text": "骷髏無聲地攻了上來。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -3644,6 +4024,11 @@
       "note": "海盜據點。"
     },
     {
+      "source": "STANDING READY THEIR LEADER SAYS 'YOU MUST BE THE SERVANTS OF YARASH!'",
+      "text": "領頭的擺開架式：「你們一定是亞拉斯的走狗！」",
+      "note": "野外。"
+    },
+    {
       "source": "STATE NAME AND INTENT",
       "text": "報上姓名與來意",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -3664,6 +4049,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "STIRGES",
+      "text": "吸血鳥",
+      "note": "野外。依怪物一覽表第 33 項。"
+    },
+    {
       "source": "STOP THEM",
       "text": "阻止他們",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -3682,6 +4072,11 @@
       "source": "STRONG",
       "text": "強",
       "note": "同上。"
+    },
+    {
+      "source": "SUDDENLY A HIDDEN DOOR BURSTS OPEN AND A HORRIBLE MONSTER BURSTS FORTH SHOUTING 'KIAIAIAIAIAIAIAI!' IT WADES INTO YOU TEARING YOU APART WITH 3-INCH LONG CLAWS.",
+      "text": "一道暗門突然撞開，一頭猙獰的怪物衝了出來，大吼「唭啊啊啊啊啊啊啊！」牠殺進隊伍，用三吋長的利爪把你們撕開。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "SUDDENLY YOU ARE FACE TO FACE WITH A GROUP OF",
@@ -3832,6 +4227,16 @@
       "source": "THE BIDDING ESCALATES TO 5,000 GOLD PIECES -- HIGH BID FROM A MAN IN PLAIN CLOTHES, NEXT TO AN OGRE.",
       "text": "價錢一路喊到五千枚金幣——最高價出自一個站在食人鬼旁邊、穿著便服的人。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE BIGGEST NOMAD, APPARENTLY THE CHIEF OR HEADMAN, ACKNOWLEDGES YOU WITH A NOD, 'WE WILL GIVE A FEAST IN YOUR HONOR",
+      "text": "那名最魁梧的遊牧民，看來是酋長或首領，朝你們點頭示意：「我們要為各位設宴",
+      "note": "遊牧民營地。接下一段。"
+    },
+    {
+      "source": "THE BIGGEST, MEANEST, DIRTIEST NOMAD PUSHES HIS WAY TO THE FRONT OF THE CROWD. FIVE OTHER NOMADS STAND AROUND HIM AS IF TO PROTECT HIM.",
+      "text": "一名最魁梧、最兇惡、最骯髒的遊牧民擠到人群前頭，另外五個圍在他身邊，像是在護著他。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "THE BOAT DISEMBARKS YOU AT SOKAL KEEP.",
@@ -4149,9 +4554,29 @@
       "note": "索卡爾城堡的事件與敘述。接下一段。"
     },
     {
+      "source": "THE HEADMAN COMES TO YOU AND SAYS, 'ABOUT MY REQUEST OF LAST NIGHT, WHAT IS YOUR DECISION?'",
+      "text": "首領走過來問：「昨晚拜託各位的事，決定得如何？」",
+      "note": "遊牧民營地。"
+    },
+    {
+      "source": "THE HEADMAN SEEMS VERY UNEASY AS HE CONTINUES TO SPEAK. HE PRACTICALLY BEGS YOU TO STAY FOR A FEW MORE DAYS, RATHER THAN LEAVE IN THE MORNING AS YOU PLANNED.",
+      "text": "首領說著說著顯得很不安，幾乎是懇求你們多留幾天，別照原定計畫早上就走。",
+      "note": "遊牧民營地。"
+    },
+    {
+      "source": "THE HEADMAN WALKS UP TO YOU WITH HIS GUARDS. 'GOOD MORNING. THERE ARE CELEBRATIONS PLANNED TODAY.'",
+      "text": "首領帶著護衛走來：「早安。今天安排了慶典。」",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "THE HEIR TO THE HOUSE OF BIVANT MUST BE RESCUED.  WE WILL PAY GENEROUSLY FOR HIS SAFE RETURN.'",
       "text": "畢凡特家的繼承人必須救回來。平安帶回，重金酬謝。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE HEROIC DEATHS OF THOSE YOU HAVE JUST BATTLED HAS BOUGHT TIME FOR THE HEADMAN TO RALLY HIS PEOPLE. WITH A TREMENDOUS CRY HE LEADS HIS TRIBE INTO BATTLE.",
+      "text": "方才那場血戰中壯烈犧牲的人，為首領爭取到集結族人的時間。他一聲怒吼，領著全族投入戰鬥。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "THE HOBGOBLINS GIVE CHASE, BUT YOU ESCAPE.",
@@ -4182,6 +4607,11 @@
       "source": "THE LEADER SPEAKS, 'THE BOSS DON'T ALLOW YOUR KIND IN HIS TERRITORY.  LEAVE NOW OR WE'LL HAVE TO RUN YOU IN.' (WHAT DO YOU DO?)",
       "text": "領頭的開口：「老大不准你們這種人進他的地盤。現在就走，不然我們就要動手抓人了。」（你們要怎麼做？）",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THE LIZARD MEN'S FEAR CHANGES TO RAGE AND THEY THROW THEIR BARRELS OF CONTAMINANT ON THE PARTY.",
+      "text": "蜥蜴人的恐懼化成暴怒，把成桶的污染物潑向隊伍。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "THE LOWER CHAMBER IS FILLED WITH GLASS AND FUR OBJECTS OF ALL TYPES.",
@@ -4282,6 +4712,11 @@
       "source": "THE MYSTIC MAN SPEAKS, 'THE VAMPIRE IS BEHIND THE NORTHERN WALL.'",
       "text": "那名神祕人說：「吸血鬼就在北牆後面。」",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE NOMADS WAIT FOR YOU TO MAKE THE FIRST MOVE.",
+      "text": "遊牧民等著你們先動。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "THE OGRE IS TACKLED AND SEARCHED. HE DOESN'T HAVE THE ITEM ON HIM.",
@@ -4395,7 +4830,7 @@
     },
     {
       "source": "THE SCROLL IS PLACED IN YOUR JOURNAL AS ENTRY 43.",
-      "text": "那卷卷軸被放進手札第 43 條。",
+      "text": "那卷卷軸被放進手冊，成為線索報導 43。",
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
@@ -4469,6 +4904,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "THE SOUND OF WAR CRIES DRAWS YOU OUT OF THE HUT.",
+      "text": "喊殺聲把你們引出了帳篷。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "THE SPECTRE HAS NOTICED YOU.",
       "text": "那隻幽魂發現你們了。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -4519,6 +4959,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "THE WALLS ARE LINED WITH FLASKS AND BOTTLES CONTAINING POWDERS, OILS, OINTMENTS, AND DRAUGHTS. THESE ARE SURELY OF AN ALCHEMICAL NATURE.",
+      "text": "牆邊排滿了瓶瓶罐罐，裝著粉末、油劑、藥膏與湯藥，顯然都是煉金之物。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "THE WATER LOOKS COLD AND DEEP. DO YOU WANT TO DIVE IN?",
       "text": "水看起來又冷又深。要潛下去嗎？",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -4527,6 +4972,11 @@
       "source": "THE WAY IS BLOCKED.",
       "text": "路被擋住了。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE WHINE SUBSIDES AS THE PRESSURE IS RELEASED.",
+      "text": "壓力洩去，那陣尖鳴也跟著減弱。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "THE WOMAN SAYS 'TYRANTHRAXUS IS LEADING OUR MEN TO THEIR DEATHS. IF YOU INTEND TO KILL HIM WE WILL HELP. USE THESE CLOTHES AS A DISGUISE AND YOU WILL ESCAPE NOTICE.",
@@ -4542,6 +4992,11 @@
       "source": "THE WOMEN SHRIEK AND FLEE BEFORE YOU AS YOU CHOP THEM DOWN. THE HALF-ORC WOMAN WITH HATE IN HER EYES SNARLS 'HEROES! HAH!' THEN HER EYES GLAZE AS SHE DIES.",
       "text": "婦人們尖叫著在你們刀下四散奔逃。那名半獸人女子眼裡滿是恨意，啐道：「英雄？哈！」隨即目光渙散，斷了氣。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THEIR LEADER SAYS 'FOUL SERVANTS OF YARASH!'",
+      "text": "領頭的喝道：「亞拉斯的卑鄙走狗！」",
+      "note": "野外。"
     },
     {
       "source": "THEN FEEL MY WRATH!",
@@ -4579,6 +5034,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "THERE IS A BOAT HERE THAT WILL TAKE YOU BACK TO THE CIVILISED SECTION OF PHLAN.  WILL YOU TAKE IT?",
+      "text": "這裡有一艘船，可以載你們回菲蘭城的文明區。要搭嗎？",
+      "note": "城郊出入口。"
+    },
+    {
       "source": "THERE IS A FEELING OF SOMETHING IMMENSE AND EVIL STARING DOWN AT YOU...",
       "text": "你們感覺到某個龐大而邪惡的東西正俯視著自己……",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -4599,6 +5059,11 @@
       "note": "瓦傑渥城堡內部。"
     },
     {
+      "source": "THERE IS A HOLE IN THE WALL THAT LEADS TO THE OUTSIDE. DO YOU GO THROUGH IT?",
+      "text": "牆上有個通往外面的洞。要鑽過去嗎？",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "THERE IS A SEEDY LITTLE MAN HERE WHO WHISPERS 'PSSST, BUDDY.  WANT TO BUY A PASS TO SEE THE CAPTAIN?'",
       "text": "這裡有個賊頭賊腦的小個子低聲說：「喂，朋友。要不要買張見隊長的通行證？」",
       "note": "海盜據點。"
@@ -4607,6 +5072,11 @@
       "source": "THERE IS A VAMPIRE HERE.",
       "text": "這裡有一隻吸血鬼。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THERE IS AN ENORMOUS EXPLOSION! BITS OF PIPE AND OTHER PLUMBING FIXTURES FLY IN ALL DIRECTIONS.",
+      "text": "一聲巨響炸開！管線碎片與各種配件朝四面八方飛散。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "THERE IS GREAT CONFUSION AS THE GUARDS RUN TO THEIR POSTS.",
@@ -4659,6 +5129,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "THEY ARE WARY, BUT NOT HOSTILE.",
+      "text": "牠們戒備著，但沒有敵意。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "THEY ATTACK YOU.",
       "text": "牠們攻擊你們。",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -4680,7 +5155,7 @@
     },
     {
       "source": "THEY DESCRIBE THE SURROUNDING AREA TO YOU. YOU LISTEN CAREFULLY, QUESTION THEM AND FROM THIS, SKETCH A MAP INTO YOUR JOURNAL CALLING IT ENTRY 10.",
-      "text": "牠們把附近的地形說給你們聽。你們仔細聽、細細問，據此在手札裡畫了一張圖，編為第 10 條。",
+      "text": "牠們把附近的地形說給你們聽。你們仔細聽、細細問，據此在手冊裡畫了一張圖，編為線索報導 10。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
@@ -4727,6 +5202,11 @@
       "source": "THEY RAISE THEIR CLUBS. 'YOU STOLE FROM LORD BANE'S TEMPLE!'",
       "text": "牠們舉起棍棒：「你們偷了邪惡神廟的東西！」",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THEY RECOIL IN FEAR",
+      "text": "牠們嚇得退開",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "THEY RUSH TOWARD YOU",
@@ -4779,6 +5259,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THIS DIRECTION WILL TAKE YOU BACK INTO THE WILDERNESS. DO YOU STILL WANT TO GO THIS WAY?",
+      "text": "這個方向會把你們帶回荒野。還要往這邊走嗎？",
+      "note": "野外。"
+    },
+    {
       "source": "THIS IS A HIDDEN TEMPLE OF ILMATER. YOU FEEL SAFE HERE.",
       "text": "這是一座隱密的伊爾梅特神殿，在這裡你們覺得安全。",
       "note": "邪惡神廟（Temple of Bane）一帶。Ilmater 為新增譯名。"
@@ -4792,6 +5277,11 @@
       "source": "THIS IS A SMALL SHRINE. SYMBOLS OF BANE HAVE REPLACED THOSE OF ILMATER.",
       "text": "這是一座小祠堂，伊爾梅特的聖徽已被邪惡神的取代。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "THIS IS THE DESK OF YARASH. ON IT IS A LITTER OF PAPERS.",
+      "text": "這是亞拉斯的書桌，上面散著一堆文件。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "THIS LARGE ROOM IS APPARENTLY EMPTY.",
@@ -4894,6 +5384,16 @@
       "note": "紡織行與巨人占據一帶的事件。片段。"
     },
     {
+      "source": "TOMORROW",
+      "text": "明天",
+      "note": "遊牧民營地。"
+    },
+    {
+      "source": "TONIGHT",
+      "text": "今晚",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "TROUBLE",
       "text": "找麻煩",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -4932,6 +5432,11 @@
       "source": "TWO OF THE SLAVES RUN QUICKLY OUT THE DOOR. THE THIRD APPROACHES YOU WITH TEARS OF GRATITUDE IN HIS EYES. 'I THANK YOU FOR FREEING ME.",
       "text": "兩名奴隸飛快地奪門而出。第三個含著感激的淚水走向你們：「謝謝你們放我自由。",
       "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
+      "source": "TWO OF THEM ARE POURING BARRELS OF THE BLACK CONTAMINANT INTO A LARGE VAT. THE OTHER IS WORKING A BELLOWS PUMP.",
+      "text": "其中兩個正把成桶的黑色污染物倒進一口大缸，另一個在踩風箱泵。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "TYPE IN THE NUMBER OF GP YOU OFFER.",
@@ -5269,6 +5774,11 @@
       "note": "海盜據點。"
     },
     {
+      "source": "YOU ARE ABOUT TO LEAVE THIS AREA.  DO YOU WANT TO RETURN?",
+      "text": "你們就要離開這一區了。要折回去嗎？",
+      "note": "野外。"
+    },
+    {
       "source": "YOU ARE APPALLED BY THE STENCH IN THIS DAMP BUILDING.",
       "text": "這棟潮濕建築裡的惡臭令你們作嘔。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -5277,6 +5787,11 @@
       "source": "YOU ARE APPROACHED BY A MAN CLAD IN MYSTIC ROBES.",
       "text": "一個身穿神祕長袍的人朝你們走來。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE AT THE EDGE OF THE GROVE.",
+      "text": "你們來到樹叢邊緣。",
+      "note": "野外。"
     },
     {
       "source": "YOU ARE AT THE GATE TO THE ANIMAL PENS.  THE ANIMALS ARE RESTLESS.  WHAT WILL YOU DO?",
@@ -5419,6 +5934,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU ARE IN A STOREROOM HOLDING A VAST COLLECTION OF MAGICAL JUNK.",
+      "text": "你們身在一間貯藏室，裡面堆滿了各式各樣的魔法雜物。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU ARE IN A TAVERN.  THE AIR IS FILLED WITH SMOKE AND GOSSIP.  PEOPLE ARE GAMBLING AT THE TABLES.",
       "text": "你們在一間酒館裡，空氣中滿是煙味與閒話，桌邊有人在賭錢。",
       "note": "地點敘述。"
@@ -5432,6 +5952,11 @@
       "source": "YOU ARE IN AN EMPTY ROOM. THE ONLY FEATURE IS A TRAP DOOR IN THE CENTER. DO YOU OPEN IT?",
       "text": "你們在一間空屋裡，唯一的東西是正中央的一道活門。要打開嗎？",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ARE IN FRONT OF A MAGNIFICENT PYRAMID.  YOU HAVE FOUND A SECRET DOOR THAT LEADS INTO THE PYRAMID.  WHAT WILL YOU DO?",
+      "text": "你們站在一座宏偉的金字塔前，找到了一道通往塔內的暗門。要怎麼做？",
+      "note": "野外。"
     },
     {
       "source": "YOU ARE IN THE AUDIENCE HALL OF TYRANTHRAXUS, CONQUEROR OF PHLAN. THE CEILING HAS BEEN TORN AWAY LEAVING THE ENTIRE SECTION OF THE TOWER OPEN TO THE SKY.",
@@ -5554,6 +6079,21 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU ARE ON THE EASTERN EDGE OF THE CITY.  THERE ARE  NORTH AND SOUTH ENTRANCES INTO THE CITY AND A SMALL BOAT THAT YOU CAN TAKE TO THE CIVILISED AREA.  WHICH ROUTE WILL YOU TAKE?",
+      "text": "你們位在城東邊緣。進城有北、南兩個入口，另外還有一艘小船可以載你們到文明區。要走哪一條？",
+      "note": "城郊出入口。"
+    },
+    {
+      "source": "YOU ARE ON THE NORTH EDGE OF THE CITY.  WILL YOU ENTER THE NORTHERN CITY GATES OR ENTER THE GRAVEYARD?",
+      "text": "你們位在城北邊緣。要走北城門，還是進墳場？",
+      "note": "城郊出入口。"
+    },
+    {
+      "source": "YOU ARE ON THE WESTERN EDGE OF THE CITY.  THERE ARE TWO ENTERANCES INTO THE CITY, A NORTH ENTRANCE AND A SOUTH ENTRANCE.  WHICH ENTRANCE WILL YOU TAKE?",
+      "text": "你們位在城西邊緣。進城有兩個入口，北入口與南入口。要走哪一個？",
+      "note": "城郊出入口。原版把 ENTRANCES 拼成 ENTERANCES。"
+    },
+    {
       "source": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS.",
       "text": "你們站在市政廳外。書記官在裡面發放委託。",
       "note": "地點敘述。"
@@ -5602,6 +6142,11 @@
       "source": "YOU ARE SURPRISED BY A GROUP OF",
       "text": "你們被一群",
       "note": "野外與漢提爾前哨一帶的事件。片段，後接怪物名。"
+    },
+    {
+      "source": "YOU ARE TREATED AS HONORED GUESTS FOR THE REST OF THE DAY. THERE ARE CONTESTS OF STRENGTH AND SKILL IN YOUR HONOR.",
+      "text": "這一天剩下的時間，你們被奉為上賓。營地為你們辦了力與技的比試。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "YOU ARE USHERED INTO THE BISHOP'S STUDY. BISHOP BRACCIO SPEAKS, 'ALLOW ME TO INTRODUCE DIRTEN, PRIEST OF ILMAR.",
@@ -5714,6 +6259,16 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU CAN SEE CHILDREN PEERING OUT OF THE TENT OPENINGS, ONLY TO BE PUSHED BACK INSIDE BY THEIR MOTHERS.",
+      "text": "你們看見孩子從帳篷口探頭張望，隨即被母親推了回去。",
+      "note": "遊牧民營地。"
+    },
+    {
+      "source": "YOU CHARGE INTO A GROUP OF SCRUFFY LOOKING NOMADS.",
+      "text": "你們衝進一群衣衫襤褸的遊牧民之中。",
+      "note": "遊牧民營地。"
+    },
+    {
       "source": "YOU CLIMB OVER THE WALL AND LEAVE THE OUTPOST.",
       "text": "你們翻牆而過，離開了前哨。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -5727,6 +6282,11 @@
       "source": "YOU COLDLY KILL THE DEFENCELESS GOBLINS.",
       "text": "你們冷酷地殺光了毫無反抗之力的哥布林。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU COLDLY KILL THE DEFENSELESS KOBOLDS.",
+      "text": "你們冷血地殺光了毫無防備的小妖魔。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "YOU CONFRONT AN ARMED MAN WHO IMMEDIATELY ATTACKS YOU.",
@@ -5750,7 +6310,7 @@
     },
     {
       "source": "YOU COPY THE PAPERS INTO YOUR JOURNAL UNDER JOURNAL ENTRY 48.",
-      "text": "你們把這些文件抄進手札第 48 條。",
+      "text": "你們把這些文件抄進手冊，成為線索報導 48。",
       "note": "柯威大樓的盜賊據點。"
     },
     {
@@ -5837,6 +6397,11 @@
       "source": "YOU ENTER A HALL WHICH IS FILLED WITH ROWS OF WRITING TABLES AND HIGH STOOLS. ROTTED MOUNDS OF PARCHMENT LITTER THE FLOOR.",
       "text": "你們走進一間大廳，裡面一排排都是書桌與高凳，地上散著腐爛的羊皮紙堆。",
       "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU ENTER A HUT THAT IS COVERED IN FILTH.  STANDING IN A POOL OF BLACK MUCK ARE TWO HORRIBLY MUTATED LIZARD MEN.  THEY LUNGE OUT AND ATTACK THE PARTY.",
+      "text": "你們走進一間污穢不堪的棚屋。兩名嚴重變異的蜥蜴人立在一灘黑泥裡，猛地撲向隊伍。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "YOU ENTER A LATRINE. THE LACK OF BAD SMELL GIVES YOU A GENERAL IDEA OF THE LEVEL OF SANITATION PRACTICED BY THE INHABITANTS OF THE AREA.",
@@ -5959,19 +6524,29 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU FIND A NOTEBOOK. A TYPICAL ENTRY READS, 'SUBJECT 213: PROGRESSING WELL, SCARS HEALING, UNABLE TO TALK YET. SUBJECT 214: DIED WHEN TREATED, FAILED AGAIN...'",
+      "text": "你們找到一本筆記，其中一則寫著：「樣本 213：進展良好，傷疤癒合中，尚不能言語。樣本 214：施術時死亡，又失敗了……」",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU FIND A PAGE FROM A DIARY AND PLACE IT IN YOUR JOURNAL UNDER ENTRY 11.",
-      "text": "你們找到一頁日記，把它放進手札第 11 條。",
+      "text": "你們找到一頁日記，把它放進手冊，成為線索報導 11。",
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU FIND A PIECE OF PAPER ON THE FLOOR IN THE ROOM.  YOU PLACE IT IN YOUR JOURNAL UNDER ENTRY 53",
-      "text": "你們在房間地上撿到一張紙，把它放進手札第 53 條",
+      "text": "你們在房間地上撿到一張紙，把它放進手冊，成為線索報導 53",
       "note": "邪惡神廟（Temple of Bane）一帶。片段。"
     },
     {
       "source": "YOU FIND A POUCH OF SMALL GEMS.",
       "text": "你們找到一小袋寶石。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU FIND A RECENTLY ABBANDONED CAMP.",
+      "text": "你們找到一處剛被棄置的營地。",
+      "note": "野外。原版把 ABANDONED 拼成 ABBANDONED。"
     },
     {
       "source": "YOU FIND A REPORT INDICATING THAT THE NORTHERN BARBARIANS ARE READY FOR THE TAKE OVER OF A STRONG LEADER AND THAT THE CHIEF OF THE RAVEN CLAN IS ALLIED TO TYRANTHRAXUS.",
@@ -6010,7 +6585,7 @@
     },
     {
       "source": "YOU FIND FYERDETHA'S DISCOURSES ON POWER. AMONG ALL THE DRY TEXT YOU FIND AN INTERESTING PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 7.",
-      "text": "你們找到斐爾德沙的《論權力》。在一堆枯燥的文字裡有一段挺有意思，抄進了手札第 7 條。",
+      "text": "你們找到斐爾德沙的《論權力》。在一堆枯燥的文字裡有一段挺有意思，抄進手冊，成為線索報導 7。",
       "note": "舊繩索公會的圖書室。Fyerdetha 為新增譯名。"
     },
     {
@@ -6020,7 +6595,7 @@
     },
     {
       "source": "YOU FIND LEX GEOGRAPHICA, AN ATLAS DRAWN BY TOMARUS. IT HAS A MAP OF PHLAN WHICH, THOUGH OLD, STILL COULD BE USEFUL. IT BECOMES ENTRY 37 IN YOUR JOURNAL.",
-      "text": "你們找到托馬魯斯繪製的地圖集《地理法典》。裡面有一張菲蘭城的地圖，雖然舊了，還是派得上用場，成為手札第 37 條。",
+      "text": "你們找到托馬魯斯繪製的地圖集《地理法典》。裡面有一張菲蘭城的地圖，雖然舊了，還是派得上用場，成為手冊的線索報導 37。",
       "note": "舊繩索公會的圖書室。Tomarus 為新增譯名。"
     },
     {
@@ -6049,13 +6624,18 @@
       "note": "舊繩索公會的圖書室。"
     },
     {
+      "source": "YOU FIND THE CORPSE OF A MAN. THE BODY HAS BEEN STRIPPED OF WEAPONS AND ARMOR, AS WELL AS ANY USEFUL GEAR.",
+      "text": "你們找到一具男屍，武器、護甲以及任何堪用的裝備都已被搜走。",
+      "note": "野外。"
+    },
+    {
       "source": "YOU FIND THE GRAND HISTORIAN'S RECORDS OF THE ARTS OF WAR. IN IT YOU FIND A USEFUL PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 21.",
-      "text": "你們找到大史官的《兵法錄》，其中一段很有用，抄進了手札第 21 條。",
+      "text": "你們找到大史官的《兵法錄》，其中一段很有用，抄進手冊，成為線索報導 21。",
       "note": "舊繩索公會的圖書室。"
     },
     {
       "source": "YOU FIND THE HISTORY OF THE NORTH. IT IS MOSTLY WRITTEN TO PLEASE A ROYAL LINE. HOWEVER, THERE IS AN INTERESTING PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 8.",
-      "text": "你們找到《北方史》。內容多半是寫來討好某個王室的，不過其中一段挺有意思，抄進了手札第 8 條。",
+      "text": "你們找到《北方史》。內容多半是寫來討好某個王室的，不過其中一段挺有意思，抄進手冊，成為線索報導 8。",
       "note": "舊繩索公會的圖書室。"
     },
     {
@@ -6065,7 +6645,7 @@
     },
     {
       "source": "YOU FIND URGUND'S DESCRIPTION OF DARKNESS. THIS IS AN ACCOUNT OF HIS IMPRISONMENT IN THE LOWER REALMS. THERE IS A PASSAGE OF INTEREST WHICH YOU COPY AS ENTRY 19 IN YOUR JOURNAL.",
-      "text": "你們找到烏爾岡的《黑暗記述》，寫的是他被囚於下界的經歷。其中一段值得一記，抄進了手札第 19 條。",
+      "text": "你們找到烏爾岡的《黑暗記述》，寫的是他被囚於下界的經歷。其中一段值得一記，抄進手冊，成為線索報導 19。",
       "note": "舊繩索公會的圖書室。Urgund 為新增譯名。"
     },
     {
@@ -6154,9 +6734,29 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "YOU HAVE DESTROYED THE LAST PIECE OF EQUIPMENT.",
+      "text": "你們搗毀了最後一件設備。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU HAVE ENTERED A CROWDED TAVERN.",
       "text": "你們走進一間擠滿人的酒館。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "YOU HAVE ENTERED A PUMPING ROOM. WORKING AS SLAVES IN THIS ROOM ARE THREE LIZARD MEN WITH WHIP CUTS ACROSS THEIR BACK WHO ARE SHACKLED TO THE WALL BY LONG CHAINS.",
+      "text": "你們走進一間泵房。三名背上滿是鞭痕的蜥蜴人被長鏈鎖在牆上，像奴隸一樣在這裡幹活。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "YOU HAVE ENTERED A ROOM FILLED WITH A HORRIBLE ASSORTMENT OF TORTURE INSTUMENTS. IN THE CENTER IS A LARGE TABLE WITH METAL RESTRAINTS.",
+      "text": "你們走進一間屋子，裡面擺滿了各式駭人的刑具。正中央是一張帶金屬束具的大檯子。",
+      "note": "亞拉斯的金字塔。原版把 INSTRUMENTS 拼成 INSTUMENTS。"
+    },
+    {
+      "source": "YOU HAVE ENTERED A ROOM FILLED WITH LARGE VATS WITH THE SAME OILY BLACK STUFF THAT FLOWS FROM THE FOUNTAIN. THE CHAMBER STINKS. ON THE WALLS ARE SHELVES OF BOTTLES AND FLASKS.",
+      "text": "你們走進一間擺滿大缸的屋子，缸裡是噴泉流出的那種油黑之物。屋內臭氣沖天，牆上架著一排排瓶罐。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "YOU HAVE ENTERED A SMALL STORAGE ROOM.",
@@ -6184,6 +6784,11 @@
       "note": "海盜據點。"
     },
     {
+      "source": "YOU HAVE ENTERED THE FOUNTAIN CHAMBER. IN THE CENTER OF THE ROOM A COLUMN OF BLACK FOUL WATER JETS UP THROUGH A CLEAR PIPE AND OUT THE ROOF.",
+      "text": "你們走進噴泉室。房間正中，一道黑濁的水柱沿著透明管線噴上去，直穿屋頂。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU HAVE ENTERED THE MONSTER-CRAWLING SLUMS OF PHLAN.  SMALL, UGLY THINGS SCURRY FROM BENEATH YOUR FEET.  IN THE DISTANCE, AN ALARM SOUNDS.",
       "text": "你們踏進了怪物橫行的菲蘭城貧民區。醜陋的小東西從腳邊竄開。遠處傳來警報聲。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -6199,14 +6804,34 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU HAVE ENTERED WHAT LOOKS LIKE AN ORDINARY ALCHEMISTS LAB... RECENTLY USED.",
+      "text": "你們走進一間看似尋常的煉金術實驗室……最近才有人用過。",
+      "note": "亞拉斯的金字塔。原版把 ALCHEMIST'S 寫成 ALCHEMISTS。"
+    },
+    {
       "source": "YOU HAVE FOUND A PASSAGE WHICH LEADS OUTSIDE.  WILL YOU TAKE IT?",
       "text": "你們找到一條通往外面的通道。要走嗎？",
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "YOU HAVE FOUND A ROWBOAT HIDDEN AMOUNGST THE REEDS.  WILL YOU TAKE IT TO THE PYRAMID?",
+      "text": "你們發現一艘藏在蘆葦叢裡的小船。要划它去金字塔嗎？",
+      "note": "野外。原版把 AMONGST 拼成 AMOUNGST。"
+    },
+    {
       "source": "YOU HAVE FOUND A SMALL DARK CAVE.  WILL YOU ENTER?",
       "text": "你們發現一個又小又暗的洞穴。要進去嗎？",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU HAVE FOUND A SMALL WOODED GROVE.  WILL YOU ENTER?",
+      "text": "你們找到一小片樹叢。要進去嗎？",
+      "note": "野外。"
+    },
+    {
+      "source": "YOU HAVE FOUND SOME RUINED HUTS.  WILL YOU INVESTIGATE?",
+      "text": "你們發現幾間毀壞的棚屋。要查看嗎？",
+      "note": "野外。"
     },
     {
       "source": "YOU HAVE INSULTED THE",
@@ -6242,6 +6867,11 @@
       "source": "YOU HAVE STUMBLED INTO A TREASURE ROOM.",
       "text": "你們誤打誤撞走進了一間寶庫。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE STUMBLED UPON A LARGE NOMAD CAMP.  WILL YOU ENTER IT?",
+      "text": "你們無意間撞見一座大型遊牧民營地。要進去嗎？",
+      "note": "遊牧民營地。"
     },
     {
       "source": "YOU HAVE SURPRISED A PARTY OF",
@@ -6289,9 +6919,19 @@
       "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
+      "source": "YOU HEAR A WHINING FROM THE PIPES THE BLACK LIQUID IS BUBBLING. HOWEVER, NOT ALL THE EQUIPMENT IS YET DESTROYED.",
+      "text": "管線傳出尖鳴，黑色液體翻騰冒泡。不過設備還沒全毀。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU HEAR ONE OF THEM WHISPER, 'THEY DON'T BELONG HERE; THEY MUST HAVE COME TO KILL TYRANTHRAXUS'. A HALF-ORC WOMAN STEPS FORWARD 'WHAT DO YOU WANT OF US?'",
       "text": "你們聽見其中一人低聲說：「他們不該在這裡，一定是來殺泰蘭特拉克斯的。」一名半獸人女子上前一步：「你們要我們做什麼？」",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU HEAR WAR CRIES AND THE CLANG OF METAL",
+      "text": "你們聽見喊殺聲與兵器相擊的聲響",
+      "note": "遊牧民營地。"
     },
     {
       "source": "YOU HIDE.",
@@ -6434,6 +7074,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU QUICKLY TRANSLATE THEM AND SAY...?",
+      "text": "你們很快譯出符文，念道……？",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU REACH THE BOTTOM AND FEEL AROUND...",
       "text": "你們摸到了底，四處探了探……",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -6444,9 +7089,19 @@
       "note": "街頭事件。"
     },
     {
+      "source": "YOU RELEASE THE KOBOLDS AND THEY THANK YOU.  ONE OF THEM SAYS, 'WATCH OUT FOR THE MUTANT LIZARD MEN, THEY'RE KILLERS!'  THEY THEN RUN OUT THE DOOR.",
+      "text": "你們放走小妖魔，牠們連聲道謝。其中一隻說：「小心那些變異的蜥蜴人，牠們會殺人！」說完便奪門而出。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU RUN AWAY FROM THE BATTLE BACK TO THE MERCHANT'S AREA.  FROM BEHIND YOU HEAR PEOPLE CALLING YOU NAMES LIKE 'PANSY' AND 'WIMP.'",
       "text": "你們逃離戰鬥，跑回商人區。身後傳來一片「膽小鬼」「孬種」的叫罵。",
       "note": "海盜據點。"
+    },
+    {
+      "source": "YOU RUN FOR THE EXIT. AS YOU SLAM THE DOOR BEHIND YOU, YOU HEAR AN ENORMOUS EXPLOSION. THE EQUIPMENT IS NOW CERTAINLY DESTROYED.",
+      "text": "你們衝向出口，門在身後砰地關上時，裡面轟然巨響。那些設備這下肯定全毀了。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "YOU RUN FOR YOUR LIVES AS THE GARRISON CHASES BEHIND YOU.  YOU RUN FOR THE FRONT GATE BUT ARE STOPPED BY SOME GUARDS.",
@@ -6524,9 +7179,19 @@
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
+      "source": "YOU SEE A DIAL THAT CAN BE SET TO FOUR DIFFERENT COLORS: BLUE, COPPER, SILVER, AND GOLD. IT IS CURRENTLY SET TO",
+      "text": "你們看到一個可以轉到四種顏色的轉盤：藍、銅、銀、金。目前轉在",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU SEE A DULL BROWN REPTILIAN MONSTER. IT DOESN'T SEEM AWARE OF YOU.",
       "text": "你們看到一隻暗褐色的爬蟲怪物，牠似乎沒有察覺你們。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A GROUP OF FIVE LIZARD MEN. THEY HISS AT YOU.",
+      "text": "你們看到五名蜥蜴人，牠們朝你們嘶叫。",
+      "note": "野外。"
     },
     {
       "source": "YOU SEE A GROUP OF FOUR ORCS WHOSE SHIELDS BEAR A BLACK HAND ON A RED FIELD.  THEY CAUTIOSLY LOOK YOU OVER.",
@@ -6559,6 +7224,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU SEE A SIGN OVER THE DOOR IN FRONT OF YOU. IT SAYS, 'DON'T FORGET THE PASSWORD'. THIS IS FOLLOWED BY SIX DWARVISH RUNES...",
+      "text": "眼前的門上有一塊牌子，寫著「別忘了通關密語」，後面跟著六個矮人符文……",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU SEE A STRANGE GREEN PLANT GROWTH WHICH YOU RECOGNIZE AS GREEN SLIME. YOU CAREFULLY MOVE AROUND IT.",
       "text": "你們看到一團奇怪的綠色黏狀物，認出那是綠泥怪，於是小心地繞了過去。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -6589,6 +7259,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU SEE ROCKS SCATTERED ABOUT THE SMOOTH FLAGSTONES.",
+      "text": "平整的石板上散落著一些石塊。",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU SEE SOME GIANTS PUTTING ON THEIR ARMOR.",
       "text": "你們看到幾名巨人正在穿護甲。",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -6597,6 +7272,11 @@
       "source": "YOU SEE SOME GIANTS STRUGGLING OUT OF BED.",
       "text": "你們看到幾名巨人正掙扎著爬下床。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU SEE SOME LIZARD MEN SWIMMING IN THE POOL.  UPON SEEING YOU THEY ATTACK!",
+      "text": "你們看到幾名蜥蜴人在池裡游動。牠們一看到你們就攻了上來！",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "YOU SEE THE CHIEF OF THE HOBGOBLINS, A HUGE OGRE. AS YOU ENTER, HE RISES TO HIS FULL, TEN FEET OF HEIGHT; HIS HEAD WREATHED IN THE FLICKERING SHADOWS.",
@@ -6617,6 +7297,11 @@
       "source": "YOU SEE WHAT ONCE WAS A GARDEN, NOW-WEED FILLED. THE PLEASANT POND HAS BECOME A SWAMP.",
       "text": "這裡曾經是花園，如今雜草叢生，原本宜人的池塘變成了沼澤。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SPIN TO FACE THE SOUND.",
+      "text": "你們循聲轉過身去。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "YOU SPOT A GROUP OF",
@@ -6647,6 +7332,11 @@
       "source": "YOU STAND OUTSIDE A LARGE MANSION.  ON THE WALLS OF THE MANSION ARE CRUDE BLACK HAND PRINTS.",
       "text": "你們站在一棟大宅外面，牆上印著粗糙的黑手印。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU START TO RUN FOR THE EXIT... YOU DON'T MAKE IT.",
+      "text": "你們拔腿衝向出口……沒能跑到。",
+      "note": "亞拉斯的金字塔。"
     },
     {
       "source": "YOU STEP INTO A STRANGE GREEN PLANT GROWTH... IT'S GREEN SLIME! QUICKLY, YOU SCRAPE IT OFF, TAKING A GOOD DEAL OF DAMAGE.",
@@ -6714,9 +7404,19 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "YOU THROW A ROCK. SUDDENLY IT DISAPPEARS WITH A FLASH!",
+      "text": "你們扔出一塊石頭，它閃了一下便憑空消失！",
+      "note": "亞拉斯的金字塔。"
+    },
+    {
       "source": "YOU THROW CAUTION TO THE WIND AND ATTACK.  THE CAPTAIN SMILES AND THEN RUSHES TO BATTLE.",
       "text": "你們豁出去動手了。隊長笑了笑，隨即投入戰鬥。",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU TRIP ON A WIRE TO THE ACCOMPANIMENT OF BELLS TINKLING. AFTER A MOMENT THERE IS A COMMOTION AHEAD OF YOU.",
+      "text": "你們絆到一根細線，鈴聲隨之響起。片刻後，前方一陣騷動。",
+      "note": "遊牧民營地。"
     },
     {
       "source": "YOU TRY TO ATTACK THE DRAGON BUT SEEM TO BE FROZEN IN TIME.  THE DRAGON THROWS A FIREBALL IN THE MIDDLE OF THE PARTY AND THEN DISAPPEARS.  YOU HAVE A STRANGE FEELING THAT YOU JUST MADE A BIG MISTAKE.",

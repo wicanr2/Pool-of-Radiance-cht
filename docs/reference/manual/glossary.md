@@ -431,6 +431,19 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 探險者手冊的用詞，遊戲畫面不會顯示，所以**它們的譯名不受遊戲文字約束，也不能
 拿遊戲資料當佐證**。定案照舊，依據仍是說明書本身。
 
+### 指向說明書的編號用詞
+
+遊戲文字常說「把這一頁抄進 JOURNAL 第 N 條」，玩家接著要翻說明書去讀那一條。
+兩邊的詞對不上，那個動作就完成不了，所以這三個詞一律照說明書：
+
+| 原文 | 定案 | 說明書出處 |
+|---|---|---|
+| Journal | 探險者手冊（行文中作「手冊」）| 手冊 p.1 第一章標題 |
+| ENTRY N | 線索報導 N | 手冊 p.22 起，第五章編號 1–58，與遊戲的 ENTRY 編號一一對應 |
+| PROCLAMATION（羅馬數字）| 公告字號（保留羅馬數字）| 手冊 p.18 起，第四章逐則標「公告字號 LIX」 |
+
+公告編號不改寫成中文數字：手冊上印的是羅馬數字，改了就查不到。
+
 ### 遊戲內文字新增譯名
 
 遊戲文字裡有一些專名說明書沒收。接線時新增的譯名記在這裡，依據與定案譯名同一組
@@ -488,6 +501,9 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Tirantikus | 提蘭提庫斯 | `ECL6` 指揮官晚宴 | 音近；原文與泰蘭特拉克斯是同一個存在的異名，字面不同故不合併 |
 | Buccaneer | 海盜 | `ECL6` 海盜據點 | 意譯；原版同時用 PIRATE，兩者在遊戲內無區別 |
 | Anhkheg（原版拼法）| 掘地蟲 | `ECL6` 野外遭遇 | 依下方對齊表 |
+| Tyrmor | 提爾莫 | `ECL7` 荒野屍體 | 音近；線索報導 26 是他的日記 |
+| Hassad Ahwal | 哈薩德·阿瓦爾 | `ECL7` 遊牧民酋長 | 音近；線索報導 55 是他的談話 |
+| Noknok | 諾克諾克 | `ECL7` 金字塔通關密語 | 音譯；矮人符文拼出的字，不譯義 |
 
 AD&D 的等級稱號在訓練所畫面上直接顯示，說明書沒收，一併記在這裡：
 WARRIOR 武士、SWORDSMAN 劍士、HERO 英雄（戰士）；CURATE 教士（牧師）；
@@ -497,7 +513,7 @@ THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
 原版在遊戲文字裡也有拼錯的地方，譯名一律照定案，不跟著錯字走：
 `PODAL PLAZA`（正為 PODOL）、`STOJONOW`（正為 STOJANOW）、`ZHENTIAL KEEP`
 （正為 ZHENTIL）、`OPENNING`（正為 OPENING）、`POSIONED`（正為 POISONED）、
-`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）、`SARCOPHOGI`（SARCOPHAGI）、`WHATS`（WHAT'S）、`ALTER`（ALTAR）、`PEACE`（PIECE）、`DIMINSH`（DIMINISH）、`VISCIOUS`（VICIOUS）、`LORDBANE`（LORD BANE）、`INTREST`／`INTRESTS`（INTEREST）、`BUCCANNEERS`（BUCCANEERS）、`DENSLY`（DENSELY）、`CONGRADULATE`（CONGRATULATE）、`TRESSPASSING`（TRESPASSING）、`CONSQUENCES`（CONSEQUENCES）、`DISSAPPEARS`（DISAPPEARS）、`APEASE`（APPEASE）、`ALOT`（A LOT）、`HORESBACK`（HORSEBACK）、`COMMING`（COMING）、`WIMPERS`（WHIMPERS）、`AMOUNG`（AMONG）、`DISSCUSION`（DISCUSSION）、`FLYS`（FLIES）、`POSSESION`（POSSESSION）、`FILED`（FILLED）、`HOWS`（HOW'S）、`GOTO`（GO TO）。口語縮寫 `OTTA'`（OUT OF）是刻意的角色口吻，不列為拼錯。
+`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）、`SARCOPHOGI`（SARCOPHAGI）、`WHATS`（WHAT'S）、`ALTER`（ALTAR）、`PEACE`（PIECE）、`DIMINSH`（DIMINISH）、`VISCIOUS`（VICIOUS）、`LORDBANE`（LORD BANE）、`INTREST`／`INTRESTS`（INTEREST）、`BUCCANNEERS`（BUCCANEERS）、`DENSLY`（DENSELY）、`CONGRADULATE`（CONGRATULATE）、`TRESSPASSING`（TRESPASSING）、`CONSQUENCES`（CONSEQUENCES）、`DISSAPPEARS`（DISAPPEARS）、`APEASE`（APPEASE）、`ALOT`（A LOT）、`HORESBACK`（HORSEBACK）、`COMMING`（COMING）、`WIMPERS`（WHIMPERS）、`AMOUNG`（AMONG）、`DISSCUSION`（DISCUSSION）、`FLYS`（FLIES）、`POSSESION`（POSSESSION）、`FILED`（FILLED）、`HOWS`（HOW'S）、`GOTO`（GO TO）、`ABBANDONED`（ABANDONED）、`PLESANTRIES`（PLEASANTRIES）、`TRESS`（TREES）、`AMOUNGST`（AMONGST）、`INSTUMENTS`（INSTRUMENTS）、`ENTERANCES`（ENTRANCES）、`FACINATING`（FASCINATING）、`ALCHEMISTS`（ALCHEMIST'S，缺所有格撇號）。口語縮寫 `OTTA'`（OUT OF）是刻意的角色口吻，不列為拼錯。
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法
