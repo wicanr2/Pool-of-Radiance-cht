@@ -35,8 +35,8 @@ type slot struct {
 	InitOffset       string `json:"init_offset"`
 	Parameters       string `json:"parameters"`
 	RequiresAttack   bool   `json:"requires_attack_roll"`
+	SaveRule         uint8  `json:"save_rule"`
 	SaveCategory     uint8  `json:"save_category"`
-	SaveModifier     uint8  `json:"save_modifier"`
 	EffectCode       string `json:"effect_code"`
 }
 
@@ -99,8 +99,8 @@ func run(zipPath, outPath string) error {
 			InitOffset:     fmt.Sprintf("%#04x", entry.InitOffset),
 			Parameters:     hexBytes(record.Raw[:]),
 			RequiresAttack: record.RequiresAttackRoll(),
-			SaveCategory:   record.SaveCategory(),
-			SaveModifier:   record.SaveModifier(),
+			SaveRule:       record.SaveRule(),
+			SaveCategory:   uint8(record.SaveCategory()),
 			EffectCode:     fmt.Sprintf("%#02x", record.EffectCode()),
 		})
 	}

@@ -19,12 +19,13 @@ const (
 	// spellParameterAttackRoll 是 `+0`：值為 FFh 時 `08BCh` 走命中判定
 	// （`0997h` 的 `cmp byte ptr [di+3196h], 0FFh`），先擲一次攻擊再談效果。
 	spellParameterAttackRoll = 0
-	// spellParameterSaveCategory 是 `+6`：0 表示不用擲豁免
-	// （`095Eh` 的 `cmp byte ptr [di+319Ch], 0`）。
-	spellParameterSaveCategory = 6
-	// spellParameterSaveModifier 是 `+7`：豁免判定的第二個引數
-	// （`097Ch` 推給 `0100h:0043h`）。
-	spellParameterSaveModifier = 7
+	// spellParameterSaveRule 是 `+6`：0 表示不用擲豁免
+	// （`095Eh` 的 `cmp byte ptr [di+319Ch], 0`）。非零時它還會一路傳給
+	// `0100h:007Fh` 與 `0100h:0084h`，所以它不只是布林；1..3 的差別未讀。
+	spellParameterSaveRule = 6
+	// spellParameterSaveCategory 是 `+7`：豁免類別，索引角色記錄 `+6Dh` 起
+	// 那五個目標值（spec 075）。`097Ch` 把它推給 `0100h:0043h`。
+	spellParameterSaveCategory = 7
 	// spellParameterEffectCode 是 `+8`：掛到角色效果串列（spec 069）的效果碼。
 	// `0A13h` 先檢查它大於零才進掛效果那一段，所以值為零就是「不留狀態」。
 	spellParameterEffectCode = 8
@@ -45,11 +46,17 @@ func (p SpellParameters) RequiresAttackRoll() bool {
 	return p.Raw[spellParameterAttackRoll] == spellParameterAttackRollFlag
 }
 
-// SaveCategory 是豁免的類別；0 表示不擲。類別 1..3 各自是什麼還沒讀。
-func (p SpellParameters) SaveCategory() uint8 { return p.Raw[spellParameterSaveCategory] }
+// SaveRule 是 0 就不擲豁免。非零代表要擲，值本身還會傳給後面兩支常式；
+// 1..3 分別是什麼處置（無效、減半、其他）還沒讀。
+func (p SpellParameters) SaveRule() uint8 { return p.Raw[spellParameterSaveRule] }
 
-// SaveModifier 是豁免判定的第二個引數。
-func (p SpellParameters) SaveModifier() uint8 { return p.Raw[spellParameterSaveModifier] }
+// AllowsSavingThrow 說目標有沒有豁免機會。
+func (p SpellParameters) AllowsSavingThrow() bool { return p.SaveRule() != 0 }
+
+// SaveCategory 是豁免類別，對到角色記錄 `+6Dh` 起那五個目標值的其中一格。
+func (p SpellParameters) SaveCategory() SaveCategory {
+	return SaveCategory(p.Raw[spellParameterSaveCategory])
+}
 
 // EffectCode 是掛上去的效果碼；0 表示這個法術不留狀態。
 func (p SpellParameters) EffectCode() uint8 { return p.Raw[spellParameterEffectCode] }
