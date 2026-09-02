@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 
@@ -184,5 +185,24 @@ func TestDisplayTextReplacesGlyphsTheFontLacks(t *testing.T) {
 	}
 	if got != "等一下...那是什麼--一把劍~" {
 		t.Fatalf("display text came out as %q", got)
+	}
+}
+
+// 兩種語言的格式化字串要吃同一組參數。順序寫反時 go vet 抓不到
+// （兩邊都是合法的字串），但畫面上會印出 %!d(string=…) 這種東西。
+func TestTranslatedFormatStringsTakeTheSameArguments(t *testing.T) {
+	verbs := regexp.MustCompile(`%[-+ #0]*[0-9*]*(?:\.[0-9*]+)?[a-zA-Z]`)
+	for id, pair := range messages {
+		english, chinese := verbs.FindAllString(pair[0], -1), verbs.FindAllString(pair[1], -1)
+		if len(english) != len(chinese) {
+			t.Fatalf("message %d has %d verbs in English and %d in Chinese: %q / %q",
+				id, len(english), len(chinese), pair[0], pair[1])
+		}
+		for index := range english {
+			if english[index][len(english[index])-1] != chinese[index][len(chinese[index])-1] {
+				t.Fatalf("message %d verb %d is %s in English and %s in Chinese: %q / %q",
+					id, index, english[index], chinese[index], pair[0], pair[1])
+			}
+		}
 	}
 }

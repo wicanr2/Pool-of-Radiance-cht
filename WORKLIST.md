@@ -231,6 +231,10 @@
   Spec 037 session snapshot）的 Pool 全套與 CoAB
   核心相容回歸均已通過。下一步依玩家路徑
   閉合 City Hall reward／commission 迴圈與其後尚未接妥的服務規則。
+- [x] 商店服務：四家店與墓園戰利品共用 `CLEARMONSTERS → TREASURE → SAVE → COMBAT`
+  邊界，判別靠 `6E6Ch=1`／`6EF6h=1`／`6E6Dh=16` 三個旗標（不是 item block 編號）。
+  存貨是 `ITEM3.DAX` 的 block `34h`..`37h`，價格在記錄 `+3Ah`。購買扣金幣並沿用
+  spec 035 的負重／格數上限。契約見 spec 067；賣出與其餘六種貨幣的換算仍未做。
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 

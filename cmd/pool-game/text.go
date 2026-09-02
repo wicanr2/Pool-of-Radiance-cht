@@ -39,6 +39,15 @@ const (
 // 不是重新翻譯。說明書沒有對應字串的（畫面提示、功能鍵列）才自行擬定，
 // 用詞依 `docs/reference/manual/glossary.md` 的定案譯名。
 var messages = map[messageID][2]string{
+	msgShopTitle:      {"SHOP", "商店"},
+	msgShopStatus:     {"Original Pool shop service: %d item(s) in stock.", "原版商店服務：架上 %d 件。"},
+	msgShopBuyer:      {"Buyer %d/%d  %s  gold %d", "買家 %d/%d　%s　金幣 %d"},
+	msgShopCount:      {"item %d of %d", "第 %d 件，共 %d 件"},
+	msgShopFooter:     {"TAB switch buyer  UP/DOWN choose  ENTER buy  ESC leave", "TAB 換買家　上下選貨　ENTER 購買　ESC 離開"},
+	msgShopBought:     {"%s bought %s for %d gold.", "%s 買下 %s，花了 %d 金幣。"},
+	msgShopNoGold:     {"%s has %d gold but this costs %d.", "%s 只有 %d 金幣，這件要 %d。"},
+	msgShopOverloaded: {"%s cannot carry any more.", "%s 拿不動了。"},
+	msgShopNoParty:    {"The party is empty.", "隊伍裡沒有人。"},
 	msgEquipmentTitle:       {"PARTY EQUIPMENT", "隊伍裝備"},
 	msgEquipmentEmptyParty:  {"The party is empty.", "隊伍裡沒有人。"},
 	msgEquipmentNoItems:     {"This character carries nothing.", "這名角色身上沒有東西。"},
@@ -372,6 +381,19 @@ func utf8DecodeLast(value string) (rune, bool) {
 }
 
 // 戰術畫面的字串。戰鬥用語依說明書第五章與 glossary 的定案（ROUND＝戰鬥回合）。
+// 商店畫面的字串。
+const (
+	msgShopTitle messageID = iota + 500
+	msgShopStatus
+	msgShopBuyer
+	msgShopCount
+	msgShopFooter
+	msgShopBought
+	msgShopNoGold
+	msgShopOverloaded
+	msgShopNoParty
+)
+
 // 裝備畫面的字串。
 const (
 	msgEquipmentTitle messageID = iota + 400

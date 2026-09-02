@@ -106,6 +106,8 @@ type app struct {
 	tactical         *tacticalState
 	journal          *journalState
 	itemTypes        *gamepack.ItemTypeTable
+	shop             *shopState
+	shopActive       bool
 	equipment        *equipmentState
 	equipmentOpen    bool
 	journalOpen      bool
@@ -331,6 +333,12 @@ func (a *app) Update() error {
 	}
 	if a.journalOpen {
 		a.journalInput()
+		return nil
+	}
+	if a.shopActive && a.shop != nil {
+		if err := a.shopInput(); err != nil {
+			a.statusLine = err.Error()
+		}
 		return nil
 	}
 	if a.equipmentOpen {
@@ -804,6 +812,11 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		a.applyCellECLResult(result)
 		if len(result.TreasureRequests) != 0 {
+			// 商店與戰利品走同一條邊界，先分辨再分派：分不出來的話，
+			// 走進商店會把整櫃存貨當成免費戰利品發下去。
+			if a.isShopBoundary(result) {
+				return a.enterShop(result.TreasureRequests)
+			}
 			return a.enterTreasure(result.TreasureRequests)
 		}
 		if result.CombatRequested && len(result.MonsterSpawns) != 0 {
@@ -1790,6 +1803,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	}
 	if a.equipmentOpen && a.equipment != nil {
 		drawEquipment(screen, a, background, foreground, accent)
+	}
+	if a.shopActive && a.shop != nil {
+		drawShop(screen, a, background, foreground, accent)
 	}
 }
 
