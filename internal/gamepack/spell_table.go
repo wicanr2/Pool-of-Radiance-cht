@@ -134,8 +134,13 @@ func (c *SpellCatalogue) ByClassAndLevel(class SpellClass, level int) []Spell {
 	return out
 }
 
-// ReadDOSSpellNames 直接從 START.EXE 解出名稱表，用來核對內建的那一份。
-func ReadDOSSpellNames(zipPath string) ([]string, error) {
+// startDataSegmentFileDelta 把 START.EXE 的 DS 位移換成檔案位移。
+// 由兩筆獨立的 IDA 匯出對出來且一致：職業 THAC0 表 ds 15382 ↔ file 46022、
+// 致能效果碼表 ds 10367 ↔ file 41007，兩者相差都是這個值。
+const startDataSegmentFileDelta = 30640
+
+// readStartExecutable 取出 DOS ZIP 裡的 START.EXE。
+func readStartExecutable(zipPath string) ([]byte, error) {
 	archive, err := zip.OpenReader(zipPath)
 	if err != nil {
 		return nil, fmt.Errorf("open DOS ZIP: %w", err)
@@ -162,6 +167,15 @@ func ReadDOSSpellNames(zipPath string) ([]string, error) {
 	raw, err := io.ReadAll(reader)
 	if err != nil {
 		return nil, fmt.Errorf("read START.EXE: %w", err)
+	}
+	return raw, nil
+}
+
+// ReadDOSSpellNames 直接從 START.EXE 解出名稱表，用來核對內建的那一份。
+func ReadDOSSpellNames(zipPath string) ([]string, error) {
+	raw, err := readStartExecutable(zipPath)
+	if err != nil {
+		return nil, err
 	}
 	end := SpellNameTableOffset + SpellNameCount*SpellNameEntrySize
 	if len(raw) < end {
