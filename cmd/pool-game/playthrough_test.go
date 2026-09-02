@@ -10,6 +10,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
@@ -290,5 +291,159 @@ func TestPassiveCombatTerminates(t *testing.T) {
 	}
 	if !strings.Contains(application.statusLine, "defeated") {
 		t.Fatalf("a party that never fought back ended with %q", application.statusLine)
+	}
+}
+
+// 隊伍打得贏。走到索寇要塞那一場，每一位都朝最近的敵人前進並攻擊；跑完
+// 一段固定的回合數之後，怪物該倒下大半而隊伍不該有人倒下。
+//
+// 這一條擋的是「打得到但打不動」——在敵方回合加上追擊退路、以及擋掉誤砍
+// 同伴之前，同樣的操作只會讓隊伍互砍或雙方對峙。
+func TestPartyMakesHeadwayInTheFirstCombat(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	party := make([]poolsave.Character, 0, 6)
+	for index := 0; index < 6; index++ {
+		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
+			GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good",
+			Abilities: [6]int{18, 10, 10, 16, 10, 10}, MaxHP: 60, CurrentHP: 60,
+			PortraitHead: 1, PortraitBody: 1, IconSize: 1})
+	}
+	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
+	application.saveState = func(poolsave.State) error { return nil }
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 20000 && !application.introDone; tick++ {
+		if application.introWaiting || application.tourPage >= 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		application.keys = scriptedKeys{}
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	random := rand.New(rand.NewSource(7))
+	for step := 0; step < 4000 && !application.combatActive; step++ {
+		switch {
+		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+		default:
+			key := ebiten.KeyArrowUp
+			if random.Intn(3) == 0 {
+				key = ebiten.KeyArrowRight
+			}
+			if err := press(application, key); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	if !application.combatActive {
+		t.Fatal("never reached combat")
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if application.tactical == nil {
+		t.Fatalf("tactical state absent: %q", application.statusLine)
+	}
+	foesAtStart := 0
+	for index := 1; index < len(application.tactical.Roster); index++ {
+		if !application.tactical.Friendly[index] {
+			foesAtStart++
+		}
+	}
+	sameCell := 0
+	for tick := 0; tick < 20000; tick++ {
+		state := application.tactical
+		if state == nil || state.Finished {
+			break
+		}
+		if state.Prompt {
+			if err := press(application, ebiten.KeyY); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		mover := state.Mover
+		if mover == 0 || int(mover) >= len(state.Friendly) || !state.Friendly[mover] {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		target, ok := state.nearestOpposing(mover)
+		if !ok {
+			break
+		}
+		from, to := state.Roster[mover], state.Roster[target]
+		chosen, chosenDistance := -1, chebyshev(from.X, from.Y, to.X, to.Y)+1
+		for direction := 0; direction < 8; direction++ {
+			x, y, err := combat.AdvanceTacticalCoordinate(from.X, from.Y, uint8(direction))
+			if err != nil {
+				continue
+			}
+			if d := chebyshev(x, y, to.X, to.Y); d < chosenDistance {
+				chosen, chosenDistance = direction, d
+			}
+		}
+		if chosen < 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		if err := press(application, tacticalStepKeys[chosen]); err != nil {
+			t.Fatalf("combat tick %d: %v", tick, err)
+		}
+		after := application.tactical
+		if after == nil || after.Finished {
+			break
+		}
+		if after.Roster[mover].X == from.X && after.Roster[mover].Y == from.Y {
+			sameCell++
+			if sameCell >= 6 {
+				sameCell = 0
+				if err := press(application, ebiten.KeyEnter); err != nil {
+					t.Fatal(err)
+				}
+			}
+		} else {
+			sameCell = 0
+		}
+	}
+	state := application.tactical
+	if state == nil {
+		// 已經打完了，那更好。
+		return
+	}
+	standingParty, standingFoes := 0, 0
+	for index := 1; index < len(state.Roster); index++ {
+		if state.Roster[index].FootprintClass == 0 {
+			continue
+		}
+		if state.Friendly[index] {
+			standingParty++
+		} else {
+			standingFoes++
+		}
+	}
+	if standingParty != len(party) {
+		t.Fatalf("%d of %d party members went down", len(party)-standingParty, len(party))
+	}
+	// 固定操作、固定種子，實測會倒下五隻；門檻放在四隻，留一點骰運的空間。
+	if foesAtStart-standingFoes < 4 {
+		t.Fatalf("only %d of %d foes went down after %d rounds", foesAtStart-standingFoes, foesAtStart, state.Round)
 	}
 }
