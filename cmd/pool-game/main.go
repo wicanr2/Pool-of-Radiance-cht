@@ -163,6 +163,12 @@ type app struct {
 	programExitsBlock bool
 	// savingThrows 是 DS:41E6h 那張表（spec 075），2Eh DAMAGE 擲豁免要用。
 	savingThrows *gamepack.SavingThrowTable
+	// trainParty 是隊伍管理畫面上選中的成員，訓練指令對他生效。
+	trainParty int
+	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
+	levelUpTables gamepack.LevelUpTables
+	// experienceTable 是昇級門檻（spec 071）。
+	experienceTable gamepack.ExperienceTable
 	// parlay 是進行中的交涉選單（spec 086）。
 	parlay *parlayState
 	// eclInput 是進行中的 ECL 輸入列（spec 087）。
@@ -256,6 +262,16 @@ func newApp(zipPath, statePath string) (*app, error) {
 	application.initialEvent = &initialEvent
 	application.itemTypes = itemTypes
 	application.savingThrows = savingThrows
+	levelUpTables, err := gamepack.ReadDOSLevelUpTables(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.levelUpTables = levelUpTables
+	experienceTable, err := gamepack.ReadDOSExperienceTable(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.experienceTable = experienceTable
 	spellParameters, err := gamepack.ReadDOSSpellParameters(zipPath)
 	if err != nil {
 		return nil, err
@@ -419,6 +435,30 @@ func (a *app) Update() error {
 		}
 	case modeMenu:
 		if a.programManaging {
+			// 1-6 挑人、T 訓練（spec 097）。原版把訓練掛在這個畫面的 `T` 上。
+			for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2,
+				ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
+				if index < len(a.state.Party) && a.justPressed(key) {
+					a.trainParty = index
+					a.statusLine = strings.TrimSpace(a.state.Party[index].Name)
+					return nil
+				}
+			}
+			if a.justPressed(ebiten.KeyT) {
+				if len(a.state.Party) == 0 {
+					a.statusLine = a.text(msgTrainNeedsMember)
+					return nil
+				}
+				if a.trainParty >= len(a.state.Party) {
+					a.trainParty = 0
+				}
+				line, err := a.trainMember(a.trainParty)
+				if err != nil {
+					return err
+				}
+				a.statusLine = line
+				return nil
+			}
 			// `38h PROGRAM` 開的隊伍管理：B 或 ESC 回地圖，ECL 從原地繼續。
 			// 這裡不能走下面那條「開始冒險」——那會把開場整個重跑一次。
 			if a.justPressed(ebiten.KeyB) || a.justPressed(ebiten.KeyEscape) {
@@ -1932,9 +1972,18 @@ func (a *app) Draw(screen *ebiten.Image) {
 			begin = a.text(msgProgramReturn)
 		}
 		drawText(screen, begin, 176, 196, foreground)
+		if a.programManaging {
+			drawText(screen, a.text(msgTrainCommand), 176, 214, foreground)
+		}
 		drawText(screen, fmt.Sprintf(a.text(msgMenuCounts), len(a.state.CharacterLibrary), len(a.state.Party)), 176, 230, accent)
 		for index, member := range a.state.Party {
-			drawText(screen, fmt.Sprintf("%d  %s", index+1, member.Name), 176, 254+index*18, foreground)
+			// 隊伍管理時標出訓練指令要作用在誰身上。
+			marker := " "
+			if a.programManaging && index == a.trainParty {
+				marker = ">"
+			}
+			drawText(screen, fmt.Sprintf("%s%d  %s", marker, index+1, member.Name),
+				176, 254+index*18, foreground)
 		}
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 72, 350, foreground)

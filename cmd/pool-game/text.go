@@ -81,6 +81,10 @@ var messages = map[messageID][2]string{
 	msgProgramAsk:           {"Do you want to change the party?", "要調整隊伍嗎？"},
 	msgProgramYes:           {"YES", "要"},
 	msgProgramNo:            {"NO", "不要"},
+	msgTrainCommand:         {"T  TRAIN CHARACTER", "T　訓練角色"},
+	msgTrainNotYet:          {" does not have enough experience to train.", " 的經驗值還不夠訓練。"},
+	msgTrainGained:          {" advances a level; hit points ", " 升了一級，生命值 "},
+	msgTrainNeedsMember:     {"Choose a character with 1-6 before training.", "先用 1-6 選一個角色再訓練。"},
 	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
@@ -472,6 +476,10 @@ const (
 	msgProgramAsk
 	msgProgramYes
 	msgProgramNo
+	msgTrainCommand
+	msgTrainNotYet
+	msgTrainGained
+	msgTrainNeedsMember
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved

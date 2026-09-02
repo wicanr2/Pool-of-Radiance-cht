@@ -702,9 +702,9 @@ const (
 	creationBaseMovement       = 0x0C
 )
 
-// remakeCharacterLevel 是隊伍成員目前一律的等級。原版的升級還沒接，
-// 建角出來的角色就是 1 級，所以查 THAC0 表時全部以 1 級計。
-const remakeCharacterLevel = 1
+// firstCharacterLevel 是還沒訓練過的角色的等級。建角每個組成職業各寫下第 1 級
+// （spec 072），存檔裡沒有 ClassLevels 就是這個狀態。
+const firstCharacterLevel = 1
 
 // partyCombatStats 依 spec 063 由職業算出隊伍成員的基礎戰鬥數值：THAC0 逐個
 // component 查 DS:3C16h 的表取最好的一個，AC 與移動用建角寫下的基礎值。
@@ -829,6 +829,11 @@ func tacticalStepDistances(grid combat.TacticalGrid, classes combat.CellClasses,
 // （spec 063）與豁免目標值（spec 075）查的是同一組索引，所以只算一次。
 func partyClassLevels(member poolsave.Character) ([gamepack.ClassThac0ClassCount]uint8, error) {
 	var levels [gamepack.ClassThac0ClassCount]uint8
+	// 訓練過的角色帶著自己的八個等級（spec 097）；沒有的照建角的第 1 級算。
+	if len(member.ClassLevels) > 0 {
+		copy(levels[:], member.ClassLevels)
+		return levels, nil
+	}
 	components, ok := creation.ClassComponents(member.ClassID)
 	if !ok {
 		return levels, fmt.Errorf("Pool character %q has unknown class %q", member.Name, member.ClassID)
@@ -841,7 +846,7 @@ func partyClassLevels(member poolsave.Character) ([gamepack.ClassThac0ClassCount
 		if int(index) >= len(levels) {
 			return levels, fmt.Errorf("Pool class component %q index %d is outside the table", component, index)
 		}
-		levels[index] = remakeCharacterLevel
+		levels[index] = firstCharacterLevel
 	}
 	return levels, nil
 }

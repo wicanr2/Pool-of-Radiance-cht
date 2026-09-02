@@ -73,6 +73,9 @@ type Character struct {
 	// Memorised 是記憶法術陣列（spec 070，記錄 `+1Fh` 起 13 格）。
 	// `3Bh SPELL` 問的就是這個；法術還沒接上來所以目前是空的。
 	Memorised []uint8 `json:"memorised,omitempty"`
+	// ClassLevels 是八個單一職業的等級（spec 097，記錄 `+96h` 起）。
+	// 空的代表「每個組成職業都是第 1 級」，所以舊存檔與剛建好的角色照讀。
+	ClassLevels []uint8 `json:"class_levels,omitempty"`
 	// Experience 是累積經驗值（spec 097，記錄 `+0ACh`／`+0AEh` 的 32 bit）。
 	// 舊存檔沒有這個欄位，讀回來是 0，與「還沒打過任何一場」同義。
 	Experience uint32 `json:"experience,omitempty"`
