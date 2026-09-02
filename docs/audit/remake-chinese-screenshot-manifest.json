@@ -1,15 +1,19 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-02",
-  "source_commit": "6130b4bded015cecf00dbbb3ec6bec9dca96f653",
+  "source_commit": "c60e9eb56b9aba6ee2b428d71f7ea6f9042df510",
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
-  "state_relation": "normal-remake-player-path; title screen then ENTER. Run with -lang zh and the ETen STDFONT.15 mounted read-only from the host; the font is third-party and is not part of this repository.",
+  "state_relation": "normal-remake-player-path: title, ENTER, C, then the creation flow. Run with -lang zh and the ETen font mounted read-only from the host.",
   "font": {
     "family": "ETen 16x15 Big5 bitmap",
-    "files": [
+    "files_present": [
       "stdfont.15",
       "ascfont.15"
     ],
+    "files_absent": [
+      "spcfont.15"
+    ],
+    "note": "spcfont.15 holds the full-width punctuation block. It was not in the font directory for this capture, so full-width commas and periods fell back to the built-in half-width glyphs. The text is otherwise the ETen face.",
     "in_repository": false
   },
   "screenshots": [
@@ -17,7 +21,29 @@
       "path": "docs/screenshots/pool-remake-chinese-menu.png",
       "sha256": "64337075719adf0af007eda57379f02bbf6cf137049dab07697e5ca27baac52a",
       "width": 960,
-      "height": 600
+      "height": 600,
+      "screen": "party creation menu"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-race.png",
+      "sha256": "c8bf525987ec641dc051480ef7b9452b1e2bcbe3d43fa1b7b16d60b88a16c737",
+      "width": 960,
+      "height": 600,
+      "screen": "race picker"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-class.png",
+      "sha256": "0524b901d5d43b89422f8e28abe444a424f5ae7f9d1e051c648c76ae959b008c",
+      "width": 960,
+      "height": 600,
+      "screen": "class picker, including the multi-class name"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-sheet.png",
+      "sha256": "941ba34f7098f5b2ba6ef4bd051d2d2190ec4197b4b0ff6cae179152e5aa741a",
+      "width": 960,
+      "height": 600,
+      "screen": "rolled character sheet"
     }
   ]
 }
