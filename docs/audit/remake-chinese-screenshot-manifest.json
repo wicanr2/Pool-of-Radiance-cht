@@ -1,0 +1,23 @@
+{
+  "schema": "pool-remake-screenshot-manifest/1",
+  "captured_at": "2026-09-02",
+  "source_commit": "6130b4bded015cecf00dbbb3ec6bec9dca96f653",
+  "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
+  "state_relation": "normal-remake-player-path; title screen then ENTER. Run with -lang zh and the ETen STDFONT.15 mounted read-only from the host; the font is third-party and is not part of this repository.",
+  "font": {
+    "family": "ETen 16x15 Big5 bitmap",
+    "files": [
+      "stdfont.15",
+      "ascfont.15"
+    ],
+    "in_repository": false
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/pool-remake-chinese-menu.png",
+      "sha256": "64337075719adf0af007eda57379f02bbf6cf137049dab07697e5ca27baac52a",
+      "width": 960,
+      "height": 600
+    }
+  ]
+}
