@@ -46,14 +46,16 @@ var messages = map[messageID][2]string{
 	msgSpellsCount:     {"%d spells in this group", "本級共 %d 種"},
 	msgSpellsFooter:    {"TAB next group  UP/DOWN choose  K/ESC close", "TAB 換級別　上下移動　K／ESC 關閉"},
 	msgSpellsNoEffect:  {"The manual's spell chapter does not describe this one.", "說明書的法術章沒有收這一條。"},
-	msgSpellsDurationFixed:       {"lasts %d rounds", "持續 %d 回合"},
-	msgSpellsDurationPerLevel:    {"lasts %d rounds per level", "每級持續 %d 回合"},
-	msgSpellsDurationBoth:        {"lasts %d rounds plus %d per level", "持續 %d 回合，每級再加 %d"},
-	msgSpellsDurationUntilBroken: {"lasts until dispelled", "持續到解除為止"},
-	msgSpellsSaveNone:            {"no saving throw", "不可豁免"},
-	msgSpellsSaveSpell:           {"save vs. spell", "可豁免（對法術）"},
-	msgSpellsSavePoison:          {"save vs. poison", "可豁免（對毒）"},
-	msgSpellsTouch:               {"must hit to take effect", "須擲中才生效"},
+	msgSpellsRangeFixed:          {"range %d", "射程 %d 格"},
+	msgSpellsRangePerLevel:       {"range %d +%d/level", "射程 %d 格（每級 +%d）"},
+	msgSpellsDurationFixed:       {"%d rounds", "持續 %d 回合"},
+	msgSpellsDurationPerLevel:    {"%d rounds/level", "每級 %d 回合"},
+	msgSpellsDurationBoth:        {"%d rounds +%d/level", "持續 %d 回合（每級 +%d）"},
+	msgSpellsDurationUntilBroken: {"until dispelled", "持續到解除"},
+	msgSpellsSaveNone:            {"no save", "不可豁免"},
+	msgSpellsSaveSpell:           {"save vs. spell", "可豁免（法術）"},
+	msgSpellsSavePoison:          {"save vs. poison", "可豁免（毒）"},
+	msgSpellsTouch:               {"must hit", "須擲中"},
 	msgShopTitle:      {"SHOP", "商店"},
 	msgShopStatus:     {"Original Pool shop service: %d item(s) in stock.", "原版商店服務：架上 %d 件。"},
 	msgShopBuyer:      {"Buyer %d/%d  %s  gold %d", "買家 %d/%d　%s　金幣 %d"},
@@ -413,6 +415,8 @@ const (
 	msgSpellsSaveSpell
 	msgSpellsSavePoison
 	msgSpellsTouch
+	msgSpellsRangeFixed
+	msgSpellsRangePerLevel
 )
 
 // 商店畫面的字串。

@@ -226,3 +226,31 @@ func TestSpellParameterDurations(t *testing.T) {
 		}
 	}
 }
+
+// 射程是 `+2 + +3 × 施法者等級`，算成 0 而 `+6` 非零就墊成 1。與規則書
+// 逐條對得上：Bless 6 格、Detect Magic 3 格、Fireball 10 加每級 1、
+// Lightning Bolt 4 加每級 1、碰觸的是 1 格。
+func TestSpellParameterRanges(t *testing.T) {
+	table, err := gamepack.ReadDOSSpellParameters(dosZIP)
+	if err != nil {
+		t.Skipf("DOS ZIP unavailable: %v", err)
+	}
+	for _, item := range []struct {
+		id, level, want int
+		note            string
+	}{
+		{1, 6, 6, "Bless 固定 6 格"},
+		{5, 6, 3, "Detect Magic 固定 3 格"},
+		{3, 6, 1, "Cure Light Wounds 是碰觸"},
+		{4, 6, 1, "Cause Light Wounds 的 FFh 也是碰觸"},
+		{23, 6, 6, "Hold Person 固定 6 格"},
+		{25, 6, 12, "Silence 15' Radius 固定 12 格"},
+		{47, 1, 11, "Fireball 10 加每級 1"},
+		{47, 6, 16, "Fireball 到 6 級是 16"},
+		{51, 6, 10, "Lightning Bolt 4 加每級 1"},
+	} {
+		if got := table[item.id].Range(item.level); got != item.want {
+			t.Fatalf("%s: spell %d at caster level %d reaches %d, want %d", item.note, item.id, item.level, got, item.want)
+		}
+	}
+}

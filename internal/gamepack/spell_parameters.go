@@ -27,7 +27,18 @@ const (
 	spellParameterLevel = 1
 	// spellParameterAttackRoll 是 `+2`：值為 FFh 時 `08BCh` 走命中判定
 	// （`0997h` 的 `cmp byte ptr [di+3196h], 0FFh`），先擲一次攻擊再談效果。
+	// 同一個 byte 也是基礎射程，見 spellParameterBaseRange。
 	spellParameterAttackRoll = 2
+	// spellParameterBaseRange 是 `+2`：基礎射程（格）。它同時是命中旗標：
+	// FFh 代表碰觸，射程算出來也是 1。
+	spellParameterBaseRange = 2
+	// spellParameterLevelRange 是 `+3`：每施法者等級再加的射程
+	// （`0742h` 的 `mov al, [di+3197h]`）。
+	spellParameterLevelRange = 3
+	// spellParameterRangeFloor 是 `+6`：射程算成 0 而它非零時，射程墊成 1
+	// （`07A3h` 的 `cmp byte ptr [di+319Ah], 0`）。它本身不是布林，
+	// 其餘語意要到 overlay-13 的四個呼叫端去讀。
+	spellParameterRangeFloor = 6
 	// spellParameterFixedDuration 是 `+4`：效果的固定回合數
 	// （`08A2h` 的 `mov al, [di+3198h]`）。
 	spellParameterFixedDuration = 4
@@ -78,6 +89,22 @@ func (p SpellParameters) Level() int { return int(p.Raw[spellParameterLevel]) }
 // RequiresAttackRoll 說這個法術是不是要先擲中才生效。
 func (p SpellParameters) RequiresAttackRoll() bool {
 	return p.Raw[spellParameterAttackRoll] == spellParameterAttackRollFlag
+}
+
+// Range 是射程，單位是格。`0723h` 那一段算的是 `+2 + +3 × 施法者等級`，
+// 算出來是 0 而 `+6` 非零就墊成 1，FFh 也是 1（碰觸）。
+//
+// 原版在戰術地圖外把施法者等級當成 6（`ds:6CB3h` 那個分支），所以戰鬥外
+// 呼叫時要傳 6，不是角色的真實等級。
+func (p SpellParameters) Range(casterLevel int) int {
+	value := (int(p.Raw[spellParameterBaseRange]) + int(p.Raw[spellParameterLevelRange])*casterLevel) & 0xff
+	if value == 0 && p.Raw[spellParameterRangeFloor] != 0 {
+		return 1
+	}
+	if value == spellParameterAttackRollFlag {
+		return 1
+	}
+	return value
 }
 
 // Duration 是效果持續幾回合：固定值加上每施法者等級的增量。

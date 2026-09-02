@@ -82,6 +82,15 @@ func (a *app) spellFacts(spell gamepack.Spell) string {
 		return ""
 	}
 	record := a.spellParameters[id]
+	// 射程與持續都寫成「基礎值加每級增量」。原版在戰術地圖外把施法者等級
+	// 當成 6，但一覽畫面不知道誰要施法，所以列的是公式而不是某個人的數字。
+	baseRange, rangePerLevel := record.Range(0), record.Range(1)-record.Range(0)
+	var reach string
+	if rangePerLevel > 0 {
+		reach = fmt.Sprintf(a.text(msgSpellsRangePerLevel), baseRange, rangePerLevel)
+	} else {
+		reach = fmt.Sprintf(a.text(msgSpellsRangeFixed), baseRange)
+	}
 	fixed, perLevel := record.Duration(0), record.Duration(1)-record.Duration(0)
 	var duration string
 	switch {
@@ -106,7 +115,7 @@ func (a *app) spellFacts(spell gamepack.Spell) string {
 	if a.language == languageTraditionalChinese {
 		separator = "　"
 	}
-	line := duration + separator + save
+	line := reach + separator + duration + separator + save
 	if record.RequiresAttackRoll() {
 		line += separator + a.text(msgSpellsTouch)
 	}
