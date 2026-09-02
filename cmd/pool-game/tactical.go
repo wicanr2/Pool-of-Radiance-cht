@@ -551,7 +551,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 	target := uint8(0)
 	if len(targets) != 0 {
 		target = targets[0]
-	} else if nearest, ok := state.nearestOpposing(mover); ok {
+	} else if nearest, ok := state.nearestReachableOpposing(mover); ok {
 		// 反應距離內沒人時，改追盤面上最近的敵人。
 		//
 		// **這不是原版的演算法**：原版的敵方回合在 overlay-09 entry 1
@@ -897,6 +897,39 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 }
 
 // sideCounts 數出兩邊還站著的人，對應原版的 DS:6772h 與 DS:6773h。
+// nearestReachableOpposing 先挑「直線走得到」的敵人，沒有才退回最近的那個。
+//
+// 走得到與否用 `combat.TraceMovement`——那支是 overlay-31 `0419h` 的重現
+// （spec 057），原版本來就是用它判斷地形擋不擋路。少了這一層，怪物會盯著
+// 一個隔著牆的目標，然後每回合往牆上撞、回報走了零步。
+//
+// **挑目標的規則本身還不是原版的**：原版的敵方回合在 overlay-09 entry 1，
+// 還沒讀。這裡只是讓「盯著走不到的目標」不再發生。
+func (state *tacticalState) nearestReachableOpposing(mover uint8) (uint8, bool) {
+	best, bestDistance := uint8(0), 0
+	from := state.Roster[mover]
+	budget := uint16(state.Budgets[mover])
+	for index := 1; index < len(state.Roster); index++ {
+		if state.Friendly[index] == state.Friendly[mover] || state.Roster[index].FootprintClass == 0 {
+			continue
+		}
+		to := state.Roster[index]
+		trace, err := combat.TraceMovement(state.Grid, state.Classes,
+			int(from.X), int(from.Y), int(to.X), int(to.Y), budget)
+		if err != nil || !trace.Complete {
+			continue
+		}
+		distance := chebyshev(from.X, from.Y, to.X, to.Y)
+		if best == 0 || distance < bestDistance {
+			best, bestDistance = uint8(index), distance
+		}
+	}
+	if best != 0 {
+		return best, true
+	}
+	return state.nearestOpposing(mover)
+}
+
 // nearestOpposing 回報盤面上離 mover 最近、還站著的敵對參戰者。
 // 距離用原版走位的切比雪夫距離（八方向一步一格）。
 func (state *tacticalState) nearestOpposing(mover uint8) (uint8, bool) {
