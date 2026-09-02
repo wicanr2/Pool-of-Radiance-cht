@@ -87,3 +87,32 @@ func TestEncumbranceOnlyLowersTheRate(t *testing.T) {
 		t.Fatalf("the 9 bucket raised a 6 to %d", got)
 	}
 }
+
+// 總負重 = 物品重量 × 數量 + 身上硬幣的枚數。七名預設人物記錄裡的 `+102h`
+// 逐一對得上——少了硬幣那一項，每個人都會差好幾千。
+func TestCarriedWeightMatchesThePremadeRecords(t *testing.T) {
+	for _, name := range []string{
+		"chrdatd1", "chrdatd2", "chrdatd3", "chrdatd4", "chrdatd5", "chrdatd6", "chrdatd7",
+	} {
+		record, err := os.ReadFile("../../workplace/oracle/dos/" + name + ".sav")
+		if err != nil {
+			t.Skipf("original character records unavailable: %v", err)
+		}
+		raw, err := os.ReadFile("../../workplace/oracle/dos/" + name + ".itm")
+		if err != nil {
+			t.Skipf("original item records unavailable: %v", err)
+		}
+		items := make([][]byte, 0, len(raw)/63)
+		for offset := 0; offset+63 <= len(raw); offset += 63 {
+			items = append(items, raw[offset:offset+63])
+		}
+		got, err := gamepack.CarriedWeightFromRecord(record, items)
+		if err != nil {
+			t.Fatalf("%s: %v", name, err)
+		}
+		want := int(record[gamepack.CarriedWeightOffset]) | int(record[gamepack.CarriedWeightOffset+1])<<8
+		if got != want {
+			t.Fatalf("%s carries %d, the record stores %d", name, got, want)
+		}
+	}
+}

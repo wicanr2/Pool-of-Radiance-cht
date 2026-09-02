@@ -28,6 +28,10 @@ const (
 	CurrentMovementOffset = 0x11c
 	// CarriedWeightOffset 是總負重（word）。
 	CarriedWeightOffset = 0x102
+	// MoneyOffset 是七種貨幣的枚數（七個 word）在角色記錄裡的起點。
+	MoneyOffset = 0x88
+	// MoneyCurrencies 是貨幣種類數（spec 040）。
+	MoneyCurrencies = 7
 	// StrengthOffset 與 ExceptionalStrengthOffset 是力量與例外力量。
 	StrengthOffset            = 0x10
 	ExceptionalStrengthOffset = 0x16
@@ -40,12 +44,47 @@ const (
 	ItemReadiedOffset = 0x34
 	// ItemWeightOffset 是重量（word）。
 	ItemWeightOffset = 0x37
+	// ItemCountOffset 是數量；0 當成 1。
+	ItemCountOffset = 0x39
 
 	// ItemCategoryArmour 是物品型別表 `+0` 代表盔甲的值；只有它會影響移動力。
 	ItemCategoryArmour = 2
 	// itemRecordSize 是一筆物品記錄的大小。
 	itemRecordSize = 63
 )
+
+// CarriedWeight 是總負重：每件物品的重量乘上數量（數量 0 當 1），再加上
+// **身上所有硬幣的枚數**——一枚就是一單位（overlay-25 `0C17h` 起的累加，
+// 加上 `0F67h` 的下限）。七名預設人物的 `+102h` 逐一對得上。
+func CarriedWeight(items [][]byte, money [MoneyCurrencies]uint16) (int, error) {
+	total := 0
+	for index, item := range items {
+		if len(item) <= ItemWeightOffset+1 {
+			return 0, fmt.Errorf("item %d has %d bytes", index, len(item))
+		}
+		weight := int(binary.LittleEndian.Uint16(item[ItemWeightOffset:]))
+		if count := int(item[ItemCountOffset]); count > 0 {
+			weight *= count
+		}
+		total += weight
+	}
+	for _, coins := range money {
+		total += int(coins)
+	}
+	return total, nil
+}
+
+// CarriedWeightFromRecord 從原版 285-byte 記錄與它的物品算總負重。
+func CarriedWeightFromRecord(record []byte, items [][]byte) (int, error) {
+	if len(record) < MoneyOffset+2*MoneyCurrencies {
+		return 0, fmt.Errorf("character record has %d bytes, money needs %d", len(record), MoneyOffset+2*MoneyCurrencies)
+	}
+	var money [MoneyCurrencies]uint16
+	for index := range money {
+		money[index] = binary.LittleEndian.Uint16(record[MoneyOffset+2*index:])
+	}
+	return CarriedWeight(items, money)
+}
 
 // ArmourMovementRate 是一件盔甲把移動力壓成多少（overlay-25 `01F8h`）。
 // weight 是物品的 `+37h`，plus 是 `+32h`，base 是角色的 `+72h`。
