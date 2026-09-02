@@ -164,6 +164,8 @@ type app struct {
 	eclInput *eclInputState
 	// whoPending 為真時選單正在等玩家挑人（`39h WHO`，spec 090）。
 	whoPending bool
+	// eclClock 是 `34h ECL CLOCK` 推的那七格（spec 093）。
+	eclClock gamepack.ECLClock
 	// currentCharacter 是原版 `DS:5CF0h` 那個「目前角色」的索引。
 	// `39h` 設定它，`28h ROB` 的範圍 0 讀它。
 	currentCharacter int
@@ -940,6 +942,12 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if event, ok := checkPartyEvent(result); ok {
 			return a.applyCheckParty(event)
+		}
+		if event, ok := eclClockEvent(result); ok {
+			return a.applyECLClock(event)
+		}
+		if event, ok := spellSearchEvent(result); ok {
+			return a.applySpellSearch(event)
 		}
 		return a.pauseAppliedCellResult(result)
 	}

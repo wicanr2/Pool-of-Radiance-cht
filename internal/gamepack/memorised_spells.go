@@ -20,7 +20,38 @@ const (
 	memorisedSpellIDMask = 0x7f
 	// MemorisedSpellFlag 是第 7 位。原版取名前會把它濾掉。
 	MemorisedSpellFlag = 0x80
+
+	// SpellSearchOpcode 是 `3Bh SPELL`（spec 094）：找隊上誰記了某個法術。
+	SpellSearchOpcode = 0x3b
+	// SpellSearchOperands 是它吃幾個運算元。
+	SpellSearchOperands = 3
+	// SpellSearchBase 是原版掃描的基底（`2FC9h` 的 `es:[di+17h]`）。
+	// 槽位編號 i 對到記錄 `+17h + i`，所以記憶陣列的第 k 格是 i = k + 8。
+	SpellSearchBase = 0x17
+	// SpellSearchLastSlot 是掃到第幾格為止（`2FD8h` 比的 51h）。
+	SpellSearchLastSlot = 0x51
+	// SpellSearchNotFound 是沒找到時寫回去的槽位編號（`2FE3h` 的 FFh）。
+	SpellSearchNotFound = 0xff
 )
+
+// SpellSearchSlot 是記憶陣列第 k 格對應的原版槽位編號。
+func SpellSearchSlot(index int) int { return index + MemorisedSpellOffset - SpellSearchBase }
+
+// SearchMemorisedSpell 在一份記憶陣列裡找某個法術編號，回傳原版的槽位編號；
+// 沒找到回 SpellSearchNotFound。
+//
+// 比對前會濾掉第 7 位的旗標，與原版取名時的 `and al, 7Fh` 同一套。
+func SearchMemorisedSpell(memorised []uint8, wanted uint8) int {
+	for index, value := range memorised {
+		if index >= MemorisedSpellSlots {
+			break
+		}
+		if value&memorisedSpellIDMask == wanted {
+			return SpellSearchSlot(index)
+		}
+	}
+	return SpellSearchNotFound
+}
 
 // MemorisedSpell 是一格記憶法術。
 type MemorisedSpell struct {

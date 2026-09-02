@@ -66,6 +66,9 @@ type Character struct {
 	// Record 是 NPC 的 285-byte MON*CHA 記錄。戰鬥數值直接讀它，
 	// 不硬把 NPC 塞進建角那一套欄位。
 	Record []byte `json:"record,omitempty"`
+	// Memorised 是記憶法術陣列（spec 070，記錄 `+1Fh` 起 13 格）。
+	// `3Bh SPELL` 問的就是這個；法術還沒接上來所以目前是空的。
+	Memorised []uint8 `json:"memorised,omitempty"`
 	// Effects 是掛在身上的效果碼（spec 069 的串列，記錄 `+7Fh` 起）。
 	// `1Eh CHECKPARTY` 的效果模式問的就是這個。法術還沒接上來，
 	// 所以目前一律是空的——空的是正確答案，不是佔位。

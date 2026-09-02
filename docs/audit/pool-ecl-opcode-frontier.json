@@ -53,41 +53,18 @@
     "0x31",
     "0x32",
     "0x33",
+    "0x34",
     "0x35",
     "0x36",
     "0x37",
     "0x38",
     "0x39",
     "0x3A",
+    "0x3B",
     "0x3C",
     "0x3D"
   ],
-  "unhandled": [
-    {
-      "opcode": "0x34",
-      "name": "ECL CLOCK",
-      "arity": 2,
-      "sites": [
-        {
-          "file": "ecl7.dax",
-          "block_id": 17,
-          "offset": 1079
-        }
-      ]
-    },
-    {
-      "opcode": "0x3B",
-      "name": "SPELL",
-      "arity": 3,
-      "sites": [
-        {
-          "file": "ecl3.dax",
-          "block_id": 14,
-          "offset": 1482
-        }
-      ]
-    }
-  ],
-  "unhandled_site_total": 2,
+  "unhandled": null,
+  "unhandled_site_total": 0,
   "blocks_scanned": 29
 }
