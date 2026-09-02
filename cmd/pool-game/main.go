@@ -9,6 +9,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -158,7 +159,20 @@ type app struct {
 	treasureAmount   string
 }
 
-func newApp(zipPath string) (*app, error) {
+// defaultStatePath 是存檔的預設位置。
+//
+// 用作業系統的使用者設定目錄，不用工作目錄：發行包裡的 AppImage 與 .app 是
+// 唯讀的，寫在旁邊會直接失敗，而那個失敗要到玩家按下存檔才會出現。
+// 取不到設定目錄時退回工作目錄——那是開發時的行為，也是最後的退路。
+func defaultStatePath() string {
+	directory, err := os.UserConfigDir()
+	if err != nil {
+		return filepath.Join("saves", "pool-remake-state.json")
+	}
+	return filepath.Join(directory, "pool-of-radiance-remake", "state.json")
+}
+
+func newApp(zipPath, statePath string) (*app, error) {
 	pictures, err := assets.ReadTitlePictures(zipPath)
 	if err != nil {
 		return nil, err
@@ -210,7 +224,6 @@ func newApp(zipPath string) (*app, error) {
 	}
 	application.initialEvent = &initialEvent
 	application.itemTypes = itemTypes
-	const statePath = "saves/pool-remake-state.json"
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
 	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
@@ -2114,6 +2127,7 @@ func main() {
 	etenFont := flag.String("eten-font", "", "ETen STDFONT.15 path; the 16x15 Han glyphs the Chinese UI needs")
 	etenSymbol := flag.String("eten-symbol-font", "", "optional ETen SPCFONT.15 path for full-width punctuation")
 	etenASCII := flag.String("eten-ascii-font", "", "optional ETen ASCFONT.15 path; defaults to ascfont.15 beside -eten-font")
+	savePath := flag.String("save", defaultStatePath(), "remake save file; defaults to the OS user config directory")
 	flag.Parse()
 	uiLanguage, face, err := resolveUILanguage(*langFlag, *etenFont, *etenSymbol, *etenASCII)
 	if err != nil {
@@ -2124,7 +2138,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	game, err := newApp(*zipPath)
+	game, err := newApp(*zipPath, *savePath)
 	if err != nil {
 		log.Fatal(err)
 	}

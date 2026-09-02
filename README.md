@@ -37,6 +37,12 @@
   釘住：它的記錄寫 `+2Eh = 26h`，而表的第 `26h` 筆正是雙手劍的 1d10／3d6。
   力量與敏捷的四張修正表逐分支照抄自 overlay-25。按 `I` 裝上武器之後，
   戰術戰鬥的 THAC0 與傷害骰由武器決定，不再是 placeholder。契約見 spec 065。
+- **三平台發行包做出來了**：`tools/package-release.sh <版本>` 產出 Linux
+  AppImage、Windows ZIP 與 macOS 雙架構 ZIP（osxcross 交叉編譯，不需要 Mac），
+  並寫一份 `manifest.json` 固定雜湊。AppImage 已在容器裡實際啟動並截圖
+  （`docs/screenshots/pool-release-linux-appimage.png`）；Windows 與 macOS
+  只證明得出「建得出來」，真機驗收還沒做。發行包不含原版資料與倚天字型，
+  兩者的權利都不在本專案。契約見 spec 066。
 - 已固定 DOS ZIP、歷史中文 RAR 與八張 D64 輸入雜湊。
 - 已盤點 DOS ZIP 168 個檔案；包含 `START.EXE`、`GAME.OVR`、八組
   ECL／GEO／WALLDEF／PIC／SPRIT DAX 與角色存檔樣本。
@@ -171,3 +177,14 @@ tools/go.sh test ./...
 Rolf 導覽、Sune／City Hall 早期事件與 Slums 戰鬥前 staging 已接通；DOS 相容角色檔、
 完整 Party Creation Menu、Pool 專屬視錐 oracle、Rolf 初次 APPROACH 圖像、全部鎖門／
 地圖事件、完整戰術戰鬥、對話／服務／戰鬥中途續點及主線破關仍未完成。
+
+## 授權、致謝與聲明
+
+本專案中由權利人擁有的程式碼、繁體中文翻譯、文件、反組譯規格與工具採
+[PolyForm Noncommercial License 1.0.0](LICENSE)：非商業用途免費，包含修改與再
+散布；商業用途請另行洽談。這是 **source-available**，不是開源——非商業限制不
+符合 OSI 的開源定義。
+
+授權**不涵蓋**原版素材：SSI／Strategic Simulations, Inc. 的《Pool of Radiance》
+遊戲、商標、圖像、音樂與資料檔；軟體世界代理當年的官方繁中說明書譯文；
+倚天中文系統的點陣字型。完整界線見 [`NOTICE.md`](NOTICE.md)。

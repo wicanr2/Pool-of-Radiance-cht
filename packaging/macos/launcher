@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+HERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+# .app 裡的執行檔被 Finder 啟動時工作目錄是 /，所以先切到 bundle 內，
+# 讓放在 MacOS/ 旁邊的原版 ZIP 找得到。
+cd "$HERE"
+exec "$HERE/pool-game-bin" "$@"

@@ -91,7 +91,7 @@ func TestGlobalHelpThemeAndQuitKeys(t *testing.T) {
 
 func TestF10AndLoadRoundTripStableCampaignSession(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
-	application, err := newApp(zipPath)
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
@@ -116,7 +116,7 @@ func TestF10AndLoadRoundTripStableCampaignSession(t *testing.T) {
 		t.Fatalf("saved campaign=%+v", saved.Campaign)
 	}
 
-	restored, err := newApp(zipPath)
+	restored, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -132,7 +132,7 @@ func TestF10AndLoadRoundTripStableCampaignSession(t *testing.T) {
 
 func TestF10AndLoadRoundTripECL2SlumsNamespace(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
-	application, err := newApp(zipPath)
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
@@ -157,7 +157,7 @@ func TestF10AndLoadRoundTripECL2SlumsNamespace(t *testing.T) {
 	if saved.Campaign == nil || saved.Campaign.ECLArchive != 2 || saved.Campaign.Session.Current != 20 {
 		t.Fatalf("saved ECL2 campaign=%+v", saved.Campaign)
 	}
-	restored, err := newApp(zipPath)
+	restored, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,7 +173,7 @@ func TestF10AndLoadRoundTripECL2SlumsNamespace(t *testing.T) {
 
 func TestRealSlumsCombatStagesMonsterRecords(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
-	application, err := newApp(zipPath)
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
@@ -223,7 +223,7 @@ func TestRealSlumsCombatStagesMonsterRecords(t *testing.T) {
 // 真的怪物記錄，直到戰後腳本繼續為止。
 func TestWinningTheRealSlumsCombatResumesTheECLScript(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
-	application, err := newApp(zipPath)
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
@@ -417,7 +417,7 @@ func TestSlumsLoadPiecesResourceReplacesAllThreeWallSlots(t *testing.T) {
 
 func TestRealNewPhlanControllerCrossesFromECL3ToSlumsECL2(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
-	application, err := newApp(zipPath)
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}

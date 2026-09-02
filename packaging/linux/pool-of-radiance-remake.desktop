@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=光芒之池 Remake
+Comment=Pool of Radiance Traditional Chinese remake
+Exec=pool-game
+Icon=pool-of-radiance-remake
+Categories=Game;RolePlaying;
+Terminal=false

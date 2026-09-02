@@ -234,7 +234,16 @@
 - [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
 
-## 發行決策（等待使用者）
+## 發行
 
-- [ ] 公開前決定程式碼授權、repository visibility 與原版素材 deny-list。
-  現階段 GitHub repository 採 private，避免在決策前公開來源或錯誤聲明。
+- [x] 授權已定案並落地：PolyForm Noncommercial License 1.0.0（非商業免費含修改
+  再散布，商業另談），`LICENSE` 與 `NOTICE.md` 在 repo 根目錄，也複製進每一個
+  發行包。`NOTICE.md` 明列不因此被重新授權的東西：SSI 原版資產、軟體世界的
+  說明書譯文、倚天字型、共用 engine 與第三方套件。
+- [x] 三平台發行包可重生：`tools/package-release.sh <版本>` 產出 Linux AppImage、
+  Windows ZIP 與 macOS 雙架構 ZIP，並寫 `manifest.json` 固定雜湊。
+  AppImage 已由 `tools/linux-release-smoke.sh` 在容器裡實際啟動並截圖。
+  契約見 spec 066。
+- [ ] Windows 與 macOS 的真機啟動驗收。目前只證明得出「建得出來、包得起來」。
+- [ ] repository visibility 與原版素材 deny-list（等待使用者）。
+  現階段 GitHub repository 採 private。

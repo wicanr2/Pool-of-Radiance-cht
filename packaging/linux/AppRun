@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+APPDIR="${APPDIR:-$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)}"
+export LD_LIBRARY_PATH="$APPDIR/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+# 不 cd 進 AppDir：原版 ZIP 由玩家放在自己的目錄，維持呼叫時的工作目錄
+# 才找得到它。AppDir 是唯讀的，存檔預設也不寫在這裡。
+exec "$APPDIR/usr/bin/pool-game" "$@"
