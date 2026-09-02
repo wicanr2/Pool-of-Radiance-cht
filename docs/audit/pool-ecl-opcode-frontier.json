@@ -55,6 +55,7 @@
     "0x35",
     "0x37",
     "0x38",
+    "0x39",
     "0x3A",
     "0x3C",
     "0x3D"
@@ -142,68 +143,6 @@
       ]
     },
     {
-      "opcode": "0x39",
-      "name": "WHO",
-      "arity": 1,
-      "sites": [
-        {
-          "file": "ecl1.dax",
-          "block_id": 18,
-          "offset": 4229
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 0,
-          "offset": 2228
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 0,
-          "offset": 3058
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 11,
-          "offset": 882
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 14,
-          "offset": 1655
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 14,
-          "offset": 7001
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 2,
-          "offset": 4973
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 5357
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 7,
-          "offset": 805
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 13,
-          "offset": 5495
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 2560
-        }
-      ]
-    },
-    {
       "opcode": "0x3B",
       "name": "SPELL",
       "arity": 3,
@@ -216,6 +155,6 @@
       ]
     }
   ],
-  "unhandled_site_total": 24,
+  "unhandled_site_total": 13,
   "blocks_scanned": 29
 }

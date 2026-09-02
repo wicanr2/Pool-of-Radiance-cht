@@ -46,6 +46,12 @@ const (
 	// 這個 block（overlay-03 `312Ah`）。
 	ProgramAskThenManage = 9
 
+	// WhoOpcode 是 `39h WHO`（spec 083／090）：讓玩家挑一個隊伍成員，
+	// 挑到的那個存進「目前角色」槽（原版的 `DS:5CF0h`）。
+	WhoOpcode = 0x39
+	// WhoOperands 是它吃幾個運算元。運算元 1 被取出來但沒看到被讀。
+	WhoOperands = 1
+
 	// ProtectionOpcode 是 `3Ch PROTECTION`（spec 089）：把運算元 1 位址起的
 	// 連續 ECL 變數印成一列數字。
 	ProtectionOpcode = 0x3c

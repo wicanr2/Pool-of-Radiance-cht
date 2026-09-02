@@ -162,6 +162,11 @@ type app struct {
 	parlay *parlayState
 	// eclInput 是進行中的 ECL 輸入列（spec 087）。
 	eclInput *eclInputState
+	// whoPending 為真時選單正在等玩家挑人（`39h WHO`，spec 090）。
+	whoPending bool
+	// currentCharacter 是原版 `DS:5CF0h` 那個「目前角色」的索引。
+	// `39h` 設定它，`28h ROB` 的範圍 0 讀它。
+	currentCharacter int
 	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
 	combatActive     bool
@@ -641,6 +646,9 @@ func (a *app) Update() error {
 					if a.parlay != nil {
 						return a.selectParlayOption()
 					}
+					if a.whoPending {
+						return a.selectWhoOption()
+					}
 					var selection *uint16
 					if a.cellWaitingMenu {
 						value := uint16(a.cellMenuCursor)
@@ -923,6 +931,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if event, ok := protectionEvent(result); ok {
 			return a.applyProtection(event)
+		}
+		if event, ok := whoEvent(result); ok {
+			return a.enterWho(event)
 		}
 		return a.pauseAppliedCellResult(result)
 	}

@@ -35,16 +35,30 @@ func TestFrontierCountsEveryUnhandledSite(t *testing.T) {
 	}
 }
 
-// passthrough 清單是遊戲行為的一部分：多宣告一個等於讓那條 opcode 靜靜跳過。
+// passthrough 清單是遊戲行為的一部分：**多宣告一個等於讓那條 opcode 靜靜
+// 跳過**，而跳過與正確處理在報表上分不出來。所以這裡把整份清單釘死——
+// 新增一條而沒有在 cmd/pool-game 接上前端，這個測試就會紅。
 func TestPassthroughStaysExplicit(t *testing.T) {
-	passthrough := gamepack.InitialEventPassthrough()
-	for _, code := range []byte{0x29, 0x38} {
-		if !passthrough[code] {
-			t.Fatalf("opcode 0x%02X must be passed through so the front end sees it", code)
+	want := map[byte]string{
+		0x0C: "SETUP MONSTER", 0x0D: "APPROACH", 0x0E: "PICTURE",
+		0x0F: "INPUT NUMBER", 0x10: "INPUT STRING",
+		0x21: "LOAD FILES", 0x22: "PARTY SURPRISE", 0x23: "SURPRISE",
+		0x24: "service boundary", 0x28: "ROB", 0x29: "ENCOUNTER MENU",
+		0x2C: "PARLAY", 0x2D: "CALL", 0x2E: "DAMAGE", 0x31: "SPRITE OFF",
+		0x32: "FIND ITEM", 0x33: "PRINT RETURN", 0x37: "LOAD PIECES",
+		0x38: "PROGRAM", 0x39: "WHO", 0x3A: "DELAY", 0x3C: "PROTECTION",
+		0x3D: "CLEAR BOX",
+	}
+	got := gamepack.InitialEventPassthrough()
+	for code, name := range want {
+		if !got[code] {
+			t.Fatalf("opcode 0x%02X (%s) is no longer passed through", code, name)
 		}
 	}
-	// 39h WHO 還沒接：宣告成 passthrough 而前端不處理，等於靜靜跳過。
-	if passthrough[0x39] {
-		t.Fatal("opcode 0x39 WHO is passed through but has no front end")
+	for code := range got {
+		if _, ok := want[code]; !ok {
+			t.Fatalf("opcode 0x%02X was added to the passthrough list; wire a front end for it "+
+				"and add it here, or it will be silently skipped", code)
+		}
 	}
 }

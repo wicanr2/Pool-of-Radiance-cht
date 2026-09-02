@@ -1190,3 +1190,28 @@ func TestECLInputFiltersWhatItAccepts(t *testing.T) {
 		t.Fatalf("buffer grew past the limit to %d", len(application.eclInput.buffer))
 	}
 }
+
+// `39h WHO` 挑到的人要留下來給後面的 opcode 用（spec 090）：`28h ROB` 的
+// 範圍 0 打的就是「目前角色」，挑錯人的症狀是別人掉了東西。
+func TestWhoSetsTheCurrentCharacter(t *testing.T) {
+	application := &app{state: poolsave.State{Party: []poolsave.Character{
+		{Name: "A"}, {Name: "B"}, {Name: "C"},
+	}}}
+	application.whoPending = true
+	application.cellWaitingMenu = true
+	application.cellMenuOptions = []string{"A", "B", "C"}
+	application.cellMenuCursor = 1
+	if err := application.resolveWhoChoice(); err != nil {
+		t.Fatal(err)
+	}
+	if application.currentCharacter != 1 {
+		t.Fatalf("current character is %d, want 1", application.currentCharacter)
+	}
+	if application.whoPending || application.cellWaitingMenu {
+		t.Fatal("the WHO menu is still up after a choice")
+	}
+	// 沒有等待中的選擇時不能悄悄成功。
+	if err := application.resolveWhoChoice(); err == nil {
+		t.Fatal("resolving a WHO choice that was never asked for succeeded")
+	}
+}

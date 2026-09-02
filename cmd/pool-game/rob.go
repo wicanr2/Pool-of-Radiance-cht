@@ -41,7 +41,8 @@ func (a *app) applyRob(event eclvm.Event) error {
 	if err != nil {
 		return fmt.Errorf("Pool ROB percent operand: %w", err)
 	}
-	targets := []int{0}
+	// 範圍 0 只對「目前角色」下手，那是 `39h WHO` 挑的那一個。
+	targets := []int{a.currentCharacter}
 	if scope != 0 {
 		targets = targets[:0]
 		for index := range a.state.Party {
