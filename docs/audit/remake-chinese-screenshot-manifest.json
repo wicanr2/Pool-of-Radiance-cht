@@ -1,9 +1,9 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-02",
-  "source_commit": "a57bc15cd3a918d9e64b399737140887e3d1292d",
+  "source_commit": "daa55019a535f34b57acc0cfbfac3dd74cc7efed",
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
-  "state_relation": "normal-remake-player-path: title, ENTER, C, the whole creation flow, A, then B. Run with -lang zh and the ETen font mounted read-only from the host.",
+  "state_relation": "normal-remake-player-path: title, ENTER, C, the whole creation flow, A, B, then F5. Run with -lang zh and the ETen font mounted read-only from the host.",
   "font": {
     "family": "ETen 16x15 Big5 bitmap",
     "files_present": [
@@ -40,7 +40,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "1fc6a852deffcd05aa439bf00c63acf2ab768f8642f15ddca293745a5d2d893b",
+      "sha256": "3712189a6cecd6b36074c179e1136a3299f71504bb1eced648c56b563352a531",
       "width": 960,
       "height": 600,
       "screen": "rolled character sheet"
@@ -51,6 +51,13 @@
       "width": 960,
       "height": 600,
       "screen": "Rolf's tour, the first original narrative text shown in Chinese"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-tactical.png",
+      "width": 960,
+      "height": 600,
+      "screen": "tactical board with the reworked four-line HUD",
+      "sha256": "7e1baac1e29f3d8c13182d4f511f5015b549131e4b023991e8ce1795c508fe30"
     }
   ]
 }
