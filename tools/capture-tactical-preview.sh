@@ -80,9 +80,19 @@ sleep 1.2
 shot /tmp/before-tactical.png
 pulse F5
 sleep 0.8
-shot docs/screenshots/pool-remake-tactical-preview.png
-if cmp -s /tmp/before-tactical.png docs/screenshots/pool-remake-tactical-preview.png; then
+shot /tmp/tactical-fresh.png
+if cmp -s /tmp/before-tactical.png /tmp/tactical-fresh.png; then
   echo "F5 did not change the screen" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
+for key in m m i; do
+  pulse "$key"
+done
+sleep 0.6
+shot docs/screenshots/pool-remake-tactical-preview.png
+if cmp -s /tmp/tactical-fresh.png docs/screenshots/pool-remake-tactical-preview.png; then
+  echo "the movement keys did not change the tactical screen" >&2
   tail -20 /tmp/game.log >&2 || true
   exit 1
 fi

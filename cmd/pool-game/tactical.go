@@ -78,13 +78,12 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		return
 	}
 
-	grid, err := combat.GenerateIndoorTacticalGrid(int(a.spawn.X), int(a.spawn.Y), geoWallProbe(a.initialMap.Grid, int(a.spawn.Y)))
-	if err != nil {
-		drawText(screen, "TACTICAL MAP ERROR", 232, 190, accent)
+	if a.tactical == nil {
+		drawText(screen, "TACTICAL STATE IS NOT BUILT", 190, 190, foreground)
 		return
 	}
-
-	classes := gamepack.OriginalCombatCellClassTable()
+	grid := a.tactical.Grid
+	classes := a.tactical.Classes
 	floor := color.RGBA{40, 72, 72, 255}
 	wall := color.RGBA{170, 255, 255, 255}
 	if a.modern {
@@ -110,7 +109,7 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		}
 	}
 
-	roster, friendly := provisionalRoster(a, grid, classes)
+	roster, friendly := a.tactical.Roster, a.tactical.Friendly
 	occupancy, err := combat.RebuildOccupancy(roster)
 	if err != nil {
 		drawText(screen, "OCCUPANCY ERROR", 232, 190, accent)
@@ -142,9 +141,11 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 
 	drawText(screen, fmt.Sprintf("DUNGEON %d,%d  CELLS %d  BLOCKING %d  PARTY %d  FOES %d",
-		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, 344, foreground)
-	drawText(screen, "DEPLOYMENT TEMPLATE SOURCE: UNRESOLVED / PROVISIONAL LAYOUT", 70, 364, accent)
-	drawText(screen, "F5: BACK", 500, 344, foreground)
+		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, 330, foreground)
+	drawText(screen, fmt.Sprintf("MOVER %d  BUDGET %d  (%s)  %s",
+		a.tactical.Mover, a.tactical.Budget, a.tactical.BudgetSource, a.tactical.Status), 70, 348, foreground)
+	drawText(screen, "H I M Q P O K G: STEP    DEPLOYMENT TEMPLATE: PROVISIONAL", 70, 366, accent)
+	drawText(screen, "F5: BACK", 500, 330, foreground)
 }
 
 // 這一段的部署是暫定的。原版由 DS:43A2h 的陣型樣板決定誰站哪一格，而那張表
@@ -210,4 +211,111 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 	}
 	assign(foes, provisionalFoeOffsetX, false)
 	return cells, friendly
+}
+
+// tacticalState 是戰術預覽跨影格保留的狀態。
+type tacticalState struct {
+	Grid         combat.TacticalGrid
+	Classes      combat.CellClasses
+	Roster       []combat.CombatantCell
+	Friendly     []bool
+	Mover        uint8
+	Budget       uint8
+	BudgetSource string
+	Status       string
+}
+
+// placeholderBaseMovement 是隊伍成員的暫定移動值。remake 的角色記錄目前沒有
+// 這個欄位，原版是 285-byte record 的 +11Ch；在它接上來之前，這個數字只是
+// 讓移動判定可以被實際走一次，畫面上會標明它的來源。
+const placeholderBaseMovement = 12
+
+// enterTacticalPreview 生成戰場、擺人、決定移動預算。
+func (a *app) enterTacticalPreview() error {
+	if a.initialMap == nil {
+		return fmt.Errorf("Pool dungeon map is not loaded")
+	}
+	grid, err := combat.GenerateIndoorTacticalGrid(int(a.spawn.X), int(a.spawn.Y),
+		geoWallProbe(a.initialMap.Grid, int(a.spawn.Y)))
+	if err != nil {
+		return err
+	}
+	classes := gamepack.OriginalCombatCellClassTable()
+	roster, friendly := provisionalRoster(a, grid, classes)
+
+	base, source := uint8(placeholderBaseMovement), "PLACEHOLDER"
+	if len(a.combatMonsters) > 0 {
+		base, source = a.combatMonsters[0].Record.Movement(), "STAGED MONSTER"
+	}
+	mover := uint8(0)
+	if len(roster) > 1 {
+		mover = 1
+	}
+	a.tactical = &tacticalState{
+		Grid:         grid,
+		Classes:      classes,
+		Roster:       roster,
+		Friendly:     friendly,
+		Mover:        mover,
+		Budget:       combat.InitialMovementBudgetBeforeEffects(base, false, 0),
+		BudgetSource: source,
+		Status:       "READY",
+	}
+	return nil
+}
+
+// tacticalStepKeys 是原版 Move 命令的八個方向鍵，依 spec 053 對到 direction 0..7。
+var tacticalStepKeys = [8]ebiten.Key{
+	ebiten.KeyH, ebiten.KeyI, ebiten.KeyM, ebiten.KeyQ,
+	ebiten.KeyP, ebiten.KeyO, ebiten.KeyK, ebiten.KeyG,
+}
+
+// tacticalInput 讓那八個鍵驅動 ResolveDestination，並在允許進入時提交這一步。
+func (a *app) tacticalInput() error {
+	state := a.tactical
+	if state == nil || state.Mover == 0 {
+		return nil
+	}
+	for direction, key := range tacticalStepKeys {
+		if !a.justPressed(key) {
+			continue
+		}
+		occupancy, err := combat.RebuildOccupancy(state.Roster)
+		if err != nil {
+			return err
+		}
+		tactical := combat.TacticalState{
+			Map:       state.Grid,
+			Occupancy: occupancy,
+			Cells:     state.Roster,
+			Classes:   state.Classes,
+		}
+		action, leaving, err := combat.ResolveDestination(tactical, state.Mover, uint8(direction), state.Budget)
+		if err != nil {
+			return err
+		}
+		switch {
+		case leaving:
+			state.Status = "OFF BOARD: LEAVE COMBAT PROMPT"
+		case action == combat.MovementAttack:
+			state.Status = "ATTACK TARGET"
+		case action == combat.MovementBlocked:
+			state.Status = "BLOCKED"
+		default:
+			mover := state.Roster[state.Mover]
+			x, y, err := combat.AdvanceTacticalCoordinate(mover.X, mover.Y, uint8(direction))
+			if err != nil {
+				return err
+			}
+			budget, err := combat.SpendMovementStep(state.Budget, uint8(direction))
+			if err != nil {
+				return err
+			}
+			state.Roster[state.Mover].X, state.Roster[state.Mover].Y = x, y
+			state.Budget = budget
+			state.Status = fmt.Sprintf("MOVED %d", direction)
+		}
+		return nil
+	}
+	return nil
 }

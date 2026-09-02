@@ -198,3 +198,25 @@ func TestRequiredFacingFailsClosedOutsideTheBoard(t *testing.T) {
 		t.Fatal("a target outside the board produced a facing")
 	}
 }
+
+// AdvanceTacticalCoordinate 自帶一份方向位移表，與 DS:274Ah／DS:2753h 解出的
+// directionSteps 是同一份原始資料。兩處必須逐項相同，否則其中一份已經飄掉。
+func TestAdvanceTacticalCoordinateAgreesWithTheDirectionTable(t *testing.T) {
+	const baseX, baseY = 20, 12
+	for direction := uint8(0); direction < DirectionCount; direction++ {
+		step, err := DirectionStep(direction)
+		if err != nil {
+			t.Fatal(err)
+		}
+		gotX, gotY, err := AdvanceTacticalCoordinate(baseX, baseY, direction)
+		if err != nil {
+			t.Fatal(err)
+		}
+		wantX := uint8(baseX + int(step.X))
+		wantY := uint8(baseY + int(step.Y))
+		if gotX != wantX || gotY != wantY {
+			t.Fatalf("direction %d moved to (%d,%d), the direction table says (%d,%d)",
+				direction, gotX, gotY, wantX, wantY)
+		}
+	}
+}

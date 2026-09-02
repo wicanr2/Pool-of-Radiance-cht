@@ -100,6 +100,7 @@ type app struct {
 	roller           creation.Roller
 	help             bool
 	tacticalPreview  bool
+	tactical         *tacticalState
 	modern           bool
 	statusLine       string
 	keys             keySource
@@ -296,6 +297,18 @@ func (a *app) Update() error {
 	}
 	if a.justPressed(ebiten.KeyF5) && a.mode == modeAdventure {
 		a.tacticalPreview = !a.tacticalPreview
+		if a.tacticalPreview {
+			if err := a.enterTacticalPreview(); err != nil {
+				a.tacticalPreview = false
+				a.statusLine = err.Error()
+			}
+		}
+	}
+	if a.tacticalPreview && a.mode == modeAdventure && !a.help {
+		if err := a.tacticalInput(); err != nil {
+			a.statusLine = err.Error()
+		}
+		return nil
 	}
 	if a.help {
 		if a.justPressed(ebiten.KeyEscape) {
