@@ -121,6 +121,11 @@ func (a *app) resolveCast() error {
 	member.Memorised[option.Slot] = 0
 	syncTrainedLibraryCharacter(&a.state, *member)
 
+	// 挑目標照原版的模式（參數表 `+6` 的低四位，spec 074）：模式 0 作用在
+	// 施法者自己、模式 0Ah 作用在整邊、模式 8／9／0Bh 是範圍。
+	// **模式 4 那三十支原版是讓玩家自己瞄**（overlay-13 `1E09h`），
+	// 那條還沒讀，所以這裡治療打自己、傷害打繞得過去的最近敵人。
+	mode := a.spellParameters[option.ID].TargetMode()
 	switch {
 	case len(effect.RemoveEffects) > 0:
 		// 解病術這一類：從施法者身上拿掉那幾個效果碼。原版問的是選中的目標，
@@ -145,6 +150,24 @@ func (a *app) resolveCast() error {
 		state.HitPoints[state.Mover] += effect.Heal
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
 			strings.TrimSpace(member.Name), option.Label, state.HitPoints[state.Mover]-before))
+	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea():
+		// 範圍：對面每一個都吃一份。原版是以一格為中心算範圍
+		// （overlay-31 `0138h:003Eh`），那條還沒讀。
+		hit := 0
+		for index := 1; index < len(state.Roster); index++ {
+			if state.Roster[index].FootprintClass == 0 ||
+				state.Friendly[index] == state.Friendly[state.Mover] {
+				continue
+			}
+			a.applySpellDamage(state, uint8(index), effect.Damage)
+			hit++
+		}
+		if hit == 0 {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+		} else {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastArea),
+				option.Label, hit, effect.Damage))
+		}
 	case effect.Damage > 0:
 		target, found := state.nearestReachableOpposing(state.Mover)
 		if !found {
@@ -152,6 +175,18 @@ func (a *app) resolveCast() error {
 			break
 		}
 		a.applySpellDamage(state, target, effect.Damage)
+	case mode == gamepack.SpellTargetWholeSide:
+		// 模式 0Ah：整邊。原版走 0F35h，把效果掛給施法者那一邊的每個人。
+		affected := 0
+		for index := 1; index < len(state.Roster); index++ {
+			if state.Roster[index].FootprintClass == 0 ||
+				state.Friendly[index] != state.Friendly[state.Mover] {
+				continue
+			}
+			affected++
+		}
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastWholeSide),
+			strings.TrimSpace(member.Name), option.Label, affected))
 	default:
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastTookEffect),
 			strings.TrimSpace(member.Name), option.Label))

@@ -35,10 +35,18 @@ const (
 	// spellParameterLevelRange 是 `+3`：每施法者等級再加的射程
 	// （`0742h` 的 `mov al, [di+3197h]`）。
 	spellParameterLevelRange = 3
-	// spellParameterRangeFloor 是 `+6`：射程算成 0 而它非零時，射程墊成 1
-	// （`07A3h` 的 `cmp byte ptr [di+319Ah], 0`）。它本身不是布林，
-	// 其餘語意要到 overlay-13 的四個呼叫端去讀。
-	spellParameterRangeFloor = 6
+	// spellParameterTargeting 是 `+6`。它有兩個用途：
+	// `08BCh` 的 `07A3h` 只看它是不是零（射程算成 0 而它非零時墊成 1），
+	// 而 **overlay-13 的挑目標常式（`20ADh`）看它的低四位**——那是
+	// 目標模式（`20F0h` 的 `mov al,[di+319Ah]` 之後 `and $0Fh`）。
+	spellParameterTargeting = 6
+	// spellParameterRangeFloor 是同一格的別名，給射程那條路用。
+	spellParameterRangeFloor = spellParameterTargeting
+	// spellParameterArea 是 `+7`：範圍法術的形狀參數。overlay-13 依模式
+	// 取它的低三位（`2241h` 的 `and $7`）或低兩位（`22CDh` 的 `and $3`）。
+	spellParameterArea = 7
+	// SpellTargetModeMask 取出目標模式。
+	SpellTargetModeMask = 0x0f
 	// spellParameterFixedDuration 是 `+4`：效果的固定回合數
 	// （`08A2h` 的 `mov al, [di+3198h]`）。
 	spellParameterFixedDuration = 4
@@ -60,6 +68,56 @@ const (
 	// spellParameterAttackRollFlag 是 `+2` 代表「要擲命中」的值。
 	spellParameterAttackRollFlag = 0xff
 )
+
+// SpellTargetMode 是 `+6` 低四位的目標模式（overlay-13 `20ADh`）。
+type SpellTargetMode uint8
+
+// 六十七格用到的模式。分組本身就是語意證據：模式 0Ah 正好是祝福、詛咒、
+// 急速與緩速這四支整邊的法術，模式 0 全是自身增益，模式 0Bh 是火球。
+const (
+	// SpellTargetSelf 是模式 0：不挑目標，作用在施法者自己
+	//（`20FDh` 直接把 `DS:5CF0h` 當成唯一的目標）。
+	SpellTargetSelf SpellTargetMode = 0x00
+	// SpellTargetSingle 是模式 4：挑一個目標。最大的一組（30 支），
+	// 治療與傷害都在裡面——原版由玩家自己瞄。
+	SpellTargetSingle SpellTargetMode = 0x04
+	// SpellTargetHold 是模式 6 與 7：定身術那一族。
+	SpellTargetHold SpellTargetMode = 0x06
+	// SpellTargetHoldAlt 是模式 7。
+	SpellTargetHoldAlt SpellTargetMode = 0x07
+	// SpellTargetBolt 是模式 8：閃電束那種直線。
+	SpellTargetBolt SpellTargetMode = 0x08
+	// SpellTargetArea 是模式 9：以一點為中心的範圍（催眠、臭雲、解除魔法）。
+	SpellTargetArea SpellTargetMode = 0x09
+	// SpellTargetWholeSide 是模式 0Ah：整邊（祝福、詛咒、急速、緩速）。
+	SpellTargetWholeSide SpellTargetMode = 0x0a
+	// SpellTargetBurst 是模式 0Bh：火球那種大範圍。
+	SpellTargetBurst SpellTargetMode = 0x0b
+	// SpellTargetPick 是模式 0Fh：走 `1E09h` 的挑目標介面。
+	SpellTargetPick SpellTargetMode = 0x0f
+)
+
+// TargetMode 是這條法術怎麼挑目標。
+func (p SpellParameters) TargetMode() SpellTargetMode {
+	return SpellTargetMode(p.Raw[spellParameterTargeting] & SpellTargetModeMask)
+}
+
+// AreaParameter 是 `+7`：範圍法術的形狀參數。
+func (p SpellParameters) AreaParameter() uint8 { return p.Raw[spellParameterArea] }
+
+// AffectsWholeSide 是模式 0Ah。
+func (p SpellParameters) AffectsWholeSide() bool {
+	return p.TargetMode() == SpellTargetWholeSide
+}
+
+// AffectsArea 是「不只打一個」的那幾種模式。
+func (p SpellParameters) AffectsArea() bool {
+	switch p.TargetMode() {
+	case SpellTargetBolt, SpellTargetArea, SpellTargetBurst:
+		return true
+	}
+	return false
+}
 
 // SpellSource 是參數表 `+0` 的三個值。
 type SpellSource uint8
