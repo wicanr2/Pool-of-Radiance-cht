@@ -24,6 +24,13 @@ type CastEffect struct {
 	// SleepBudget 是催眠術能放倒的生命骰總量（`DS:47A6h`）。大於零時
 	// 呼叫端要依 SleepHitDiceCost 逐個目標扣，扣得動的就睡著。
 	SleepBudget int
+	// CasterLevelOverride 是 `08BCh` 的第一個覆寫參數（`[bp+10h]`）：
+	// 非零就取代真正的施法者等級（`08F2h` 的 `cmpb $0` 之後分岔）。
+	// 鏡影術借這一格傳「幾個影像」。
+	CasterLevelOverride int
+	// EffectParameter 是第二個覆寫參數（`[bp+0Eh]`），掛效果時一起傳給
+	// 效果常式（`0A3Dh`）。致病術傳 1，其餘多半是 0；完整語意未閉合。
+	EffectParameter int
 }
 
 // SleepEffectCode 是催眠術掛上去的效果碼（`15DEh` 推的 35h）。
@@ -77,10 +84,13 @@ func CasterLevelFor(parameters SpellParameters, clericLevel, magicUserLevel int,
 const (
 	SpellIDBless          = 1  // 0FF5h
 	SpellIDCureLightWound = 3  // 1051h
+	SpellIDCauseLightWound = 4  // 108Fh
 	SpellIDBurningHands   = 9  // 1178h
 	SpellIDMagicMissile   = 15 // 1429h
 	SpellIDShockingGrasp  = 20 // 14BFh
 	SpellIDSleep          = 21 // 1513h
+	SpellIDMirrorImage    = 32 // 1A6Fh
+	SpellIDCauseDisease   = 40 // 231Dh
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -164,7 +174,10 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	03h Cure Light     1051h  Roll(1, 8) 的治療，直接呼叫 0100h:0089h，不走 08BCh
 //	09h Burning Hands  1178h  傷害＝施法者等級，沒有擲骰
 //	0Fh Magic Missile  1429h  Roll(等級÷2, 4) ＋ 等級÷2
+//	04h Cause Light W. 108Fh  傷害 Roll(1, 8)
 //	14h Shocking Grasp 14BFh  Roll(1, 8) ＋ 等級
+//	20h Mirror Image   1A6Fh  Roll(1, 4) 推在施法者等級那一格
+//	28h Cause Disease  231Dh  四個覆寫參數 0／1／0／0，只掛效果
 //	15h Sleep          1513h  額度 Roll(4, 4) 生命骰，逐個目標依 HD 扣
 //	2Fh Fireball       262Eh  Roll(等級, 6)
 //	33h Lightning Bolt 2B75h  Roll(等級, 6)
@@ -190,6 +203,18 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.Damage = roller.Roll(missiles, 4) + missiles
 	case SpellIDShockingGrasp:
 		effect.Damage = roller.Roll(1, 8) + casterLevel
+	case SpellIDCauseLightWound:
+		// `10A5h` 的 Roll(1, 8)，第五個參數 8。與治療輕傷同一個骰子。
+		effect.Damage = roller.Roll(1, 8)
+	case SpellIDCauseDisease:
+		// `2323h` 推的四個覆寫參數是 0／1／0／0：沒有傷害，
+		// 只把參數表的效果碼掛上去，第二個覆寫參數是 1。
+		effect.EffectParameter = 1
+	case SpellIDMirrorImage:
+		// `1A79h` 把 Roll(1, 4) 推在**第一個**覆寫參數的位置——那一格是
+		// 施法者等級的覆寫（`08BCh` 的 `08F2h`），所以鏡影的數量是借
+		// 等級那一格傳的。
+		effect.CasterLevelOverride = roller.Roll(1, 4)
 	case SpellIDSleep:
 		// 額度是 4d4 生命骰（`151Eh` 的 Roll(4, 4)），效果碼 35h。
 		effect.Area, effect.SleepBudget = true, roller.Roll(4, 4)
@@ -208,8 +233,9 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 // 一條法術能不能選，而不是讓玩家選了才失敗。
 func SpellIsImplemented(id uint8) bool {
 	switch id {
-	case SpellIDBless, SpellIDCureLightWound, SpellIDBurningHands,
-		SpellIDMagicMissile, SpellIDShockingGrasp, SpellIDSleep,
+	case SpellIDBless, SpellIDCureLightWound, SpellIDCauseLightWound,
+		SpellIDBurningHands, SpellIDMagicMissile, SpellIDShockingGrasp,
+		SpellIDSleep, SpellIDMirrorImage, SpellIDCauseDisease,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}

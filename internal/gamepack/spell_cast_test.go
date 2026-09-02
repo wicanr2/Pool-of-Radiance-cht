@@ -228,3 +228,33 @@ func TestSpellCasterCoversTheGenericBatch(t *testing.T) {
 		t.Error("臭雲術兩邊都沒有，應該硬失敗")
 	}
 }
+
+// 後來讀的四支，逐條對反組譯。
+func TestLaterSpellFormulas(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	// 致傷輕傷：Roll(1, 8)。
+	low, _ := CastSpell(SpellIDCauseLightWound, parameters, 6, minRoller{})
+	high, _ := CastSpell(SpellIDCauseLightWound, parameters, 6, maxRoller{})
+	if low.Damage != 1 || high.Damage != 8 {
+		t.Errorf("致傷輕傷應該是 1..8，算出 %d..%d", low.Damage, high.Damage)
+	}
+	// 鏡影術：Roll(1, 4) 推在施法者等級那一格，不是傷害。
+	image, _ := CastSpell(SpellIDMirrorImage, parameters, 6, maxRoller{})
+	if image.Damage != 0 {
+		t.Errorf("鏡影術不該有傷害，算出 %d", image.Damage)
+	}
+	if image.CasterLevelOverride != 4 {
+		t.Errorf("鏡影術擲滿應該覆寫成 4，算出 %d", image.CasterLevelOverride)
+	}
+	// 致病術：四個覆寫參數 0／1／0／0，沒有傷害。
+	disease, _ := CastSpell(SpellIDCauseDisease, parameters, 6, maxRoller{})
+	if disease.Damage != 0 || disease.EffectParameter != 1 {
+		t.Errorf("致病術應該沒有傷害而且第二個覆寫參數是 1，算出 %+v", disease)
+	}
+	if disease.EffectCode != parameters[SpellIDCauseDisease].EffectCode() {
+		t.Errorf("致病術的效果碼應該來自參數表")
+	}
+}
