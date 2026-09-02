@@ -395,3 +395,65 @@ func TestPartyCombatStatsRejectsAnUnknownClass(t *testing.T) {
 		t.Fatal("an unknown class was given combat stats")
 	}
 }
+
+// 走進同伴那一格不會揮刀。原版的格位表沒有陣營，`ProbeDestination` 只回報
+// 「那一格站著誰」，所以陣營判斷是呼叫端的責任；少了它，隊伍排成一列時最左邊
+// 那個往右走就會砍死自己的同伴，而戰鬥永遠打不完。
+func TestWalkingIntoAnAllyDoesNotAttack(t *testing.T) {
+	state := newAttackState()
+	state.Friendly[2] = true
+	state.Roster[1].X, state.Roster[1].Y = 10, 10
+	state.Roster[2].X, state.Roster[2].Y = 11, 10
+	state.Grid = combat.TacticalGrid{IgnoreTerrain: true, Terrain: make([]uint8, 1250)}
+	state.Budgets[1] = 24
+	state.Mover = 1
+	a := &app{roller: fixedRoller{20}, tactical: state, language: languageEnglish}
+
+	east := -1
+	for direction := 0; direction < 8; direction++ {
+		x, y, err := combat.AdvanceTacticalCoordinate(10, 10, uint8(direction))
+		if err == nil && x == 11 && y == 10 {
+			east = direction
+		}
+	}
+	if east < 0 {
+		t.Fatal("no eastward direction")
+	}
+	before := state.HitPoints[2]
+	a.keys = scriptedKeys{tacticalStepKeys[east]: true}
+	if err := a.tacticalInput(); err != nil {
+		t.Fatal(err)
+	}
+	if state.HitPoints[2] != before {
+		t.Fatalf("an ally took %d damage", before-state.HitPoints[2])
+	}
+	if state.Roster[1].X != 10 || state.Roster[1].Y != 10 {
+		t.Fatalf("the mover walked onto its ally at (%d,%d)", state.Roster[1].X, state.Roster[1].Y)
+	}
+}
+
+// 對面的人照打。
+func TestWalkingIntoAFoeStillAttacks(t *testing.T) {
+	state := newAttackState()
+	state.Roster[1].X, state.Roster[1].Y = 10, 10
+	state.Roster[2].X, state.Roster[2].Y = 11, 10
+	state.Grid = combat.TacticalGrid{IgnoreTerrain: true, Terrain: make([]uint8, 1250)}
+	state.Budgets[1] = 24
+	state.Mover = 1
+	a := &app{roller: fixedRoller{20}, tactical: state, language: languageEnglish}
+	east := -1
+	for direction := 0; direction < 8; direction++ {
+		x, y, err := combat.AdvanceTacticalCoordinate(10, 10, uint8(direction))
+		if err == nil && x == 11 && y == 10 {
+			east = direction
+		}
+	}
+	before := state.HitPoints[2]
+	a.keys = scriptedKeys{tacticalStepKeys[east]: true}
+	if err := a.tacticalInput(); err != nil {
+		t.Fatal(err)
+	}
+	if state.HitPoints[2] >= before {
+		t.Fatalf("a foe took no damage (%d then %d)", before, state.HitPoints[2])
+	}
+}

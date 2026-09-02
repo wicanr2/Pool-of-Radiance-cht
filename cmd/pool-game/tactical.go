@@ -754,6 +754,19 @@ func (a *app) tacticalInput() error {
 		case outcome.Leaving:
 			state.Status = state.say(msgStatusOffBoard)
 		case outcome.Action == combat.MovementAttack:
+			// 撞到自己人不打自己人。`ProbeDestination` 忠實重現原版，它只回報
+			// 「那一格站著誰」——原版的格位表（`DS:5E89h`）本來就沒有陣營，
+			// 陣營在角色記錄的 `+10Eh`，所以這個判斷是呼叫端的責任。
+			// 少了它，隊伍排成一列時最左邊那個往右走就會砍死自己的同伴，
+			// 而戰鬥永遠打不完。
+			//
+			// 待證：原版撞到同伴是「擋住」還是「換位」。這裡先擋住。
+			if same, err := state.sameSide(state.Mover, outcome.Target); err != nil {
+				return err
+			} else if same {
+				state.Status = state.say(msgStatusBlocked)
+				return nil
+			}
 			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
 				return err
 			}
@@ -859,6 +872,14 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 }
 
 // sideCounts 數出兩邊還站著的人，對應原版的 DS:6772h 與 DS:6773h。
+// sameSide 說兩個參戰者是不是同一邊。
+func (state *tacticalState) sameSide(a, b uint8) (bool, error) {
+	if int(a) >= len(state.Friendly) || int(b) >= len(state.Friendly) || a == 0 || b == 0 {
+		return false, fmt.Errorf("Pool combatant index %d or %d is outside the roster", a, b)
+	}
+	return state.Friendly[a] == state.Friendly[b], nil
+}
+
 func (state *tacticalState) sideCounts() combat.SideCounts {
 	counts := combat.SideCounts{}
 	for index := 1; index < len(state.Roster); index++ {
