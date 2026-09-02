@@ -1,13 +1,13 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-02",
-  "source_commit": "20474cb5c867367d9bc2e13c045780e5a42a119d",
+  "source_commit": "5f89a3e2d1f818db82e732ff5f64ae34cffc58c0",
   "method": "Docker/Xvfb real Ebitengine window with sequential key input",
-  "state_relation": "normal-remake-player-path; tactical map preview toggled with F5",
+  "state_relation": "normal-remake-player-path; tactical map preview toggled with F5. No ECL encounter is staged on this path, so the board carries the party only; the foe turn is covered by unit tests, not by this screenshot.",
   "screenshots": [
     {
       "path": "docs/screenshots/pool-remake-tactical-preview.png",
-      "sha256": "44fdee0c38dcd7cca2b2fa1f4a5d4ff3bce6104ba060ecd15301c3ac510cf830",
+      "sha256": "152e7fddea19a508443ee85a94a9acddc62781f1e6a67b471922b40a45fe5770",
       "width": 960,
       "height": 600
     }
