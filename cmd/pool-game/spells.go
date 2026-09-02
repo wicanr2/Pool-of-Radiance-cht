@@ -187,7 +187,14 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 		if first+offset == state.cursor {
 			cursor, ink = ">", accent
 		}
-		drawText(screen, fmt.Sprintf("%s%-34s %s", cursor, spell.Name, spell.Text),
+		// 標出哪幾條施得出來：逐支讀過的，或版型認得出來的（spec 098）。
+		// 沒標的記得起來但施不出來，清單上不列——與其讓玩家選了才失敗，
+		// 不如一開始就看得出差別。
+		mark := " "
+		if a.spellCaster.Implemented(uint8(spell.Index + 1)) {
+			mark = "*"
+		}
+		drawText(screen, fmt.Sprintf("%s%s%-33s %s", cursor, mark, spell.Name, spell.Text),
 			spellTextLeft, spellFirstLine+offset*spellLineHeight, ink)
 	}
 

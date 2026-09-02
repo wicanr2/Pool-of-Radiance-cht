@@ -153,3 +153,78 @@ func TestSleepBudgetAndEffectCode(t *testing.T) {
 		t.Errorf("催眠術不該有傷害，算出 %d", high.Damage)
 	}
 }
+
+// 版型認得出來的那批要正好是二十五格，而且每一格都有訊息。
+// 比對整個版型是關鍵：只看「有沒有呼叫 08BCh」會把會算傷害的那幾支
+// 一起收進來，然後傷害就消失了——所以這裡順便釘住魔法飛彈不在裡面。
+func TestGenericSpellHandlersMatchTheTemplate(t *testing.T) {
+	handlers, err := ReadDOSGenericSpellHandlers(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	if len(handlers) != 25 {
+		t.Fatalf("版型認出 %d 格，先前量到 25 格", len(handlers))
+	}
+	ids := map[int]string{}
+	for _, handler := range handlers {
+		if handler.Message == "" {
+			t.Errorf("法術 %d 認成泛型卻沒有訊息", handler.SpellID)
+		}
+		ids[handler.SpellID] = handler.Message
+	}
+	// 幾條有名有姓的樣本，訊息逐字對原版。
+	for id, want := range map[int]string{
+		6: "is protected", 19: "is shielded", 30: "is invisible",
+		31: "Knock-Knock", 33: "is weakened", 44: "has been cursed!",
+	} {
+		if got := ids[id]; got != want {
+			t.Errorf("法術 %d 的訊息是 %q，原版是 %q", id, got, want)
+		}
+	}
+	// 會算傷害的那幾支不能被收進來。
+	for _, id := range []int{SpellIDMagicMissile, SpellIDFireball, SpellIDLightningBolt,
+		SpellIDBurningHands, SpellIDShockingGrasp, SpellIDSleep, SpellIDCureLightWound} {
+		if _, ok := ids[id]; ok {
+			t.Errorf("法術 %d 有自己的算法，不該被當成純泛型", id)
+		}
+	}
+}
+
+// 泛型那批施得出來，效果就是參數表的效果碼。
+func TestSpellCasterCoversTheGenericBatch(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	caster, err := ReadDOSSpellCaster(poolZipPath())
+	if err != nil {
+		t.Fatal(err)
+	}
+	// 6 是 Protection From Evil：純泛型。
+	if !caster.Implemented(6) {
+		t.Fatal("Protection From Evil 應該施得出來")
+	}
+	effect, err := caster.Cast(6, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if effect.Damage != 0 || effect.Heal != 0 {
+		t.Errorf("純泛型的不該有傷害或治療，拿到 %+v", effect)
+	}
+	if effect.EffectCode != parameters[6].EffectCode() {
+		t.Errorf("效果碼應該來自參數表 %#02x，拿到 %#02x",
+			parameters[6].EffectCode(), effect.EffectCode)
+	}
+	// 逐支讀過的仍然走自己的算法。
+	missile, err := caster.Cast(SpellIDMagicMissile, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if missile.Damage != 15 {
+		t.Errorf("第 6 級的魔法飛彈擲滿應該 15 點，拿到 %d", missile.Damage)
+	}
+	// 兩邊都沒有的仍然硬失敗。
+	if _, err := caster.Cast(34, parameters, 6, maxRoller{}); err == nil {
+		t.Error("臭雲術兩邊都沒有，應該硬失敗")
+	}
+}

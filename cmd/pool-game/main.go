@@ -180,6 +180,8 @@ type app struct {
 	experienceTable gamepack.ExperienceTable
 	// spellSlotTables 是牧師與法師的可記憶數表（spec 072），記憶法術要用。
 	spellSlotTables gamepack.SpellSlotTables
+	// spellCaster 收著逐支讀過的算法與那批純泛型的（spec 098）。
+	spellCaster *gamepack.SpellCaster
 	// parlay 是進行中的交涉選單（spec 086）。
 	parlay *parlayState
 	// eclInput 是進行中的 ECL 輸入列（spec 087）。
@@ -288,6 +290,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.spellSlotTables = spellSlotTables
+	spellCaster, err := gamepack.ReadDOSSpellCaster(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.spellCaster = spellCaster
 	spellParameters, err := gamepack.ReadDOSSpellParameters(zipPath)
 	if err != nil {
 		return nil, err

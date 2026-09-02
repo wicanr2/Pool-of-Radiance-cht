@@ -142,6 +142,55 @@ Shocking Grasp「1d8 加每級 1 點」、Fireball「1-6 點×施術者等級」
 
 掛上去的效果碼是 `35h`，overlay-15 的名稱鏈把它叫 **"Funky--"**（spec 069）。
 
+## 二十五支是純泛型的，不必逐支讀
+
+六十七支裡有一大批**只做兩件事**：把一段字面訊息複製到區域變數，
+然後推「法術編號 ＋ 四個零」呼叫 `08BCh`。它們沒有自己的算法——射程、
+持續、豁免與掛哪一個效果全部來自參數表（spec 074）。
+
+版型（以 Protection From Evil `110Bh` 為例）：
+
+```
+55 89 E5 [83 EC nn]      push bp / mov bp,sp / sub sp,nn
+A0 79 67 50              mov al, ds:6779h / push ax     ; 法術編號
+(B0 00 50) × 4           push 0 四次                     ; 四個覆寫參數
+8D 7E nn 16 57           lea di,[bp-nn] / push ss / push di
+BF lo hi 0E 57           mov di, 訊息位移 / push cs / push di
+9A 34 06 BB 05           lcall 05BBh:0634h              ; 字串指派
+0E E8 lo hi              push cs / call 08BCh
+89 EC 5D CB              mov sp,bp / pop bp / retf
+```
+
+`internal/gamepack.ParseGenericSpellHandlers` 逐位元組比對整個版型，
+認出 **25 格**：
+
+| 編號 | 法術 | 訊息 |
+|---:|---|---|
+| 5、11 | Detect Magic | `is affected` |
+| 6、7、16、17 | Protection From Evil／Good | `is protected` |
+| 8 | Resist Cold | `is cold-resistant` |
+| 18 | Read Magic | `is affected` |
+| 19 | Shield | `is shielded` |
+| 22 | Find Traps | `is affected` |
+| 24 | Resist Fire | `is fire resistant` |
+| 25 | Silence, 15' Radius | `is silenced` |
+| 29 | Detect Invisibility | `is affected` |
+| 30、50、63 | Invisibility | `is invisible` |
+| 31 | Knock | `Knock-Knock` |
+| 33 | Ray of Enfeeblement | `is weakened` |
+| 38 | Cause Blindness | `is blind` |
+| 44 | Bestow Curse | `has been cursed!` |
+| 45 | Blink | `is blinking` |
+| 52、53 | Protection From Evil／Good, 10' Radius | `is protected` |
+| 54 | Protection From Normal Missiles | `is protected` |
+| 61 | （無名）| `is paralyzed` |
+
+**要比對整個版型，不能只看「有沒有呼叫 08BCh」**：會算傷害的那幾支也呼叫
+`08BCh`，只看呼叫會把它們一起收進來，然後傷害就消失了。測試同時釘住
+「二十五格」與「魔法飛彈那幾支不在裡面」兩個方向。
+
+加上逐支讀出來的八支，六十七格裡**接得出來的有 33 格**。
+
 ## 不做
 
 - 不從 AD&D 規則書補傷害公式。原版有自己的算法，逐支讀出來才寫。

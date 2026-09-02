@@ -277,3 +277,156 @@ func readArchiveMember(zipPath, want string) ([]byte, error) {
 	}
 	return raw, nil
 }
+
+// 純泛型的處理常式（spec 098）。
+//
+// 六十七支裡有一大批只做兩件事：把一段字面訊息複製到區域變數，然後推
+// 「法術編號 ＋ 四個零」呼叫 `08BCh`。它們**沒有自己的算法**——射程、
+// 持續、豁免與掛哪一個效果全部來自參數表（spec 074），所以認得出這個
+// 版型就等於一次接完一整批。
+//
+// 版型（以 Protection From Evil `110Bh` 為例）：
+//
+//	55 89 E5 [83 EC nn]      push bp / mov bp,sp / sub sp,nn
+//	A0 79 67 50              mov al, ds:6779h / push ax     ; 法術編號
+//	(B0 00 50) × 4           push 0 四次                     ; 四個覆寫參數
+//	8D 7E nn 16 57           lea di,[bp-nn] / push ss / push di
+//	BF lo hi 0E 57           mov di, 訊息位移 / push cs / push di
+//	9A 34 06 BB 05           lcall 05BBh:0634h              ; 字串指派
+//	0E E8 lo hi              push cs / call 08BCh
+//	89 EC 5D CB              mov sp,bp / pop bp / retf
+//
+// 比對整個版型而不是只看「有沒有呼叫 08BCh」：會算傷害的那幾支也呼叫
+// 08BCh，只看呼叫會把它們一起收進來，然後傷害就消失了。
+const sharedCastRoutineOffset = 0x08bc
+
+// GenericSpellHandler 是一支純泛型的處理常式。
+type GenericSpellHandler struct {
+	// SpellID 是 1-based 的法術編號。
+	SpellID int
+	// Message 是它推給 `08BCh` 的那一段字面訊息。
+	Message string
+}
+
+// ParseGenericSpellHandlers 找出所有符合版型的處理常式。
+func ParseGenericSpellHandlers(overlay tpov.Overlay, table []SpellDispatchEntry) []GenericSpellHandler {
+	code := overlay.Code
+	out := make([]GenericSpellHandler, 0, len(table))
+	for _, entry := range table {
+		message, ok := matchGenericSpellHandler(code, int(entry.CodeOffset))
+		if !ok {
+			continue
+		}
+		out = append(out, GenericSpellHandler{SpellID: entry.SpellID, Message: message})
+	}
+	return out
+}
+
+// matchGenericSpellHandler 逐位元組比對版型，回傳訊息字串。
+func matchGenericSpellHandler(code []byte, offset int) (string, bool) {
+	at := func(index int) byte {
+		if index < 0 || index >= len(code) {
+			return 0xff
+		}
+		return code[index]
+	}
+	expect := func(index int, want ...byte) bool {
+		for step, value := range want {
+			if at(index+step) != value {
+				return false
+			}
+		}
+		return true
+	}
+	position := offset
+	if !expect(position, 0x55, 0x89, 0xe5) {
+		return "", false
+	}
+	position += 3
+	if expect(position, 0x83, 0xec) {
+		position += 3
+	}
+	if !expect(position, 0xa0, 0x79, 0x67, 0x50) {
+		return "", false
+	}
+	position += 4
+	zeros := 0
+	for expect(position, 0xb0, 0x00, 0x50) {
+		zeros++
+		position += 3
+	}
+	if zeros != 4 {
+		return "", false
+	}
+	if !expect(position, 0x8d, 0x7e) {
+		return "", false
+	}
+	position += 3
+	if !expect(position, 0x16, 0x57) {
+		return "", false
+	}
+	position += 2
+	if at(position) != 0xbf {
+		return "", false
+	}
+	messageOffset := int(binary.LittleEndian.Uint16(code[position+1:]))
+	position += 3
+	if !expect(position, 0x0e, 0x57) {
+		return "", false
+	}
+	position += 2
+	if !expect(position, 0x9a, 0x34, 0x06, 0xbb, 0x05) {
+		return "", false
+	}
+	position += 5
+	if !expect(position, 0x0e, 0xe8) {
+		return "", false
+	}
+	target := position + 4 + int(int16(binary.LittleEndian.Uint16(code[position+2:])))
+	if target != sharedCastRoutineOffset {
+		return "", false
+	}
+	return pascalString(code, messageOffset)
+}
+
+// pascalString 讀一條 Turbo Pascal 短字串（長度在前）。
+func pascalString(code []byte, offset int) (string, bool) {
+	if offset < 0 || offset >= len(code) {
+		return "", false
+	}
+	length := int(code[offset])
+	if length == 0 || offset+1+length > len(code) {
+		return "", false
+	}
+	text := code[offset+1 : offset+1+length]
+	for _, value := range text {
+		if value < 0x20 || value > 0x7e {
+			return "", false
+		}
+	}
+	return string(text), true
+}
+
+// ReadDOSGenericSpellHandlers 從原版 ZIP 直接解出那一批。
+func ReadDOSGenericSpellHandlers(zipPath string) ([]GenericSpellHandler, error) {
+	executable, err := readStartExecutable(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	overlayFile, err := readArchiveMember(zipPath, "GAME.OVR")
+	if err != nil {
+		return nil, err
+	}
+	overlays, err := tpov.Decode(executable, overlayFile)
+	if err != nil {
+		return nil, fmt.Errorf("decode GAME.OVR: %w", err)
+	}
+	if len(overlays) <= SpellDispatchOverlay {
+		return nil, fmt.Errorf("GAME.OVR has %d overlays, want more than %d", len(overlays), SpellDispatchOverlay)
+	}
+	table, err := ParseSpellDispatchTable(overlays[SpellDispatchOverlay])
+	if err != nil {
+		return nil, err
+	}
+	return ParseGenericSpellHandlers(overlays[SpellDispatchOverlay], table), nil
+}

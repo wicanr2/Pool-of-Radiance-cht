@@ -47,7 +47,7 @@ func (a *app) openCastMenu() {
 			continue
 		}
 		id := value & 0x7f
-		if !gamepack.SpellIsImplemented(id) {
+		if !a.spellCaster.Implemented(id) {
 			continue
 		}
 		label := fmt.Sprintf("%d", id)
@@ -113,7 +113,7 @@ func (a *app) resolveCast() error {
 	levels := memberClassLevels(*member)
 	casterLevel := gamepack.CasterLevelFor(a.spellParameters[option.ID],
 		int(levels[gamepack.ClassSlotCleric]), int(levels[gamepack.ClassSlotMagicUser]), false)
-	effect, err := gamepack.CastSpell(option.ID, a.spellParameters, casterLevel, a.roller)
+	effect, err := a.spellCaster.Cast(option.ID, a.spellParameters, casterLevel, a.roller)
 	if err != nil {
 		return err
 	}

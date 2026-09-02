@@ -85,6 +85,77 @@ const (
 	SpellIDLightningBolt  = 51 // 2B75h
 )
 
+// SpellCaster 把讀出來的處理常式與那一批純泛型的收在一起。
+//
+// 純泛型的那批沒有自己的算法：`08BCh` 依參數表判射程、豁免，再把
+// 參數表 `+0Ah` 的效果碼掛上去（spec 074／098）。所以認得出版型就等於
+// 接完一整批，不必逐支讀。
+type SpellCaster struct {
+	generic map[uint8]string
+}
+
+// NewSpellCaster 用解出來的泛型清單建一個施法器。
+func NewSpellCaster(handlers []GenericSpellHandler) *SpellCaster {
+	generic := make(map[uint8]string, len(handlers))
+	for _, handler := range handlers {
+		if handler.SpellID > 0 && handler.SpellID <= SpellDispatchCount {
+			generic[uint8(handler.SpellID)] = handler.Message
+		}
+	}
+	return &SpellCaster{generic: generic}
+}
+
+// ReadDOSSpellCaster 直接從原版 ZIP 建一個。
+func ReadDOSSpellCaster(zipPath string) (*SpellCaster, error) {
+	handlers, err := ReadDOSGenericSpellHandlers(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	return NewSpellCaster(handlers), nil
+}
+
+// Implemented 說這個編號施得出來了沒有：逐支讀過的，或版型認得出來的。
+func (c *SpellCaster) Implemented(id uint8) bool {
+	if SpellIsImplemented(id) {
+		return true
+	}
+	if c == nil {
+		return false
+	}
+	_, ok := c.generic[id]
+	return ok
+}
+
+// Cast 算出一次施法的結果，泛型的那批走參數表。
+func (c *SpellCaster) Cast(id uint8, parameters []SpellParameters, casterLevel int,
+	roller Roller) (CastEffect, error) {
+	if effect, err := CastSpell(id, parameters, casterLevel, roller); err == nil {
+		return effect, nil
+	}
+	if c == nil {
+		return CastEffect{}, fmt.Errorf("Pool spell %d has no handler and no caster table", id)
+	}
+	if _, ok := c.generic[id]; !ok {
+		return CastEffect{}, fmt.Errorf(
+			"Pool spell %d has no read handler; overlay-22 dispatch slot %d is still unread (spec 073)",
+			id, id)
+	}
+	if id == 0 || int(id) >= len(parameters) {
+		return CastEffect{}, fmt.Errorf("Pool spell %d is outside the parameter table", id)
+	}
+	// 純泛型：沒有傷害也沒有治療，只把參數表的效果碼掛上去。
+	return CastEffect{EffectCode: parameters[id].EffectCode()}, nil
+}
+
+// GenericMessage 是那批泛型法術推給 `08BCh` 的字面訊息。
+func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
+	if c == nil {
+		return "", false
+	}
+	message, ok := c.generic[id]
+	return message, ok
+}
+
 // CastSpell 算出一次施法的結果。
 //
 // 逐條的出處：
