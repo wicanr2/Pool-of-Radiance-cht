@@ -272,6 +272,13 @@ type tacticalState struct {
 	// PartySlot 把戰場上的位置換回隊伍索引，−1 代表那一格不是隊員。
 	// 施法要用它才找得到「這個位置是誰」的記憶陣列。
 	PartySlot []int
+	// HitDice 是每一格的 `+73h`（最高職業等級，怪物就是生命骰）。
+	// 催眠術用它算要花多少額度（spec 098）。
+	HitDice []uint8
+	// SleepFlag 是每一格的 `+2Eh`，催眠術第 5 段要看它。
+	SleepFlag []uint8
+	// Asleep 是被催眠的格子。睡著的一輪到就直接結束回合。
+	Asleep []bool
 	Dexterity     []uint8
 	Scores        []uint8
 	Budgets       []uint8
@@ -454,6 +461,9 @@ func (a *app) enterTacticalPreview() error {
 	state.THAC0 = make([]uint8, size)
 	state.ArmorClass = make([]int, size)
 	state.Damage = make([]combat.DamageDice, size)
+	state.HitDice = make([]uint8, size)
+	state.SleepFlag = make([]uint8, size)
+	state.Asleep = make([]bool, size)
 	for index := 1; index < size; index++ {
 		state.BaseMovement[index] = base
 		state.Dexterity[index] = placeholderDexterity
@@ -479,6 +489,13 @@ func (a *app) enterTacticalPreview() error {
 				return err
 			}
 			state.THAC0[index] = thac0
+			// `+73h` 是最高職業等級（spec 072 的 overlay-23）。催眠術用它。
+			levels := memberClassLevels(member)
+			for _, level := range levels {
+				if level > state.HitDice[index] {
+					state.HitDice[index] = level
+				}
+			}
 			// 穿在身上的東西改 AC 與腳程（spec 079／080）：`partyCombatStats`
 			// 回的是建角值，那是「脫光了」的角色。
 			armor, movement, err = a.memberDefenceStats(member, armor, movement)
@@ -502,6 +519,8 @@ func (a *app) enterTacticalPreview() error {
 		}
 		if record, ok := a.stagedRecordFor(index, friendly); ok {
 			state.BaseMovement[index] = record.Movement()
+			state.HitDice[index] = record.Raw[0x73]
+			state.SleepFlag[index] = record.Raw[0x2e]
 			state.HitPoints[index] = int(record.CurrentHitPoints())
 			state.THAC0[index] = uint8(60 - record.THAC0())
 			state.ArmorClass[index] = 60 - record.ArmorClass()
@@ -958,6 +977,16 @@ func (a *app) tacticalInput() error {
 		if a.justPressed(ebiten.KeyN) {
 			state.Prompt = false
 			state.Finished, state.Outcome = true, combat.ResolveCombatOutcome(state.sideCounts())
+			return a.finishCombat(state.Outcome)
+		}
+		return nil
+	}
+	// 睡著的一輪到就直接結束回合（spec 098 的催眠術）。原版是把效果碼掛上去
+	// 之後由行動判定擋下來；這裡先用一個旗標，效果串列還沒接進戰鬥。
+	if state.Mover != 0 && int(state.Mover) < len(state.Asleep) && state.Asleep[state.Mover] {
+		state.Status = state.say(msgStatusAsleep, state.Mover)
+		state.endTurn(a.rollDice, false)
+		if state.Finished {
 			return a.finishCombat(state.Outcome)
 		}
 		return nil

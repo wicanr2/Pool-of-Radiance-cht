@@ -100,6 +100,8 @@ var messages = map[messageID][2]string{
 	msgCastDown:             {"Spell drops %d.", "法術放倒了 %d。"},
 	msgCastTookEffect:       {"%s casts %s.", "%s 施展了 %s。"},
 	msgCastHint:             {"C cast", "C 施法"},
+	msgCastSlept:            {"%s puts %d foes to sleep.", "%s 催眠了 %d 個敵人。"},
+	msgCastSleptNone:        {"%s puts nobody to sleep.", "%s 沒有催眠到任何人。"},
 	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
@@ -510,6 +512,8 @@ const (
 	msgCastDown
 	msgCastTookEffect
 	msgCastHint
+	msgCastSlept
+	msgCastSleptNone
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved
@@ -582,6 +586,7 @@ const (
 	msgStatusMissed
 	msgStatusHit
 	msgStatusDown
+	msgStatusAsleep
 	msgFoeNoTarget
 	msgFoeAttacked
 	msgFoeClosed
@@ -604,6 +609,7 @@ func init() {
 		msgStatusMissed:         {"ATTACK %d MISSED (D20 %d)", "攻擊 %d 落空（D20 %d）"},
 		msgStatusHit:            {"HIT %d FOR %d (HP %d)", "打中 %d 造成 %d（剩 %d 生命力）"},
 		msgStatusDown:           {"%d IS DOWN", "%d 倒下了"},
+		msgStatusAsleep:         {"%d IS ASLEEP", "%d 睡著了"},
 		msgFoeNoTarget:          {"FOE %d FOUND NO TARGET", "敵方 %d 找不到目標"},
 		msgFoeAttacked:          {"FOE %d AFTER %d STEPS: %s", "敵方 %d 走了 %d 步：%s"},
 		msgFoeClosed:            {"FOE %d CLOSED %d STEPS ON %d", "敵方 %d 朝 %d 走近 %d 步"},

@@ -118,6 +118,8 @@ func (a *app) resolveCast() error {
 	syncTrainedLibraryCharacter(&a.state, *member)
 
 	switch {
+	case effect.SleepBudget > 0:
+		a.applySleep(state, member.Name, option.Label, effect.SleepBudget)
 	case effect.Heal > 0:
 		before := state.HitPoints[state.Mover]
 		state.HitPoints[state.Mover] += effect.Heal
@@ -163,4 +165,31 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 func (a *app) tacticalStatus(state *tacticalState, line string) {
 	state.Status = line
 	a.statusLine = line
+}
+
+// applySleep 依額度逐個放倒對面的人（spec 098）。
+//
+// 原版走的是這一次施法挑出來的目標清單（`DS:6B85h`），這裡沒有瞄準那一層，
+// 所以走整個敵方，順序就是位置順序。花費照 `SleepHitDiceCost`。
+func (a *app) applySleep(state *tacticalState, caster, label string, budget int) {
+	slept := 0
+	for index := 1; index < len(state.Roster); index++ {
+		if state.Roster[index].FootprintClass == 0 ||
+			state.Friendly[index] == state.Friendly[state.Mover] || state.Asleep[index] {
+			continue
+		}
+		cost := gamepack.SleepHitDiceCost(int(state.HitDice[index]), state.SleepFlag[index])
+		if cost > budget {
+			continue
+		}
+		budget -= cost
+		state.Asleep[index] = true
+		slept++
+	}
+	if slept == 0 {
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastSleptNone), strings.TrimSpace(caster)))
+		return
+	}
+	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastSlept), strings.TrimSpace(caster), slept))
+	_ = label
 }

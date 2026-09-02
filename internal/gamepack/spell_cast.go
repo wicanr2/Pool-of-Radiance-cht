@@ -21,6 +21,36 @@ type CastEffect struct {
 	WholeSide bool
 	// Area 為真代表這是範圍法術（處理常式先寫 `DS:677Eh = 1`）。
 	Area bool
+	// SleepBudget 是催眠術能放倒的生命骰總量（`DS:47A6h`）。大於零時
+	// 呼叫端要依 SleepHitDiceCost 逐個目標扣，扣得動的就睡著。
+	SleepBudget int
+}
+
+// SleepEffectCode 是催眠術掛上去的效果碼（`15DEh` 推的 35h）。
+// overlay-15 的名稱鏈把它叫 "Funky--"（spec 069）。
+const SleepEffectCode = 0x35
+
+// SleepHitDiceCost 是放倒一個目標要花多少額度（overlay-22 `1553h..15AFh`）。
+//
+// 依目標的 `+73h`（最高職業等級，怪物就是生命骰）分段。第 5 段還要看
+// `+2Eh`：為零花 10，否則花 20。六段以上一律 20，等於放不倒。
+func SleepHitDiceCost(hitDice int, fifthBandFlag uint8) int {
+	switch {
+	case hitDice <= 1:
+		return 1
+	case hitDice == 2:
+		return 2
+	case hitDice == 3:
+		return 4
+	case hitDice == 4:
+		return 6
+	case hitDice == 5:
+		if fifthBandFlag == 0 {
+			return 10
+		}
+		return 20
+	}
+	return 20
 }
 
 // CasterLevelFor 是 overlay-25 `26F8h`：參數表 `+0` 決定讀哪一個職業等級，
@@ -50,6 +80,7 @@ const (
 	SpellIDBurningHands   = 9  // 1178h
 	SpellIDMagicMissile   = 15 // 1429h
 	SpellIDShockingGrasp  = 20 // 14BFh
+	SpellIDSleep          = 21 // 1513h
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -63,6 +94,7 @@ const (
 //	09h Burning Hands  1178h  傷害＝施法者等級，沒有擲骰
 //	0Fh Magic Missile  1429h  Roll(等級÷2, 4) ＋ 等級÷2
 //	14h Shocking Grasp 14BFh  Roll(1, 8) ＋ 等級
+//	15h Sleep          1513h  額度 Roll(4, 4) 生命骰，逐個目標依 HD 扣
 //	2Fh Fireball       262Eh  Roll(等級, 6)
 //	33h Lightning Bolt 2B75h  Roll(等級, 6)
 //
@@ -87,6 +119,10 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.Damage = roller.Roll(missiles, 4) + missiles
 	case SpellIDShockingGrasp:
 		effect.Damage = roller.Roll(1, 8) + casterLevel
+	case SpellIDSleep:
+		// 額度是 4d4 生命骰（`151Eh` 的 Roll(4, 4)），效果碼 35h。
+		effect.Area, effect.SleepBudget = true, roller.Roll(4, 4)
+		effect.EffectCode = SleepEffectCode
 	case SpellIDFireball, SpellIDLightningBolt:
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
 	default:
@@ -102,7 +138,8 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 func SpellIsImplemented(id uint8) bool {
 	switch id {
 	case SpellIDBless, SpellIDCureLightWound, SpellIDBurningHands,
-		SpellIDMagicMissile, SpellIDShockingGrasp, SpellIDFireball, SpellIDLightningBolt:
+		SpellIDMagicMissile, SpellIDShockingGrasp, SpellIDSleep,
+		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}
 	return false
