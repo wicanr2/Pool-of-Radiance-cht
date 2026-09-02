@@ -783,6 +783,18 @@ func (a *app) tacticalInput() error {
 			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
 				return err
 			}
+			// 攻擊就用掉這一次行動。原版的玩家指令迴圈（overlay-08 `0307h`）
+			// 把「這一回合結束了嗎」的旗標位址交給攻擊常式
+			// （`0096h:0089h`，`03D7h` 那個 `lea -2(bp)`），由它決定要不要
+			// 回到 `036Ch` 再問下一個指令；敵方回合（`foeTurn`）打完也是直接
+			// `endTurn`。少了這一步，同一個角色可以對同一個目標無限連打。
+			//
+			// 待證：戰士的多次攻擊（記錄 `+A1h`，spec 051）還沒接，接上之後
+			// 這裡要改成「打完所有攻擊次數才結束」。
+			state.endTurn(a.rollDice, false)
+			if state.Finished {
+				return a.finishCombat(state.Outcome)
+			}
 		case outcome.Action == combat.MovementBlocked:
 			state.Status = state.say(msgStatusBlocked)
 		default:

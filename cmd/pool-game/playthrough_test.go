@@ -411,13 +411,11 @@ func TestPartyMakesHeadwayInTheFirstCombat(t *testing.T) {
 		if after == nil || after.Finished {
 			break
 		}
-		if after.Roster[mover].X == from.X && after.Roster[mover].Y == from.Y {
+		if after.Mover == mover && after.Roster[mover].X == from.X && after.Roster[mover].Y == from.Y {
+			// 動不了也打不到就結束這一回合。攻擊本身已經會結束回合。
 			sameCell++
-			if sameCell >= 6 {
-				sameCell = 0
-				if err := press(application, ebiten.KeyEnter); err != nil {
-					t.Fatal(err)
-				}
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
 			}
 		} else {
 			sameCell = 0
@@ -442,8 +440,8 @@ func TestPartyMakesHeadwayInTheFirstCombat(t *testing.T) {
 	if standingParty != len(party) {
 		t.Fatalf("%d of %d party members went down", len(party)-standingParty, len(party))
 	}
-	// 固定操作、固定種子，實測會倒下五隻；門檻放在四隻，留一點骰運的空間。
-	if foesAtStart-standingFoes < 4 {
+	// 固定操作、固定種子，實測十二隻裡放倒十一隻；門檻放在十隻，留骰運的空間。
+	if foesAtStart-standingFoes < 10 {
 		t.Fatalf("only %d of %d foes went down after %d rounds", foesAtStart-standingFoes, foesAtStart, state.Round)
 	}
 }
