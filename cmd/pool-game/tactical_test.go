@@ -65,17 +65,22 @@ func fixedRoll(int, int) int { return 3 }
 func newRoundState(members int) *tacticalState {
 	size := members + 1
 	state := &tacticalState{
-		Roster:       make([]combat.CombatantCell, size),
-		Friendly:     make([]bool, size),
-		Dexterity:    make([]uint8, size),
-		Scores:       make([]uint8, size),
-		Budgets:      make([]uint8, size),
-		BaseMovement: make([]uint8, size),
+		Roster:        make([]combat.CombatantCell, size),
+		Friendly:      make([]bool, size),
+		Dexterity:     make([]uint8, size),
+		Scores:        make([]uint8, size),
+		Budgets:       make([]uint8, size),
+		BaseMovement:  make([]uint8, size),
+		States:        make([]uint8, size),
+		DyingCounters: make([]uint8, size),
 	}
 	for index := 1; index < size; index++ {
 		state.Dexterity[index] = 12
 		state.BaseMovement[index] = 9
+		state.Roster[index].FootprintClass = 1
 	}
+	// 兩邊都要有人站著，回合收尾才不會把測試盤面判成已經分出勝負。
+	state.Friendly[1] = true
 	return state
 }
 
@@ -178,8 +183,9 @@ func TestResolveTacticalAttackMisses(t *testing.T) {
 	}
 }
 
-// 打倒目標之後它的體型類別歸零，不再佔格也不再參與；敵方清空即為勝。
-func TestResolveTacticalAttackDownsTheTargetAndEndsTheCombat(t *testing.T) {
+// 打倒目標之後它的體型類別歸零、轉成倒地狀態；戰鬥不在這一刻結束——
+// spec 062 契約 6 的結束旗標是回合收尾產出的。
+func TestResolveTacticalAttackDownsTheTargetWithoutEndingTheCombat(t *testing.T) {
 	state := newAttackState()
 	a := &app{roller: fixedRoller{20}, tactical: state}
 	if err := a.resolveTacticalAttack(state, 2); err != nil {
@@ -191,26 +197,65 @@ func TestResolveTacticalAttackDownsTheTargetAndEndsTheCombat(t *testing.T) {
 	if state.Roster[2].FootprintClass != 0 {
 		t.Fatal("a downed combatant still occupies its cells")
 	}
-	if state.Status != "VICTORY" {
-		t.Fatalf("status %q, want VICTORY", state.Status)
+	if state.States[2] != combat.DyingState {
+		t.Fatalf("downed combatant state %d, want %d", state.States[2], combat.DyingState)
+	}
+	if state.Finished {
+		t.Fatal("the attack ended the combat; only the round end may do that")
 	}
 }
 
-// 兩邊都還有人時戰鬥繼續。
-func TestCombatOutcomeStaysOngoingWhileBothSidesStand(t *testing.T) {
+// 兩邊都還有人時回合收尾不結束戰鬥，直接開下一回合。
+func TestEndRoundStartsTheNextRoundWhileBothSidesStand(t *testing.T) {
 	state := newAttackState()
-	over, outcome := state.combatOutcome()
-	if over || outcome != combat.CombatOngoing {
-		t.Fatalf("over %v outcome %v, want an ongoing combat", over, outcome)
+	state.endRound(fixedRoll)
+	if state.Finished || state.Prompt {
+		t.Fatalf("finished %v prompt %v, want an ongoing combat", state.Finished, state.Prompt)
+	}
+	if state.Round != 1 {
+		t.Fatalf("round %d, want the next round to have started", state.Round)
 	}
 }
 
-func TestCombatOutcomeReportsDefeatWhenThePartyIsGone(t *testing.T) {
+// 我方全倒就是敗，而且不問要不要繼續。
+func TestEndRoundReportsDefeatWhenThePartyIsGone(t *testing.T) {
 	state := newAttackState()
 	state.Roster[1].FootprintClass = 0
-	over, outcome := state.combatOutcome()
-	if !over || outcome != combat.CombatDefeat {
-		t.Fatalf("over %v outcome %v, want defeat", over, outcome)
+	state.endRound(fixedRoll)
+	if !state.Finished || state.Outcome != combat.CombatDefeat {
+		t.Fatalf("finished %v outcome %v, want defeat", state.Finished, state.Outcome)
+	}
+	if state.Prompt {
+		t.Fatal("a defeated party was asked whether to fight on")
+	}
+}
+
+// spec 062 契約 5：清光敵人之後要先問一次，答 N 才結束。
+func TestEndRoundAsksBeforeEndingAClearedBattle(t *testing.T) {
+	state := newAttackState()
+	state.Roster[2].FootprintClass = 0
+	state.endRound(fixedRoll)
+	if state.Finished {
+		t.Fatal("clearing the foes ended the battle without asking")
+	}
+	if !state.Prompt {
+		t.Fatal("the continue prompt did not come up")
+	}
+}
+
+// 倒地者每個回合加一，撐過第九回合才轉成另一個狀態。
+func TestEndRoundAdvancesTheDyingCounter(t *testing.T) {
+	state := newAttackState()
+	state.States[2] = combat.DyingState
+	for round := 0; round < int(combat.DyingRoundLimit); round++ {
+		state.endRound(fixedRoll)
+		if state.States[2] != combat.DyingState {
+			t.Fatalf("state %d after %d rounds, want it still dying", state.States[2], round+1)
+		}
+	}
+	state.endRound(fixedRoll)
+	if state.States[2] != combat.DeadState {
+		t.Fatalf("state %d after the limit, want %d", state.States[2], combat.DeadState)
 	}
 }
 

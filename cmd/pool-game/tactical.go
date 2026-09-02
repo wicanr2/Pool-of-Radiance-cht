@@ -146,7 +146,11 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		a.tactical.Round, a.tactical.Mover, a.tactical.Scores[a.tactical.Mover],
 		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 344, foreground)
 	drawText(screen, fmt.Sprintf("PROVISIONAL AI  %s", a.tactical.FoeLog), 70, 358, foreground)
-	drawText(screen, "H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY", 70, 372, accent)
+	hint := "H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY"
+	if a.tactical.Prompt {
+		hint = "Y: FIGHT ON   N: END THE BATTLE"
+	}
+	drawText(screen, hint, 70, 372, accent)
 	drawText(screen, "F5: BACK", 500, 330, foreground)
 }
 
@@ -218,26 +222,29 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 // tacticalState 是戰術預覽跨影格保留的狀態。Scores 對應原版 runtime 的 `+3`
 // 先攻排序分數，Budgets 對應 `+6` 的剩餘步數，兩者都是 1-based。
 type tacticalState struct {
-	Grid         combat.TacticalGrid
-	Classes      combat.CellClasses
-	Roster       []combat.CombatantCell
-	Friendly     []bool
-	Dexterity    []uint8
-	Scores       []uint8
-	Budgets      []uint8
-	BaseMovement []uint8
-	HitPoints    []int
-	THAC0        []uint8
-	ArmorClass   []int
-	Damage       []combat.DamageDice
-	StatsSource  string
-	Round        int
-	Mover        uint8
-	Finished     bool
-	Outcome      combat.CombatOutcome
-	BudgetSource string
-	Status       string
-	FoeLog       string
+	Grid          combat.TacticalGrid
+	Classes       combat.CellClasses
+	Roster        []combat.CombatantCell
+	Friendly      []bool
+	Dexterity     []uint8
+	Scores        []uint8
+	Budgets       []uint8
+	States        []uint8
+	DyingCounters []uint8
+	BaseMovement  []uint8
+	HitPoints     []int
+	THAC0         []uint8
+	ArmorClass    []int
+	Damage        []combat.DamageDice
+	StatsSource   string
+	Round         int
+	Mover         uint8
+	Finished      bool
+	Prompt        bool
+	Outcome       combat.CombatOutcome
+	BudgetSource  string
+	Status        string
+	FoeLog        string
 }
 
 // Budget 回傳目前行動者的剩餘步數。
@@ -296,9 +303,35 @@ func (state *tacticalState) endTurn(roll func(count, sides int) int, delay bool)
 	}
 	state.selectActor(roll)
 	if state.Mover == 0 {
-		state.startRound(roll)
-		state.Status = fmt.Sprintf("ROUND %d", state.Round)
+		state.endRound(roll)
 	}
+}
+
+// endRound 重現 overlay-08 `0868h` 的回合收尾（spec 062）：先推進倒地計時，
+// 再判結束；「我方還在、敵方清光」那一支要多問一次要不要繼續，不是直接結束。
+//
+// 原版另有一個不問的條件（`DS:4955h` 非 0），它的來源還沒閉合，所以這裡一律問。
+func (state *tacticalState) endRound(roll func(count, sides int) int) {
+	for index := 1; index < len(state.Roster); index++ {
+		state.States[index], state.DyingCounters[index] =
+			combat.AdvanceDyingCounter(state.States[index], state.DyingCounters[index])
+	}
+	counts := state.sideCounts()
+	if counts.Party > 0 && counts.Foes == 0 {
+		state.Prompt = true
+		state.Status = "CONTINUE BATTLE? Y/N"
+		return
+	}
+	if combat.RoundEndsCombat(counts, 0, false) {
+		state.Finished, state.Outcome = true, combat.ResolveCombatOutcome(counts)
+		state.Status = "DEFEAT"
+		if state.Outcome == combat.CombatVictory {
+			state.Status = "VICTORY"
+		}
+		return
+	}
+	state.startRound(roll)
+	state.Status = fmt.Sprintf("ROUND %d", state.Round)
 }
 
 // placeholderBaseMovement 是隊伍成員的暫定移動值。remake 的角色記錄目前沒有
@@ -352,6 +385,8 @@ func (a *app) enterTacticalPreview() error {
 		BaseMovement: make([]uint8, size),
 		BudgetSource: source,
 	}
+	state.States = make([]uint8, size)
+	state.DyingCounters = make([]uint8, size)
 	state.HitPoints = make([]int, size)
 	state.THAC0 = make([]uint8, size)
 	state.ArmorClass = make([]int, size)
@@ -505,9 +540,6 @@ func (a *app) foeTurn(state *tacticalState) error {
 				return err
 			}
 			state.FoeLog = fmt.Sprintf("FOE %d AFTER %d STEPS: %s", mover, steps, state.Status)
-			if state.Finished {
-				return nil
-			}
 			state.endTurn(a.rollDice, false)
 			return nil
 		}
@@ -545,6 +577,19 @@ func (a *app) tacticalInput() error {
 	if state == nil {
 		return nil
 	}
+	if state.Prompt {
+		if a.justPressed(ebiten.KeyY) {
+			state.Prompt = false
+			state.startRound(a.rollDice)
+			state.Status = fmt.Sprintf("ROUND %d", state.Round)
+		}
+		if a.justPressed(ebiten.KeyN) {
+			state.Prompt = false
+			state.Finished, state.Outcome = true, combat.ResolveCombatOutcome(state.sideCounts())
+			return a.finishCombat(state.Outcome)
+		}
+		return nil
+	}
 	if state.Mover != 0 && int(state.Mover) < len(state.Friendly) && !state.Friendly[state.Mover] {
 		if err := a.foeTurn(state); err != nil {
 			return err
@@ -556,10 +601,16 @@ func (a *app) tacticalInput() error {
 	}
 	if a.justPressed(ebiten.KeyEnter) {
 		state.endTurn(a.rollDice, false)
+		if state.Finished {
+			return a.finishCombat(state.Outcome)
+		}
 		return nil
 	}
 	if a.justPressed(ebiten.KeyD) {
 		state.endTurn(a.rollDice, true)
+		if state.Finished {
+			return a.finishCombat(state.Outcome)
+		}
 		return nil
 	}
 	if state.Mover == 0 {
@@ -583,9 +634,6 @@ func (a *app) tacticalInput() error {
 		case outcome.Action == combat.MovementAttack:
 			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
 				return err
-			}
-			if state.Finished {
-				return a.finishCombat(state.Outcome)
 			}
 		case outcome.Action == combat.MovementBlocked:
 			state.Status = "BLOCKED"
@@ -658,16 +706,8 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	state.HitPoints[target] = 0
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
+	state.States[target] = combat.DyingState
 	state.Status = fmt.Sprintf("%d IS DOWN", target)
-	if over, outcome := state.combatOutcome(); over {
-		state.Finished, state.Outcome = true, outcome
-		switch outcome {
-		case combat.CombatVictory:
-			state.Status = "VICTORY"
-		case combat.CombatDefeat:
-			state.Status = "DEFEAT"
-		}
-	}
 	return nil
 }
 
@@ -696,9 +736,8 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	return nil
 }
 
-// combatOutcome 依兩邊還站著的人數判定戰鬥是否結束。清光敵人之後原版還會問
-// 一次要不要繼續，這裡先不問，直接當成結束。
-func (state *tacticalState) combatOutcome() (bool, combat.CombatOutcome) {
+// sideCounts 數出兩邊還站著的人，對應原版的 DS:6772h 與 DS:6773h。
+func (state *tacticalState) sideCounts() combat.SideCounts {
 	counts := combat.SideCounts{}
 	for index := 1; index < len(state.Roster); index++ {
 		if state.Roster[index].FootprintClass == 0 {
@@ -710,8 +749,5 @@ func (state *tacticalState) combatOutcome() (bool, combat.CombatOutcome) {
 			counts.Foes++
 		}
 	}
-	if !combat.RoundEndsCombat(counts, 0, false) {
-		return false, combat.CombatOngoing
-	}
-	return true, combat.ResolveCombatOutcome(counts)
+	return counts
 }
