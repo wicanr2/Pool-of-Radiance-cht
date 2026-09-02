@@ -3,8 +3,9 @@
 狀態：READY。日期：2026-09-02。
 
 證據等級：overlay 25／31／32 四個函式、`DS:2860h` 佔格表與 `DS:274Ah`／`DS:2753h`
-方向表為 `exact`；X／Y 軸的指派為 `strong inference`；`sub_419` 的成本函式、
-`arg_0`／`arg_2` 遠指標的內容、combatant record `+2` 欄位仍為 `待證`。
+方向表為 `exact`；X／Y 軸的指派為 `strong inference`；combatant record `+2` 欄位
+仍為 `待證`。`sub_419` 的成本函式與 `arg_0`／`arg_2` 遠指標由 spec 057 閉合：
+那兩個參數是戰術地圖的遠指標，成本是 Bresenham 走訪的累計值。
 
 ## 為什麼需要這一段
 
@@ -167,7 +168,8 @@ overlay-13 的 move-probe 與 move-budget-step、overlay-24 的 effect-apply 共
 4. 兩層迴圈（自身四格 × 對方四格，各自跳過無效槽）：
    - `sub_579(自身格X, 自身格Y, 對方格X, 對方格Y, arg_6)` 為 false 則跳過；
    - `sub_419(自身格X, 自身格Y, @對方格X, @對方格Y, @成本, arg_2:arg_0)`
-     為 false 則跳過，為 true 時成本可能被就地更新；
+     為 false 則跳過，為 true 時成本被就地更新為實際走訪成本。成本變數進去時
+     是預算、出來時是結果（spec 057）；
    - 記錄成本最小的那組（自身格索引與對方格索引）。
 5. 該 combatant 只要有任一組成立就追加一筆結果：`+0` 寫 combatant 索引、
    `+1` 寫最小成本的低位元組、`+2` 寫朝向——`arg_6 < 8` 時直接沿用 `arg_6`，
@@ -192,10 +194,7 @@ overlay-13 的 move-probe 與 move-budget-step、overlay-24 的 effect-apply 共
 
 ## 尚未閉合
 
-- `sub_419`（overlay-31 `0419h`）的成本函式本體，以及 `arg_0`／`arg_2` 遠指標指向
-  什麼。`0912h` 寫進結果 `+1` 的成本語意要靠它才能定。
 - combatant record `+2` 欄位。
-- `sub_2E` 的收尾動作與回傳值語意。
 - `6674h` 結構與 `6CD7h` 陣列的容量上限，以及超量時的行為。
 - `013Dh:0025h` 的 code offset 是 `FFFFh`，是未使用的 entry 槽，用途待證。
 - X／Y 的指派尚未由畫面證實，見「座標軸」一節。
@@ -225,3 +224,10 @@ overlay-13 的 move-probe 與 move-budget-step、overlay-24 的 effect-apply 共
   `Failed to initialize IDA as library (error code 1)` 失敗，要對 raw bin 重跑。
 - raw binary 沒有 entry point，IDA 不會自動建立任何函式，函式清單會是空的；
   必須由 `POOL_IDA_SEEDS` 明確種入。
+
+## 實作對應
+
+`internal/combat/nearby.go` 的 `NearbyCells` 就是 `0912h`：展開雙方佔格、
+過朝向弧、走 `TraceMovement`、取最小成本、朝向未指定時自 0 起找第一個成立的
+方向，收尾排序。`OpposingNearbyAt` 接上 overlay-25 entry 32 的陣營篩選，
+`LeavingOpponentsAfterStep` 則是 spec 059 那個「暫時推一格、查詢、復原」的差集。
