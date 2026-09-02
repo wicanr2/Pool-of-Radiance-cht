@@ -1,6 +1,9 @@
 package gamepack
 
-import "fmt"
+import (
+	"encoding/hex"
+	"fmt"
+)
 
 const (
 	CombatCellClassCount      = 66
@@ -38,4 +41,24 @@ func ParseCombatCellClassTable(raw []byte) ([CombatCellClassCount]CombatCellClas
 		}
 	}
 	return records, nil
+}
+
+// originalCombatCellClassHex 是 START.EXE 的 DS:2758h 起 66×4 bytes，
+// 逐位元組照抄。這是本表在 repo 裡的唯一一份；戰鬥層與畫面都由
+// OriginalCombatCellClassTable 取得，不另建副本。
+const originalCombatCellClassHex = "0100ff00ff000200ff000201ff000202ff00020301000004ff000205ff000206ff00020701000008ff0002090100000aff00020b0100000cff00020d0100000eff00020f01000010ff000211ff000212ff000213ff000214ff0002150100001601000017ff000218010000220100002301000024010000250100002601000027ff000200ff000201ff000202ff00020301000004010000050100000601000007ff000008ff0000090100000a0100000b0100000c0100000d0100000e0100000f0100001001000011ff000012ff000013010000140100001501000016ff000017ff000018010000190100001a0100001bff00001cff00021dff00021eff00021f01000020ff000221"
+
+// OriginalCombatCellClassTable 解出原版的 66 筆格位類別表。
+// 表的內容是編譯進 START.EXE 的初始化資料，不隨存檔或關卡改變，
+// 因此每次呼叫都回傳同一份值的複本。
+func OriginalCombatCellClassTable() [CombatCellClassCount]CombatCellClass {
+	raw, err := hex.DecodeString(originalCombatCellClassHex)
+	if err != nil {
+		panic("Pool combat cell class table is not valid hex: " + err.Error())
+	}
+	records, err := ParseCombatCellClassTable(raw)
+	if err != nil {
+		panic("Pool combat cell class table does not parse: " + err.Error())
+	}
+	return records
 }

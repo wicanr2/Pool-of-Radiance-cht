@@ -99,6 +99,7 @@ type app struct {
 	rolled           *creation.RolledCharacter
 	roller           creation.Roller
 	help             bool
+	tacticalPreview  bool
 	modern           bool
 	statusLine       string
 	keys             keySource
@@ -292,6 +293,9 @@ func (a *app) Update() error {
 	}
 	if a.justPressed(ebiten.KeyF2) {
 		a.modern = !a.modern
+	}
+	if a.justPressed(ebiten.KeyF5) && a.mode == modeAdventure {
+		a.tacticalPreview = !a.tacticalPreview
 	}
 	if a.help {
 		if a.justPressed(ebiten.KeyEscape) {
@@ -1701,10 +1705,12 @@ func (a *app) Draw(screen *ebiten.Image) {
 		}
 	} else if a.mode == modeCreation {
 		drawCreation(screen, a, foreground, accent)
+	} else if a.tacticalPreview {
+		drawTactical(screen, a, foreground, accent)
 	} else {
 		drawAdventure(screen, a, foreground, accent)
 	}
-	drawText(screen, "F1 Help  F2 Theme  ESC Back  F10 Quit", 16, 390, foreground)
+	drawText(screen, "F1 Help  F2 Theme  F5 Tactical  ESC Back  F10 Quit", 16, 390, foreground)
 	if a.help {
 		drawHelp(screen, background, foreground, accent)
 	}
