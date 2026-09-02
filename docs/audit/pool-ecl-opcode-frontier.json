@@ -41,6 +41,7 @@
     "0x29",
     "0x2A",
     "0x2B",
+    "0x2C",
     "0x2D",
     "0x2E",
     "0x2F",
@@ -284,203 +285,6 @@
       ]
     },
     {
-      "opcode": "0x2C",
-      "name": "PARLAY",
-      "arity": 6,
-      "sites": [
-        {
-          "file": "ecl1.dax",
-          "block_id": 18,
-          "offset": 817
-        },
-        {
-          "file": "ecl1.dax",
-          "block_id": 18,
-          "offset": 1448
-        },
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 6098
-        },
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 6558
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 9,
-          "offset": 1502
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 4080
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 1841
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 6561
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 6590
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 6608
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 2,
-          "offset": 2581
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 2,
-          "offset": 3000
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 10,
-          "offset": 7294
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 854
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 1362
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 2008
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 2643
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 4432
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 1372
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 2053
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 2815
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 4909
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 1204
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 1890
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 2701
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 4944
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 5,
-          "offset": 1231
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 5,
-          "offset": 4285
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 1114
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 2029
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 4532
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 2497
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 1564
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 4370
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 2537
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 1961
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 29,
-          "offset": 3685
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 29,
-          "offset": 5219
-        }
-      ]
-    },
-    {
       "opcode": "0x34",
       "name": "ECL CLOCK",
       "arity": 2,
@@ -676,6 +480,6 @@
       ]
     }
   ],
-  "unhandled_site_total": 110,
+  "unhandled_site_total": 72,
   "blocks_scanned": 29
 }

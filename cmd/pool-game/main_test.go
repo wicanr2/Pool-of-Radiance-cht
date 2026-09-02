@@ -1076,3 +1076,39 @@ func TestDamageRequestFlags(t *testing.T) {
 		t.Fatalf("%+v", noSave)
 	}
 }
+
+// `2Ch PARLAY`：選到第 N 個語氣就把運算元 N 的結果碼寫進運算元 6 指的變數
+// （spec 086）。挑錯一格的症狀是交涉走錯分支，而畫面上分不出來。
+func TestParlayWritesTheChosenOutcome(t *testing.T) {
+	application := &app{eventMachine: &eclvm.Machine{Memory: map[uint16]uint16{}}}
+	application.parlay = &parlayState{
+		outcomes:      [gamepack.ParlayOutcomeCount]uint16{11, 22, 33, 44, 55},
+		resultAddress: 0x1234,
+	}
+	application.cellMenuCursor = 2 // NICE
+	if err := application.resolveParlayChoice(); err != nil {
+		t.Fatal(err)
+	}
+	if got := application.eventMachine.Memory[0x1234]; got != 33 {
+		t.Fatalf("parlay wrote %d, want the third outcome 33", got)
+	}
+	if application.parlay != nil || application.cellWaitingMenu {
+		t.Fatal("the parlay menu is still up after a choice")
+	}
+}
+
+// 五個顯示字串與結果表同長且順序相同。少一個或錯位就會選到別格。
+func TestParlayMenuHasFiveOptionsInOrder(t *testing.T) {
+	if len(gamepack.ParlayChoices) != gamepack.ParlayOutcomeCount {
+		t.Fatalf("%d 個選項，結果表 %d 格", len(gamepack.ParlayChoices), gamepack.ParlayOutcomeCount)
+	}
+	if len(parlayMenuMessages) != gamepack.ParlayOutcomeCount {
+		t.Fatalf("顯示字串 %d 個", len(parlayMenuMessages))
+	}
+	application := &app{}
+	for index, item := range parlayMenuMessages {
+		if got := application.text(item); got != gamepack.ParlayChoices[index] {
+			t.Fatalf("第 %d 個顯示 %q，原文是 %q", index, got, gamepack.ParlayChoices[index])
+		}
+	}
+}

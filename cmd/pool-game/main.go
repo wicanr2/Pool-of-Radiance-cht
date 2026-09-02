@@ -158,6 +158,8 @@ type app struct {
 	programManaging bool
 	// savingThrows 是 DS:41E6h 那張表（spec 075），2Eh DAMAGE 擲豁免要用。
 	savingThrows *gamepack.SavingThrowTable
+	// parlay 是進行中的交涉選單（spec 086）。
+	parlay *parlayState
 	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
 	combatActive     bool
@@ -630,6 +632,9 @@ func (a *app) Update() error {
 					if a.templeActive {
 						return a.selectSuneTempleOption()
 					}
+					if a.parlay != nil {
+						return a.selectParlayOption()
+					}
 					var selection *uint16
 					if a.cellWaitingMenu {
 						value := uint16(a.cellMenuCursor)
@@ -900,6 +905,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if event, ok := partyQueryEvent(result); ok {
 			return a.applyPartyQuery(event)
+		}
+		if event, ok := parlayEvent(result); ok {
+			return a.enterParlay(event)
 		}
 		return a.pauseAppliedCellResult(result)
 	}

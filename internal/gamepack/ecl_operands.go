@@ -46,6 +46,15 @@ const (
 	// 這個 block（overlay-03 `312Ah`）。
 	ProgramAskThenManage = 9
 
+	// ParlayOpcode 是 `2Ch PARLAY`（spec 086）：五種語氣的交涉選單。
+	ParlayOpcode = 0x2c
+	// ParlayOperands 是它吃幾個運算元。
+	ParlayOperands = 6
+	// ParlayOutcomeCount 是結果表的格數，等於選項數。
+	ParlayOutcomeCount = 5
+	// ParlayResultOperand 是「結果寫進哪個 ECL 變數」那個運算元的序號。
+	ParlayResultOperand = 6
+
 	// PrintReturnOpcode 是 `33h PRINT RETURN`（spec 082）：文字框換行。
 	PrintReturnOpcode = 0x33
 	// ClearBoxOpcode 是 `3Dh CLEAR BOX`（spec 082）：清掉文字框。
@@ -55,6 +64,12 @@ const (
 // EncounterMenuChoices 是選單的四個選項，順序即畫面順序。第四項依情境在
 // PARLAY 與 ADVANCE 之間切換（overlay-03 `2333h`）。
 var EncounterMenuChoices = []string{"COMBAT", "WAIT", "FLEE", "PARLAY"}
+
+// ParlayChoices 是交涉選單的五種語氣，順序即畫面順序，也就是結果表
+// 運算元 1..5 的索引。字面值來自 overlay-03 `2785h` 的
+// `~HAUGHTY ~SLY ~NICE ~MEEK ~ABUSIVE`（`~` 標的是熱鍵字母，與 spec 078
+// 的選單同一套寫法）。
+var ParlayChoices = []string{"HAUGHTY", "SLY", "NICE", "MEEK", "ABUSIVE"}
 
 // EncounterMenuAdvanceChoices 是第四項換成 ADVANCE 的那一版。
 var EncounterMenuAdvanceChoices = []string{"COMBAT", "WAIT", "FLEE", "ADVANCE"}

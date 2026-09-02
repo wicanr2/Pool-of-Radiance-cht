@@ -81,6 +81,12 @@ var messages = map[messageID][2]string{
 	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
+	msgParlayPrompt:         {"Choose the tone of the parlay.", "選擇交涉的語氣。"},
+	msgParlayHaughty:        {"HAUGHTY", "傲慢"},
+	msgParlaySly:            {"SLY", "狡猾"},
+	msgParlayNice:           {"NICE", "友善"},
+	msgParlayMeek:           {"MEEK", "謙卑"},
+	msgParlayAbusive:        {"ABUSIVE", "辱罵"},
 	msgEquipmentFooter:      {"TAB switch character  UP/DOWN choose  ENTER ready  I/ESC close", "TAB 換人　上下選物品　ENTER 裝備／卸下　I／ESC 關閉"},
 	// 標題畫面的按鍵提示，說明書沒有，鍵名保持原文。
 	msgTitleHint: {"ENTER / SPACE", "ENTER／空白鍵"},
@@ -459,6 +465,12 @@ const (
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved
+	msgParlayPrompt
+	msgParlayHaughty
+	msgParlaySly
+	msgParlayNice
+	msgParlayMeek
+	msgParlayAbusive
 	msgEquipmentFooter
 )
 
