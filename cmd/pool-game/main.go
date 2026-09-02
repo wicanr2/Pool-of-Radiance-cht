@@ -938,6 +938,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		if event, ok := addNPCEvent(result); ok {
 			return a.applyAddNPC(event)
 		}
+		if event, ok := checkPartyEvent(result); ok {
+			return a.applyCheckParty(event)
+		}
 		return a.pauseAppliedCellResult(result)
 	}
 	return fmt.Errorf("Pool SearchLocation exceeded presentation boundary limit")

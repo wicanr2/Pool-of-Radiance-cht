@@ -258,6 +258,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x37: true, // LOAD PIECES / title resource boundary
 		0x0F: true, // INPUT NUMBER（spec 087）
 		0x10: true, // INPUT STRING（spec 087）
+		0x1E: true, // CHECKPARTY（spec 092；隊伍統計）
 		0x22: true, // PARTY SURPRISE（spec 085）
 		0x23: true, // SURPRISE（spec 085）
 		0x28: true, // ROB（spec 088；前端要接，接不到隊伍不會掉東西）

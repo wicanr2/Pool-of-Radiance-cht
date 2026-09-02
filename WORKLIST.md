@@ -351,9 +351,9 @@
   `docs/audit/pool-ecl-opcode-frontier.json`，由 `cmd/pool-ecl-frontier` 重生
   （「已處理」那一半直接讀共用 VM 的 switch 與 Pool 的 passthrough 清單，
   不另抄一份會過期的常數）。依呼叫點數排：
-  `1Eh CHECKPARTY` 4、`34h ECL CLOCK` 1、`3Bh SPELL` 1。
-  `1Eh` 依運算元 1 的位址挑欄位（讀到 `+79h` 與 `+11Ch` 兩支）算最小／最大／
-  總和／平均，結果由 `14B2h` 寫出去，那一支還沒讀。
+  `34h ECL CLOCK` 1、`3Bh SPELL` 1。
+  另外 `1Eh CHECKPARTY` 的四個呼叫點裡有一個（`ECL3/b14 @1AA2h`）走的是
+  記錄 `+79h`，那個欄位的語意還沒讀出來，維持硬失敗（spec 092）。
   `34h` 讀運算元編號時讀的是未初始化的堆疊位元組，原版就是這樣。
   `3Bh` 掃記憶法術陣列（`+17h + i`，i = 1..51h），把命中的槽位與第幾個人寫回
   運算元 2／3；**外層迴圈實際上只跑得到第一個人**（內層掃完就把 found 設成 1），
@@ -368,7 +368,8 @@
   （spec 084）、`32h FIND ITEM`／`22h PARTY SURPRISE`／`23h SURPRISE`
   （spec 085）、`2Ch PARLAY`（spec 086）、`0Fh`／`10h` 輸入（spec 087）、
   `28h ROB`（spec 088）、`3Ch PROTECTION`（spec 089）、`39h WHO`（spec 090）、
-  `36h ADD NPC`（spec 091）。待辦從 16 條 253 處降到 **3 條 6 處**。
+  `36h ADD NPC`（spec 091）、`1Eh CHECKPARTY`（spec 092，三種模式接了兩種）。
+  待辦從 16 條 253 處降到 **2 條 2 處**，外加 `1Eh` 的一個未讀模式。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家

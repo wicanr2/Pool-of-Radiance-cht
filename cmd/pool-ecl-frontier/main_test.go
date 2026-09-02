@@ -41,7 +41,7 @@ func TestFrontierCountsEveryUnhandledSite(t *testing.T) {
 func TestPassthroughStaysExplicit(t *testing.T) {
 	want := map[byte]string{
 		0x0C: "SETUP MONSTER", 0x0D: "APPROACH", 0x0E: "PICTURE",
-		0x0F: "INPUT NUMBER", 0x10: "INPUT STRING",
+		0x0F: "INPUT NUMBER", 0x10: "INPUT STRING", 0x1E: "CHECKPARTY",
 		0x21: "LOAD FILES", 0x22: "PARTY SURPRISE", 0x23: "SURPRISE",
 		0x24: "service boundary", 0x28: "ROB", 0x29: "ENCOUNTER MENU",
 		0x2C: "PARLAY", 0x2D: "CALL", 0x2E: "DAMAGE", 0x31: "SPRITE OFF",

@@ -32,6 +32,7 @@
     "0x1B",
     "0x1C",
     "0x1D",
+    "0x1E",
     "0x20",
     "0x21",
     "0x22",
@@ -63,33 +64,6 @@
   ],
   "unhandled": [
     {
-      "opcode": "0x1E",
-      "name": "CHECKPARTY",
-      "arity": 6,
-      "sites": [
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 7048
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 14,
-          "offset": 6818
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 14,
-          "offset": 6836
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 13,
-          "offset": 5300
-        }
-      ]
-    },
-    {
       "opcode": "0x34",
       "name": "ECL CLOCK",
       "arity": 2,
@@ -114,6 +88,6 @@
       ]
     }
   ],
-  "unhandled_site_total": 6,
+  "unhandled_site_total": 2,
   "blocks_scanned": 29
 }
