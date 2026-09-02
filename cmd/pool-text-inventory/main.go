@@ -20,6 +20,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	"github.com/wicanr2/golden-box-remake-engine/dax"
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
 )
@@ -41,22 +42,70 @@ type entry struct {
 	Locations []location `json:"locations"`
 }
 
+// coverageReport 說的是「翻了多少」，以句數與字元數兩個尺度計。
+// 只看句數會被大量短選項灌得好看，只看字元數又會忽略短句其實最常出現。
+type coverageReport struct {
+	Locale               string  `json:"locale"`
+	TranslatedStrings    int     `json:"translated_strings"`
+	TranslatedCharacters int     `json:"translated_characters"`
+	StringPercent        float64 `json:"string_percent"`
+	CharacterPercent     float64 `json:"character_percent"`
+}
+
 type report struct {
-	ZIP          string   `json:"zip"`
-	Archives     int      `json:"archives"`
-	Blocks       int      `json:"blocks"`
-	TracedBlocks int      `json:"traced_blocks"`
-	FailedBlocks []string `json:"failed_blocks,omitempty"`
-	TextOperands int      `json:"text_operands"`
-	Unique       int      `json:"unique_strings"`
-	Characters   int      `json:"characters"`
-	Entries      []entry  `json:"entries"`
+	ZIP          string          `json:"zip"`
+	Archives     int             `json:"archives"`
+	Blocks       int             `json:"blocks"`
+	TracedBlocks int             `json:"traced_blocks"`
+	FailedBlocks []string        `json:"failed_blocks,omitempty"`
+	TextOperands int             `json:"text_operands"`
+	Unique       int             `json:"unique_strings"`
+	Characters   int             `json:"characters"`
+	Coverage     *coverageReport `json:"coverage,omitempty"`
+	Entries      []entry         `json:"entries"`
+}
+
+// addCoverage 比對內建譯文表與盤點結果。譯文表裡出現盤點檔沒有的原文時失敗即
+// 關閉——那代表兩邊其中一個是舊的，而繼續算下去會得到一個看起來合理的錯數字。
+func addCoverage(result *report) error {
+	catalogue, err := gametext.TraditionalChinese()
+	if err != nil {
+		return err
+	}
+	translated := make(map[string]bool, catalogue.Size())
+	for _, source := range catalogue.Sources() {
+		translated[source] = true
+	}
+	summary := coverageReport{Locale: catalogue.Locale()}
+	for _, item := range result.Entries {
+		if !translated[item.Source] {
+			continue
+		}
+		summary.TranslatedStrings++
+		summary.TranslatedCharacters += item.Length
+		delete(translated, item.Source)
+	}
+	if len(translated) != 0 {
+		return fmt.Errorf("Pool game text catalogue has %d sources the inventory does not contain", len(translated))
+	}
+	if result.Unique > 0 {
+		summary.StringPercent = float64(summary.TranslatedStrings) * 100 / float64(result.Unique)
+	}
+	if result.Characters > 0 {
+		summary.CharacterPercent = float64(summary.TranslatedCharacters) * 100 / float64(result.Characters)
+	}
+	result.Coverage = &summary
+	return nil
 }
 
 func main() {
 	zipPath := flag.String("zip", "Pool of Radiance (1988).zip", "DOS source ZIP")
+	coverage := flag.Bool("coverage", false, "add how much of the inventory the built-in zh-TW catalogue covers")
 	flag.Parse()
 	result, err := inventory(*zipPath)
+	if err == nil && *coverage {
+		err = addCoverage(&result)
+	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

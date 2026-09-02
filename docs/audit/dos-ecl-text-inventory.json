@@ -11,6 +11,13 @@
   "text_operands": 2194,
   "unique_strings": 1731,
   "characters": 110473,
+  "coverage": {
+    "locale": "zh-TW",
+    "translated_strings": 176,
+    "translated_characters": 6098,
+    "string_percent": 10.167533217793183,
+    "character_percent": 5.519900790238339
+  },
   "entries": [
     {
       "source": "' DO YOU SEEK HEALING?'",

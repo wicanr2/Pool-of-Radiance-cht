@@ -21,8 +21,10 @@
 - 遊戲內的敘述文字也開始接線：原版的 ECL 文字全部盤點過，共 **1,731 句、
   110,473 個字元**（`docs/audit/dos-ecl-text-inventory.json`），那就是遊戲內文字的
   翻譯總量。譯文以原文整句為鍵放在 `internal/gametext`，原版檔案一個位元組都不改；
-  目前翻了 15 句——羅夫導覽全部八頁、四種續行提示與三個常見選單選項。
-  戰鬥畫面與 Journal 仍是英文。
+  目前翻了 **176 句（10.2%）／6,098 字元（5.5%）**：羅夫導覽全部八頁、遭遇選單、
+  九種怪物名，以及新菲蘭城起始地圖上會遇到的全部敘述。覆蓋率由
+  `cmd/pool-text-inventory -coverage` 量出來，譯文表出現盤點檔沒有的原文時失敗即關閉。
+  戰術畫面已中文化；Journal 仍是英文。
 - 已固定 DOS ZIP、歷史中文 RAR 與八張 D64 輸入雜湊。
 - 已盤點 DOS ZIP 168 個檔案；包含 `START.EXE`、`GAME.OVR`、八組
   ECL／GEO／WALLDEF／PIC／SPRIT DAX 與角色存檔樣本。
