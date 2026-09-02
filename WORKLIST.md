@@ -33,9 +33,10 @@
 - [x] UI 第一段接線：標題提示、人物管理選擇項、建角四個選單、人物資料頁與姓名輸入
   已用說明書用詞顯示中文，字型走 `internal/etenfont`，`-lang zh` 缺字型失敗即關閉。
   驗收：`tools/capture-chinese-menu.sh` 的四張實拍圖與 manifest。
-- [ ] 戰術畫面中文化前先重排版面：四行資訊加功能鍵列在 15px 漢字字型下高度不夠
-  （地圖底 y=326、下框 y=388，中間只有 62px）。驗收：中文模式下四行不互相重疊、
-  也不被下框切到。
+- [x] 戰術畫面版面重排並中文化：盤面上移到 y=58（25 列畫到 307），四行基線
+  322／338／354／370、功能鍵列 386，16 像素行距在 ascent 14 的漢字字型下不相疊。
+  狀態列訊息改走可翻譯的 `say`，沒接語言時退回英文。
+  驗收：`docs/screenshots/pool-remake-chinese-tactical.png`。
 - [x] 遊戲內敘述文字（ECL 6-bit packed）的中文化管線：`internal/gametext` 以原文
   整句為鍵、原版 block 不修改，顯示端已接上導覽、事件文字與選單標籤。
   驗收：`docs/screenshots/pool-remake-chinese-tour.png` 是羅夫導覽的中文畫面。

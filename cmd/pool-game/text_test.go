@@ -122,3 +122,20 @@ func TestEveryCreationHintHasATranslation(t *testing.T) {
 		t.Fatal("the English hint changed")
 	}
 }
+
+// 狀態列的訊息在沒有接上語言時要退回英文，接上之後要是中文——
+// 測試直接建構 tacticalState，所以這條路徑一定會被走到。
+func TestTacticalStatusFallsBackToEnglishWithoutALanguage(t *testing.T) {
+	var state tacticalState
+	if got := state.say(msgStatusRound, 3); got != "ROUND 3" {
+		t.Fatalf("without a language: %q", got)
+	}
+	chinese := &app{language: languageTraditionalChinese}
+	state.Text = chinese.text
+	if got := state.say(msgStatusRound, 3); got != "第 3 回合" {
+		t.Fatalf("with Chinese: %q", got)
+	}
+	if got := state.say(msgStatusVictory); got != "獲勝" {
+		t.Fatalf("victory: %q", got)
+	}
+}

@@ -349,3 +349,91 @@ func utf8DecodeLast(value string) (rune, bool) {
 	}
 	return runes[len(runes)-1], true
 }
+
+// 戰術畫面的字串。戰鬥用語依說明書第五章與 glossary 的定案（ROUND＝戰鬥回合）。
+const (
+	msgTacticalTitle messageID = iota + 200
+	msgTacticalNoMap
+	msgTacticalNoState
+	msgTacticalBoard
+	msgTacticalRound
+	msgTacticalProvisional
+	msgTacticalKeys
+	msgTacticalPrompt
+	msgTacticalBack
+)
+
+func init() {
+	for id, entry := range map[messageID][2]string{
+		msgTacticalTitle:   {"TACTICAL MAP PREVIEW", "戰術戰場"},
+		msgTacticalNoMap:   {"DUNGEON MAP IS NOT LOADED", "地城地圖尚未載入"},
+		msgTacticalNoState: {"TACTICAL STATE IS NOT BUILT", "戰場尚未建立"},
+		msgTacticalBoard: {
+			"DUNGEON %d,%d  CELLS %d  BLOCKING %d  PARTY %d  FOES %d",
+			"地城 %d,%d　格 %d　阻擋 %d　隊伍 %d　敵方 %d",
+		},
+		msgTacticalRound: {
+			"ROUND %d  MOVER %d  SCORE %d  BUDGET %d (%s)  %s",
+			"回合 %d　行動者 %d　先攻 %d　步數 %d（%s）　%s",
+		},
+		// 這一行標的是三塊還沒有原版依據的東西，中英文都要看得出來是暫定的。
+		msgTacticalProvisional: {
+			"PROVISIONAL: AI, DEPLOYMENT, PARTY DAMAGE",
+			"暫定：敵方 AI、部署位置、隊伍傷害骰",
+		},
+		msgTacticalKeys: {
+			"H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY",
+			"H I M Q P O K G 移動　ENTER 結束回合　D 延後",
+		},
+		msgTacticalPrompt: {"Y: FIGHT ON   N: END THE BATTLE", "Y 繼續戰鬥　N 結束戰鬥"},
+		msgTacticalBack:   {"F5: BACK", "F5 返回"},
+	} {
+		messages[id] = entry
+	}
+}
+
+// 戰術狀態列的字串。這些是 remake 自己產生的訊息，不是原版文字，
+// 但玩家看得到，所以一樣要有中文。
+const (
+	msgStatusDelayed messageID = iota + 300
+	msgStatusTurnEnded
+	msgStatusContinuePrompt
+	msgStatusDefeat
+	msgStatusVictory
+	msgStatusRound
+	msgStatusOffBoard
+	msgStatusBlocked
+	msgStatusMoved
+	msgStatusMissed
+	msgStatusHit
+	msgStatusDown
+	msgFoeNoTarget
+	msgFoeAttacked
+	msgFoeClosed
+	msgBudgetPlaceholder
+	msgBudgetStagedMonster
+)
+
+func init() {
+	for id, entry := range map[messageID][2]string{
+		msgStatusDelayed:        {"DELAYED", "延後"},
+		msgStatusTurnEnded:      {"TURN ENDED", "回合結束"},
+		msgStatusContinuePrompt: {"CONTINUE BATTLE? Y/N", "要繼續戰鬥嗎？ Y／N"},
+		msgStatusDefeat:         {"DEFEAT", "全滅"},
+		msgStatusVictory:        {"VICTORY", "獲勝"},
+		msgStatusRound:          {"ROUND %d", "第 %d 回合"},
+		msgStatusOffBoard:       {"OFF BOARD: LEAVE COMBAT PROMPT", "走出盤面：詢問是否離開戰鬥"},
+		msgStatusBlocked:        {"BLOCKED", "走不過去"},
+		msgStatusMoved:          {"MOVED %d", "往 %d 移動"},
+		msgStatusMissed:         {"ATTACK %d MISSED (D20 %d)", "攻擊 %d 落空（D20 %d）"},
+		msgStatusHit:            {"HIT %d FOR %d (HP %d)", "打中 %d 造成 %d（剩 %d 生命力）"},
+		msgStatusDown:           {"%d IS DOWN", "%d 倒下了"},
+		msgFoeNoTarget:          {"FOE %d FOUND NO TARGET", "敵方 %d 找不到目標"},
+		msgFoeAttacked:          {"FOE %d AFTER %d STEPS: %s", "敵方 %d 走了 %d 步：%s"},
+		msgFoeClosed:            {"FOE %d CLOSED %d STEPS ON %d", "敵方 %d 朝 %d 走近 %d 步"},
+		msgBudgetPlaceholder:    {"PLACEHOLDER", "暫定值"},
+		msgBudgetStagedMonster:  {"STAGED MONSTER", "怪物記錄"},
+	} {
+		messages[id] = entry
+	}
+}

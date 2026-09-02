@@ -15,7 +15,10 @@ import (
 const (
 	tacticalCellSize = 10
 	tacticalLeft     = 70
-	tacticalTop      = 76
+	// 盤面往上挪，讓底下擠得下四行資訊加功能鍵列。25 列 × 10 像素從 58 畫到 307，
+	// 四行基線 322／338／354／370，功能鍵列 386；漢字字型的 ascent 是 14，
+	// 16 像素行距剛好不相疊，也不會壓到下框。
+	tacticalTop = 58
 )
 
 // geoDetailForDirection 取出 GEO cell 在該方向的 detail 位元。
@@ -74,14 +77,14 @@ func fillTacticalCell(screen *ebiten.Image, column, row int, ink color.Color) {
 // 還沒有 combatant、輸入或回合流程。
 func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	drawFrame(screen, foreground, accent)
-	drawText(screen, "TACTICAL MAP PREVIEW", 232, 52, accent)
+	drawText(screen, a.text(msgTacticalTitle), 232, 44, accent)
 	if a.initialMap == nil {
-		drawText(screen, "DUNGEON MAP IS NOT LOADED", 196, 190, foreground)
+		drawText(screen, a.text(msgTacticalNoMap), 196, 190, foreground)
 		return
 	}
 
 	if a.tactical == nil {
-		drawText(screen, "TACTICAL STATE IS NOT BUILT", 190, 190, foreground)
+		drawText(screen, a.text(msgTacticalNoState), 190, 190, foreground)
 		return
 	}
 	grid := a.tactical.Grid
@@ -142,19 +145,19 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		}
 	}
 
-	drawText(screen, fmt.Sprintf("DUNGEON %d,%d  CELLS %d  BLOCKING %d  PARTY %d  FOES %d",
-		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, 330, foreground)
-	drawText(screen, fmt.Sprintf("ROUND %d  MOVER %d  SCORE %d  BUDGET %d (%s)  %s",
+	drawText(screen, fmt.Sprintf(a.text(msgTacticalBoard),
+		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, 322, foreground)
+	drawText(screen, fmt.Sprintf(a.text(msgTacticalRound),
 		a.tactical.Round, a.tactical.Mover, a.tactical.Scores[a.tactical.Mover],
-		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 344, foreground)
-	drawText(screen, fmt.Sprintf("PROVISIONAL: AI, DEPLOYMENT, PARTY DAMAGE   %s",
-		a.tactical.FoeLog), 70, 358, foreground)
-	hint := "H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY"
+		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 338, foreground)
+	drawText(screen, fmt.Sprintf("%s   %s", a.text(msgTacticalProvisional), a.tactical.FoeLog),
+		70, 354, foreground)
+	hint := a.text(msgTacticalKeys)
 	if a.tactical.Prompt {
-		hint = "Y: FIGHT ON   N: END THE BATTLE"
+		hint = a.text(msgTacticalPrompt)
 	}
-	drawText(screen, hint, 70, 372, accent)
-	drawText(screen, "F5: BACK", 500, 330, foreground)
+	drawText(screen, hint, 70, 370, accent)
+	drawText(screen, a.text(msgTacticalBack), 500, 322, foreground)
 }
 
 // 這一段的部署是暫定的。原版由 DS:43A2h 的陣型樣板決定誰站哪一格，而那張表
@@ -247,6 +250,21 @@ type tacticalState struct {
 	BudgetSource  string
 	Status        string
 	FoeLog        string
+	// Text 由建立者接上 app.text，讓狀態列的訊息也能翻譯。測試直接建構
+	// tacticalState 時不設它，say 會退回英文，所以測試不必知道語言這件事。
+	Text func(messageID) string
+}
+
+// say 取出一則狀態訊息的目前語言版本。
+func (state *tacticalState) say(id messageID, args ...any) string {
+	format := messages[id][0]
+	if state != nil && state.Text != nil {
+		format = state.Text(id)
+	}
+	if len(args) == 0 {
+		return format
+	}
+	return fmt.Sprintf(format, args...)
 }
 
 // Budget 回傳目前行動者的剩餘步數。
@@ -298,10 +316,10 @@ func (state *tacticalState) endTurn(roll func(count, sides int) int, delay bool)
 	}
 	if delay {
 		state.Scores[state.Mover] = combat.DelayInitiative()
-		state.Status = "DELAYED"
+		state.Status = state.say(msgStatusDelayed)
 	} else {
 		state.Scores[state.Mover] = 0
-		state.Status = "TURN ENDED"
+		state.Status = state.say(msgStatusTurnEnded)
 	}
 	state.selectActor(roll)
 	if state.Mover == 0 {
@@ -321,19 +339,19 @@ func (state *tacticalState) endRound(roll func(count, sides int) int) {
 	counts := state.sideCounts()
 	if counts.Party > 0 && counts.Foes == 0 {
 		state.Prompt = true
-		state.Status = "CONTINUE BATTLE? Y/N"
+		state.Status = state.say(msgStatusContinuePrompt)
 		return
 	}
 	if combat.RoundEndsCombat(counts, 0, false) {
 		state.Finished, state.Outcome = true, combat.ResolveCombatOutcome(counts)
-		state.Status = "DEFEAT"
+		state.Status = state.say(msgStatusDefeat)
 		if state.Outcome == combat.CombatVictory {
-			state.Status = "VICTORY"
+			state.Status = state.say(msgStatusVictory)
 		}
 		return
 	}
 	state.startRound(roll)
-	state.Status = fmt.Sprintf("ROUND %d", state.Round)
+	state.Status = state.say(msgStatusRound, state.Round)
 }
 
 // placeholderBaseMovement 是隊伍成員的暫定移動值。remake 的角色記錄目前沒有
@@ -371,9 +389,9 @@ func (a *app) enterTacticalPreview() error {
 	classes := gamepack.OriginalCombatCellClassTable()
 	roster, friendly := provisionalRoster(a, grid, classes)
 
-	base, source := uint8(placeholderBaseMovement), "PLACEHOLDER"
+	base, source := uint8(placeholderBaseMovement), a.text(msgBudgetPlaceholder)
 	if len(a.combatMonsters) > 0 {
-		base, source = a.combatMonsters[0].Record.Movement(), "STAGED MONSTER"
+		base, source = a.combatMonsters[0].Record.Movement(), a.text(msgBudgetStagedMonster)
 	}
 	size := len(roster)
 	state := &tacticalState{
@@ -386,6 +404,7 @@ func (a *app) enterTacticalPreview() error {
 		Budgets:      make([]uint8, size),
 		BaseMovement: make([]uint8, size),
 		BudgetSource: source,
+		Text:         a.text,
 	}
 	state.States = make([]uint8, size)
 	state.DyingCounters = make([]uint8, size)
@@ -430,7 +449,7 @@ func (a *app) enterTacticalPreview() error {
 		}
 	}
 	state.startRound(a.rollDice)
-	state.Status = fmt.Sprintf("ROUND %d", state.Round)
+	state.Status = state.say(msgStatusRound, state.Round)
 	a.tactical = state
 	return nil
 }
@@ -519,7 +538,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 		return err
 	}
 	if len(targets) == 0 {
-		state.FoeLog = fmt.Sprintf("FOE %d FOUND NO TARGET", mover)
+		state.FoeLog = state.say(msgFoeNoTarget, mover)
 		state.endTurn(a.rollDice, false)
 		return nil
 	}
@@ -544,7 +563,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
 				return err
 			}
-			state.FoeLog = fmt.Sprintf("FOE %d AFTER %d STEPS: %s", mover, steps, state.Status)
+			state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
 			state.endTurn(a.rollDice, false)
 			return nil
 		}
@@ -562,7 +581,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 		state.Roster[mover].X, state.Roster[mover].Y = x, y
 		state.Budgets[mover] = budget
 	}
-	state.FoeLog = fmt.Sprintf("FOE %d CLOSED %d STEPS ON %d", mover, steps, target)
+	state.FoeLog = state.say(msgFoeClosed, mover, steps, target)
 	state.endTurn(a.rollDice, false)
 	return nil
 }
@@ -626,7 +645,7 @@ func (a *app) tacticalInput() error {
 		if a.justPressed(ebiten.KeyY) {
 			state.Prompt = false
 			state.startRound(a.rollDice)
-			state.Status = fmt.Sprintf("ROUND %d", state.Round)
+			state.Status = state.say(msgStatusRound, state.Round)
 		}
 		if a.justPressed(ebiten.KeyN) {
 			state.Prompt = false
@@ -675,13 +694,13 @@ func (a *app) tacticalInput() error {
 		}
 		switch {
 		case outcome.Leaving:
-			state.Status = "OFF BOARD: LEAVE COMBAT PROMPT"
+			state.Status = state.say(msgStatusOffBoard)
 		case outcome.Action == combat.MovementAttack:
 			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
 				return err
 			}
 		case outcome.Action == combat.MovementBlocked:
-			state.Status = "BLOCKED"
+			state.Status = state.say(msgStatusBlocked)
 		default:
 			mover := state.Roster[state.Mover]
 			x, y, err := combat.AdvanceTacticalCoordinate(mover.X, mover.Y, uint8(direction))
@@ -694,7 +713,7 @@ func (a *app) tacticalInput() error {
 			}
 			state.Roster[state.Mover].X, state.Roster[state.Mover].Y = x, y
 			state.Budgets[state.Mover] = budget
-			state.Status = fmt.Sprintf("MOVED %d", direction)
+			state.Status = state.say(msgStatusMoved, direction)
 		}
 		return nil
 	}
@@ -731,7 +750,7 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 		return err
 	}
 	if !hit {
-		state.Status = fmt.Sprintf("ATTACK %d MISSED (D20 %d)", target, roll)
+		state.Status = state.say(msgStatusMissed, target, roll)
 		return nil
 	}
 	dice := state.Damage[state.Mover]
@@ -745,14 +764,14 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	}
 	state.HitPoints[target] -= damage
 	if state.HitPoints[target] > 0 {
-		state.Status = fmt.Sprintf("HIT %d FOR %d (HP %d)", target, damage, state.HitPoints[target])
+		state.Status = state.say(msgStatusHit, target, damage, state.HitPoints[target])
 		return nil
 	}
 	state.HitPoints[target] = 0
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
 	state.States[target] = combat.DyingState
-	state.Status = fmt.Sprintf("%d IS DOWN", target)
+	state.Status = state.say(msgStatusDown, target)
 	return nil
 }
 
