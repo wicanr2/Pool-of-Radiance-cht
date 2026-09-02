@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -300,8 +302,9 @@ func TestPassiveCombatTerminates(t *testing.T) {
 // 以及怪物只肯往方向表要的那一格走、撞到地形就原地不動。任何一個回來，
 // 這場戰鬥就會變成永遠打不完。
 //
-// **不斷言誰贏**：這一隊是空手的一級戰士，勝負取決於怪物強度，不是規則
-// 對不對。AC 那條鏈有沒有接上另外驗（見底下對 ArmorClass 的斷言）。
+// **不斷言誰贏**：這一隊完全沒有裝備，空手的一級戰士打不過六隻骷髏加六隻
+// 殭屍是合理的結果。「裝備好的隊伍打得贏」由
+// TestAnEquippedPartyWinsTheFirstFight 驗。
 func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
@@ -317,6 +320,8 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 	}
 	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
 	application.saveState = func(poolsave.State) error { return nil }
+	// 骰子固定：不然「放倒幾隻」每次都不一樣，門檻只能訂得很鬆或很脆。
+	application.roller = diceRoller{random: rand.New(rand.NewSource(3))}
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}
@@ -448,10 +453,209 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 		t.Fatalf("combat never ended: round %d, status %q, foe log %q",
 			application.tactical.Round, application.tactical.Status, application.tactical.FoeLog)
 	}
-	// 固定操作、固定種子，實測十二隻裡放倒三隻之後隊伍就被打垮。門檻放在
-	// 三隻，只證明「攻擊真的造成死亡」；打不贏是因為裝備還沒接進戰鬥，
-	// 隊伍身上等於沒有盔甲也沒有武器，那是另一條 worklist。
-	if foesAtStart-fewestFoes < 3 {
+	// 固定操作、固定骰子。門檻只要證明「攻擊真的造成死亡」——空手的隊伍
+	// 打不贏是預期結果，能不能贏由 TestAnEquippedPartyWinsTheFirstFight 驗。
+	if foesAtStart-fewestFoes < 2 {
 		t.Fatalf("only %d of %d foes went down before the fight ended", foesAtStart-fewestFoes, foesAtStart)
 	}
+}
+
+// 裝備好的隊伍打得贏索寇要塞第一場，而且戰後腳本會續跑。
+//
+// 這是主線可破關的實測門檻：規則對不對，看的不是單元測試綠不綠，而是
+// 一支拿得動刀、穿得起甲的隊伍能不能實際打完第一場遭遇並走下去。
+//
+// 三件事各自都會讓這條路斷掉，而且斷得很安靜：
+//   - 武器挑錯（拿戒指當武器，傷害骰 0d0）——戰鬥照跑，只是永遠打不死人。
+//   - AC 沒接裝備——隊伍挨打的機率差 25% 以上。
+//   - 清光敵人之後不按 N——原版問「還要繼續嗎」，答 Y 會一直空轉。
+func TestAnEquippedPartyWinsTheFirstFight(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	// 骰子固定，否則「贏了」只是這一次的運氣。
+	application.roller = diceRoller{random: rand.New(rand.NewSource(11))}
+
+	kit, err := premadeReadiedKit()
+	if err != nil {
+		t.Skipf("original item records unavailable: %v", err)
+	}
+	party := make([]poolsave.Character, 0, 6)
+	for index := 0; index < 6; index++ {
+		own := make([]poolsave.Item, 0, len(kit))
+		for _, item := range kit {
+			own = append(own, poolsave.Item{Name: item.Name, Raw: append([]byte(nil), item.Raw...)})
+		}
+		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
+			GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good",
+			Abilities: [6]int{18, 10, 10, 16, 10, 10}, ExceptionalStrength: 100,
+			MaxHP: 60, CurrentHP: 60, PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+			Inventory: own})
+	}
+	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
+	application.saveState = func(poolsave.State) error { return nil }
+
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 20000 && !application.introDone; tick++ {
+		if application.introWaiting || application.tourPage >= 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		application.keys = scriptedKeys{}
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	random := rand.New(rand.NewSource(7))
+	for step := 0; step < 4000 && !application.combatActive; step++ {
+		switch {
+		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+		default:
+			key := ebiten.KeyArrowUp
+			if random.Intn(3) == 0 {
+				key = ebiten.KeyArrowRight
+			}
+			if err := press(application, key); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	if !application.combatActive {
+		t.Fatal("never reached combat")
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if application.tactical == nil {
+		t.Fatalf("tactical state absent: %q", application.statusLine)
+	}
+	// 武器與盔甲要真的變成戰鬥數值：長劍 +4 的 1d8、敏捷 16 加板甲 +2 加盾 +2。
+	if got := application.tactical.Damage[1]; got.Count == 0 || got.Sides == 0 {
+		t.Fatalf("party damage dice %v: the readied weapon never reached combat", got)
+	}
+	if got := application.tactical.ArmorClass[1]; got != 64 {
+		t.Fatalf("party internal AC %d, want 64", got)
+	}
+	foesAtStart := 0
+	for index := 1; index < len(application.tactical.Roster); index++ {
+		if !application.tactical.Friendly[index] {
+			foesAtStart++
+		}
+	}
+	if err := driveTacticalCombat(t, application, 40000); err != nil {
+		t.Fatal(err)
+	}
+	if application.tactical != nil {
+		t.Fatalf("combat never ended: round %d, status %q",
+			application.tactical.Round, application.tactical.Status)
+	}
+	if strings.Contains(application.statusLine, "defeated") {
+		t.Fatalf("an equipped party lost the first fight: %q", application.statusLine)
+	}
+	// 勝利之後 finishCombat 會續跑戰後腳本；跑錯會回 error，跑不到會留著遭遇旗標。
+	if application.combatActive {
+		t.Fatal("the encounter is still staged after the fight")
+	}
+	t.Logf("索寇要塞第一場：%d 隻怪物，隊伍勝出", foesAtStart)
+}
+
+// premadeReadiedKit 借原版預設人物 chrdatd2 身上穿戴中的東西當裝備：
+// 長劍 +4、板甲 +2、盾 +2 與一枚戒指。用真記錄才測得到「型別索引查得到表」。
+func premadeReadiedKit() ([]poolsave.Item, error) {
+	raw, err := os.ReadFile(filepath.Join("..", "..", "workplace", "oracle", "dos", "chrdatd2.itm"))
+	if err != nil {
+		return nil, err
+	}
+	var kit []poolsave.Item
+	for offset := 0; offset+63 <= len(raw); offset += 63 {
+		record := append([]byte(nil), raw[offset:offset+63]...)
+		if record[itemReadyOffset] == 0 {
+			continue
+		}
+		length := int(record[0])
+		kit = append(kit, poolsave.Item{Name: string(record[1 : 1+length]), Raw: record})
+	}
+	if len(kit) == 0 {
+		return nil, errors.New("chrdatd2 has no readied items")
+	}
+	return kit, nil
+}
+
+// driveTacticalCombat 是「一個會繞路的玩家」：每個我方回合把八個方向依
+// 「走完之後離目標多近」排序，一個一個試到真的動了為止。只試最好的那一個
+// 等於撞牆就放棄，那樣量到的是驅動程式的極限，不是遊戲的。
+func driveTacticalCombat(t *testing.T, application *app, budget int) error {
+	t.Helper()
+	for tick := 0; tick < budget; tick++ {
+		state := application.tactical
+		if state == nil || state.Finished {
+			return nil
+		}
+		if state.Prompt {
+			// 敵方清光時原版會問「還要繼續嗎」，N 才是收尾。
+			if err := press(application, ebiten.KeyN); err != nil {
+				return err
+			}
+			continue
+		}
+		mover := state.Mover
+		if mover == 0 || int(mover) >= len(state.Friendly) || !state.Friendly[mover] {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				return err
+			}
+			continue
+		}
+		target, ok := state.nearestOpposing(mover)
+		if !ok {
+			// 場上沒有敵人了：結束回合，讓 endRound 去問「還要繼續嗎」。
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				return err
+			}
+			continue
+		}
+		from, to := state.Roster[mover], state.Roster[target]
+		order := make([]int, 0, len(tacticalStepKeys))
+		for direction := range tacticalStepKeys {
+			if _, _, err := combat.AdvanceTacticalCoordinate(from.X, from.Y, uint8(direction)); err == nil {
+				order = append(order, direction)
+			}
+		}
+		sort.SliceStable(order, func(i, j int) bool {
+			xi, yi, _ := combat.AdvanceTacticalCoordinate(from.X, from.Y, uint8(order[i]))
+			xj, yj, _ := combat.AdvanceTacticalCoordinate(from.X, from.Y, uint8(order[j]))
+			return chebyshev(xi, yi, to.X, to.Y) < chebyshev(xj, yj, to.X, to.Y)
+		})
+		moved := false
+		for _, direction := range order {
+			if err := press(application, tacticalStepKeys[direction]); err != nil {
+				return err
+			}
+			after := application.tactical
+			if after == nil || after.Finished {
+				return nil
+			}
+			if after.Mover != mover || after.Roster[mover].X != from.X || after.Roster[mover].Y != from.Y {
+				moved = true
+				break
+			}
+		}
+		if !moved {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				return err
+			}
+		}
+	}
+	return fmt.Errorf("combat did not finish within %d ticks", budget)
 }

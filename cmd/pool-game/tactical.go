@@ -440,7 +440,7 @@ func (a *app) enterTacticalPreview() error {
 			state.ArmorClass[index] = armor
 			state.BaseMovement[index] = movement
 			// 手上有裝備好的武器時，THAC0 與傷害改由武器決定（spec 065）。
-			if weapon, ok := readiedWeapon(member); ok {
+			if weapon, ok := a.readiedWeapon(member); ok {
 				stats, err := a.weaponCombatStats(weapon, member, thac0)
 				if err != nil {
 					return err
@@ -736,20 +736,35 @@ const (
 	itemTypeOffset  = 0x2e // 物品型別索引，查 DS:54E0h 那張表用
 	itemPlusOffset  = 0x32 // 附魔值，武器的 +1／+2
 	itemReadyOffset = 0x34 // 非零代表這件已經裝備上
+
+	// itemCategoryWeapon 是型別表 `+0` 的武器類別，對應角色記錄的 `+CCh` 槽。
+	itemCategoryWeapon = 0
 )
 
-// readiedWeapon 取出角色裝備好的那一件。原版的角色記錄只有一個
-// `+0CCh` 武器槽，所以這裡也只認第一件標成裝備的物品。
-func readiedWeapon(member poolsave.Character) (poolsave.Item, bool) {
+// readiedWeapon 取出角色手上的武器。
+//
+// 原版把每件穿戴中的物品依型別表的類別放進 `+CCh + 類別 × 4` 的槽
+//（overlay-25 `0C76h`，類別 0..8；類別 9 另外走 `+F0h`／`+F4h` 兩個戒指槽），
+// 而判斷「有沒有武器」讀的是類別 0 那一格（`0E81h` 檢查 `+CCh`／`+CEh` 是不是
+// 空指標，空的就走徒手那一支）。所以武器是**類別 0** 的那一件，不是物品鏈上
+// 第一件標成裝備的東西——預設人物身上第一件裝備多半是戒指，那東西的傷害骰
+// 是 0d0，拿它當武器整隊會打不出傷害。
+//
+// 槽是覆寫不是累加，所以同類別有多件時**最後一件**贏，這裡照同樣的順序。
+func (a *app) readiedWeapon(member poolsave.Character) (poolsave.Item, bool) {
+	var weapon poolsave.Item
+	found := false
 	for _, item := range member.Inventory {
-		if len(item.Raw) <= itemReadyOffset {
+		if len(item.Raw) <= itemReadyOffset || item.Raw[itemReadyOffset] == 0 {
 			continue
 		}
-		if item.Raw[itemReadyOffset] != 0 {
-			return item, true
+		entry, err := a.itemTypes.Entry(item.Raw[itemTypeOffset])
+		if err != nil || entry.Category() != itemCategoryWeapon {
+			continue
 		}
+		weapon, found = item, true
 	}
-	return poolsave.Item{}, false
+	return weapon, found
 }
 
 // weaponCombatStats 是畫面與戰鬥共用的那一條規則：兩邊分開算，會出現

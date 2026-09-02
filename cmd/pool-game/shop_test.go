@@ -104,7 +104,7 @@ func TestBoughtItemsArriveUnreadied(t *testing.T) {
 	if err := a.shopInput(); err != nil {
 		t.Fatal(err)
 	}
-	if _, ok := readiedWeapon(a.state.Party[0]); ok {
+	if _, ok := a.readiedWeapon(a.state.Party[0]); ok {
 		t.Fatal("a bought item was already readied")
 	}
 }

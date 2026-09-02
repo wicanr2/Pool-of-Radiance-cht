@@ -148,7 +148,7 @@ func drawEquipment(screen *ebiten.Image, a *app, background, foreground, accent 
 	// 裝備上之後的戰鬥數值直接畫出來：看不到數字就分不出「裝備沒生效」與
 	// 「這把武器本來就這麼弱」。
 	line := a.text(msgEquipmentUnarmed)
-	if weapon, ok := readiedWeapon(member); ok {
+	if weapon, ok := a.readiedWeapon(member); ok {
 		baseThac0, _, _, err := partyCombatStats(member)
 		if err != nil {
 			line = err.Error()

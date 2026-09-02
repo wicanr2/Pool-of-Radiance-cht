@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -52,7 +53,7 @@ func newEquipmentApp(t *testing.T) *app {
 // 撿到的物品預設沒有裝備上：原版記錄的 +34h 是 0。
 func TestTreasureItemsArriveUnreadied(t *testing.T) {
 	a := newEquipmentApp(t)
-	if _, ok := readiedWeapon(a.state.Party[0]); ok {
+	if _, ok := a.readiedWeapon(a.state.Party[0]); ok {
 		t.Fatal("a freshly taken item was already readied")
 	}
 }
@@ -63,7 +64,7 @@ func TestEnterTogglesReady(t *testing.T) {
 	a.equipmentOpen = true
 	a.keys = scriptedKeys{ebiten.KeyEnter: true}
 	a.equipmentInput()
-	weapon, ok := readiedWeapon(a.state.Party[0])
+	weapon, ok := a.readiedWeapon(a.state.Party[0])
 	if !ok {
 		t.Fatal("ENTER did not ready the sword")
 	}
@@ -72,7 +73,7 @@ func TestEnterTogglesReady(t *testing.T) {
 	}
 	a.keys = scriptedKeys{ebiten.KeyEnter: true}
 	a.equipmentInput()
-	if _, ok := readiedWeapon(a.state.Party[0]); ok {
+	if _, ok := a.readiedWeapon(a.state.Party[0]); ok {
 		t.Fatal("a second ENTER did not unready the sword")
 	}
 }
@@ -100,7 +101,7 @@ func TestReadyingOneItemUnreadiesTheOther(t *testing.T) {
 	if readied != 1 {
 		t.Fatalf("%d items are readied at once", readied)
 	}
-	weapon, _ := readiedWeapon(a.state.Party[0])
+	weapon, _ := a.readiedWeapon(a.state.Party[0])
 	if weapon.Name != "SECOND SWORD" {
 		t.Fatalf("the readied weapon is %q", weapon.Name)
 	}
@@ -123,7 +124,7 @@ func TestReadiedWeaponDrivesTheCombatStats(t *testing.T) {
 	if base != 0x28 {
 		t.Fatalf("base internal THAC0 %#02x, want 0x28", base)
 	}
-	weapon, _ := readiedWeapon(member)
+	weapon, _ := a.readiedWeapon(member)
 	stats, err := a.weaponCombatStats(weapon, member, base)
 	if err != nil {
 		t.Fatal(err)
@@ -206,5 +207,41 @@ func TestReadiedArmourDrivesTheDefenceStats(t *testing.T) {
 	// 重 450 又有加值：spec 079 的 6 加 3。
 	if movement != 9 {
 		t.Fatalf("movement %d, want 9", movement)
+	}
+}
+
+// 武器是類別 0 那一件，不是物品鏈上第一件裝備。`chrdatd2` 身上第一件裝備
+// 是火焰抗性戒指（0d0），最後一件才是長劍 +4——挑錯的話整隊打不出傷害，
+// 而戰鬥還是會照跑，報表上只看得到「打不贏」。
+func TestReadiedWeaponSkipsTheRingsAndArmour(t *testing.T) {
+	a := newEquipmentApp(t)
+	raw, err := os.ReadFile(filepath.Join("..", "..", "workplace", "oracle", "dos", "chrdatd2.itm"))
+	if err != nil {
+		t.Skipf("original item records unavailable: %v", err)
+	}
+	var inventory []poolsave.Item
+	for offset := 0; offset+63 <= len(raw); offset += 63 {
+		record := append([]byte(nil), raw[offset:offset+63]...)
+		length := int(record[0])
+		inventory = append(inventory, poolsave.Item{
+			Name: string(record[1 : 1+length]), Raw: record})
+	}
+	member := poolsave.Character{Name: "HERO", ClassID: "fighter",
+		Abilities: [6]int{18, 10, 10, 18, 10, 10}, ExceptionalStrength: 100,
+		Inventory: inventory}
+
+	weapon, ok := a.readiedWeapon(member)
+	if !ok {
+		t.Fatal("chrdatd2 has a readied long sword")
+	}
+	if !strings.Contains(weapon.Name, "Long Sword") {
+		t.Fatalf("readied weapon is %q", weapon.Name)
+	}
+	stats, err := a.weaponCombatStats(weapon, member, 0x28)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if stats.DamageCount == 0 || stats.DamageSides == 0 {
+		t.Fatalf("weapon damage %dd%d", stats.DamageCount, stats.DamageSides)
 	}
 }
