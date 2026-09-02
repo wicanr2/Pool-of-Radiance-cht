@@ -75,6 +75,9 @@ var messages = map[messageID][2]string{
 	msgEquipmentUnarmed:     {"Unarmed: the original leaves the damage dice alone.", "徒手：原版此時不動傷害骰。"},
 	msgEquipmentStats:       {"Readied: THAC0 %d, damage %dd%d%+d", "已裝備：THAC0 %d，傷害 %dd%d%+d"},
 	msgEquipmentDefence:     {"; armour class %d, movement %d", "；護甲 %d，移動 %d"},
+	msgProgramManaging:      {"Party management; B or ESC returns to the map.", "隊伍管理；B 或 ESC 回到地圖。"},
+	msgProgramReturn:        {"B  RETURN TO THE MAP", "B　回到地圖"},
+	msgProgramNeedsParty:    {"The party cannot be empty on the map.", "地圖上的隊伍不能是空的。"},
 	msgEquipmentFooter:      {"TAB switch character  UP/DOWN choose  ENTER ready  I/ESC close", "TAB 換人　上下選物品　ENTER 裝備／卸下　I／ESC 關閉"},
 	// 標題畫面的按鍵提示，說明書沒有，鍵名保持原文。
 	msgTitleHint: {"ENTER / SPACE", "ENTER／空白鍵"},
@@ -447,6 +450,9 @@ const (
 	msgEquipmentUnarmed
 	msgEquipmentStats
 	msgEquipmentDefence
+	msgProgramManaging
+	msgProgramReturn
+	msgProgramNeedsParty
 	msgEquipmentFooter
 )
 

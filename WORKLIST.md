@@ -343,15 +343,22 @@
   其中兵器鋪由 ECL 的 treasure request 開（`enterShop`），庫存與價目已由真檔
   測試涵蓋（長劍 15、鏈甲 75、盾 15）。**還缺**：只用按鍵從標題走到兵器鋪的
   那一段沒有測過，所以「玩家買得到裝備」目前是推論不是實測。
-- [ ] **`38h PROGRAM` 還沒接，起始地圖上有一格會硬失敗**。只用按鍵在起始
-  地圖上亂走，走進 ECL3／block 11 的某一格就停在
-  `opcode 0x38 at 1865 has no core handler`。全遊戲只有三個呼叫點
-  （ECL3/block 0 與 ECL7/block 17 是值 9，ECL3/block 11 是值 0），
-  兩個值都落在原版有處理的分支上，所以不需要通用實作。
-  派發與呼叫目標已由 spec 081 解出：值 0 直接開 overlay-16 entry 1 加
-  overlay-25 entry 37，值 9 先問一句、答應才開同一個畫面，然後結束 block。
-  那兩支合起來是**城裡的隊伍管理／訓練所畫面**，remake 已經有角色庫與建隊
-  UI，缺的是把它接到 ECL 這條路上。**接上之前維持硬失敗**。
+- [x] `38h PROGRAM` 的值 0 已接上（spec 081）：走到 ECL3／block 11 那一格會
+  開起隊伍管理，B 或 ESC 回地圖，ECL 從原地繼續。從地圖進來的那次不走
+  「開始冒險」——那會把開場重跑、隊伍丟回起點，而畫面上只看得出「怎麼又在
+  講故事」。值 9 仍硬失敗：問句的字串與「讓 block 結束」的路徑都還沒讀出來。
+- [ ] **ECL opcode 的待辦剩 16 條、253 個呼叫點**，盤點在
+  `docs/audit/pool-ecl-opcode-frontier.json`，由 `cmd/pool-ecl-frontier` 重生
+  （「已處理」那一半直接讀共用 VM 的 switch 與 Pool 的 passthrough 清單，
+  不另抄一份會過期的常數）。依呼叫點數排：
+  `2Eh DAMAGE` 47、`2Ch PARLAY` 38、`3Dh CLEAR BOX` 27、`22h`／`23h` SURPRISE
+  各 21、`10h INPUT STRING` 20、`33h PRINT RETURN` 20、`28h ROB` 14、
+  `3Ch PROTECTION` 12、`39h WHO` 11、`36h ADD NPC` 7、`32h FIND ITEM` 7、
+  `1Eh CHECKPARTY` 4、`0Fh INPUT NUMBER` 2、`34h ECL CLOCK` 1、`3Bh SPELL` 1。
+  起始地圖上走得到的是 `39h`（ECL3/b0 兩處、b11 一處）與 `36h`（各一處），
+  所以那兩條擋在最前面。
+  `33h PRINT RETURN` 與 `3Dh CLEAR BOX` 是純呈現（前者 `5D82h`／`5D83h` 換行、
+  後者清文字框再設 `82A4h`），兩條加起來 47 個呼叫點，成本最低。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家

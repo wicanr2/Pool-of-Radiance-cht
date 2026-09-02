@@ -242,6 +242,9 @@ func ReadDOSInitialEvent(zipPath string) (InitialEvent, error) {
 	}, nil
 }
 
+// InitialEventPassthrough 讓盤點工具讀到同一份清單，不必自己再抄一次。
+func InitialEventPassthrough() map[byte]bool { return initialEventPassthrough() }
+
 func initialEventPassthrough() map[byte]bool {
 	return map[byte]bool{
 		0x0C: true, // SETUP MONSTER
@@ -253,6 +256,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x2D: true, // CALL
 		0x31: true, // SPRITE OFF
 		0x37: true, // LOAD PIECES / title resource boundary
+		0x38: true, // PROGRAM（spec 081；前端要接，值 9 仍硬失敗）
 		0x3A: true, // DELAY
 	}
 }

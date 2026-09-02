@@ -32,6 +32,19 @@ const (
 	EncounterMenuOutcomeFirstOperand = 5
 	// EncounterMenuOutcomeCount 是結果表的格數。
 	EncounterMenuOutcomeCount = 5
+
+	// ProgramOpcode 是 `38h PROGRAM`（spec 081）：用一個運算元選一支子程式。
+	ProgramOpcode = 0x38
+	// ProgramOperands 是它吃幾個運算元。
+	ProgramOperands = 1
+	// ProgramPartyManagement（值 0）直接開城裡的隊伍管理畫面
+	// （overlay-16 entry 1 加 overlay-25 entry 37）。
+	ProgramPartyManagement = 0
+	// ProgramUnusedEight（值 8）走 overlay-18 entry 1；全遊戲沒有呼叫點。
+	ProgramUnusedEight = 8
+	// ProgramAskThenManage（值 9）先問一句，答應才開同一個畫面，然後結束
+	// 這個 block（overlay-03 `312Ah`）。
+	ProgramAskThenManage = 9
 )
 
 // EncounterMenuChoices 是選單的四個選項，順序即畫面順序。第四項依情境在

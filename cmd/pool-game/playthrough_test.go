@@ -659,3 +659,108 @@ func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 	}
 	return fmt.Errorf("combat did not finish within %d ticks", budget)
 }
+
+// 只用按鍵走到 `38h PROGRAM` 那一格，開起隊伍管理，再回到地圖繼續走。
+//
+// 這條擋的是兩件事：opcode 硬失敗讓探索整個停住，以及「回地圖」誤走成
+// 「開始冒險」——後者會把開場整個重跑一次，隊伍被丟回起點，而畫面上看起來
+// 只是「怎麼又在講故事」。
+func TestNormalKeysReachThePartyManagementCell(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	application.roller = diceRoller{random: rand.New(rand.NewSource(5))}
+	party := make([]poolsave.Character, 0, 6)
+	for index := 0; index < 6; index++ {
+		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
+			GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good",
+			Abilities: [6]int{18, 10, 10, 16, 10, 10}, MaxHP: 60, CurrentHP: 60,
+			PortraitHead: 1, PortraitBody: 1, IconSize: 1})
+	}
+	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
+	application.saveState = func(poolsave.State) error { return nil }
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 20000 && !application.introDone; tick++ {
+		if application.introWaiting || application.tourPage >= 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		application.keys = scriptedKeys{}
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// 種子 19 的隨機走查會在第 668 步踩到 ECL3／block 11 的 `PROGRAM 0`。
+	keys := []ebiten.Key{ebiten.KeyArrowUp, ebiten.KeyArrowLeft, ebiten.KeyArrowRight, ebiten.KeyArrowDown}
+	random := rand.New(rand.NewSource(19))
+	reached := false
+	for step := 0; step < 4000 && !reached; step++ {
+		if application.programManaging {
+			reached = true
+			break
+		}
+		if application.combatActive || application.tactical != nil {
+			t.Fatalf("walked into combat at step %d before reaching the PROGRAM cell", step)
+		}
+		if application.encounter != nil || application.cellWaitingMenu || application.cellEventPending {
+			if application.cellWaitingMenu && len(application.cellMenuOptions) > 1 {
+				for k := random.Intn(len(application.cellMenuOptions)); k > 0; k-- {
+					if err := press(application, ebiten.KeyArrowDown); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		if err := press(application, keys[random.Intn(len(keys))]); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !reached {
+		t.Fatal("never reached the PROGRAM cell")
+	}
+	if application.mode != modeMenu {
+		t.Fatalf("PROGRAM left the app in mode %d, want the party management screen", application.mode)
+	}
+	where := application.spawn
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	if application.programManaging {
+		t.Fatal("B did not leave the party management screen")
+	}
+	if application.mode != modeAdventure {
+		t.Fatalf("B left the app in mode %d, want the map", application.mode)
+	}
+	// 回地圖不是重開冒險：位置與朝向都要留在原地。
+	if application.spawn.Map != where.Map || application.spawn.X != where.X || application.spawn.Y != where.Y {
+		t.Fatalf("the party moved from %v to %v while managing", where, application.spawn)
+	}
+	if application.introWaiting || application.tourActive {
+		t.Fatal("returning to the map restarted the opening")
+	}
+	// 回來之後還走得動。
+	for step := 0; step < 200; step++ {
+		if application.cellEventPending || application.cellWaitingMenu {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		if err := press(application, ebiten.KeyArrowUp); err != nil {
+			t.Fatalf("could not walk after party management: %v", err)
+		}
+	}
+}

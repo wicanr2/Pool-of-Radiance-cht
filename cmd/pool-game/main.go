@@ -153,6 +153,9 @@ type app struct {
 	templeStage      templeStage
 	templeParty      int
 	templeService    int
+	// programManaging 為真時，隊伍管理畫面是 `38h PROGRAM` 從地圖上開的，
+	// 離開時要回地圖並讓 ECL 繼續，不是重新開始冒險。
+	programManaging bool
 	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
 	combatActive     bool
@@ -392,6 +395,17 @@ func (a *app) Update() error {
 			a.mode = modeMenu
 		}
 	case modeMenu:
+		if a.programManaging {
+			// `38h PROGRAM` 開的隊伍管理：B 或 ESC 回地圖，ECL 從原地繼續。
+			// 這裡不能走下面那條「開始冒險」——那會把開場整個重跑一次。
+			if a.justPressed(ebiten.KeyB) || a.justPressed(ebiten.KeyEscape) {
+				if len(a.state.Party) == 0 {
+					a.statusLine = a.text(msgProgramNeedsParty)
+					return nil
+				}
+				return a.closePartyManagement()
+			}
+		}
 		if a.justPressed(ebiten.KeyB) {
 			if len(a.state.Party) == 0 {
 				a.statusLine = "Add at least one character before beginning adventure."
@@ -870,6 +884,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if event, ok := encounterEvent(result); ok {
 			return a.enterEncounter(event)
+		}
+		if event, ok := programEvent(result); ok {
+			return a.enterProgram(event)
 		}
 		return a.pauseInitialCellResult(result)
 	}
@@ -1803,7 +1820,11 @@ func (a *app) Draw(screen *ebiten.Image) {
 		drawText(screen, a.text(msgMenuCreate), 176, 112, foreground)
 		drawText(screen, a.text(msgMenuAdd), 176, 140, foreground)
 		drawText(screen, a.text(msgMenuLoad), 176, 168, foreground)
-		drawText(screen, a.text(msgMenuBegin), 176, 196, foreground)
+		begin := a.text(msgMenuBegin)
+		if a.programManaging {
+			begin = a.text(msgProgramReturn)
+		}
+		drawText(screen, begin, 176, 196, foreground)
 		drawText(screen, fmt.Sprintf(a.text(msgMenuCounts), len(a.state.CharacterLibrary), len(a.state.Party)), 176, 230, accent)
 		for index, member := range a.state.Party {
 			drawText(screen, fmt.Sprintf("%d  %s", index+1, member.Name), 176, 254+index*18, foreground)

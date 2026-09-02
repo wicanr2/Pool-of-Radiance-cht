@@ -1,0 +1,99 @@
+package main
+
+import (
+	"fmt"
+
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	"github.com/wicanr2/golden-box-remake-engine/ecl"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
+)
+
+// `38h PROGRAM`（spec 081）。全遊戲只有三個呼叫點，運算元只有 0 與 9 兩個值。
+//
+// 值 0 直接開城裡的隊伍管理畫面（overlay-16 entry 1 加 overlay-25 entry 37），
+// 開完 ECL 從原地繼續——這一支讀得完整，所以接上。
+//
+// 值 9 多了兩件還沒讀出來的東西：問句的字串（`35DBh` 拿 `4948h` 當參數）與
+// 「答完之後讓 block 結束」的路徑（原版是近呼叫 `00h EXIT` 的 handler）。
+// 兩件都得靠猜才寫得出來，所以維持硬失敗——**跳過它與正確處理它在報表上
+// 分不出來**。
+
+// programEvent 找出結果裡的 `38h`。
+func programEvent(result eclvm.Result) (eclvm.Event, bool) {
+	for _, event := range result.Events {
+		if event.Opcode == gamepack.ProgramOpcode {
+			return event, true
+		}
+	}
+	return eclvm.Event{}, false
+}
+
+// programSelector 解出運算元 1 的值。三個呼叫點的運算元都是位元組字面值，
+// 所以這裡直接讀值，不必走記憶體。
+func (a *app) programSelector(event eclvm.Event) (uint16, error) {
+	if a.eventSession == nil {
+		return 0, fmt.Errorf("Pool PROGRAM has no ECL session")
+	}
+	archive, ok := a.eclCatalog.Archive(a.eclArchive)
+	if !ok {
+		return 0, fmt.Errorf("Pool ECL archive %d is absent", a.eclArchive)
+	}
+	block, ok := archive.Blocks[a.eventSession.CurrentBlockID()]
+	if !ok {
+		return 0, fmt.Errorf("Pool ECL block %d is absent from archive %d",
+			a.eventSession.CurrentBlockID(), a.eclArchive)
+	}
+	if len(block) < 2 {
+		return 0, fmt.Errorf("Pool ECL block %d is shorter than its two-byte prefix",
+			a.eventSession.CurrentBlockID())
+	}
+	instruction, err := ecl.DecodeInstruction(block[2:], event.PC)
+	if err != nil {
+		return 0, fmt.Errorf("decode Pool PROGRAM at %d: %w", event.PC, err)
+	}
+	if len(instruction.Operands) != gamepack.ProgramOperands {
+		return 0, fmt.Errorf("Pool PROGRAM has %d operands, want %d",
+			len(instruction.Operands), gamepack.ProgramOperands)
+	}
+	value, err := ecl.NumericValue(instruction.Operands[0], a.eventSession.Machine().Memory)
+	if err != nil {
+		return 0, fmt.Errorf("Pool PROGRAM selector: %w", err)
+	}
+	return value, nil
+}
+
+// enterProgram 依運算元分派。
+func (a *app) enterProgram(event eclvm.Event) error {
+	selector, err := a.programSelector(event)
+	if err != nil {
+		return err
+	}
+	switch selector {
+	case gamepack.ProgramPartyManagement:
+		a.openPartyManagement()
+		return nil
+	case gamepack.ProgramAskThenManage:
+		return fmt.Errorf("Pool PROGRAM %d needs the unread prompt string and block-exit path (spec 081)", selector)
+	default:
+		// 原版對其餘的值直接返回，什麼都不做。
+		return a.continueInitialSearch(nil)
+	}
+}
+
+// openPartyManagement 把畫面切到隊伍管理，並記住這是從地圖上進來的。
+// 從標題進來的那一次會重跑開場，從這裡進來的不能——隊伍已經在圖上了。
+func (a *app) openPartyManagement() {
+	a.programManaging = true
+	a.mode = modeMenu
+	a.cellEventPending, a.cellWaitingMenu = false, false
+	a.cellMenuOptions, a.cellMenuCursor = nil, 0
+	a.eventText, a.eventLabel = "", ""
+	a.statusLine = a.text(msgProgramManaging)
+}
+
+// closePartyManagement 回到地圖，ECL 從 `38h` 的下一條繼續。
+func (a *app) closePartyManagement() error {
+	a.programManaging = false
+	a.mode = modeAdventure
+	return a.continueInitialSearch(nil)
+}
