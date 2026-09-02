@@ -821,7 +821,7 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText = "Encounter: " + strings.Join(labels, " / ")
 	a.eventLabel = "TACTICAL COMBAT PENDING"
-	a.statusLine = "Original monster records loaded; tactical combat remains fail-closed."
+	a.statusLine = "Original monster records loaded; press ENTER to enter tactical combat."
 	return nil
 }
 

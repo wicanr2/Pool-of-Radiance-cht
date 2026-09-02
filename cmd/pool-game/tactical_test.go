@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
@@ -225,5 +226,99 @@ func TestFinishCombatDoesNotRunThePostCombatScriptOnDefeat(t *testing.T) {
 	}
 	if a.tacticalPreview || a.tactical != nil {
 		t.Fatal("the tactical screen stayed open after defeat")
+	}
+}
+
+// stepTowards 反查的就是原版那張方向表：0 向上、順時針一圈。
+func TestStepTowardsUsesTheOriginalDirectionTable(t *testing.T) {
+	for _, test := range []struct {
+		name           string
+		toX, toY, want uint8
+	}{
+		{"east", 11, 10, 2},
+		{"north", 10, 9, 0},
+		{"south west", 9, 11, 5},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			got, ok := stepTowards(10, 10, test.toX, test.toY)
+			if !ok || got != test.want {
+				t.Fatalf("got %d (ok %v), want %d", got, ok, test.want)
+			}
+		})
+	}
+	if _, ok := stepTowards(10, 10, 10, 10); ok {
+		t.Fatal("a combatant standing on the target produced a direction")
+	}
+}
+
+func newFoeTurnState(foeX, foeY, partyX, partyY uint8, budget uint8) *tacticalState {
+	state := newRoundState(2)
+	cellCount := combat.TacticalRowStride * (combat.TacticalMaxY + 1)
+	// 地形碼 0 在目的格探測裡代表盤面外，所以測試盤面要鋪一個非 0 的可通行碼。
+	const openTerrain = 5
+	terrain := make([]uint8, cellCount)
+	for index := range terrain {
+		terrain[index] = openTerrain
+	}
+	state.Grid = combat.TacticalGrid{Terrain: terrain}
+	state.Classes[openTerrain] = gamepack.CombatCellClass{EntryThreshold: 1}
+	state.Friendly[1] = true
+	state.Roster[1] = combat.CombatantCell{X: partyX, Y: partyY, FootprintClass: 1}
+	state.Roster[2] = combat.CombatantCell{X: foeX, Y: foeY, FootprintClass: 1}
+	state.HitPoints = []int{0, 10, 10}
+	state.THAC0 = []uint8{0, 40, 40}
+	state.ArmorClass = []int{0, 50, 50}
+	state.Damage = []combat.DamageDice{{}, {Count: 1, Sides: 8}, {Count: 1, Sides: 8}}
+	state.Scores[1], state.Scores[2] = 5, 5
+	state.Budgets[1], state.Budgets[2] = budget, budget
+	state.Mover = 2
+	return state
+}
+
+// 敵方就在旁邊時這一回合直接攻擊，而且回合會結束、換人行動。
+func TestFoeTurnAttacksAnAdjacentPartyMember(t *testing.T) {
+	state := newFoeTurnState(11, 10, 10, 10, 20)
+	a := &app{roller: fixedRoller{20}, tactical: state}
+	if err := a.foeTurn(state); err != nil {
+		t.Fatal(err)
+	}
+	if state.HitPoints[1] == 10 {
+		t.Fatalf("the party member was untouched: %s", state.FoeLog)
+	}
+	if state.Scores[2] != 0 {
+		t.Fatalf("the foe kept its initiative score %d after acting", state.Scores[2])
+	}
+	if state.Mover != 1 {
+		t.Fatalf("mover %d after the foe acted, want the party member", state.Mover)
+	}
+}
+
+// 走不到就用完預算往目標靠，不會憑空攻擊。
+func TestFoeTurnClosesTheDistanceWhenItCannotReach(t *testing.T) {
+	state := newFoeTurnState(20, 10, 10, 10, 6)
+	a := &app{roller: fixedRoller{20}, tactical: state}
+	if err := a.foeTurn(state); err != nil {
+		t.Fatal(err)
+	}
+	if state.HitPoints[1] != 10 {
+		t.Fatalf("the foe attacked from out of reach: %s", state.FoeLog)
+	}
+	if state.Roster[2].X != 17 {
+		t.Fatalf("the foe walked to x=%d on a budget of 6, want 17", state.Roster[2].X)
+	}
+	if state.Budgets[2] != 0 {
+		t.Fatalf("the foe kept %d movement after closing", state.Budgets[2])
+	}
+}
+
+// F5 開的預覽盤面沒有 ECL 遭遇，勝利也不能去續跑腳本。這個測試同樣刻意不給
+// eventSession，走到續跑就會 panic。
+func TestFinishCombatDoesNotRunAScriptForThePreviewBoard(t *testing.T) {
+	a := &app{tacticalPreview: true, tactical: &tacticalState{}}
+	if err := a.finishCombat(combat.CombatVictory); err != nil {
+		t.Fatal(err)
+	}
+	if a.tacticalPreview || a.tactical != nil {
+		t.Fatal("the tactical screen stayed open after the preview combat ended")
 	}
 }

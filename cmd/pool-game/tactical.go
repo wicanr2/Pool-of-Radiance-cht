@@ -144,8 +144,9 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, 330, foreground)
 	drawText(screen, fmt.Sprintf("ROUND %d  MOVER %d  SCORE %d  BUDGET %d (%s)  %s",
 		a.tactical.Round, a.tactical.Mover, a.tactical.Scores[a.tactical.Mover],
-		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 348, foreground)
-	drawText(screen, "H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY", 70, 366, accent)
+		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 344, foreground)
+	drawText(screen, fmt.Sprintf("PROVISIONAL AI  %s", a.tactical.FoeLog), 70, 358, foreground)
+	drawText(screen, "H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY", 70, 372, accent)
 	drawText(screen, "F5: BACK", 500, 330, foreground)
 }
 
@@ -236,6 +237,7 @@ type tacticalState struct {
 	Outcome      combat.CombatOutcome
 	BudgetSource string
 	Status       string
+	FoeLog       string
 }
 
 // Budget 回傳目前行動者的剩餘步數。
@@ -393,6 +395,141 @@ func (a *app) enterTacticalPreview() error {
 	return nil
 }
 
+// tacticalSnapshot 把跨影格的狀態組成 combat 層要的那份 DS 快照。佔用格每次
+// 重建，與原版每個回合開頭呼叫 overlay-32 entry 20 的做法一致（spec 061）。
+func (state *tacticalState) tacticalSnapshot() (combat.TacticalState, error) {
+	occupancy, err := combat.RebuildOccupancy(state.Roster)
+	if err != nil {
+		return combat.TacticalState{}, err
+	}
+	return combat.TacticalState{
+		Map:       state.Grid,
+		Occupancy: occupancy,
+		Cells:     state.Roster,
+		Classes:   state.Classes,
+	}, nil
+}
+
+// sideOf 把 Friendly 對回原版 combatant record 的 +10Eh 陣營欄位：隊伍 0、敵方 1。
+// 查不到的索引一律回 false，讓陣營篩選失敗即關閉。
+func (state *tacticalState) sideOf(index uint8) (uint8, bool) {
+	if index == 0 || int(index) >= len(state.Friendly) {
+		return 0, false
+	}
+	if state.Friendly[index] {
+		return 0, true
+	}
+	return 1, true
+}
+
+// foeSearchBudget 是敵方找目標時給直線追蹤的預算。原版怎麼挑目標還沒讀出來，
+// 這個值只用來保證整個盤面都落在搜尋範圍內。
+const foeSearchBudget = 128
+
+// foeMaxStepsPerTurn 是一回合內允許的步數上限。預算本身每步遞減、迴圈一定會停，
+// 這個上限只是防止未來改動把它變成不會停的迴圈。
+const foeMaxStepsPerTurn = 32
+
+// stepTowards 由座標差反查原版方向表，得到朝目標前進的那一個方向。
+func stepTowards(fromX, fromY, toX, toY uint8) (uint8, bool) {
+	deltaX, deltaY := sign(int(toX)-int(fromX)), sign(int(toY)-int(fromY))
+	if deltaX == 0 && deltaY == 0 {
+		return 0, false
+	}
+	for direction := uint8(0); direction < combat.DirectionCount; direction++ {
+		step, err := combat.DirectionStep(direction)
+		if err != nil {
+			continue
+		}
+		if int(step.X) == deltaX && int(step.Y) == deltaY {
+			return direction, true
+		}
+	}
+	return 0, false
+}
+
+func sign(value int) int {
+	switch {
+	case value > 0:
+		return 1
+	case value < 0:
+		return -1
+	default:
+		return 0
+	}
+}
+
+// foeTurn 讓敵方的行動者走完一回合。原版的怪物 AI 還沒反組譯，所以「挑哪個
+// 目標」與「走哪一步」是暫定策略，畫面上標成 PROVISIONAL AI；策略之外的每一步
+// 都走已閉合的原版規則——目標由 spec 056 的鄰近成本表取成本最小者，每一步過
+// ResolveDestination（spec 058），攻擊走 spec 050／051。
+func (a *app) foeTurn(state *tacticalState) error {
+	mover := state.Mover
+	snapshot, err := state.tacticalSnapshot()
+	if err != nil {
+		return err
+	}
+	side, ok := state.sideOf(mover)
+	if !ok {
+		return fmt.Errorf("Pool mover %d has no side", mover)
+	}
+	targets, err := combat.OpposingNearbyAt(snapshot, mover,
+		state.Roster[mover].X, state.Roster[mover].Y, foeSearchBudget, 1-side, state.sideOf)
+	if err != nil {
+		return err
+	}
+	if len(targets) == 0 {
+		state.FoeLog = fmt.Sprintf("FOE %d FOUND NO TARGET", mover)
+		state.endTurn(a.rollDice, false)
+		return nil
+	}
+	target := targets[0]
+
+	steps := 0
+	for ; steps < foeMaxStepsPerTurn; steps++ {
+		snapshot, err = state.tacticalSnapshot()
+		if err != nil {
+			return err
+		}
+		direction, ok := stepTowards(state.Roster[mover].X, state.Roster[mover].Y,
+			state.Roster[target].X, state.Roster[target].Y)
+		if !ok {
+			break
+		}
+		outcome, err := combat.ResolveDestination(snapshot, mover, direction, state.Budget())
+		if err != nil {
+			return err
+		}
+		if outcome.Action == combat.MovementAttack {
+			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
+				return err
+			}
+			state.FoeLog = fmt.Sprintf("FOE %d AFTER %d STEPS: %s", mover, steps, state.Status)
+			if state.Finished {
+				return nil
+			}
+			state.endTurn(a.rollDice, false)
+			return nil
+		}
+		if outcome.Action != combat.MovementEnter {
+			break
+		}
+		x, y, err := combat.AdvanceTacticalCoordinate(state.Roster[mover].X, state.Roster[mover].Y, direction)
+		if err != nil {
+			return err
+		}
+		budget, err := combat.SpendMovementStep(state.Budget(), direction)
+		if err != nil {
+			return err
+		}
+		state.Roster[mover].X, state.Roster[mover].Y = x, y
+		state.Budgets[mover] = budget
+	}
+	state.FoeLog = fmt.Sprintf("FOE %d CLOSED %d STEPS ON %d", mover, steps, target)
+	state.endTurn(a.rollDice, false)
+	return nil
+}
+
 // rollDice 把 app 的骰子接成回合流程要的形狀。
 func (a *app) rollDice(count, sides int) int { return a.roller.Roll(count, sides) }
 
@@ -406,6 +543,15 @@ var tacticalStepKeys = [8]ebiten.Key{
 func (a *app) tacticalInput() error {
 	state := a.tactical
 	if state == nil {
+		return nil
+	}
+	if state.Mover != 0 && int(state.Mover) < len(state.Friendly) && !state.Friendly[state.Mover] {
+		if err := a.foeTurn(state); err != nil {
+			return err
+		}
+		if state.Finished {
+			return a.finishCombat(state.Outcome)
+		}
 		return nil
 	}
 	if a.justPressed(ebiten.KeyEnter) {
@@ -423,15 +569,9 @@ func (a *app) tacticalInput() error {
 		if !a.justPressed(key) {
 			continue
 		}
-		occupancy, err := combat.RebuildOccupancy(state.Roster)
+		tactical, err := state.tacticalSnapshot()
 		if err != nil {
 			return err
-		}
-		tactical := combat.TacticalState{
-			Map:       state.Grid,
-			Occupancy: occupancy,
-			Cells:     state.Roster,
-			Classes:   state.Classes,
 		}
 		outcome, err := combat.ResolveDestination(tactical, state.Mover, uint8(direction), state.Budget())
 		if err != nil {
@@ -534,9 +674,15 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 // finishCombat 依 spec 046 契約 5 處理戰後：只有勝利才從 COMBAT 邊界停下的 PC
 // 續跑戰後腳本；戰敗不得續跑，也不得用自動勝利代替戰鬥結果。
 func (a *app) finishCombat(outcome combat.CombatOutcome) error {
+	staged := a.combatActive
 	a.tacticalPreview, a.tactical = false, nil
 	if outcome != combat.CombatVictory {
 		a.statusLine = "Party defeated; the post-combat script does not run."
+		return nil
+	}
+	if !staged {
+		// F5 開的是預覽盤面，不是 ECL 排出來的遭遇，所以沒有戰後腳本可以續跑。
+		a.statusLine = "Tactical preview finished; no encounter was staged."
 		return nil
 	}
 	a.combatActive, a.combatMonsters = false, nil

@@ -2,7 +2,6 @@ package gamepack
 
 import "testing"
 
-
 func TestParseCombatCellClassTableOriginalSTARTEXEBytes(t *testing.T) {
 	records := OriginalCombatCellClassTable()
 	tests := []struct {
