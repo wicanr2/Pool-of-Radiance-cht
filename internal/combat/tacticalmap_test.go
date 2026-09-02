@@ -66,3 +66,62 @@ func TestIndoorWindowCellsFollowTheOriginalLoopOrder(t *testing.T) {
 		t.Fatalf("last cell %v, want [6 2]", cells[len(cells)-1])
 	}
 }
+
+// 地城格原點的斜向投影，X 也吃 dy 的位移。
+func TestIndoorTacticalCellProjection(t *testing.T) {
+	x, y, ok := IndoorTacticalCell(0, 0, 0, 0)
+	if !ok || x != IndoorOriginX || y != IndoorOriginY {
+		t.Fatalf("origin cell (%d,%d) ok=%v", x, y, ok)
+	}
+	x, _, _ = IndoorTacticalCell(1, 0, 0, 0)
+	if x != IndoorOriginX+IndoorStepXPerColumn {
+		t.Fatalf("one column right gave x=%d", x)
+	}
+	x, y, _ = IndoorTacticalCell(0, 1, 0, 0)
+	if x != IndoorOriginX+IndoorStepXPerRow || y != IndoorOriginY+IndoorStepYPerRow {
+		t.Fatalf("one row down gave (%d,%d); the projection is skewed, X must shift too", x, y)
+	}
+}
+
+// 視窗的兩個角落算出來落在盤面外，原版整格不寫。
+func TestIndoorTacticalCellDropsCellsOutsideTheBoard(t *testing.T) {
+	if _, _, ok := IndoorTacticalCell(IndoorWindowMinX, IndoorWindowMinY, 0, 0); ok {
+		t.Fatal("the far top-left dungeon cell landed on the board")
+	}
+	if _, _, ok := IndoorTacticalCell(IndoorWindowMaxX, IndoorWindowMaxY, 4, 5); ok {
+		t.Fatal("the far bottom-right dungeon cell landed on the board")
+	}
+}
+
+// 建構器填地板用 16h，存進地圖是 17h——與室外整面填的類別相同。
+func TestStoredCellClassIsOneMoreThanTheBuilderClass(t *testing.T) {
+	if got := StoredCellClass(IndoorFloorBuilderClass); got != OpenGroundCellClass {
+		t.Fatalf("stored class %02Xh, want %02Xh", got, OpenGroundCellClass)
+	}
+	if got := StoredCellClass(0); got != 1 {
+		t.Fatalf("stored class %d, want 1", got)
+	}
+}
+
+// 走過整個視窗，落在盤面內的格子必須各自唯一，否則投影寫錯了。
+func TestIndoorWindowProjectionDoesNotCollide(t *testing.T) {
+	seen := map[[2]int]bool{}
+	for _, cell := range IndoorWindowCells() {
+		for subA := 2; subA <= 4; subA++ {
+			for subB := 0; subB <= 5; subB++ {
+				x, y, ok := IndoorTacticalCell(cell[0], cell[1], subA, subB)
+				if !ok {
+					continue
+				}
+				key := [2]int{x, y}
+				if seen[key] {
+					t.Fatalf("dungeon cell %v sub (%d,%d) reused tactical cell %v", cell, subA, subB, key)
+				}
+				seen[key] = true
+			}
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatal("the whole window fell outside the board")
+	}
+}

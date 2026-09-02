@@ -63,3 +63,34 @@ func IndoorWindowCells() [][2]int {
 	}
 	return cells
 }
+
+// 室內戰場把地城格斜向投影到戰術格（spec 060）。地城格 (dx, dy) 的原點是
+// `(IndoorOriginX + 6·dx + 5·dy, IndoorOriginY + 5·dy)`；X 也吃 dy 的位移，
+// 所以整張圖是斜的，不是正交排列。
+const (
+	IndoorOriginX        = 21
+	IndoorOriginY        = 10
+	IndoorStepXPerColumn = 6
+	IndoorStepXPerRow    = 5
+	IndoorStepYPerRow    = 5
+)
+
+// IndoorTacticalCell 重現 overlay-10 `022Eh` 的座標計算。subA 沿 Y、subB 沿 X
+// 是地城格內的細部位移。落在盤面外時 ok 為 false——原版同樣是算完再檢查，
+// 超界就整格不寫，而不是先裁切視窗。
+func IndoorTacticalCell(dx, dy, subA, subB int) (x, y int, ok bool) {
+	x = IndoorOriginX + IndoorStepXPerColumn*dx + IndoorStepXPerRow*dy + subB
+	y = IndoorOriginY + IndoorStepYPerRow*dy + subA
+	if x < 0 || x > TacticalMaxX || y < 0 || y > TacticalMaxY {
+		return x, y, false
+	}
+	return x, y, true
+}
+
+// StoredCellClass 重現 `022Eh` 寫入前的加一：建構器傳的是 0-based 的類別，
+// 存進地圖的是它加一之後的值，正好對上格位類別表折疊過的 1-based 索引。
+func StoredCellClass(builderClass uint8) uint8 { return builderClass + 1 }
+
+// IndoorFloorBuilderClass 是室內建構器填地板時傳的類別；加一之後就是
+// OpenGroundCellClass，與室外整面填的值是同一個。
+const IndoorFloorBuilderClass = 0x16
