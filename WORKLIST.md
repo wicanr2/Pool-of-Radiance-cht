@@ -351,17 +351,17 @@
   `docs/audit/pool-ecl-opcode-frontier.json`，由 `cmd/pool-ecl-frontier` 重生
   （「已處理」那一半直接讀共用 VM 的 switch 與 Pool 的 passthrough 清單，
   不另抄一份會過期的常數）。依呼叫點數排：
-  `2Ch PARLAY` 38、`22h`／`23h` SURPRISE 各 21、`10h INPUT STRING` 20、
-  `28h ROB` 14、`3Ch PROTECTION` 12、`39h WHO` 11、`36h ADD NPC` 7、
-  `32h FIND ITEM` 7、`1Eh CHECKPARTY` 4、`0Fh INPUT NUMBER` 2、
+  `2Ch PARLAY` 38、`10h INPUT STRING` 20、`28h ROB` 14、`3Ch PROTECTION` 12、
+  `39h WHO` 11、`36h ADD NPC` 7、`1Eh CHECKPARTY` 4、`0Fh INPUT NUMBER` 2、
   `34h ECL CLOCK` 1、`3Bh SPELL` 1。
   起始地圖上走得到的是 `39h WHO`（ECL3/b0 兩處、b11 一處）與 `36h ADD NPC`
   （各一處），所以那兩條擋在最前面。兩條的骨架已由 spec 083 解出，並解出
   它們共用的「目前角色」槽 `DS:5CF0h`——`39h` 寫、`36h` 讀、`38h` 也會搬。
   **還缺**：挑人的 UI（overlay-25 entry 42）、NPC 記錄從哪個封存檔載入
   （overlay-17 entry 9）、以及記錄 `+84h` 的語意。
-  `33h PRINT RETURN`／`3Dh CLEAR BOX`（spec 082）與 `2Eh DAMAGE`（spec 084）
-  已接，待辦從 16 條 253 處降到 **13 條 159 處**。
+  已接：`33h PRINT RETURN`／`3Dh CLEAR BOX`（spec 082）、`2Eh DAMAGE`
+  （spec 084）、`32h FIND ITEM`／`22h PARTY SURPRISE`／`23h SURPRISE`
+  （spec 085）。待辦從 16 條 253 處降到 **10 條 110 處**。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家

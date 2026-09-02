@@ -120,3 +120,19 @@ func ClassComponents(classID string) ([]string, bool) {
 	}
 	return nil, false
 }
+
+// ClassDOSCode 回傳組合職業自己的 DOS 碼，也就是原版角色記錄 `+2Fh` 那個
+// 位元組。七名預設人物對得上：三名戰士是 2、牧師 0、兩名法師 5、賊 6。
+//
+// 與 ComponentClassIndex 不同：那一支回的是每個組成職業的列索引，
+// 這一支回的是整個職業組合的碼（雙職業 8..16）。
+func ClassDOSCode(classID string) (uint8, bool) {
+	for _, choices := range classesByRace {
+		for _, choice := range choices {
+			if choice.ID == classID {
+				return choice.DOSCode, true
+			}
+		}
+	}
+	return 0, false
+}

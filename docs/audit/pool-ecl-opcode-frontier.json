@@ -32,6 +32,8 @@
     "0x1D",
     "0x20",
     "0x21",
+    "0x22",
+    "0x23",
     "0x24",
     "0x25",
     "0x26",
@@ -44,6 +46,7 @@
     "0x2F",
     "0x30",
     "0x31",
+    "0x32",
     "0x33",
     "0x35",
     "0x37",
@@ -200,230 +203,6 @@
           "file": "ecl8.dax",
           "block_id": 13,
           "offset": 5300
-        }
-      ]
-    },
-    {
-      "opcode": "0x22",
-      "name": "PARTY SURPRISE",
-      "arity": 2,
-      "sites": [
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 5273
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 9,
-          "offset": 3236
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 425
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 804
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 2773
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 769
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 10,
-          "offset": 6992
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 3347
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 20
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 20
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 5,
-          "offset": 20
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 207
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 2034
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 2233
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 2086
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 3318
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 4076
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 4562
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 1510
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 29,
-          "offset": 599
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 29,
-          "offset": 2889
-        }
-      ]
-    },
-    {
-      "opcode": "0x23",
-      "name": "SURPRISE",
-      "arity": 4,
-      "sites": [
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 5280
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 9,
-          "offset": 3258
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 432
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 830
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 15,
-          "offset": 2780
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 776
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 10,
-          "offset": 6999
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 3354
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 46
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 46
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 5,
-          "offset": 46
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 233
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 25,
-          "offset": 2041
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 2240
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 26,
-          "offset": 2093
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 3325
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 4083
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 4569
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 27,
-          "offset": 1517
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 29,
-          "offset": 606
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 29,
-          "offset": 2896
         }
       ]
     },
@@ -702,48 +481,6 @@
       ]
     },
     {
-      "opcode": "0x32",
-      "name": "FIND ITEM",
-      "arity": 1,
-      "sites": [
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 286
-        },
-        {
-          "file": "ecl1.dax",
-          "block_id": 24,
-          "offset": 3279
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 2,
-          "offset": 2367
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 10,
-          "offset": 6219
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 10,
-          "offset": 6494
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 1,
-          "offset": 4797
-        },
-        {
-          "file": "ecl6.dax",
-          "block_id": 19,
-          "offset": 148
-        }
-      ]
-    },
-    {
       "opcode": "0x34",
       "name": "ECL CLOCK",
       "arity": 2,
@@ -939,6 +676,6 @@
       ]
     }
   ],
-  "unhandled_site_total": 159,
+  "unhandled_site_total": 110,
   "blocks_scanned": 29
 }
