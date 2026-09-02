@@ -46,6 +46,20 @@ const (
 	// 這個 block（overlay-03 `312Ah`）。
 	ProgramAskThenManage = 9
 
+	// InputNumberOpcode 是 `0Fh INPUT NUMBER`（spec 087）。
+	InputNumberOpcode = 0x0f
+	// InputStringOpcode 是 `10h INPUT STRING`（spec 087）。
+	InputStringOpcode = 0x10
+	// InputOperands 是兩條輸入 opcode 各吃幾個運算元。
+	InputOperands = 2
+	// InputDestinationOperand 是「寫進哪個 ECL 變數」那個運算元的序號。
+	InputDestinationOperand = 2
+	// InputStringMaxLength 是 `10h` 收的最長字元數（`0991h` 推的 28h）。
+	InputStringMaxLength = 0x28
+	// InputStringEmptyReplacement 是空字串會被換成什麼（`09AFh` 的 `cs:95Eh`
+	// 是長度 1 的一個空白）。
+	InputStringEmptyReplacement = " "
+
 	// ParlayOpcode 是 `2Ch PARLAY`（spec 086）：五種語氣的交涉選單。
 	ParlayOpcode = 0x2c
 	// ParlayOperands 是它吃幾個運算元。

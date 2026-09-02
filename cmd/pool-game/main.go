@@ -160,6 +160,8 @@ type app struct {
 	savingThrows *gamepack.SavingThrowTable
 	// parlay 是進行中的交涉選單（spec 086）。
 	parlay *parlayState
+	// eclInput 是進行中的 ECL 輸入列（spec 087）。
+	eclInput *eclInputState
 	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
 	combatActive     bool
@@ -491,6 +493,10 @@ func (a *app) Update() error {
 	case modeCreation:
 		return a.updateCreation()
 	case modeAdventure:
+		// 輸入列吃掉整個影格：ESC 與方向鍵在打字的時候不該有別的意思。
+		if handled, err := a.eclInputUpdate(); handled {
+			return err
+		}
 		if a.justPressed(ebiten.KeyEscape) {
 			a.mode = modeMenu
 			a.statusLine = "Returned from the initial event."
@@ -908,6 +914,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if event, ok := parlayEvent(result); ok {
 			return a.enterParlay(event)
+		}
+		if event, ok := eclInputEvent(result); ok {
+			return a.enterECLInput(event)
 		}
 		return a.pauseAppliedCellResult(result)
 	}

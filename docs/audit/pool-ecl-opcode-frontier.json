@@ -17,6 +17,8 @@
     "0x0C",
     "0x0D",
     "0x0E",
+    "0x0F",
+    "0x10",
     "0x11",
     "0x12",
     "0x13",
@@ -56,130 +58,6 @@
     "0x3D"
   ],
   "unhandled": [
-    {
-      "opcode": "0x0F",
-      "name": "INPUT NUMBER",
-      "arity": 2,
-      "sites": [
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 6845
-        },
-        {
-          "file": "ecl3.dax",
-          "block_id": 0,
-          "offset": 3172
-        }
-      ]
-    },
-    {
-      "opcode": "0x10",
-      "name": "INPUT STRING",
-      "arity": 2,
-      "sites": [
-        {
-          "file": "ecl2.dax",
-          "block_id": 9,
-          "offset": 1564
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 9,
-          "offset": 1643
-        },
-        {
-          "file": "ecl2.dax",
-          "block_id": 20,
-          "offset": 5791
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 1408
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 2690
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 4478
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 1521
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 1601
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 4438
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 4965
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 5048
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 1352
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 1432
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 5,
-          "offset": 1288
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 5,
-          "offset": 1408
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 5,
-          "offset": 2228
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 4594
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 6,
-          "offset": 4670
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 2977
-        },
-        {
-          "file": "ecl8.dax",
-          "block_id": 16,
-          "offset": 1993
-        }
-      ]
-    },
     {
       "opcode": "0x1E",
       "name": "CHECKPARTY",
@@ -480,6 +358,6 @@
       ]
     }
   ],
-  "unhandled_site_total": 72,
+  "unhandled_site_total": 50,
   "blocks_scanned": 29
 }

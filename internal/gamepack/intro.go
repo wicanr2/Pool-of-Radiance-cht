@@ -256,6 +256,8 @@ func initialEventPassthrough() map[byte]bool {
 		0x2D: true, // CALL
 		0x31: true, // SPRITE OFF
 		0x37: true, // LOAD PIECES / title resource boundary
+		0x0F: true, // INPUT NUMBER（spec 087）
+		0x10: true, // INPUT STRING（spec 087）
 		0x22: true, // PARTY SURPRISE（spec 085）
 		0x23: true, // SURPRISE（spec 085）
 		0x2C: true, // PARLAY（spec 086；前端要接，接不到會靜靜跳過一段交涉）

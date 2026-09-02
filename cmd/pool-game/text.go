@@ -82,6 +82,7 @@ var messages = map[messageID][2]string{
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
 	msgParlayPrompt:         {"Choose the tone of the parlay.", "選擇交涉的語氣。"},
+	msgEclInputPrompt:       {"Type your answer, then ENTER.", "打完之後按 ENTER。"},
 	msgParlayHaughty:        {"HAUGHTY", "傲慢"},
 	msgParlaySly:            {"SLY", "狡猾"},
 	msgParlayNice:           {"NICE", "友善"},
@@ -466,6 +467,7 @@ const (
 	msgDamageDies
 	msgDamageSaved
 	msgParlayPrompt
+	msgEclInputPrompt
 	msgParlayHaughty
 	msgParlaySly
 	msgParlayNice

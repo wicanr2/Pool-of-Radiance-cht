@@ -42,6 +42,11 @@ func (keys *scriptedTextKeys) JustPressed(key ebiten.Key) bool {
 }
 func (keys *scriptedTextKeys) Chars() []rune { result := keys.chars; keys.chars = nil; return result }
 
+// scriptedChars 餵一串字元給輸入列，按鍵一律沒按。
+func scriptedChars(text string) *scriptedTextKeys {
+	return &scriptedTextKeys{scriptedKeys: scriptedKeys{}, chars: []rune(text)}
+}
+
 func press(application *app, key ebiten.Key) error {
 	application.keys = scriptedKeys{key: true}
 	return application.Update()
@@ -1110,5 +1115,78 @@ func TestParlayMenuHasFiveOptionsInOrder(t *testing.T) {
 		if got := application.text(item); got != gamepack.ParlayChoices[index] {
 			t.Fatalf("第 %d 個顯示 %q，原文是 %q", index, got, gamepack.ParlayChoices[index])
 		}
+	}
+}
+
+// 兩條輸入 opcode 把打好的內容寫進運算元 2 指的變數（spec 087）：
+// 數字寫 Memory，字串寫 Strings，而空字串會被換成一個空白——那是原版的
+// 行為，少了它「什麼都沒打」與「打了一個空白」在 ECL 比對時結果不同。
+func TestECLInputWritesTheDestination(t *testing.T) {
+	newInputApp := func(numeric bool, buffer string) *app {
+		return &app{
+			eventMachine: &eclvm.Machine{Memory: map[uint16]uint16{}, Strings: map[uint16]string{}},
+			eclInput:     &eclInputState{numeric: numeric, address: 0x4321, buffer: buffer},
+		}
+	}
+	number := newInputApp(true, "137")
+	if err := number.commitECLInput(); err != nil {
+		t.Fatal(err)
+	}
+	if got := number.eventMachine.Memory[0x4321]; got != 137 {
+		t.Fatalf("number wrote %d", got)
+	}
+	text := newInputApp(false, "MANTOR")
+	if err := text.commitECLInput(); err != nil {
+		t.Fatal(err)
+	}
+	if got := text.eventMachine.Strings[0x4321]; got != "MANTOR" {
+		t.Fatalf("string wrote %q", got)
+	}
+	empty := newInputApp(false, "")
+	if err := empty.commitECLInput(); err != nil {
+		t.Fatal(err)
+	}
+	if got := empty.eventMachine.Strings[0x4321]; got != gamepack.InputStringEmptyReplacement {
+		t.Fatalf("empty input wrote %q, want a single space", got)
+	}
+	// 沒打數字就是 0，不是錯誤。
+	blank := newInputApp(true, "")
+	if err := blank.commitECLInput(); err != nil {
+		t.Fatal(err)
+	}
+	if got := blank.eventMachine.Memory[0x4321]; got != 0 {
+		t.Fatalf("blank number wrote %d", got)
+	}
+	if blank.eclInput != nil || blank.cellEventPending {
+		t.Fatal("the input line is still up after ENTER")
+	}
+}
+
+// 數字輸入只收數字，字串輸入收可見字元並轉大寫，兩者都在上限處停下來。
+func TestECLInputFiltersWhatItAccepts(t *testing.T) {
+	application := &app{eclInput: &eclInputState{numeric: true}}
+	application.keys = scriptedChars("12a3")
+	if _, err := application.eclInputUpdate(); err != nil {
+		t.Fatal(err)
+	}
+	if application.eclInput.buffer != "123" {
+		t.Fatalf("numeric buffer %q", application.eclInput.buffer)
+	}
+	application = &app{eclInput: &eclInputState{numeric: false}}
+	application.keys = scriptedChars("man tor")
+	if _, err := application.eclInputUpdate(); err != nil {
+		t.Fatal(err)
+	}
+	if application.eclInput.buffer != "MAN TOR" {
+		t.Fatalf("string buffer %q", application.eclInput.buffer)
+	}
+	application = &app{eclInput: &eclInputState{numeric: false,
+		buffer: strings.Repeat("X", gamepack.InputStringMaxLength)}}
+	application.keys = scriptedChars("Y")
+	if _, err := application.eclInputUpdate(); err != nil {
+		t.Fatal(err)
+	}
+	if len(application.eclInput.buffer) != gamepack.InputStringMaxLength {
+		t.Fatalf("buffer grew past the limit to %d", len(application.eclInput.buffer))
 	}
 }
