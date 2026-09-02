@@ -5,33 +5,61 @@ import "fmt"
 // 每個法術編號一筆 16-byte 參數。overlay-22 的共用施法常式 `08BCh` 全程用
 // `di = 編號 × 16` 取這張表，一支常式服務 67 個編號、行為差異全部從這裡來。
 //
-// 表在 START.EXE 的資料段（`3196h + 30640 = 43478`，檔案只有 47936 bytes，
+// 表在 START.EXE 的資料段（`3194h + 30640 = 43476`，檔案只有 47936 bytes，
 // 所以它是靜態初始化過的），編號 0 那筆整筆是零，是走不到的哨兵。
+//
+// 讀它的碼一律用「基底加欄位位移」的形式（`[di+3196h]` 就是 `+2`），
+// 所以欄位編號要換算回 `3194h`。
 const (
-	// SpellParameterTableAddress 是編號 0 那筆的 DS 位址。
-	SpellParameterTableAddress = 0x3196
+	// SpellParameterTableAddress 是編號 0 那筆的 DS 位址；那一筆整筆是零，
+	// 是走不到的哨兵。
+	SpellParameterTableAddress = 0x3194
 	// SpellParameterRecordSize 是一筆的大小。
 	SpellParameterRecordSize = 16
 	// SpellParameterCount 是表的筆數，含編號 0 的哨兵，
 	// 上限與派發表（spec 073）的 67 個編號相符。
 	SpellParameterCount = SpellDispatchCount + 1
 
-	// spellParameterAttackRoll 是 `+0`：值為 FFh 時 `08BCh` 走命中判定
+	// spellParameterClass 是 `+0`：0 牧師、1 法師、2 物品效果。
+	// overlay-25 的 `26F8h` 用它決定施法者等級要讀角色記錄的哪一格。
+	spellParameterClass = 0
+	// spellParameterLevel 是 `+1`：法術等級。
+	spellParameterLevel = 1
+	// spellParameterAttackRoll 是 `+2`：值為 FFh 時 `08BCh` 走命中判定
 	// （`0997h` 的 `cmp byte ptr [di+3196h], 0FFh`），先擲一次攻擊再談效果。
-	spellParameterAttackRoll = 0
-	// spellParameterSaveRule 是 `+6`：0 表示不用擲豁免
+	spellParameterAttackRoll = 2
+	// spellParameterFixedDuration 是 `+4`：效果的固定回合數
+	// （`08A2h` 的 `mov al, [di+3198h]`）。
+	spellParameterFixedDuration = 4
+	// spellParameterLevelDuration 是 `+5`：每施法者等級再加的回合數
+	// （`088Dh` 的 `mov al, [di+3199h]`）。
+	spellParameterLevelDuration = 5
+	// spellParameterSaveRule 是 `+8`：0 表示不用擲豁免
 	// （`095Eh` 的 `cmp byte ptr [di+319Ch], 0`）。非零時它還會一路傳給
 	// `0100h:007Fh` 與 `0100h:0084h`，所以它不只是布林；1..3 的差別未讀。
-	spellParameterSaveRule = 6
-	// spellParameterSaveCategory 是 `+7`：豁免類別，索引角色記錄 `+6Dh` 起
+	spellParameterSaveRule = 8
+	// spellParameterSaveCategory 是 `+9`：豁免類別，索引角色記錄 `+6Dh` 起
 	// 那五個目標值（spec 075）。`097Ch` 把它推給 `0100h:0043h`。
-	spellParameterSaveCategory = 7
-	// spellParameterEffectCode 是 `+8`：掛到角色效果串列（spec 069）的效果碼。
-	// `0A13h` 先檢查它大於零才進掛效果那一段，所以值為零就是「不留狀態」。
-	spellParameterEffectCode = 8
+	spellParameterSaveCategory = 9
+	// spellParameterEffectCode 是 `+0Ah`：掛到角色效果串列（spec 069）的
+	// 效果碼。`0A13h` 先檢查它大於零才進掛效果那一段，所以值為零就是
+	// 「不留狀態」。
+	spellParameterEffectCode = 10
 
-	// spellParameterAttackRollFlag 是 `+0` 代表「要擲命中」的值。
+	// spellParameterAttackRollFlag 是 `+2` 代表「要擲命中」的值。
 	spellParameterAttackRollFlag = 0xff
+)
+
+// SpellSource 是參數表 `+0` 的三個值。
+type SpellSource uint8
+
+const (
+	// SpellSourceCleric 是神術，施法者等級讀角色記錄的 `+96h`。
+	SpellSourceCleric SpellSource = 0
+	// SpellSourceMagicUser 是巫術，讀 `+9Bh`。
+	SpellSourceMagicUser SpellSource = 1
+	// SpellSourceItem 是物品或怪物的效果，施法者等級固定 12。
+	SpellSourceItem SpellSource = 2
 )
 
 // SpellParameters 是一筆原始記錄。只有讀得出證據的欄位有具名取值；其餘留在
@@ -41,9 +69,21 @@ type SpellParameters struct {
 	Raw     [SpellParameterRecordSize]byte
 }
 
+// Source 是這個編號屬於神術、巫術，還是物品效果。
+func (p SpellParameters) Source() SpellSource { return SpellSource(p.Raw[spellParameterClass]) }
+
+// Level 是法術等級。
+func (p SpellParameters) Level() int { return int(p.Raw[spellParameterLevel]) }
+
 // RequiresAttackRoll 說這個法術是不是要先擲中才生效。
 func (p SpellParameters) RequiresAttackRoll() bool {
 	return p.Raw[spellParameterAttackRoll] == spellParameterAttackRollFlag
+}
+
+// Duration 是效果持續幾回合：固定值加上每施法者等級的增量。
+// `0875h` 那一段就是 `+4 + +5 × 等級`，兩個都是零表示不自己結束。
+func (p SpellParameters) Duration(casterLevel int) int {
+	return int(p.Raw[spellParameterFixedDuration]) + int(p.Raw[spellParameterLevelDuration])*casterLevel
 }
 
 // SaveRule 是 0 就不擲豁免。非零代表要擲，值本身還會傳給後面兩支常式；

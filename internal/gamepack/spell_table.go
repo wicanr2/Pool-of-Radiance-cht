@@ -92,8 +92,10 @@ func ParseSpellCatalogue(raw []byte) (*SpellCatalogue, error) {
 		if entry.Class != SpellClassCleric && entry.Class != SpellClassMagicUser {
 			return nil, fmt.Errorf("Pool spell %d has unknown class %q", position, entry.Class)
 		}
-		if entry.Level < 1 || entry.Level > 3 {
-			return nil, fmt.Errorf("Pool spell %d has level %d outside 1..3", position, entry.Level)
+		// 玩家能記憶的到第 3 級為止（spec 072 的格數表），但原版的參數表
+		// 收得比較寬：Restoration 是牧師第 7 級，隊伍碰不到它，神殿才提供。
+		if entry.Level < 1 || entry.Level > 7 {
+			return nil, fmt.Errorf("Pool spell %d has level %d outside 1..7", position, entry.Level)
 		}
 		// Restoration 不在說明書的法術章（它是神殿服務，見 spec 068），
 		// 其餘每一條都要有說明——少了就是轉錄漏了一條，而畫面上看起來

@@ -453,8 +453,8 @@
       "index": 55,
       "name": "Restoration",
       "text": "恢復術",
-      "class": "magic-user",
-      "level": 3
+      "class": "cleric",
+      "level": 7
     }
   ],
   "effect_source": "軟體世界說明書下冊第六章；Restoration 不在該章（它是神殿服務），因此沒有說明"

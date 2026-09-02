@@ -165,3 +165,64 @@ func TestSpellDispatchMessagesMatchTheirSpells(t *testing.T) {
 		t.Fatalf("%d spells carry a message, want 54", messages)
 	}
 }
+
+// `+0`／`+1` 與人工整理的法術目錄逐筆相符：56 個具名法術的職業與等級全中。
+// 目錄是照說明書整理的，表是原版的位元組，兩邊獨立——對得起來才表示欄位
+// 讀對了，而且順帶把目錄鎖在資料上。
+func TestSpellParametersMatchTheCatalogueClassAndLevel(t *testing.T) {
+	table, err := gamepack.ReadDOSSpellParameters(dosZIP)
+	if err != nil {
+		t.Skipf("DOS ZIP unavailable: %v", err)
+	}
+	catalogue, err := gamepack.TraditionalChineseSpells()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for id := 1; id <= gamepack.SpellNameCount; id++ {
+		spell, err := catalogue.SpellByID(uint8(id))
+		if err != nil {
+			t.Fatalf("catalogue has no spell %d: %v", id, err)
+		}
+		want := gamepack.SpellSourceCleric
+		if spell.Class == gamepack.SpellClassMagicUser {
+			want = gamepack.SpellSourceMagicUser
+		}
+		if table[id].Source() != want {
+			t.Fatalf("spell %d (%s) is %v in the table but %s in the catalogue", id, spell.Name, table[id].Source(), spell.Class)
+		}
+		if table[id].Level() != spell.Level {
+			t.Fatalf("spell %d (%s) is level %d in the table but %d in the catalogue", id, spell.Name, table[id].Level(), spell.Level)
+		}
+	}
+	// 57..67 沒有名字，全部是物品效果。
+	for id := gamepack.SpellNameCount + 1; id <= gamepack.SpellDispatchCount; id++ {
+		if table[id].Source() != gamepack.SpellSourceItem {
+			t.Fatalf("unnamed spell %d is %v, want an item effect", id, table[id].Source())
+		}
+	}
+}
+
+// 持續回合數對得上規則書：固定值加每級增量。取幾個原版與 AD&D 完全一致的
+// 來鎖住兩個欄位的位置與先後。
+func TestSpellParameterDurations(t *testing.T) {
+	table, err := gamepack.ReadDOSSpellParameters(dosZIP)
+	if err != nil {
+		t.Skipf("DOS ZIP unavailable: %v", err)
+	}
+	for _, item := range []struct {
+		id, level, want int
+		note            string
+	}{
+		{1, 5, 6, "Bless 固定 6 回合"},
+		{6, 5, 15, "Protection From Evil 每級 3 回合"},
+		{19, 4, 20, "Shield 每級 5 回合"},
+		{22, 3, 30, "Find Traps 固定 3 turn"},
+		{32, 6, 12, "Mirror Image 每級 2 回合"},
+		{48, 5, 8, "Haste 3 加每級 1"},
+		{30, 9, 0, "Invisibility 不自己結束"},
+	} {
+		if got := table[item.id].Duration(item.level); got != item.want {
+			t.Fatalf("%s: spell %d at caster level %d lasts %d, want %d", item.note, item.id, item.level, got, item.want)
+		}
+	}
+}

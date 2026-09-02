@@ -29,9 +29,11 @@ func TestBuiltInSpellNamesMatchTheOriginalTable(t *testing.T) {
 	}
 }
 
-// 原版把兩類法術放在同一張表裡，用順序分組。分組界線與說明書下冊第六章的
-// LEVEL 標題一致，每組的筆數固定。
-func TestSpellGroupsMatchTheManualChapter(t *testing.T) {
+// 原版把兩類法術放在同一張表裡，用順序分組。職業與等級由參數表的 `+0`／`+1`
+// 決定（spec 074），六個玩家分組的界線與說明書下冊第六章的 LEVEL 標題一致。
+// Restoration 是例外：它在說明書的法術章裡沒有條目，參數表把它記成牧師
+// 第 7 級，隊伍碰不到——所以它自己一組。
+func TestSpellGroupsMatchTheOriginalTable(t *testing.T) {
 	catalogue, err := gamepack.TraditionalChineseSpells()
 	if err != nil {
 		t.Fatal(err)
@@ -48,7 +50,8 @@ func TestSpellGroupsMatchTheManualChapter(t *testing.T) {
 		{gamepack.SpellClassCleric, 2, 7, "Find Traps", "Spiritual Hammer"},
 		{gamepack.SpellClassMagicUser, 2, 7, "Detect Invisibility", "Strength"},
 		{gamepack.SpellClassCleric, 3, 9, "Animate Dead", "Bestow Curse"},
-		{gamepack.SpellClassMagicUser, 3, 12, "Blink", "Restoration"},
+		{gamepack.SpellClassMagicUser, 3, 11, "Blink", "Slow"},
+		{gamepack.SpellClassCleric, 7, 1, "Restoration", "Restoration"},
 	} {
 		group := catalogue.ByClassAndLevel(item.class, item.level)
 		if len(group) != item.count {
