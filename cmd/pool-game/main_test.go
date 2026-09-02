@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -170,7 +171,7 @@ func TestF10AndLoadRoundTripECL2SlumsNamespace(t *testing.T) {
 	}
 }
 
-func TestRealSlumsCombatStagesMonsterRecordsWithoutContinuing(t *testing.T) {
+func TestRealSlumsCombatStagesMonsterRecords(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application, err := newApp(zipPath)
 	if err != nil {
@@ -204,11 +205,90 @@ func TestRealSlumsCombatStagesMonsterRecordsWithoutContinuing(t *testing.T) {
 	if got := uint16(0x9900 + session.Machine().PC); got != 0x9E6D || session.Machine().Memory[0x4ABB] != 0 {
 		t.Fatalf("combat staging advanced PC/state to 0x%04X / %d", got, session.Machine().Memory[0x4ABB])
 	}
+	// ENTER 進的是戰術戰鬥，不是把 ECL 推過去；PC 要留在 COMBAT 邊界後的那一條，
+	// 由戰鬥結果決定續不續跑（spec 046 契約 5）。
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}
+	if !application.tacticalPreview || application.tactical == nil {
+		t.Fatal("ENTER did not enter tactical combat")
+	}
 	if got := uint16(0x9900 + session.Machine().PC); got != 0x9E6D {
-		t.Fatalf("ENTER advanced fail-closed combat PC to 0x%04X", got)
+		t.Fatalf("entering combat advanced the ECL PC to 0x%04X", got)
+	}
+}
+
+// 打贏真實的 Slums 遭遇之後，停在 COMBAT 邊界的 ECL session 要真的往下跑。
+// 這是整條垂直鏈裡唯一沒有被單元測試涵蓋的一段：真的 archive、真的 session、
+// 真的怪物記錄，直到戰後腳本繼續為止。
+func TestWinningTheRealSlumsCombatResumesTheECLScript(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(2)
+	if !ok {
+		t.Fatal("ECL2 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 20, 0x9E5D)
+	if err != nil {
+		t.Fatal(err)
+	}
+	member := poolsave.Character{
+		Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
+		AlignmentID: "lawful-good", MaxHP: 12, CurrentHP: 12,
+	}
+	application.mode, application.introDone = modeAdventure, true
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 2
+	application.state.Party = []poolsave.Character{member}
+	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 2, BlockID: 20}, X: 3, Y: 4, Facing: 2}
+	result, err := session.RunUntilEvent(16, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := application.consumeInitialSearch(result); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	state := application.tactical
+	if state == nil {
+		t.Fatal("ENTER did not enter tactical combat")
+	}
+
+	// 把場上的敵人全部打倒——這裡直接改盤面而不是模擬走位，因為要測的是
+	// 「贏了之後會不會續跑」，不是走位本身（走位有自己的測試）。
+	for index := 1; index < len(state.Roster); index++ {
+		if !state.Friendly[index] {
+			state.Roster[index].FootprintClass = 0
+			state.Scores[index] = 0
+			state.States[index] = combat.DyingState
+		}
+	}
+	state.Mover, state.Prompt = 0, false
+	state.endRound(application.rollDice)
+	if !state.Prompt {
+		t.Fatal("clearing the foes did not raise the continue prompt")
+	}
+	if got := uint16(0x9900 + session.Machine().PC); got != 0x9E6D {
+		t.Fatalf("the prompt already advanced the ECL PC to 0x%04X", got)
+	}
+
+	// 答 N 結束戰鬥，戰後腳本才續跑。
+	if err := press(application, ebiten.KeyN); err != nil {
+		t.Fatal(err)
+	}
+	if application.tacticalPreview || application.tactical != nil {
+		t.Fatal("the tactical screen stayed open after the battle ended")
+	}
+	if application.combatActive {
+		t.Fatal("the encounter is still staged after a win")
+	}
+	if got := uint16(0x9900 + session.Machine().PC); got == 0x9E6D {
+		t.Fatal("the post-combat script did not run after the win")
 	}
 }
 
