@@ -1,7 +1,7 @@
 # Spec 069：角色的效果串列（`.spc`）
 
-狀態：CONFORMED（檔案形狀、節點版面、與已裝備魔法物品的對應）；
-DRAFT（節點 `+1`..`+4` 的語意、代碼 `59h`、效果如何影響數值）。
+狀態：CONFORMED（檔案形狀、節點版面、與已裝備魔法物品的對應、十五個代碼的
+顯示名稱）；DRAFT（節點 `+1`..`+4` 的語意、效果如何影響數值）。
 日期：2026-09-03。
 
 ## 它不是記憶的法術
@@ -37,9 +37,33 @@ DRAFT（節點 `+1`..`+4` 的語意、代碼 `59h`、效果如何影響數值）
 | `3Dh` | 戴著 Ring of Fire Resistance（物品型別 `45h`）的角色 | 4 | 0 |
 | `26h` | 戴著 Gauntlets of Ogre Power（型別 `3Fh`）的角色 | 3 | 0 |
 
-一對一、沒有反例，橫跨戰士、牧師與賊。這是 `strong inference`：
-它證明代碼隨已裝備的魔法物品產生，但沒有證明代碼**本身**就是那件物品的
-效果編號——那要讀到寫入串列的那段程式碼才算數。
+一對一、沒有反例，橫跨戰士、牧師與賊。
+
+**`3Dh` 已由原版的字串證實**：overlay-15 `0F9Ch..12FFh` 那串
+`cmp ax, 碼` 的顯示名稱鏈裡，`3Dh` 字面上就叫 "Fire Resistance"
+（見下一節）。`26h` 不在那串鏈裡——Gauntlets of Ogre Power 改的是力量，
+顯示在能力值上，不掛具名狀態，所以那一條仍是 `strong inference`。
+
+## 顯示名稱：overlay-15 的比較鏈
+
+原版把效果碼換成字串的地方在 overlay-15 `0F9Ch..12FFh`，一串
+`cmp ax, 碼` / `mov $字串位移, %di`，字串內嵌在同一支 overlay 的
+`0E93h..0F91h`（Turbo Pascal 短字串，長度在前）。十五個碼有名稱：
+
+| 碼 | 名稱 | 碼 | 名稱 |
+|---:|---|---:|---|
+| `04h` | Studying Manual of Bodily Health | `37h` | Poisoned |
+| `07h` | Training with Manual of Bodily Health | `3Bh` | Regenerating |
+| `1Bh` | Feather Fall | `3Dh` | Fire Resistance |
+| `1Fh` | Helpless | `47h` | Invisible |
+| `23h` | Prayer | `48h` | Camouflaged |
+| `2Ch` | Cause Disease | `59h` | Displaced |
+| `32h` | Dreaded Mummy Disease | | |
+| `35h` | Funky-- | | |
+| `36h` | Repulsed | | |
+
+沒列到的碼**沒有顯示名稱**，那是原版的答案，不是這裡漏了。
+表在 `internal/gamepack/effect_names.zh-TW.json`。
 
 ## 掛上與拿掉
 
@@ -93,12 +117,15 @@ overlay-22 那五處就是效果被掛上去的地方。`1344h` 那一處在函�
 確定的是形狀：效果節點的數值是這樣擲出來的，掛上去的是「記錄 ＋ 一個擲骰
 結果 ＋ 另一個 byte」。
 
-## 未解：代碼 `59h`
+## 代碼 `59h` ＝ Displaced
 
-兩個 CARRY（`chrdatd6`、`chrdate6`）都有 `59h`，而且只有他們有。
-兩人共同持有的是 Quarter Staff 與 Ring Of Protection，但 `chrdatb6` 的 CARRY
-同樣持有這兩件、卻沒有 `.spc`；TARRY（`chrdatd5`）持有 Cloak of Displacement
-卻沒有 `59h`。**目前沒有一個持有物的組合能解釋它**，因此不猜。
+原版的名稱鏈把 `59h` 叫 "Displaced"，對應的裝備是 Cloak of Displacement。
+
+**但持有它不等於掛著它**：TARRY（`chrdatd5`）身上有一件 Cloak of Displacement
+卻沒有 `59h`，而兩個 CARRY（`chrdatd6`、`chrdate6`）有 `59h`。
+所以這個代碼跟的是「裝備中」而不是「持有」，與 `3Dh`／`26h` 那兩條
+（比對的就是**裝備中**的魔法物品）同一套。這一點還沒讀到寫入串列的程式碼，
+標 `strong inference`。
 
 節點內容也還沒閉合：`3Dh` 的四個 byte 是 `00 00 0C 00`，`59h` 在兩個 CARRY 上
 分別是 `00 00 0C 00` 與 `00 00 1C 00`。差異與等級（6 與 5）對不上明顯的關係。

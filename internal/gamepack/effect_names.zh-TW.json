@@ -1,0 +1,22 @@
+{
+  "schema": "pool-effect-names/1",
+  "locale": "zh-TW",
+  "source": "overlay-15 0F9Ch..12FFh 的比較鏈，字串在同一支 overlay 的 0E93h..0F91h",
+  "entries": [
+    {"code": 4, "name": "Studying Manual of Bodily Health", "text": "研讀健體手冊"},
+    {"code": 7, "name": "Training with Manual of Bodily Health", "text": "依健體手冊訓練"},
+    {"code": 27, "name": "Feather Fall", "text": "羽落術"},
+    {"code": 31, "name": "Helpless", "text": "無助"},
+    {"code": 35, "name": "Prayer", "text": "祈禱術"},
+    {"code": 44, "name": "Cause Disease", "text": "致病術"},
+    {"code": 50, "name": "Dreaded Mummy Disease", "text": "木乃伊惡疾"},
+    {"code": 53, "name": "Funky--", "text": "Funky--"},
+    {"code": 54, "name": "Repulsed", "text": "被驅離"},
+    {"code": 55, "name": "Poisoned", "text": "中毒"},
+    {"code": 59, "name": "Regenerating", "text": "再生中"},
+    {"code": 61, "name": "Fire Resistance", "text": "抗火"},
+    {"code": 71, "name": "Invisible", "text": "隱形"},
+    {"code": 72, "name": "Camouflaged", "text": "偽裝"},
+    {"code": 89, "name": "Displaced", "text": "幻影移位"}
+  ]
+}
