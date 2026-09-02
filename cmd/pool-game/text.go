@@ -56,6 +56,8 @@ var messages = map[messageID][2]string{
 	msgSpellsSaveSpell:           {"save vs. spell", "可豁免（法術）"},
 	msgSpellsSavePoison:          {"save vs. poison", "可豁免（毒）"},
 	msgSpellsTouch:               {"must hit", "須擲中"},
+	msgEncounterDistance:         {"The monsters are %d squares away.", "怪物在 %d 格之外。"},
+	msgEncounterPrompt:           {"Choose how to meet them.", "選擇要怎麼應對。"},
 	msgShopTitle:      {"SHOP", "商店"},
 	msgShopStatus:     {"Original Pool shop service: %d item(s) in stock.", "原版商店服務：架上 %d 件。"},
 	msgShopBuyer:      {"Buyer %d/%d  %s  gold %d", "買家 %d/%d　%s　金幣 %d"},
@@ -417,6 +419,8 @@ const (
 	msgSpellsTouch
 	msgSpellsRangeFixed
 	msgSpellsRangePerLevel
+	msgEncounterDistance
+	msgEncounterPrompt
 )
 
 // 商店畫面的字串。

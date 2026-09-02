@@ -107,6 +107,7 @@ type app struct {
 	journal          *journalState
 	itemTypes        *gamepack.ItemTypeTable
 	spellParameters  []gamepack.SpellParameters
+	encounter        *encounterState
 	spells           *spellState
 	spellsOpen       bool
 	shop             *shopState
@@ -602,6 +603,9 @@ func (a *app) Update() error {
 					}
 				}
 				if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+					if a.encounter != nil {
+						return a.selectEncounterOption()
+					}
 					if a.templeActive {
 						return a.selectSuneTempleOption()
 					}
@@ -863,6 +867,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if a.isSuneTempleBoundary(result) {
 			return a.enterSuneTemple()
+		}
+		if event, ok := encounterEvent(result); ok {
+			return a.enterEncounter(event)
 		}
 		return a.pauseInitialCellResult(result)
 	}

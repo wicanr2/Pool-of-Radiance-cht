@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -129,4 +131,80 @@ func TestNormalKeysReachTheFirstDungeonStep(t *testing.T) {
 	if restored.spawn.X == resumed.X && restored.spawn.Y == resumed.Y {
 		t.Fatalf("the restored party could not move: %q", restored.statusLine)
 	}
+}
+
+// 只用按鍵走到第一場戰鬥。路線是固定亂數種子的漫遊，所以每次都一樣：
+// 隊伍會經過渡船抵達索寇要塞，觸發 `29h` 的遭遇選單，選 COMBAT 之後 ECL
+// 依結果碼分支，把原版的骷髏與殭屍記錄擺上場。
+func TestNormalKeysReachTheFirstCombat(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
+		AlignmentID: "lawful-good", Abilities: [6]int{16, 10, 10, 13, 10, 10}, MaxHP: 8, CurrentHP: 8,
+		PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application.state = poolsave.State{Schema: poolsave.Schema,
+		CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}
+	application.saveState = func(poolsave.State) error { return nil }
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 20000 && !application.introDone; tick++ {
+		if application.introWaiting || application.tourPage >= 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		application.keys = scriptedKeys{}
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !application.introDone {
+		t.Fatal("the opening never finished")
+	}
+
+	random := rand.New(rand.NewSource(7))
+	sawEncounter := false
+	for step := 0; step < 4000; step++ {
+		if application.combatActive {
+			if !sawEncounter {
+				t.Fatal("combat started without the encounter menu")
+			}
+			if !strings.Contains(application.eventText, "SKELETON") || !strings.Contains(application.eventText, "ZOMBIE") {
+				t.Fatalf("staged monsters are %q", application.eventText)
+			}
+			if application.spawn.Map.Archive != 4 {
+				t.Fatalf("combat happened on archive %d", application.spawn.Map.Archive)
+			}
+			return
+		}
+		var err error
+		switch {
+		case application.encounter != nil:
+			sawEncounter = true
+			if len(application.cellMenuOptions) != 4 || application.cellMenuOptions[0] != "COMBAT" {
+				t.Fatalf("encounter menu is %v", application.cellMenuOptions)
+			}
+			err = press(application, ebiten.KeyEnter) // COMBAT
+		case application.cellWaitingMenu, application.cellEventPending:
+			err = press(application, ebiten.KeyEnter)
+		default:
+			if random.Intn(3) == 0 {
+				err = press(application, ebiten.KeyArrowRight)
+			} else {
+				err = press(application, ebiten.KeyArrowUp)
+			}
+		}
+		if err != nil {
+			t.Fatalf("step %d at %+v: %v", step, application.spawn, err)
+		}
+	}
+	t.Fatalf("no combat in 4000 steps; last position %+v, encounter seen=%v", application.spawn, sawEncounter)
 }

@@ -249,6 +249,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x0E: true, // PICTURE
 		0x21: true, // LOAD FILES / title resource boundary
 		0x24: true, // Pool service / encounter boundary
+		0x29: true, // ENCOUNTER MENU（spec 078；前端一定要接，不能讓它靜靜跳過）
 		0x2D: true, // CALL
 		0x31: true, // SPRITE OFF
 		0x37: true, // LOAD PIECES / title resource boundary

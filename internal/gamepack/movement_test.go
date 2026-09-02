@@ -21,9 +21,9 @@ func TestMovementRateMatchesThePremadeCharacters(t *testing.T) {
 		note string
 	}{
 		{"chrdatd1", 3, "戰士 8，Plate Mail +3，負重超過寬容 1024"},
-		{"chrdatd2", 9, "盔甲重 450 有加值 → 6+3"},
+		{"chrdatd2", 9, "盔甲重 450 有加值，6 加 3"},
 		{"chrdatd3", 9, "同上"},
-		{"chrdatd4", 12, "盔甲重 150 → 基礎值，負重在寬容內"},
+		{"chrdatd4", 12, "盔甲重 150 用基礎值，負重在寬容內"},
 		{"chrdatd5", 3, "法師，無盔甲，負重超過寬容 1024"},
 		{"chrdatd6", 3, "同上"},
 		{"chrdatd7", 12, "盔甲重 150 無加值，負重輕"},

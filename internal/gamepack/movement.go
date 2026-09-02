@@ -157,15 +157,12 @@ func EncumbranceMovementRate(carried, allowance, rate int) int {
 	return rate
 }
 
-// MovementRate 走完整條管線。items 是角色的物品記錄，types 是物品型別表。
+// MovementRateFor 走完整條管線：基礎值 → 盔甲 → 負重。
 //
 // 盔甲那一段只看**穿戴中**的物品：`01F8h` 自己不檢查 `+34h`，是呼叫端挑的；
 // 沒穿在身上的盔甲不該拖慢腳步。
-func MovementRate(record []byte, items [][]byte, types *ItemTypeTable) (int, error) {
-	if len(record) <= CurrentMovementOffset {
-		return 0, fmt.Errorf("character record has %d bytes, movement needs %d", len(record), CurrentMovementOffset+1)
-	}
-	rate := int(record[BaseMovementOffset])
+func MovementRateFor(base, strength, exceptional, carried int, items [][]byte, types *ItemTypeTable) (int, error) {
+	rate := base
 	for index, item := range items {
 		if len(item) <= ItemWeightOffset+1 {
 			return 0, fmt.Errorf("item %d has %d bytes", index, len(item))
@@ -181,12 +178,21 @@ func MovementRate(record []byte, items [][]byte, types *ItemTypeTable) (int, err
 			continue
 		}
 		rate = ArmourMovementRate(int(binary.LittleEndian.Uint16(item[ItemWeightOffset:])),
-			int(int8(item[ItemPlusOffset])), int(record[BaseMovementOffset]))
+			int(int8(item[ItemPlusOffset])), base)
 	}
-	index, err := StrengthTableIndex(int(record[StrengthOffset]), int(record[ExceptionalStrengthOffset]))
+	index, err := StrengthTableIndex(strength, exceptional)
 	if err != nil {
 		return 0, err
 	}
-	carried := int(binary.LittleEndian.Uint16(record[CarriedWeightOffset:]))
 	return EncumbranceMovementRate(carried, StrengthWeightAllowance(int(index)), rate), nil
+}
+
+// MovementRate 從原版 285-byte 記錄與它的物品算移動力。
+func MovementRate(record []byte, items [][]byte, types *ItemTypeTable) (int, error) {
+	if len(record) <= CurrentMovementOffset {
+		return 0, fmt.Errorf("character record has %d bytes, movement needs %d", len(record), CurrentMovementOffset+1)
+	}
+	carried := int(binary.LittleEndian.Uint16(record[CarriedWeightOffset:]))
+	return MovementRateFor(int(record[BaseMovementOffset]), int(record[StrengthOffset]),
+		int(record[ExceptionalStrengthOffset]), carried, items, types)
 }
