@@ -73,5 +73,34 @@ if cmp -s /tmp/title.png docs/screenshots/pool-remake-chinese-menu.png; then
   tail -20 /tmp/game.log >&2 || true
   exit 1
 fi
-sha256sum docs/screenshots/pool-remake-chinese-menu.png
+# C 進建角：種族 → 性別 → 職業，各拍一張能證明選單項目也是中文的。
+pulse c
+sleep 0.6
+shot docs/screenshots/pool-remake-chinese-race.png
+if cmp -s docs/screenshots/pool-remake-chinese-menu.png docs/screenshots/pool-remake-chinese-race.png; then
+  echo "C did not open character creation" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
+for key in Return Return; do
+  pulse "$key"
+done
+sleep 0.6
+shot docs/screenshots/pool-remake-chinese-class.png
+if cmp -s docs/screenshots/pool-remake-chinese-race.png docs/screenshots/pool-remake-chinese-class.png; then
+  echo "the creation flow did not reach the class picker" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
+for key in Return Return; do
+  pulse "$key"
+done
+sleep 0.8
+shot docs/screenshots/pool-remake-chinese-sheet.png
+if cmp -s docs/screenshots/pool-remake-chinese-class.png docs/screenshots/pool-remake-chinese-sheet.png; then
+  echo "the creation flow did not reach the character sheet" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
+sha256sum docs/screenshots/pool-remake-chinese-*.png
 '

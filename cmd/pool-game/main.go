@@ -1911,32 +1911,36 @@ func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepa
 func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	drawFrame(screen, foreground, accent)
 	if a.flow.Stage == creation.StageRoll {
-		drawText(screen, "CHARACTER SHEET", 230, 42, accent)
+		drawText(screen, a.text(msgCharacterSheet), 230, 42, accent)
 		if a.rolled == nil {
-			drawText(screen, "Rolling...", 40, 82, foreground)
+			drawText(screen, a.text(msgRolling), 40, 82, foreground)
 			return
 		}
 		value := a.rolled
-		drawText(screen, fmt.Sprintf("%s  %s  %s", a.flow.SelectedGender().Label, a.flow.SelectedRace().Label, a.flow.SelectedClass().Label), 48, 82, foreground)
-		drawText(screen, fmt.Sprintf("AGE %d", value.Age), 48, 110, foreground)
-		for index, name := range []string{"STR", "INT", "WIS", "DEX", "CON", "CHA"} {
+		gender := a.optionText(a.flow.SelectedGender().ID, a.flow.SelectedGender().Label)
+		race := a.optionText(a.flow.SelectedRace().ID, a.flow.SelectedRace().Label)
+		class := a.optionText(a.flow.SelectedClass().ID, a.flow.SelectedClass().Label)
+		drawText(screen, fmt.Sprintf("%s  %s  %s", gender, race, class), 48, 82, foreground)
+		drawText(screen, fmt.Sprintf(a.text(msgAge), value.Age), 48, 110, foreground)
+		for index := range value.Abilities {
 			extra := ""
 			if index == 0 && value.ExceptionalStrength != 0 {
 				extra = fmt.Sprintf("/%02d", value.ExceptionalStrength)
 			}
-			drawText(screen, fmt.Sprintf("%-3s %2d%s", name, value.Abilities[index], extra), 48+(index/3)*180, 150+(index%3)*28, foreground)
+			drawText(screen, fmt.Sprintf("%s %2d%s", a.abilityName(index), value.Abilities[index], extra),
+				48+(index/3)*180, 150+(index%3)*28, foreground)
 		}
-		drawText(screen, fmt.Sprintf("GOLD %d     HP %d/%d", value.Gold, value.HP, value.HP), 48, 252, foreground)
-		drawText(screen, "KEEP THIS CHARACTER?  ENTER/Y = YES   R = REROLL", 48, 302, accent)
+		drawText(screen, fmt.Sprintf(a.text(msgGoldAndHP), value.Gold, value.HP, value.HP), 48, 252, foreground)
+		drawText(screen, a.text(msgKeepCharacter), 48, 302, accent)
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 48, 334, foreground)
 		}
 		return
 	}
 	if a.flow.Stage == creation.StageName {
-		drawText(screen, "CHARACTER NAME:", 160, 128, accent)
+		drawText(screen, a.text(msgCharacterName), 160, 128, accent)
 		drawText(screen, a.nameInput+"_", 160, 164, foreground)
-		drawText(screen, "1-15 CHARACTERS; ENTER ACCEPTS", 160, 214, foreground)
+		drawText(screen, a.text(msgNameRule), 160, 214, foreground)
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 48, 334, foreground)
 		}
@@ -1977,7 +1981,7 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 			screen.DrawImage(icon, op)
 		}
 		drawText(screen, "ALL DOS OPTIONS ARE KEPT; DIRECT KEYS GUIDE THIS FIRST SLICE.", 48, 298, foreground)
-		drawText(screen, creation.HintFor("icon"), 48, 332, foreground)
+		drawText(screen, a.hint("icon"), 48, 332, foreground)
 		return
 	}
 	if a.flow.Stage == creation.StageIconConfirm {
@@ -1989,17 +1993,24 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		}
 		return
 	}
-	title := map[creation.Stage]string{creation.StageRace: "PICK RACE", creation.StageGender: "PICK GENDER", creation.StageClass: "PICK CLASS", creation.StageAlignment: "PICK ALIGNMENT"}[a.flow.Stage]
-	drawText(screen, title, 250, 42, accent)
+	title := map[creation.Stage]messageID{
+		creation.StageRace: msgStageRace, creation.StageGender: msgStageGender,
+		creation.StageClass: msgStageClass, creation.StageAlignment: msgStageAlignment,
+	}[a.flow.Stage]
+	drawText(screen, a.text(title), 250, 42, accent)
+	ids := a.flow.OptionIDs()
 	for index, option := range a.flow.Options() {
 		prefix := "  "
 		ink := foreground
 		if index == a.cursor {
 			prefix, ink = "> ", accent
 		}
+		if index < len(ids) {
+			option = a.optionText(ids[index], option)
+		}
 		drawText(screen, prefix+option, 128, 82+index*22, ink)
 	}
-	drawText(screen, creation.HintFor(stageName(a.flow.Stage)), 32, 346, foreground)
+	drawText(screen, a.hint(stageName(a.flow.Stage)), 32, 346, foreground)
 }
 
 func stageName(stage creation.Stage) string {

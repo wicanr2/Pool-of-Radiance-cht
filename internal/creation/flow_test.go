@@ -105,3 +105,20 @@ func TestFlowContinuesThroughOriginalNameAndPortraitOrder(t *testing.T) {
 		t.Fatalf("icon reject: stage=%d err=%v", flow.Stage, err)
 	}
 }
+
+// OptionIDs 要與 Options 一一對應，否則 UI 會把譯名對到錯的選項。
+func TestOptionIDsLineUpWithOptions(t *testing.T) {
+	flow := NewFlow()
+	for _, stage := range []Stage{StageRace, StageGender, StageClass, StageAlignment} {
+		flow.Stage = stage
+		labels, ids := flow.Options(), flow.OptionIDs()
+		if len(labels) != len(ids) || len(ids) == 0 {
+			t.Fatalf("stage %v: %d labels, %d ids", stage, len(labels), len(ids))
+		}
+		for _, id := range ids {
+			if id == "" {
+				t.Fatalf("stage %v has an empty option id", stage)
+			}
+		}
+	}
+}

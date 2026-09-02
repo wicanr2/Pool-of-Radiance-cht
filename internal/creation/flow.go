@@ -57,6 +57,31 @@ func (flow Flow) Options() []string {
 	return result
 }
 
+// OptionIDs 與 Options 一一對應，回傳每個選項的穩定 ID。UI 靠 ID 決定譯名，
+// 不靠英文標籤字串——標籤是給人看的，改了不該連帶改壞翻譯對照。
+func (flow Flow) OptionIDs() []string {
+	var result []string
+	switch flow.Stage {
+	case StageRace:
+		for _, value := range Races {
+			result = append(result, value.ID)
+		}
+	case StageGender:
+		for _, value := range Genders {
+			result = append(result, value.ID)
+		}
+	case StageClass:
+		for _, value := range ClassesForRace(Races[flow.RaceIndex].ID) {
+			result = append(result, value.ID)
+		}
+	case StageAlignment:
+		for _, value := range Alignments {
+			result = append(result, value.ID)
+		}
+	}
+	return result
+}
+
 func (flow *Flow) Select(index int) error {
 	options := flow.Options()
 	if index < 0 || index >= len(options) {
