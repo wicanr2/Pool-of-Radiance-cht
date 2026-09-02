@@ -90,6 +90,21 @@ DRAFT（兩冊尚未逐條回對掃描做第二輪覆核；corpus 尚未接進�
 - 掃描檔中 `Pic0033`、`Pic0034`、`Pic0064-left` 是雜誌廣告，`Pic0064-right` 是下冊
   封面，`Pic0065`–`Pic0068` 是磁片標籤與包裝盒照片，都不屬說明書正文。
 
+## 與遊戲資料的對接驗證（2026-09-02）
+
+轉錄的內容已經有兩處實際對上原版資料，說明 corpus 不只是文獻整理：
+
+1. **議會公告字號**。既有測試 `TestCityHallCommissionSelectsOriginalProclamation`
+   以 VM 實跑取得遊戲依 `4AC1h` 派發的委託序列：`CI`、`CXXVI AND CX`、`CXXXIV`、
+   `CLIV`、`CXIV`、`CCIV`、`CXXIX`、`CCI`、`CXIV`。這些字號全部落在上冊第四章轉錄的
+   18 則公告（`LIX`…`CCXIV`）之內，沒有一個落空。遊戲派發的是說明書印出的那批公告。
+2. **Journal 條目編號**。《軟體世界》創刊號攻略指出曼多爾圖書館的房間分別指向
+   Journal Entry 10、19 與線索報導 21、8、37、7，都在轉錄的線索報導 1–58 範圍內
+   （見 [`walkthrough-notes-softworld-001.md`](../reference/walkthrough-notes-softworld-001.md)）。
+
+兩者都還沒有做「條目內容逐字對回遊戲畫面」的驗證：目前證明的是**編號集合相符**，
+不是每一條的文字都與遊戲顯示一致。接線時仍要逐條比對。
+
 ## 驗收
 
 - 每個條目都帶：冊別、章節、頁碼、來源 `Pic` 編號、條目 ID 與繁中全文。
