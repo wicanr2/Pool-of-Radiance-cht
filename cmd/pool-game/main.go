@@ -462,7 +462,18 @@ func (a *app) Update() error {
 		if a.introDone {
 			if a.cellEventPending {
 				if a.combatActive {
-					a.statusLine = "A real Pool encounter is staged; tactical combat remains fail-closed."
+					if a.justPressed(ebiten.KeyEnter) && !a.tacticalPreview {
+						if err := a.enterTacticalPreview(); err != nil {
+							a.statusLine = err.Error()
+							return nil
+						}
+						a.tacticalPreview = true
+						a.statusLine = "Tactical combat entered; deployment and party combat stats are provisional."
+						return nil
+					}
+					if !a.tacticalPreview {
+						a.statusLine = "A real Pool encounter is staged; press ENTER to enter tactical combat."
+					}
 					return nil
 				}
 				if a.treasureActive && a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {

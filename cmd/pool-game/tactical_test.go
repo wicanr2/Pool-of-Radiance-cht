@@ -212,3 +212,18 @@ func TestCombatOutcomeReportsDefeatWhenThePartyIsGone(t *testing.T) {
 		t.Fatalf("over %v outcome %v, want defeat", over, outcome)
 	}
 }
+
+// Spec 046 契約 5：戰敗不得續跑戰後 ECL。這個測試刻意不給 eventSession——
+// 一旦 defeat 走到續跑就會 panic，所以它同時證明那條路徑碰不到 session。
+func TestFinishCombatDoesNotRunThePostCombatScriptOnDefeat(t *testing.T) {
+	a := &app{combatActive: true, tacticalPreview: true, tactical: &tacticalState{}}
+	if err := a.finishCombat(combat.CombatDefeat); err != nil {
+		t.Fatal(err)
+	}
+	if !a.combatActive {
+		t.Fatal("defeat cleared the encounter; the post-combat script must not be reached")
+	}
+	if a.tacticalPreview || a.tactical != nil {
+		t.Fatal("the tactical screen stayed open after defeat")
+	}
+}

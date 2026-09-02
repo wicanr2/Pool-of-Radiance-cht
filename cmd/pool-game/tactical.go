@@ -232,6 +232,8 @@ type tacticalState struct {
 	StatsSource  string
 	Round        int
 	Mover        uint8
+	Finished     bool
+	Outcome      combat.CombatOutcome
 	BudgetSource string
 	Status       string
 }
@@ -442,6 +444,9 @@ func (a *app) tacticalInput() error {
 			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
 				return err
 			}
+			if state.Finished {
+				return a.finishCombat(state.Outcome)
+			}
 		case outcome.Action == combat.MovementBlocked:
 			state.Status = "BLOCKED"
 		default:
@@ -515,6 +520,7 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	state.Scores[target] = 0
 	state.Status = fmt.Sprintf("%d IS DOWN", target)
 	if over, outcome := state.combatOutcome(); over {
+		state.Finished, state.Outcome = true, outcome
 		switch outcome {
 		case combat.CombatVictory:
 			state.Status = "VICTORY"
@@ -522,6 +528,25 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 			state.Status = "DEFEAT"
 		}
 	}
+	return nil
+}
+
+// finishCombat 依 spec 046 契約 5 處理戰後：只有勝利才從 COMBAT 邊界停下的 PC
+// 續跑戰後腳本；戰敗不得續跑，也不得用自動勝利代替戰鬥結果。
+func (a *app) finishCombat(outcome combat.CombatOutcome) error {
+	a.tacticalPreview, a.tactical = false, nil
+	if outcome != combat.CombatVictory {
+		a.statusLine = "Party defeated; the post-combat script does not run."
+		return nil
+	}
+	a.combatActive, a.combatMonsters = false, nil
+	a.cellEventPending, a.cellWaitingMenu = false, false
+	a.eventText, a.eventLabel = "", ""
+	result, err := a.eventSession.RunUntilEvent(4096, nil, true)
+	if err != nil {
+		return fmt.Errorf("continue after Pool combat: %w", err)
+	}
+	a.applyCellECLResult(result)
 	return nil
 }
 
