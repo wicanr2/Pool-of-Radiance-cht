@@ -75,6 +75,44 @@ func (a *app) spellsInput() {
 	}
 }
 
+// spellFacts 把參數表裡讀得出證據的三個欄位排成一行：持續、豁免、命中。
+func (a *app) spellFacts(spell gamepack.Spell) string {
+	id := spell.Index + 1
+	if id < 1 || id >= len(a.spellParameters) {
+		return ""
+	}
+	record := a.spellParameters[id]
+	fixed, perLevel := record.Duration(0), record.Duration(1)-record.Duration(0)
+	var duration string
+	switch {
+	case fixed > 0 && perLevel > 0:
+		duration = fmt.Sprintf(a.text(msgSpellsDurationBoth), fixed, perLevel)
+	case fixed > 0:
+		duration = fmt.Sprintf(a.text(msgSpellsDurationFixed), fixed)
+	case perLevel > 0:
+		duration = fmt.Sprintf(a.text(msgSpellsDurationPerLevel), perLevel)
+	default:
+		duration = a.text(msgSpellsDurationUntilBroken)
+	}
+	save := a.text(msgSpellsSaveNone)
+	if record.AllowsSavingThrow() {
+		save = a.text(msgSpellsSaveSpell)
+		if record.SaveCategory() == gamepack.SaveParalyzation {
+			save = a.text(msgSpellsSavePoison)
+		}
+	}
+	// 中文用全形空白分隔，英文用兩個半形——這是排版，不是可翻譯的字串。
+	separator := "  "
+	if a.language == languageTraditionalChinese {
+		separator = "　"
+	}
+	line := duration + separator + save
+	if record.RequiresAttackRoll() {
+		line += separator + a.text(msgSpellsTouch)
+	}
+	return line
+}
+
 func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
 	state := a.spells
 	for y := 40; y < 372; y++ {
@@ -126,6 +164,10 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 			}
 			drawText(screen, line, spellTextLeft, 258+index*spellLineHeight, foreground)
 		}
+	}
+	// 這一行的三件事全部來自原版的參數表（spec 074），不是說明書。
+	if state.cursor < len(group) {
+		drawText(screen, a.spellFacts(group[state.cursor]), spellTextLeft, 316, foreground)
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgSpellsCount), len(group)), spellTextLeft, 336, foreground)
 	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, 356, accent)

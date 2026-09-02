@@ -106,6 +106,7 @@ type app struct {
 	tactical         *tacticalState
 	journal          *journalState
 	itemTypes        *gamepack.ItemTypeTable
+	spellParameters  []gamepack.SpellParameters
 	spells           *spellState
 	spellsOpen       bool
 	shop             *shopState
@@ -228,6 +229,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.initialEvent = &initialEvent
 	application.itemTypes = itemTypes
+	spellParameters, err := gamepack.ReadDOSSpellParameters(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.spellParameters = spellParameters
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
 	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
