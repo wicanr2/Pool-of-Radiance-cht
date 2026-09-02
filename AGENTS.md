@@ -199,6 +199,13 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
 「是否改變玩家體驗或目前交付 gate」；否則留最小定位與證據等級，
 不讓無關 helper 把收尾變成無限反組譯。
 
+**用腳本改 Markdown 一律先驗錨點再取代**：`assert s.count(old) == 1`，
+然後才 `s.replace(old, new)`。錨點對不上時 `str.replace` 不會報錯，
+空字串錨點更會把新內容插進**每一個字元之間**——檔案照樣是合法 Markdown、
+`head` 與 `tail` 看起來都正常，只有大小會從幾十 KB 變成幾十 MB。
+同一批 commit 因此可能一路把它推上去而沒人察覺。改完看一眼 `wc -c` 或
+`git diff --stat` 的行數是第二道關。
+
 ## 10. 打包、授權與推廣片
 
 - 所有封包、smoke、推廣片、影音 metadata 與 SHA-256 集中在
