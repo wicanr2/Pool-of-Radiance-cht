@@ -1,5 +1,5 @@
 {
-  "schema": "pool-spell-names/1",
+  "schema": "pool-spell-names/2",
   "locale": "zh-TW",
   "source": "START.EXE 41052..43348 (56 entries, 41-byte stride)",
   "entries": [
@@ -8,385 +8,446 @@
       "name": "Bless",
       "text": "祝福術",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "可用於平常紮營或戰鬥時但只對不在戰鬥狀態的人物有效，此法術可將隊員們的 THAC0 降低一個數字，並將特殊隊員的士氣加 1，可持續 6 個普通回合（1 小時）。若你知道即將面臨一場大戰，可先紮營並使用此法術再去迎戰。"
     },
     {
       "index": 1,
       "name": "Curse",
       "text": "咀咒術",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "和祝福術正好相反，可增加敵人的 THAC0 並將他們的士氣降 1。此法術只能在戰鬥中使用，可持續 6 個戰鬥回合。"
     },
     {
       "index": 2,
       "name": "Cure Light Wounds",
       "text": "治療輕傷",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "隨時都可使用的法術，但在戰鬥中施術者必須位在受術者的旁邊。可恢復 1～8 點的生命力。此法術立即生效。"
     },
     {
       "index": 3,
       "name": "Cause Light Wounds",
       "text": "引起輕傷",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "這個戰鬥用法術可對位於施術者身旁的一名被瞄準的敵人造成 1～8 點的傷害。"
     },
     {
       "index": 4,
       "name": "Detect Magic",
       "text": "搜尋魔法物品",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "和「搜尋邪惡」（Detect Evil）很類似，但它只能持續1 分鐘。它可以查出一個 3×1 方格的區域內之所有魔法物品，但卻無法顯示出是何類的魔法。"
     },
     {
       "index": 5,
       "name": "Protection From Evil",
       "text": "免受邪惡侵害",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "這項法術可以在戰鬥中施展，或是預知有大戰要發生時先紮營施展它。它可在隊員面對邪惡生物的攻擊時降低某名隊員 2 點 AC，並使該隊員對此生物的攻擊之閃躲率增加 2。受術者必須位在施術者旁邊（包括施術者本身）。本法術持續時間是施術者等級×3 個戰鬥回合。"
     },
     {
       "index": 6,
       "name": "Protection from Good",
       "text": "免受善良侵害",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "效用和「免受邪惡侵害」相同，不過本法術僅對來自善良生物的攻擊有效。"
     },
     {
       "index": 7,
       "name": "Resist Cold",
       "text": "耐冰術",
       "class": "cleric",
-      "level": 1
+      "level": 1,
+      "effect": "使一名隊員能夠抵禦寒冷的襲擊，最冷可至華氏 0 度的低溫，並加倍他對抗以冷為基礎的攻擊之閃躲率。本法術持續時間是施術者等級×1 個戰鬥回合，受術者必須在施術者的旁邊。"
     },
     {
       "index": 8,
       "name": "Burning Hands",
       "text": "燃燒之手",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "這個戰鬥用法術可給予一名位在施術者身旁的敵人（1×施術者等級）點的傷害。"
     },
     {
       "index": 9,
       "name": "Charm Person",
       "text": "迷惑術",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "控制一個類人生物使其成為施術者的朋友與同盟，被控制的生物可能在幾天或幾星期後再度清醒，視他的智慧高低而定；你永遠無法知道他被迷惑得多深。此時假如隊伍中尚有空位，他會加入隊伍成為一名 NPC，接受施術者的控制。"
     },
     {
       "index": 10,
       "name": "Detect Magic",
       "text": "搜尋魔法物品",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "同牧師神術的同名法術，但可持續時間＝20×施術者等級（分鐘）。"
     },
     {
       "index": 11,
       "name": "Enlarge",
       "text": "巨大術",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "可在紮營或戰鬥時施展，持續的戰鬥回合數＝1×施術者等級。還活著的受術者之體型會加大（20%×施術者等級），可把一個原本矮小的類人生物變成一隻巨大的食人鬼，其體型（Size）和力量都會隨之提昇。一個受術者只能接受一次巨大術，第二次的巨大術將會完全無效。假如受術者不願意接受這個法術，法術的效力可能會減弱。"
     },
     {
       "index": 12,
       "name": "Reduce",
       "text": "縮小術",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "和巨大術正好相反，也用於消除巨大術的效用。若受術者不願接受，他仍有躲過法術的機會。若沒能躲過，他的體型大小、力量和移動力都會變小。"
     },
     {
       "index": 13,
       "name": "Friends",
       "text": "友好術",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "這個戰鬥用法術影響任何位在一個圓形地區內的人，地區的大小隨著魔法師的等級高低而增大。任何在圓形範圍內而又沒能逃過法術效果的人，都會將施術者的魅力高估 2～8 點，即使能躲過，他也會認為自己的魅力少了 1～4 點。本法術可持續的戰鬥回合數＝1×施術者等級。"
     },
     {
       "index": 14,
       "name": "Magic Missile",
       "text": "魔法飛彈",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "這個戰鬥用法術對指定的遠程目標造成 2～5 點的傷害，並且完全無法閃躲。魔法師每昇兩級，施展本法術就可多擲出一個魔法飛彈，如第 3 級或第 4 級的法師可擲出 2 個魔法飛彈，第 5 或 6 級則可擲出 3 個。所有的魔法飛彈在施展時都會立即射出。"
     },
     {
       "index": 15,
       "name": "Protection From Evil",
       "text": "免受邪惡侵害",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "和神術中的同名法術完全相同，但可持續的戰鬥回合數＝2×施術者等級。"
     },
     {
       "index": 16,
       "name": "Protection From Good",
       "text": "免受善良侵害",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "和神術中的同名法術完全相同，但可持續的戰鬥回合數＝2×施術者等級。"
     },
     {
       "index": 17,
       "name": "Read Magic",
       "text": "閱讀魔法",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "本法術僅能在紮營時施展，用以閱讀魔法師（不是牧師）的卷軸上記載之隱藏魔法，可持續的時間＝20×施術者等級（分鐘）。只有被施展過此法術的魔法師卷軸才能直接用來施法。"
     },
     {
       "index": 18,
       "name": "Shield",
       "text": "魔盾術",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "此戰鬥用法術可以提昇受術者的防護力和法術閃躲率，並完全封鎖魔法飛彈的效力。可持續的戰鬥回合數＝5×施術者等級。"
     },
     {
       "index": 19,
       "name": "Shocking Grasp",
       "text": "電擊術",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "這個戰鬥用法術對一名位在魔法師身邊的敵人造成（1～8 點再加1×施術者等級）點的電擊傷害。"
     },
     {
       "index": 20,
       "name": "Sleep",
       "text": "催眠術",
       "class": "magic-user",
-      "level": 1
+      "level": 1,
+      "effect": "這個戰鬥用法術最多能在 5×施術者等級個戰鬥回合的作用時間中催眠16 個敵人，最弱的敵人將會最先被催眠，而敵人的體型越大越不易被催眠，而一定程度以上的敵人，催眠術將會完全失效。本法術無法躲避。"
     },
     {
       "index": 21,
       "name": "Find Traps",
       "text": "搜尋陷阱",
       "class": "cleric",
-      "level": 2
+      "level": 2,
+      "effect": "本法術只能在紮營時施展。施展後，施術者前方的所有陷阱都會自動顯現。可持續 3 個普通回合（30 分鐘）。"
     },
     {
       "index": 22,
       "name": "Hold Person",
       "text": "束縛敵人",
       "class": "cleric",
-      "level": 2
+      "level": 2,
+      "effect": "這個戰鬥用法術可束縛 1～3 個（牧師施展時）外形和大小與人類相似的生物，使其無法動彈，其效用可持續的戰鬥回合數＝4＋1×施術者等級。"
     },
     {
       "index": 23,
       "name": "Resist Fire",
       "text": "耐火術",
       "class": "cleric",
-      "level": 2
+      "level": 2,
+      "effect": "效用和「耐冰術」類似，但只對熱和源自高熱的攻擊有效。"
     },
     {
       "index": 24,
       "name": "Silence, 15' Radius",
       "text": "半徑 15 格的沈靜術",
       "class": "cleric",
-      "level": 2
+      "level": 2,
+      "effect": "這個戰鬥用法術在它的有效範圍內能封鎖任何法術的施展或作用。假如施展在某個人身上，它的作用範圍將會以那個人為中心，持續到那個人閃躲掉為止。假如施展在某個區域，它的效力將會影響所有在作用範圍內的東西，可持續的戰鬥回合數＝2×施術者等級。"
     },
     {
       "index": 25,
       "name": "Slow Poison",
       "text": "緩毒術",
       "class": "cleric",
-      "level": 2
+      "level": 2,
+      "effect": "可在紮營或戰鬥時使用，它可使一個中毒的人在 1×施術者等級個小時的作用時間內重新變得生龍活虎，但法術的時效一過，除非對此人施展只有 NPC 才會的高段法術「中和毒性」（Neutralize Poison），否則他會立刻死亡。"
     },
     {
       "index": 26,
       "name": "Snake Charm",
       "text": "蛇魅術",
       "class": "cleric",
-      "level": 2
+      "level": 2,
+      "effect": "這個戰鬥用法術能影響所有 HP 和施術的牧師一樣多的蛇，被影響的蛇在 5～8 個戰鬥回合內會停止不動。"
     },
     {
       "index": 27,
       "name": "Spiritual Hammer",
       "text": "心靈之鎚",
       "class": "cleric",
-      "level": 2
+      "level": 2,
+      "effect": "這個戰鬥用法術能在受術者身上造出一把臨時用的魔法鐵鎚（Hammer），並自動裝備上手。這把鐵鎚可以做遠程攻擊並引起普通鐵鎚能造成的傷害，還能用來對付只有魔法武器才能傷害的特殊怪物。它能持續的戰鬥回合數＝1×施術者等級，時間一到便自行消失。",
+      "manual_note": "〔原書如此，應為 SPIRITUAL〕"
     },
     {
       "index": 28,
       "name": "Detect Invisibility",
       "text": "搜尋隱形物品",
       "class": "magic-user",
-      "level": 2
+      "level": 2,
+      "effect": "可在戰鬥或紮營時施展，持續的戰鬥回合數＝5×施術者等級，其作用範圍是 20×施術者等級（呎）。"
     },
     {
       "index": 29,
       "name": "Invisibility",
       "text": "隱形術",
       "class": "magic-user",
-      "level": 2
+      "level": 2,
+      "effect": "受術者必須位在施術者的旁邊。本法術可使他不被任何對手發現，直到效用結束或他攻擊別人為止。"
     },
     {
       "index": 30,
       "name": "Knock",
       "text": "踢開術",
       "class": "magic-user",
-      "level": 2
+      "level": 2,
+      "effect": "用來打開上鎖的門或箱子。可用於紮營或移動時。"
     },
     {
       "index": 31,
       "name": "Mirror Image",
       "text": "幻影術",
       "class": "magic-user",
-      "level": 2
+      "level": 2,
+      "effect": "此戰鬥用法術將產生 1～4 個魔法師的幻影，但遭到攻擊的幻影便會消失，可持續的戰鬥回合數＝2×施術者等級。"
     },
     {
       "index": 32,
       "name": "Ray of Enfeeblement",
       "text": "衰弱術",
       "class": "magic-user",
-      "level": 2
+      "level": 2,
+      "effect": "此戰鬥法術可能被躲過，但受術者若未能躲過則將變衰弱，其程度以戰鬥回合計＝1×施術者等級。",
+      "manual_note": "〔原書如此，應為 RAY OF ENFEEBLEMENT〕"
     },
     {
       "index": 33,
       "name": "Stinking Cloud",
       "text": "臭雲術",
       "class": "magic-user",
-      "level": 2
+      "level": 2,
+      "effect": "法力可及直徑三格內的圓形區域，在此範圍內的任何人都有機會躲過，但若未成功則會有 2～5 分鐘變得沒有防禦及攻擊力，雖然可以走出此範圍，但效用仍在，如果成功地躲過，法術只對受術者在此區內及其後一戰鬥回合有效。此法術持續時間＝1×施術者等級（戰鬥回合）。",
+      "manual_note": "〔原書如此，應為 Stinking Cloud〕"
     },
     {
       "index": 34,
       "name": "Strength",
       "text": "大力術",
       "class": "magic-user",
-      "level": 2
+      "level": 2,
+      "effect": "只用於紮營時，它可增加受術者的力量，但其程度則視受術者的等級而定，持續時間＝6×施術者等級（分鐘）。"
     },
     {
       "index": 35,
       "name": "Animate Dead",
       "text": "活動死屍",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "本法術可在戰鬥或紮營時使用，它能使受術的死屍變成聽命於施術者的僵屍（Zombie），在戰鬥時僵屍會為施術者而戰，但它的行動由電腦來指揮控制。這項法術可持續到僵屍被殺為止。不論生前是隊員抑或 NPC，變成僵屍後一律都是 NPC，不過你可以自由拿取他的裝備它絕不會反抗。"
     },
     {
       "index": 36,
       "name": "Cure Blindness",
       "text": "醫治失明",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "可在紮營或戰鬥中施展，但受術者一定要在施術者的旁邊，本法術用於治愈「引起失明」法術所造成的失明。"
     },
     {
       "index": 37,
       "name": "Cause Blindness",
       "text": "引起失明",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "這個戰鬥用法術可使一名位在施術者身邊的敵人失明，他有躲過此法術的機會。其效用可持續至被「治療失明」或「解除法術」此法術解除為止。"
     },
     {
       "index": 38,
       "name": "Cure Disease",
       "text": "醫治疾病",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "本法術只能在紮營時施展。它可以治愈由木乃伊（Mummy）的攻擊或「引起疾病」法術所造成的疾病。"
     },
     {
       "index": 39,
       "name": "Cause Disease",
       "text": "引起疾病",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "這個戰鬥用法術可使一名位在施術者身旁的敵人染上一種奇怪的疾病，但他有躲過此法術的機會。一旦得了此病，他的 HP 和力量都會隨時間不斷下降，直降到原來的十分之一為止。這種疾病可被「醫治疾病」和「解除法術」這兩個法術治愈。"
     },
     {
       "index": 40,
       "name": "Dispel Magic",
       "text": "解除法術",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "可在紮營或戰鬥中使用。在戰鬥中施展時，它能影響在一特定區域中的每一項法術和魔法物品；在紮營時施展，它能影響每一個（件）你選擇的隊員或物品。它成功的百分率取決於施術者和欲解除法術原來的施展者兩者等級之比。若成功了，被解除的魔法將永遠消失。"
     },
     {
       "index": 41,
       "name": "Prayer",
       "text": "祈禱",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "這個戰鬥用法術可使我方戰士的 THAC0 和法術被命中率（容後再述）降 1，並使敵方戰士的 THAC0 和法術被命中率加 1。其作用範圍是一個 60° 的扇狀區域，而持續的戰鬥回合數＝1×施術者等級。"
     },
     {
       "index": 42,
       "name": "Remove Curse",
       "text": "除去咀咒",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "可將受者身上的咀咒由敵人的特殊攻擊或「散布咀咒法術所引起者」去掉，或解除一件受咒物品的咀咒。受術者（物）必須位在施術者的身旁（身上）。"
     },
     {
       "index": 43,
       "name": "Bestow Curse",
       "text": "散佈咀咒",
       "class": "cleric",
-      "level": 3
+      "level": 3,
+      "effect": "這個戰鬥用法術可持續的戰鬥回合數＝1×施術者等級。它有許多種效用，至於是那種則由電腦來決定。",
+      "manual_note": "〔原書如此，應為 BESTOW CURSE〕"
     },
     {
       "index": 44,
       "name": "Blink",
       "text": "閃爍術",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "使用此法術後，因為施術者將變得忽隱忽現因此較不會被施法術，可持續1×施術者等級（戰鬥回合）。"
     },
     {
       "index": 45,
       "name": "Dispel Magic",
       "text": "解除法術",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "同神術的「解除法術」。"
     },
     {
       "index": 46,
       "name": "Fireball",
       "text": "火球術",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "在此法術範圍所及的每個受術者將受到火球傷害，其程度＝1-6 點×施術者等級，但若躲過則傷害減半。在室外，一個火球威力可及直徑三格的圓形區域，在密閉的室內則可及半徑五格的區域。"
     },
     {
       "index": 47,
       "name": "Haste",
       "text": "加倍術",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "此戰鬥法術威力所及的人數視施術者等級而一定，一等級一個人，受術者每人的移動距離及戰鬥中飛彈武器的攻擊均加倍，但在每回合無法多施展額外的法術，可持續的戰鬥回合數＝3 回合＋1×施術者等級。"
     },
     {
       "index": 48,
       "name": "Hold Person",
       "text": "束縛敵人",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "同神術的同名法術，但威力可及 1～4 人，可持續的戰鬥回合數＝2×施術者等級。"
     },
     {
       "index": 49,
       "name": "Invisibility, 10' Radius",
       "text": "半徑十呎的隱形術",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "類似「隱形術」，但威力可及施術者施術時所在位置半徑十呎內的所有人，受術的每個人都隱形，直到施術者解除此法術為止。"
     },
     {
       "index": 50,
       "name": "Lightning Bolt",
       "text": "閃電術",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "威力可及其行進所經過的每個人，引起的傷害＝（1～6）×施術者等級，若能躲過此法術則傷害減半，其作用範圍以直線行進可達 4～8 格，而且遇到牆壁會反彈，循原來路徑彈回。適合攻擊一整排敵人或單一的強大敵人。",
+      "manual_note": "〔原書如此，應為 LIGHTNING〕"
     },
     {
       "index": 51,
       "name": "Protection From Evil, 10' Radius",
       "text": "半徑十呎的免受邪惡傷害",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "類似 LEVEL 1 的「免受邪惡傷害」，但威力可及受術者旁一格內的所有人，直到離開此範圍為止。"
     },
     {
       "index": 52,
       "name": "Protection From Good, 10' Radius",
       "text": "半徑十呎的免受善良傷害",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "類似 LEVEL 1 的「免受善良傷害」，但威力可及受術者旁一格內的所有人，直到離開此區域為止。"
     },
     {
       "index": 53,
       "name": "Protection From Normal Missiles",
       "text": "免受一般飛彈傷害",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "使受術者免受無魔法的飛彈傷害，但他需位在施術者旁邊，持續時間（分鐘）＝1×施術者等級。",
+      "manual_note": "〔原書如此，應為 MISSILES〕"
     },
     {
       "index": 54,
       "name": "Slow",
       "text": "減緩術",
       "class": "magic-user",
-      "level": 3
+      "level": 3,
+      "effect": "此戰鬥法術威力可及的人數視施術者等級而同，一等級一個人，不願意受術者可躲過此法術。受術者每回合可移動的距離及攻擊的次數均減半，如果每回合攻擊一次，則減為兩回合一次，可抵消「加倍術」，可持續時間（戰鬥回合）＝3＋1×施術者等級。在施展法術上，還有下例注意事項：1. 許多法術都有距離的限制，切記在紮營時施法可以完全不管這個限制，而在戰鬥時則有。尤其在指定某些攻擊及防禦性魔法的目標時更要格外小心，辨明該法術是否有距離上的限制，以及範圍是否會危及我方隊員。許多法術的作用範圍都會隨法師的等級而增加，在施展時更要特別注意。2. 在戰鬥時別選錯法術，一旦選擇法術便無法返回，雖然可以選擇跳出（A)BORT），但該法術卻就此失落了。3. 小心地使用法術，它將會是你勝利的基礎。4. 法術的被命中率與閃躲率—並不是每個法術都一定能百發百中，有的法術有所謂的「閃躲率」（Saving Throw），也就是說該種法術有躲過的可能，閃躲率越高越易躲過或減輕法術的效果。身為魔法的操縱者，魔法師對魔法的閃躲率較高，牧師較能避過死亡性或毒的魔法，而矮人和半身人的閃躲率比其他的種族要好。有關法術的閃躲率有否和其造成的影響請參閱前面對各法術的介紹。5. 有許多法術在戰鬥中施展時，必須如使用武器攻擊般的瞄準目標，使用的指令和「瞄準攻擊」時的指令完全相同，請自行參閱。法術也有其特性，如近程遠程；對人，對地區或兩者皆可，在施展時務必注意，以免浪費法術不說，還錯過了大好的攻擊機會。"
     },
     {
       "index": 55,
@@ -395,5 +456,6 @@
       "class": "magic-user",
       "level": 3
     }
-  ]
+  ],
+  "effect_source": "軟體世界說明書下冊第六章；Restoration 不在該章（它是神殿服務），因此沒有說明"
 }

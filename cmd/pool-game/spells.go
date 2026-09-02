@@ -17,7 +17,8 @@ const (
 	spellTextLeft   = 48
 	spellFirstLine  = 118
 	spellLineHeight = 16
-	spellLineCount  = 13
+	spellLineCount  = 8
+	spellColumns    = 64
 )
 
 // spellGroups 是六個分頁，順序照原版表的分組。
@@ -92,14 +93,39 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 		spellTextLeft, 92, accent)
 
 	group := state.current()
-	for offset := 0; offset < spellLineCount && offset < len(group); offset++ {
-		spell := group[offset]
+	// 一頁放不下十三條，捲動時讓游標留在畫面內。
+	first := state.cursor - spellLineCount/2
+	if first < 0 {
+		first = 0
+	}
+	if first+spellLineCount > len(group) {
+		first = len(group) - spellLineCount
+	}
+	if first < 0 {
+		first = 0
+	}
+	for offset := 0; offset < spellLineCount && first+offset < len(group); offset++ {
+		spell := group[first+offset]
 		cursor, ink := " ", foreground
-		if offset == state.cursor {
+		if first+offset == state.cursor {
 			cursor, ink = ">", accent
 		}
 		drawText(screen, fmt.Sprintf("%s%-34s %s", cursor, spell.Name, spell.Text),
 			spellTextLeft, spellFirstLine+offset*spellLineHeight, ink)
+	}
+
+	// 說明來自說明書下冊第六章，是「說明書寫的行為」，不是反組譯出來的規則。
+	if state.cursor < len(group) {
+		effect := group[state.cursor].Effect
+		if effect == "" {
+			effect = a.text(msgSpellsNoEffect)
+		}
+		for index, line := range wrapDisplay(effect, spellColumns) {
+			if index >= 4 {
+				break
+			}
+			drawText(screen, line, spellTextLeft, 258+index*spellLineHeight, foreground)
+		}
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgSpellsCount), len(group)), spellTextLeft, 336, foreground)
 	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, 356, accent)

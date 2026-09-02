@@ -47,13 +47,20 @@ type Spell struct {
 	Text  string     `json:"text"`
 	Class SpellClass `json:"class"`
 	Level int        `json:"level"`
+	// Effect 是說明書下冊第六章對這個法術的說明，逐條轉錄。
+	// 它是**說明書寫的行為**，不是從反組譯讀出來的規則；接進戰鬥判定之前
+	// 仍要逐條以原版程式碼驗證。
+	Effect string `json:"effect,omitempty"`
+	// ManualNote 保留說明書自己的〔原書如此〕註記。
+	ManualNote string `json:"manual_note,omitempty"`
 }
 
 type spellFile struct {
-	Schema  string  `json:"schema"`
-	Locale  string  `json:"locale"`
-	Source  string  `json:"source"`
-	Entries []Spell `json:"entries"`
+	Schema       string  `json:"schema"`
+	Locale       string  `json:"locale"`
+	Source       string  `json:"source"`
+	EffectSource string  `json:"effect_source"`
+	Entries      []Spell `json:"entries"`
 }
 
 // SpellCatalogue 是內建的法術表：遊戲自己的名稱順序，配上說明書的中譯。
@@ -68,8 +75,8 @@ func ParseSpellCatalogue(raw []byte) (*SpellCatalogue, error) {
 	if err := json.Unmarshal(raw, &decoded); err != nil {
 		return nil, fmt.Errorf("Pool spell catalogue: %w", err)
 	}
-	if decoded.Schema != "pool-spell-names/1" {
-		return nil, fmt.Errorf("Pool spell catalogue schema %q is not pool-spell-names/1", decoded.Schema)
+	if decoded.Schema != "pool-spell-names/2" {
+		return nil, fmt.Errorf("Pool spell catalogue schema %q is not pool-spell-names/2", decoded.Schema)
 	}
 	if len(decoded.Entries) != SpellNameCount {
 		return nil, fmt.Errorf("Pool spell catalogue has %d entries, the original table has %d",
@@ -87,6 +94,12 @@ func ParseSpellCatalogue(raw []byte) (*SpellCatalogue, error) {
 		}
 		if entry.Level < 1 || entry.Level > 3 {
 			return nil, fmt.Errorf("Pool spell %d has level %d outside 1..3", position, entry.Level)
+		}
+		// Restoration 不在說明書的法術章（它是神殿服務，見 spec 068），
+		// 其餘每一條都要有說明——少了就是轉錄漏了一條，而畫面上看起來
+		// 只是「這個法術沒寫」。
+		if entry.Effect == "" && entry.Name != "Restoration" {
+			return nil, fmt.Errorf("Pool spell %q has no manual description", entry.Name)
 		}
 	}
 	return &SpellCatalogue{locale: decoded.Locale, entries: decoded.Entries}, nil

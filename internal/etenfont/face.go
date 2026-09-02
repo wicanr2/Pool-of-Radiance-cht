@@ -276,7 +276,10 @@ func (f *Face) asciiGlyph(r rune) ([]byte, bool) {
 // typographic aliases; translation text remains data-driven and no game term
 // is encoded here.
 func etenASCIICode(r rune) (byte, bool) {
-	if r >= 0 && r <= 0xff {
+	// 只有 ASCII 那半段對得上。ETen 的 ASCFONT 高半部不是 Latin-1——
+	// 0x80..0xFF 在 Big5 是前導位元組，那些格子畫出來是方塊或雜訊，
+	// 而「畫出方塊」在畫面上與缺字沒有分別。所以高半部一律走別名表。
+	if r >= 0 && r <= 0x7f {
 		return byte(r), true
 	}
 	aliases := map[rune]byte{
@@ -288,6 +291,7 @@ func etenASCIICode(r rune) (byte, bool) {
 		'《': '<', '》': '>', '【': '[', '】': ']', '〔': '[', '〕': ']',
 		'～': '~', '〜': '~',
 		'\u2018': '\'', '\u2019': '\'', '\u201c': '"', '\u201d': '"',
+		'×': 'x', '÷': '/', '·': '.', '°': 'o', '±': '+',
 	}
 	value, ok := aliases[r]
 	return value, ok

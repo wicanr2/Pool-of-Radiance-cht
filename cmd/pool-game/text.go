@@ -45,6 +45,7 @@ var messages = map[messageID][2]string{
 	msgSpellsMagicUser: {"Magic User", "巫術"},
 	msgSpellsCount:     {"%d spells in this group", "本級共 %d 種"},
 	msgSpellsFooter:    {"TAB next group  UP/DOWN choose  K/ESC close", "TAB 換級別　上下移動　K／ESC 關閉"},
+	msgSpellsNoEffect:  {"The manual's spell chapter does not describe this one.", "說明書的法術章沒有收這一條。"},
 	msgShopTitle:      {"SHOP", "商店"},
 	msgShopStatus:     {"Original Pool shop service: %d item(s) in stock.", "原版商店服務：架上 %d 件。"},
 	msgShopBuyer:      {"Buyer %d/%d  %s  gold %d", "買家 %d/%d　%s　金幣 %d"},
@@ -395,6 +396,7 @@ const (
 	msgSpellsMagicUser
 	msgSpellsCount
 	msgSpellsFooter
+	msgSpellsNoEffect
 )
 
 // 商店畫面的字串。

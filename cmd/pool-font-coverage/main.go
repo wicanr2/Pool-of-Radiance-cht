@@ -12,6 +12,7 @@ import (
 	"flag"
 	"fmt"
 	"go/ast"
+	"image"
 	"go/parser"
 	"go/token"
 	"os"
@@ -52,13 +53,18 @@ func main() {
 	note := func(text, label string) {
 		// 與畫面走同一條替換：稽核的是「實際會畫出來的字」。
 		for _, r := range etenfont.ReplaceUnavailable(text) {
+			// 空白字元本來就該是空的。
+			if r == ' ' || r == '\t' || r == '\u3000' {
+				continue
+			}
 			if r == '\n' {
 				continue
 			}
-			if _, ok := face.GlyphAdvance(r); ok {
-				if _, drawable := face.Bitmap(r); drawable {
-					continue
-				}
+			// 判準是「畫出來有東西」，不是「取得到字模格」。
+			// ASCII 那條路對任何 <= 0xFF 的碼位都取得到格子，但格子可能整片空白
+			// ——那在畫面上與缺字沒有分別，而只看 ok 會把它漏掉。
+			if mask, drawable := face.Bitmap(r); drawable && !blank(mask) {
+				continue
 			}
 			counts[r]++
 			if where[r] == "" {
@@ -149,6 +155,19 @@ func noteSourceStrings(note func(text, label string)) error {
 		})
 		return nil
 	})
+}
+
+// blank 判斷字模是不是整片空白。空白字元本來就該是空的，不算缺字。
+func blank(mask *image.Alpha) bool {
+	if mask == nil {
+		return true
+	}
+	for _, value := range mask.Pix {
+		if value != 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func sum(counts map[rune]int) int {

@@ -94,3 +94,48 @@ func TestParseSpellCatalogueRejectsAShortTable(t *testing.T) {
 		t.Fatal("a foreign schema was accepted")
 	}
 }
+
+// 除了 Restoration，56 條都要有說明書的說明。少一條就是轉錄漏了，
+// 而畫面上看起來只是「這個法術沒寫」。
+func TestEverySpellCarriesTheManualDescription(t *testing.T) {
+	catalogue, err := gamepack.TraditionalChineseSpells()
+	if err != nil {
+		t.Fatal(err)
+	}
+	missing := 0
+	for _, spell := range catalogue.Spells() {
+		if spell.Effect != "" {
+			continue
+		}
+		if spell.Name != "Restoration" {
+			t.Fatalf("%q has no manual description", spell.Name)
+		}
+		missing++
+	}
+	if missing != 1 {
+		t.Fatalf("%d spells lack a description; only Restoration should", missing)
+	}
+}
+
+// 說明書自己的〔原書如此〕註記要跟著條目走：比對法術名時要以遊戲的拼法
+// 為準，說明書那六個拼錯的字不能反過來當標準。
+func TestManualTyposAreRecordedAgainstTheGameSpelling(t *testing.T) {
+	catalogue, err := gamepack.TraditionalChineseSpells()
+	if err != nil {
+		t.Fatal(err)
+	}
+	notes := map[string]bool{}
+	for _, spell := range catalogue.Spells() {
+		if spell.ManualNote != "" {
+			notes[spell.Name] = true
+		}
+	}
+	for _, name := range []string{
+		"Spiritual Hammer", "Ray of Enfeeblement", "Bestow Curse",
+		"Lightning Bolt", "Stinking Cloud", "Protection From Normal Missiles",
+	} {
+		if !notes[name] {
+			t.Fatalf("%q lost the manual's original-spelling note", name)
+		}
+	}
+}
