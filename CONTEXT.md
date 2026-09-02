@@ -511,10 +511,15 @@ trace（26 成功，失敗三筆與既有 `failed_blocks` 一致），以「自�
 直接由 `ECL3/block 8` 的 `9D63h ON GOSUB` 解出二十六條通知分支並提供
 pending／acknowledge／增量判定，八個測試通過；既有的 commission 測試測的是派發端
 （`4AC1h` → 公告字號），兩者合成完整循環，且其期望字號全部落在說明書第四章轉錄的
-18 則公告內，這是說明書 corpus 第一次被原版資料證明可接線。戰鬥側：由既有的
-`ida-overlay25-nearby-opponents.json` 閉合 overlay-25 entry 32 的完整資料流
-（spec 056）——鄰近格位表 `6674h` 每筆 3 bytes、筆數在 `6678h`、combatant record 由
-`6517h` far pointer 表取得、依 `+10Eh` 篩對立陣營、命中者原地前移壓縮、index 匯出到
-`6CD7h`；`internal/combat/occupancy.go` 實作篩選與壓縮並通過測試。occupancy 的另一半
-`sub_13BE`（鄰近格位如何列舉）仍未解，那是把 `attackTargetID` 接進 `ResolveMovementProbe`
-的前提，也是戰術戰鬥的下一個關鍵路徑。
+18 則公告內，這是說明書 corpus 第一次被原版資料證明可接線。戰鬥側：occupancy
+整條鏈打通（spec 056 升為 READY）。`START.EXE` 每個 overlay stub 段開頭有 32 bytes
+描述子，其 file offset／code size／relocation size／entry 數四個欄位對 38 顆 overlay
+全部與 `ovr-manifest.json` 相符，因此 far call 落在哪一顆 overlay 是查表得到的：
+`0138h` 是 overlay-31、`013Dh` 是 overlay-32。產生端 overlay-31 `0912h` 以體型類別
+展開四個候選格，逐一與場上每個 combatant 的四個佔格兩兩比對，取成本最小者寫進
+`6674h` 結構；佔格偏移表在 `DS:2860h`，只有四列——1 格、直向 2 格、橫向 2 格、2×2。
+結果每筆 3 bytes 的語意是 `+0` combatant 索引、`+1` 成本、`+2` 可及級數；篩選端
+overlay-25 entry 32 再依 `+10Eh` 留下對立陣營、原地前移壓縮、索引匯出到 `6CD7h`。
+`internal/combat/occupancy.go` 依此重寫，佔格表逐位元組照抄原始資料，11 個測試通過。
+下一步是 `sub_419` 的成本函式與 `sub_579` 的可及級數定義，這兩者定了才能把
+`attackTargetID` 接進 `ResolveMovementProbe`。
