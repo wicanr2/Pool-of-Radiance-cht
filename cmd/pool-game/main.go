@@ -17,7 +17,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
-	"golang.org/x/image/font/basicfont"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
@@ -100,6 +99,7 @@ type app struct {
 	roller           creation.Roller
 	help             bool
 	tacticalPreview  bool
+	language         language
 	tactical         *tacticalState
 	modern           bool
 	statusLine       string
@@ -1712,15 +1712,15 @@ func (a *app) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Scale(2, 2)
 		screen.DrawImage(a.title, op)
-		drawText(screen, "ENTER / SPACE", 264, 382, accent)
+		drawText(screen, a.text(msgTitleHint), 264, 382, accent)
 	} else if a.mode == modeMenu {
 		drawFrame(screen, foreground, accent)
-		drawText(screen, "PARTY CREATION MENU", 224, 54, accent)
-		drawText(screen, "C  CREATE NEW CHARACTER", 176, 112, foreground)
-		drawText(screen, "A  ADD CHARACTER TO PARTY", 176, 140, foreground)
-		drawText(screen, "L  LOAD SAVED GAME", 176, 168, foreground)
-		drawText(screen, "B  BEGIN ADVENTURING", 176, 196, foreground)
-		drawText(screen, fmt.Sprintf("LIBRARY %d   PARTY %d/6", len(a.state.CharacterLibrary), len(a.state.Party)), 176, 230, accent)
+		drawText(screen, a.text(msgMenuTitle), 224, 54, accent)
+		drawText(screen, a.text(msgMenuCreate), 176, 112, foreground)
+		drawText(screen, a.text(msgMenuAdd), 176, 140, foreground)
+		drawText(screen, a.text(msgMenuLoad), 176, 168, foreground)
+		drawText(screen, a.text(msgMenuBegin), 176, 196, foreground)
+		drawText(screen, fmt.Sprintf(a.text(msgMenuCounts), len(a.state.CharacterLibrary), len(a.state.Party)), 176, 230, accent)
 		for index, member := range a.state.Party {
 			drawText(screen, fmt.Sprintf("%d  %s", index+1, member.Name), 176, 254+index*18, foreground)
 		}
@@ -1734,7 +1734,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	} else {
 		drawAdventure(screen, a, foreground, accent)
 	}
-	drawText(screen, "F1 Help  F2 Theme  F5 Tactical  ESC Back  F10 Quit", 16, 390, foreground)
+	// 基線 386：倚天字型的 ascent 是 14，畫在 390 會被 drawFrame 的下框
+	// （y 388..391）切掉字腳。
+	drawText(screen, a.text(msgFooter), 16, 386, foreground)
 	if a.help {
 		drawHelp(screen, background, foreground, accent)
 	}
@@ -2049,18 +2051,28 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 }
 
 func drawText(screen *ebiten.Image, value string, x, y int, ink color.Color) {
-	text.Draw(screen, strings.ToUpper(value), basicfont.Face7x13, x, y, ink)
+	text.Draw(screen, strings.ToUpper(value), uiFace, x, y, ink)
 }
 
 func (a *app) Layout(_, _ int) (int, int) { return logicalWidth, logicalHeight }
 
 func main() {
 	zipPath := flag.String("zip", "Pool of Radiance (1988).zip", "DOS source ZIP used as local asset source")
+	langFlag := flag.String("lang", "auto", "UI language: en, zh, or auto (zh when an ETen font is supplied)")
+	etenFont := flag.String("eten-font", "", "ETen STDFONT.15 path; the 16x15 Han glyphs the Chinese UI needs")
+	etenSymbol := flag.String("eten-symbol-font", "", "optional ETen SPCFONT.15 path for full-width punctuation")
+	etenASCII := flag.String("eten-ascii-font", "", "optional ETen ASCFONT.15 path; defaults to ascfont.15 beside -eten-font")
 	flag.Parse()
+	uiLanguage, face, err := resolveUILanguage(*langFlag, *etenFont, *etenSymbol, *etenASCII)
+	if err != nil {
+		log.Fatal(err)
+	}
+	uiFace = face
 	game, err := newApp(*zipPath)
 	if err != nil {
 		log.Fatal(err)
 	}
+	game.language = uiLanguage
 	ebiten.SetWindowSize(960, 600)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("Pool of Radiance Remake")
