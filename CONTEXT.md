@@ -599,3 +599,15 @@ panic。畫面截圖由 `tools/capture-tactical-preview.sh` 在容器內以 Xvfb
 仍未接：敵方 AI 的行動（目前只有玩家這側會動）、反應攻擊接進移動提交、
 `Continue Battle:` 提示的 UI。隊伍的 AC／THAC0／傷害骰仍是暫定值——角色記錄
 還沒有那三項，畫面上以 `PLACEHOLDER` 標明，不得當成 parity 證據。
+
+敵方回合接上之後戰鬥才是雙向的。`foeTurn` 用 spec 056 的鄰近成本表挑成本最小的
+敵對目標，每一步反查原版方向表朝它前進、過 `ResolveDestination`，撞上目標就走
+spec 050／051 的攻擊。產生鄰近成本表的 overlay-31 `0912h` 本身也一併實作了
+（`internal/combat/nearby.go`）：展開雙方佔格、過朝向弧、走直線追蹤、取最小成本，
+朝向未指定時自 0 起找第一個成立的方向。`OpposingNearbyAt` 接上 overlay-25
+entry 32 的陣營篩選，`LeavingOpponentsAfterStep` 是 spec 059 那個「暫時推一格、
+查詢、復原」的差集。
+
+「挑哪個目標、走哪一步」是暫定策略——原版的怪物 AI 還沒反組譯——畫面上以
+`PROVISIONAL AI` 標明。目前的擷取路徑沒有 ECL 排出來的遭遇，盤面上只有隊伍，
+所以敵方回合沒有截圖佐證，只有單元測試；manifest 裡寫明了這一點。
