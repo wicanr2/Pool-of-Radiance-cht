@@ -3,11 +3,11 @@ package combat
 import "fmt"
 
 // NearbyCell 是原版 DS:6674h 結構的一筆，共三個 byte，順序與原版一致
-// （spec 056）：+0 combatant 索引、+1 成本、+2 可及級數。
+// （spec 056）：+0 combatant 索引、+1 成本、+2 攻擊該目標所需的朝向。
 type NearbyCell struct {
 	CombatantIndex uint8
 	Cost           uint8
-	ReachClass     uint8
+	Facing         uint8
 }
 
 // SelectOpposingNearby 重現 overlay-25 entry 32（`246Dh..2591h`）的篩選與輸出：
@@ -65,7 +65,7 @@ const (
 
 // footprintTable 逐位元組照抄 START.EXE 的 DS:2860h..287Fh，
 // 見 docs/audit/ida-ds-footprint-offset-table.json。列為體型類別 1..4，
-// 每列四組 (分量 A, 分量 B) 有號偏移，分量 A 為負代表該列到此為止。
+// 每列四組 (X, Y) 有號偏移，X 為負代表該列到此為止。
 var footprintTable = [FootprintClassCount][FootprintSlots * 2]byte{
 	{0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
 	{0x00, 0x00, 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF},
@@ -73,11 +73,11 @@ var footprintTable = [FootprintClassCount][FootprintSlots * 2]byte{
 	{0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x01, 0x01},
 }
 
-// FootprintOffset 是佔格偏移表的一組偏移。分量 A 對應 combatant record +0，
-// 分量 B 對應 +1；兩者何者為 X 尚未閉合（spec 056）。
+// FootprintOffset 是佔格偏移表的一組偏移。X 對應 combatant record +0，
+// Y 對應 +1。
 type FootprintOffset struct {
-	A int8
-	B int8
+	X int8
+	Y int8
 }
 
 // FootprintOffsets 回傳體型類別的有效偏移，順序與原始表相同。
@@ -94,21 +94,21 @@ func FootprintOffsets(class uint8) ([]FootprintOffset, error) {
 		if a < 0 {
 			break
 		}
-		offsets = append(offsets, FootprintOffset{A: a, B: int8(row[slot*2+1])})
+		offsets = append(offsets, FootprintOffset{X: a, Y: int8(row[slot*2+1])})
 	}
 	return offsets, nil
 }
 
-// FootprintCell 是展開到基準座標之後的一格。原版以「分量 A 的最高位元被設起」
-// 表示無效，且無效時不會寫分量 B，因此這裡也只用分量 A 判定。
+// FootprintCell 是展開到基準座標之後的一格。原版以「X 的最高位元被設起」表示無效，
+// 且無效時不會寫 Y，因此這裡也只用 X 判定。
 type FootprintCell struct {
-	A uint8
-	B uint8
+	X uint8
+	Y uint8
 }
 
-// Valid 重現原版的 `cmp ...,0 / jl`：分量 A 以有號位元組看為負即無效。
+// Valid 重現原版的 `cmp ...,0 / jl`：X 以有號位元組看為負即無效。
 // 這同時涵蓋「表已終止」與「加總後越過 127」兩種情形，與原版一致。
-func (cell FootprintCell) Valid() bool { return int8(cell.A) >= 0 }
+func (cell FootprintCell) Valid() bool { return int8(cell.X) >= 0 }
 
 const footprintInvalid = 0xFF
 
@@ -117,10 +117,10 @@ const footprintInvalid = 0xFF
 // 槽的位置本身要保留（spec 056 READY 契約 2）。
 //
 // class 為 0 時四個槽全部無效，對應原版「體型類別 0 的 combatant 不參與」。
-func FootprintCells(class uint8, baseA, baseB uint8) [FootprintSlots]FootprintCell {
+func FootprintCells(class uint8, baseX, baseY uint8) [FootprintSlots]FootprintCell {
 	var cells [FootprintSlots]FootprintCell
 	for slot := range cells {
-		cells[slot] = FootprintCell{A: footprintInvalid, B: footprintInvalid}
+		cells[slot] = FootprintCell{X: footprintInvalid, Y: footprintInvalid}
 	}
 	if class == 0 || int(class) > FootprintClassCount {
 		return cells
@@ -132,8 +132,8 @@ func FootprintCells(class uint8, baseA, baseB uint8) [FootprintSlots]FootprintCe
 			continue
 		}
 		cells[slot] = FootprintCell{
-			A: baseA + uint8(a),
-			B: baseB + uint8(int8(row[slot*2+1])),
+			X: baseX + uint8(a),
+			Y: baseY + uint8(int8(row[slot*2+1])),
 		}
 	}
 	return cells

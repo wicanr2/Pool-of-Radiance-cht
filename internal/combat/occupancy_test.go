@@ -15,10 +15,10 @@ func sides(table map[uint8]uint8) func(uint8) (uint8, bool) {
 
 func TestSelectOpposingNearbyKeepsOriginalOrder(t *testing.T) {
 	cells := []NearbyCell{
-		{CombatantIndex: 3, Cost: 2, ReachClass: 1},
-		{CombatantIndex: 7, Cost: 5, ReachClass: 0},
-		{CombatantIndex: 9, Cost: 7, ReachClass: 2},
-		{CombatantIndex: 4, Cost: 9, ReachClass: 3},
+		{CombatantIndex: 3, Cost: 2, Facing: 1},
+		{CombatantIndex: 7, Cost: 5, Facing: 0},
+		{CombatantIndex: 9, Cost: 7, Facing: 2},
+		{CombatantIndex: 4, Cost: 9, Facing: 3},
 	}
 	lookup := sides(map[uint8]uint8{3: 0xFF, 7: 0x00, 9: 0xFF, 4: 0xFF})
 	selected, err := SelectOpposingNearby(cells, 0xFF, lookup)
@@ -82,10 +82,10 @@ func TestCompactOpposingNearbyKeepsNoneWhenSidesMatchMover(t *testing.T) {
 // DS:2860h 的四列，逐組對回 docs/audit/ida-ds-footprint-offset-table.json。
 func TestFootprintOffsetsMatchOriginalTable(t *testing.T) {
 	want := map[uint8][]FootprintOffset{
-		1: {{A: 0, B: 0}},
-		2: {{A: 0, B: 0}, {A: 0, B: 1}},
-		3: {{A: 0, B: 0}, {A: 1, B: 0}},
-		4: {{A: 0, B: 0}, {A: 1, B: 0}, {A: 0, B: 1}, {A: 1, B: 1}},
+		1: {{X: 0, Y: 0}},
+		2: {{X: 0, Y: 0}, {X: 0, Y: 1}},
+		3: {{X: 0, Y: 0}, {X: 1, Y: 0}},
+		4: {{X: 0, Y: 0}, {X: 1, Y: 0}, {X: 0, Y: 1}, {X: 1, Y: 1}},
 	}
 	for class, expected := range want {
 		got, err := FootprintOffsets(class)
@@ -109,10 +109,10 @@ func TestFootprintOffsetsRejectsClassesOutsideTheTable(t *testing.T) {
 // 原版固定跑四個槽，無效槽寫 0FFh 佔位，槽的位置要保留。
 func TestFootprintCellsKeepSlotPositions(t *testing.T) {
 	cells := FootprintCells(2, 10, 20)
-	if !cells[0].Valid() || cells[0] != (FootprintCell{A: 10, B: 20}) {
+	if !cells[0].Valid() || cells[0] != (FootprintCell{X: 10, Y: 20}) {
 		t.Fatalf("slot 0 = %+v", cells[0])
 	}
-	if !cells[1].Valid() || cells[1] != (FootprintCell{A: 10, B: 21}) {
+	if !cells[1].Valid() || cells[1] != (FootprintCell{X: 10, Y: 21}) {
 		t.Fatalf("slot 1 = %+v", cells[1])
 	}
 	for slot := 2; slot < FootprintSlots; slot++ {
@@ -124,10 +124,10 @@ func TestFootprintCellsKeepSlotPositions(t *testing.T) {
 
 func TestFootprintCellsCoverAllFourShapes(t *testing.T) {
 	want := map[uint8][]FootprintCell{
-		1: {{A: 10, B: 20}},
-		2: {{A: 10, B: 20}, {A: 10, B: 21}},
-		3: {{A: 10, B: 20}, {A: 11, B: 20}},
-		4: {{A: 10, B: 20}, {A: 11, B: 20}, {A: 10, B: 21}, {A: 11, B: 21}},
+		1: {{X: 10, Y: 20}},
+		2: {{X: 10, Y: 20}, {X: 10, Y: 21}},
+		3: {{X: 10, Y: 20}, {X: 11, Y: 20}},
+		4: {{X: 10, Y: 20}, {X: 11, Y: 20}, {X: 10, Y: 21}, {X: 11, Y: 21}},
 	}
 	for class, expected := range want {
 		cells := FootprintCells(class, 10, 20)
