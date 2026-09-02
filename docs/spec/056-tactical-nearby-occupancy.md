@@ -38,6 +38,20 @@ spec 053 對它的描述「只留下 `+10Eh` 等於 mover 反值者」在此得�
 
 - `sub_13BE` 的產生規則：格位如何列舉、距離參數如何影響、是否含 mover 自身。
   這是完整 occupancy 的另一半，也是把 `attackTargetID` 接進 probe 的前提。
+  **已試過一次並確認此路不通，下一輪不要重跑同一條**：以
+  `ida-pro-9.4-idapython:locked-v1` 對 `overlay-25.bin`（SHA-256
+  `9fede24b…50c0e`，與 `ida-overlay25-nearby-opponents.json` 記錄的完全相同）
+  跑 `tools/ida-export-overlay-functions.py`，`POOL_IDA_SEEDS=5054`（＝`13BEh`），
+  輸出檔非空但**解碼錯位**：第一條是 `adc ax, [bx+si]`，結尾卻是 `retf 4`。
+  兩件事同時成立——檔案一致，且 `13BEh` 不是 file offset 上的指令邊界——指向
+  `call sub_13BE` 是 near call，其目標是**段內偏移**，而 overlay-25 的 file offset
+  與段偏移之間存在位移。因此要先解 overlay-25 的段結構（`dos-ovr-manifest.json`
+  與 TPOV entry stub），把段基底算出來，才能得到正確 seed。
+  參考 `~/.claude/knowledge-base/retro/borland-tpov-overlay-re.md` 的
+  「stub offset 撞號要比 segment」。
+  另注意：對已存在的 `.i64` 直接跑 `idat -A -B` 會以
+  `Failed to initialize IDA as library (error code 1)` 失敗，要對 raw bin 重跑；
+  raw binary 沒有 entry point，IDA 不會自動建立任何函式，函式清單會是空的。
 - 每筆 3 bytes 的前兩 byte 語意（合理推測是格座標，但未證）。
 - 迴圈從 1 起算，因此 `6678h`（＝`6676h+2`，即筆 0 的第三欄）與筆 0 的前兩欄
   是否為保留槽或另有用途，屬 `strong inference`，未證實。
