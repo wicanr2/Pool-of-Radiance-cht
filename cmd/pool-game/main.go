@@ -167,6 +167,10 @@ type app struct {
 	trainParty int
 	// spellMember 是法術畫面上選中的成員，記憶指令對他生效。
 	spellMember int
+	// 戰鬥中的施法清單（spec 098）。
+	castOpen    bool
+	castOptions []castOption
+	castCursor  int
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
 	// experienceTable 是昇級門檻（spec 071）。

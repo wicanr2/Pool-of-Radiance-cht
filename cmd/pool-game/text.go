@@ -92,6 +92,14 @@ var messages = map[messageID][2]string{
 	msgSpellsNoSlot:         {" has no free slot for that spell.", " 沒有空格可以記那個法術。"},
 	msgSpellsMemoriseHint:   {"1-6 pick  M memorise  F forget", "1-6 挑人　M 記憶　F 忘掉"},
 	msgSpellsSlotLine:       {"%s (%d): memorised %d of %d, %d free", "%s（%d）：已記 %d／%d，還能記 %d"},
+	msgCastNotACaster:       {"That combatant is not a party member.", "那一格不是隊員。"},
+	msgCastNothingReady:     {"No memorised spell is ready to cast.", "沒有記著可以施展的法術。"},
+	msgCastNoTarget:         {"%s finds no reachable target.", "%s 找不到打得到的目標。"},
+	msgCastHealed:           {"%s casts %s and recovers %d hit points.", "%s 施展 %s，回復 %d 點生命值。"},
+	msgCastHit:              {"Spell hits %d for %d; %d hit points left.", "法術命中 %d 造成 %d 點；剩 %d 點。"},
+	msgCastDown:             {"Spell drops %d.", "法術放倒了 %d。"},
+	msgCastTookEffect:       {"%s casts %s.", "%s 施展了 %s。"},
+	msgCastHint:             {"C cast", "C 施法"},
 	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
@@ -494,6 +502,14 @@ const (
 	msgSpellsNoSlot
 	msgSpellsMemoriseHint
 	msgSpellsSlotLine
+	msgCastNotACaster
+	msgCastNothingReady
+	msgCastNoTarget
+	msgCastHealed
+	msgCastHit
+	msgCastDown
+	msgCastTookEffect
+	msgCastHint
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved

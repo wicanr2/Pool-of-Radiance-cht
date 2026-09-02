@@ -152,12 +152,29 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 338, foreground)
 	drawText(screen, fmt.Sprintf("%s   %s", a.text(msgTacticalProvisional), a.tactical.FoeLog),
 		70, 354, foreground)
-	hint := a.text(msgTacticalKeys)
+	hint := a.text(msgTacticalKeys) + "  " + a.text(msgCastHint)
 	if a.tactical.Prompt {
 		hint = a.text(msgTacticalPrompt)
 	}
 	drawText(screen, hint, 70, 370, accent)
 	drawText(screen, a.text(msgTacticalBack), 500, 322, foreground)
+	drawCastMenu(screen, a, foreground, accent)
+}
+
+// drawCastMenu 把施法清單畫在盤面右邊。只列得出已經讀過處理常式的法術，
+// 所以看得到的就是做得到的。
+func drawCastMenu(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	if !a.castOpen || len(a.castOptions) == 0 {
+		return
+	}
+	for index, option := range a.castOptions {
+		cursor, ink := " ", foreground
+		if index == a.castCursor {
+			cursor, ink = ">", accent
+		}
+		drawText(screen, fmt.Sprintf("%s%s", cursor, option.Label),
+			420, 100+index*16, ink)
+	}
 }
 
 // 這一段的部署是暫定的。原版由 DS:43A2h 的陣型樣板決定誰站哪一格，而那張表
@@ -252,6 +269,9 @@ type tacticalState struct {
 	Classes       combat.CellClasses
 	Roster        []combat.CombatantCell
 	Friendly      []bool
+	// PartySlot 把戰場上的位置換回隊伍索引，−1 代表那一格不是隊員。
+	// 施法要用它才找得到「這個位置是誰」的記憶陣列。
+	PartySlot []int
 	Dexterity     []uint8
 	Scores        []uint8
 	Budgets       []uint8
@@ -425,6 +445,7 @@ func (a *app) enterTacticalPreview() error {
 		Budgets:      make([]uint8, size),
 		BaseMovement: make([]uint8, size),
 		BudgetSource: source,
+		PartySlot:    partySlot,
 		Text:         a.text,
 	}
 	state.States = make([]uint8, size)
@@ -950,6 +971,13 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
+	if a.castOpen {
+		return a.castInput()
+	}
+	if a.justPressed(ebiten.KeyC) && state.Mover != 0 {
+		a.openCastMenu()
+		return nil
+	}
 	if a.justPressed(ebiten.KeyEnter) {
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
@@ -1092,6 +1120,7 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	staged := a.combatActive
 	a.tacticalPreview, a.tactical = false, nil
+	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	if outcome != combat.CombatVictory {
 		a.statusLine = "Party defeated; the post-combat script does not run."
 		return nil

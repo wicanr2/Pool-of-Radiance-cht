@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"path/filepath"
 	"testing"
 
@@ -80,5 +81,142 @@ func TestMemoriseFromTheSpellScreen(t *testing.T) {
 	// 角色庫要跟著同步。
 	if len(application.state.CharacterLibrary[0].Memorised) == 0 {
 		t.Error("角色庫沒有跟著更新")
+	}
+}
+
+// 只用按鍵走到真的一場戰鬥裡施出魔法飛彈，並且確認：記憶的那一格被用掉、
+// 敵人真的掉血、傷害落在 spec 098 算出來的範圍。
+//
+// 不用戰場預覽——預覽的盤面上沒有敵人，測起來會 skip，而 skip 與通過在
+// 報表上分不出來。
+func TestCastMagicMissileInCombat(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	// 第 6 級法師：魔法飛彈 3 發，每發 1d4+1（spec 098）。
+	levels := make([]uint8, gamepack.ClassThac0ClassCount)
+	levels[gamepack.ClassSlotMagicUser] = 6
+	party := make([]poolsave.Character, 0, 6)
+	for index := 0; index < 6; index++ {
+		member := poolsave.Character{Name: string(rune('A' + index)),
+			RaceID: "human", GenderID: "male", ClassID: "magic-user",
+			AlignmentID: "lawful-good", Abilities: [6]int{10, 18, 10, 10, 10, 10},
+			MaxHP: 30, CurrentHP: 30, PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+			ClassLevels: append([]uint8(nil), levels...),
+			Memorised:   make([]uint8, gamepack.MemorisedSpellSlots)}
+		member.Memorised[0] = gamepack.SpellIDMagicMissile
+		party = append(party, member)
+	}
+	application.state = poolsave.State{Schema: poolsave.Schema,
+		CharacterLibrary: party, Party: party}
+	application.saveState = func(poolsave.State) error { return nil }
+	application.roller = diceRoller{random: rand.New(rand.NewSource(3))}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 20000 && !application.introDone; tick++ {
+		if application.introWaiting || application.tourPage >= 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		application.keys = scriptedKeys{}
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	random := rand.New(rand.NewSource(7))
+	for step := 0; step < 4000 && !application.combatActive; step++ {
+		var err error
+		switch {
+		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
+			err = press(application, ebiten.KeyEnter)
+		default:
+			if random.Intn(3) == 0 {
+				err = press(application, ebiten.KeyArrowRight)
+			} else {
+				err = press(application, ebiten.KeyArrowUp)
+			}
+		}
+		if err != nil {
+			t.Fatalf("step %d: %v", step, err)
+		}
+	}
+	if !application.combatActive {
+		t.Fatal("never reached combat")
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	state := application.tactical
+	if state == nil {
+		t.Fatalf("tactical state absent: %q", application.statusLine)
+	}
+	// 輪到隊員動的時候按 C 施法。
+	cast := false
+	for tick := 0; tick < 4000 && !cast; tick++ {
+		state = application.tactical
+		if state == nil || state.Finished {
+			break
+		}
+		if state.Prompt {
+			if err := press(application, ebiten.KeyY); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		mover := state.Mover
+		if mover == 0 || int(mover) >= len(state.PartySlot) || state.PartySlot[mover] < 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		target, found := state.nearestReachableOpposing(mover)
+		if !found {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		partyIndex := state.PartySlot[mover]
+		before := state.HitPoints[target]
+		if err := press(application, ebiten.KeyC); err != nil {
+			t.Fatal(err)
+		}
+		if !application.castOpen {
+			t.Fatalf("按 C 沒有開出施法清單（狀態列 %q）", application.statusLine)
+		}
+		if len(application.castOptions) != 1 ||
+			application.castOptions[0].ID != gamepack.SpellIDMagicMissile {
+			t.Fatalf("清單應該只有魔法飛彈一條，拿到 %+v", application.castOptions)
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+		if application.state.Party[partyIndex].Memorised[0] != 0 {
+			t.Fatal("施完之後那一格記憶沒有被用掉")
+		}
+		after := state.HitPoints[target]
+		damage := before - after
+		if damage <= 0 {
+			t.Fatalf("敵人的血從 %d 變成 %d，法術沒有造成傷害（狀態列 %q）",
+				before, after, application.statusLine)
+		}
+		// 3 發，每發 1d4+1 → 6..15。目標被打倒時血會被夾到 0，所以只查上界。
+		if damage > 15 {
+			t.Fatalf("第 6 級的魔法飛彈最多 15 點，造成了 %d 點", damage)
+		}
+		t.Logf("施出魔法飛彈：對 %d 造成 %d 點", target, damage)
+		cast = true
+	}
+	if !cast {
+		t.Fatal("整場都沒有機會施法")
 	}
 }
