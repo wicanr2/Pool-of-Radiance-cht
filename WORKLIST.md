@@ -356,8 +356,10 @@
   `3Ch PROTECTION` 12、`39h WHO` 11、`36h ADD NPC` 7、`32h FIND ITEM` 7、
   `1Eh CHECKPARTY` 4、`0Fh INPUT NUMBER` 2、`34h ECL CLOCK` 1、`3Bh SPELL` 1。
   起始地圖上走得到的是 `39h WHO`（ECL3/b0 兩處、b11 一處）與 `36h ADD NPC`
-  （各一處），所以那兩條擋在最前面。`39h` 的提示字串來自 `DS:6E8Eh`，
-  那段在 START.EXE 的檔案映像之外（BSS），是執行時才填的，靜態讀不到。
+  （各一處），所以那兩條擋在最前面。兩條的骨架已由 spec 083 解出，並解出
+  它們共用的「目前角色」槽 `DS:5CF0h`——`39h` 寫、`36h` 讀、`38h` 也會搬。
+  **還缺**：挑人的 UI（overlay-25 entry 42）、NPC 記錄從哪個封存檔載入
+  （overlay-17 entry 9）、以及記錄 `+84h` 的語意。
   `33h PRINT RETURN` 與 `3Dh CLEAR BOX` 已接（spec 082），待辦從 16 條 253 處
   降到 14 條 206 處。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
