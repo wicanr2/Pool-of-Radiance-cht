@@ -14,9 +14,19 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "'ALL RIGHT THEN. WHAT IS TODAY'S PASSWORD?'",
+      "text": "「那好。今天的密語是什麼？」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'ALL RIGHT, GET OUT OF HERE THEN. COME BACK WHEN YOU'VE LEARNED THE RULES.'",
       "text": "「那就滾吧。等你們學會規矩再回來。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'ALL RIGHT, THEN. PASS!' AND WITH THAT THE GATES SWING OPEN AND YOU PASS THROUGH THE GATE.",
+      "text": "「那好，過去吧！」門隨即敞開，你們穿了過去。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'ALL RIGHT, THEN. WHAT IS TODAY'S PASSWORD?'",
@@ -24,9 +34,24 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'ALL RIGHT, THEN. WHAT TODAY'S PASSWORD?'",
+      "text": "「那好。今天密語是什麼？」",
+      "note": "紡織行與巨人占據一帶的事件。原版此處漏了 IS。"
+    },
+    {
+      "source": "'ARROGANT KNAVE FEEL THE POWER OF TYRANTHRAXUS!'",
+      "text": "「狂妄的小人，嘗嘗泰蘭特拉克斯的力量！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'BACK SO SOON? I CAN ONLY REPEAT THE EARLIER OFFERS: '",
       "text": "「這麼快就回來了？我能給的還是先前那幾項：」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'BEGONE OR FEEL THE WRATH AND POWER OF TYRANTHRAXUS!' DO YOU LEAVE?",
+      "text": "「滾，否則就嘗嘗泰蘭特拉克斯的怒火與力量！」你們要離開嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'BEHIND THESE DOORS ARE THE SPECIAL TRAINING SCHOOLS  WHERE ADVENTURERS INCREASE THEIR SKILLS. LET US NOW GO TO THE CITY'S MOST IMPORTANT BUILDING.'",
@@ -37,6 +62,16 @@
       "source": "'BEYOND THIS GATE ARE THE MONSTER-RIDDEN AREAS OF THE OLD CITY WE ARE SLOWLY PREPARING FOR SETTLEMENT.  THE COUNCIL OFFERS A GENEROUS REWARD TO THOSE WHO CLEAR AREAS OF MONSTERS.",
       "text": "「這道門外就是舊城區，那裡滿是怪物，我們正一步步整頓、準備讓人遷入。清掉一區怪物的人，市議會會給一筆優厚的報酬。",
       "note": "Rolf 導覽第七頁。原版這一句沒有結尾引號，照原樣不補。"
+    },
+    {
+      "source": "'BLASPHEMERS! GET THEM!'",
+      "text": "「褻瀆神明的傢伙！上！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'BOY, THIS CROWN IS HEAVY. OH, WELL IT'S A LIVING. WHAT DOES TYRANTHRAXUS WAN... OOPS! GET THEM!",
+      "text": "「唉，這頂王冠真沉。算了，總得討口飯吃。泰蘭特拉克斯要什……糟！上啊！",
+      "note": "瓦傑渥城堡內部。接下一段。"
     },
     {
       "source": "'BY ORDER OF THE CITY COUNCIL,' THE HARBOR MASTER SAYS, 'THE ONLY BOAT OUT IS GOING TO SOKAL KEEP.  YOU CAN CATCH IT AT THE END OF THE PIER.'",
@@ -89,14 +124,34 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "'FROGS AND TOADS NOT SAME THING. THEY NOT SAME, THEY DIF... THEY NOT SAME! ME RIGHT?'",
+      "text": "「青蛙跟蟾蜍不一樣。不一樣，牠們不……反正就是不一樣！我沒說錯吧？」",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
       "source": "'GARWIN, I'LL GET YOU!' CRIES THE AUCTIONEER. HOWEVER, THE MAN HAS ESCAPED IN THE CONFUSION.",
       "text": "「加文，我不會放過你！」拍賣官大叫。但那人已趁亂逃走了。",
       "note": "波多廣場的拍賣會與街頭遭遇。Garwin 為新增譯名。"
     },
     {
+      "source": "'GET EM!'",
+      "text": "「上啊！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'GET LOST, WIMP! IF YA DON'T BEAT IT WE'LL BEAT YOU! HA! HA!' THE GIANT LEADER POKES THE GIANT NEXT TO HIM, 'BEAT IT, BEAT THEM! GET IT?!'",
+      "text": "「滾吧，孬種！你們不快滾，我們就揍你們！哈！哈！」巨人頭子戳了戳旁邊那個：「快滾、揍他們！懂了沒？！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'GET OUTA HERE BEFORE WE MAKE YOU LEAVE' THE MONSTERS YELL.  'AND YOU WONT COME BACK IF YOU KNOW WHATS GOOD FER YA'  THE MONSTERS THEN LEAVE.",
       "text": "「趁我們還沒動手，快滾。」怪物吼道，「識相的話就別再回來。」說完牠們就走了。",
       "note": "波多廣場的拍賣會與街頭遭遇。原版此處刻意用不標準的口語。"
+    },
+    {
+      "source": "'GO AHEAD THREATEN US! TEAR OUT OUR HEARTS! CUT OFF OUR HEADS! SLICE OPEN OUR BELLIES... IF YOU CAN.",
+      "text": "「儘管威脅我們啊！挖出我們的心！砍下我們的頭！剖開我們的肚子……如果你們辦得到的話。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
     },
     {
       "source": "'GOING... GOING... GONE!' THE AUCTIONEER CRIES.",
@@ -112,6 +167,11 @@
       "source": "'GREETINGS, COURAGEOUS ONES, I AM ROLF, APPOINTED BY THE COUNCIL TO INTRODUCE NEWCOMERS TO THE FAIR CITY OF PHLAN. IF YOU WILL ACCOMPANY ME, I WILL START THE TOUR.'",
       "text": "「勇敢的朋友們，你們好。我是羅夫，市議會派我為新來的人介紹美麗的菲蘭城。願意跟我走一趟的話，導覽這就開始。」",
       "note": "Rolf 導覽第一頁。Phlan 依 glossary 定案作菲蘭；Rolf 說明書未收，見 glossary 的「遊戲內文字新增譯名」。"
+    },
+    {
+      "source": "'HAH! HAH! YOU'RE DUMB! THAT'S NOT THE PASSWORD!'",
+      "text": "「哈！哈！你們真笨！那不是密語！」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'HAIL, NOBLE ADVENTURERS,' HE CALLS. 'I WOULD ASK YOU TO HELP ME END THIS FOUL UNDEAD CURSE.'",
@@ -139,9 +199,24 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "'HEY LOOK! IT MUST BE THEM INTRUDERS.'",
+      "text": "「喂看！一定就是那些闖進來的。」",
+      "note": "紡織行與巨人占據一帶的事件。原版用口語。"
+    },
+    {
       "source": "'HEY, WAIT A MINUTE. THEY ARE IMPOSTERS! ALL RIGHT, THROW DOWN YOUR WEAPONS!'",
       "text": "「喂，等等。他們是冒牌的！好啦，把武器丟下！」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'HEY, WHAT DO YOU THINK YOU'RE DOING?'",
+      "text": "「喂，你們以為自己在幹嘛？」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'HIS IMMENSITY, TYRANTHRAXUS, HAS SEEN FIT TO ESTABLISH THIS TEMPLE TO OUR LORD BANE. THEREFORE IT IS RIGHT THAT YOU ACCEPT THE LORD BANE'S BLESSING.'",
+      "text": "「至大的泰蘭特拉克斯認為該為我主邪惡神立這座神廟。因此，你們理當接受邪惡神的祝福。」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'HOW DARE YOU INTERFERE WITH THE BOSS'S BUSINESS?' THE LEADER ROARS.  'KILL THEM,' HE ORDERS.",
@@ -169,9 +244,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "'I HAVE NO MORE TIME TO TALK WITH YOU, THE LORD BANE REQUIRES MY CONSTANT DEVOTION. COME, BEFORE YOU LEAVE ACCEPT THE BLESSING OF OUR LORD.",
+      "text": "「我沒空再和你們說話了，邪惡神需要我時刻虔敬。來吧，走之前接受我主的祝福。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
       "source": "'I HAVE NO TIME FOR THE LIKES OF YOU,' THE MAN SAYS AIRILY.  'BEGONE!' (WHAT DO YOU DO?)",
       "text": "「我沒空理你們這種人。」那人輕慢地說，「滾吧！」（你們要怎麼做？）",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I KNOW THE WAY THROUGH THE HEDGE... LEFT RIGHT RIGHT... FOR CHANTUA'S SAKE! DON'T LEAVE ME!'",
+      "text": "「我知道怎麼穿過樹籬……左、右、右……看在香圖亞的份上！別丟下我！」",
+      "note": "瓦傑渥城堡內部。Chantua 為新增譯名。"
     },
     {
       "source": "'I MAY HAVE A USE FOR YOU,' THE MAN SAYS. 'SOME TIME AGO, I ORDERED A SPECIAL POTION.  THE POTION IS READY BUT I CAN'T LEAVE TO FETCH IT.  BRING IT HERE, I PAY WELL.' (WHAT DO YOU DO?)",
@@ -179,9 +264,29 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'I SAID GET LOST!'",
+      "text": "「我叫你們滾！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'I SAID GET OUT!' THE GNOLL GRABS A POT FROM THE FIRE AND THROWS ITS CONTENTS AT YOU.",
+      "text": "「我叫你們滾！」那隻豺狼人從火上抄起一口鍋，把裡面的東西潑向你們。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'I'M SORRY, I CAN'T TAKE ANYMORE ORDERS JUST NOW. IF IT'S IMPORTANT GET AUTHORIZATION. NOW IF YOU'LL EXCUSE ME I HAVE TO GET BACK TO WORK'",
+      "text": "「抱歉，我現在不能再接單了。要是事情要緊，去弄張授權來。恕我失陪，我得回去做事了。」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'I'M SORRY, SIR, THERE'S AN ALERT.",
       "text": "「抱歉，長官，現在有警報。",
       "note": "貧民區（Slums）的事件與敘述。接下一段。"
+    },
+    {
+      "source": "'I'M SORRY, SIR, THERE'S AN ALERT. ON WHOSE AUTHORITY ARE YOU HERE?'",
+      "text": "「抱歉，長官，現在有警報。你們是奉誰的命令來的？」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'IF YOU CHANGE YOUR MIND, RETURN IN TWO HOURS.' HE ESCORTS YOU OUT.",
@@ -194,6 +299,11 @@
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
+      "source": "'IN THE NAME OF CHANTUA, HELP ME, PLEASE! BY ALL THAT'S MERCIFUL HELP ME.' HE BEGINS TO COUGH.",
+      "text": "「以香圖亞之名，求求你們救我！看在一切慈悲的份上救救我。」他咳了起來。",
+      "note": "瓦傑渥城堡內部。"
+    },
+    {
       "source": "'IT IS IMPERATIVE THAT A MESSAGE BE DELIVERED TO THE ZHENTIL OUTPOST TO THE WEST.  I AM SENDING YOU AS DIPLOMATIC ENVOYS.",
       "text": "「有一封信務必送到西邊的漢提爾前哨。我要派你們以使節的身分前往。",
       "note": "接下一段。"
@@ -202,6 +312,11 @@
       "source": "'IT IS THE UNANIMOUS REQUEST OF THE COUNCIL THAT YOU LEAD THE ATTACK. YOUR SKILL AND BRAVERY HAVE WON THE ADMIRATION OF ALL PHLAN.  WE LOOK TO YOU TO HELP US WIN OUR FREEDOM.'",
       "text": "「議會一致請求由你們領軍。你們的本事與膽識已贏得全菲蘭城的敬佩。我們指望你們幫我們贏回自由。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'IT IS TODAY'S PASSWORD AT THE MAIN GATE INTO THE HEDGE MAZE. ALAS, I CAN NOT HELP YOU WITH THAT FOR I HAVE NOT BEEN INSIDE. BUT I HAVE HEARD THE MAZE IS DEADLY!'",
+      "text": "「那是今天進樹籬迷宮大門的密語。可惜迷宮裡我幫不上忙，我沒進去過。不過聽說那迷宮要人命！」",
+      "note": "瓦傑渥城堡內部。"
     },
     {
       "source": "'IT WAITS IN A BOOTH IN THE OLD ROPE GUILD BUT A SHORT DISTANCE TO THE SOUTHEAST FROM WHERE YOU NOW STAND.  SPEAK MY NAME, OHLO.'",
@@ -222,6 +337,11 @@
       "source": "'IT'S A WAND OF ILLUMINATION. WHO CARES, I SEE IN THE DARK ANYWAY!'",
       "text": "「那是照明魔杖。誰在乎，反正我在暗處也看得見！」",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "'JUST LET ME GO, OKAY?",
+      "text": "「放我走，好不好？",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
     },
     {
       "source": "'LET ME GIVE YOU A PIECE OF ADVICE,' THEIR LEADER SAYS.  'STAY AWAY FROM THE TEXTILE HOUSE. THE UNDEAD ARE GOING CRAZY UP THERE.'  THE MONSTERS TURN TO LEAVE. (WHAT DO YOU DO?)",
@@ -259,6 +379,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'OH WELL. CAN'T LET HERDREK HAVE ALL FUN.' THEY PICK UP THEIR CLUBS AND ATTACK.",
+      "text": "「算了，總不能讓赫德瑞克一個人玩得盡興。」牠們抄起棍棒攻了上來。",
+      "note": "紡織行與巨人占據一帶的事件。Herdrek 為新增譯名。"
+    },
+    {
       "source": "'OH WELL.' HE LEAVES.",
       "text": "「算了。」他走了。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -269,9 +394,29 @@
       "note": "史塔傑諾門一帶的事件。"
     },
     {
+      "source": "'OH, WE SORRY! JUST DOING JOB! PLEASE NO TELL? WE LET YOU... WE STAY AT POST. MAKE SURE NO ONE GO BY!'",
+      "text": "「喔，抱歉抱歉！我們只是做事！拜託別說出去？我們讓你們……我們守在崗位上，保證沒人過得去！」",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
+      "source": "'OH, YEAH? WHO SEND YOU?'",
+      "text": "「是喔？誰派你們來的？」",
+      "note": "紡織行與巨人占據一帶的事件。原版文法本身就不通。"
+    },
+    {
       "source": "'OH, YOU'RE HERE FOR THE BOSS.'",
       "text": "「喔，你們是來找老大的。」",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "'OH... OKAY.' AND WITH THAT THEY LEAVE.",
+      "text": "「喔……好吧。」說完牠們就走了。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'OKAY, BUT NO HANGING AROUND.'",
+      "text": "「好吧，但別在這裡逗留。」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'ON YOUR RIGHT IS ONE OF THE ENTRANCE'S TO SUNE'S TEMPLE. AS WITH ALL PHLAN'S TEMPLES, VARIOUS CLERICAL SERVICES ARE OFFERED INSIDE.  ON YOUR LEFT IS AN ENTRANCE TO THE CITY PARK.'",
@@ -282,6 +427,11 @@
       "source": "'OUR TOUR IS ENDED. AGAIN, LET ME URGE YOU TO APPLY TO THE CITY CLERK FOR A COMMISSION.  GOOD-BYE AND GOOD FORTUNE.' (YOU ARE ON YOUR OWN NOW)",
       "text": "「導覽到此結束。再提醒一次，記得去找書記官接委託。再會，祝你們好運。」（接下來就靠你們自己了）",
       "note": "Rolf 導覽最後一頁。括號內是原版給玩家的旁白，不是羅夫的話。"
+    },
+    {
+      "source": "'PLEASE DON'T KILL US,' SHE SAYS. 'IF YOU DON'T WE WILL GIVE YOU THESE CLOTHES TO USE AS A DISGUISE. WE SWEAR WE WON'T SAY ANYTHING!",
+      "text": "「求你們別殺我們，」她說，「只要放過我們，這些衣服就給你們拿去偽裝。我們發誓什麼都不說！",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
     },
     {
       "source": "'PLEASURE DOING BUSINESS WITH YOU. HERE'S YOUR WAGON.'",
@@ -299,6 +449,16 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "'SORRY ME NOT KNOW! JUST DOING JOB! YOU GO NOW.'",
+      "text": "「抱歉我不知道！只是做事而已！你們快走。」",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
+      "source": "'SORRY, SIR. YEAH, WE CAN GET YA TO THE BOSS. THIS PAPER HAS THE PASSWORDS.'",
+      "text": "「抱歉，長官。是的，我們能帶你們去見老大。密語都在這張紙上。」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'SORRY, THAT'S MY FINAL OFFER. TAKE IT OR LEAVE IT.",
       "text": "「抱歉，這是我的最後開價。要不要隨你們。",
       "note": "貧民區（Slums）的事件與敘述。接下一段。"
@@ -309,14 +469,29 @@
       "note": "貧民區（Slums）的事件與敘述。接下一段；原版口語作 DON'T GOT。"
     },
     {
+      "source": "'TELL ME PASSWORD OR I KILL YOU. NOW!'",
+      "text": "「說出密語，不然我殺了你們。快！」",
+      "note": "紡織行與巨人占據一帶的事件。原版文法本身就不通。"
+    },
+    {
       "source": "'THANK YOU FOR COMING.  I MUST BE BRIEF FOR OUR NEED IS URGENT.  OUR ONE CHANCE TO DEFEAT THE ENEMY IS THROUGH AN ASSAULT ON THE CASTLE. TO DO THIS, WE MUST FIRST SECURE STOJANOW GATE.",
       "text": "「多謝你們前來。事情緊急，我就長話短說。要擊敗敵人只有一條路——強攻城堡。而要做到這一點，得先拿下史塔傑諾門。",
       "note": "接下一段。"
     },
     {
+      "source": "'THANK YOU! THANK YOU! I JUST THOUGHT THAT THE POOL WAS HERE! THERE WAS NOWHERE ELSE TO GO! I HAVE NOWHERE TO GO. TAKE ME WITH YOU?'",
+      "text": "「謝謝！謝謝你們！我只是以為那池子在這裡！我沒有別的地方可去了！真的沒有。帶我一起走好嗎？」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'THANKS FOR FREEING ME. I'M LORD CADORNA'S SERVANT.",
       "text": "「謝謝你們放我出來。我是卡多納大人的僕人。",
       "note": "瓦海登墳場的事件與敘述。接下一段。"
+    },
+    {
+      "source": "'THAT'S THEM! GET THEM!'",
+      "text": "「就是他們！上！」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'THE AUCTION IS CANCELLED!' YELLS THE AUCTIONEER AS HE FLEES.",
@@ -389,6 +564,26 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'WAIT DON'T LEAVE ME HERE. IF YOU DO I'LL RAISE THE ALARM.'",
+      "text": "「等等，別把我丟在這裡。你們敢走，我就拉警報。」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'WAIT! I WAS JUST A MAGE SEARCHING FOR KNOWLEDGE WHEN TYRANTHRAXUS CAPTURED ME. I'VE BEEN FORCED TO WORK FOR HIM. SPARE ME AND I WILL LEAVE, NEVER TO RETURN!'",
+      "text": "「等等！我只是個尋求知識的法師，被泰蘭特拉克斯抓來的。我是被迫替牠做事。放我一馬，我這就走，再也不回來！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'WAIT! PLEASE! I'LL GIVE YOU ALL MY NOTES! HERE THEY ARE!'",
+      "text": "「等等！拜託！我的筆記全給你們！都在這裡！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'WAIT!' HE SHRIEKS. 'I KNOW HOW TO GET THROUGH THE MAIN GATES. I CAN HELP YOU.'",
+      "text": "「等等！」他尖叫，「我知道怎麼通過大門。我能幫你們。」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'WE ARE JUST OUTSIDE THE CITY HALL. PROCLAMATIONS ARE POSTED ON THESE WALLS. INSIDE, THE CITY CLERK AWARDS THE COUNCIL'S COMMISSIONS.  COMMISSIONS ARE THE QUICKEST WAY TO FAME AND FORTUNE.'",
       "text": "「我們就在市政廳外面。公告都貼在這幾面牆上。裡頭的書記官負責發放市議會的委託。想快點成名發財，接委託是最快的路。」",
       "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
@@ -397,6 +592,11 @@
       "source": "'WE CAN DUPLICATE THE SEAL ON THAT CHEST -- FOR HALF THE TREASURE -- NO ONE WILL EVER KNOW. INTERESTED?'",
       "text": "「那個箱子的封印我們可以仿造——分我們一半財寶——沒有人會知道。有興趣嗎？」",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "'WE DO SO KNOW THE PASSWORDS! YOU ALWAYS THINK YOU'RE SO SMART. LET'S SEE IF YOU CAN READ TODAY'S LIST.'",
+      "text": "「我們當然知道密語！你老以為自己多聰明。那就看看你唸不唸得出今天這張單子。」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'WE GOTTA KEEP ALL YOU NONBELIVERS OUTA HERE' THE MONSTERS SAY AS THEY BEGIN TO LEAVE.  'SO HIT THE ROAD YA BUMS.'  THE MONSTERS TURN AND LEAVE.",
@@ -429,6 +629,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'WELL THEN, GOOD LUCK. BEST YOU LEAVE BEFORE YOU ARE FOUND HERE.",
+      "text": "「那就祝你們好運。最好趁還沒被發現前離開。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
       "source": "'WHAT A BUNCH OF CHEAPSKATES,' THE LEADER COMPLAINS. 'LET 'EM HAVE IT BOYS!'",
       "text": "「一群小氣鬼。」領頭的抱怨道，「弟兄們，給他們點顏色看看！」",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -439,9 +644,39 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'WHAT ARE YOU DOING HERE?' HE REPEATS.",
+      "text": "「你們在這裡做什麼？」他又問了一次。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'WHAT ARE YOU DOING HERE?', HE REPEATS.",
+      "text": "「你們在這裡做什麼？」他又問了一次。",
+      "note": "紡織行與巨人占據一帶的事件。原版這一版逗號位置不同。"
+    },
+    {
+      "source": "'WHAT IS YOUR BUSINESS WITH TYRANTHRAXUS, LORD OF PHLAN?'",
+      "text": "「你們找菲蘭城之主泰蘭特拉克斯有什麼事？」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'WHAT PASSWORD?'",
+      "text": "「什麼密語？」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'WHAT YA DOIN' HERE?'",
+      "text": "「你們在這幹嘛？」",
+      "note": "紡織行與巨人占據一帶的事件。原版用口語。"
+    },
+    {
       "source": "'WHAT? I THINK THESE SCUM ARE IMPOSTERS!'",
       "text": "「什麼？我看這些渣滓是冒牌貨！」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'WHAT? I THINK YOU SCUM ARE IMPOSTERS!'",
+      "text": "「什麼？我看你們這些渣滓是冒牌貨！」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'WHATS YOUR PROBLEM?'",
@@ -457,6 +692,11 @@
       "source": "'WHEN YOU GET TO ZHENTIAL KEEP, PRESENT THIS PACKET TO ITS COMMANDANT.  DO NOT BREAK THE SEALS OR YOU WILL BE SEIZED AS SPIES.'",
       "text": "「到了漢提爾城堡，把這包文件交給指揮官。千萬別拆封，否則會被當成間諜逮捕。」",
       "note": "原版此處把 ZHENTIL 拼成 ZHENTIAL。"
+    },
+    {
+      "source": "'WHO HIM? OH WELL HE NO CAN HELP YOU NOW!'",
+      "text": "「他？哼，他現在幫不了你們了！」",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
     },
     {
       "source": "'WHY SURE I'LL SELL YOU MY WAGON. ALL IT'LL COST YOU IS 250 GOLD PIECES. HOW ABOUT IT?'",
@@ -484,6 +724,21 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "'WRONG ANSWER, DINNER!'",
+      "text": "「答錯了，晚餐！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'WRONG! GUESS AGAIN!",
+      "text": "「錯了！再猜！",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
+      "source": "'WRONG! THERE IS NO PASSWORD! HA! HA! HA!' THE GIANTS ATTACK.",
+      "text": "「錯！根本沒有密語！哈！哈！哈！」巨人動手了。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "'YOU ARE SEEKING THE TEXTILE HOUSE. WE CAN GET YOU IN UNSEEN AND POSSIBLY HELP YOU WITH THE TREASURE. INTERESTED?'",
       "text": "「你們要找的是紡織行。我們可以帶你們神不知鬼不覺地進去，說不定還能幫你們弄到那批財寶。有興趣嗎？」",
       "note": "瓦海登墳場的事件與敘述。"
@@ -492,6 +747,11 @@
       "source": "'YOU CAN REST HERE AS LONG AS YOU WISH.' SHE THEN LEAVES.",
       "text": "「你們想休息多久都行。」說完她就離開了。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "'YOU DON'T BELONG HERE!'",
+      "text": "「你們不該待在這裡！」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "'YOU HAVE DONE WELL. GIVE ME THE POTION AND YOU WILL BE REWARDED.' (WHAT DO YOU DO?)",
@@ -507,6 +767,11 @@
       "source": "'YOU LIE,' THE SPIRIT MOANS AS IT FADES AWAY.",
       "text": "「你們說謊。」那幽靈一邊呻吟一邊消散。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "'YOU NO HURT THEM. THEM MY BUDDIES!' THEY ARGUE FOR A LITTLE BIT AND THEN ONE SAYS, 'HEY, WHAT WE FIGHTING FOR? IT'S ALL FAULT OF THEM!' 'YEH!' THEY TURN AND ATTACK YOU.",
+      "text": "「你不准傷他們。他們是我朋友！」牠們爭了一會兒，其中一個說：「喂，我們吵什麼？都是他們害的！」「對啊！」牠們轉身攻向你們。",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
     },
     {
       "source": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '",
@@ -562,6 +827,11 @@
       "source": ". THE LEADER SEES YOU. 'THAT'S THEM!'",
       "text": "。領頭的看見你們：「就是他們！」",
       "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": ". THE LEADER YELLS 'SACRILEGIOUS SCUM!'",
+      "text": "。領頭的大吼：「褻瀆神明的渣滓！」",
+      "note": "紡織行與巨人占據一帶的事件。片段。"
     },
     {
       "source": "... THE GANG IS OPERATING FROM THE CATACOMBS BY THE WELL...",
@@ -639,9 +909,19 @@
       "note": "酒館事件。"
     },
     {
+      "source": "A FIGHTER EMERGES FROM THE BUILDING NEARBY AND CONFRONTS YOU.",
+      "text": "一名戰士從附近的建築走出來攔住你們。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "A GROUP OF BUGBEARS APPROACH. 'THROW DOWN YOUR WEAPONS!'",
       "text": "一群熊妖走了過來：「把武器丟下！」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A GROUP OF FOUR GIANTS CHARGE OUT OF A NEARBY BUILDING.",
+      "text": "四名巨人從附近一棟建築裡衝了出來。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "A GROUP OF MONSTERS IS WAITING ON THE OTHER SIDE OF THE WALL",
@@ -689,6 +969,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "A MEDUSA COMES RUNNING TOWARD YOU.",
+      "text": "一隻蛇髮女妖朝你們奔來。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "A MIST RISES AND THICKENS INTO NUMEROUS SHADOWING FIGURES.  FROM THESE FIGURES RISES A LOW MOANING.",
       "text": "霧氣升起，凝成無數暗影般的身形，其間傳出低沉的呻吟。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -707,6 +992,11 @@
       "source": "A PACK OF HUNGRY GHOULS LOPES TOWARD YOU.",
       "text": "一群飢餓的食屍鬼朝你們奔來。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A PACK OF TROLLS CHARGE FROM WHERE THEY WERE HIDING.",
+      "text": "一群巨魔從藏身處衝了出來。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "A PACK OF UNDEAD SUDDENLY APPEARS.",
@@ -729,9 +1019,19 @@
       "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
+      "source": "A PATROL ROUNDS THE CORNER..",
+      "text": "一支巡邏隊繞過轉角……",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "A POWERFUL ONE BECOMES AWARE OF YOUR DEEDS AND SEEKS TO DESTROY YOU.  A WEAK ONE SEES YOU AS A PATH TO POWER.",
       "text": "一位強者察覺了你們的作為，想除掉你們；一位弱者則把你們看成通往力量的路。",
       "note": "貧民區（Slums）的事件與敘述。算命內容。"
+    },
+    {
+      "source": "A PRIEST AND TWO ACOLYTES TURN FROM THE ALTER, 'WELCOME MY CHILDREN. COME FORWARD AND ACCEPT THE BLESSING OF LORD BANE.'",
+      "text": "一名祭司與兩名見習僧侶從祭壇前轉過身來：「歡迎，我的孩子們。上前來，接受邪惡神的祝福。」",
+      "note": "紡織行與巨人占據一帶的事件。原版把 ALTAR 拼成 ALTER。"
     },
     {
       "source": "A ROBED ORC IS SITTING HERE. WHAT DO YOU DO?",
@@ -744,9 +1044,19 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "A SCRIBE WALKS INTO THE ROOM. HE SEES YOU AND LETS OUT A GASP. HE DROPS HIS BOOKS AND RUNS OUT THE DOOR.",
+      "text": "一名文書走進房裡，看到你們倒抽一口氣，丟下書就奪門而出。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "A SCYTHING BLADE DROPS ACROSS THE DOORWAY, DAMAGING ONE OF THE CHARACTERS.",
       "text": "一片鐮刀狀的刃器橫掃過門口，傷到了一名隊員。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "A SECRET DOOR IS FOUND",
+      "text": "你們找到一道暗門",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "A SHARP CRACK SPLITS THE AIR AND YOU ARE STUNG.",
@@ -819,6 +1129,11 @@
       "note": "史塔傑諾門一帶的事件。"
     },
     {
+      "source": "A VOLLEY OF BOULDERS ARE THROWN AT YOU...",
+      "text": "一陣巨石朝你們砸來……",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "A WEAPON OF GREAT POWER IS TO BE AUCTIONED TO OUR ENEMIES. THIS AUCTION IS TO BE HELD IN PODAL PLAZA.  FIND OUT WHAT THE WEAPON IS AND RETURN.'",
       "text": "有一件威力強大的武器要拍賣給我們的敵人，拍賣會就辦在波多廣場。查清楚那是什麼武器，然後回報。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -889,6 +1204,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "AMBUSH AND TIE HIM UP",
+      "text": "伏擊並把他綁起來",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "AMID THE LITTER OF THE ROOM YOU SEE A DULL BROWN REPTILIAN MONSTER.",
       "text": "在滿地雜物之間，你們看到一隻暗褐色的爬蟲怪物。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -897,6 +1217,11 @@
       "source": "AMID THE TRASH YOU FIND A BOX WHICH CONTAINS GOLD FOIL.",
       "text": "你們在垃圾堆裡找到一個裝著金箔的盒子。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "AMID THEIR PROTESTS YOU TIE THEM UP. THESE PROTESTS DIMINSH IN VOLUME AS YOU GAG THE WOMEN AND HIDE THEM IN A CORNER.",
+      "text": "你們在她們的抗議聲中把人綁了起來。塞住嘴、藏進角落之後，抗議聲也小了下去。",
+      "note": "紡織行與巨人占據一帶的事件。原版把 DIMINISH 拼成 DIMINSH。"
     },
     {
       "source": "AN ABANDONED SHOP. BROKEN SHELVES ARE ALL THAT REMAIN.",
@@ -917,6 +1242,11 @@
       "source": "AN ALARM STARTS RINGING!",
       "text": "警報大作！",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "AN OFFICER LOOKS AT YOU, 'WHAT ARE YOU DOING HERE?'",
+      "text": "一名軍官看向你們：「你們在這裡做什麼？」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "AN OLD THIEF STANDS HERE.'WELCOME TO MY GUILD. I AM RESTAL.' HE BOWS LOW.",
@@ -949,6 +1279,11 @@
       "note": "片段。"
     },
     {
+      "source": "AND YOU FIND A SWORD!",
+      "text": "你們找到一把劍！",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "ANHKHEG",
       "text": "蟻獅",
       "note": "怪物名，原版拼作 ANHKHEG（一般作 Ankheg）。"
@@ -962,6 +1297,26 @@
       "source": "APPROACH",
       "text": "靠近",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "AS HE COMES THROUGH THE DOOR YOU KNOCK HIM OUT AND DRAG HIS FORM INTO A CORNER.",
+      "text": "他一走進門就被你們打昏，屍身被拖進角落。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS HE COMES THROUGH THE DOOR YOU SLIT HIS THROAT. THE BODY IS DRAGGED INTO A CORNER.",
+      "text": "他一走進門，喉嚨就被你們割開。屍體被拖進角落。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS THE GIANT TURNS IN TRIUMPH TO HIS COMPANIONS, THE OTHERS PICK UP THEIR CLUBS. 'WHAT THEY KNOW? WE KNOCK DUMB LITTLE MEN'S BRAINS OUT!'",
+      "text": "那名巨人得意地轉向同伴，其餘的抄起了棍棒：「他們懂什麼？把這些笨小人的腦漿打出來！」",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
+      "source": "AS THE OTHER GIANTS BURST INTO HOWLS OF LAUGHTER THE ONE WHO TALKED TO YOU TURNS RED AND SAYS, 'YOU LIE! YOU LIE TO MAKE ME FOOL! I SMASH YOU!'",
+      "text": "其他巨人爆出一陣狂笑，剛才跟你們說話的那個臉都紅了：「你們騙人！騙我出醜！我砸扁你們！」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "AS YOU APPROACH THEY MOVE, ALLOWING YOU ENTRANCE INTO THE TEMPLE.",
@@ -987,6 +1342,11 @@
       "source": "AS YOU BACK AWAY THE BLIND ORC SAYS, 'I MUST CHECK IF YOU ARE WORTHY TO ENTER THE TEMPLE OF BANE, DO NEED NOT BE AFRAID.'",
       "text": "你們一後退，那隻盲眼半獸人說：「我得檢查你們配不配進邪惡神廟，不必怕。」",
       "note": "邪惡神廟（Temple of Bane）一帶。原版此處語句本身就不通（DO NEED NOT BE AFRAID）。"
+    },
+    {
+      "source": "AS YOU BREAK THROUGH THE DOOR INTO A WELL FITTED APARTMENT, TWO GIANTS COME LUMBERING UP TO YOU. YOU TURN TO FACE THEM.",
+      "text": "你們破門進入一間陳設講究的居室，兩名巨人笨重地走了過來。你們轉身迎戰。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "AS YOU DESTROY THE ALTAR, THE TEMPLE DOORS FLY OPEN AND A SCREAMING HORDE OF ORCS LED BY A HALF-ORC CLERIC ATTACK.  YOU TURN TO FACE THEM.",
@@ -1022,6 +1382,11 @@
       "source": "AS YOU ENTER THE ROOM YOU SEE SIX ORCS LED BY A LARGE OGRE.  THEY LUNGE FOWARD AND ATTACK.",
       "text": "你們一進房就看到六隻半獸人，由一隻高大的食人魔帶領。牠們撲上前來攻擊。",
       "note": "邪惡神廟（Temple of Bane）一帶。原版把 FORWARD 拼成 FOWARD。"
+    },
+    {
+      "source": "AS YOU ENTER THE ROOM YOU SEE SOME SLEEPING GIANTS.",
+      "text": "你們一進房就看到幾名熟睡的巨人。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "AS YOU ENTER THIS ROOM THE TWO THIEVES SPLIT; ONE GOING THROUGH THE EAST DOOR, THE OTHER GOING THROUGH THE SOUTH.  WHICH PATH WILL YOU TAKE?",
@@ -1064,6 +1429,21 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "AS YOU OPEN THE DOOR A BUCKET OF SAND THAT WAS PROPPED ABOVE THE DOOR FALLS.",
+      "text": "你們一開門，架在門上的一桶沙就翻了下來。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS YOU PUSH THE DOOR OPEN THE CEILING CAVES IN.",
+      "text": "你們一推開門，天花板就塌了下來。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS YOU QUICKLY LEAVE THE ROOM, YOU HEAR ONE OF THE GIANTS SAY, 'AH, US RIGHT. THEM JUST AFRAID TO SAY 'CAUSE KNOW YOU SMASH 'EM.' THE ARGUMENT RESUMES.",
+      "text": "你們匆匆離開時，聽見一名巨人說：「啊，我們是對的。他們只是不敢講，怕被你砸扁。」爭論又繼續下去。",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
       "source": "AS YOU SEARCH THE BEDS A GROUP OF ORCS COMES INTO THE ROOM.  THEY ATTACK IMMEDIATELY.",
       "text": "你們正在搜床鋪，一群半獸人走進房裡，立刻發動攻擊。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -1089,9 +1469,29 @@
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
+      "source": "AS YOU SLICE THROUGH SOMEONE IS PRICKED BY A THORN.",
+      "text": "你們一路砍過去，有人被荊棘扎到。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS YOU SNEAK TOWARD THEM A LOOSE BOARD CREAKS. THE GIANTS GET TO THEIR FEET SHAKING THE SLEEP FROM THEIR EYES.",
+      "text": "你們潛行過去時踩到一塊鬆動的木板，發出吱嘎聲。巨人紛紛起身，把睡意甩開。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS YOU START TO ATTACK HIM, FOUR GIANTS BURST OUT OF A NEARBY BUILDING.",
+      "text": "你們正要動手，四名巨人就從附近的建築衝了出來。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "AS YOU TRY TO DEACTIVATE THE TRAP YOU MANAGE TO SET IT OFF.  A LARGE NEEDLE SHOOTS OUT OF A HIDDEN COMPARTMENT HITTING A PARTY MEMBER.",
       "text": "你們想解除陷阱，結果反而讓它啟動了。一根大針從暗格射出，扎中一名隊員。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "ASIDE FROM A LAYER OF MUD, YOU DON'T FIND ANYTHING.",
+      "text": "除了一層爛泥，什麼也沒找到。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "ASK FOR MORE MONEY",
@@ -1164,6 +1564,16 @@
       "note": "地點敘述；河名依 glossary。"
     },
     {
+      "source": "BEFORE HE CAN ATTACK THE OTHERS GRAB HIM AND SAY, 'YOU BETTER GO LITTLE MEN.",
+      "text": "他還來不及動手就被其他人拉住：「小傢伙們，你們最好快走。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
+      "source": "BEFORE I LEAVE LET ME HELP YOU AS BEST I CAN.' HE TAKES A SLIP OF PAPER FROM THE POUCH OF THE DEAD GNOLL. 'HERE, YOU WILL NEED THIS.'",
+      "text": "走之前讓我盡力幫你們一把。」他從那隻死去豺狼人的袋子裡抽出一張紙條：「拿去，你們會用得上。」",
+      "note": "紡織行與巨人占據一帶的事件。承接上一段。"
+    },
+    {
       "source": "BEFORE THE CLERIC'S SPELLS INADVERTENTLY BOUND THEM TO THIS PLACE. ONE SPIRIT'S VOICE RISES ABOVE THE REST, 'AN ACCOUNT OF OUR TRIALS IS WITHIN THE DIARY.' HE POINTS TO A FLOORBOARD.",
       "text": "後來那位僧侶的法術無意間把他們縛在了這裡。一個亡魂的聲音蓋過其他：「我們的遭遇都寫在那本日記裡。」他指了指一塊地板。",
       "note": "索卡爾城堡的事件與敘述。承接上一段。"
@@ -1184,9 +1594,24 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "BEFORE YOU IS A WELL FILLED WITH WATER.",
+      "text": "你們面前是一口盛滿水的井。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "BEFORE YOU IS STOJANOW GATE. THIS ANCIENT EDIFICE IS BUILT ACROSS THE BEND OF THE RIVER, THUS ISOLATING THE OLD TOWN AND THE CASTLE FROM THE REST OF THE CITY.",
       "text": "你們面前是史塔傑諾門。這座古老的建築橫跨河灣而建，把舊城與城堡同城裡其他地方隔了開來。",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "BEFORE YOU OPEN THE DOOR ALL THE WAY, YOU NOTICE A BUCKET ABOVE THE DOOR. YOU KICK THE DOOR OPEN LETTING THE BUCKET FALL HARMLESSLY TO THE GROUND.",
+      "text": "門還沒完全推開，你們就注意到門上架著一只桶子。一腳把門踹開，桶子無害地落到地上。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "BEHIND THE ALTER ARE TWO CROSSED SWORDS. DO YOU TAKE THEM?",
+      "text": "祭壇後面交叉擺著兩把劍。要拿走嗎？",
+      "note": "紡織行與巨人占據一帶的事件。原版把 ALTAR 拼成 ALTER。"
     },
     {
       "source": "BEHIND YOU.",
@@ -1242,6 +1667,11 @@
       "source": "C",
       "text": "丙",
       "note": "同上。"
+    },
+    {
+      "source": "CADORNA HANDS YOU A SLIP OF PAPER AND WHISPERS, 'HERE IS TODAY'S GATE PASSWORD.'",
+      "text": "卡多納遞給你們一張紙條，低聲說：「這是今天的城門密語。」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "CADORNA TEXTILE HOUSE.'",
@@ -1404,9 +1834,19 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "DO YOU WANT TO GO DOWN THESE STAIRS?",
+      "text": "要下這道樓梯嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "DO YOU WANT TO GO DOWNSTAIRS?",
       "text": "要下樓嗎？",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "DO YOU WANT TO GO UP THESE STAIRS?",
+      "text": "要上這道樓梯嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "DO YOU WANT TO GO UPSTAIRS?",
@@ -1417,6 +1857,16 @@
       "source": "DO YOU WANT TO TAKE A BOAT BACK TO PHLAN?",
       "text": "要搭船回菲蘭城嗎？",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DO YOU WANT TO TAKE ANYTHING?",
+      "text": "要拿走什麼嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "DO YOU WISH TO SPEND HOURS READING THE RECORDS?",
+      "text": "要花上幾個小時把這些檔案讀完嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "DO YOU:",
@@ -1442,6 +1892,11 @@
       "source": "DON'T TALK",
       "text": "不交談",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "DOUBLES UP IN AGONY.",
+      "text": "痛得彎下腰去。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "DRINK HEAVILY",
@@ -1504,6 +1959,11 @@
       "note": "訓練所指示牌，複數。"
     },
     {
+      "source": "FINALLY YOU ENTER THE CIVILIZED AREA OF PHLAN.",
+      "text": "你們終於回到菲蘭城已開化的地帶。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "FIND THE NOMADS AND STOP THEM FROM JOINING FORCES WITH OUR ENEMIES.'",
       "text": "找到那群遊牧民，別讓他們和敵人聯手。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -1559,6 +2019,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "GENHEERIS",
+      "text": "根赫里斯",
+      "note": "紡織行與巨人占據一帶的事件。通關密語，音近。"
+    },
+    {
       "source": "GHOSTLY SHAPES SCREECH OUT A DREADFUL KEENING HOWL",
       "text": "幽靈般的身影發出可怖的哀嚎",
       "note": "瓦海登墳場的事件與敘述。片段。"
@@ -1587,6 +2052,11 @@
       "source": "GO BACK",
       "text": "退回去",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "GO BACK OUTSIDE",
+      "text": "退回外面",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "GOBLINS",
@@ -1644,9 +2114,39 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "HE LUNGES FOR THE DOOR AND HITS A BUTTON. THEN HE TURNS AND FACES THE PARTY WITH SWORD DRAWN. 'IN A MOMENT A PATROL WILL BE HERE. IF YOU STAY TO FIGHT ME YOU WILL DIE.'",
+      "text": "他撲向門邊按下一個按鈕，然後拔劍轉身面對隊伍：「再過一會兒巡邏隊就到了。你們留下來跟我打，就是死路一條。」",
+      "note": "瓦傑渥城堡內部。"
+    },
+    {
       "source": "HE POINTS HIS RING AT YOU AND YOU RISE UP AND OUT THE WELL.",
       "text": "他把戒指對準你們，你們便升起來，飄出了井口。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "HE QUICKLY LEAVES. YOU ARE LEFT WITH THE NOTES OF AL-HYAM DHAZID, WHICH TELL QUITE A LOT ABOUT THE POOL OF RADIANCE. YOU COPY THEM INTO YOUR JOURNAL AS ENTRY 30.",
+      "text": "他匆匆離去，留下阿爾-海姆·達齊德的筆記，裡面提到不少關於光芒之池的事。你們把它抄進手札第 30 條。",
+      "note": "紡織行與巨人占據一帶的事件。Al-Hyam Dhazid 為新增譯名。"
+    },
+    {
+      "source": "HE QUICKLY RETREATS THROUGH THE DOOR AND SLAMS IT, YELLING, 'INTRUDERS!'",
+      "text": "他迅速退進門裡，砰地關上，一邊大喊：「有人闖進來了！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "HE RUNS OUT OF THE HALL. THERE IS TREASURE ALL ABOUT.",
+      "text": "他跑出了大廳。四周散著財寶。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "HE SCRAMBLES OUT THE DOOR.",
+      "text": "他連滾帶爬地衝出門去。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "HE SEEMS TO COLLAPSE. 'ALL RIGHT. I'M NOT TYRANTHRAXUS. HE JUST HIRED ME TO IMPERSONATE HIM. IT'S NOT A BAD LIFE, BUT, HEY! I CAN TELL WHICH WAY THE WIND'S BLOWING.'",
+      "text": "他整個垮了下來：「好吧，我不是泰蘭特拉克斯。他只是雇我來冒充他。這差事不算差，不過嘿，風往哪邊吹我還是看得出來的。」",
+      "note": "瓦傑渥城堡內部。"
     },
     {
       "source": "HE STANDS UP, MUTTERING TO HIMSELF, AND JOINS YOU.",
@@ -1754,6 +2254,11 @@
       "note": "遭遇敘述的方位片段，原版把句子拆成幾段拼起來。"
     },
     {
+      "source": "IN THE CENTER OF THE ROOM IS A GLOWING POOL. AN ANCIENT BRONZE DRAGON, SURROUNDED BY A FIERY AURA, RISES FROM WHERE IT WAS COILED NEARBY.",
+      "text": "房間正中是一池發光的水。一條蒼老的青銅龍裹著火焰般的靈光，從一旁盤踞之處立起。",
+      "note": "瓦傑渥城堡內部。"
+    },
+    {
       "source": "IN THE CHAMBER IS A SINGLE CRYPT.  FLOATING ABOVE THE CRYPT IS A WRAITH. 'I AM THE PROTECTOR OF THE PALADIN. I GUARD HIS REMAINS FOR ALL ETERNITY.  LEAVE OR SUFFER.'  WHAT DO YOU DO?",
       "text": "室內只有一座墓，墓上飄著一隻幽靈：「我是那位聖武士的守護者，永世看守他的遺骸。走開，否則後果自負。」你們要怎麼做？",
       "note": "瓦海登墳場的事件與敘述。"
@@ -1777,6 +2282,11 @@
       "source": "IN THE MIDDLE OF A DOOR IS A PANEL OF A POWERFUL KNIGHT FIGHTING SEVERAL UNDEAD.",
       "text": "門的中央鑲著一塊浮雕，刻的是一名強大的騎士對抗數隻不死怪物。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "IN THE ROOM ARE FOUR GIANTS.",
+      "text": "房裡有四名巨人。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "IN THE RUBBLE YOU SPOT A BEAUTIFUL TAPESTRY.  WILL YOU TAKE IT?",
@@ -1839,6 +2349,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "IT SEEMS THAT THEIR SCREAMS WERE HEARD...",
+      "text": "看來牠們的尖叫被聽見了……",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "IT'S BLUE.  YOU WIN.",
       "text": "是藍色，你們贏了。",
       "note": "酒館賭局結果。"
@@ -1859,14 +2374,29 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "KILL HIM",
+      "text": "殺了他",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "KILL IT",
       "text": "殺了牠",
       "note": "遭遇選單。"
     },
     {
+      "source": "KILL THE OVERSEER AND FREE THE SLAVES",
+      "text": "殺了工頭，放走奴隸",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "KILL THEM",
       "text": "殺了他們",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "KNOWING THAT TYRANTHRAXUS HAS FINALLY BEEN DEFEATED, YOU LEAVE THE CASTLE. MOVING THROUGH THE STREETS YOU CATCH OCCASIONAL GLIMPSES OF MONSTERS IN HIDING. NONE ATTACK.",
+      "text": "確知泰蘭特拉克斯終於被擊敗，你們離開了城堡。走在街上，偶爾瞥見躲藏的怪物，卻沒有一隻出手。",
+      "note": "瓦傑渥城堡內部。"
     },
     {
       "source": "KOBOLDS",
@@ -1887,6 +2417,11 @@
       "source": "LEAVE",
       "text": "離開",
       "note": "選單選項，出現 62 次，是最常見的一個。"
+    },
+    {
+      "source": "LEAVE HIM",
+      "text": "放著他",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "LEAVE IT",
@@ -2049,6 +2584,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "NEAR IT IS THE OFFERING BOX WITH SOME CHANGE IN IT.",
+      "text": "旁邊有個奉獻箱，裡面有些零錢。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "NO",
       "text": "否",
       "note": "選單選項。"
@@ -2082,6 +2622,11 @@
       "source": "NOTICES FOR TEACHERS AND STUDENTS ARE POSTED ON THE WALLS.  A NOTE DIRECTS MAGIC USERS AND CLERICS TO GO NORTH AND FIGHTERS AND 'ROGUES' TO GO EAST.",
       "text": "牆上貼著給教習與學員的公告。有一張指示魔法師與牧師往北、戰士與「盜賊」往東。",
       "note": "訓練所與競技場。"
+    },
+    {
+      "source": "NOW THEY ARE MUCH MORE SINISTER. THE WEB OF CORRUPTION HE HAS SPREAD IS INCREDIBLE IN ITS SCOPE. HIS ULTIMATE GOAL IS TO CONQUER ALL LANDS SOUTH OF THE MOONSEA.",
+      "text": "如今他們陰險多了。他所鋪開的腐化之網規模驚人，最終目標是征服月之海以南的所有土地。",
+      "note": "紡織行與巨人占據一帶的事件。承接上一段；Moonsea 依 glossary 作月之海。"
     },
     {
       "source": "NOXIOUS FUMES POUR FROM THE TOWER DOORWAY, MAKING IT IMPOSSIBLE TO SEE INSIDE.",
@@ -2137,6 +2682,11 @@
       "source": "ON THE FLOOR YOU FIND A TRAP DOOR.  WILL YOU OPEN IT?",
       "text": "你們在地板上發現一道活門。要打開嗎？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "ON THE GROUND YOU FIND A PEACE OF PAPER THAT SAYS:",
+      "text": "你們在地上撿到一張紙，上面寫著：",
+      "note": "紡織行與巨人占據一帶的事件。原版把 PIECE 拼成 PEACE。"
     },
     {
       "source": "ON THE WALL HERE IS A POORLY SCRATCHED OUT MESSAGE.  YOU CAN BARELEY MAKE OUT THE WORDS",
@@ -2234,6 +2784,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "PILED UP OUT OF THE WAY ARE AN ASSORTMENT OF WEAPONS AND ARMOR.",
+      "text": "角落堆著各式各樣的武器與護甲。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "PLUS A PICK OF SPECIAL ITEMS",
       "text": "再加上幾樣特別的東西任選",
       "note": "柯威大樓的盜賊據點。"
@@ -2277,6 +2832,11 @@
       "source": "PRESS BUTTON OR <RETURN> TO CONTINUE",
       "text": "按按鈕或 <RETURN> 繼續",
       "note": "同上，這一版兩者順序相反。"
+    },
+    {
+      "source": "PRESS BUTTON OR RETURN TO CONTINUE",
+      "text": "按按鈕或 RETURN 繼續",
+      "note": "紡織行與巨人占據一帶的事件。續行提示的另一種拼法。"
     },
     {
       "source": "PROCLAMATION",
@@ -2324,6 +2884,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "RELEASE HIM",
+      "text": "放他走",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "RELEASE THEM?",
       "text": "要放他們走嗎？",
       "note": "提問。"
@@ -2352,6 +2917,11 @@
       "source": "RUN",
       "text": "快跑",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "RUN AWAY",
+      "text": "逃走",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "RUN AWAY?",
@@ -2462,6 +3032,11 @@
       "source": "SKULLCRUSHER SPEAKS, 'I MUST GO TO MY MASTER NOW.'",
       "text": "碎顱者開口：「我得去見我的主人了。」",
       "note": "NPC 離隊事件。"
+    },
+    {
+      "source": "SNEAK OUT QUIETLY",
+      "text": "悄悄溜出去",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "SNEAK, REMAINING UNSEEN",
@@ -2597,6 +3172,11 @@
       "source": "TALK",
       "text": "交談",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "TALK TO THE OVERSEER",
+      "text": "和工頭談",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "TELL THE TRUTH?",
@@ -2784,6 +3364,11 @@
       "note": "互動提問。"
     },
     {
+      "source": "THE DOOR OF THE BUILDING YOU ARE PASSING SLAMS.",
+      "text": "你們經過的那棟建築，門砰地關上。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THE ELF IS LONG DEAD.",
       "text": "那名精靈早就死了。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -2797,6 +3382,51 @@
       "source": "THE FLOOR IS SLIPPERY FROM DUNG AND REEKS OF URINE.",
       "text": "地板被糞便弄得濕滑，尿騷味刺鼻。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE FOLLOWING CATCHES YOUR EYE, 'DO NOT BE FOOLED BY OUTWARD FORMS FOR YOU SHALL KNOW ME BY MY FLAMING AURA.",
+      "text": "這一段吸引了你們的注意：「莫被外形所惑，你們將以我那燃燒的靈光認出我。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
+      "source": "THE GATE PASSWORD IS",
+      "text": "城門的密語是",
+      "note": "紡織行與巨人占據一帶的事件。片段。"
+    },
+    {
+      "source": "THE GIANT HESITATES, 'WHO SENT YOU?'",
+      "text": "那名巨人遲疑了一下：「誰派你們來的？」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE GIANT READIES HIS WEAPON AND ADVANCES. THE OTHERS FOLLOW SUIT.",
+      "text": "那名巨人舉起武器逼近，其餘的也跟著上。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE GIANTS ARE WALKING TOWARD YOU.",
+      "text": "巨人正朝你們走來。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE GIANTS LOOK UP AT YOU.",
+      "text": "巨人抬頭看向你們。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE GIANTS STAND IN FRONT OF YOU LOOKING SUSPICIOUS.",
+      "text": "巨人站在你們面前，一臉懷疑。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE GIANTS WHO PLACED THE BUCKET THERE CHARGE!",
+      "text": "擺下那只桶子的巨人衝了上來！",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE GNOLL TURNS TO FLEE. AS HE RUNS BY, ONE OF THE SLAVES TRIPS HIM. YOU ADVANCE AND CUT THE OVERSEER'S THROAT.",
+      "text": "那隻豺狼人轉身要逃，跑過時被一名奴隸絆倒。你們上前割開了工頭的喉嚨。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "THE GROUP OF BUGBEARS COME OVER, 'WE WARNED YOU! WHAT'S THE MATTER? CAN'T YOU UNDERSTAND COMMON? I GUESS I'LL HAVE TO TEACH YOU.' THE LEADER SWINGS AT YOU.",
@@ -2994,6 +3624,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE OVERSEER TURNS TOWARD YOU BLUDGEON IN HAND. 'GO ON! GET OUT OF MY KITCHEN OR I'LL THROW BOILING OIL ON YOU!'",
+      "text": "工頭手持大棒轉向你們：「走開！滾出我的廚房，不然我就把滾油潑到你們身上！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THE PARTY HEARS THE CRACKING OF GLASS.  A POISONOUS GAS FILLS THE AIR!",
       "text": "隊伍聽到玻璃碎裂的聲音，毒氣瞬間瀰漫開來！",
       "note": "柯威大樓的盜賊據點。"
@@ -3002,6 +3637,11 @@
       "source": "THE PARTY RUNS AND ESCAPES.",
       "text": "隊伍拔腿逃了出去。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE PRIEST SHOUTS, 'WHAT'S THIS? YOU AREN'T WORSHIPPERS OF LORD BANE! DIE IMPOSTERS!' HE GRABS THE LAST RHINESTONE FROM A NECKLACE AND THROWS IT AT YOU. A FIREBALL EXPLODES!",
+      "text": "那名祭司大喝：「這是怎麼回事？你們根本不是邪惡神的信徒！冒牌貨去死！」他從項鍊上摘下最後一顆水鑽擲向你們，一團火球轟然炸開！",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "THE PRIESTS OF TEMPUS BID YOU WELCOME.",
@@ -3074,6 +3714,11 @@
       "note": "商店。"
     },
     {
+      "source": "THE SIX SCRIBES DIVE FOR COVER AS THE TWO OFFICERS ATTACK.",
+      "text": "六名文書撲向掩蔽，兩名軍官同時攻了上來。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THE SKELETON OF A LONG-DEAD ELF LIES HIDDEN BY ROCKS AND REEDS.  ITS WEAPONS AND EQUIPMENT ARE BADLY RUSTED AND CORRODED BY SALT, ITS LEATHERS ARE WORM EATEN AND CRUSTED IN DIRT.",
       "text": "一具死去多時的精靈骸骨被岩石與蘆葦掩著。牠的武器與裝備鏽蝕嚴重、被鹽分侵蝕，皮件則被蟲蛀、結滿塵垢。",
       "note": "索卡爾城堡的事件與敘述。"
@@ -3087,6 +3732,26 @@
       "source": "THE SLUMS IMMEDIATELY TO OUR WEST NEED TO BE CLEARED OF MONSTERS.'",
       "text": "我們西邊那片貧民區的怪物必須清掉。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE SMITH (A HUMAN) AND THREE FIRE GIANTS ARE WORKING ON A SUIT OF ARMOR. PILED UP OUT OF THE WAY ARE AN ASSORTMENT OF WEAPONS AND ARMOR.",
+      "text": "鐵匠（一名人類）和三名火巨人正在打一套護甲。角落堆著各式武器與護甲。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE SMITH IGNORES YOU AS HE HAMMERS ON A GREAVE.",
+      "text": "鐵匠只顧著捶打護脛，沒理會你們。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE SMITH LOOKS UP FROM HIS WORK. 'WHAT DO YOU NEED?'",
+      "text": "鐵匠從活兒裡抬起頭：「要什麼？」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE SMITHY WIPES HIS BROW AND SAYS, 'NO, YOU NEVER GET TOTALLY USED TO THE HEAT, BUT IT'S NOT THAT BAD. NOW, IF YOU'LL EXCUSE ME I NEED TO GET BACK TO WORK.'",
+      "text": "鐵匠抹了抹額頭：「不，這熱氣沒人能完全習慣，不過也還好。恕我失陪，我得回去做事了。」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "THE SPECTRE HAS NOTICED YOU.",
@@ -3129,14 +3794,34 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE WATER LOOKS COLD AND DEEP. DO YOU WANT TO DIVE IN?",
+      "text": "水看起來又冷又深。要潛下去嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THE WAY IS BLOCKED.",
       "text": "路被擋住了。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THE WOMAN SAYS 'TYRANTHRAXUS IS LEADING OUR MEN TO THEIR DEATHS. IF YOU INTEND TO KILL HIM WE WILL HELP. USE THESE CLOTHES AS A DISGUISE AND YOU WILL ESCAPE NOTICE.",
+      "text": "那女子說：「泰蘭特拉克斯正把我們的男人送去送死。你們若打算殺牠，我們願意幫忙。拿這些衣服偽裝，就不會被注意到。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
       "source": "THE WOMAN'S HANDS MAKE MYSTIC PASSAGES WHILE SHE MUTTERS SOME WORDS.  HER VOICE UNDERGOES A STRANGE TRANSFORMATION ...",
       "text": "那女人雙手比劃著神祕的手勢，口中念念有詞。她的聲音起了奇異的變化……",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THE WOMEN SHRIEK AND FLEE BEFORE YOU AS YOU CHOP THEM DOWN. THE HALF-ORC WOMAN WITH HATE IN HER EYES SNARLS 'HEROES! HAH!' THEN HER EYES GLAZE AS SHE DIES.",
+      "text": "婦人們尖叫著在你們刀下四散奔逃。那名半獸人女子眼裡滿是恨意，啐道：「英雄？哈！」隨即目光渙散，斷了氣。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THEN FEEL MY WRATH!",
+      "text": "那就嘗嘗我的怒火！",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "THEN YOU MUST LEAVE.",
@@ -3154,6 +3839,11 @@
       "note": "貧民區（Slums）的事件與敘述。Ettin 為新增譯名。"
     },
     {
+      "source": "THERE IS A FEELING OF SOMETHING IMMENSE AND EVIL STARING DOWN AT YOU...",
+      "text": "你們感覺到某個龐大而邪惡的東西正俯視著自己……",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THERE IS A FREE MAN HERE. WHAT DO YOU DO?",
       "text": "這裡有個獲釋的人。你們要怎麼做？",
       "note": "瓦海登墳場的事件與敘述。"
@@ -3162,6 +3852,11 @@
       "source": "THERE IS A GLOW IN THE NORTHWESTERN CORNER OF THE ROOM.",
       "text": "房間西北角有一團光。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THERE IS A HEDGE WITH POISONOUS THORNS IN THAT DIRECTION. DO YOU WANT TO TRY TO CUT THROUGH?",
+      "text": "那個方向有一道長滿毒刺的樹籬。要試著砍出一條路嗎？",
+      "note": "瓦傑渥城堡內部。"
     },
     {
       "source": "THERE IS A VAMPIRE HERE.",
@@ -3209,6 +3904,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "THEY ATTACK YOU.",
+      "text": "牠們攻擊你們。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THEY ATTACK.",
       "text": "牠們發動攻擊。",
       "note": "遭遇敘述。"
@@ -3217,6 +3917,11 @@
       "source": "THEY CHECK OUT YOUR PARTY,",
       "text": "牠們把你們的隊伍打量一番，",
       "note": "片段。"
+    },
+    {
+      "source": "THEY COME RUNNING TOWARD YOU.",
+      "text": "牠們朝你們奔來。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "THEY DESCRIBE THE SURROUNDING AREA TO YOU. YOU LISTEN CAREFULLY, QUESTION THEM AND FROM THIS, SKETCH A MAP INTO YOUR JOURNAL CALLING IT ENTRY 10.",
@@ -3244,6 +3949,16 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "THEY HELP YOU PUT ON THE CLOTHES. 'HAVE NO FEAR.",
+      "text": "他們幫你們把衣服穿上：「別怕。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
+      "source": "THEY HOLD THEIR WEAPONS READY.",
+      "text": "牠們握緊了武器。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THEY PAW THROUGH YOUR COINS AND LEAVE.",
       "text": "他們翻了翻你們的錢就走了。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -3252,6 +3967,11 @@
       "source": "THEY PLEAD FOR MERCY.",
       "text": "他們跪地求饒。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THEY RAISE THEIR CLUBS. 'YOU STOLE FROM LORD BANE'S TEMPLE!'",
+      "text": "牠們舉起棍棒：「你們偷了邪惡神廟的東西！」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "THEY RUSH TOWARD YOU",
@@ -3309,6 +4029,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。Ilmater 為新增譯名。"
     },
     {
+      "source": "THIS IS A SMALL CELL. CHAINED TO THE WALL IS A MAN BEATEN TO WITHIN AN INCH OF HIS LIFE. AS YOU OPEN THE DOOR HE LOOKS UP AND YOU FEEL A SHOCK... THE MAN IS PORPHYRYS CADORNA.",
+      "text": "這是一間小牢房。牆上鎖著一個被打得只剩一口氣的人。你們一開門，他抬起頭來——你們心頭一震……那人正是普洛菲力·卡多納。",
+      "note": "瓦傑渥城堡內部。"
+    },
+    {
       "source": "THIS IS A SMALL SHRINE. SYMBOLS OF BANE HAVE REPLACED THOSE OF ILMATER.",
       "text": "這是一座小祠堂，伊爾梅特的聖徽已被邪惡神的取代。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -3344,14 +4069,34 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THIS TOWER IS OCCUPIED BY FOUR GIANTS. AS YOU COME IN THEY ARE IN THE MIDST OF AN ARGUMENT. THE BIGGEST ONE TURNS TO YOU AND SAYS, 'THEM LOOK SMART. THEM TELL US.'",
+      "text": "這座塔裡住著四名巨人。你們進去時牠們正在爭論。最大的那個轉向你們：「他們看起來聰明，讓他們說。」",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
       "source": "THIS WAS ONCE THE CHAPEL OF THE KEEP.  INSIDE THE DOORWAY ARE THE DRIED HUSKS OF TWO ORCS, THEIR FACES TWISTED WITH TERROR.  A LARGE ALTAR DOMINATES THE SOUTHERN WALL.",
       "text": "這裡曾是城堡的禮拜堂。門內躺著兩具乾癟的半獸人屍殼，臉上滿是驚恐。南牆前立著一座大祭壇。",
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
+      "source": "THREE GIANTS STEP UP TO YOU.",
+      "text": "三名巨人朝你們走來。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "THROW A ROCK",
       "text": "丟石頭",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "TIE THEM UP",
+      "text": "把他們綁起來",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "TO FIND ANYTHING MORE YOU WILL HAVE TO SPEND SO MUCH TIME THAT YOU WILL NEED TO CLEAR THE AREA FIRST.",
+      "text": "想再找到什麼，得花上太多時間，得先把這一區清乾淨才行。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "TO FIND HELP FOR YOUR BATTLES, YOU SHOULD PASS THROUGH THE ILLUSIONARY WALL IN THE ARMORY OF THIS KEEP.",
@@ -3379,9 +4124,39 @@
       "note": "同上。"
     },
     {
+      "source": "TODAY'S PASSWORD IS",
+      "text": "今天的密語是",
+      "note": "紡織行與巨人占據一帶的事件。片段。"
+    },
+    {
+      "source": "TRY AGAIN?",
+      "text": "要再試一次嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "TRY TO LEAVE",
       "text": "試著離開",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "TWO GIANTS COME BOUNDING OUT OF A DOORWAY. ONE STAYS BY THE DOOR.",
+      "text": "兩名巨人從門裡蹦了出來，其中一個守在門邊。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "TWO GIANTS STAND BARRING YOUR WAY.",
+      "text": "兩名巨人擋住了你們的去路。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "TWO GUARDS MOVE TO BAR YOUR PATH. THE DRAGON LOOKS AT YOU WITH MALEVOLENCE. 'GUARDS, KILL THESE PESTS.'",
+      "text": "兩名守衛上前擋路。那條龍以惡毒的眼神看著你們：「守衛，殺了這些害蟲。」",
+      "note": "瓦傑渥城堡內部。"
+    },
+    {
+      "source": "TWO OF THE SLAVES RUN QUICKLY OUT THE DOOR. THE THIRD APPROACHES YOU WITH TEARS OF GRATITUDE IN HIS EYES. 'I THANK YOU FOR FREEING ME.",
+      "text": "兩名奴隸飛快地奪門而出。第三個含著感激的淚水走向你們：「謝謝你們放我自由。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
     },
     {
       "source": "TYPE IN THE NUMBER OF GP YOU OFFER.",
@@ -3397,6 +4172,11 @@
       "source": "UNDEAD FROM THE GRAVEYARD HAVE GROWN MORE DANGEROUS THAN ALL OF THE OTHER FORCES WHICH CONFRONT US.",
       "text": "墳場裡的不死怪物，如今比其他所有敵人都還危險。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "UNDER A LOOSE STONE YOU FIND SOME TREASURE.",
+      "text": "鬆動的石頭底下藏著一些財寶。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "UNDERNEATH A BROKEN TABLE YOU FIND A CRUSHED SKELETON.  IT HAS SOME JEWELRY ON IT; WILL YOU TAKE IT?",
@@ -3479,6 +4259,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "WE WILL KEEP SILENCE.'",
+      "text": "我們會保持安靜。」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "WEAK",
       "text": "弱",
       "note": "隊伍強度回報，見 spec 030 的 PARTYSTRENGTH。"
@@ -3529,6 +4314,16 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "WHAT PASSWORD DO YOU GIVE?",
+      "text": "你們要說哪個密語？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "WHAT? EVERYONE KNOWS THAT... HEY, YOU DON'T BELONG HERE!",
+      "text": "什麼？那大家都知道……喂，你們不該在這裡！",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "WHEN YOU ENTER, A FEW FADED, MOTHEATEN TAPESTRIES FLUTTER MOURNFULLY.",
       "text": "你們一進門，幾幅褪色蟲蛀的掛毯淒然飄動。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -3564,6 +4359,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "WHO WILL DIVE IN?",
+      "text": "由誰潛下去？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "WHO WILL DUEL?",
       "text": "由誰上場？",
       "note": "訓練所與競技場。"
@@ -3577,6 +4377,11 @@
       "source": "WHO WILL JOIN YOU FOR",
       "text": "誰要一起去",
       "note": "同伴徵詢，接下一段。"
+    },
+    {
+      "source": "WHO WILL OPEN IT?",
+      "text": "由誰來打開？",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "WHO WILL PAY?",
@@ -3604,9 +4409,19 @@
       "note": "酒館賭局提問。"
     },
     {
+      "source": "WILL YOU USE THE CLOTHING AS A DISGUISE?",
+      "text": "要用這些衣物來偽裝嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "WITH A NOD OF THE HEAD YOU ARE LEFT ALONE.",
       "text": "對方點了點頭，就不再理會你們。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "WITH A QUICK STROKE YOU RELEASE HIM FROM THIS PAIN... TO ALL THE PAIN TO COME.",
+      "text": "你們一刀了結，讓他脫離這份痛苦……去承受接下來所有的痛苦。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "WITH ONE MIGHTY SWING YOU SMASH OPEN THE LOCK MAKING ENOUGH NOISE TO WAKE THE DEAD.",
@@ -3669,6 +4484,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU ARE BEFORE THE ALTER.",
+      "text": "你們站在祭壇前。",
+      "note": "紡織行與巨人占據一帶的事件。原版把 ALTAR 拼成 ALTER。"
+    },
+    {
       "source": "YOU ARE BEING APPROACHED BY SOME ANGRY",
       "text": "有一群怒氣沖沖的",
       "note": "貧民區（Slums）的事件與敘述。片段，後接怪物名。"
@@ -3699,9 +4519,34 @@
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
+      "source": "YOU ARE FINDING A PATTERN TO TYRANTHRAXUS' ACTIVITIES. AT FIRST TYRANTHRAXUS' FOLLOWERS WERE AN UNSOPHISTICATED HORDE OF ILL ORGANIZED UNHUMANS.",
+      "text": "你們漸漸看出泰蘭特拉克斯行事的規律。起初牠的追隨者不過是一群烏合之眾般的非人生物。",
+      "note": "紡織行與巨人占據一帶的事件。接下一段。"
+    },
+    {
+      "source": "YOU ARE IN A BUILDING FULL OF RECORDS.",
+      "text": "你們在一棟堆滿檔案的建築裡。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ARE IN A BUILDING THAT WAS ONCE A BARRACKS BUT HAS NOW BEEN CONVERTED TO A TEMPLE OF BANE. AT THE FAR END OF THE ROOM IS A CRUDE ALTER.",
+      "text": "你們在一棟原本是營房、如今被改成邪惡神廟的建築裡。房間另一頭立著一座粗陋的祭壇。",
+      "note": "紡織行與巨人占據一帶的事件。原版把 ALTAR 拼成 ALTER。"
+    },
+    {
+      "source": "YOU ARE IN A DESERTED BUILDING. THERE ARE NOTHING BUT VERY LARGE COBWEBS HERE.",
+      "text": "你們在一棟廢棄的建築裡，除了幾張巨大的蜘蛛網什麼也沒有。",
+      "note": "紡織行與巨人占據一帶的事件。原版此處 THERE ARE 與單數不一致。"
+    },
+    {
       "source": "YOU ARE IN A DETERIORATED BUILDING.",
       "text": "你們在一棟破敗的建築裡。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE IN A HALL WITH LONG TABLES, BENCHES AND A GREAT HEARTH AT ONE END. IN THE CORNERS ARE HEAPS OF GARBAGE BEING PICKED OVER BY SOME RATS WHICH FLEE AT YOUR ENTRANCE.",
+      "text": "你們在一間大廳裡，擺著長桌與長凳，一端有座大火爐。角落堆著垃圾，幾隻老鼠正在翻找，見你們進來便四下逃開。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU ARE IN A LARGE ROOM WHICH SERVES AS A CRUDE TEMPLE, AND CAUSES A VAGUE FEELING OF DISQUIET.",
@@ -3709,9 +4554,19 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU ARE IN A ROOM FILLED WITH BROKEN STATUES. A HEAD BROKEN LOOSE FROM THE TORSO SHOWS A FACE FILLED WITH TERROR.",
+      "text": "你們在一間滿是破碎雕像的房間裡。一顆從軀幹上斷落的頭顱，臉上滿是驚恐。",
+      "note": "瓦傑渥城堡內部。"
+    },
+    {
       "source": "YOU ARE IN A ROOM FILLED WITH RUBBLE AND WASTE.",
       "text": "你們在一間堆滿瓦礫與廢物的屋子裡。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU ARE IN A ROOM FURNISHED WITH CHAIRS AND BENCHES.",
+      "text": "你們在一間擺著椅子與長凳的房間裡。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU ARE IN A ROOM THAT HAS BEEN CONVERTED TO A JAIL CELL.  IT IS EMPTY.",
@@ -3729,6 +4584,21 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU ARE IN A SMITHY.",
+      "text": "你們在一間鐵匠鋪裡。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ARE IN A STANDARD MEAT SMOKEHOUSE... WELL MAYBE NOT QUITE STANDARD. YOU FEEL A LITTLE SICK AS YOU LOOK AT THE MEAT. THE SMELL AND THE SMOKE DON'T HELP EITHER.",
+      "text": "你們在一間普通的燻肉房裡……好吧，也許沒那麼普通。看著那些肉，你們有點反胃，那氣味和煙也幫不上忙。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ARE IN A STOREROOM FULL OF COAL.",
+      "text": "你們在一間堆滿煤的儲藏室裡。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "YOU ARE IN A TAVERN.  THE AIR IS FILLED WITH SMOKE AND GOSSIP.  PEOPLE ARE GAMBLING AT THE TABLES.",
       "text": "你們在一間酒館裡，空氣中滿是煙味與閒話，桌邊有人在賭錢。",
       "note": "地點敘述。"
@@ -3737,6 +4607,16 @@
       "source": "YOU ARE IN A VERY SMALL, DARK ROOM.",
       "text": "你們在一間又小又暗的房間裡。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE IN AN EMPTY ROOM. THE ONLY FEATURE IS A TRAP DOOR IN THE CENTER. DO YOU OPEN IT?",
+      "text": "你們在一間空屋裡，唯一的東西是正中央的一道活門。要打開嗎？",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ARE IN THE AUDIENCE HALL OF TYRANTHRAXUS, CONQUEROR OF PHLAN. THE CEILING HAS BEEN TORN AWAY LEAVING THE ENTIRE SECTION OF THE TOWER OPEN TO THE SKY.",
+      "text": "你們在菲蘭城征服者泰蘭特拉克斯的覲見廳裡。屋頂已被掀去，整段塔身就這麼敞向天空。",
+      "note": "瓦傑渥城堡內部。"
     },
     {
       "source": "YOU ARE IN THE DUSTY REMAINS OF A BLACK MARBLE CRYPT.",
@@ -3782,6 +4662,11 @@
       "source": "YOU ARE ROUSTED BY THE CITY WATCH AND TOLD TO MOVE ALONG. WHAT DO YOU DO?",
       "text": "城衛隊把你們趕起來，要你們別逗留。你們要怎麼做？",
       "note": "城衛隊事件。"
+    },
+    {
+      "source": "YOU ARE RUNNING OUT OF AIR...",
+      "text": "你們快沒氣了……",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU ARE SUDDENLY CONFRONTED BY",
@@ -3854,6 +4739,16 @@
       "note": "敘述。"
     },
     {
+      "source": "YOU BREAK THE SURFACE GASPING FOR AIR.",
+      "text": "你們衝出水面大口喘氣。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU BREAK THE SURFACE JUST AS YOU BREATHE IN SOME WATER.",
+      "text": "你們衝出水面，同時嗆進了一口水。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "YOU BUMP INTO SOME",
       "text": "你們撞見了一些",
       "note": "貧民區（Slums）的事件與敘述。片段，後接怪物名。"
@@ -3877,6 +4772,11 @@
       "source": "YOU COLDLY KILL THE DEFENCELESS GOBLINS.",
       "text": "你們冷酷地殺光了毫無反抗之力的哥布林。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU CONFRONT AN ARMED MAN WHO IMMEDIATELY ATTACKS YOU.",
+      "text": "你們迎上一個持械的人，他立刻動手。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU CONVINCE THE",
@@ -3924,6 +4824,26 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU ENTER A BRIGHTLY LIT BUILDING WHICH REEKS OF TALLOW AND LEATHER. YOU SEE SIX SCRIBES BUSILY WRITING DOWN THE REPORTS OF A COUPLE OF OFFICERS.",
+      "text": "你們走進一棟燈火通明的建築，屋裡瀰漫著油脂與皮革味。六名文書正忙著記下兩名軍官的報告。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ENTER A BUILDING WHERE WOMEN ARE WASHING CLOTHES. AS YOU COME IN, THEY RETREAT TO THE CORNER LOOKING FEARFULLY AT YOU.",
+      "text": "你們走進一棟有婦人在洗衣的建築。你們一進去，她們就退到角落，驚懼地望著你們。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ENTER A BUILDING WHICH IS FILLED WITH TABLES AND WRITING SUPPLIES. THOUGH EMPTY, THERE ARE SIGNS THAT WORK HAS BEEN DONE HERE RECENTLY.",
+      "text": "你們走進一棟滿是桌子與文具的建築。雖然空無一人，卻看得出不久前還有人在這裡辦公。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ENTER A CHAMBER WHICH IS LAVISHLY APPOINTED WITH HANGINGS, CARPETS AND FURNITURE. SITTING ON A THRONE IS A POWERFUL LOOKING MAN CLAD IN BARBARIC SPLENDOR.",
+      "text": "你們走進一間布置奢華的廳室，掛毯、地毯與家具一應俱全。王座上坐著一個外表強悍、穿戴著蠻族華服的男人。",
+      "note": "瓦傑渥城堡內部。"
+    },
+    {
       "source": "YOU ENTER A GUARD ROOM. THERE ARE TABLES, CHAIRS, AND BEDS HERE. ALL BUT TWO OF THE BEDS ARE 14 FEET LONG!",
       "text": "你們走進一間守衛室，裡面有桌椅和床。除了兩張之外，每張床都有十四呎長！",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -3932,6 +4852,16 @@
       "source": "YOU ENTER A HALL WHICH IS FILLED WITH ROWS OF WRITING TABLES AND HIGH STOOLS. ROTTED MOUNDS OF PARCHMENT LITTER THE FLOOR.",
       "text": "你們走進一間大廳，裡面一排排都是書桌與高凳，地上散著腐爛的羊皮紙堆。",
       "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU ENTER A LATRINE. THE LACK OF BAD SMELL GIVES YOU A GENERAL IDEA OF THE LEVEL OF SANITATION PRACTICED BY THE INHABITANTS OF THE AREA.",
+      "text": "你們走進一間茅廁。沒什麼臭味，這大致說明了這一帶住民的衛生水準。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ENTER A ROOM FURNISHED AS THE APARTMENT OF A WEALTHY IF ECCENTRIC MERCHANT.",
+      "text": "你們走進一間布置得像富有卻古怪的商人住處的屋子。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU ENTER A ROOM THAT HAS BEEN CONVERTED TO A JAIL.  THERE ARE TEN YOUNG THUGS BEATING AN OLDER THIEF TO DEATH.  ONCE YOU ENTER THEY STOP AND ATTACK YOU.",
@@ -3947,6 +4877,16 @@
       "source": "YOU ENTER A ROOM THAT HAS SOME CRUDE HAY BEDS. WHAT WILL YOU DO?",
       "text": "你們走進一間擺著幾張粗陋草床的屋子。要怎麼做？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU ENTER A ROOM THAT MORE RESEMBLES A PIGSTY THAN THE BARRACKS IT IS.",
+      "text": "你們走進一間屋子，說是營房，倒更像豬圈。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ENTER A ROOM THAT REEKS OF SMOKE AND BURNED FOOD. YOU SEE THREE HUMAN SLAVES COOKING MEAT, PEELING POTATOES, AND BEING BEATEN BY VISCIOUS LOOKING GNOLL.",
+      "text": "你們走進一間滿是煙味與焦味的屋子，看到三名人類奴隸在烤肉、削馬鈴薯，還被一隻凶惡的豺狼人毆打。",
+      "note": "紡織行與巨人占據一帶的事件。原版把 VICIOUS 拼成 VISCIOUS。"
     },
     {
       "source": "YOU ENTER INTO A FILTHY ROOM.  EIGHT ORC GUARDS ATTACK YOU IMMEDIATELY.",
@@ -3967,6 +4907,11 @@
       "source": "YOU FEEL A LIGHT TOUCH ON YOUR PURSE.  DO YOU IGNORE IT OR GRAB THE OFFENDING HAND?",
       "text": "你們感覺錢袋被輕輕碰了一下。要不理會，還是抓住那隻手？",
       "note": "扒手事件。"
+    },
+    {
+      "source": "YOU FEEL A SUDDEN DISORIENTATION.",
+      "text": "你們突然一陣暈眩失向。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU FIND A BOOK ENTITLED",
@@ -4019,6 +4964,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU FIND A REPORT INDICATING THAT THE NORTHERN BARBARIANS ARE READY FOR THE TAKE OVER OF A STRONG LEADER AND THAT THE CHIEF OF THE RAVEN CLAN IS ALLIED TO TYRANTHRAXUS.",
+      "text": "你們找到一份報告，指出北方蠻族已準備好接受一位強勢領袖的統御，而渡鴉氏族的首領已與泰蘭特拉克斯結盟。",
+      "note": "紡織行與巨人占據一帶的事件。Raven Clan 為新增譯名。"
+    },
+    {
       "source": "YOU FIND A TRAP DOOR.  WILL YOU OPEN IT?",
       "text": "你們發現一道活門。要打開嗎？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -4034,14 +4984,29 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU FIND ASSORTED REPORTS.",
+      "text": "你們找到各式各樣的報告。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "YOU FIND ESSAYS ON GEOMETRY, METAMAGICAL MATH, UNIVERSAL GEOMETRY, ETC., BUT NOTHING USEFUL.",
       "text": "你們找到幾何學、超魔數學、萬有幾何之類的論文，沒有用得上的。",
       "note": "舊繩索公會的圖書室。"
     },
     {
+      "source": "YOU FIND EVIDENCE THAT THE RED WIZARDS OF THAY ARE ALLIED TO TYRANTHRAXUS.",
+      "text": "你們找到證據，塞伊的紅袍法師與泰蘭特拉克斯結了盟。",
+      "note": "紡織行與巨人占據一帶的事件。Red Wizards of Thay 為新增譯名。"
+    },
+    {
       "source": "YOU FIND FYERDETHA'S DISCOURSES ON POWER. AMONG ALL THE DRY TEXT YOU FIND AN INTERESTING PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 7.",
       "text": "你們找到斐爾德沙的《論權力》。在一堆枯燥的文字裡有一段挺有意思，抄進了手札第 7 條。",
       "note": "舊繩索公會的圖書室。Fyerdetha 為新增譯名。"
+    },
+    {
+      "source": "YOU FIND HARD EVIDENCE THAT CADORNA HAS BEEN USING YOU FOR HIS OWN ENDS AND HAS BEEN SEEKING THE POOL OF RADIANCE FOR HIMSELF.",
+      "text": "你們找到確鑿的證據：卡多納一直在利用你們達成自己的目的，並且早就在為自己尋找光芒之池。",
+      "note": "紡織行與巨人占據一帶的事件。Pool of Radiance 依說明書作光芒之池。"
     },
     {
       "source": "YOU FIND LEX GEOGRAPHICA, AN ATLAS DRAWN BY TOMARUS. IT HAS A MAP OF PHLAN WHICH, THOUGH OLD, STILL COULD BE USEFUL. IT BECOMES ENTRY 37 IN YOUR JOURNAL.",
@@ -4057,6 +5022,11 @@
       "source": "YOU FIND NOTHING.",
       "text": "你們什麼也沒找到。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND SOME TREASURE.",
+      "text": "你們找到一些財寶。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU FIND SOME UNDEAD.",
@@ -4119,6 +5089,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU GO FORWARD AND KNEEL. 'IN THE NAME OF LORD BANE, GOD OF GODS, I BLESS YOU.'",
+      "text": "你們上前跪下。「以眾神之神邪惡神之名，我為你們祝福。」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU GO UPSTAIRS.",
+      "text": "你們上了樓。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "YOU HACK THE BODY TO BITS.",
       "text": "你們把屍體砍成碎塊。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -4179,6 +5159,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU HAVE ENTERED AN ARMORY. INSIDE IS A LARGE ASSORTMENT OF ARMOR AND WEAPONS.",
+      "text": "你們走進一間軍械庫，裡面有大批各式護甲與武器。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "YOU HAVE ENTERED THE MONSTER-CRAWLING SLUMS OF PHLAN.  SMALL, UGLY THINGS SCURRY FROM BENEATH YOUR FEET.  IN THE DISTANCE, AN ALARM SOUNDS.",
       "text": "你們踏進了怪物橫行的菲蘭城貧民區。醜陋的小東西從腳邊竄開。遠處傳來警報聲。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -4187,6 +5172,11 @@
       "source": "YOU HAVE ENTERED THE MYSTERIOUS BUILDING THAT WAS ONCE THE ROPE GUILD.  MOST WHO VENTURE INTO ITS TWISTY HALLS NEVER RETURN.",
       "text": "你們走進了那棟神祕的建築，它從前是繩索公會。敢深入這些彎曲廊道的人，多半再也沒有回來。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE ENTERED THE REMAINS OF A TOWER.",
+      "text": "你們走進一座塔的殘骸。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU HAVE MANAGED TO SNEAK UP ON SOME",
@@ -4224,9 +5214,29 @@
       "note": "史塔傑諾門一帶的事件。"
     },
     {
+      "source": "YOU HEAR A DEEP VOICE, 'HEY, THAT'S THEM GUYS WHO TRIED TO BUST IN!'",
+      "text": "你們聽見一個低沉的聲音：「喂，就是那票想硬闖進來的傢伙！」",
+      "note": "紡織行與巨人占據一帶的事件。原版用口語。"
+    },
+    {
+      "source": "YOU HEAR A DEEP VOICE, 'THIEF! YOU STOLE FROM LORD BANE!'",
+      "text": "你們聽見一個低沉的聲音：「小偷！你們偷了邪惡神的東西！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU HEAR A DEEP VOICE,'THIEF! YOU STOLE FROM LORDBANE!'",
+      "text": "你們聽見一個低沉的聲音：「小偷！你們偷了邪惡神的東西！」",
+      "note": "紡織行與巨人占據一帶的事件。原版把 LORD BANE 連寫成 LORDBANE。"
+    },
+    {
       "source": "YOU HEAR A HISS. AS YOU LOOK DOWN YOU SUDDENLY SEE A DULL BROWN REPTILIAN MONSTER.",
       "text": "你們聽到嘶嘶聲，低頭一看，竟是一隻暗褐色的爬蟲怪物。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HEAR ONE OF THEM WHISPER, 'THEY DON'T BELONG HERE; THEY MUST HAVE COME TO KILL TYRANTHRAXUS'. A HALF-ORC WOMAN STEPS FORWARD 'WHAT DO YOU WANT OF US?'",
+      "text": "你們聽見其中一人低聲說：「他們不該在這裡，一定是來殺泰蘭特拉克斯的。」一名半獸人女子上前一步：「你們要我們做什麼？」",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU HIDE.",
@@ -4264,9 +5274,19 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU LEAVE. BEHIND YOU ARE HIS SCREAMS, 'INTRUDERS! INTRUDERS!'",
+      "text": "你們離開了，身後傳來他的尖叫：「有人闖進來了！有人闖進來了！」",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "YOU LET THE GOBLINS GO.  AS THEY LEAVE ONE OF THEM SAYS 'TO ENTER THE TEMPLE YOU NEED A HOLY SYMBOL OF BANE.'",
       "text": "你們放走了哥布林。臨走前有一隻說：「要進神廟，得有邪惡神的聖徽。」",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU LOOK AT THE WRITING...",
+      "text": "你們看著上面的字……",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU NOW CAREFULLY AVOID THE GREEN SLIME.",
@@ -4307,6 +5327,11 @@
       "source": "YOU QUICKLY KILL THE TRADER AND GRAB HIS WAGON.",
       "text": "你們迅速殺了那名商人，搶走他的貨車。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU REACH THE BOTTOM AND FEEL AROUND...",
+      "text": "你們摸到了底，四處探了探……",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU REALIZE YOU HAVE BEEN VICTIMIZED BY A PICKPOCKET.",
@@ -4354,9 +5379,24 @@
       "note": "邪惡神廟（Temple of Bane）一帶。原版把 CAUTIOUSLY 拼成 CAUTIOSLY。"
     },
     {
+      "source": "YOU SEE A HARMLESS, MIDDLE AGED MAN.",
+      "text": "你們看到一個看來人畜無害的中年男子。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
       "source": "YOU SEE A JAR UNDER THE FLOORBOARDS.",
       "text": "你們看到地板底下有個罐子。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A PACK OF TROLLS.",
+      "text": "你們看到一群巨魔。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU SEE A PACK OF TROLLS. THEY SEEM UNAWARE OF YOU.",
+      "text": "你們看到一群巨魔，牠們似乎沒有察覺你們。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU SEE A RUINED ROOM WITH ROTTED FURNITURE. HUMAN BONES LIE SCATTERED ABOUT A DESK.",
@@ -4377,6 +5417,31 @@
       "source": "YOU SEE AN EMPTY ROOM. THE ONLY FEATURE IS A SERIES OF FRESCOES ON THE WALLS OF LEARNED MEN AND THE HEAVENLY PATRONS OF ART AND LEARNING. YOU GET A FEELING OF PEACE.",
       "text": "你們看到一間空屋，唯一的陳設是牆上一系列壁畫，畫的是學者與掌管藝術與學問的天上守護者。你們心裡生出一股寧靜。",
       "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU SEE FOUR GIANTS. 'HEY, THEM THE GUYS WHAT STEAL FROM LORD BANE. GET 'EM!'",
+      "text": "你們看到四名巨人：「喂，就是那票偷邪惡神東西的傢伙。上！」",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
+      "source": "YOU SEE FOUR GIANTS. 'THEM THE NOT BELONG HERE! GET THEM!",
+      "text": "你們看到四名巨人：「他們不該在這！上啊！",
+      "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。接下一段。"
+    },
+    {
+      "source": "YOU SEE GIANT SNAKES.",
+      "text": "你們看到幾條巨蛇。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU SEE SOME GIANTS PUTTING ON THEIR ARMOR.",
+      "text": "你們看到幾名巨人正在穿護甲。",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU SEE SOME GIANTS STRUGGLING OUT OF BED.",
+      "text": "你們看到幾名巨人正掙扎著爬下床。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU SEE THE CHIEF OF THE HOBGOBLINS, A HUGE OGRE. AS YOU ENTER, HE RISES TO HIS FULL, TEN FEET OF HEIGHT; HIS HEAD WREATHED IN THE FLICKERING SHADOWS.",
@@ -4447,6 +5512,16 @@
       "source": "YOU SURPRISE A SHADOWY FORM CREATING NEW SKELETONS.",
       "text": "你們撞見一個陰影般的身影正在造新的骷髏。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU SURPRISE THREE GIANTS!",
+      "text": "你們突襲了三名巨人！",
+      "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU SWIM DOWN UNTIL YOU FEEL YOUR PULSE BEATING IN YOUR EARS. YOU DON'T REACH THE BOTTOM.",
+      "text": "你們一直往下潛，直到耳中傳來自己的脈搏聲，卻仍到不了底。",
+      "note": "紡織行與巨人占據一帶的事件。"
     },
     {
       "source": "YOU TRY TO PICK THE LOCK BUT IT IS TOO COMPLEX FOR YOU TO PICK.  YOU FAIL MISERABLY.",

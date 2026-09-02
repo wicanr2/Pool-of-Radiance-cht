@@ -478,6 +478,12 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Torath | 托拉斯 | `ECL4` 費瑞的敘述 | 音近 |
 | Samosud | 薩莫蘇德 | `ECL4` 通關密語 | 音近；原版是一個字，不譯義 |
 | Shestni | 謝斯特尼 | `ECL4` 通關密語 | 同上 |
+| Genheeris | 根赫里斯 | `ECL5` 通關密語 | 同上 |
+| Herdrek | 赫德瑞克 | `ECL5` 巨人對話 | 音近 |
+| Chantua | 香圖亞 | `ECL5` 樹籬迷宮 | 音近 |
+| Al-Hyam Dhazid | 阿爾-海姆·達齊德 | `ECL5` 手札第 30 條 | 音近，保留連字號 |
+| Red Wizards of Thay | 塞伊紅袍法師 | `ECL5` 報告 | 通行譯名 |
+| Raven Clan | 渡鴉氏族 | `ECL5` 報告 | 意譯 |
 | Ettin | 雙頭巨人 | `ECL2` 遭遇 | 形貌譯法 |
 | Green Slime | 綠泥怪 | `ECL2` 遭遇 | 形貌譯法 |
 | Spectre | 幽魂 | `ECL2` 遭遇 | 通行譯名 |
@@ -491,7 +497,7 @@ THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
 原版在遊戲文字裡也有拼錯的地方，譯名一律照定案，不跟著錯字走：
 `PODAL PLAZA`（正為 PODOL）、`STOJONOW`（正為 STOJANOW）、`ZHENTIAL KEEP`
 （正為 ZHENTIL）、`OPENNING`（正為 OPENING）、`POSIONED`（正為 POISONED）、
-`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）、`SARCOPHOGI`（SARCOPHAGI）、`WHATS`（WHAT'S）。
+`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）、`SARCOPHOGI`（SARCOPHAGI）、`WHATS`（WHAT'S）、`ALTER`（ALTAR）、`PEACE`（PIECE）、`DIMINSH`（DIMINISH）、`VISCIOUS`（VICIOUS）、`LORDBANE`（LORD BANE）。
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法
