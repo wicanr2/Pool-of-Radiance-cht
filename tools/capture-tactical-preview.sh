@@ -96,5 +96,13 @@ if cmp -s /tmp/tactical-fresh.png docs/screenshots/pool-remake-tactical-preview.
   tail -20 /tmp/game.log >&2 || true
   exit 1
 fi
+pulse Return
+sleep 0.6
+shot /tmp/tactical-next-round.png
+if cmp -s docs/screenshots/pool-remake-tactical-preview.png /tmp/tactical-next-round.png; then
+  echo "ending the turn did not advance the round" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
 sha256sum docs/screenshots/pool-remake-tactical-preview.png
 '

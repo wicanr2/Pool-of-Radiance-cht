@@ -58,3 +58,86 @@ func TestGeoWallProbeDrivesTheGenerator(t *testing.T) {
 		}
 	}
 }
+
+func fixedRoll(int, int) int { return 3 }
+
+func newRoundState(members int) *tacticalState {
+	size := members + 1
+	state := &tacticalState{
+		Roster:       make([]combat.CombatantCell, size),
+		Friendly:     make([]bool, size),
+		Dexterity:    make([]uint8, size),
+		Scores:       make([]uint8, size),
+		Budgets:      make([]uint8, size),
+		BaseMovement: make([]uint8, size),
+	}
+	for index := 1; index < size; index++ {
+		state.Dexterity[index] = 12
+		state.BaseMovement[index] = 9
+	}
+	return state
+}
+
+// 每個回合都重擲先攻並重設移動預算，不是整場排一次。
+func TestStartRoundResetsBudgetsAndScores(t *testing.T) {
+	state := newRoundState(2)
+	state.startRound(fixedRoll)
+	if state.Round != 1 {
+		t.Fatalf("round %d, want 1", state.Round)
+	}
+	want := combat.InitialMovementBudgetBeforeEffects(9, false, 0)
+	for index := 1; index < len(state.Budgets); index++ {
+		if state.Budgets[index] != want {
+			t.Fatalf("combatant %d budget %d, want %d", index, state.Budgets[index], want)
+		}
+		if state.Scores[index] == 0 {
+			t.Fatalf("combatant %d was not given an initiative score", index)
+		}
+	}
+	if state.Mover == 0 {
+		t.Fatal("no actor was selected")
+	}
+}
+
+// 全部行動完才進下一回合，且預算會重設。
+func TestEndTurnAdvancesTheRoundOnlyWhenNobodyIsLeft(t *testing.T) {
+	state := newRoundState(2)
+	state.startRound(fixedRoll)
+	state.Budgets[state.Mover] = 0
+
+	state.endTurn(fixedRoll, false)
+	if state.Round != 1 {
+		t.Fatalf("the round advanced with an actor still to go: round %d", state.Round)
+	}
+	if state.Mover == 0 {
+		t.Fatal("the second actor was not selected")
+	}
+
+	state.endTurn(fixedRoll, false)
+	if state.Round != 2 {
+		t.Fatalf("round %d after everyone acted, want 2", state.Round)
+	}
+	want := combat.InitialMovementBudgetBeforeEffects(9, false, 0)
+	for index := 1; index < len(state.Budgets); index++ {
+		if state.Budgets[index] != want {
+			t.Fatalf("combatant %d budget %d was not reset", index, state.Budgets[index])
+		}
+	}
+}
+
+// Delay 把分數寫成 1 而不是 0，所以那名角色稍後還會被選到。
+func TestDelayKeepsTheActorSelectable(t *testing.T) {
+	state := newRoundState(1)
+	state.startRound(fixedRoll)
+	actor := state.Mover
+	state.endTurn(fixedRoll, true)
+	if state.Round != 1 {
+		t.Fatalf("delay advanced the round to %d", state.Round)
+	}
+	if state.Mover != actor {
+		t.Fatalf("mover %d after delay, want the same actor %d", state.Mover, actor)
+	}
+	if state.Scores[actor] != combat.DelayInitiative() {
+		t.Fatalf("delayed score %d, want %d", state.Scores[actor], combat.DelayInitiative())
+	}
+}
