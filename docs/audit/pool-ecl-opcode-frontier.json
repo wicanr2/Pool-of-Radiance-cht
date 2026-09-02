@@ -56,6 +56,7 @@
     "0x37",
     "0x38",
     "0x3A",
+    "0x3C",
     "0x3D"
   ],
   "unhandled": [
@@ -213,75 +214,8 @@
           "offset": 1482
         }
       ]
-    },
-    {
-      "opcode": "0x3C",
-      "name": "PROTECTION",
-      "arity": 1,
-      "sites": [
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 728
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 733
-        },
-        {
-          "file": "ecl4.dax",
-          "block_id": 21,
-          "offset": 738
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 4324
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 3,
-          "offset": 4392
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 2913
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 2936
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 2960
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 4168
-        },
-        {
-          "file": "ecl5.dax",
-          "block_id": 4,
-          "offset": 4196
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 2820
-        },
-        {
-          "file": "ecl7.dax",
-          "block_id": 23,
-          "offset": 2922
-        }
-      ]
     }
   ],
-  "unhandled_site_total": 36,
+  "unhandled_site_total": 24,
   "blocks_scanned": 29
 }

@@ -46,6 +46,16 @@ const (
 	// 這個 block（overlay-03 `312Ah`）。
 	ProgramAskThenManage = 9
 
+	// ProtectionOpcode 是 `3Ch PROTECTION`（spec 089）：把運算元 1 位址起的
+	// 連續 ECL 變數印成一列數字。
+	ProtectionOpcode = 0x3c
+	// ProtectionOperands 是它吃幾個運算元。
+	ProtectionOperands = 1
+	// ProtectionMaxEntries 是 remake 這一側的安全上限。原版沒有上限，
+	// 靠「遇到 0 就停」收尾；記憶體是 map 的話讀不到的位址回 0，一樣會停，
+	// 但留一個上限免得資料壞掉時無限印。
+	ProtectionMaxEntries = 64
+
 	// InputNumberOpcode 是 `0Fh INPUT NUMBER`（spec 087）。
 	InputNumberOpcode = 0x0f
 	// InputStringOpcode 是 `10h INPUT STRING`（spec 087）。

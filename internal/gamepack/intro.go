@@ -266,6 +266,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x32: true, // FIND ITEM（spec 085）
 		0x33: true, // PRINT RETURN（spec 082；文字框換行）
 		0x38: true, // PROGRAM（spec 081；前端要接，值 9 仍硬失敗）
+		0x3C: true, // PROTECTION（spec 089；印一列數字）
 		0x3D: true, // CLEAR BOX（spec 082；清掉文字框）
 		0x3A: true, // DELAY
 	}
