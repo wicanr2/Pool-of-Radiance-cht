@@ -69,6 +69,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'DON'T TRY TO FOOL ME.' HE GROWLS.",
+      "text": "「別想騙我。」他低吼。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "'DUE TO YOUR VICIOUS ATTACK ON THOSE WHO PROTECT US, WE REFUSE YOU ALL SERVICE.'",
       "text": "「你們竟然攻擊保護我們的人，這裡不再為你們提供任何服務。」",
       "note": "神殿拒絕服務。"
@@ -77,6 +82,11 @@
       "source": "'EXCELLENT.'",
       "text": "「太好了。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'FREE ME AND I'LL HELP YOU.'",
+      "text": "「放我自由，我就幫你們。」",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "'GARWIN, I'LL GET YOU!' CRIES THE AUCTIONEER. HOWEVER, THE MAN HAS ESCAPED IN THE CONFUSION.",
@@ -94,9 +104,19 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "'GREAT! MY NAME IS SKULLCRUSHER. THERE'S A SECRET DOOR TO THE SOUTHEAST. THAT'S WHERE I MET THE HOBGOBLIN LEADER.'",
+      "text": "「太好了！我叫碎顱者。東南邊有一道暗門，我就是在那裡碰上大哥布林頭子的。」",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "'GREETINGS, COURAGEOUS ONES, I AM ROLF, APPOINTED BY THE COUNCIL TO INTRODUCE NEWCOMERS TO THE FAIR CITY OF PHLAN. IF YOU WILL ACCOMPANY ME, I WILL START THE TOUR.'",
       "text": "「勇敢的朋友們，你們好。我是羅夫，市議會派我為新來的人介紹美麗的菲蘭城。願意跟我走一趟的話，導覽這就開始。」",
       "note": "Rolf 導覽第一頁。Phlan 依 glossary 定案作菲蘭；Rolf 說明書未收，見 glossary 的「遊戲內文字新增譯名」。"
+    },
+    {
+      "source": "'HAIL, NOBLE ADVENTURERS,' HE CALLS. 'I WOULD ASK YOU TO HELP ME END THIS FOUL UNDEAD CURSE.'",
+      "text": "「高貴的冒險者，你們好。」他喊道，「我想請你們幫我了結這道汙穢的不死詛咒。」",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "'HE IS BOUND TO RECOVER THE TEMPLE WHICH HAS BEEN DESECRATED TO BANE.  GO WITH HIM ACROSS THE RIVER AND HELP HIM TO CLEANSE THE TEMPLE.  IN PAYMENT, YOU MAY KEEP THE HIDDEN TREASURES.'",
@@ -129,9 +149,19 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'I ALMOST KILLED THE LEADER OF THESE SCUMMY HOBGOBLINS, BUT THE REST JUMPED ME!'",
+      "text": "「我差點就宰了這群骯髒大哥布林的頭子，結果其他的一擁而上！」",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "'I AM SORRY,' THE MAN SAYS, 'I CANNOT HELP YOU.'",
       "text": "那人說：「抱歉，我幫不上忙。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I DON'T LIKE YOUR TONE.'",
+      "text": "「我不喜歡你們的口氣。」",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "'I HAVE BEEN AUTHORIZED TO GIVE YOU AN ENCHANTED WEAPON IF YOU ACCEPT THE COMMISSION TO END THE GRAVEYARD MENACE.  DO YOU ACCEPT?'",
@@ -157,6 +187,11 @@
       "source": "'IF YOU CHANGE YOUR MIND, RETURN IN TWO HOURS.' HE ESCORTS YOU OUT.",
       "text": "「改變主意的話，兩小時後再來。」他送你們出去。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "'IN THE EAST WALL IS THE SECRET DOOR.' SAYS SKULLCRUSHER.'IF WE GO THROUGH WE CAN SURPRISE THEM.'",
+      "text": "「暗門在東牆上。」碎顱者說，「從那裡進去可以打牠們個措手不及。」",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "'IT IS IMPERATIVE THAT A MESSAGE BE DELIVERED TO THE ZHENTIL OUTPOST TO THE WEST.  I AM SENDING YOU AS DIPLOMATIC ENVOYS.",
@@ -224,6 +259,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'OH WELL.' HE LEAVES.",
+      "text": "「算了。」他走了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "'OH, BY THE WAY. BETTER BEWARE OF THE GUARDS. EVER SINCE THE GIANTS MOVED INTO THE CASTLE AREA, BUGBEARS HAVE BEEN STUCK GUARDING THE GATE. AND THEY HATE IT.'",
       "text": "「對了，守衛要當心。自從巨人搬進城堡一帶，守門的差事就落到熊妖頭上，牠們可討厭得很。」",
       "note": "史塔傑諾門一帶的事件。"
@@ -249,6 +289,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'PUNY CREATURES,' HE BELLOWS.'I ALLOWED YOU TO TOY WITH MY MINIONS, BUT NOW I'LL CRUSH THE LIFE FROM YOUR LIMBS.'",
+      "text": "「渺小的東西。」他咆哮，「我讓你們玩弄我的爪牙，現在該把你們的命從四肢裡捏出來了。」",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "'SKULLCRUSHER WAS HERE' IS CARVED INTO THE NORTH WALL.",
+      "text": "北牆上刻著「碎顱者到此一遊」。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "'SORRY, THAT'S MY FINAL OFFER. TAKE IT OR LEAVE IT.",
       "text": "「抱歉，這是我的最後開價。要不要隨你們。",
       "note": "貧民區（Slums）的事件與敘述。接下一段。"
@@ -262,6 +312,11 @@
       "source": "'THANK YOU FOR COMING.  I MUST BE BRIEF FOR OUR NEED IS URGENT.  OUR ONE CHANCE TO DEFEAT THE ENEMY IS THROUGH AN ASSAULT ON THE CASTLE. TO DO THIS, WE MUST FIRST SECURE STOJANOW GATE.",
       "text": "「多謝你們前來。事情緊急，我就長話短說。要擊敗敵人只有一條路——強攻城堡。而要做到這一點，得先拿下史塔傑諾門。",
       "note": "接下一段。"
+    },
+    {
+      "source": "'THANKS FOR FREEING ME. I'M LORD CADORNA'S SERVANT.",
+      "text": "「謝謝你們放我出來。我是卡多納大人的僕人。",
+      "note": "瓦海登墳場的事件與敘述。接下一段。"
     },
     {
       "source": "'THE AUCTION IS CANCELLED!' YELLS THE AUCTIONEER AS HE FLEES.",
@@ -299,6 +354,16 @@
       "note": "波多廣場的拍賣會與街頭遭遇。Grishnak 為新增譯名。"
     },
     {
+      "source": "'THE UNDEAD ARE CONTROLLED BY A VAMPIRE WHO LURKS IN THE NORTHEAST CORNER OF THE GRAVEYARD,' THE MAN SAYS.",
+      "text": "那人說：「這些不死怪物由一隻吸血鬼操控，牠躲在墳場的東北角。」",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "'THEN DIE YOU SCUM,' THE MAN SPITS.",
+      "text": "「那就去死吧，渣滓。」那人啐道。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "'THERE IS A FINE",
       "text": "「費用是",
       "note": "訓練所與競技場。接下一段。"
@@ -327,6 +392,11 @@
       "source": "'WE ARE JUST OUTSIDE THE CITY HALL. PROCLAMATIONS ARE POSTED ON THESE WALLS. INSIDE, THE CITY CLERK AWARDS THE COUNCIL'S COMMISSIONS.  COMMISSIONS ARE THE QUICKEST WAY TO FAME AND FORTUNE.'",
       "text": "「我們就在市政廳外面。公告都貼在這幾面牆上。裡頭的書記官負責發放市議會的委託。想快點成名發財，接委託是最快的路。」",
       "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
+    },
+    {
+      "source": "'WE CAN DUPLICATE THE SEAL ON THAT CHEST -- FOR HALF THE TREASURE -- NO ONE WILL EVER KNOW. INTERESTED?'",
+      "text": "「那個箱子的封印我們可以仿造——分我們一半財寶——沒有人會知道。有興趣嗎？」",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "'WE GOTTA KEEP ALL YOU NONBELIVERS OUTA HERE' THE MONSTERS SAY AS THEY BEGIN TO LEAVE.  'SO HIT THE ROAD YA BUMS.'  THE MONSTERS TURN AND LEAVE.",
@@ -374,6 +444,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "'WHATS YOUR PROBLEM?'",
+      "text": "「你們有什麼毛病？」",
+      "note": "瓦海登墳場的事件與敘述。原版把 WHAT'S 寫成 WHATS。"
+    },
+    {
       "source": "'WHEN OLD PHLAN WAS OVERRUN, A FAMILY TREASURE WAS HIDDEN IN THE WESTERN BUILDING OF THE TEXTILE COMPLEX.",
       "text": "「舊菲蘭城淪陷時，一件傳家寶被藏在紡織行西側那棟建築裡。",
       "note": "接下一段。"
@@ -394,9 +469,24 @@
       "note": "巴西歐主教的委託；Dirten 為新增譯名。"
     },
     {
+      "source": "'WOE, WOOOE, OH WOE,' THE FIGURES CRY PITEOUSLY.",
+      "text": "「哀啊，哀啊，好哀啊。」那些身影淒慘地哭喊。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "'WORDS DON'T BREAK CHAINS!' HE SNARLS.",
+      "text": "「話又砸不斷鎖鏈！」他咆哮。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "'WOULD YOU LIKE TO CONSIDER SOMEONE ELSE?'",
       "text": "「要不要考慮換一個人？」",
       "note": "訓練所與競技場。"
+    },
+    {
+      "source": "'YOU ARE SEEKING THE TEXTILE HOUSE. WE CAN GET YOU IN UNSEEN AND POSSIBLY HELP YOU WITH THE TREASURE. INTERESTED?'",
+      "text": "「你們要找的是紡織行。我們可以帶你們神不知鬼不覺地進去，說不定還能幫你們弄到那批財寶。有興趣嗎？」",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "'YOU CAN REST HERE AS LONG AS YOU WISH.' SHE THEN LEAVES.",
@@ -412,6 +502,11 @@
       "source": "'YOU HAVE RETURNED EMPTY HANDED,' HE OBSERVES. 'I HAVE NO TIME FOR YOU NOW.'  HE WAVES HIS HAND.",
       "text": "「空手回來啊。」他看了一眼，「我現在沒空理你們。」說著揮了揮手。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'YOU LIE,' THE SPIRIT MOANS AS IT FADES AWAY.",
+      "text": "「你們說謊。」那幽靈一邊呻吟一邊消散。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '",
@@ -484,6 +579,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "...THE LAST PART IS EATEN AWAY.",
+      "text": "……最後一段被啃蝕掉了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "1 SHARE",
       "text": "一份",
       "note": "分配戰利品的份數。"
@@ -507,6 +607,11 @@
       "source": "A",
       "text": "甲",
       "note": "選項編號，原版以 A～D 標示四個小箱。"
+    },
+    {
+      "source": "A BROKEN HEARTH AND BELLOWS DOMINATES THE COLLAPSED REMAINS OF A BLACKSMITH'S SHOP.  THE FLOOR IS SPONGEY AND DAMP.  THE CROAKING OF FROGS GREETS YOUR ENTRY.",
+      "text": "鐵匠鋪的殘骸裡，一座破爐與風箱最為顯眼。地面濕軟，你們一進來就聽見青蛙的呱呱聲。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "A BUGBEAR LEADING",
@@ -564,6 +669,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "A LOUD COMMOTION RISES FROM THE COURTYARD.  BASHING OPEN THE DOOR, A LARGE FORCE OF ORCS AND HOBGOBLINS RUSHES YOU.",
+      "text": "中庭傳來一陣喧鬧。門被撞開，一大群半獸人與大哥布林朝你們衝來。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "A MAN AND OGRE EXCHANGE THE WAND AND A LARGE BAG, THEN DISAPPEAR INTO THE CROWD.",
       "text": "一個人和一隻食人魔交換了魔杖與一個大袋子，隨即消失在人群裡。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -579,9 +689,34 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "A MIST RISES AND THICKENS INTO NUMEROUS SHADOWING FIGURES.  FROM THESE FIGURES RISES A LOW MOANING.",
+      "text": "霧氣升起，凝成無數暗影般的身形，其間傳出低沉的呻吟。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A MUSCULAR MAN LOCKED IN CHAINS LIES HERE. NEAR HIM IS A PAGE THAT YOU PLACE IN YOUR JOURNAL UNDER ENTRY 47.",
+      "text": "一個被鎖鏈綁著的壯漢躺在這裡。他旁邊有一頁紙，你們把它放進手札第 47 條。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "A NET ENTANGLES YOU.",
       "text": "一張網把你們纏住了。",
       "note": "遭遇敘述。"
+    },
+    {
+      "source": "A PACK OF HUNGRY GHOULS LOPES TOWARD YOU.",
+      "text": "一群飢餓的食屍鬼朝你們奔來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A PACK OF UNDEAD SUDDENLY APPEARS.",
+      "text": "一群不死怪物突然出現。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A PALE FORM RISES BEFORE YOU.",
+      "text": "一個蒼白的身影在你們面前升起。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "A PARTY OF",
@@ -604,9 +739,19 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "A ROPE IS TOSSED UP AND THE REST OF THE PARTY COMES DOWN. THE OLD THIEF SAYS 'OUR RULES REQUIRE YOU TO BE BLINDFOLDED IN OUR GUILD HOUSE, OKAY?'",
+      "text": "一條繩子被拋了上來，隊伍其餘的人也下來了。那名年長的盜賊說：「按規矩，在我們公會裡各位得蒙上眼，可以吧？」",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "A SCYTHING BLADE DROPS ACROSS THE DOORWAY, DAMAGING ONE OF THE CHARACTERS.",
       "text": "一片鐮刀狀的刃器橫掃過門口，傷到了一名隊員。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "A SHARP CRACK SPLITS THE AIR AND YOU ARE STUNG.",
+      "text": "空中傳來一聲脆響，你們被蟄了一下。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "A SIGN ON THE NORTH DOOR READS 'FIGHTERS'.",
@@ -624,9 +769,34 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "A SIMPLE KITCHEN, A FEW CLAY BOWLS ADORN THE FLOOR.",
+      "text": "一間簡陋的廚房，地上擺著幾個陶碗。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A SKELETAL FORCE SPOTS YOU AND ATTACKS.",
+      "text": "一支骷髏隊伍發現你們，攻了上來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A SMALL ARMY OF SKELETONS RUSHES FROM THE TOWER.",
+      "text": "一小支骷髏軍從塔裡衝了出來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "A SPECTRE SUDDENLY APPEARS BEFORE YOU. 'THIEF! I DEFENDED THESE BOOKS IN LIFE AND I WILL DEFEND THEM IN DEATH!' IT ATTACKS YOU.",
       "text": "一隻幽魂突然出現在你們面前：「小偷！我生前守著這些書，死後照樣守！」牠攻了過來。",
       "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "A THICK CARPET OF FUNGUS COVERS THE FLOOR OF THIS ROOM.",
+      "text": "這房間的地板上鋪著一層厚厚的真菌。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A TOWER STANDS CLEARLY ABOVE ALL CRYPTS IN THE AREA.  HUGE PILES OF HUMAN BONES ARE STREWN ABOUT.",
+      "text": "一座塔明顯高過周圍所有墓室，四下散著成堆的人骨。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "A TRIBE OF LIZARDMEN IS PREPARING TO JOIN THE ENEMY.  PREVENT THIS.'",
@@ -637,6 +807,11 @@
       "source": "A VOICE FROM THE TOWER YELLS 'STAY AWAY FROM THE WALL!'",
       "text": "塔上有人大喊：「離牆遠一點！」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A VOICE SPEAKS, 'COME, MY BRAVE ADVENTURERS.  YOU MUST TAKE MY GIFTS TO BETTER FIGHT THE EVIL THAT HAS COME TO THE CITY.'",
+      "text": "一個聲音說：「來吧，勇敢的冒險者。收下我的贈禮，才好對抗降臨這座城的邪惡。」",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "A VOICE YELLS DOWN, 'WE SAID STAY AWAY FROM THE WALL. THAT INCLUDES THE TOWER!'",
@@ -654,6 +829,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。接下一段。"
     },
     {
+      "source": "A ZOMBIE WITH GRAY, LEATHERY-HARD SKIN GAZES AT YOU WITH HATE-FILLED EYES.",
+      "text": "一具皮膚灰硬如革的殭屍以充滿恨意的眼神盯著你們。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "ACCEPT BLESSING",
       "text": "接受祝福",
       "note": "遭遇選單。"
@@ -667,6 +847,11 @@
       "source": "ACOLYTE",
       "text": "見習僧侶",
       "note": "NPC 稱謂。"
+    },
+    {
+      "source": "ADD HIM TO YOUR PARTY?",
+      "text": "要讓他加入隊伍嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "ADMIST THE BODIES YOU FIND SOME JEWELRY.  WILL YOU TAKE IT?",
@@ -692,6 +877,11 @@
       "source": "AGREE",
       "text": "答應",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "ALL AROUND THE TOWER, PILES OF HAIR AND FUR COVER THE AREA.",
+      "text": "塔的四周堆滿了毛髮與獸皮。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "AMBUSH AND KILL HIM",
@@ -727,6 +917,16 @@
       "source": "AN ALARM STARTS RINGING!",
       "text": "警報大作！",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "AN OLD THIEF STANDS HERE.'WELCOME TO MY GUILD. I AM RESTAL.' HE BOWS LOW.",
+      "text": "一名年長的盜賊站在這裡：「歡迎來到我的公會。我是雷斯托。」他深深一鞠躬。",
+      "note": "瓦海登墳場的事件與敘述。Restal 為新增譯名。"
+    },
+    {
+      "source": "AN UNDEAD PATROL CONFRONTS YOU.  DO YOU GIVE THE PASSWORD?",
+      "text": "一支不死怪物的巡邏隊攔住你們。要說出通關密語嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "AND DEMAND, 'WHO ARE YOU?'",
@@ -884,6 +1084,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "AS YOU SEARCH THROUGH THE WRECKED SMITHY, YOU FIND THAT TIME HAS CRUMBLED EVERYTHING WITH THE EXCEPTION OF ONE OLD HAMMER.",
+      "text": "你們在毀壞的鐵匠鋪裡翻找，發現時間已把一切化為碎屑，只剩一柄舊鐵鎚。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "AS YOU TRY TO DEACTIVATE THE TRAP YOU MANAGE TO SET IT OFF.  A LARGE NEEDLE SHOOTS OUT OF A HIDDEN COMPARTMENT HITTING A PARTY MEMBER.",
       "text": "你們想解除陷阱，結果反而讓它啟動了。一根大針從暗格射出，扎中一名隊員。",
       "note": "柯威大樓的盜賊據點。"
@@ -897,6 +1102,11 @@
       "source": "AT YOUR ENTRY, THE COUNCIL CLERK BEGINS LOOKING THROUGH A STACK OF PAPERS.  'BEFORE I CAN OFFER ANY COMMISSIONS, I MUST SEE IF YOU ARE DUE A CURRENT REWARD.",
       "text": "你們一進門，議會書記官便開始翻一疊文件：「在談委託之前，我得先看看你們有沒有該領的報酬。",
       "note": "接下一段。"
+    },
+    {
+      "source": "ATOP A SMALL BONE ALTAR, STANDS AN ANCIENT, HOBGOBLIN. SHE SCREAMS 'I AM THE MIGHTY GRISHNAK! YOU HAVE INTERRUPTED MY UNHOLY RITES! FEEL MY INFERNAL WRATH!'",
+      "text": "一座小小的骨製祭壇上站著一隻蒼老的大哥布林。她尖叫：「我是偉大的格里希納克！你們打斷了我的邪穢儀式！嘗嘗我地獄般的怒火！」",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "ATTACK",
@@ -954,6 +1164,11 @@
       "note": "地點敘述；河名依 glossary。"
     },
     {
+      "source": "BEFORE THE CLERIC'S SPELLS INADVERTENTLY BOUND THEM TO THIS PLACE. ONE SPIRIT'S VOICE RISES ABOVE THE REST, 'AN ACCOUNT OF OUR TRIALS IS WITHIN THE DIARY.' HE POINTS TO A FLOORBOARD.",
+      "text": "後來那位僧侶的法術無意間把他們縛在了這裡。一個亡魂的聲音蓋過其他：「我們的遭遇都寫在那本日記裡。」他指了指一塊地板。",
+      "note": "索卡爾城堡的事件與敘述。承接上一段。"
+    },
+    {
       "source": "BEFORE THE GATE YOU CAN MAKE OUT A MAN WITH A WAGON OF GOODS WHO IS TALKING TO TWO OF THE BUGBEARS. THE MAN HANDS SOMETHING TO THE BUGBEARS AND THE GATES OPEN.",
       "text": "門前有個趕著貨車的人正和兩隻熊妖說話。那人遞了什麼東西過去，門就開了。",
       "note": "史塔傑諾門一帶的事件。"
@@ -979,6 +1194,11 @@
       "note": "同上。"
     },
     {
+      "source": "BENEATH A FLOORBOARD YOU FIND SOME GEMS AND A FEW PAGES OF A DIARY.  YOU COPY THESE PAGES INTO YOUR JOURNAL AS ENTRY 3.",
+      "text": "地板底下有幾顆寶石和幾頁日記。你們把這幾頁抄進手札第 3 條。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "BIVANT WAS DELIGHTED WITH THE CHILD'S RESCUE.  THEY LEFT SOME TRINKETS FOR YOU.",
       "text": "孩子獲救，畢凡特家欣喜不已，留了些小飾物給你們。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -989,9 +1209,19 @@
       "note": "貧民區（Slums）的事件與敘述。算命內容。"
     },
     {
+      "source": "BREAD AND MEAT LIE ABOUT, AS WELL AS PIECES OF HUMAN ANATOMY.",
+      "text": "地上散著麵包和肉，還有人體的殘塊。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "BREAK",
       "text": "砸開",
       "note": "開鎖選項。"
+    },
+    {
+      "source": "BREAK CHAINS",
+      "text": "砸斷鎖鏈",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "BRIBE",
@@ -1044,9 +1274,19 @@
       "note": "地點選項。"
     },
     {
+      "source": "CLAWS RISE FROM THE SOIL AND ATTEMPT TO DRAG YOU DOWN.",
+      "text": "利爪從土裡伸出，想把你們拖下去。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "CLERICS",
       "text": "牧師",
       "note": "訓練所指示牌，複數。"
+    },
+    {
+      "source": "CLIMB DOWN",
+      "text": "爬下去",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "COMBAT",
@@ -1074,6 +1314,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "CROAK!",
+      "text": "呱！",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "CURATE",
       "text": "教士",
       "note": "AD&D 等級稱號（牧師）。"
@@ -1082,6 +1327,21 @@
       "source": "D",
       "text": "丁",
       "note": "同上。"
+    },
+    {
+      "source": "DARK, BENT CREATURES RUSH SWIFTLY AT YOU.",
+      "text": "陰暗佝僂的生物迅速朝你們撲來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DESPITE GREAT EFFORT, THE CHAINS HOLD.",
+      "text": "使盡了力氣，鎖鏈還是紋絲不動。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DESTROY",
+      "text": "摧毀",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "DESTROY ALTAR",
@@ -1114,9 +1374,34 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "DO YOU LEAVE?",
+      "text": "你們要離開嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DO YOU LET HIM JOIN THE PARTY OR SEND HIM AWAY?",
+      "text": "要讓他加入隊伍，還是打發他走？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DO YOU READ THE SCROLL?",
+      "text": "要讀那卷卷軸嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "DO YOU TAKE IT?",
       "text": "要拿走嗎？",
       "note": "提問。"
+    },
+    {
+      "source": "DO YOU TAKE THE GEMS?",
+      "text": "要拿走那些寶石嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DO YOU WANT TO DO ANYTHING WITH THE COFFIN?",
+      "text": "要對那具棺材做什麼嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "DO YOU WANT TO GO DOWNSTAIRS?",
@@ -1127,6 +1412,16 @@
       "source": "DO YOU WANT TO GO UPSTAIRS?",
       "text": "要上樓嗎？",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "DO YOU WANT TO TAKE A BOAT BACK TO PHLAN?",
+      "text": "要搭船回菲蘭城嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "DO YOU:",
+      "text": "你們要：",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "DOES ANYONE WANT TO GAMBLE?",
@@ -1159,9 +1454,19 @@
       "note": "方位選項。"
     },
     {
+      "source": "ECHOING FOOTSTEPS ARE DIMLY HEARD WITHIN THE KEEP.  TO THE WEST RISES A MOUND OF REEDS.",
+      "text": "城堡裡隱約傳來迴盪的腳步聲。西邊隆起一叢蘆葦。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "ENTER",
       "text": "進入",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "EVIL LOOKING FROGS BOIL UP FROM BELOW.",
+      "text": "樣子邪惡的青蛙從底下湧了上來。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "EVOKER",
@@ -1169,9 +1474,24 @@
       "note": "AD&D 等級稱號（魔法師）。"
     },
     {
+      "source": "EXAMINE",
+      "text": "查看",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "EXAMINE THE CABINET",
       "text": "查看櫃子",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "FERRAN SPEAKS: 'THE CITY FELL LONG AGO TO THE UNBLESSED CREATURES IMBUED WITH THE MIGHT OF A MAGICAL POOL.  CHIEF AMONG THESE WERE TYRANTHRAXUS, EDRANKA, AND TORATH.",
+      "text": "費瑞說：「這座城很久以前就淪陷了，敵人是一群不受祝福、被一池魔法之力灌注的生物。為首的是泰蘭特拉克斯、艾德蘭卡與托拉斯。",
+      "note": "索卡爾城堡的事件與敘述。Edranka、Torath 為新增譯名。接下一段。"
+    },
+    {
+      "source": "FIERCE GUSTS OF WIND HOWL PAST AND THE GROUND SHAKES AS PEALS OF THUNDER ROCK THE LAND.  THE SWIRLING MURK HIDES WHAT LIES AHEAD.",
+      "text": "狂風呼嘯而過，雷聲震得大地搖晃。翻捲的昏暗遮住了前方的一切。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "FIGHT",
@@ -1214,14 +1534,34 @@
       "note": "選項。"
     },
     {
+      "source": "FREE",
+      "text": "放他自由",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "FROM AN ARCHWAY AT THE BOTTOM COME ARROWS.",
+      "text": "箭矢從底下的拱門射了出來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "FROM ARROW SLITS IN THE TOWER ARE SHOT A COUPLE ARROWS.",
       "text": "塔上的箭孔射出幾支箭。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "FROM THE MAGICALLY-LIT TOMB OF A BRAVE KNIGHT, A BODY RISES FROM ITS RESTING PLACE TO LAY WEAPONS BEFORE THE PARTY.",
+      "text": "在一位勇敢騎士的魔法照明墓穴裡，一具遺體從安息之處起身，把武器放到隊伍面前。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "FROM THE TOP OF THE GATE COMES A VOLLEY OF ROCKS.",
       "text": "門樓上砸下一陣落石。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "GHOSTLY SHAPES SCREECH OUT A DREADFUL KEENING HOWL",
+      "text": "幽靈般的身影發出可怖的哀嚎",
+      "note": "瓦海登墳場的事件與敘述。片段。"
     },
     {
       "source": "GIVE",
@@ -1264,6 +1604,11 @@
       "note": "扒手事件的選項。"
     },
     {
+      "source": "GRAFFITI COVERS THE WALLS IN MEANINGLESS ABANDON.",
+      "text": "牆上滿是毫無意義的塗鴉。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "GREET",
       "text": "打招呼",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -1299,9 +1644,19 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "HE POINTS HIS RING AT YOU AND YOU RISE UP AND OUT THE WELL.",
+      "text": "他把戒指對準你們，你們便升起來，飄出了井口。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "HE STANDS UP, MUTTERING TO HIMSELF, AND JOINS YOU.",
       "text": "他站起身，喃喃自語，加入了你們。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "HERE IS A LAUGHING THIEF.",
+      "text": "這裡有個在笑的盜賊。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "HERE IS YOUR REWARD.'",
@@ -1329,9 +1684,19 @@
       "note": "怪物名；與哥布林成對，取「大」以示體型。"
     },
     {
+      "source": "HOBGOBLINS CHARGE SCREAMING.",
+      "text": "大哥布林尖叫著衝了過來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "HOW MANY PLATINUM PIECES WILL YOU WAGER? (HOUSE LIMIT IS 1000)",
       "text": "要下注幾枚白金幣？（莊家上限一千）",
       "note": "酒館賭局。"
+    },
+    {
+      "source": "HOW WILL YOU FREE HIM?",
+      "text": "你們要怎麼放他自由？",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "I AM SORRY, BUT I HAVE NOTHING TO SELL NOW.  COME BACK SOME OTHER TIME.",
@@ -1354,9 +1719,19 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "IN A CHAMBER FILLED WITH RUINED PARCHMENTS, YOU SURPRISE A SHAPE THAT IS CREATING ZOMBIES.",
+      "text": "在一間滿是毀壞羊皮紙的屋子裡，你們撞見一個身影正在製造殭屍。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "IN A DEEP THREATENING VOICE ONE OF THE ORCS SAYS 'YOU MOLES BETTER WATCH YOUR STEP OR YOU SHALL FEEL THE WRATH OF BANE!'  AFTER SAYING THIS HE SPITS AND LEAVES.",
       "text": "其中一隻半獸人壓低嗓子威脅道：「你們這些鼴鼠最好給我小心點，不然就等著嘗嘗邪惡神的怒火！」說完啐了一口就走。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "IN A POUCH ON THE REMAINS IS A CRUMBLING PARCHMENT SCROLL WITH THE WORDS ...",
+      "text": "遺骸身上的小袋裡有一卷風化的羊皮卷軸，上面寫著……",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "IN FRONT OF YOU ARE THREE CABINETS.  WHICH ONE WILL YOU EXAMINE?",
@@ -1379,9 +1754,29 @@
       "note": "遭遇敘述的方位片段，原版把句子拆成幾段拼起來。"
     },
     {
+      "source": "IN THE CHAMBER IS A SINGLE CRYPT.  FLOATING ABOVE THE CRYPT IS A WRAITH. 'I AM THE PROTECTOR OF THE PALADIN. I GUARD HIS REMAINS FOR ALL ETERNITY.  LEAVE OR SUFFER.'  WHAT DO YOU DO?",
+      "text": "室內只有一座墓，墓上飄著一隻幽靈：「我是那位聖武士的守護者，永世看守他的遺骸。走開，否則後果自負。」你們要怎麼做？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "IN THE COUNCIL CHAMBERS, THE ENTIRE CITY COUNCIL IS WAITING FOR YOU. THE LORD HIGH MAYOR, ULRICH EBERHARD, SPEAKS: 'OUR FORCES ARE MARSHALLED FOR THE ASSAULT ON VALJEVO CASTLE.",
       "text": "議事廳裡，全體市議會都在等你們。大市長亞爾瑞屈·艾伯哈德開口：「我軍已集結完畢，準備進攻瓦傑渥城堡。",
       "note": "接下一段。"
+    },
+    {
+      "source": "IN THE CRYPT LIES THE FULLY-EQUIPPED BODY OF A MIGHTY WARRIOR.  DO YOU STRIP THE BODY?",
+      "text": "墓室裡躺著一具裝備齊全的強大戰士遺體。要剝下他的裝備嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "IN THE ENTRY IS SET A HUGE PAIR OF BRASS DOORS.",
+      "text": "入口處嵌著一對巨大的黃銅門。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "IN THE MIDDLE OF A DOOR IS A PANEL OF A POWERFUL KNIGHT FIGHTING SEVERAL UNDEAD.",
+      "text": "門的中央鑲著一塊浮雕，刻的是一名強大的騎士對抗數隻不死怪物。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "IN THE RUBBLE YOU SPOT A BEAUTIFUL TAPESTRY.  WILL YOU TAKE IT?",
@@ -1417,6 +1812,11 @@
       "source": "INSIDE THE CASKET IS A VARIETY OF GOLD CHAINS, PENDANTS AND JEWELRY.",
       "text": "小箱裡是各式金鍊、墜飾與首飾。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "INSIDE THE RUINS OF A BLACK MARBLE CRYPT IS A COFFIN FILLED WITH DUST.  AMONG THE PILES OF DUST ARE SEVERAL BROKEN CROSSES, VIALS OF SPILLED HOLY WATER, AND A SCROLL.",
+      "text": "黑色大理石墓室的廢墟裡有一具滿是塵土的棺材。塵堆之間散著幾支斷裂的十字架、幾瓶灑翻的聖水，還有一卷卷軸。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "INSIDE THIS ROOM YOU FIND A LARGE PILE OF WEAPONS AND SHIELDS.  THEY APPEAR TO BE IN GOOD CONDITION AND OF FINE QUALITY.  WHAT WILL YOU DO?",
@@ -1514,6 +1914,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "LET HIM JOIN",
+      "text": "讓他加入",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "LET HIM TOUCH YOU",
       "text": "讓他摸",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -1527,6 +1932,11 @@
       "source": "LIBRARY.'",
       "text": "圖書館。」",
       "note": "委託文字的結尾片段，原版把長句拆成幾段拼起來。"
+    },
+    {
+      "source": "LIE?",
+      "text": "說謊？",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "LISTEN TO COMMENTS",
@@ -1557,6 +1967,11 @@
       "source": "LORD URSLINGEN WISHES URGENTLY TO SPEAK WITH YOU.  GO THROUGH THE SOUTH DOOR OF THE TRAITOR CADORNA'S OLD QUARTERS.'",
       "text": "烏斯林根大人急著要見你們。走叛徒卡多納舊居的南門進去。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "LUMBERING FIGURES REACH FOR YOU.",
+      "text": "笨重的身影朝你們伸出手來。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "LUX",
@@ -1644,6 +2059,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "NO ONE IS ABLE TO PICK ALL THE PADLOCKS.",
+      "text": "沒有人能把所有掛鎖都撬開。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "NO ONE IS WILLING TO GAMBLE WITH SOMEONE WHO LOOKS THAT BAD.",
       "text": "沒有人願意跟看起來這麼落魄的人賭。",
       "note": "酒館賭局。"
@@ -1664,6 +2084,16 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "NOXIOUS FUMES POUR FROM THE TOWER DOORWAY, MAKING IT IMPOSSIBLE TO SEE INSIDE.",
+      "text": "毒氣從塔門湧出，裡頭什麼也看不見。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "NOXIOUS FUMES TEAR AT YOUR THROAT AS YOU CRUNCH THROUGH PILES OF DRIED BONES.",
+      "text": "你們踩過成堆的乾骨，刺鼻的毒氣灼著喉嚨。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "OGRES",
       "text": "食人魔",
       "note": "怪物名，遊戲文字證實。"
@@ -1674,9 +2104,19 @@
       "note": "NPC 名，音近。"
     },
     {
+      "source": "ON A HOBGOBLIN BODY, YOU FIND A NOTE THAT YOU COPY INTO YOUR JOURNAL AS ENTRY 57.",
+      "text": "你們在一具大哥布林屍體上找到一張字條，抄進手札第 57 條。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "ON A NEARBY WALL IS A SLATE.  DRAWN ON THE SLATE IS A COMPLEX MAZE WITH THE WORDS 'NW CASTLE' UNDER IT.  YOU COPY THE CASTLE INTO YOUR JOURNAL UNDER JOURNAL ENTRY 41.",
       "text": "旁邊牆上有一塊石板，上頭畫著一座複雜的迷宮，底下寫著「城堡西北」。你們把它抄進手札第 41 條。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "ON STANDS ARE A SHIELD, A MACE, A SWORD, AND A SMALL SUIT OF CHAINMAIL.  THE EQUIPMENT HAS NOT BEEN TARNISHED BY THE PASSING YEARS.",
+      "text": "架上放著一面盾、一柄釘頭鎚、一把劍和一套小號鎖子甲。這些裝備沒有被歲月侵蝕。",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "ON THE DEAD BODY OF THE HALF-ORC CLERIC YOU FIND A PIECE OF PAPER.  YOU PUT THE PAPER IN YOUR JOURNAL UNDER ENTRY 25.",
@@ -1704,6 +2144,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。原版把 BARELY 拼成 BARELEY。接下一段。"
     },
     {
+      "source": "ON THE WELL IS A NOTE,'THIEVES ONLY.' THE WELL HAS NO RUNGS OR ROPE AND SEEMS VERY DEEP. ONLY A SKILLFUL CLIMBER COULD SURVIVE THE DESCENT. WHAT DO YOU DO?",
+      "text": "井上貼著一張字條：「限盜賊。」井裡既沒有踏階也沒有繩子，看來很深，只有身手好的攀爬者才下得去。你們要怎麼做？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "ON WHOSE AUTHORITY ARE YOU HERE?'",
       "text": "你們是奉誰的命令來的？」",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -1722,6 +2167,11 @@
       "source": "OPEN",
       "text": "打開",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "OPEN IT",
+      "text": "打開",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "OPEN TRAPDOOR",
@@ -1744,9 +2194,19 @@
       "note": "波多廣場的拍賣會與街頭遭遇。原版把 PIT 拼成 PITT。"
     },
     {
+      "source": "OVERTURN",
+      "text": "推倒",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "PARLAY",
       "text": "談判",
       "note": "遭遇選單；說明書第四章的 PARLAY 指令。"
+    },
+    {
+      "source": "PASSING THROUGH AN ILLUSIONARY WALL, YOU ENTER A PORTION OF THE KEEP THAT REMAINS UNTOUCHED BY TIME OR RAVAGING ARMIES.",
+      "text": "穿過幻象之牆，你們進入城堡裡一處未受時間與兵燹侵擾的地方。",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "PAY",
@@ -1762,6 +2222,11 @@
       "source": "PICK",
       "text": "撬鎖",
       "note": "開鎖選項。"
+    },
+    {
+      "source": "PICK LOCK",
+      "text": "撬鎖",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "PILED HERE IS VARIOUS LOOT.  THERE IS A WIDE VARIETY OF NICK NACKS FROM TARNISHED BRONZE CANDLESTICKS TO ONE OR TWO USEFUL ITEMS.",
@@ -1889,14 +2354,34 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "RUN AWAY?",
+      "text": "逃走？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "RUSH TO ATTACK.",
       "text": "衝上去攻擊。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "SAMOSUD",
+      "text": "薩莫蘇德",
+      "note": "瓦海登墳場的事件與敘述。通關密語，音近。"
+    },
+    {
+      "source": "SANCTIFY",
+      "text": "淨化",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "SAY,",
       "text": "說：",
       "note": "片段。"
+    },
+    {
+      "source": "SCORPIONS APPROACH HUNGRILY.",
+      "text": "蠍子飢腸轆轆地靠近。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "SEARCH",
@@ -1924,14 +2409,54 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "SEND HIM AWAY",
+      "text": "打發他走",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SEVERAL BABY HOBGOBLINS FLEE, SCREAMING IN FEAR!",
+      "text": "幾隻大哥布林幼崽驚恐尖叫著逃開！",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "SEVERAL ORCS ARE ARGUING OVER SOME PAPERS.",
       "text": "幾隻半獸人正為了幾張文件爭吵。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "SHADOWY FORMS FLOW FROM BETWEEN THE DOORS AND ATTACK.",
+      "text": "陰影般的身影從門縫間湧出，發動攻擊。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SHESTNI",
+      "text": "謝斯特尼",
+      "note": "瓦海登墳場的事件與敘述。通關密語，音近。"
+    },
+    {
+      "source": "SKELETONS SILENTLY ATTACK.",
+      "text": "骷髏無聲地攻了上來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SKELETONS.",
+      "text": "骷髏。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "SKULLCRUSHER",
       "text": "碎顱者",
       "note": "NPC 名，遊戲文字證實。"
+    },
+    {
+      "source": "SKULLCRUSHER LAUGHS AND CRACKS HIS KNUCKLES.",
+      "text": "碎顱者大笑，把指節捏得喀喀作響。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SKULLCRUSHER PROUDLY POINTS OUT HIS HANDIWORK.",
+      "text": "碎顱者得意地指著自己的傑作。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "SKULLCRUSHER SPEAKS, 'I MUST GO TO MY MASTER NOW.'",
@@ -1954,6 +2479,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "SOME GHOULS DECIDE TO ADD YOU TO THEIR MENU.",
+      "text": "幾隻食屍鬼決定把你們加進菜單。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "SOME HOBGOBLINS ARE ARGUING OVER A PILE OF GOLD.  'THIEVES!' THEY SCREAM WHEN THEY SEE YOU.",
       "text": "幾隻大哥布林正為一堆金幣爭吵。看到你們，牠們大叫：「小偷！」",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -1972,6 +2502,11 @@
       "source": "SPEAK",
       "text": "說話",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "SPECIAL STANDS IN THE NORTHWESTERN CORNER HOLD EQUIPMENT.",
+      "text": "西北角的特製架上放著裝備。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "STAND AND LISTEN",
@@ -2044,6 +2579,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "TAKE IT UNOPENED",
+      "text": "不打開就帶走",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "TAKE SOME",
       "text": "拿一些",
       "note": "柯威大樓的盜賊據點。"
@@ -2059,6 +2599,16 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "TELL THE TRUTH?",
+      "text": "說實話？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THAT ONE IS NOT WELL ENOUGH TO CLIMB.",
+      "text": "那個人的狀況爬不動。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THAT ONE IS UNACCEPTABLE. CHOOSE ANOTHER.",
       "text": "這個不行，換一個。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -2072,6 +2622,11 @@
       "source": "THE AGED ORC COMES GRASPING TOWARD YOU.  WILL YOU LET HIM TOUCH YOU?",
       "text": "那隻年邁的半獸人伸著手朝你們摸過來。要讓他摸嗎？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "THE AIR AROUND THE TOWER IS CHARGED WITH STATIC ELECTRICITY AND BALL LIGHTNING.",
+      "text": "塔的四周瀰漫著靜電，還有滾動的球狀閃電。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE ARENA MASTER ASKS IF YOU WISH TO DUEL.  'THE DUELS  ARE EVENLY MATCHED AND NORMALLY NOT TO THE DEATH. DO YOU DUEL?'",
@@ -2114,6 +2669,16 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "THE BOAT DISEMBARKS YOU AT SOKAL KEEP.",
+      "text": "船把你們送上索卡爾城堡。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE BRASS KEY YOU FOUND OPENS ALL OF THE PADLOCKS.",
+      "text": "你們找到的黃銅鑰匙打開了所有掛鎖。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE BUCCANEER SMILES.'THAT IS SUFFICIENT PAYMENT.' HE LEAVES.",
       "text": "那名海盜笑了笑：「這樣就夠了。」隨即離去。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -2132,6 +2697,16 @@
       "source": "THE CASKET IS FILLED WITH TINY PEARLS!",
       "text": "小箱裡滿滿都是細小的珍珠！",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "THE CHAMBER IS FILLED WITH USELESS CLOTHING AND RUSTING ARMOR.",
+      "text": "室內堆滿了沒用的衣物與生鏽的護甲。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE CHAMBER LIGHTS UP TO REVEAL A TALL, PALE MAN WITH VERY WHITE TEETH.",
+      "text": "室內亮起，照出一個高瘦蒼白、牙齒極白的男人。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE CITY WATCH CHARGES IN. DO YOU RUN AWAY OR STAY TO CONFRONT THEM?",
@@ -2157,6 +2732,11 @@
       "source": "THE CLERK SPEAKS. '",
       "text": "書記官開口說：「",
       "note": "片段，後面接委託內容。"
+    },
+    {
+      "source": "THE COFFIN MAKES A MESS ON THE FLOOR.",
+      "text": "棺材砸得滿地狼藉。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE COUNCIL HAS AWARDED A BONUS FOR YOUR ELIMINATING NORRIS THE GRAY.",
@@ -2194,9 +2774,29 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "THE CROAKING RISES IN VOLUME.",
+      "text": "呱呱聲愈來愈響。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE DOOR IS LOCKED.  DO YOU WANT TO BREAK IN?",
       "text": "門鎖著。要破門進去嗎？",
       "note": "互動提問。"
+    },
+    {
+      "source": "THE ELF IS LONG DEAD.",
+      "text": "那名精靈早就死了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE ENCLAVE IS GUARDED BY A SKELETON ARMY!",
+      "text": "這片地界由一支骷髏大軍守著！",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE FLOOR IS SLIPPERY FROM DUNG AND REEKS OF URINE.",
+      "text": "地板被糞便弄得濕滑，尿騷味刺鼻。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE GROUP OF BUGBEARS COME OVER, 'WE WARNED YOU! WHAT'S THE MATTER? CAN'T YOU UNDERSTAND COMMON? I GUESS I'LL HAVE TO TEACH YOU.' THE LEADER SWINGS AT YOU.",
@@ -2209,6 +2809,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THE HALL IS EMPTY, SAVE FOR SIGNS OF A RECENT BATTLE.",
+      "text": "大廳空無一物，只留下不久前一場戰鬥的痕跡。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE HARBOR MASTER TELLS YOU BOATS LEAVE FOR THE WEST, THE EAST, SOKAL KEEP, AND THE NORTH SIDE OF THE BAY.  'ROUND TRIP PASSAGE IS 1 PLATINUM PIECE. WHAT PASSAGE CAN I SELL YOU?'",
       "text": "港務長告訴你們，有船開往西邊、東邊、索卡爾城堡與海灣北岸。「來回船票一枚白金幣。要買哪一趟？」",
       "note": "港口。"
@@ -2219,9 +2824,29 @@
       "note": "書名，出現在搜書的敘述裡。"
     },
     {
+      "source": "THE HAUNTS BURST INTO A CHORUS OF HOWLS, MOANS, COMPLAINTS, WAILS, AND OTHER LAMENTATIONS OVER THEIR FATE AND THE FATE OF THEIR FAMILIES. THEY WERE THE ORIGINAL DEFENDERS OF THE KEEP,",
+      "text": "那些幽魂爆出一陣嚎叫、呻吟、抱怨與哀號，為自己和家人的命運悲嘆。他們原是這座城堡的守軍，",
+      "note": "索卡爾城堡的事件與敘述。接下一段。"
+    },
+    {
       "source": "THE HEIR TO THE HOUSE OF BIVANT MUST BE RESCUED.  WE WILL PAY GENEROUSLY FOR HIS SAFE RETURN.'",
       "text": "畢凡特家的繼承人必須救回來。平安帶回，重金酬謝。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE HOBGOBLINS GIVE CHASE, BUT YOU ESCAPE.",
+      "text": "大哥布林追了上來，但你們逃掉了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE HOBGOBLINS RESPOND WITH A PIERCING BATTLE CRY!",
+      "text": "大哥布林以刺耳的戰吼回應！",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE INTERIOR IS OVERRUN WITH INSECTS.  AT YOUR FOOTSTEP, THEY FALL FROM THE WALLS AND CEILING.",
+      "text": "室內爬滿了蟲子。你們一踏進去，牠們就從牆上與天花板落下。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE LEADER ADVANCES.",
@@ -2234,6 +2859,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THE LOWER CHAMBER IS FILLED WITH GLASS AND FUR OBJECTS OF ALL TYPES.",
+      "text": "下層室內堆滿各式玻璃與毛皮製品。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE MAD MAN SUDDENLY BEGINS TO SCREAM AND ATTACK EVERYONE WITHIN ARM'S REACH.",
       "text": "那個瘋子突然尖叫起來，見人就打。",
       "note": "瘋子事件。"
@@ -2242,6 +2872,11 @@
       "source": "THE MAIN WALL RISES 30 FEET WHILE THE TWO WATCHTOWER RISE TO 50 FEET. LOUNGING AROUND THE ENTRANCE ARE A GROUP OF BUGBEARS.",
       "text": "主牆高三十呎，兩座瞭望塔高五十呎。入口附近懶散地聚著一群熊妖。",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "THE MAN DIES A CRUEL DEATH.",
+      "text": "那人死得很慘。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE MAN RUNS SCREAMING INTO THE BACK OF THE BOOTH.",
@@ -2264,9 +2899,19 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "THE MAN WAITS IMPATIENTLY.",
+      "text": "那人不耐煩地等著。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE MINUTE YOU FIND THE TREASURE A LARGE GROUP OF ORCS CHARGE THROUGH THE TEMPLE DOORS.  LEADING THEM IS A HALF-ORC WHO IS SCREAMING 'KILL!  KILL, THESE SCUM WHO WOULD STEAL FROM OUR TEMPLE.'",
       "text": "你們一找到寶藏，一大群半獸人就從神廟大門衝了進來，領頭的半獸人尖叫著：「殺！殺了這些膽敢偷我們神廟東西的渣滓。」",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "THE MOANING CONTINUES.",
+      "text": "呻吟聲持續著。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE MONSTERS LOOK AROUND FOR A SCAPEGOAT. THEIR EYES FALL UPON YOUR PARTY, THEN THEY",
@@ -2304,6 +2949,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "THE MYSTIC MAN SPEAKS, 'THE VAMPIRE IS BEHIND THE NORTHERN WALL.'",
+      "text": "那名神祕人說：「吸血鬼就在北牆後面。」",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE OGRE IS TACKLED AND SEARCHED. HE DOESN'T HAVE THE ITEM ON HIM.",
       "text": "食人魔被撲倒搜身，東西不在牠身上。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -2319,6 +2969,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。原版把 CAREFUL 拼成 CAREFULL。"
     },
     {
+      "source": "THE OLD THIEF LAUGHS, 'PERHAPS WE SHALL MEET AGAIN.'",
+      "text": "那名年長的盜賊笑道：「或許我們還會再見。」",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE ORC SMILES CROOKEDLY.'GREETINGS FROM BANE.",
       "text": "那隻半獸人歪嘴一笑：「邪惡神向你們問好。",
       "note": "邪惡神廟（Temple of Bane）一帶。接下一段。"
@@ -2332,6 +2987,11 @@
       "source": "THE ORCS YELL OUT, 'WE HAVE ORDERS TO CHECK OUT SUSPICIOUS INDIVIDUALS, BUT YOUSE GUYS LOOK HARMLESS ENOUGH.'  AFTER TALKING THE FOUR ORCS WANDER AWAY.",
       "text": "半獸人喊道：「上頭要我們盤查可疑的人，不過你們這票看起來人畜無害。」說完那四隻半獸人就晃走了。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE OUTLINE OF A SAD-FACED MAN WAVERS AND FADES AWAY.",
+      "text": "一個愁容男子的輪廓晃了晃，消散了。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE PARTY HEARS THE CRACKING OF GLASS.  A POISONOUS GAS FILLS THE AIR!",
@@ -2364,6 +3024,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THE REMAINS OF A SMOKING FIRE.",
+      "text": "一堆還冒著煙的火堆殘跡。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE REMAINS OF AN EVIL ALTAR ARE NEARBY.",
       "text": "附近有一座邪惡祭壇的殘跡。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -2377,6 +3042,16 @@
       "source": "THE ROOM IS FILLED WITH DUELING PAIRS.",
       "text": "房裡到處都是兩兩對決的人。",
       "note": "訓練所與競技場。"
+    },
+    {
+      "source": "THE SCROLL IS PLACED IN YOUR JOURNAL AS ENTRY 43.",
+      "text": "那卷卷軸被放進手札第 43 條。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE SHAPE SPEAKS, 'I AM THE LIFE FORM OF FERRAN MARTINEZ, BOUND WITH THE UNDEAD SPIRITS OF ALL WHO DIE WITHIN THESE WALLS TO GUARD THE KEEP. TELL ME, HAS THE CITY BEEN FREED?'",
+      "text": "那身影開口：「我是費瑞·馬提茲的生命形體，與所有死在這道城牆內的亡魂縛在一起，守著這座城堡。告訴我，那座城自由了嗎？」",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "THE SHOP SELLS SILVER ITEMS. 'WOULD YOU LIKE TO SEE OUR SELECTION?'",
@@ -2399,9 +3074,24 @@
       "note": "商店。"
     },
     {
+      "source": "THE SKELETON OF A LONG-DEAD ELF LIES HIDDEN BY ROCKS AND REEDS.  ITS WEAPONS AND EQUIPMENT ARE BADLY RUSTED AND CORRODED BY SALT, ITS LEATHERS ARE WORM EATEN AND CRUSTED IN DIRT.",
+      "text": "一具死去多時的精靈骸骨被岩石與蘆葦掩著。牠的武器與裝備鏽蝕嚴重、被鹽分侵蝕，皮件則被蟲蛀、結滿塵垢。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
+      "source": "THE SKY DARKENS.",
+      "text": "天色暗了下來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE SLUMS IMMEDIATELY TO OUR WEST NEED TO BE CLEARED OF MONSTERS.'",
       "text": "我們西邊那片貧民區的怪物必須清掉。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE SPECTRE HAS NOTICED YOU.",
+      "text": "那隻幽魂發現你們了。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE TELLING IS FINISHED. (WHAT DO YOU DO?)",
@@ -2419,9 +3109,24 @@
       "note": "貧民區（Slums）的事件與敘述。算命內容。"
     },
     {
+      "source": "THE TOWER DOOR SWINGS OPEN AND A SMALL ARMY OF ZOMBIES SHUFFLES OUT.  THE DOOR CLOSES WITH A CLAMOR OF LOCKS FALLING INTO PLACE.",
+      "text": "塔門敞開，一小支殭屍軍拖著腳步走了出來。門隨即關上，鎖扣落下的聲響此起彼落。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THE UNDEAD ARE CROSSING THE RIVER IN HORDES AND KILLING OR CARRYING OFF OUR SETTLERS.  THE COUNCIL DEMANDS THESE ATTACKS BE STOPPED. A GENEROUS REWARD IS OFFERED.'",
       "text": "不死怪物成群渡河而來，殺害或擄走我們的移民。議會要求制止這些襲擊，並提供優厚報酬。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE UNDEAD LEAVE.",
+      "text": "不死怪物離開了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE VAMPIRE TURNS INTO A VAPOR CLOUD AND FLOATS AWAY.",
+      "text": "吸血鬼化成一團霧氣飄走了。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THE WAY IS BLOCKED.",
@@ -2439,14 +3144,39 @@
       "note": "敘述。"
     },
     {
+      "source": "THERE ARE LARGE SILVER HOLY SYMBOLS UP AND DOWN THE CRACK IN THE DOORWAY.",
+      "text": "門縫上下嵌著幾枚碩大的銀製聖徽。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THERE ARE TWO HUMANS AND THREE ETTIN IN THE ROOM.",
       "text": "房裡有兩個人類和三隻雙頭巨人。",
       "note": "貧民區（Slums）的事件與敘述。Ettin 為新增譯名。"
     },
     {
+      "source": "THERE IS A FREE MAN HERE. WHAT DO YOU DO?",
+      "text": "這裡有個獲釋的人。你們要怎麼做？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THERE IS A GLOW IN THE NORTHWESTERN CORNER OF THE ROOM.",
+      "text": "房間西北角有一團光。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THERE IS A VAMPIRE HERE.",
+      "text": "這裡有一隻吸血鬼。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THERE IS MASS CONFUSION. SUDDENLY, THE OGRE SPRINTS FROM THE DARKNESS.",
       "text": "場面一片混亂。忽然，那隻食人魔從黑暗中衝了出來。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THERE IS NO ROOM IN YOUR PARTY FOR HIM.",
+      "text": "你們的隊伍沒有位置給他。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THESE ARE THE LIBRARY STACKS. OLD AND MOLDERING BOOKS ARE STORED ON SHELVES. A SIGN OVER THE ENTRANCE READS",
@@ -2494,6 +3224,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THEY DIDN'T LIKE THAT WORD.",
+      "text": "牠們不喜歡這個字。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THEY DON'T LISTEN.",
+      "text": "牠們不理會。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THEY GLARE AT YOUR PARTY,",
       "text": "牠們瞪著你們的隊伍，",
       "note": "片段。"
@@ -2539,6 +3279,16 @@
       "note": "怪物名。與職業 Thief（賊）分開用字，避免混淆。"
     },
     {
+      "source": "THINGS SEEM STRANGELY QUIET. THE DRUM HAS FADED TO SILENCE.",
+      "text": "四下靜得出奇，鼓聲已經停了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THIS BUILDING IS FILLED WITH BROKEN AND SPLINTERED WOOD, THE REMAINS OF THE BUNKS AND CHESTS OF THE ORIGINAL DEFENDERS.  IT SEEMS EVERYTHING HAS BEEN WELL LOOTED.",
+      "text": "這棟建築裡滿是碎裂的木料，是當年守軍的床鋪與箱櫃殘骸。看來所有東西都被搜刮乾淨了。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "THIS CABINET IS EMPTY.",
       "text": "這個櫃子是空的。",
       "note": "柯威大樓的盜賊據點。"
@@ -2547,6 +3297,11 @@
       "source": "THIS CASKET IS EMPTY.",
       "text": "這個小箱是空的。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "THIS CAVERNOUS BUILDING SERVES AS A BARRACKS.",
+      "text": "這棟空蕩的建築被當成營房。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "THIS IS A HIDDEN TEMPLE OF ILMATER. YOU FEEL SAFE HERE.",
@@ -2574,14 +3329,39 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THIS ROOM HAS HAD BLOOD SMEARED ON THE FLOOR AND WALLS IN A RITUAL, UNHOLY MANNER.",
+      "text": "這房間的地板與牆上塗滿血跡，是某種邪穢儀式的樣式。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THIS ROOM IS DIMLY LIT WITH GUTTERING TORCHES.",
+      "text": "房裡點著幾支忽明忽滅的火把，光線昏暗。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "THIS ROOM WAS ONCE A STUDY. IT IS NOW A SHATTERED RUIN.",
       "text": "這裡本來是書房，如今只剩一片殘破。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THIS WAS ONCE THE CHAPEL OF THE KEEP.  INSIDE THE DOORWAY ARE THE DRIED HUSKS OF TWO ORCS, THEIR FACES TWISTED WITH TERROR.  A LARGE ALTAR DOMINATES THE SOUTHERN WALL.",
+      "text": "這裡曾是城堡的禮拜堂。門內躺著兩具乾癟的半獸人屍殼，臉上滿是驚恐。南牆前立著一座大祭壇。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "THROW A ROCK",
       "text": "丟石頭",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "TO FIND HELP FOR YOUR BATTLES, YOU SHOULD PASS THROUGH THE ILLUSIONARY WALL IN THE ARMORY OF THIS KEEP.",
+      "text": "想在戰鬥中得到助力，就穿過這座城堡軍械庫裡的幻象之牆。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
+      "source": "TO PASS MY GUARDS ON THE WAY OUT, SPEAK THE WORD 'SAMOSUD'.  NOW WE ARE FREED, OUR DUTY DONE!' FERRAN FADES AWAY.",
+      "text": "出去時要通過我的守衛，就說出「薩莫蘇德」這個字。如今我們解脫了，職責已盡！」費瑞的身影消散了。",
+      "note": "索卡爾城堡的事件與敘述。Ferran Martinez 依 glossary 作費瑞·馬提茲。"
     },
     {
       "source": "TO THE NORTH IS THE PASSENGER DOCK.",
@@ -2624,6 +3404,26 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "UNLOCK",
+      "text": "開鎖",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "UNTIL AN EXPLOSION OF LIGHTNING REVEALS THE NIGHTMARE SCENE OF A GRAVEYARD TURNED UPSIDE DOWN.",
+      "text": "直到一道爆閃的雷光照出眼前的噩夢——整座墳場被翻了個底朝天。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "UNWHOLESOME MOLD AND FUNGI COVER THE DECAYING RUINS OF THE KEEP'S STABLE.  A PUTRID SMELL OF SICKNESS RISES AS YOU ENTER THE BUILDING.",
+      "text": "城堡馬廄的殘垣上長滿了病態的黴菌與真菌。你們一走進去，一股腐臭的病氣撲面而來。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
+      "source": "VARIOUS OBJECTS ARE SCATTERED ABOUT. WILL YOU PICK THEM UP?",
+      "text": "地上散著各種東西。要撿起來嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "WAIT",
       "text": "等待",
       "note": "遭遇選單。"
@@ -2632,6 +3432,11 @@
       "source": "WAIT FOR WINNER",
       "text": "等著看誰得標",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "WARNING VOICES CRY FROM WITHIN.  'WE ARE THE SPIRITS OF THOSE WHO FOUGHT THE DRAGONS.  LEAVE US OR DIE.'",
+      "text": "裡面傳出警告的呼喊：「我們是與巨龍作戰者的亡魂。走開，否則就死。」",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "WARRIOR",
@@ -2689,6 +3494,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "WHAT DO YOU DO WITH THE BODY?",
+      "text": "你們要怎麼處置那具屍體？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "WHAT DO YOU DO WITH THE MAN?",
+      "text": "你們要怎麼處置那個人？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "WHAT DO YOU DO?",
       "text": "你們要怎麼做？",
       "note": "遭遇提問。"
@@ -2699,9 +3514,24 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "WHAT DO YOU SAY? (TYPE A SINGLE WORD).",
+      "text": "你們要說什麼？（輸入一個字）",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "WHAT DO YOU WANT TO DO TO IT?",
+      "text": "你們要對它做什麼？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "WHAT DO YOU WANT TO DO?",
       "text": "你們要怎麼做？",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "WHEN YOU ENTER, A FEW FADED, MOTHEATEN TAPESTRIES FLUTTER MOURNFULLY.",
+      "text": "你們一進門，幾幅褪色蟲蛀的掛毯淒然飄動。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "WHICH CASKET WILL YOU SEARCH?",
@@ -2722,6 +3552,11 @@
       "source": "WHO WILL CHALLENGE THE BUCCANEER?",
       "text": "由誰去向那名海盜挑戰？",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "WHO WILL CLIMB DOWN?",
+      "text": "由誰爬下去？",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "WHO WILL DISARM THE TRAP?",
@@ -2754,6 +3589,16 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "WIGHTS APPEAR FROM BEHIND THE TOWER.",
+      "text": "屍妖從塔後現身。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "WIGHTS.",
+      "text": "屍妖。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "WILL YOU GO AGAIN?",
       "text": "要再來一次嗎？",
       "note": "酒館賭局提問。"
@@ -2769,6 +3614,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "WITH SLOW, OMINOUS CREAKS, MUMMIES OPEN THEIR SARCOPHOGI.",
+      "text": "伴著緩慢而不祥的吱嘎聲，木乃伊推開了石棺。",
+      "note": "瓦海登墳場的事件與敘述。原版把 SARCOPHAGI 拼成 SARCOPHOGI。"
+    },
+    {
       "source": "WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARREN RIVER.",
       "text": "索卡爾城堡到手之後，我們就能走船繞過那條荒蕪之河。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -2779,9 +3629,44 @@
       "note": "原版此處把 STOJANOW 拼成 STOJONOW。"
     },
     {
+      "source": "WITH THEIR POWERS THEY RULED AND UNITED ALL ELSE, DRIVING FORWARD TO DESTROY US ALL. THE SAGE MENDOR WORKED HARD TO GATHER RECORD OF ALL THESE THINGS, BUT THEY ARE LOST NOW, HIS LIBRARY OVERRUN.",
+      "text": "牠們憑那股力量統御並聯合了其餘一切，一路進逼要滅了我們。賢者曼多爾費盡心力蒐羅這些記載，如今全都散失了，他的圖書館也被占了。",
+      "note": "索卡爾城堡的事件與敘述。Mendor 依 glossary 的曼多爾圖書館作曼多爾。"
+    },
+    {
+      "source": "WOODEN STAIRS LEAD INTO A PIT.  DO YOU GO DOWN?",
+      "text": "木梯通往一個坑洞。要下去嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "WRITTEN ON THE DOOR (IN THE COMMON TONGUE) IS: 'DO NOT OPEN THIS DOOR. A GREAT EVIL HAS BEEN LAID TO REST HERE.'",
+      "text": "門上以通用語寫著：「請勿開啟此門。此處鎮著一股大惡。」",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "WRONG WORD.",
+      "text": "說錯了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YES",
       "text": "是",
       "note": "選單選項。"
+    },
+    {
+      "source": "YOU ARE APPALLED BY THE STENCH IN THIS DAMP BUILDING.",
+      "text": "這棟潮濕建築裡的惡臭令你們作嘔。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE APPROACHED BY A MAN CLAD IN MYSTIC ROBES.",
+      "text": "一個身穿神祕長袍的人朝你們走來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE ATTACKED BY WIGHTS.",
+      "text": "你們遭到屍妖攻擊。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU ARE BEING APPROACHED BY SOME ANGRY",
@@ -2789,14 +3674,39 @@
       "note": "貧民區（Slums）的事件與敘述。片段，後接怪物名。"
     },
     {
+      "source": "YOU ARE BLINDFOLDED AND TAKEN ON A LONG, TWISTING WALK, THEN UP A LADDER.'ONLY MEET US AT THE MAIN WELL.'",
+      "text": "你們被蒙上眼，走了一段長而曲折的路，再爬上梯子。「以後只在大井那裡碰面。」",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU ARE BY THE GATEWAY TO THE UNSETTLED AREAS. THE CITY WATCH EYES YOU SUSPICIOUSLY.",
       "text": "你們就在通往未開發地區的門邊。城衛隊用懷疑的眼神打量你們。",
       "note": "地點敘述。"
     },
     {
+      "source": "YOU ARE CHASED OUT INTO THE STREETS.",
+      "text": "你們被追到街上。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU ARE CONVERSING WITH",
       "text": "你們正在和",
       "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "YOU ARE ENTERING A WEEDY, GARBAGE STREWN COURTYARD. A DRUM BEGINS TO BEAT AND HOBGOBLINS ATTACK.",
+      "text": "你們踏進一座雜草叢生、垃圾滿地的中庭。鼓聲響起，大哥布林攻了上來。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE IN A DETERIORATED BUILDING.",
+      "text": "你們在一棟破敗的建築裡。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE IN A LARGE ROOM WHICH SERVES AS A CRUDE TEMPLE, AND CAUSES A VAGUE FEELING OF DISQUIET.",
+      "text": "你們在一間大屋裡，它被充作簡陋的神廟，讓人隱隱不安。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU ARE IN A ROOM FILLED WITH RUBBLE AND WASTE.",
@@ -2824,6 +3734,16 @@
       "note": "地點敘述。"
     },
     {
+      "source": "YOU ARE IN A VERY SMALL, DARK ROOM.",
+      "text": "你們在一間又小又暗的房間裡。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE IN THE DUSTY REMAINS OF A BLACK MARBLE CRYPT.",
+      "text": "你們在一座黑色大理石墓室的塵封殘跡裡。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU ARE IN THE ILLUMINATORS CARRELS. ALL THEIR EQUIPMENT HAS DECAYED AND LIES ROTTING ON THE FLOOR.",
       "text": "你們在繕寫師的小隔間裡，所有器具都腐朽了，散落一地。",
       "note": "舊繩索公會的圖書室。"
@@ -2844,6 +3764,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU ARE NOTICED.",
+      "text": "你們被發現了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS.",
       "text": "你們站在市政廳外。書記官在裡面發放委託。",
       "note": "地點敘述。"
@@ -2857,6 +3782,11 @@
       "source": "YOU ARE ROUSTED BY THE CITY WATCH AND TOLD TO MOVE ALONG. WHAT DO YOU DO?",
       "text": "城衛隊把你們趕起來，要你們別逗留。你們要怎麼做？",
       "note": "城衛隊事件。"
+    },
+    {
+      "source": "YOU ARE SUDDENLY CONFRONTED BY",
+      "text": "你們突然遭遇了",
+      "note": "瓦海登墳場的事件與敘述。片段。"
     },
     {
       "source": "YOU ARE SUDDENLY FACE TO FACE WITH A GROUP OF",
@@ -2914,6 +3844,11 @@
       "note": "柯威大樓的盜賊據點。原版此處把 OPENING 拼成 OPENNING。"
     },
     {
+      "source": "YOU BEGIN A LONG FALL.",
+      "text": "你們開始長長地墜落。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU BOARD A BOAT.",
       "text": "你們上了船。",
       "note": "敘述。"
@@ -2932,6 +3867,11 @@
       "source": "YOU BYPASS THE TRAP BY NOT FOOLING WITH ANY OF THE WEAPONS.",
       "text": "你們沒有去碰那些武器，因此躲過了陷阱。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU CAN BARELY SEE A DARK OBJECT TO THE WEST.",
+      "text": "你們勉強看見西邊有個暗色的東西。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU COLDLY KILL THE DEFENCELESS GOBLINS.",
@@ -2954,6 +3894,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU DESTROY EVERYTHING OF VALUE.",
+      "text": "你們把所有值錢的東西都毀了。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU DESTROY THE EVIL ALTAR AND THE UNEASY FEELING LEAVES YOU.",
       "text": "你們搗毀了邪惡祭壇，那股不安的感覺也隨之消散。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -2972,6 +3917,11 @@
       "source": "YOU EASILY MURDER THE OLD WOMAN.  EXCEPT FOR A FEW COPPER PIECES YOU FIND NOTHING OF VALUE.  THE GODS HAVE NOTED YOUR ACTIONS.",
       "text": "你們輕易殺了那個老婦人。除了幾枚銅幣之外一無所獲。眾神記下了你們的作為。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU ENCOUNTER HOBGOBLINS!",
+      "text": "你們遭遇了大哥布林！",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU ENTER A GUARD ROOM. THERE ARE TABLES, CHAIRS, AND BEDS HERE. ALL BUT TWO OF THE BEDS ARE 14 FEET LONG!",
@@ -3009,6 +3959,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "YOU ENTER THE KEEP'S OLD ARMORY.  ALL OF THE WEAPONS AND ARMOR HAVE DECAYED INTO USELESSNESS.",
+      "text": "你們走進城堡的舊軍械庫，所有武器與護甲都已腐朽得不能用了。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "YOU FEEL A LIGHT TOUCH ON YOUR PURSE.  DO YOU IGNORE IT OR GRAB THE OFFENDING HAND?",
       "text": "你們感覺錢袋被輕輕碰了一下。要不理會，還是抓住那隻手？",
       "note": "扒手事件。"
@@ -3024,6 +3979,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU FIND A GIANT SKELETON",
+      "text": "你們發現一具巨大的骷髏",
+      "note": "瓦海登墳場的事件與敘述。片段。"
+    },
+    {
       "source": "YOU FIND A LARGE NUMBER OF VALUABLES.",
       "text": "你們找到大量值錢的東西。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -3037,6 +3997,16 @@
       "source": "YOU FIND A LOOSE FLOORBOARD.  PRYING IT UP, YOU FIND A CHEST HIDDEN BENEATH THE FLOOR.  DO YOU TAKE IT?",
       "text": "你們發現一塊鬆動的地板。撬開一看，底下藏著一個箱子。要拿走嗎？",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND A MARBLE CHEST.  OPEN IT?",
+      "text": "你們找到一個大理石箱。要打開嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND A PAGE FROM A DIARY AND PLACE IT IN YOUR JOURNAL UNDER ENTRY 11.",
+      "text": "你們找到一頁日記，把它放進手札第 11 條。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU FIND A PIECE OF PAPER ON THE FLOOR IN THE ROOM.  YOU PLACE IT IN YOUR JOURNAL UNDER ENTRY 53",
@@ -3059,6 +4029,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU FIND AN IRON BOX, ACROSS THE LOCK IS THE SEAL OF THE FAMILY OF CADORNA. OPENING THE BOX WILL DAMAGE THE SEAL BEYOND REPAIR. WHAT DO YOU DO?",
+      "text": "你們找到一個鐵盒，鎖上蓋著卡多納家族的封印。打開盒子會把封印毀得無法修復。你們要怎麼做？",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU FIND ESSAYS ON GEOMETRY, METAMAGICAL MATH, UNIVERSAL GEOMETRY, ETC., BUT NOTHING USEFUL.",
       "text": "你們找到幾何學、超魔數學、萬有幾何之類的論文，沒有用得上的。",
       "note": "舊繩索公會的圖書室。"
@@ -3074,6 +4049,21 @@
       "note": "舊繩索公會的圖書室。Tomarus 為新增譯名。"
     },
     {
+      "source": "YOU FIND NOTHING OF ANY VALUE.",
+      "text": "你們沒找到任何值錢的東西。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND NOTHING.",
+      "text": "你們什麼也沒找到。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND SOME UNDEAD.",
+      "text": "你們遇上了一些不死怪物。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU FIND SPEECHES FROM FAMOUS MURDER TRIALS, PUBLIC DEBATES, ETC., BUT NOTHING OF INTEREST.",
       "text": "你們找到著名兇殺案審判、公開辯論之類的講稿，沒什麼值得一看的。",
       "note": "舊繩索公會的圖書室。"
@@ -3087,6 +4077,11 @@
       "source": "YOU FIND THE HISTORY OF THE NORTH. IT IS MOSTLY WRITTEN TO PLEASE A ROYAL LINE. HOWEVER, THERE IS AN INTERESTING PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 8.",
       "text": "你們找到《北方史》。內容多半是寫來討好某個王室的，不過其中一段挺有意思，抄進了手札第 8 條。",
       "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU FIND THE VAMPIRE'S TREASURE TROVE.  DO YOU TAKE IT?",
+      "text": "你們找到了吸血鬼的寶藏。要拿走嗎？",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU FIND URGUND'S DESCRIPTION OF DARKNESS. THIS IS AN ACCOUNT OF HIS IMPRISONMENT IN THE LOWER REALMS. THERE IS A PASSAGE OF INTEREST WHICH YOU COPY AS ENTRY 19 IN YOUR JOURNAL.",
@@ -3109,9 +4104,24 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "YOU FLEE THE ROOM.",
+      "text": "你們逃出了房間。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU FLOAT DOWN THE WELL.",
+      "text": "你們順著井飄了下去。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU GO BACK OUT THE DOOR.",
       "text": "你們退出門外。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HACK THE BODY TO BITS.",
+      "text": "你們把屍體砍成碎塊。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU HAD A GREAT TIME UNTIL YOU ALL PASSED OUT. YOUR PURSE IS MISSING.",
@@ -3179,6 +4189,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU HAVE MANAGED TO SNEAK UP ON SOME",
+      "text": "你們成功摸到了幾隻",
+      "note": "瓦海登墳場的事件與敘述。片段。"
+    },
+    {
+      "source": "YOU HAVE NO KEY TO UNLOCK THE PADLOCKS.",
+      "text": "你們沒有鑰匙能打開那些掛鎖。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU HAVE SLAIN THE GARRISON. NOW IF YOU CAN BUT SLAY THE OUTSIDE GUARDS QUICKLY BEFORE THE ENEMY ARRIVES THE GATE WILL BE YOURS!",
       "text": "你們殲滅了守軍。只要能在敵人趕到前迅速解決外頭的守衛，這道門就是你們的了！",
       "note": "史塔傑諾門一帶的事件。"
@@ -3212,6 +4232,11 @@
       "source": "YOU HIDE.",
       "text": "你們躲了起來。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HIT AN UNYIELDING STONE FLOOR.",
+      "text": "你們重重摔在堅硬的石地板上。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU INTERRUPT SOME FEEDING KOBOLDS.",
@@ -3294,6 +4319,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU SCATTER THE DUST AND PLACE WHAT HOLY ITEMS YOU CAN SPARE INSIDE.",
+      "text": "你們把塵土撥開，將能挪出的聖物放了進去。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOU SEARCH THE BEDS BUT FIND NOTHING.",
       "text": "你們搜遍床鋪，什麼也沒找到。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -3307,6 +4337,11 @@
       "source": "YOU SEE A CHAMBER FILLED WITH ROTTED FURNITURE AND BENCHES.",
       "text": "你們看到一間堆滿腐朽家具與長凳的屋子。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A DEAD HOBGOBLIN WITH ITS HEAD CRUSHED. WRITTEN IN BLOOD IS A MESSAGE: 'SKULLCRUSHER WAS HERE.'",
+      "text": "你們看到一具腦袋被砸爛的大哥布林屍體，旁邊用血寫著：「碎顱者到此一遊。」",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "YOU SEE A DULL BROWN REPTILIAN MONSTER. IT DOESN'T SEEM AWARE OF YOU.",
@@ -3344,9 +4379,19 @@
       "note": "舊繩索公會的圖書室。"
     },
     {
+      "source": "YOU SEE THE CHIEF OF THE HOBGOBLINS, A HUGE OGRE. AS YOU ENTER, HE RISES TO HIS FULL, TEN FEET OF HEIGHT; HIS HEAD WREATHED IN THE FLICKERING SHADOWS.",
+      "text": "你們看到大哥布林的首領，是一隻巨大的食人魔。你們一進來，牠便挺直了十呎高的身軀，腦袋沒入搖曳的陰影裡。",
+      "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
       "source": "YOU SEE THE MAN IS QUITE MAD. DO YOU TAKE PITY AND INVITE HIM TO GO WITH YOU?",
       "text": "你們看得出這人瘋得不輕。要不要可憐他，邀他同行？",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE THE PITIFUL REMAINS OF A DEAD ELF.  EVERYTHING OF VALUE HAS BEEN TAKEN OR DESTROYED.",
+      "text": "你們看到一名精靈的可憐遺骸，值錢的東西不是被拿走就是被毀了。",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "YOU SEE WHAT ONCE WAS A GARDEN, NOW-WEED FILLED. THE PLEASANT POND HAS BECOME A SWAMP.",
@@ -3362,6 +4407,16 @@
       "source": "YOU SPY A GROUP OF SEEDY-LOOKING",
       "text": "你們瞥見一群衣衫襤褸的",
       "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "YOU STAND BEFORE A HUGE TOWER. THE SINGLE ENTRANCE IS LOCKED AND STRONGLY BUILT.",
+      "text": "你們站在一座巨塔前，唯一的入口鎖著，而且造得極為堅固。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU STAND BELOW THE ROTTING REMAINS OF THE ONCE-MIGHTY GATES OF SOKAL KEEP.",
+      "text": "你們站在索卡爾城堡那道昔日雄偉、如今朽壞的大門底下。",
+      "note": "索卡爾城堡的事件與敘述。"
     },
     {
       "source": "YOU STAND IN FRONT OF THE ENTRANCE TO A LARGE SHADOWY TEMPLE.  AN OLD BLIND DECREPIT ORC STANDS OUTSIDE WITH EIGHT ORC GUARDS.",
@@ -3382,6 +4437,16 @@
       "source": "YOU STOP, AND THEY MOVE ON.",
       "text": "你們停下腳步，牠們就走開了。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "YOU SURPRISE A FIGURE AS IT SUMMONS A WIGHT.",
+      "text": "你們撞見一個身影正在召喚屍妖。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU SURPRISE A SHADOWY FORM CREATING NEW SKELETONS.",
+      "text": "你們撞見一個陰影般的身影正在造新的骷髏。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOU TRY TO PICK THE LOCK BUT IT IS TOO COMPLEX FOR YOU TO PICK.  YOU FAIL MISERABLY.",
@@ -3429,6 +4494,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "YOUR FRIEND FLOATS OUT OF THE WELL.",
+      "text": "你們的同伴從井裡飄了上來。",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
       "source": "YOUR MAGIC DETECTS A TRAP!",
       "text": "你們的法術偵測到陷阱！",
       "note": "柯威大樓的盜賊據點。"
@@ -3437,6 +4507,11 @@
       "source": "YOUR PARTY DETECTS A TRAP!",
       "text": "隊伍發現了陷阱！",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOUR PARTY IS TOO LARGE FOR ME TO JOIN.",
+      "text": "你們人太多了，我加入不了。",
+      "note": "瓦海登墳場的事件與敘述。"
     },
     {
       "source": "YOUR PARTY SLIPS PAST THEM.",
@@ -3452,6 +4527,16 @@
       "source": "YOUR TAKING THE GATE WILL ENABLE OUR FORCES TO ASSAULT THE ENEMY STRONGHOLD. RETURN THERE TO LEAD THE ATTACK.",
       "text": "你們拿下那道門，我軍才能進攻敵方要塞。回去領頭發動攻擊。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "ZOMBIES SHUFFLE DOWN THE STAIRS!",
+      "text": "殭屍拖著腳步從樓梯下來了！",
+      "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "ZOMBIES.",
+      "text": "殭屍。",
+      "note": "瓦海登墳場的事件與敘述。"
     }
   ]
 }

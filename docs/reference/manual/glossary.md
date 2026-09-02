@@ -473,6 +473,11 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Garwin | 加文 | `ECL1` 拍賣會 | 音近 |
 | The Pitt（原版拼法）| 深坑 | `ECL1` 酒館招牌 | 意譯；原版把 PIT 拼成 PITT |
 | Black Hand | 黑手 | `ECL1` 邪惡神廟 | 邪惡神的標記，意譯 |
+| Restal | 雷斯托 | `ECL4` 盜賊公會 | 音近 |
+| Edranka | 艾德蘭卡 | `ECL4` 費瑞的敘述 | 音近 |
+| Torath | 托拉斯 | `ECL4` 費瑞的敘述 | 音近 |
+| Samosud | 薩莫蘇德 | `ECL4` 通關密語 | 音近；原版是一個字，不譯義 |
+| Shestni | 謝斯特尼 | `ECL4` 通關密語 | 同上 |
 | Ettin | 雙頭巨人 | `ECL2` 遭遇 | 形貌譯法 |
 | Green Slime | 綠泥怪 | `ECL2` 遭遇 | 形貌譯法 |
 | Spectre | 幽魂 | `ECL2` 遭遇 | 通行譯名 |
@@ -486,7 +491,7 @@ THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
 原版在遊戲文字裡也有拼錯的地方，譯名一律照定案，不跟著錯字走：
 `PODAL PLAZA`（正為 PODOL）、`STOJONOW`（正為 STOJANOW）、`ZHENTIAL KEEP`
 （正為 ZHENTIL）、`OPENNING`（正為 OPENING）、`POSIONED`（正為 POISONED）、
-`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）。
+`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）、`SARCOPHOGI`（SARCOPHAGI）、`WHATS`（WHAT'S）。
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法
