@@ -600,6 +600,10 @@ func (a *app) foeTurn(state *tacticalState) error {
 		return nil
 	}
 
+	// 目標在這一回合裡不會換，所以步數表只算一次。
+	goalCell := state.Roster[target]
+	stepDistance := tacticalStepDistances(state.Grid, state.Classes, goalCell.X, goalCell.Y)
+
 	steps := 0
 	for ; steps < foeMaxStepsPerTurn; steps++ {
 		snapshot, err = state.tacticalSnapshot()
@@ -617,7 +621,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 		//
 		// **繞路的規則不是原版的**：原版的敵方回合在 overlay-09 entry 1
 		// （code `000Fh`），還沒讀。這裡只挑一步，不做完整選路。
-		bestDirection, bestDistance := -1, chebyshev(here.X, here.Y, goal.X, goal.Y)
+		bestDirection, bestDistance := -1, tacticalDistanceAt(stepDistance, here.X, here.Y, goal)
 		// 先問原版的方向表要的那一格；走得進去就走，繞路只是備案。
 		preferred := -1
 		if direction, ok := stepTowards(here.X, here.Y, goal.X, goal.Y); ok {
@@ -657,7 +661,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 			if err != nil {
 				return err
 			}
-			distance := chebyshev(x, y, goal.X, goal.Y)
+			distance := tacticalDistanceAt(stepDistance, x, y, goal)
 			if distance >= bestDistance {
 				continue
 			}
@@ -766,6 +770,59 @@ func applyNPCCombatStats(state *tacticalState, index int, member poolsave.Charac
 		Bonus: record.DamageBonus(),
 	}
 	return nil
+}
+
+// tacticalDistanceAt 查步數表；查不到（那一格與目標之間沒有通路）就退回
+// 直線距離，讓行為不會比先前差。
+func tacticalDistanceAt(distance map[int]int, x, y uint8, goal combat.CombatantCell) int {
+	if step, ok := distance[tacticalCellKey(x, y)]; ok {
+		return step
+	}
+	return chebyshev(x, y, goal.X, goal.Y) + len(distance)
+}
+
+// tacticalCellKey 把一格壓成一個查表用的鍵。
+func tacticalCellKey(x, y uint8) int { return int(y)*256 + int(x) }
+
+// tacticalStepDistances 從目標往外做一次寬度優先，回傳每一格到目標的步數。
+//
+// 挑方向要用**繞得過去的實際步數**，不是直線距離：戰場是原版的斜投影又多牆
+// （spec 060），直線距離會把人帶進死角然後在那裡來回，盤面一擠就再也靠不近。
+//
+// 只看地形擋不擋路，不看誰站在那裡——佔用格每一步都在變，把它算進去會讓
+// 同一條路每走一步就得到不同的答案。
+//
+// **這不是原版的選路**：原版（overlay-31 entry 6，spec 096）是先列出目標
+// 周圍可站的格子再挑。這裡只是讓「繞得過去」這件事成立。
+func tacticalStepDistances(grid combat.TacticalGrid, classes combat.CellClasses, targetX, targetY uint8) map[int]int {
+	distance := map[int]int{tacticalCellKey(targetX, targetY): 0}
+	queue := [][2]uint8{{targetX, targetY}}
+	for len(queue) != 0 {
+		cell := queue[0]
+		queue = queue[1:]
+		step := distance[tacticalCellKey(cell[0], cell[1])] + 1
+		for direction := uint8(0); direction < 8; direction++ {
+			x, y, err := combat.AdvanceTacticalCoordinate(cell[0], cell[1], direction)
+			if err != nil {
+				continue
+			}
+			key := tacticalCellKey(x, y)
+			if _, seen := distance[key]; seen {
+				continue
+			}
+			terrain, err := grid.TerrainAt(int(x), int(y))
+			if err != nil {
+				continue
+			}
+			record, err := combat.CellClassAt(classes, terrain)
+			if err != nil || record.EntryThreshold >= 0xFF {
+				continue
+			}
+			distance[key] = step
+			queue = append(queue, [2]uint8{x, y})
+		}
+	}
+	return distance
 }
 
 // partyClassLevels 把角色攤成原版記錄 `+96h` 起那八個職業等級。THAC0

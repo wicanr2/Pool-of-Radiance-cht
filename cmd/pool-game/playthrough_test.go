@@ -571,41 +571,6 @@ func TestAnEquippedPartyWinsTheFirstFight(t *testing.T) {
 	t.Logf("索寇要塞第一場：%d 隻怪物，隊伍勝出", foesAtStart)
 }
 
-func tacticalCellKey(x, y uint8) int { return int(y)*256 + int(x) }
-
-// tacticalStepDistances 從目標往外做一次寬度優先，回傳每一格到目標的步數。
-// 只看地形擋不擋路——佔用格會變，用它排序會讓每一步都重算成不同的答案。
-func tacticalStepDistances(state *tacticalState, targetX, targetY uint8) map[int]int {
-	distance := map[int]int{tacticalCellKey(targetX, targetY): 0}
-	queue := [][2]uint8{{targetX, targetY}}
-	for len(queue) != 0 {
-		cell := queue[0]
-		queue = queue[1:]
-		step := distance[tacticalCellKey(cell[0], cell[1])] + 1
-		for direction := 0; direction < len(tacticalStepKeys); direction++ {
-			x, y, err := combat.AdvanceTacticalCoordinate(cell[0], cell[1], uint8(direction))
-			if err != nil {
-				continue
-			}
-			key := tacticalCellKey(x, y)
-			if _, seen := distance[key]; seen {
-				continue
-			}
-			terrain, err := state.Grid.TerrainAt(int(x), int(y))
-			if err != nil {
-				continue
-			}
-			record, err := combat.CellClassAt(state.Classes, terrain)
-			if err != nil || record.EntryThreshold >= 0xFF {
-				continue
-			}
-			distance[key] = step
-			queue = append(queue, [2]uint8{x, y})
-		}
-	}
-	return distance
-}
-
 // premadeReadiedKit 借原版預設人物 chrdatd2 身上穿戴中的東西當裝備：
 // 長劍 +4、板甲 +2、盾 +2 與一枚戒指。用真記錄才測得到「型別索引查得到表」。
 func premadeReadiedKit() ([]poolsave.Item, error) {
@@ -663,7 +628,7 @@ func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 		from, to := state.Roster[mover], state.Roster[target]
 		// 依「繞得過去的實際步數」排序，不是直線距離。盤面是斜的又多牆
 		// （spec 060），直線距離會把人帶進死角然後在那裡來回。
-		distance := tacticalStepDistances(state, to.X, to.Y)
+		distance := tacticalStepDistances(state.Grid, state.Classes, to.X, to.Y)
 		order := make([]int, 0, len(tacticalStepKeys))
 		for direction := range tacticalStepKeys {
 			if _, _, err := combat.AdvanceTacticalCoordinate(from.X, from.Y, uint8(direction)); err == nil {
