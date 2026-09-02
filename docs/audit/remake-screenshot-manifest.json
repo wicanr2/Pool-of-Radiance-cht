@@ -1,0 +1,51 @@
+{
+  "schema": "pool-remake-screenshot-manifest/1",
+  "captured_at": "2026-09-01",
+  "source_commit": "601ddfd0b77e407efd07c43e8e01a5e628a2ca0e",
+  "method": "Docker/Xvfb real Ebitengine window with sequential key input",
+  "state_relation": "normal-remake-player-path; not an original-DOS parity claim",
+  "screenshots": [
+    {
+      "path": "docs/screenshots/pool-remake-character-name.png",
+      "sha256": "3669c707c6f75f6a229e86b63353c28db715c9ac3372d9afffd03f3299fec530",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-portrait-editor.png",
+      "sha256": "2cb68d231d22b8039e2a0db36753541e3f8cf712ad482d84f830f58abba2e91f",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-combat-icon-editor.png",
+      "sha256": "4a5749c574f437ebf08ed3e94974b2a2631376d6ad5818f25a66be4ee9f13741",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-icon-confirm.png",
+      "sha256": "dd9416ea9a05a1643a62f7f707876c29f5a59a8df8246f1706cb659e54773ff7",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-party-menu.png",
+      "sha256": "e77f64be80f312c07610a22c2b400cf671267cb079ec99785a866a76864124d0",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-initial-rolf-event.png",
+      "sha256": "4f2844db13817824c2670350e74e95e5475d06d86ef0f28cf2f05876d7b10abf",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-rolf-tour-tyr.png",
+      "sha256": "0329b941ef919bc29d54aae216f65d440bd92ed641b0b4096d54e115d6fa1cc1",
+      "width": 960,
+      "height": 600
+    }
+  ]
+}

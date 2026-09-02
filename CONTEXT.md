@@ -460,3 +460,9 @@ predicate 尚未閉合。故目前只完成資料／規則 primitive，戰術畫
 因空的 module cache 無法取得已鎖定的 Ebiten／`x/image` 而在 setup 階段停止；開放網路
 下載同一鎖定版本後乾淨重跑成功，該次失敗分類為工具環境，不是產品測試失敗。本收據
 只證明目前 remake 內部與編譯期檢查通過，不升格 DOS 同狀態 parity 或完整戰鬥可玩性。
+
+2026-09-02 使用者把下一個產品閘門改為：先整理《軟體世界》說明書中的 Journal／日誌，
+完成全文繁中翻譯、集中術語表與未翻譯數為 0 的覆蓋報表，再接遊戲內 UI。README 現況
+已同步到 Spec 048～053，並以 `docs/audit/remake-screenshot-manifest.json` 固定七張正常
+玩家路徑重拍圖的來源提交、尺寸與 SHA-256；戰鬥目前沒有正常可達 runtime 截圖，不能
+用 direct-entry 畫面替代。
