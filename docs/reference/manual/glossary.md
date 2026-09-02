@@ -461,6 +461,17 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Bivant | 畢凡特 | `ECL3/8` 委託 | 音近；菲蘭城的一個家族 |
 | Stojanow Gate | 史塔傑諾門 | `ECL3/8` 委託 | 與史塔傑諾河同名，Gate 作門 |
 | Cadorna Textile House | 卡多納紡織行 | `ECL3/8` 委託 | 說明書地圖只標英文；Cadorna 依 glossary |
+| Ohlo | 歐洛 | `ECL2` 貧民區 | 音近 |
+| Arram | 阿蘭姆 | `ECL2` 書名 | 音近 |
+| Strom | 史壯 | `ECL2` 書名 | 音近 |
+| Fyerdetha | 斐爾德沙 | `ECL2` 書名 | 音近 |
+| Urgund | 烏爾岡 | `ECL2` 書名 | 音近 |
+| Tomarus | 托馬魯斯 | `ECL2` 書名 | 音近 |
+| Lex Geographica | 地理法典 | `ECL2` 書名 | 拉丁書名，意譯 |
+| Ettin | 雙頭巨人 | `ECL2` 遭遇 | 形貌譯法 |
+| Green Slime | 綠泥怪 | `ECL2` 遭遇 | 形貌譯法 |
+| Spectre | 幽魂 | `ECL2` 遭遇 | 通行譯名 |
+| Medusa | 蛇髮女妖 | `ECL2` 對話 | 通行譯名 |
 
 AD&D 的等級稱號在訓練所畫面上直接顯示，說明書沒收，一併記在這裡：
 WARRIOR 武士、SWORDSMAN 劍士、HERO 英雄（戰士）；CURATE 教士（牧師）；
@@ -470,7 +481,7 @@ THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
 原版在遊戲文字裡也有拼錯的地方，譯名一律照定案，不跟著錯字走：
 `PODAL PLAZA`（正為 PODOL）、`STOJONOW`（正為 STOJANOW）、`ZHENTIAL KEEP`
 （正為 ZHENTIL）、`OPENNING`（正為 OPENING）、`POSIONED`（正為 POISONED）、
-`DISAPPERING`（正為 DISAPPEARING）。
+`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）。
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法

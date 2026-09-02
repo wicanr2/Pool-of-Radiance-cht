@@ -9,6 +9,16 @@
       "note": "神殿的問句，原版開頭多一個空格。"
     },
     {
+      "source": "'ALL RIGHT, GET OUT OF HERE THEN. COME BACK WHEN YOU'VE LEARNED THE RULES.'",
+      "text": "「那就滾吧。等你們學會規矩再回來。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'ALL RIGHT, THEN. WHAT IS TODAY'S PASSWORD?'",
+      "text": "「那好。今天的通關密語是什麼？」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "'BACK SO SOON? I CAN ONLY REPEAT THE EARLIER OFFERS: '",
       "text": "「這麼快就回來了？我能給的還是先前那幾項：」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -44,6 +54,11 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "'DON'T GO THERE! DON'T GO ON THE HILL!'",
+      "text": "「別去那裡！別上那座山丘！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "'DUE TO YOUR VICIOUS ATTACK ON THOSE WHO PROTECT US, WE REFUSE YOU ALL SERVICE.'",
       "text": "「你們竟然攻擊保護我們的人，這裡不再為你們提供任何服務。」",
       "note": "神殿拒絕服務。"
@@ -64,9 +79,49 @@
       "note": "巴西歐主教的委託；Bane 依 glossary 作邪惡（神）。"
     },
     {
+      "source": "'HE IS NOT HUMAN I TELL YOU! NOT AT ALL!'",
+      "text": "「我告訴你們，他不是人！根本不是！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'HE IS WRAPPED IN FIRE AND SO CRUEL!'",
+      "text": "「他渾身裹著火，殘忍極了！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'HEY, WAIT A MINUTE. THEY ARE IMPOSTERS! ALL RIGHT, THROW DOWN YOUR WEAPONS!'",
+      "text": "「喂，等等。他們是冒牌的！好啦，把武器丟下！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'HOW DARE YOU INTERFERE WITH THE BOSS'S BUSINESS?' THE LEADER ROARS.  'KILL THEM,' HE ORDERS.",
+      "text": "「你們竟敢壞老大的事？」領頭的怒吼，「殺了他們。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I AM SORRY,' THE MAN SAYS, 'I CANNOT HELP YOU.'",
+      "text": "那人說：「抱歉，我幫不上忙。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "'I HAVE BEEN AUTHORIZED TO GIVE YOU AN ENCHANTED WEAPON IF YOU ACCEPT THE COMMISSION TO END THE GRAVEYARD MENACE.  DO YOU ACCEPT?'",
       "text": "「只要你們接下解除墳場之患的委託，我獲准贈與一件附魔武器。你們接嗎？」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'I HAVE NO TIME FOR THE LIKES OF YOU,' THE MAN SAYS AIRILY.  'BEGONE!' (WHAT DO YOU DO?)",
+      "text": "「我沒空理你們這種人。」那人輕慢地說，「滾吧！」（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I MAY HAVE A USE FOR YOU,' THE MAN SAYS. 'SOME TIME AGO, I ORDERED A SPECIAL POTION.  THE POTION IS READY BUT I CAN'T LEAVE TO FETCH IT.  BRING IT HERE, I PAY WELL.' (WHAT DO YOU DO?)",
+      "text": "「你們或許派得上用場。」那人說，「前些時候我訂了一瓶特製藥水。藥水好了，我卻走不開去取。替我帶來，重重有賞。」（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I'M SORRY, SIR, THERE'S AN ALERT.",
+      "text": "「抱歉，長官，現在有警報。",
+      "note": "貧民區（Slums）的事件與敘述。接下一段。"
     },
     {
       "source": "'IT IS IMPERATIVE THAT A MESSAGE BE DELIVERED TO THE ZHENTIL OUTPOST TO THE WEST.  I AM SENDING YOU AS DIPLOMATIC ENVOYS.",
@@ -79,9 +134,34 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "'IT WAITS IN A BOOTH IN THE OLD ROPE GUILD BUT A SHORT DISTANCE TO THE SOUTHEAST FROM WHERE YOU NOW STAND.  SPEAK MY NAME, OHLO.'",
+      "text": "「東西就在舊繩索公會的一個攤子裡，離你們站的地方往東南不遠。報上我的名字，歐洛。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "'IT WILL COST YOU 1 PLATINUM PIECE TO REST HERE.  DO YOU WANT TO STAY?'",
       "text": "「在這裡休息要一枚白金幣。你們要住下嗎？」",
       "note": "旅店。"
+    },
+    {
+      "source": "'LET ME GIVE YOU A PIECE OF ADVICE,' THEIR LEADER SAYS.  'STAY AWAY FROM THE TEXTILE HOUSE. THE UNDEAD ARE GOING CRAZY UP THERE.'  THE MONSTERS TURN TO LEAVE. (WHAT DO YOU DO?)",
+      "text": "「給你們一個忠告，」領頭的說，「離紡織行遠一點。那裡的不死怪物已經瘋了。」怪物轉身要走。（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'NOT ONLY THAT THEY'RE AFRAID OF THEM ETTIN. MAKES 'EM REAL JUMPY. WOULDN'T GIVE 'EM NO BACK TALK IF I WERE YOU.'",
+      "text": "「不只這樣，他們還怕那些雙頭巨人，怕得神經兮兮。我是你們就不會頂嘴。」",
+      "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "'NOW BEAT IT BEFORE WE GET SERIOUS.'",
+      "text": "「趁我們還沒認真，快滾。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'OH, BY THE WAY. BETTER BEWARE OF THE GUARDS. EVER SINCE THE GIANTS MOVED INTO THE CASTLE AREA, BUGBEARS HAVE BEEN STUCK GUARDING THE GATE. AND THEY HATE IT.'",
+      "text": "「對了，守衛要當心。自從巨人搬進城堡一帶，守門的差事就落到熊妖頭上，牠們可討厭得很。」",
+      "note": "史塔傑諾門一帶的事件。"
     },
     {
       "source": "'ON YOUR RIGHT IS ONE OF THE ENTRANCE'S TO SUNE'S TEMPLE. AS WITH ALL PHLAN'S TEMPLES, VARIOUS CLERICAL SERVICES ARE OFFERED INSIDE.  ON YOUR LEFT IS AN ENTRANCE TO THE CITY PARK.'",
@@ -94,9 +174,29 @@
       "note": "Rolf 導覽最後一頁。括號內是原版給玩家的旁白，不是羅夫的話。"
     },
     {
+      "source": "'PLEASURE DOING BUSINESS WITH YOU. HERE'S YOUR WAGON.'",
+      "text": "「跟你們做生意真愉快。貨車給你們。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'SORRY, THAT'S MY FINAL OFFER. TAKE IT OR LEAVE IT.",
+      "text": "「抱歉，這是我的最後開價。要不要隨你們。",
+      "note": "貧民區（Slums）的事件與敘述。接下一段。"
+    },
+    {
+      "source": "'SORRY, YOU DON'T GOT THE MONEY, FRIEND. WELL SEE YOU AROUND.",
+      "text": "「抱歉，朋友，你們錢不夠。那就再會啦。",
+      "note": "貧民區（Slums）的事件與敘述。接下一段；原版口語作 DON'T GOT。"
+    },
+    {
       "source": "'THANK YOU FOR COMING.  I MUST BE BRIEF FOR OUR NEED IS URGENT.  OUR ONE CHANCE TO DEFEAT THE ENEMY IS THROUGH AN ASSAULT ON THE CASTLE. TO DO THIS, WE MUST FIRST SECURE STOJANOW GATE.",
       "text": "「多謝你們前來。事情緊急，我就長話短說。要擊敗敵人只有一條路——強攻城堡。而要做到這一點，得先拿下史塔傑諾門。",
       "note": "接下一段。"
+    },
+    {
+      "source": "'THE BIG ONE, THE EVIL ONE IN THE CASTLE OF FLOWERS -- HE IS COMING! IT IS COMING!'",
+      "text": "「那個大的、住在花之城堡裡的邪物——他要來了！牠要來了！」",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "'THE FAITHFUL SERVANT SENT TO FETCH IT NEVER RETURNED.  THE COMPLEX IS JUST SOUTH OF PODOL PLAZA.  BRING THE TREASURE TO ME AND YOU WILL BE WELL REWARDED.'",
@@ -134,6 +234,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "'WAIT A MOMENT,' THE MAN SAYS.  HE HURRIES TO THE BACK OF THE BOOTH AND RETURNS WITH A PACKAGE. 'HERE,' HE SAYS.",
+      "text": "「等一下。」那人說完急忙走到攤子後面，拿了一個包裹回來：「拿去。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "'WE ARE JUST OUTSIDE THE CITY HALL. PROCLAMATIONS ARE POSTED ON THESE WALLS. INSIDE, THE CITY CLERK AWARDS THE COUNCIL'S COMMISSIONS.  COMMISSIONS ARE THE QUICKEST WAY TO FAME AND FORTUNE.'",
       "text": "「我們就在市政廳外面。公告都貼在這幾面牆上。裡頭的書記官負責發放市議會的委託。想快點成名發財，接委託是最快的路。」",
       "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
@@ -149,6 +254,26 @@
       "note": "訓練所與競技場。接下一段。"
     },
     {
+      "source": "'WELL BOYS, I THINK WE HAVE THE INTRUDERS HERE. GET THEM!'",
+      "text": "「弟兄們，闖進來的就在這裡。上！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'WHAT A BUNCH OF CHEAPSKATES,' THE LEADER COMPLAINS. 'LET 'EM HAVE IT BOYS!'",
+      "text": "「一群小氣鬼。」領頭的抱怨道，「弟兄們，給他們點顏色看看！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'WHAT ARE YOU DOING HERE?'",
+      "text": "「你們在這裡做什麼？」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'WHAT? I THINK THESE SCUM ARE IMPOSTERS!'",
+      "text": "「什麼？我看這些渣滓是冒牌貨！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "'WHEN OLD PHLAN WAS OVERRUN, A FAMILY TREASURE WAS HIDDEN IN THE WESTERN BUILDING OF THE TEXTILE COMPLEX.",
       "text": "「舊菲蘭城淪陷時，一件傳家寶被藏在紡織行西側那棟建築裡。",
       "note": "接下一段。"
@@ -157,6 +282,11 @@
       "source": "'WHEN YOU GET TO ZHENTIAL KEEP, PRESENT THIS PACKET TO ITS COMMANDANT.  DO NOT BREAK THE SEALS OR YOU WILL BE SEIZED AS SPIES.'",
       "text": "「到了漢提爾城堡，把這包文件交給指揮官。千萬別拆封，否則會被當成間諜逮捕。」",
       "note": "原版此處把 ZHENTIL 拼成 ZHENTIAL。"
+    },
+    {
+      "source": "'WHY SURE I'LL SELL YOU MY WAGON. ALL IT'LL COST YOU IS 250 GOLD PIECES. HOW ABOUT IT?'",
+      "text": "「當然，貨車賣你們。兩百五十枚金幣就好。如何？」",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "'WILL YOU ACCOMPANY DIRTEN?'",
@@ -169,9 +299,24 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "'YOU HAVE DONE WELL. GIVE ME THE POTION AND YOU WILL BE REWARDED.' (WHAT DO YOU DO?)",
+      "text": "「幹得好。把藥水給我，少不了你們的報酬。」（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'YOU HAVE RETURNED EMPTY HANDED,' HE OBSERVES. 'I HAVE NO TIME FOR YOU NOW.'  HE WAVES HIS HAND.",
+      "text": "「空手回來啊。」他看了一眼，「我現在沒空理你們。」說著揮了揮手。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '",
       "text": "「你們面前是提爾神殿的入口。菲蘭城裡有三座神殿：提爾、蘇妮與坦帕斯。提爾神殿最大，巴西歐主教就住在裡面。現在請轉過身來，」",
       "note": "Rolf 導覽第二頁。原版每一頁各自成一段引文，這一頁的句子在下一頁接完，但引號在本頁就收掉，譯文照同樣的斷法。Tyr 提爾、Braccio 巴西歐 依 glossary 定案；Sune、Tempus 為新增譯名。"
+    },
+    {
+      "source": "'YOU PRESUME TOO MUCH,' THE MAN SAYS QUIETLY.  HE GESTURES.",
+      "text": "「你們太放肆了。」那人低聲說，接著打了個手勢。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "'YOU WILL SEE THE ENTRANCE TO THE PASSENGER DOCK AREA WE JUST DEPARTED.  FEW SHIPS DARE THE PERILOUS PASSAGE HERE, BUT THE COUNCIL IS DEVELOPING A PLAN TO OPEN UP THE SEA LANES.  PLEASE FOLLOW ME.'",
@@ -209,6 +354,26 @@
       "note": "片段，承接上一段。"
     },
     {
+      "source": ". THE LEADER SEES YOU. 'THAT'S THEM!'",
+      "text": "。領頭的看見你們：「就是他們！」",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "... THE GANG IS OPERATING FROM THE CATACOMBS BY THE WELL...",
+      "text": "……那幫人以井邊的地下墓穴為據點……",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "... THE TEMPLE OVER THE RIVER IS RUN BY SOME HOT-SHOT ORC...",
+      "text": "……河對岸那座神殿由一隻很跩的半獸人掌管……",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "... THERE IS A SECRET TREASURE ROOM IN THE NW CORNER ...",
+      "text": "……西北角有一間祕密寶庫……",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "1 SHARE",
       "text": "一份",
       "note": "分配戰利品的份數。"
@@ -239,9 +404,34 @@
       "note": "怪物名片段。"
     },
     {
+      "source": "A BUGBEAR LEADING A PARTY OF",
+      "text": "一隻熊妖領著一隊",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "A BUGBEAR WALKS UP TO YOU. 'OKAY, LETS HAVE THE 15 GOLD.' DO YOU PAY HIM?",
+      "text": "一隻熊妖走上前來：「好啦，十五枚金幣拿來。」你們要付嗎？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "A DRUNKEN BRAWL BREAKS OUT. YOU ARE CAUGHT IN THE MIDDLE.",
       "text": "一場酒醉鬥毆爆發，你們正好被夾在中間。",
       "note": "酒館事件。"
+    },
+    {
+      "source": "A GROUP OF BUGBEARS APPROACH. 'THROW DOWN YOUR WEAPONS!'",
+      "text": "一群熊妖走了過來：「把武器丟下！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A GROUP OF MONSTERS IS WAITING ON THE OTHER SIDE OF THE WALL",
+      "text": "牆的另一邊有一群怪物等著",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "A HEALTHY-LOOKING GOBLIN IS INSTRUCTING A GROUP OF YOUNG WARRIORS.  HE SMILES AND SAYS, 'I SEE OUR OPPONENTS HAVE ARRIVED.'",
+      "text": "一隻壯碩的哥布林正在指導一群年輕戰士。牠笑著說：「看來對手到了。」",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "A LARGE GROUP OF THIEVES OPERATES OUT OF THE OLD KOVEL MANSION. THE COUNCIL WILL PAY TO HAVE THEM CLEANED OUT.'",
@@ -249,9 +439,24 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "A LARGE ORC RAISES HIS HEAD AND SNARLS, 'HOW DARE YOU BREAK INTO OUR HOME?'",
+      "text": "一隻高大的半獸人抬起頭來咆哮：「你們竟敢闖進我們的地方？」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "A LARGE TRIBE OF KOBOLDS IS BEING RECRUITED BY THE ENEMY.  MAKE SURE THEY DON'T JOIN THE ENEMY FORCES.'",
       "text": "敵方正在招攬一支龐大的小妖魔部族，別讓他們加入敵軍。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "A MAN DRIVING A WAGON FULL OF FOOD AND EQUIPMENT STARTS TO DRIVE PAST YOU, GOING NORTH.",
+      "text": "一個人趕著滿載食物與裝備的貨車，正要往北從你們身邊經過。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A MAN HURRIES FORWARD. 'I AM SORRY, NOBLE ONES, BUT I HAVE NOTHING TO SELL.'",
+      "text": "一個人急忙迎上來：「抱歉，各位大人，我沒有東西可賣。」",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "A NET ENTANGLES YOU.",
@@ -262,6 +467,16 @@
       "source": "A PARTY OF",
       "text": "一隊",
       "note": "遭遇敘述的片段。"
+    },
+    {
+      "source": "A PATROL OF GIANTS LED BY A HUMAN FIGHTER",
+      "text": "一隊巨人，由一名人類戰士帶領",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "A POWERFUL ONE BECOMES AWARE OF YOUR DEEDS AND SEEKS TO DESTROY YOU.  A WEAK ONE SEES YOU AS A PATH TO POWER.",
+      "text": "一位強者察覺了你們的作為，想除掉你們；一位弱者則把你們看成通往力量的路。",
+      "note": "貧民區（Slums）的事件與敘述。算命內容。"
     },
     {
       "source": "A SCYTHING BLADE DROPS ACROSS THE DOORWAY, DAMAGING ONE OF THE CHARACTERS.",
@@ -284,9 +499,24 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "A SPECTRE SUDDENLY APPEARS BEFORE YOU. 'THIEF! I DEFENDED THESE BOOKS IN LIFE AND I WILL DEFEND THEM IN DEATH!' IT ATTACKS YOU.",
+      "text": "一隻幽魂突然出現在你們面前：「小偷！我生前守著這些書，死後照樣守！」牠攻了過來。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
       "source": "A TRIBE OF LIZARDMEN IS PREPARING TO JOIN THE ENEMY.  PREVENT THIS.'",
       "text": "有一支蜥蜴人部族正準備投靠敵方，阻止他們。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "A VOICE FROM THE TOWER YELLS 'STAY AWAY FROM THE WALL!'",
+      "text": "塔上有人大喊：「離牆遠一點！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A VOICE YELLS DOWN, 'WE SAID STAY AWAY FROM THE WALL. THAT INCLUDES THE TOWER!'",
+      "text": "上面有人吼下來：「說了離牆遠一點，塔也一樣！」",
+      "note": "史塔傑諾門一帶的事件。"
     },
     {
       "source": "A WEAPON OF GREAT POWER IS TO BE AUCTIONED TO OUR ENEMIES. THIS AUCTION IS TO BE HELD IN PODAL PLAZA.  FIND OUT WHAT THE WEAPON IS AND RETURN.'",
@@ -297,6 +527,11 @@
       "source": "ACCEPT BLESSING",
       "text": "接受祝福",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "ACCEPT THE COMMISSION",
+      "text": "接下委託",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "ACOLYTE",
@@ -329,9 +564,29 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "AMID THE LITTER OF THE ROOM YOU SEE A DULL BROWN REPTILIAN MONSTER.",
+      "text": "在滿地雜物之間，你們看到一隻暗褐色的爬蟲怪物。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "AMID THE TRASH YOU FIND A BOX WHICH CONTAINS GOLD FOIL.",
+      "text": "你們在垃圾堆裡找到一個裝著金箔的盒子。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "AN AGED PRIEST APPROACHES, POINTING AT THE MAD MAN, HE SPEAKS, 'THAT MAN URGENTLY NEEDS OUR CARE.  DROP HIM FROM YOUR PARTY OR HE WILL BRING YOU TO GRIEF.  WE WILL CARE FOR HIM.'",
       "text": "一位年長的僧侶走過來，指著那個瘋子說：「那個人急需我們照料。把他從隊伍裡放掉吧，不然他會給你們惹禍。我們會照顧他。」",
       "note": "瘋子事件。"
+    },
+    {
+      "source": "AN ALARM IS SOUNDING.",
+      "text": "警報響了。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "AN ALARM STARTS RINGING!",
+      "text": "警報大作！",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "AND ITS RETAINERS.",
@@ -394,6 +649,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "AS YOU MOVE THROUGH THE GARDEN",
+      "text": "你們穿過花園時",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
       "source": "AS YOU NEAR THE PILE OF WEAPONS AN AWFUL SMELLING CLOUD OF GAS FORMS.  THIS FOUL SMELLING GAS STUNS THE PARTY ALLOWING A GROUP OF THIEVES TO JUMP OUT OF THE SHADOWS AND ATTACK AT WILL!",
       "text": "你們一靠近那堆武器，一團惡臭的氣體便升起。臭氣把隊伍薰得動彈不得，一群盜賊趁機從暗處撲出來，任意攻擊！",
       "note": "柯威大樓的盜賊據點。"
@@ -412,6 +672,11 @@
       "source": "AS YOU SEARCH THE CASKET, YOU ACCIDENTLY SET OFF A TRAP.  A NOXIOUS POWDER SPRAYS INTO THE AIR DAMAGING THE PARTY.",
       "text": "你們搜小箱時不慎觸動陷阱，一股毒粉噴散開來，傷到了隊伍。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU SEARCH THE ROOM YOU SCAN RANDOM BOOKS.",
+      "text": "你們搜房間時隨手翻了幾本書。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "AS YOU TRY TO DEACTIVATE THE TRAP YOU MANAGE TO SET IT OFF.  A LARGE NEEDLE SHOOTS OUT OF A HIDDEN COMPARTMENT HITTING A PARTY MEMBER.",
@@ -474,9 +739,19 @@
       "note": "地點敘述；河名依 glossary。"
     },
     {
+      "source": "BEFORE THE GATE YOU CAN MAKE OUT A MAN WITH A WAGON OF GOODS WHO IS TALKING TO TWO OF THE BUGBEARS. THE MAN HANDS SOMETHING TO THE BUGBEARS AND THE GATES OPEN.",
+      "text": "門前有個趕著貨車的人正和兩隻熊妖說話。那人遞了什麼東西過去，門就開了。",
+      "note": "史塔傑諾門一帶的事件。"
+    },
+    {
       "source": "BEFORE YOU IS A TABLE WITH FOUR SMALL CASKETS ON TOP OF IT.  WHAT WILL YOU DO?",
       "text": "你們面前有一張桌子，上面擺著四個小箱。要怎麼做？",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "BEFORE YOU IS STOJANOW GATE. THIS ANCIENT EDIFICE IS BUILT ACROSS THE BEND OF THE RIVER, THUS ISOLATING THE OLD TOWN AND THE CASTLE FROM THE REST OF THE CITY.",
+      "text": "你們面前是史塔傑諾門。這座古老的建築橫跨河灣而建，把舊城與城堡同城裡其他地方隔了開來。",
+      "note": "史塔傑諾門一帶的事件。"
     },
     {
       "source": "BEHIND YOU.",
@@ -489,6 +764,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "BLOOD AND VIOLENCE ARE WRIT BOLDLY IN YOUR FUTURE.  LOOK FOR FRIENDS WHERE YOU EXPECT ENEMIES AND ENEMIES WHERE YOU EXPECT ALLIES.",
+      "text": "你們的未來上，血與暴力寫得斗大。在以為是敵人的地方找朋友，在以為是盟友的地方防敵人。",
+      "note": "貧民區（Slums）的事件與敘述。算命內容。"
+    },
+    {
       "source": "BREAK",
       "text": "砸開",
       "note": "開鎖選項。"
@@ -497,6 +777,16 @@
       "source": "BRIBE",
       "text": "行賄",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "BUGBEARS WERE WAITING ON THE OTHER SIDE OF THE GATE.",
+      "text": "門的另一邊有熊妖等著。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "BURIED AMID ALL THE TRASH YOU SEE A BOOK.",
+      "text": "在成堆的垃圾裡，你們看到一本書。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "C",
@@ -517,6 +807,11 @@
       "source": "CASTS A KNOCK SPELL AND OPENS THE LOCK.",
       "text": "施展敲擊術，把鎖打開了。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "CHRONICLES OF ARRAM.",
+      "text": "《阿蘭姆編年史》。",
+      "note": "書名，出現在搜書的敘述裡。Arram 為新增譯名。"
     },
     {
       "source": "CITY",
@@ -569,9 +864,24 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "DISCOURSE ON THE NATURE OF WRITING.",
+      "text": "《論書寫的本質》。",
+      "note": "書名，出現在搜書的敘述裡。"
+    },
+    {
       "source": "DO YOU TAKE IT?",
       "text": "要拿走嗎？",
       "note": "提問。"
+    },
+    {
+      "source": "DO YOU WANT TO GO DOWNSTAIRS?",
+      "text": "要下樓嗎？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "DO YOU WANT TO GO UPSTAIRS?",
+      "text": "要上樓嗎？",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "DOES ANYONE WANT TO GAMBLE?",
@@ -649,6 +959,21 @@
       "note": "選項。"
     },
     {
+      "source": "FROM ARROW SLITS IN THE TOWER ARE SHOT A COUPLE ARROWS.",
+      "text": "塔上的箭孔射出幾支箭。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "FROM THE TOP OF THE GATE COMES A VOLLEY OF ROCKS.",
+      "text": "門樓上砸下一陣落石。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "GIVE",
+      "text": "給他",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "GIVE THE PASSWORD",
       "text": "說出通關密語",
       "note": "遭遇選單。"
@@ -674,9 +999,19 @@
       "note": "怪物名，遊戲文字證實。"
     },
     {
+      "source": "GOBLINS.",
+      "text": "哥布林。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "GRAB",
       "text": "抓住",
       "note": "扒手事件的選項。"
+    },
+    {
+      "source": "GUARDS RUN TO INTERCEPT YOU.",
+      "text": "守衛跑過來攔截你們。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "HARASH",
@@ -687,6 +1022,16 @@
       "source": "HE LEAVES.",
       "text": "他離開了。",
       "note": "敘述。"
+    },
+    {
+      "source": "HE LOOKS RELUCTANT AND SAYS, 'BUT HIS MINIONS ARE THERE. HE WILL COME TOO!' DO YOU INSIST HE COME?",
+      "text": "他一臉不情願：「可是他的爪牙都在那裡。他也會來的！」你們要堅持帶他去嗎？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "HE STANDS UP, MUTTERING TO HIMSELF, AND JOINS YOU.",
+      "text": "他站起身，喃喃自語，加入了你們。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "HERE IS YOUR REWARD.'",
@@ -704,6 +1049,11 @@
       "note": "AD&D 等級稱號（戰士第四級）。"
     },
     {
+      "source": "HISTORY.",
+      "text": "《歷史》。",
+      "note": "書名，出現在搜書的敘述裡。"
+    },
+    {
       "source": "HOBGOBLINS",
       "text": "大哥布林",
       "note": "怪物名；與哥布林成對，取「大」以示體型。"
@@ -712,6 +1062,11 @@
       "source": "HOW MANY PLATINUM PIECES WILL YOU WAGER? (HOUSE LIMIT IS 1000)",
       "text": "要下注幾枚白金幣？（莊家上限一千）",
       "note": "酒館賭局。"
+    },
+    {
+      "source": "I AM SORRY, BUT I HAVE NOTHING TO SELL NOW.  COME BACK SOME OTHER TIME.",
+      "text": "抱歉，我現在沒有東西可賣。改天再來吧。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "I CAN'T ACCEPT THAT WAGER.",
@@ -777,6 +1132,11 @@
       "source": "INSIDE THIS ROOM YOU FIND A LARGE PILE OF WEAPONS AND SHIELDS.  THEY APPEAR TO BE IN GOOD CONDITION AND OF FINE QUALITY.  WHAT WILL YOU DO?",
       "text": "房裡堆著大量武器與盾牌，看起來狀況良好、品質不錯。你們要怎麼做？",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "IT HISSES AT YOU.",
+      "text": "牠朝你們嘶叫。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "IT IS LOCKED.  HOW WILL YOU OPEN THE LOCK?",
@@ -854,6 +1214,11 @@
       "note": "怪物名，遊戲文字證實。"
     },
     {
+      "source": "LOOKING UP FROM A TABLE ARE FIVE KOBOLDS.",
+      "text": "五隻小妖魔從桌邊抬起頭來。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "LORD CADORNA HAS A DELICATE DIPLOMATIC MISSION THAT REQUIRES YOUR PARTICULAR SKILLS.  YOU ARE SUMMONED TO HIS CHAMBERS. GO THROUGH THE SOUTH DOOR.'",
       "text": "卡多納大人有一樁棘手的外交任務，正需要你們這樣的本事。他召你們到他房裡，走南門進去。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -877,6 +1242,31 @@
       "source": "MAGIC USERS",
       "text": "魔法師",
       "note": "訓練所指示牌；遊戲寫 MAGIC USERS，沒有連字號。"
+    },
+    {
+      "source": "MATHEMATICS.",
+      "text": "《數學》。",
+      "note": "書名，出現在搜書的敘述裡。"
+    },
+    {
+      "source": "MEDITATIONS.",
+      "text": "《沉思錄》。",
+      "note": "書名，出現在搜書的敘述裡。"
+    },
+    {
+      "source": "MONSTERS ARE CHARGING TOWARD YOU FROM THE FAR TOWER.",
+      "text": "怪物從遠處的塔那邊朝你們衝來。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "MONSTERS ARE CHARGING TOWARD YOU FROM THE FAR TOWER. AT THE SAME TIME MONSTERS BURST ON YOU FROM THE TOWER NEXT TO YOU.",
+      "text": "怪物從遠處的塔朝你們衝來，同時旁邊那座塔裡也竄出怪物撲向你們。",
+      "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "MONSTERS THUNDER DOWN THE STEPS OF THE TOWER NEXT TO YOU.",
+      "text": "怪物從你們旁邊那座塔的階梯上轟隆隆衝下來。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "MOVE ON",
@@ -919,6 +1309,11 @@
       "note": "怪物名，遊戲文字證實。"
     },
     {
+      "source": "OHLO",
+      "text": "歐洛",
+      "note": "NPC 名，音近。"
+    },
+    {
       "source": "ON A NEARBY WALL IS A SLATE.  DRAWN ON THE SLATE IS A COMPLEX MAZE WITH THE WORDS 'NW CASTLE' UNDER IT.  YOU COPY THE CASTLE INTO YOUR JOURNAL UNDER JOURNAL ENTRY 41.",
       "text": "旁邊牆上有一塊石板，上頭畫著一座複雜的迷宮，底下寫著「城堡西北」。你們把它抄進手札第 41 條。",
       "note": "柯威大樓的盜賊據點。"
@@ -934,9 +1329,24 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "ON WHOSE AUTHORITY ARE YOU HERE?'",
+      "text": "你們是奉誰的命令來的？」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "ONE OF THE KOBOLDS SAYS, 'IF YOU SPARE OUR LIVES WE WILL TELL YOU ALL WE KNOW ABOUT THIS AREA!' WILL YOU SPARE THEM?",
+      "text": "一隻小妖魔說：「饒我們一命，這一帶的事我們全告訴你們！」要放過牠們嗎？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "ORCS",
       "text": "半獸人",
       "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "ORCS.",
+      "text": "半獸人。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "PARLAY",
@@ -947,6 +1357,11 @@
       "source": "PAY",
       "text": "付錢",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "PHILOSOPHY.",
+      "text": "《哲學》。",
+      "note": "書名，出現在搜書的敘述裡。"
     },
     {
       "source": "PICK",
@@ -1034,6 +1449,16 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "REFUSE TO GIVE",
+      "text": "拒絕交出",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "REJECT IT",
+      "text": "拒絕",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "RELEASE",
       "text": "放走",
       "note": "遭遇選單。"
@@ -1047,6 +1472,11 @@
       "source": "RETURN",
       "text": "返回",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "RHETORIC.",
+      "text": "《修辭學》。",
+      "note": "書名，出現在搜書的敘述裡。"
     },
     {
       "source": "RHODIA",
@@ -1079,6 +1509,16 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "SEATED AT A TABLE IS A RAGGED OLD WOMAN. SHE GREETS YOU. 'WELCOME. FOR THE PRICE OF A FEW COPPERS, I WILL TELL YOUR FORTUNE.' (WHAT DO YOU DO?)",
+      "text": "桌邊坐著一位衣衫破舊的老婦人。她招呼你們：「來啦。幾枚銅幣，我替你們算個命。」（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "SEVERAL ORCS ARE ARGUING OVER SOME PAPERS.",
+      "text": "幾隻半獸人正為了幾張文件爭吵。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "SKULLCRUSHER",
       "text": "碎顱者",
       "note": "NPC 名，遊戲文字證實。"
@@ -1099,9 +1539,24 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "SOME HOBGOBLINS ARE ARGUING OVER A PILE OF GOLD.  'THIEVES!' THEY SCREAM WHEN THEY SEE YOU.",
+      "text": "幾隻大哥布林正為一堆金幣爭吵。看到你們，牠們大叫：「小偷！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "SOME MONSTERS ARE TOSSING A SACK OF GRAIN. WHEN THE SACK BREAKS THEY WAIL, 'OH, NO! WHAT CAN WE THROW NOW?' ONE LOOKS YOUR WAY. 'I KNOW,' HE SAYS.",
+      "text": "幾隻怪物正把一袋穀子拋來拋去。袋子破了，牠們哀號：「糟了！那現在要丟什麼？」其中一隻朝你們看過來：「我知道了。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "SOUTH",
       "text": "南",
       "note": "方位選項。"
+    },
+    {
+      "source": "SPEAK",
+      "text": "說話",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "STAY",
@@ -1114,9 +1569,24 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "STOP THEM",
+      "text": "阻止他們",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "STROM'S DISCUSSIONS OF POETICS.",
+      "text": "史壯的《詩學論》。",
+      "note": "書名，出現在搜書的敘述裡。Strom 為新增譯名。"
+    },
+    {
       "source": "STRONG",
       "text": "強",
       "note": "同上。"
+    },
+    {
+      "source": "SUDDENLY, YOU SPOT A DULL BROWN REPTILIAN MONSTER WHICH IS JUST COMING AWAKE.",
+      "text": "你們忽然發現一隻暗褐色的爬蟲怪物剛剛醒來。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "SURPRISES YOU.",
@@ -1144,9 +1614,19 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "TAKE IT",
+      "text": "接受",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "TAKE SOME",
       "text": "拿一些",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "TAKE THE PUNCH",
+      "text": "硬挨這一拳",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "TALK",
@@ -1162,6 +1642,16 @@
       "source": "THE ARENA MASTER ASKS IF YOU WISH TO DUEL.  'THE DUELS  ARE EVENLY MATCHED AND NORMALLY NOT TO THE DEATH. DO YOU DUEL?'",
       "text": "競技場主事問你們要不要上場對決：「對手實力相當，通常不會打到死。要打嗎？」",
       "note": "訓練所與競技場。"
+    },
+    {
+      "source": "THE BUGBEAR TAKES THE MONEY AND THE GATE OPENS. YOU PROCEED THROUGH.",
+      "text": "熊妖收下錢，門開了。你們走了進去。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THE BUGBEARS STRIP YOU OF ANYTHING REMOTELY VALUABLE AND SEND YOU ON YOUR WAY.",
+      "text": "熊妖把你們身上稍微值錢的東西全搜走，然後放你們走。",
+      "note": "史塔傑諾門一帶的事件。"
     },
     {
       "source": "THE CASKET IS FILLED WITH TINY PEARLS!",
@@ -1229,6 +1719,11 @@
       "note": "互動提問。"
     },
     {
+      "source": "THE GROUP OF BUGBEARS COME OVER, 'WE WARNED YOU! WHAT'S THE MATTER? CAN'T YOU UNDERSTAND COMMON? I GUESS I'LL HAVE TO TEACH YOU.' THE LEADER SWINGS AT YOU.",
+      "text": "那群熊妖走了過來：「警告過你們了！怎麼，聽不懂通用語嗎？看來得教教你們。」領頭的一刀砍向你們。",
+      "note": "史塔傑諾門一帶的事件。"
+    },
+    {
       "source": "THE GUARD CAPTAIN STEPS FORWARD. 'PLEASE LET US SHOW YOU THE WAY.'",
       "text": "衛隊長走上前來：「請讓我們帶路。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -1237,6 +1732,11 @@
       "source": "THE HARBOR MASTER TELLS YOU BOATS LEAVE FOR THE WEST, THE EAST, SOKAL KEEP, AND THE NORTH SIDE OF THE BAY.  'ROUND TRIP PASSAGE IS 1 PLATINUM PIECE. WHAT PASSAGE CAN I SELL YOU?'",
       "text": "港務長告訴你們，有船開往西邊、東邊、索卡爾城堡與海灣北岸。「來回船票一枚白金幣。要買哪一趟？」",
       "note": "港口。"
+    },
+    {
+      "source": "THE HARMONY OF THE ROCK.",
+      "text": "《岩石的和諧》。",
+      "note": "書名，出現在搜書的敘述裡。"
     },
     {
       "source": "THE HEIR TO THE HOUSE OF BIVANT MUST BE RESCUED.  WE WILL PAY GENEROUSLY FOR HIS SAFE RETURN.'",
@@ -1249,9 +1749,44 @@
       "note": "遭遇敘述。"
     },
     {
+      "source": "THE LEADER SPEAKS, 'THE BOSS DON'T ALLOW YOUR KIND IN HIS TERRITORY.  LEAVE NOW OR WE'LL HAVE TO RUN YOU IN.' (WHAT DO YOU DO?)",
+      "text": "領頭的開口：「老大不准你們這種人進他的地盤。現在就走，不然我們就要動手抓人了。」（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "THE MAD MAN SUDDENLY BEGINS TO SCREAM AND ATTACK EVERYONE WITHIN ARM'S REACH.",
       "text": "那個瘋子突然尖叫起來，見人就打。",
       "note": "瘋子事件。"
+    },
+    {
+      "source": "THE MAIN WALL RISES 30 FEET WHILE THE TWO WATCHTOWER RISE TO 50 FEET. LOUNGING AROUND THE ENTRANCE ARE A GROUP OF BUGBEARS.",
+      "text": "主牆高三十呎，兩座瞭望塔高五十呎。入口附近懶散地聚著一群熊妖。",
+      "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "THE MAN RUNS SCREAMING INTO THE BACK OF THE BOOTH.",
+      "text": "那人尖叫著跑進攤子後面。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THE MAN SCREAMS WHILE FROTHING AT THE MOUTH,",
+      "text": "那人口吐白沫，一邊尖叫著",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "THE MAN TAKES THE POTION AND GULPS IT GREEDILY.  AS YOU WATCH, HE SEEMS TO GROW YOUNGER AND STRONGER. 'EXCELLENT,' HE SMACKS, 'YOUR REWARD.'",
+      "text": "那人接過藥水，貪婪地一飲而盡。你們看著他彷彿變得更年輕、更強壯。「太好了。」他咂了咂嘴，「你們的報酬。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THE MONSTERS RESPOND, 'DA BOSS DON'T LIKE YOUSE GUYS. GIVE US SUMPTIN AN MAYBE WE'LL FERGET WE SEEN YAS.' (WHAT DO YOU DO?)",
+      "text": "怪物回話：「老大不喜歡你們這票人。給點好處，說不定我們就當沒看見。」（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。原版此處刻意用不標準的口語。"
+    },
+    {
+      "source": "THE MONSTERS ROB AND BLINDFOLD YOU. YOU ARE KICKED SOUNDLY AND SENT ON YOUR WAY.",
+      "text": "怪物搶了你們的東西，蒙住你們的眼，狠狠踹了幾腳才放人。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "THE PARTY HEARS THE CRACKING OF GLASS.  A POISONOUS GAS FILLS THE AIR!",
@@ -1277,6 +1812,11 @@
       "source": "THE REMAINING GUARDS DECIDE TO LEAVE YOU ALONE.",
       "text": "剩下的守衛決定不再找你們麻煩。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE ROOM IS DIRTY AND HAS A STRONG AND UNPLEASANT ODOR.",
+      "text": "房間很髒，還有一股濃烈的臭味。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "THE ROOM IS FILLED WITH DUELING PAIRS.",
@@ -1309,9 +1849,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THE TELLING IS FINISHED. (WHAT DO YOU DO?)",
+      "text": "話說完了。（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "THE TEMPLE GUARDS INFORM YOU THAT THE BISHOP IS NOT RECEIVING VISITORS AT THIS TIME.  WHAT DO YOU DO?",
       "text": "神殿衛兵告訴你們，主教這時候不見客。你們要怎麼做？",
       "note": "提爾神殿。"
+    },
+    {
+      "source": "THE TIME IS NIGH WHEN THE PATHS YOU HAVE TROD WILL EMPTY AND YOU MUST SEEK NEW WAYS.  THE RIDDLE'S ANSWER IS GREAT EVIL USING GREAT GOOD FOR GREAT EVIL.",
+      "text": "你們走過的路即將走盡，該去尋新路了。這道謎的答案是：大惡假大善之名，行大惡之事。",
+      "note": "貧民區（Slums）的事件與敘述。算命內容。"
     },
     {
       "source": "THE UNDEAD ARE CROSSING THE RIVER IN HORDES AND KILLING OR CARRYING OFF OUR SETTLERS.  THE COUNCIL DEMANDS THESE ATTACKS BE STOPPED. A GENEROUS REWARD IS OFFERED.'",
@@ -1324,9 +1874,24 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THE WOMAN'S HANDS MAKE MYSTIC PASSAGES WHILE SHE MUTTERS SOME WORDS.  HER VOICE UNDERGOES A STRANGE TRANSFORMATION ...",
+      "text": "那女人雙手比劃著神祕的手勢，口中念念有詞。她的聲音起了奇異的變化……",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "THEN YOU MUST LEAVE.",
       "text": "那你們得離開。",
       "note": "敘述。"
+    },
+    {
+      "source": "THERE ARE TWO HUMANS AND THREE ETTIN IN THE ROOM.",
+      "text": "房裡有兩個人類和三隻雙頭巨人。",
+      "note": "貧民區（Slums）的事件與敘述。Ettin 為新增譯名。"
+    },
+    {
+      "source": "THESE ARE THE LIBRARY STACKS. OLD AND MOLDERING BOOKS ARE STORED ON SHELVES. A SIGN OVER THE ENTRANCE READS",
+      "text": "這裡是書庫，架上堆著發霉的舊書。入口上方的牌子寫著",
+      "note": "舊繩索公會的圖書室。片段，後接書名。"
     },
     {
       "source": "THESE HISTORIES CONTAIN MUCH USEFUL INFORMATION.",
@@ -1344,9 +1909,44 @@
       "note": "AD&D 等級稱號（魔法師）。"
     },
     {
+      "source": "THEY ADVANCE, WEAPONS READY",
+      "text": "牠們舉著武器逼近",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "THEY ATTACK.",
       "text": "牠們發動攻擊。",
       "note": "遭遇敘述。"
+    },
+    {
+      "source": "THEY DESCRIBE THE SURROUNDING AREA TO YOU. YOU LISTEN CAREFULLY, QUESTION THEM AND FROM THIS, SKETCH A MAP INTO YOUR JOURNAL CALLING IT ENTRY 10.",
+      "text": "牠們把附近的地形說給你們聽。你們仔細聽、細細問，據此在手札裡畫了一張圖，編為第 10 條。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THEY PAW THROUGH YOUR COINS AND LEAVE.",
+      "text": "他們翻了翻你們的錢就走了。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THEY PLEAD FOR MERCY.",
+      "text": "他們跪地求饒。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THEY RUSH TOWARD YOU",
+      "text": "牠們朝你們衝過來",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THEY SEEM UNAWARE OF YOU.",
+      "text": "牠們似乎沒有察覺你們。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THEY STAND ARMS RAISED IN SURRENDER.",
+      "text": "他們舉起雙手投降。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "THIEVES",
@@ -1364,6 +1964,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "THIS LARGE ROOM IS APPARENTLY EMPTY.",
+      "text": "這間大房間看來是空的。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.",
       "text": "小妖魔的兵力折損，對敵方是一大打擊。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -1372,6 +1977,11 @@
       "source": "THIS MATERIAL IS OF SMALL VALUE.",
       "text": "這份資料價值不高。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THIS ROOM WAS ONCE A STUDY. IT IS NOW A SHATTERED RUIN.",
+      "text": "這裡本來是書房，如今只剩一片殘破。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "THROW A ROCK",
@@ -1399,6 +2009,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "TYPE IN THE NUMBER OF GP YOU OFFER.",
+      "text": "輸入你們要出的金幣數。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "TYRANTHRAXUS",
       "text": "泰蘭特拉克斯",
       "note": "依 glossary 定案。"
@@ -1417,6 +2032,11 @@
       "source": "WARRIOR",
       "text": "武士",
       "note": "AD&D 等級稱號（戰士）。"
+    },
+    {
+      "source": "WATCHING YOU WARILY, HE INCHES AWAY. WHEN HE IS OUT OF SWORD'S REACH HE SCRAMBLES TO HIS FEET AND FLEES THE ROOM.",
+      "text": "他一邊警戒地盯著你們，一邊慢慢挪開。退到刀劍搆不著的地方，就爬起來奪門而出。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "WE FIND THESE DISCOURSES VALUABLE.",
@@ -1449,9 +2069,19 @@
       "note": "方位選項。"
     },
     {
+      "source": "WHAT ARE YOU DOING HERE?",
+      "text": "你們在這裡做什麼？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "WHAT DO YOU DO?",
       "text": "你們要怎麼做？",
       "note": "遭遇提問。"
+    },
+    {
+      "source": "WHAT DO YOU SAY? (TYPE A SINGLE WORD)",
+      "text": "你們要說什麼？（輸入一個字）",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "WHAT DO YOU WANT TO DO?",
@@ -1504,6 +2134,11 @@
       "note": "酒館賭局提問。"
     },
     {
+      "source": "WITH A NOD OF THE HEAD YOU ARE LEFT ALONE.",
+      "text": "對方點了點頭，就不再理會你們。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "WITH ONE MIGHTY SWING YOU SMASH OPEN THE LOCK MAKING ENOUGH NOISE TO WAKE THE DEAD.",
       "text": "你們用力一砸把鎖打開，那聲響大得足以吵醒死人。",
       "note": "柯威大樓的盜賊據點。"
@@ -1524,9 +2159,19 @@
       "note": "選單選項。"
     },
     {
+      "source": "YOU ARE BEING APPROACHED BY SOME ANGRY",
+      "text": "有一群怒氣沖沖的",
+      "note": "貧民區（Slums）的事件與敘述。片段，後接怪物名。"
+    },
+    {
       "source": "YOU ARE BY THE GATEWAY TO THE UNSETTLED AREAS. THE CITY WATCH EYES YOU SUSPICIOUSLY.",
       "text": "你們就在通往未開發地區的門邊。城衛隊用懷疑的眼神打量你們。",
       "note": "地點敘述。"
+    },
+    {
+      "source": "YOU ARE CONVERSING WITH",
+      "text": "你們正在和",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
       "source": "YOU ARE IN A ROOM THAT HAS BEEN CONVERTED TO A JAIL CELL.  IT IS EMPTY.",
@@ -1534,14 +2179,29 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU ARE IN A SMALL ROOM HAVING LITTLE MORE THAN A BENCH AND A SMALL DESK.",
+      "text": "你們在一間小房間裡，除了一張長凳和一張小桌子，幾乎什麼都沒有。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU ARE IN A TAVERN.  THE AIR IS FILLED WITH SMOKE AND GOSSIP.  PEOPLE ARE GAMBLING AT THE TABLES.",
       "text": "你們在一間酒館裡，空氣中滿是煙味與閒話，桌邊有人在賭錢。",
       "note": "地點敘述。"
     },
     {
+      "source": "YOU ARE IN THE ILLUMINATORS CARRELS. ALL THEIR EQUIPMENT HAS DECAYED AND LIES ROTTING ON THE FLOOR.",
+      "text": "你們在繕寫師的小隔間裡，所有器具都腐朽了，散落一地。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
       "source": "YOU ARE INTERCEPTED BY THE COUNCIL GUARD. 'HALT.  YOUR PRESENCE IS NOT AUTHORIZED.  LEAVE.'  DO YOU LEAVE?",
       "text": "議會衛兵攔下你們：「站住。你們沒有獲准進入，離開。」你們要離開嗎？",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOU ARE JUST NORTH OF THE ENTRY TO THE OLD ROPE GUILD.",
+      "text": "你們就在舊繩索公會入口的北邊。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS.",
@@ -1614,6 +2274,16 @@
       "note": "敘述。"
     },
     {
+      "source": "YOU BUMP INTO SOME",
+      "text": "你們撞見了一些",
+      "note": "貧民區（Slums）的事件與敘述。片段，後接怪物名。"
+    },
+    {
+      "source": "YOU BURST INTO AN ELEGANTLY PANELLED ROOM. A SMALL MAN SITS HUNCHED OVER A TABLE BY THE EAST WALL. HE SETS DOWN HIS PEN AND GAZES STERNLY AT YOU.  'WELL?', HE DEMANDS.  (WHAT DO YOU DO?)",
+      "text": "你們闖進一間鑲著雅緻壁板的屋子。東牆邊的桌前伏著一個瘦小的男人。他放下筆，嚴厲地盯著你們：「有事？」（你們要怎麼做？）",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU BYPASS THE TRAP BY NOT FOOLING WITH ANY OF THE WEAPONS.",
       "text": "你們沒有去碰那些武器，因此躲過了陷阱。",
       "note": "柯威大樓的盜賊據點。"
@@ -1634,9 +2304,29 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU DON'T HAVE ENOUGH MONEY!",
+      "text": "你們的錢不夠！",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU DON'T HAVE ENOUGH PLATINUM.",
       "text": "你們的白金幣不夠。",
       "note": "敘述。"
+    },
+    {
+      "source": "YOU EASILY MURDER THE OLD WOMAN.  EXCEPT FOR A FEW COPPER PIECES YOU FIND NOTHING OF VALUE.  THE GODS HAVE NOTED YOUR ACTIONS.",
+      "text": "你們輕易殺了那個老婦人。除了幾枚銅幣之外一無所獲。眾神記下了你們的作為。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU ENTER A GUARD ROOM. THERE ARE TABLES, CHAIRS, AND BEDS HERE. ALL BUT TWO OF THE BEDS ARE 14 FEET LONG!",
+      "text": "你們走進一間守衛室，裡面有桌椅和床。除了兩張之外，每張床都有十四呎長！",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU ENTER A HALL WHICH IS FILLED WITH ROWS OF WRITING TABLES AND HIGH STOOLS. ROTTED MOUNDS OF PARCHMENT LITTER THE FLOOR.",
+      "text": "你們走進一間大廳，裡面一排排都是書桌與高凳，地上散著腐爛的羊皮紙堆。",
+      "note": "舊繩索公會的圖書室。"
     },
     {
       "source": "YOU ENTER A ROOM THAT HAS BEEN CONVERTED TO A JAIL.  THERE ARE TEN YOUNG THUGS BEATING AN OLDER THIEF TO DEATH.  ONCE YOU ENTER THEY STOP AND ATTACK YOU.",
@@ -1654,6 +2344,31 @@
       "note": "扒手事件。"
     },
     {
+      "source": "YOU FIND A BOOK ENTITLED",
+      "text": "你們找到一本書，書名是",
+      "note": "貧民區（Slums）的事件與敘述。片段，後接書名。"
+    },
+    {
+      "source": "YOU FIND A FIGHTER WITH BATTERED ARMOR AND WILD EYES COWERING IN THE CORNER. 'YAI! MERCY! MERCY!' HE CRIES. AND THEN AS SUDDENLY, 'DIE! DIE YOU SLIME FROM THE PIT!'",
+      "text": "你們發現一名戰士縮在角落，護甲殘破、雙眼發直。「哇！饒命！饒命啊！」他喊著，忽然又變調：「去死！你們這些地獄來的爛泥去死！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND A LARGE NUMBER OF VALUABLES.",
+      "text": "你們找到大量值錢的東西。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND A LONG LEATHER BAG.  WILL YOU OPEN IT?",
+      "text": "你們找到一個長形皮袋。要打開嗎？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND A LOOSE FLOORBOARD.  PRYING IT UP, YOU FIND A CHEST HIDDEN BENEATH THE FLOOR.  DO YOU TAKE IT?",
+      "text": "你們發現一塊鬆動的地板。撬開一看，底下藏著一個箱子。要拿走嗎？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU FIND A POUCH OF SMALL GEMS.",
       "text": "你們找到一小袋寶石。",
       "note": "柯威大樓的盜賊據點。"
@@ -1664,14 +2379,74 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU FIND ESSAYS ON GEOMETRY, METAMAGICAL MATH, UNIVERSAL GEOMETRY, ETC., BUT NOTHING USEFUL.",
+      "text": "你們找到幾何學、超魔數學、萬有幾何之類的論文，沒有用得上的。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU FIND FYERDETHA'S DISCOURSES ON POWER. AMONG ALL THE DRY TEXT YOU FIND AN INTERESTING PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 7.",
+      "text": "你們找到斐爾德沙的《論權力》。在一堆枯燥的文字裡有一段挺有意思，抄進了手札第 7 條。",
+      "note": "舊繩索公會的圖書室。Fyerdetha 為新增譯名。"
+    },
+    {
+      "source": "YOU FIND LEX GEOGRAPHICA, AN ATLAS DRAWN BY TOMARUS. IT HAS A MAP OF PHLAN WHICH, THOUGH OLD, STILL COULD BE USEFUL. IT BECOMES ENTRY 37 IN YOUR JOURNAL.",
+      "text": "你們找到托馬魯斯繪製的地圖集《地理法典》。裡面有一張菲蘭城的地圖，雖然舊了，還是派得上用場，成為手札第 37 條。",
+      "note": "舊繩索公會的圖書室。Tomarus 為新增譯名。"
+    },
+    {
+      "source": "YOU FIND SPEECHES FROM FAMOUS MURDER TRIALS, PUBLIC DEBATES, ETC., BUT NOTHING OF INTEREST.",
+      "text": "你們找到著名兇殺案審判、公開辯論之類的講稿，沒什麼值得一看的。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU FIND THE GRAND HISTORIAN'S RECORDS OF THE ARTS OF WAR. IN IT YOU FIND A USEFUL PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 21.",
+      "text": "你們找到大史官的《兵法錄》，其中一段很有用，抄進了手札第 21 條。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU FIND THE HISTORY OF THE NORTH. IT IS MOSTLY WRITTEN TO PLEASE A ROYAL LINE. HOWEVER, THERE IS AN INTERESTING PASSAGE WHICH YOU COPY INTO YOUR JOURNAL AS ENTRY 8.",
+      "text": "你們找到《北方史》。內容多半是寫來討好某個王室的，不過其中一段挺有意思，抄進了手札第 8 條。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU FIND URGUND'S DESCRIPTION OF DARKNESS. THIS IS AN ACCOUNT OF HIS IMPRISONMENT IN THE LOWER REALMS. THERE IS A PASSAGE OF INTEREST WHICH YOU COPY AS ENTRY 19 IN YOUR JOURNAL.",
+      "text": "你們找到烏爾岡的《黑暗記述》，寫的是他被囚於下界的經歷。其中一段值得一記，抄進了手札第 19 條。",
+      "note": "舊繩索公會的圖書室。Urgund 為新增譯名。"
+    },
+    {
+      "source": "YOU FIND VARIOUS BOOKS WHICH ARE SO FILLED WITH MYTH THAT YOU DON'T FIND ANYTHING USEFUL.",
+      "text": "你們翻到幾本書，滿紙都是神話傳說，沒有半點有用的東西。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU FIND WORKS ON NATURAL PHILOSOPHY, THEORIES OF ART, AND THE SUPERNATURAL SCIENCES. IT IS VERY BORING.",
+      "text": "你們找到自然哲學、藝術理論與超自然科學的著作，無聊得很。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU GO BACK OUT THE DOOR.",
+      "text": "你們退出門外。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU HAVE",
       "text": "你們有",
       "note": "敘述片段，後面接數量。"
     },
     {
+      "source": "YOU HAVE ALERTED THE GUARDS.",
+      "text": "你們驚動了守衛。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU HAVE ALREADY TRIED TO PICK THIS LOCK AND HAVE FOUND THAT IT IS TOO COMPLEX FOR YOU TO HANDLE.",
       "text": "這個鎖你們試過了，太複雜，撬不開。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU HAVE ANGERED THE",
+      "text": "你們惹惱了",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
       "source": "YOU HAVE CAUGHT ONE OF THE THIEVES.  THE THIEF BEGS FOR MERCY AND SAYS, 'I AM THE GUILD MASTER.  IF YOU RELEASE ME, MY THIEVES WILL NO LONGER ATTACK YOU!'  WHAT WILL YOU DO?",
@@ -1684,9 +2459,84 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "YOU HAVE ENTERED A SMALL STORAGE ROOM.",
+      "text": "你們走進一間小儲藏室。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE ENTERED A STOREROOM FULL OF SUPPLIES TOO OLD TO BE USEFUL.",
+      "text": "你們走進一間儲藏室，裡面的物資早就舊得不能用了。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE ENTERED A VERY UNCLEAN STABLE.  THERE IS EVIDENCE THAT A LARGE AND UNTIDY ANIMAL HAD LIVED HERE.",
+      "text": "你們走進一間骯髒的馬廄，看得出這裡住過一隻又大又邋遢的動物。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE ENTERED THE MONSTER-CRAWLING SLUMS OF PHLAN.  SMALL, UGLY THINGS SCURRY FROM BENEATH YOUR FEET.  IN THE DISTANCE, AN ALARM SOUNDS.",
+      "text": "你們踏進了怪物橫行的菲蘭城貧民區。醜陋的小東西從腳邊竄開。遠處傳來警報聲。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE ENTERED THE MYSTERIOUS BUILDING THAT WAS ONCE THE ROPE GUILD.  MOST WHO VENTURE INTO ITS TWISTY HALLS NEVER RETURN.",
+      "text": "你們走進了那棟神祕的建築，它從前是繩索公會。敢深入這些彎曲廊道的人，多半再也沒有回來。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE SLAIN THE GARRISON. NOW IF YOU CAN BUT SLAY THE OUTSIDE GUARDS QUICKLY BEFORE THE ENEMY ARRIVES THE GATE WILL BE YOURS!",
+      "text": "你們殲滅了守軍。只要能在敵人趕到前迅速解決外頭的守衛，這道門就是你們的了！",
+      "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "YOU HAVE STUMBLED INTO A TREASURE ROOM.",
+      "text": "你們誤打誤撞走進了一間寶庫。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE SURPRISED A PARTY OF",
+      "text": "你們突襲了一隊",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "YOU HAVE TAKEN THE GATE! YOU OPEN THE GREAT PORTALS AS 20  HUMAN AND DEMI-HUMAN GUARDS IMMEDIATELY TAKE POSSESSION OF THE GUARD TOWERS.",
+      "text": "你們拿下了這道門！大門一開，二十名人類與半人類守衛立刻接管了兩座守衛塔。",
+      "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "YOU HEAR A HISS. AS YOU LOOK DOWN YOU SUDDENLY SEE A DULL BROWN REPTILIAN MONSTER.",
+      "text": "你們聽到嘶嘶聲，低頭一看，竟是一隻暗褐色的爬蟲怪物。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HIDE.",
+      "text": "你們躲了起來。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU INTERRUPT SOME FEEDING KOBOLDS.",
+      "text": "你們打擾了一群正在進食的小妖魔。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU INTRUDE ON A GATHERING OF MONSTER LEADERS.",
+      "text": "你們闖進了一場怪物首領的集會。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU LEAVE THE SHOP.",
+      "text": "你們離開了店裡。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU LEAVE THE WEAPONS ALONE.",
       "text": "你們沒有去動那堆武器。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU NOW CAREFULLY AVOID THE GREEN SLIME.",
+      "text": "你們小心地繞開那團綠泥怪。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "YOU OVERHEAR TAVERN TALE",
@@ -1694,9 +2544,24 @@
       "note": "敘述片段，後面接編號。"
     },
     {
+      "source": "YOU OVERHEAR THE FIGHTER TELL THE MAGE, 'YOU BETTER WATCH YOUR TALK. THE LAST GUY WHO GAVE THE BOSS LIP WAS THROWN THROUGH THE TRAPDOOR TO THE MEDUSA!'",
+      "text": "你們聽見那名戰士對法師說：「你講話最好小心點。上一個頂撞老大的，被從活門丟下去餵蛇髮女妖了！」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU OVERHEAR THE MAGE TELL HIS COMPANION, 'HOW MUCH LONGER MUST WE WAIT BEFORE ASSAULTING PHLAN. I AM EAGER TO BECOME A BARON.'",
+      "text": "你們聽見那名法師對同伴說：「還要等多久才進攻菲蘭城？我可等不及要當男爵了。」",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU PICK THE LOCK!",
       "text": "你們把鎖撬開了！",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU QUICKLY KILL THE TRADER AND GRAB HIS WAGON.",
+      "text": "你們迅速殺了那名商人，搶走他的貨車。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "YOU REALIZE YOU HAVE BEEN VICTIMIZED BY A PICKPOCKET.",
@@ -1714,14 +2579,64 @@
       "note": "遭遇敘述的開頭片段，後面接怪物名。"
     },
     {
+      "source": "YOU SEE A CHAMBER FILLED WITH ROTTED FURNITURE AND BENCHES.",
+      "text": "你們看到一間堆滿腐朽家具與長凳的屋子。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A DULL BROWN REPTILIAN MONSTER. IT DOESN'T SEEM AWARE OF YOU.",
+      "text": "你們看到一隻暗褐色的爬蟲怪物，牠似乎沒有察覺你們。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A JAR UNDER THE FLOORBOARDS.",
+      "text": "你們看到地板底下有個罐子。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A RUINED ROOM WITH ROTTED FURNITURE. HUMAN BONES LIE SCATTERED ABOUT A DESK.",
+      "text": "你們看到一間殘破的屋子，家具都爛了，桌子四周散著人骨。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A STRANGE GREEN PLANT GROWTH WHICH YOU RECOGNIZE AS GREEN SLIME. YOU CAREFULLY MOVE AROUND IT.",
+      "text": "你們看到一團奇怪的綠色黏狀物，認出那是綠泥怪，於是小心地繞了過去。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU SEE A WIDE COLLECTION OF RUGS AND TAPESTRIES.  TWO OF THEM LOOK EXTRAORDINARY WHILE THE OTHERS LOOK AVERAGE.",
       "text": "你們看到一大批地毯與掛毯，其中兩件看來非凡，其餘平平。",
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU SEE AN EMPTY ROOM. THE ONLY FEATURE IS A SERIES OF FRESCOES ON THE WALLS OF LEARNED MEN AND THE HEAVENLY PATRONS OF ART AND LEARNING. YOU GET A FEELING OF PEACE.",
+      "text": "你們看到一間空屋，唯一的陳設是牆上一系列壁畫，畫的是學者與掌管藝術與學問的天上守護者。你們心裡生出一股寧靜。",
+      "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU SEE THE MAN IS QUITE MAD. DO YOU TAKE PITY AND INVITE HIM TO GO WITH YOU?",
+      "text": "你們看得出這人瘋得不輕。要不要可憐他，邀他同行？",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE WHAT ONCE WAS A GARDEN, NOW-WEED FILLED. THE PLEASANT POND HAS BECOME A SWAMP.",
+      "text": "這裡曾經是花園，如今雜草叢生，原本宜人的池塘變成了沼澤。",
+      "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
       "source": "YOU SPOT A GROUP OF",
       "text": "你們發現一群",
       "note": "同上。"
+    },
+    {
+      "source": "YOU SPY A GROUP OF SEEDY-LOOKING",
+      "text": "你們瞥見一群衣衫襤褸的",
+      "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "YOU STEP INTO A STRANGE GREEN PLANT GROWTH... IT'S GREEN SLIME! QUICKLY, YOU SCRAPE IT OFF, TAKING A GOOD DEAL OF DAMAGE.",
+      "text": "你們踩進一團奇怪的綠色黏狀物……是綠泥怪！你們趕緊刮掉，還是受了不小的傷。",
+      "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "YOU TRY TO PICK THE LOCK BUT IT IS TOO COMPLEX FOR YOU TO PICK.  YOU FAIL MISERABLY.",
@@ -1732,6 +2647,11 @@
       "source": "YOU WALK NEAR THE",
       "text": "你們走近",
       "note": "敘述片段，後面接地名。"
+    },
+    {
+      "source": "YOU WANDER IN THE OLD HEMP MARKET.  MONSTERS SCURRY AT YOUR APPROACH.  YOU OCCASSIONALLY CATCH SNATCHES OF CONVERSATIONS.",
+      "text": "你們在舊麻市裡走著，怪物一見你們就四下逃竄，偶爾能聽見隻字片語。",
+      "note": "貧民區（Slums）的事件與敘述。原版此處把 OCCASIONALLY 拼成 OCCASSIONALLY。"
     },
     {
       "source": "YOUR CLEARING OF THE SLUM AREAS PERMITS US TO EXPAND.",
