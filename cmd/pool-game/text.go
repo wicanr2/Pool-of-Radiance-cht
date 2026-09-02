@@ -85,6 +85,13 @@ var messages = map[messageID][2]string{
 	msgTrainNotYet:          {" does not have enough experience to train.", " 的經驗值還不夠訓練。"},
 	msgTrainGained:          {" advances a level; hit points ", " 升了一級，生命值 "},
 	msgTrainNeedsMember:     {"Choose a character with 1-6 before training.", "先用 1-6 選一個角色再訓練。"},
+	msgSpellsNeedsMember:    {"Choose a character with 1-6 first.", "先用 1-6 選一個角色。"},
+	msgSpellsMemorised:      {" memorises ", " 記下了 "},
+	msgSpellsForgot:         {" forgets ", " 忘掉了 "},
+	msgSpellsNotMemorised:   {" has not memorised ", " 沒有記著 "},
+	msgSpellsNoSlot:         {" has no free slot for that spell.", " 沒有空格可以記那個法術。"},
+	msgSpellsMemoriseHint:   {"1-6 pick  M memorise  F forget", "1-6 挑人　M 記憶　F 忘掉"},
+	msgSpellsSlotLine:       {"%s (%d): memorised %d of %d, %d free", "%s（%d）：已記 %d／%d，還能記 %d"},
 	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
@@ -480,6 +487,13 @@ const (
 	msgTrainNotYet
 	msgTrainGained
 	msgTrainNeedsMember
+	msgSpellsNeedsMember
+	msgSpellsMemorised
+	msgSpellsForgot
+	msgSpellsNotMemorised
+	msgSpellsNoSlot
+	msgSpellsMemoriseHint
+	msgSpellsSlotLine
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved

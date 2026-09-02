@@ -109,3 +109,52 @@ func TestMemoriseRespectsTheSlotLimit(t *testing.T) {
 		t.Fatal("法師的格子不該收得下牧師法術")
 	}
 }
+
+// 從職業等級與睿智算出來的可記憶數，要和角色記錄裡已經算好的六格一模一樣。
+// 這是把 spec 072 的兩張表加睿智加成拿去對原版寫下的結果。
+func TestComputedSpellSlotsMatchTheRecords(t *testing.T) {
+	tables, err := ReadDOSSpellSlotTableSet(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	directory := filepath.Join("..", "..", "workplace", "oracle", "dos")
+	entries, err := os.ReadDir(directory)
+	if err != nil {
+		t.Skipf("original character files are intentionally not tracked: %v", err)
+	}
+	checked := 0
+	for _, entry := range entries {
+		if filepath.Ext(entry.Name()) != ".sav" {
+			continue
+		}
+		record, err := os.ReadFile(filepath.Join(directory, entry.Name()))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(record) < 285 {
+			continue
+		}
+		stored, err := RecordSpellSlotMaxima(record)
+		if err != nil {
+			t.Fatalf("%s: %v", entry.Name(), err)
+		}
+		if stored == (SpellSlotCounts{}) {
+			continue
+		}
+		checked++
+		levels, err := ClassLevels(record)
+		if err != nil {
+			t.Fatalf("%s: %v", entry.Name(), err)
+		}
+		computed := tables.SpellSlotMaxima(int(levels[ClassSlotCleric]),
+			int(levels[ClassSlotMagicUser]), int(record[wisdomOffset]))
+		if computed != stored {
+			t.Errorf("%s 算出來是 %v，記錄裡是 %v（牧師 %d 級、法師 %d 級、睿智 %d）",
+				entry.Name(), computed, stored, levels[ClassSlotCleric],
+				levels[ClassSlotMagicUser], record[wisdomOffset])
+		}
+	}
+	if checked < 10 {
+		t.Fatalf("只對到 %d 個施法者，預設人物裡有十個——掃描面漏了", checked)
+	}
+}

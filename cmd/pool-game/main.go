@@ -165,10 +165,14 @@ type app struct {
 	savingThrows *gamepack.SavingThrowTable
 	// trainParty 是隊伍管理畫面上選中的成員，訓練指令對他生效。
 	trainParty int
+	// spellMember 是法術畫面上選中的成員，記憶指令對他生效。
+	spellMember int
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
 	// experienceTable 是昇級門檻（spec 071）。
 	experienceTable gamepack.ExperienceTable
+	// spellSlotTables 是牧師與法師的可記憶數表（spec 072），記憶法術要用。
+	spellSlotTables gamepack.SpellSlotTables
 	// parlay 是進行中的交涉選單（spec 086）。
 	parlay *parlayState
 	// eclInput 是進行中的 ECL 輸入列（spec 087）。
@@ -272,6 +276,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.experienceTable = experienceTable
+	spellSlotTables, err := gamepack.ReadDOSSpellSlotTableSet(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.spellSlotTables = spellSlotTables
 	spellParameters, err := gamepack.ReadDOSSpellParameters(zipPath)
 	if err != nil {
 		return nil, err

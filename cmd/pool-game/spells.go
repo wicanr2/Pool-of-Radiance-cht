@@ -3,14 +3,15 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
-// 法術一覽。這是查閱用的畫面，不是施法：記憶與施展還沒接，畫面上也不假裝
-// 接好了——原版的法術書畫面另有版面，等反組譯讀到再做。
+// 法術一覽兼記憶畫面。**施展還沒接**，畫面上也不假裝接好了——原版的施法
+// 常式有 53 支，各自的效果還沒讀（spec 073）。
 //
 // 表本身是原版 START.EXE 裡那 56 筆（spec 068），順序即原版的順序。
 const (
@@ -71,6 +72,19 @@ func (a *app) spellsInput() {
 	case a.justPressed(ebiten.KeyUp):
 		if group := state.current(); len(group) > 0 {
 			state.cursor = (state.cursor - 1 + len(group)) % len(group)
+		}
+	case a.justPressed(ebiten.KeyM):
+		a.memoriseHighlightedSpell()
+	case a.justPressed(ebiten.KeyF):
+		a.forgetHighlightedSpell()
+	default:
+		for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2,
+			ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
+			if index < len(a.state.Party) && a.justPressed(key) {
+				a.spellMember = index
+				a.statusLine = strings.TrimSpace(a.state.Party[index].Name)
+				return
+			}
 		}
 	}
 }
@@ -139,6 +153,22 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 	drawText(screen, fmt.Sprintf(a.text(msgSpellsGroup), className, current.Level),
 		spellTextLeft, 92, accent)
 
+	// 被選中的人在這一級還能記幾個。上限與已記都由記錄與參數表算出來
+	// （spec 072／074），不是寫死的。
+	if maxima, used, ok := a.spellMemberSlots(a.spellMember); ok {
+		member := a.state.Party[a.spellMember]
+		spellGroup := gamepack.SpellSlotGroupCleric
+		if current.Class == gamepack.SpellClassMagicUser {
+			spellGroup = gamepack.SpellSlotGroupMagicUser
+		}
+		free := gamepack.FreeSpellSlots(maxima, used)[spellGroup][current.Level-1]
+		drawText(screen, fmt.Sprintf(a.text(msgSpellsSlotLine),
+			strings.TrimSpace(member.Name), a.spellMember+1,
+			used[spellGroup][current.Level-1], maxima[spellGroup][current.Level-1], free),
+			spellTextLeft, 106, foreground)
+	}
+	drawText(screen, a.text(msgSpellsMemoriseHint), spellTextLeft, 366, accent)
+
 	group := state.current()
 	// 一頁放不下十三條，捲動時讓游標留在畫面內。
 	first := state.cursor - spellLineCount/2
@@ -180,4 +210,85 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgSpellsCount), len(group)), spellTextLeft, 336, foreground)
 	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, 356, accent)
+}
+
+// 記憶法術（spec 070／072／074）。原版的入口在紮營選單，remake 還沒有紮營
+// 畫面，所以先掛在法術一覽上：1-6 挑人、M 記憶游標上那一條、F 忘掉一格。
+//
+// 規則本身照原版接：可記憶數依職業等級與睿智算（睿智加成只給牧師），
+// 那是**上限**不是遞減的剩餘量，所以「還能記幾個」是上限減掉已經記了幾個。
+
+// spellMemberSlots 算出被選中的成員的可記憶數上限與已經記了幾個。
+func (a *app) spellMemberSlots(index int) (maxima, used gamepack.SpellSlotCounts, ok bool) {
+	if index < 0 || index >= len(a.state.Party) {
+		return maxima, used, false
+	}
+	member := a.state.Party[index]
+	levels := memberClassLevels(member)
+	maxima = a.spellSlotTables.SpellSlotMaxima(int(levels[gamepack.ClassSlotCleric]),
+		int(levels[gamepack.ClassSlotMagicUser]),
+		member.Abilities[gamepack.AbilityWisdom])
+	used = gamepack.MemorisedCounts(member.Memorised, a.spellParameters)
+	return maxima, used, true
+}
+
+// memoriseHighlightedSpell 把游標上那一條記給被選中的成員。
+func (a *app) memoriseHighlightedSpell() {
+	state := a.spells
+	group := state.current()
+	if len(group) == 0 || state.cursor >= len(group) {
+		return
+	}
+	if len(a.state.Party) == 0 {
+		a.statusLine = a.text(msgSpellsNeedsMember)
+		return
+	}
+	if a.spellMember >= len(a.state.Party) {
+		a.spellMember = 0
+	}
+	member := &a.state.Party[a.spellMember]
+	if len(member.Memorised) < gamepack.MemorisedSpellSlots {
+		grown := make([]uint8, gamepack.MemorisedSpellSlots)
+		copy(grown, member.Memorised)
+		member.Memorised = grown
+	}
+	maxima, _, ok := a.spellMemberSlots(a.spellMember)
+	if !ok {
+		return
+	}
+	id := uint8(group[state.cursor].Index + 1)
+	if err := gamepack.Memorise(member.Memorised, id, a.spellParameters, maxima); err != nil {
+		a.statusLine = fmt.Sprintf("%s%s", strings.TrimSpace(member.Name), a.text(msgSpellsNoSlot))
+		return
+	}
+	syncTrainedLibraryCharacter(&a.state, *member)
+	a.statusLine = fmt.Sprintf("%s%s%s", strings.TrimSpace(member.Name),
+		a.text(msgSpellsMemorised), group[state.cursor].Text)
+}
+
+// forgetHighlightedSpell 忘掉被選中的成員身上第一個符合游標的那一格。
+func (a *app) forgetHighlightedSpell() {
+	state := a.spells
+	group := state.current()
+	if len(group) == 0 || state.cursor >= len(group) || len(a.state.Party) == 0 {
+		return
+	}
+	if a.spellMember >= len(a.state.Party) {
+		a.spellMember = 0
+	}
+	member := &a.state.Party[a.spellMember]
+	id := uint8(group[state.cursor].Index + 1)
+	for slot, value := range member.Memorised {
+		if value&0x7f == id {
+			if err := gamepack.ForgetMemorised(member.Memorised, slot); err != nil {
+				return
+			}
+			syncTrainedLibraryCharacter(&a.state, *member)
+			a.statusLine = fmt.Sprintf("%s%s%s", strings.TrimSpace(member.Name),
+				a.text(msgSpellsForgot), group[state.cursor].Text)
+			return
+		}
+	}
+	a.statusLine = fmt.Sprintf("%s%s%s", strings.TrimSpace(member.Name),
+		a.text(msgSpellsNotMemorised), group[state.cursor].Text)
 }

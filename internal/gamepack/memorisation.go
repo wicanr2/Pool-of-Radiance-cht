@@ -121,3 +121,52 @@ func ForgetMemorised(memorised []uint8, slot int) error {
 	memorised[slot] = 0
 	return nil
 }
+
+// SpellSlotTables 是牧師與法師的格數表，加上算出可記憶數要用的規則。
+type SpellSlotTables struct {
+	Cleric    []SpellSlots
+	MagicUser []SpellSlots
+}
+
+// ReadDOSSpellSlotTableSet 讀出兩張表。
+func ReadDOSSpellSlotTableSet(zipPath string) (SpellSlotTables, error) {
+	cleric, magicUser, err := ReadDOSSpellSlotTables(zipPath)
+	if err != nil {
+		return SpellSlotTables{}, err
+	}
+	return SpellSlotTables{Cleric: cleric, MagicUser: magicUser}, nil
+}
+
+// slotsForLevel 取某個職業等級那一列；第 1 級不查表（表裡那一列是 FFh
+// 佔位），用建角寫下的一格。等級超出表的範圍就沒有格子。
+func slotsForLevel(table []SpellSlots, level int) SpellSlots {
+	switch {
+	case level <= 0:
+		return SpellSlots{}
+	case level < SpellSlotFirstLevel:
+		return FirstLevelSpellSlots()
+	case level < len(table):
+		return table[level]
+	}
+	return SpellSlots{}
+}
+
+// SpellSlotMaxima 依職業等級與睿智算出可記憶數，也就是角色記錄
+// `+0B2h`／`+0B5h` 那六格的內容。
+//
+// **睿智加成只給牧師**：overlay-23 是在牧師那一段（`00EBh`）呼叫它的，
+// 法師那一段（`0141h` 起）沒有。第 1 級也拿不到加成——那一段在
+// 「等級大於 1」的分支裡。
+func (t SpellSlotTables) SpellSlotMaxima(clericLevel, magicUserLevel, wisdom int) SpellSlotCounts {
+	var counts SpellSlotCounts
+	cleric := slotsForLevel(t.Cleric, clericLevel)
+	if clericLevel >= SpellSlotFirstLevel {
+		cleric = WisdomBonusSlots(wisdom, cleric)
+	}
+	magicUser := slotsForLevel(t.MagicUser, magicUserLevel)
+	for level := 0; level < SpellSlotLevels; level++ {
+		counts[SpellSlotGroupCleric][level] = int(cleric[level])
+		counts[SpellSlotGroupMagicUser][level] = int(magicUser[level])
+	}
+	return counts
+}
