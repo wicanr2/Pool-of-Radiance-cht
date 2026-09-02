@@ -351,13 +351,12 @@
   `docs/audit/pool-ecl-opcode-frontier.json`，由 `cmd/pool-ecl-frontier` 重生
   （「已處理」那一半直接讀共用 VM 的 switch 與 Pool 的 passthrough 清單，
   不另抄一份會過期的常數）。依呼叫點數排：
-  `34h ECL CLOCK` 1、`3Bh SPELL` 1。
-  另外 `1Eh CHECKPARTY` 的四個呼叫點裡有一個（`ECL3/b14 @1AA2h`）走的是
-  記錄 `+79h`，那個欄位的語意還沒讀出來，維持硬失敗（spec 092）。
-  `34h` 讀運算元編號時讀的是未初始化的堆疊位元組，原版就是這樣。
-  `3Bh` 掃記憶法術陣列（`+17h + i`，i = 1..51h），把命中的槽位與第幾個人寫回
-  運算元 2／3；**外層迴圈實際上只跑得到第一個人**（內層掃完就把 found 設成 1），
-  而且它掃的範圍比 spec 070 的 `+1Fh` 起 13 格寬得多，兩者還沒對齊。`1Eh` 是隊伍統計，依運算元 1 的位址挑欄位算最小／最大／平均，
+  **掃描面上已經是 0 條**（`cmd/pool-ecl-frontier` 掃 29 個 block）。
+  剩下的是**兩處在 handler 內部的硬失敗**，都不是「還沒接」而是「還沒讀」：
+  - `1Eh CHECKPARTY` 的 `6BA7h` 模式要統計記錄 `+79h`，那個欄位的語意還沒
+    讀出來（四個呼叫點裡的一個，`ECL3/b14 @1AA2h`；spec 092）。
+  - `38h PROGRAM` 的值 9 要一句問話（字串在 BSS，靜態讀不到）與一條讓 block
+    結束的路徑（兩個呼叫點，`ECL3/b0` 與 `ECL7/b17`；spec 081）。`1Eh` 是隊伍統計，依運算元 1 的位址挑欄位算最小／最大／平均，
   骨架讀過一半；`34h` 讀運算元編號時讀的是未初始化的堆疊位元組。
   起始地圖上走得到的是 `39h WHO`（ECL3/b0 兩處、b11 一處）與 `36h ADD NPC`
   （各一處），所以那兩條擋在最前面。兩條的骨架已由 spec 083 解出，並解出
@@ -368,8 +367,14 @@
   （spec 084）、`32h FIND ITEM`／`22h PARTY SURPRISE`／`23h SURPRISE`
   （spec 085）、`2Ch PARLAY`（spec 086）、`0Fh`／`10h` 輸入（spec 087）、
   `28h ROB`（spec 088）、`3Ch PROTECTION`（spec 089）、`39h WHO`（spec 090）、
-  `36h ADD NPC`（spec 091）、`1Eh CHECKPARTY`（spec 092，三種模式接了兩種）。
-  待辦從 16 條 253 處降到 **2 條 2 處**，外加 `1Eh` 的一個未讀模式。
+  `36h ADD NPC`（spec 091）、`1Eh CHECKPARTY`（spec 092，三種模式接了兩種）、
+  `34h ECL CLOCK`（spec 093）、`3Bh SPELL`（spec 094）。
+  待辦從 16 條 253 處降到 **0**。
+- [ ] **打不到的敵人會讓戰鬥停在那裡**。實測（八千步隨機走查，三個種子裡
+  的一個）走進一場戰鬥之後兩萬個 tick 收不了尾：殘敵在隊伍走不到的地方，
+  而戰術畫面目前**沒有逃跑或強制收尾的出口**——只有結束回合（ENTER）與
+  延後（D）。原版的玩家指令迴圈有 `Quick Done`（overlay-08 `05E1h` 起的
+  指令字串），還沒讀。另外兩個種子各走完八千步沒有任何硬失敗。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家
