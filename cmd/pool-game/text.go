@@ -555,7 +555,8 @@ func init() {
 	for id, entry := range map[messageID][2]string{
 		msgStatusDelayed:        {"DELAYED", "延後"},
 		msgStatusTurnEnded:      {"TURN ENDED", "回合結束"},
-		msgStatusContinuePrompt: {"CONTINUE BATTLE? Y/N", "要繼續戰鬥嗎？ Y／N"},
+		// 原文是 overlay-08 `0857h` 的 `Continue Battle:`。
+		msgStatusContinuePrompt: {"CONTINUE BATTLE: Y/N", "要繼續戰鬥嗎？ Y／N"},
 		msgStatusDefeat:         {"DEFEAT", "全滅"},
 		msgStatusVictory:        {"VICTORY", "獲勝"},
 		msgStatusRound:          {"ROUND %d", "第 %d 回合"},

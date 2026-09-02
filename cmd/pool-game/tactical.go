@@ -350,7 +350,8 @@ func (state *tacticalState) endTurn(roll func(count, sides int) int, delay bool)
 // endRound 重現 overlay-08 `0868h` 的回合收尾（spec 062）：先推進倒地計時，
 // 再判結束；「我方還在、敵方清光」那一支要多問一次要不要繼續，不是直接結束。
 //
-// 原版另有一個不問的條件（`DS:4955h` 非 0），它的來源還沒閉合，所以這裡一律問。
+// 原版另有一個不問的條件（`DS:4955h` 非 0），但全遊戲只有 overlay-11 `03C1h`
+// 的啟動設定寫它，寫的是 0——所以正常遊玩時一律會問，這裡照做（spec 062）。
 func (state *tacticalState) endRound(roll func(count, sides int) int) {
 	for index := 1; index < len(state.Roster); index++ {
 		state.States[index], state.DyingCounters[index] =
