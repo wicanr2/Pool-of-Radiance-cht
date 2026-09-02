@@ -99,6 +99,16 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|
 | ![Pool remake 初始 Rolf 導覽事件](docs/screenshots/pool-remake-initial-rolf-event.png) |
 
+| 冒險畫面按 `F5` 的戰術地圖預覽（Spec 060） |
+|---|
+| ![Pool remake 戰術地圖預覽](docs/screenshots/pool-remake-tactical-preview.png) |
+
+這張圖是由目前地城座標與真實 GEO 牆面資料現場生成的 50×25 戰術格，1250 格全部
+有內容；牆呈斜線是投影本身的形狀（`X = 21 + 6dx + 5dy + subB`）。它只呈現地形，
+還沒有 combatant、輸入與回合流程。GEO 的牆面樣式編號與戰術層的 0／1／3 尚未對上，
+所以門目前畫成實牆——這一點直接寫在畫面上。來源提交與雜湊見
+[戰術預覽截圖 manifest](docs/audit/remake-tactical-screenshot-manifest.json)。
+
 | Rolf 34-step 導覽的 Tyr 停靠點（正常 Return 路徑） |
 |---|
 | ![Pool remake Rolf 導覽 Tyr 停靠點](docs/screenshots/pool-remake-rolf-tour-tyr.png) |
