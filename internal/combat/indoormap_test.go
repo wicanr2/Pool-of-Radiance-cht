@@ -198,3 +198,73 @@ func TestIndoorBuildersCoverDisjointSubCells(t *testing.T) {
 		}
 	}
 }
+
+func openProbe(uint8, int, int) (uint8, error) { return WallOpen, nil }
+
+// 一整片沒有牆的地城，生成出來的戰術格都是地板。
+func TestGenerateIndoorTacticalGridOnOpenGround(t *testing.T) {
+	grid, err := GenerateIndoorTacticalGrid(10, 10, openProbe)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(grid.Terrain) != TacticalMapCellCount {
+		t.Fatalf("grid has %d cells", len(grid.Terrain))
+	}
+	painted := 0
+	for _, code := range grid.Terrain {
+		switch code {
+		case UnpaintedCellClass:
+		case OpenGroundCellClass:
+			painted++
+		default:
+			t.Fatalf("open ground produced class %02Xh", code)
+		}
+	}
+	if painted == 0 {
+		t.Fatal("nothing was painted")
+	}
+}
+
+// 有牆時牆面類別要真的出現，而且能被格位類別表判成擋路。
+func TestGenerateIndoorTacticalGridPaintsWalls(t *testing.T) {
+	probe := func(direction uint8, x, y int) (uint8, error) {
+		if direction == WallDirectionNorth {
+			return WallBlocking, nil
+		}
+		return WallOpen, nil
+	}
+	grid, err := GenerateIndoorTacticalGrid(10, 10, probe)
+	if err != nil {
+		t.Fatal(err)
+	}
+	seen := map[uint8]int{}
+	for _, code := range grid.Terrain {
+		seen[code]++
+	}
+	if seen[StoredCellClass(0x05)] == 0 && seen[StoredCellClass(0x0A)] == 0 {
+		t.Fatalf("no wall classes appeared: %v", seen)
+	}
+}
+
+func TestGenerateIndoorTacticalGridNeedsAProbe(t *testing.T) {
+	if _, err := GenerateIndoorTacticalGrid(10, 10, nil); err == nil {
+		t.Fatal("a nil probe was accepted")
+	}
+}
+
+// 牆面查詢是雙向的：只有鄰格那一側有牆時也要算數。
+func TestWallBetweenChecksBothSides(t *testing.T) {
+	probe := func(direction uint8, x, y int) (uint8, error) {
+		if direction == WallDirectionEast && x == 4 {
+			return WallBlocking, nil
+		}
+		return WallOpen, nil
+	}
+	got, err := WallBetween(probe, WallDirectionWest, 5, 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != WallBlocking {
+		t.Fatalf("wall between (5,5) and its west neighbour = %d, want %d", got, WallBlocking)
+	}
+}

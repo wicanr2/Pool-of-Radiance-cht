@@ -273,3 +273,122 @@ func pickCorner(condition bool, whenTrue, whenFalse uint8) uint8 {
 	}
 	return whenFalse
 }
+
+// WallProbe 由呼叫端提供：回報地城格 (x, y) 朝 direction 那一面的牆值。
+// 對應原版 overlay-10 `0138h` 讀 GEO 資料的那一層。
+type WallProbe func(direction uint8, x, y int) (uint8, error)
+
+// WallBetween 重現 overlay-10 `01BAh`：兩側都問，取 OR。
+// 先問這一格朝 direction，再問鄰格朝 `(direction+4) mod 8`。
+func WallBetween(probe WallProbe, direction uint8, x, y int) (uint8, error) {
+	if probe == nil {
+		return 0, fmt.Errorf("Pool wall query needs a probe")
+	}
+	step, err := DirectionStep(direction)
+	if err != nil {
+		return 0, err
+	}
+	near, err := probe(direction, x, y)
+	if err != nil {
+		return 0, err
+	}
+	far, err := probe((direction+4)%DirectionCount, x+int(step.X), y+int(step.Y))
+	if err != nil {
+		return 0, err
+	}
+	return near | far, nil
+}
+
+// 三個牆面查詢的方向碼，順序與 overlay-10 `0820h` 一致。
+const (
+	WallDirectionNorth uint8 = 0
+	WallDirectionEast  uint8 = 2
+	WallDirectionWest  uint8 = 6
+)
+
+// GenerateIndoorTacticalGrid 重現 overlay-10 `0820h`：以隊伍所在地城格為中心
+// 掃 13×5 的視窗，每格做三次牆面查詢，交給四支建構器落筆，再投影進戰術格。
+//
+// 原版沒有先清空這塊記憶體（只有室外那一支會 FillChar），所以投影不到的格子
+// 保留配置時的內容。這裡以 UnpaintedCellClass 明確標出那些格子，
+// 讓「原版是未初始化」這件事在重建裡看得見，而不是靜靜地變成 0。
+func GenerateIndoorTacticalGrid(partyX, partyY int, probe WallProbe) (TacticalGrid, error) {
+	terrain := make([]uint8, TacticalMapCellCount)
+	for index := range terrain {
+		terrain[index] = UnpaintedCellClass
+	}
+
+	for _, cell := range IndoorWindowCells() {
+		dx, dy := cell[0], cell[1]
+		x, y := partyX+dx, partyY+dy
+
+		west, err := WallBetween(probe, WallDirectionWest, x, y)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		north, err := WallBetween(probe, WallDirectionNorth, x, y)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		east, err := WallBetween(probe, WallDirectionEast, x, y)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+
+		aboveWest, err := WallBetween(probe, WallDirectionWest, x, y-1)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		leftNorth, err := WallBetween(probe, WallDirectionNorth, x-1, y)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		aboveEast, err := WallBetween(probe, WallDirectionEast, x, y-1)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		rightNorth, err := WallBetween(probe, WallDirectionNorth, x+1, y)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+
+		groups := make([][]IndoorPaint, 0, 4)
+		westBand, err := PaintWestBand(west)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		groups = append(groups, westBand)
+		northBand, err := PaintNorthBand(north)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		groups = append(groups, northBand)
+		northWest, err := PaintNorthWestCorner(north, west,
+			aboveWest == WallOpen && leftNorth == WallOpen)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		groups = append(groups, northWest)
+		northEast, err := PaintNorthEastCorner(north, east, aboveEast, rightNorth,
+			aboveEast == WallOpen && rightNorth == WallOpen)
+		if err != nil {
+			return TacticalGrid{}, err
+		}
+		groups = append(groups, northEast)
+
+		for _, paints := range groups {
+			for _, paint := range paints {
+				column, row, ok := IndoorTacticalCell(dx, dy, paint.SubA, paint.SubB)
+				if !ok {
+					continue
+				}
+				terrain[row*TacticalRowStride+column] = StoredCellClass(paint.Class)
+			}
+		}
+	}
+	return TacticalGrid{IgnoreTerrain: false, Terrain: terrain}, nil
+}
+
+// UnpaintedCellClass 標出室內生成沒有落筆到的格子。原版那些格子留著配置時的
+// 內容，本身不是一個有意義的類別值——不可把它當成地形。
+const UnpaintedCellClass = 0xFF
