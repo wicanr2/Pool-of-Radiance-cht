@@ -1,0 +1,399 @@
+{
+  "schema": "pool-spell-names/1",
+  "locale": "zh-TW",
+  "source": "START.EXE 41052..43348 (56 entries, 41-byte stride)",
+  "entries": [
+    {
+      "index": 0,
+      "name": "Bless",
+      "text": "祝福術",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 1,
+      "name": "Curse",
+      "text": "咀咒術",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 2,
+      "name": "Cure Light Wounds",
+      "text": "治療輕傷",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 3,
+      "name": "Cause Light Wounds",
+      "text": "引起輕傷",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 4,
+      "name": "Detect Magic",
+      "text": "搜尋魔法物品",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 5,
+      "name": "Protection From Evil",
+      "text": "免受邪惡侵害",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 6,
+      "name": "Protection from Good",
+      "text": "免受善良侵害",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 7,
+      "name": "Resist Cold",
+      "text": "耐冰術",
+      "class": "cleric",
+      "level": 1
+    },
+    {
+      "index": 8,
+      "name": "Burning Hands",
+      "text": "燃燒之手",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 9,
+      "name": "Charm Person",
+      "text": "迷惑術",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 10,
+      "name": "Detect Magic",
+      "text": "搜尋魔法物品",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 11,
+      "name": "Enlarge",
+      "text": "巨大術",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 12,
+      "name": "Reduce",
+      "text": "縮小術",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 13,
+      "name": "Friends",
+      "text": "友好術",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 14,
+      "name": "Magic Missile",
+      "text": "魔法飛彈",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 15,
+      "name": "Protection From Evil",
+      "text": "免受邪惡侵害",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 16,
+      "name": "Protection From Good",
+      "text": "免受善良侵害",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 17,
+      "name": "Read Magic",
+      "text": "閱讀魔法",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 18,
+      "name": "Shield",
+      "text": "魔盾術",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 19,
+      "name": "Shocking Grasp",
+      "text": "電擊術",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 20,
+      "name": "Sleep",
+      "text": "催眠術",
+      "class": "magic-user",
+      "level": 1
+    },
+    {
+      "index": 21,
+      "name": "Find Traps",
+      "text": "搜尋陷阱",
+      "class": "cleric",
+      "level": 2
+    },
+    {
+      "index": 22,
+      "name": "Hold Person",
+      "text": "束縛敵人",
+      "class": "cleric",
+      "level": 2
+    },
+    {
+      "index": 23,
+      "name": "Resist Fire",
+      "text": "耐火術",
+      "class": "cleric",
+      "level": 2
+    },
+    {
+      "index": 24,
+      "name": "Silence, 15' Radius",
+      "text": "半徑 15 格的沈靜術",
+      "class": "cleric",
+      "level": 2
+    },
+    {
+      "index": 25,
+      "name": "Slow Poison",
+      "text": "緩毒術",
+      "class": "cleric",
+      "level": 2
+    },
+    {
+      "index": 26,
+      "name": "Snake Charm",
+      "text": "蛇魅術",
+      "class": "cleric",
+      "level": 2
+    },
+    {
+      "index": 27,
+      "name": "Spiritual Hammer",
+      "text": "心靈之鎚",
+      "class": "cleric",
+      "level": 2
+    },
+    {
+      "index": 28,
+      "name": "Detect Invisibility",
+      "text": "搜尋隱形物品",
+      "class": "magic-user",
+      "level": 2
+    },
+    {
+      "index": 29,
+      "name": "Invisibility",
+      "text": "隱形術",
+      "class": "magic-user",
+      "level": 2
+    },
+    {
+      "index": 30,
+      "name": "Knock",
+      "text": "踢開術",
+      "class": "magic-user",
+      "level": 2
+    },
+    {
+      "index": 31,
+      "name": "Mirror Image",
+      "text": "幻影術",
+      "class": "magic-user",
+      "level": 2
+    },
+    {
+      "index": 32,
+      "name": "Ray of Enfeeblement",
+      "text": "衰弱術",
+      "class": "magic-user",
+      "level": 2
+    },
+    {
+      "index": 33,
+      "name": "Stinking Cloud",
+      "text": "臭雲術",
+      "class": "magic-user",
+      "level": 2
+    },
+    {
+      "index": 34,
+      "name": "Strength",
+      "text": "大力術",
+      "class": "magic-user",
+      "level": 2
+    },
+    {
+      "index": 35,
+      "name": "Animate Dead",
+      "text": "活動死屍",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 36,
+      "name": "Cure Blindness",
+      "text": "醫治失明",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 37,
+      "name": "Cause Blindness",
+      "text": "引起失明",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 38,
+      "name": "Cure Disease",
+      "text": "醫治疾病",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 39,
+      "name": "Cause Disease",
+      "text": "引起疾病",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 40,
+      "name": "Dispel Magic",
+      "text": "解除法術",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 41,
+      "name": "Prayer",
+      "text": "祈禱",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 42,
+      "name": "Remove Curse",
+      "text": "除去咀咒",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 43,
+      "name": "Bestow Curse",
+      "text": "散佈咀咒",
+      "class": "cleric",
+      "level": 3
+    },
+    {
+      "index": 44,
+      "name": "Blink",
+      "text": "閃爍術",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 45,
+      "name": "Dispel Magic",
+      "text": "解除法術",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 46,
+      "name": "Fireball",
+      "text": "火球術",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 47,
+      "name": "Haste",
+      "text": "加倍術",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 48,
+      "name": "Hold Person",
+      "text": "束縛敵人",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 49,
+      "name": "Invisibility, 10' Radius",
+      "text": "半徑十呎的隱形術",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 50,
+      "name": "Lightning Bolt",
+      "text": "閃電術",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 51,
+      "name": "Protection From Evil, 10' Radius",
+      "text": "半徑十呎的免受邪惡傷害",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 52,
+      "name": "Protection From Good, 10' Radius",
+      "text": "半徑十呎的免受善良傷害",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 53,
+      "name": "Protection From Normal Missiles",
+      "text": "免受一般飛彈傷害",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 54,
+      "name": "Slow",
+      "text": "減緩術",
+      "class": "magic-user",
+      "level": 3
+    },
+    {
+      "index": 55,
+      "name": "Restoration",
+      "text": "恢復術",
+      "class": "magic-user",
+      "level": 3
+    }
+  ]
+}

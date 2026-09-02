@@ -39,6 +39,12 @@ const (
 // 不是重新翻譯。說明書沒有對應字串的（畫面提示、功能鍵列）才自行擬定，
 // 用詞依 `docs/reference/manual/glossary.md` 的定案譯名。
 var messages = map[messageID][2]string{
+	msgSpellsTitle:     {"SPELLS", "法術一覽"},
+	msgSpellsGroup:     {"%s  level %d", "%s　第 %d 級"},
+	msgSpellsCleric:    {"Cleric", "神術"},
+	msgSpellsMagicUser: {"Magic User", "巫術"},
+	msgSpellsCount:     {"%d spells in this group", "本級共 %d 種"},
+	msgSpellsFooter:    {"TAB next group  UP/DOWN choose  K/ESC close", "TAB 換級別　上下移動　K／ESC 關閉"},
 	msgShopTitle:      {"SHOP", "商店"},
 	msgShopStatus:     {"Original Pool shop service: %d item(s) in stock.", "原版商店服務：架上 %d 件。"},
 	msgShopBuyer:      {"Buyer %d/%d  %s  gold %d", "買家 %d/%d　%s　金幣 %d"},
@@ -381,6 +387,16 @@ func utf8DecodeLast(value string) (rune, bool) {
 }
 
 // 戰術畫面的字串。戰鬥用語依說明書第五章與 glossary 的定案（ROUND＝戰鬥回合）。
+// 法術一覽的字串。
+const (
+	msgSpellsTitle messageID = iota + 600
+	msgSpellsGroup
+	msgSpellsCleric
+	msgSpellsMagicUser
+	msgSpellsCount
+	msgSpellsFooter
+)
+
 // 商店畫面的字串。
 const (
 	msgShopTitle messageID = iota + 500

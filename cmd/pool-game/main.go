@@ -106,6 +106,8 @@ type app struct {
 	tactical         *tacticalState
 	journal          *journalState
 	itemTypes        *gamepack.ItemTypeTable
+	spells           *spellState
+	spellsOpen       bool
 	shop             *shopState
 	shopActive       bool
 	equipment        *equipmentState
@@ -345,11 +347,21 @@ func (a *app) Update() error {
 		a.equipmentInput()
 		return nil
 	}
-	if a.justPressed(ebiten.KeyI) && a.mode == modeAdventure && !a.help {
+	if a.spellsOpen {
+		a.spellsInput()
+		return nil
+	}
+	if a.mode == modeAdventure && !a.help && a.justPressed(ebiten.KeyK) {
+		if err := a.openSpells(); err != nil {
+			a.statusLine = err.Error()
+		}
+		return nil
+	}
+	if a.mode == modeAdventure && !a.help && a.justPressed(ebiten.KeyI) {
 		a.openEquipment()
 		return nil
 	}
-	if a.justPressed(ebiten.KeyJ) && a.mode == modeAdventure && !a.help {
+	if a.mode == modeAdventure && !a.help && a.justPressed(ebiten.KeyJ) {
 		if err := a.openJournal(); err != nil {
 			a.statusLine = err.Error()
 		}
@@ -1807,6 +1819,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.shopActive && a.shop != nil {
 		drawShop(screen, a, background, foreground, accent)
 	}
+	if a.spellsOpen && a.spells != nil {
+		drawSpells(screen, a, background, foreground, accent)
+	}
 }
 
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
@@ -2125,6 +2140,7 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 		"F10: save the remake state and quit",
 		"J: open the adventurer's journal (-lang zh)",
 		"I: ready or unready a party member's items",
+		"K: browse the original spell list",
 	}
 	for index, line := range lines {
 		drawText(screen, line, 104, 120+index*30, foreground)

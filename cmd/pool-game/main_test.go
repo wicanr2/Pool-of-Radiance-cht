@@ -978,3 +978,22 @@ func TestPoolPostWallLayerMapsOverTheRenderedTopCorners(t *testing.T) {
 		t.Fatalf("Pool top fill screen rect=%v, want %v", got, want)
 	}
 }
+
+// 全域熱鍵（J 手冊、I 裝備、K 法術）只在冒險畫面生效，而且**不能在別的畫面
+// 把按鍵吃掉**：`justPressed` 讀一次就消費，條件寫成
+// `justPressed(K) && mode == adventure` 會讓建角的 portrait editor 收不到 KEEP。
+func TestGlobalHotkeysDoNotConsumeKeysOutsideAdventure(t *testing.T) {
+	for _, key := range []ebiten.Key{ebiten.KeyJ, ebiten.KeyI, ebiten.KeyK} {
+		keys := scriptedKeys{key: true}
+		application := &app{mode: modeCreation, keys: keys}
+		if err := application.Update(); err != nil {
+			t.Fatalf("key %v: %v", key, err)
+		}
+		if application.journalOpen || application.equipmentOpen || application.spellsOpen {
+			t.Fatalf("key %v opened an overlay outside the adventure screen", key)
+		}
+		if !keys[key] {
+			t.Fatalf("key %v was consumed on the creation screen", key)
+		}
+	}
+}

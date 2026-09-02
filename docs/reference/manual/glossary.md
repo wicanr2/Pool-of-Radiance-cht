@@ -522,7 +522,24 @@ THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法
 在畫面上維持英文，而那看起來像漏翻。
 
-### 撞名與定義衝突
+#### 說明書法術章的拼寫錯誤
+
+法術名稱以**遊戲**的拼法為準（`START.EXE` 的 56 筆名稱表，spec 068）；
+說明書下冊第六章有六處拼錯，比對時不要反過來以說明書為準：
+
+| 說明書 | 正確（遊戲） |
+|---|---|
+| `SPIRITOAL HAMMER` | `Spiritual Hammer` |
+| `KEY OF ENFEEBLEMENT` | `Ray of Enfeeblement` |
+| `BESTOW URSE` | `Bestow Curse` |
+| `LIGHTNENG BOLT` | `Lightning Bolt` |
+| `Stinking Clud`／`Stinking cioud` | `Stinking Cloud` |
+| `PROTECTION FROM NORMAL MISSILF` | `Protection From Normal Missiles` |
+
+另有兩處是縮寫而非錯字：`PROTECT FROM GOOD`（遊戲作 Protection from Good）、
+`FIND TRAP`（遊戲作 Find Traps）。中譯一律沿用說明書。
+
+## 撞名與定義衝突
 
 - **Yarash（巫師）＝亞拉斯；Yulash（城市）＝尤拉斯。** 上冊 p.11 把城市寫成
   「亞拉斯」，該處視為原書誤譯；接線時依上下文分辨，遊戲文字一律照本表分開。

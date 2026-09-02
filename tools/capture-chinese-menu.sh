@@ -174,5 +174,21 @@ if cmp -s docs/screenshots/pool-remake-chinese-journal-46.png docs/screenshots/p
   tail -20 /tmp/game.log >&2 || true
   exit 1
 fi
+# ESC 關裝備頁，K 開法術一覽，TAB 翻到巫術第 1 級——那一頁 13 種，是最長的一組。
+pulse Escape
+sleep 0.5
+pulse k
+sleep 0.8
+for step in 1 2 3; do
+  pulse Tab
+  sleep 0.3
+done
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-spells.png
+if cmp -s docs/screenshots/pool-remake-chinese-equipment.png docs/screenshots/pool-remake-chinese-spells.png; then
+  echo "K did not open the spell list" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
 sha256sum docs/screenshots/pool-remake-chinese-*.png
 '
