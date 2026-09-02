@@ -21,6 +21,9 @@
   Magic-User＝魔法師等），並分開 Yarash（亞拉斯）與 Yulash（尤拉斯）、固定
   ROUND／TURN 的定義。轉錄正文維持原書用字不動，本表只約束 game pack 與 UI。
 - [ ] 怪物一覽表 42 種的中文譯名：說明書只給英文，須由遊戲內文字或戰鬥訊息確認後再定。
+  已由遊戲文字證實並定案的有九種（半獸人、小妖魔、哥布林、大哥布林、豺狼人、
+  蜥蜴人、食人魔、熊妖、蟻獅），記在 glossary 的「遊戲內文字新增譯名」；
+  其餘待各自在遊戲文字或 `MON*CHA` 記錄裡出現後再定。
 - [x] 用原版資料反查定案譯名：`cmd/pool-name-audit` 掃全部 1,245 個 DAX block 的
   明碼與 6-bit packed 字串，結果在 `docs/audit/dos-original-name-strings.json`。
   九個專名由遊戲文字證實（Phlan、Bishop Braccio、Valjevo Castle、Lord Urslingen、

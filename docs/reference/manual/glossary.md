@@ -442,6 +442,19 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Rolf | 羅夫 | `ECL3/0` 導覽第一頁 | 音近，兩字；不與既有專名撞字 |
 | Sune | 蘇妮 | `ECL3/0` 導覽第二、六頁 | 音近；女神，取「妮」 |
 | Tempus | 坦帕斯 | `ECL3/0` 導覽第二頁 | 音近，三字 |
+| Orc | 半獸人 | 遭遇敘述 | 遊戲文字直接出現 |
+| Goblin | 哥布林 | 遭遇敘述 | 音近；避開「地精」以免與侏儒（Gnome）混淆 |
+| Hobgoblin | 大哥布林 | 遭遇敘述 | 與哥布林成對，以「大」示體型 |
+| Gnoll | 豺狼人 | 遭遇敘述 | 形貌譯法 |
+| Lizard Man | 蜥蜴人 | 遭遇敘述 | 形貌譯法 |
+| Ogre | 食人魔 | 遭遇敘述 | 通行譯名 |
+| Bugbear | 熊妖 | 遭遇敘述 | 形貌譯法，兩字 |
+| Ankheg（原版拼 ANHKHEG）| 蟻獅 | 遭遇敘述 | 形貌譯法 |
+| Thieves（怪物）| 盜賊 | 遭遇敘述 | 與職業 Thief（賊）分開用字，避免同一畫面兩義 |
+| Skullcrusher | 碎顱者 | 遭遇敘述 | 意譯；`AD29h` 離隊事件的同一個名字 |
+| Harash | 哈拉許 | 遭遇敘述 | 音近 |
+| Rhodia | 蘿蒂亞 | 遭遇敘述 | 音近 |
+| Lux | 勒克斯 | 遭遇敘述 | 音近 |
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法

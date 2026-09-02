@@ -4,9 +4,34 @@
   "note": "原文逐字取自 docs/audit/dos-ecl-text-inventory.json；原版 block 不修改。專有名詞依 docs/reference/manual/glossary.md，說明書沒有的另記在該檔的「遊戲內文字新增譯名」一節。",
   "entries": [
     {
+      "source": "'BEHIND THESE DOORS ARE THE SPECIAL TRAINING SCHOOLS  WHERE ADVENTURERS INCREASE THEIR SKILLS. LET US NOW GO TO THE CITY'S MOST IMPORTANT BUILDING.'",
+      "text": "「這幾道門後面是各種訓練所，冒險者在裡面精進本事。接下來去看看城裡最重要的建築。」",
+      "note": "Rolf 導覽第五頁。訓練所沿用說明書 p.9 的用詞。"
+    },
+    {
+      "source": "'BEYOND THIS GATE ARE THE MONSTER-RIDDEN AREAS OF THE OLD CITY WE ARE SLOWLY PREPARING FOR SETTLEMENT.  THE COUNCIL OFFERS A GENEROUS REWARD TO THOSE WHO CLEAR AREAS OF MONSTERS.",
+      "text": "「這道門外就是舊城區，那裡滿是怪物，我們正一步步整頓、準備讓人遷入。清掉一區怪物的人，市議會會給一筆優厚的報酬。",
+      "note": "Rolf 導覽第七頁。原版這一句沒有結尾引號，照原樣不補。"
+    },
+    {
       "source": "'GREETINGS, COURAGEOUS ONES, I AM ROLF, APPOINTED BY THE COUNCIL TO INTRODUCE NEWCOMERS TO THE FAIR CITY OF PHLAN. IF YOU WILL ACCOMPANY ME, I WILL START THE TOUR.'",
       "text": "「勇敢的朋友們，你們好。我是羅夫，市議會派我為新來的人介紹美麗的菲蘭城。願意跟我走一趟的話，導覽這就開始。」",
       "note": "Rolf 導覽第一頁。Phlan 依 glossary 定案作菲蘭；Rolf 說明書未收，見 glossary 的「遊戲內文字新增譯名」。"
+    },
+    {
+      "source": "'ON YOUR RIGHT IS ONE OF THE ENTRANCE'S TO SUNE'S TEMPLE. AS WITH ALL PHLAN'S TEMPLES, VARIOUS CLERICAL SERVICES ARE OFFERED INSIDE.  ON YOUR LEFT IS AN ENTRANCE TO THE CITY PARK.'",
+      "text": "「右手邊是蘇妮神殿的入口之一。和菲蘭城其他神殿一樣，裡面提供各種神職服務。左手邊則是通往市立公園的入口。」",
+      "note": "Rolf 導覽第六頁。"
+    },
+    {
+      "source": "'OUR TOUR IS ENDED. AGAIN, LET ME URGE YOU TO APPLY TO THE CITY CLERK FOR A COMMISSION.  GOOD-BYE AND GOOD FORTUNE.' (YOU ARE ON YOUR OWN NOW)",
+      "text": "「導覽到此結束。再提醒一次，記得去找書記官接委託。再會，祝你們好運。」（接下來就靠你們自己了）",
+      "note": "Rolf 導覽最後一頁。括號內是原版給玩家的旁白，不是羅夫的話。"
+    },
+    {
+      "source": "'WE ARE JUST OUTSIDE THE CITY HALL. PROCLAMATIONS ARE POSTED ON THESE WALLS. INSIDE, THE CITY CLERK AWARDS THE COUNCIL'S COMMISSIONS.  COMMISSIONS ARE THE QUICKEST WAY TO FAME AND FORTUNE.'",
+      "text": "「我們就在市政廳外面。公告都貼在這幾面牆上。裡頭的書記官負責發放市議會的委託。想快點成名發財，接委託是最快的路。」",
+      "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
     },
     {
       "source": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '",
@@ -19,29 +44,329 @@
       "note": "Rolf 導覽第三頁，承接上一頁的句子。The City Council 依 glossary 作市議會。"
     },
     {
-      "source": "'WE ARE JUST OUTSIDE THE CITY HALL. PROCLAMATIONS ARE POSTED ON THESE WALLS. INSIDE, THE CITY CLERK AWARDS THE COUNCIL'S COMMISSIONS.  COMMISSIONS ARE THE QUICKEST WAY TO FAME AND FORTUNE.'",
-      "text": "「我們就在市政廳外面。公告都貼在這幾面牆上。裡頭的書記官負責發放市議會的委託。想快點成名發財，接委託是最快的路。」",
-      "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
+      "source": "(WHAT DO YOU DO?)",
+      "text": "（你們要怎麼做？）",
+      "note": "同上，原版這一版帶括號。"
     },
     {
-      "source": "'BEHIND THESE DOORS ARE THE SPECIAL TRAINING SCHOOLS  WHERE ADVENTURERS INCREASE THEIR SKILLS. LET US NOW GO TO THE CITY'S MOST IMPORTANT BUILDING.'",
-      "text": "「這幾道門後面是各種訓練所，冒險者在裡面精進本事。接下來去看看城裡最重要的建築。」",
-      "note": "Rolf 導覽第五頁。訓練所沿用說明書 p.9 的用詞。"
+      "source": "--TYRANTHRAXUS'",
+      "text": "——泰蘭特拉克斯",
+      "note": "署名片段，原版以兩個連字號起頭。"
     },
     {
-      "source": "'ON YOUR RIGHT IS ONE OF THE ENTRANCE'S TO SUNE'S TEMPLE. AS WITH ALL PHLAN'S TEMPLES, VARIOUS CLERICAL SERVICES ARE OFFERED INSIDE.  ON YOUR LEFT IS AN ENTRANCE TO THE CITY PARK.'",
-      "text": "「右手邊是蘇妮神殿的入口之一。和菲蘭城其他神殿一樣，裡面提供各種神職服務。左手邊則是通往市立公園的入口。」",
-      "note": "Rolf 導覽第六頁。"
+      "source": "1 SHARE",
+      "text": "一份",
+      "note": "分配戰利品的份數。"
     },
     {
-      "source": "'BEYOND THIS GATE ARE THE MONSTER-RIDDEN AREAS OF THE OLD CITY WE ARE SLOWLY PREPARING FOR SETTLEMENT.  THE COUNCIL OFFERS A GENEROUS REWARD TO THOSE WHO CLEAR AREAS OF MONSTERS.",
-      "text": "「這道門外就是舊城區，那裡滿是怪物，我們正一步步整頓、準備讓人遷入。清掉一區怪物的人，市議會會給一筆優厚的報酬。",
-      "note": "Rolf 導覽第七頁。原版這一句沒有結尾引號，照原樣不補。"
+      "source": "2 SHARES",
+      "text": "兩份",
+      "note": "同上。"
     },
     {
-      "source": "'OUR TOUR IS ENDED. AGAIN, LET ME URGE YOU TO APPLY TO THE CITY CLERK FOR A COMMISSION.  GOOD-BYE AND GOOD FORTUNE.' (YOU ARE ON YOUR OWN NOW)",
-      "text": "「導覽到此結束。再提醒一次，記得去找書記官接委託。再會，祝你們好運。」（接下來就靠你們自己了）",
-      "note": "Rolf 導覽最後一頁。括號內是原版給玩家的旁白，不是羅夫的話。"
+      "source": "3 SHARES",
+      "text": "三份",
+      "note": "同上。"
+    },
+    {
+      "source": "4 SHARES",
+      "text": "四份",
+      "note": "同上。"
+    },
+    {
+      "source": "A BUGBEAR LEADING",
+      "text": "一隻熊妖領著",
+      "note": "怪物名片段。"
+    },
+    {
+      "source": "A NET ENTANGLES YOU.",
+      "text": "一張網把你們纏住了。",
+      "note": "遭遇敘述。"
+    },
+    {
+      "source": "A PARTY OF",
+      "text": "一隊",
+      "note": "遭遇敘述的片段。"
+    },
+    {
+      "source": "ACCEPT BLESSING",
+      "text": "接受祝福",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "ACOLYTE",
+      "text": "見習僧侶",
+      "note": "NPC 稱謂。"
+    },
+    {
+      "source": "ADVANCE CAUTIOUSLY",
+      "text": "小心前進",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "AGREE",
+      "text": "答應",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "AMBUSH AND KILL HIM",
+      "text": "伏擊殺了他",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "AND ITS RETAINERS.",
+      "text": "和牠的隨從。",
+      "note": "遭遇敘述的片段。"
+    },
+    {
+      "source": "AND WALK ON.",
+      "text": "然後繼續走。",
+      "note": "遭遇敘述的片段。"
+    },
+    {
+      "source": "ANHKHEG",
+      "text": "蟻獅",
+      "note": "怪物名，原版拼作 ANHKHEG（一般作 Ankheg）。"
+    },
+    {
+      "source": "APOLOGIZE",
+      "text": "道歉",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "APPROACH",
+      "text": "靠近",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "ASK FOR MORE MONEY",
+      "text": "要求加價",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "ATTACK",
+      "text": "攻擊",
+      "note": "遭遇選單，出現 32 次。"
+    },
+    {
+      "source": "ATTACK AS THEY SLEEP",
+      "text": "趁睡著時偷襲",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "ATTACK GUARDS",
+      "text": "攻擊守衛",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "ATTACK HIM",
+      "text": "攻擊他",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "AVERAGE",
+      "text": "中等",
+      "note": "同上。"
+    },
+    {
+      "source": "BEHIND YOU.",
+      "text": "就在你們後面。",
+      "note": "同上。"
+    },
+    {
+      "source": "BRIBE",
+      "text": "行賄",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "CITY",
+      "text": "城區",
+      "note": "地點選項。"
+    },
+    {
+      "source": "COMBAT",
+      "text": "戰鬥",
+      "note": "選項。"
+    },
+    {
+      "source": "DO YOU TAKE IT?",
+      "text": "要拿走嗎？",
+      "note": "提問。"
+    },
+    {
+      "source": "DON'T KNOW",
+      "text": "不知道",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "DON'T TALK",
+      "text": "不交談",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "EAST",
+      "text": "東",
+      "note": "方位選項。"
+    },
+    {
+      "source": "ENTER",
+      "text": "進入",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "FIGHT",
+      "text": "開打",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "FLEE",
+      "text": "逃走",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "FORCE THE GATE OPEN",
+      "text": "硬把門撞開",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "GIVE THE PASSWORD",
+      "text": "說出通關密語",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "GNOLLS",
+      "text": "豺狼人",
+      "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "GO",
+      "text": "前往",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "GO BACK",
+      "text": "退回去",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "GOBLINS",
+      "text": "哥布林",
+      "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "HARASH",
+      "text": "哈拉許",
+      "note": "NPC 名，音近。"
+    },
+    {
+      "source": "HOBGOBLINS",
+      "text": "大哥布林",
+      "note": "怪物名；與哥布林成對，取「大」以示體型。"
+    },
+    {
+      "source": "IGNORE",
+      "text": "不理會",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "IN FRONT OF YOU.",
+      "text": "就在你們前面。",
+      "note": "遭遇敘述的方位片段，原版把句子拆成幾段拼起來。"
+    },
+    {
+      "source": "KILL IT",
+      "text": "殺了牠",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "KILL THEM",
+      "text": "殺了他們",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "KOBOLDS",
+      "text": "小妖魔",
+      "note": "怪物名；Kobold 依 glossary 定案作小妖魔。"
+    },
+    {
+      "source": "KOBOLDS.",
+      "text": "小妖魔。",
+      "note": "同上，原版這一版帶句點。"
+    },
+    {
+      "source": "LEAVE",
+      "text": "離開",
+      "note": "選單選項，出現 62 次，是最常見的一個。"
+    },
+    {
+      "source": "LEAVE IT",
+      "text": "留在原處",
+      "note": "遭遇選單，指不拿走某樣東西。"
+    },
+    {
+      "source": "LEAVE THEM",
+      "text": "不管他們",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "LET HIM GO",
+      "text": "放他走",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "LET THEM GO",
+      "text": "放他們走",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "LIZARD MEN",
+      "text": "蜥蜴人",
+      "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "LUX",
+      "text": "勒克斯",
+      "note": "NPC 名，音近。"
+    },
+    {
+      "source": "MAD MAN",
+      "text": "瘋子",
+      "note": "NPC 稱謂。"
+    },
+    {
+      "source": "MOVE ON",
+      "text": "繼續走",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "NO",
+      "text": "否",
+      "note": "選單選項。"
+    },
+    {
+      "source": "NORTH",
+      "text": "北",
+      "note": "方位選項。"
+    },
+    {
+      "source": "OGRES",
+      "text": "食人魔",
+      "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "ORCS",
+      "text": "半獸人",
+      "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "PARLAY",
+      "text": "談判",
+      "note": "遭遇選單；說明書第四章的 PARLAY 指令。"
+    },
+    {
+      "source": "PAY",
+      "text": "付錢",
+      "note": "遭遇選單。"
     },
     {
       "source": "PRESS <RETURN> OR BUTTON TO CONTINUE",
@@ -64,19 +389,179 @@
       "note": "同上，這一版兩者順序相反。"
     },
     {
+      "source": "REFUSE",
+      "text": "拒絕",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "RELEASE",
+      "text": "放走",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "RELEASE THEM?",
+      "text": "要放他們走嗎？",
+      "note": "提問。"
+    },
+    {
+      "source": "RETURN",
+      "text": "返回",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "RHODIA",
+      "text": "蘿蒂亞",
+      "note": "NPC 名，音近。"
+    },
+    {
+      "source": "RUN",
+      "text": "快跑",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "SEARCH",
+      "text": "搜索",
+      "note": "遭遇選單；說明書第四章的 SEARCH 指令。"
+    },
+    {
+      "source": "SKULLCRUSHER",
+      "text": "碎顱者",
+      "note": "NPC 名，遊戲文字證實。"
+    },
+    {
+      "source": "SOUTH",
+      "text": "南",
+      "note": "方位選項。"
+    },
+    {
+      "source": "STAY",
+      "text": "留下",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "STAY AND FIGHT",
+      "text": "留下來打",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "STRONG",
+      "text": "強",
+      "note": "同上。"
+    },
+    {
+      "source": "SURPRISES YOU.",
+      "text": "偷襲了你們。",
+      "note": "同上。"
+    },
+    {
+      "source": "SURRENDER",
+      "text": "投降",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "TAKE",
+      "text": "拿取",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "TAKE BOAT",
+      "text": "搭船",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "TALK",
+      "text": "交談",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "THE LEADER ADVANCES.",
+      "text": "領頭的走上前來。",
+      "note": "遭遇敘述。"
+    },
+    {
+      "source": "THEY ATTACK.",
+      "text": "牠們發動攻擊。",
+      "note": "遭遇敘述。"
+    },
+    {
+      "source": "THIEVES",
+      "text": "盜賊",
+      "note": "怪物名。與職業 Thief（賊）分開用字，避免混淆。"
+    },
+    {
+      "source": "THROW A ROCK",
+      "text": "丟石頭",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "TO YOUR LEFT.",
+      "text": "在你們左邊。",
+      "note": "同上。"
+    },
+    {
+      "source": "TO YOUR RIGHT.",
+      "text": "在你們右邊。",
+      "note": "同上。"
+    },
+    {
+      "source": "TRY TO LEAVE",
+      "text": "試著離開",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "TYRANTHRAXUS",
+      "text": "泰蘭特拉克斯",
+      "note": "依 glossary 定案。"
+    },
+    {
+      "source": "WAIT",
+      "text": "等待",
+      "note": "遭遇選單。"
+    },
+    {
+      "source": "WEAK",
+      "text": "弱",
+      "note": "隊伍強度回報，見 spec 030 的 PARTYSTRENGTH。"
+    },
+    {
+      "source": "WEST",
+      "text": "西",
+      "note": "方位選項。"
+    },
+    {
+      "source": "WHAT DO YOU DO?",
+      "text": "你們要怎麼做？",
+      "note": "遭遇提問。"
+    },
+    {
       "source": "YES",
       "text": "是",
       "note": "選單選項。"
     },
     {
-      "source": "NO",
-      "text": "否",
-      "note": "選單選項。"
+      "source": "YOU ARE SURPRISED BY",
+      "text": "你們被偷襲了，來的是",
+      "note": "同上。"
     },
     {
-      "source": "LEAVE",
-      "text": "離開",
-      "note": "選單選項，出現 62 次，是最常見的一個。"
+      "source": "YOU BOARD A BOAT.",
+      "text": "你們上了船。",
+      "note": "敘述。"
+    },
+    {
+      "source": "YOU CONVINCE THE",
+      "text": "你們說服了",
+      "note": "敘述片段。"
+    },
+    {
+      "source": "YOU SEE A",
+      "text": "你們看到",
+      "note": "遭遇敘述的開頭片段，後面接怪物名。"
+    },
+    {
+      "source": "YOU SPOT A GROUP OF",
+      "text": "你們發現一群",
+      "note": "同上。"
     }
   ]
 }
