@@ -682,20 +682,9 @@ const remakeCharacterLevel = 1
 // 裝備尚未接進戰鬥，所以這裡回的是「沒有裝備」的角色——原版穿上裝備之後還會
 // 重算 AC，那條鏈（overlay-25 的 sub_281／sub_39F）還沒閉合。
 func partyCombatStats(member poolsave.Character) (thac0Internal uint8, armorInternal int, movement uint8, err error) {
-	components, ok := creation.ClassComponents(member.ClassID)
-	if !ok {
-		return 0, 0, 0, fmt.Errorf("Pool character %q has unknown class %q", member.Name, member.ClassID)
-	}
-	var levels [gamepack.ClassThac0ClassCount]uint8
-	for _, component := range components {
-		index, ok := creation.ComponentClassIndex(component)
-		if !ok {
-			return 0, 0, 0, fmt.Errorf("Pool class component %q has no index", component)
-		}
-		if int(index) >= len(levels) {
-			return 0, 0, 0, fmt.Errorf("Pool class component %q index %d is outside the table", component, index)
-		}
-		levels[index] = remakeCharacterLevel
+	levels, err := partyClassLevels(member)
+	if err != nil {
+		return 0, 0, 0, err
 	}
 	thac0Internal, err = gamepack.BaseThac0Internal(levels)
 	if err != nil {
@@ -729,6 +718,27 @@ func (a *app) memberDefenceStats(member poolsave.Character, baseArmor int, baseM
 		return 0, 0, fmt.Errorf("Pool character %q movement: %w", member.Name, err)
 	}
 	return armour.Internal, uint8(movement), nil
+}
+
+// partyClassLevels 把角色攤成原版記錄 `+96h` 起那八個職業等級。THAC0
+// （spec 063）與豁免目標值（spec 075）查的是同一組索引，所以只算一次。
+func partyClassLevels(member poolsave.Character) ([gamepack.ClassThac0ClassCount]uint8, error) {
+	var levels [gamepack.ClassThac0ClassCount]uint8
+	components, ok := creation.ClassComponents(member.ClassID)
+	if !ok {
+		return levels, fmt.Errorf("Pool character %q has unknown class %q", member.Name, member.ClassID)
+	}
+	for _, component := range components {
+		index, ok := creation.ComponentClassIndex(component)
+		if !ok {
+			return levels, fmt.Errorf("Pool class component %q has no index", component)
+		}
+		if int(index) >= len(levels) {
+			return levels, fmt.Errorf("Pool class component %q index %d is outside the table", component, index)
+		}
+		levels[index] = remakeCharacterLevel
+	}
+	return levels, nil
 }
 
 // 物品記錄裡本規格用到的三個欄位（spec 033／035／063）。

@@ -256,6 +256,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x2D: true, // CALL
 		0x31: true, // SPRITE OFF
 		0x37: true, // LOAD PIECES / title resource boundary
+		0x2E: true, // DAMAGE（spec 084；前端要接，接不到會靜靜不扣血）
 		0x33: true, // PRINT RETURN（spec 082；文字框換行）
 		0x38: true, // PROGRAM（spec 081；前端要接，值 9 仍硬失敗）
 		0x3D: true, // CLEAR BOX（spec 082；清掉文字框）

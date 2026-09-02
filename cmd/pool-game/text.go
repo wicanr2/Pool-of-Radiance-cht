@@ -78,6 +78,9 @@ var messages = map[messageID][2]string{
 	msgProgramManaging:      {"Party management; B or ESC returns to the map.", "隊伍管理；B 或 ESC 回到地圖。"},
 	msgProgramReturn:        {"B  RETURN TO THE MAP", "B　回到地圖"},
 	msgProgramNeedsParty:    {"The party cannot be empty on the map.", "地圖上的隊伍不能是空的。"},
+	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
+	msgDamageDies:           {"%s dies.", "%s 死了。"},
+	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
 	msgEquipmentFooter:      {"TAB switch character  UP/DOWN choose  ENTER ready  I/ESC close", "TAB 換人　上下選物品　ENTER 裝備／卸下　I／ESC 關閉"},
 	// 標題畫面的按鍵提示，說明書沒有，鍵名保持原文。
 	msgTitleHint: {"ENTER / SPACE", "ENTER／空白鍵"},
@@ -453,6 +456,9 @@ const (
 	msgProgramManaging
 	msgProgramReturn
 	msgProgramNeedsParty
+	msgDamageHit
+	msgDamageDies
+	msgDamageSaved
 	msgEquipmentFooter
 )
 

@@ -1026,3 +1026,53 @@ func TestCellTextBuildsOnePageFromEveryMessage(t *testing.T) {
 		t.Fatalf("an empty event changed the page to %q", application.eventText)
 	}
 }
+
+// `2Eh DAMAGE` 的兩條界線：赤字大於 9 直接死透，剛好歸零是不省人事
+// （spec 084）。這兩條錯了，一場戰鬥的死傷名單就跟原版不同。
+func TestDamageStateBoundaries(t *testing.T) {
+	for _, item := range []struct {
+		hp, damage int
+		state      uint8
+		wantHP     int
+		wantState  uint8
+		note       string
+	}{
+		{hp: 20, damage: 5, state: 0, wantHP: 15, wantState: 0, note: "扣血還活著"},
+		{hp: 5, damage: 5, state: 0, wantHP: 0, wantState: 4, note: "剛好歸零"},
+		{hp: 5, damage: 5, state: 1, wantHP: 0, wantState: 6, note: "狀態 1 歸零就死透"},
+		{hp: 5, damage: 14, state: 0, wantHP: 0, wantState: 5, note: "赤字 9 是瀕死"},
+		{hp: 5, damage: 15, state: 0, wantHP: 0, wantState: 6, note: "赤字 10 死透"},
+	} {
+		got := gamepack.ApplyDamage(item.hp, item.state, item.damage)
+		if got.HitPoints != item.wantHP || got.State != item.wantState {
+			t.Fatalf("%s: %d 點血吃 %d 傷害得到 %+v，預期 %d/%d",
+				item.note, item.hp, item.damage, got, item.wantHP, item.wantState)
+		}
+		if downed := item.wantState > gamepack.AliveStateMax; got.Downed != downed {
+			t.Fatalf("%s: Downed=%v，預期 %v", item.note, got.Downed, downed)
+		}
+	}
+}
+
+// 旗標的四個位元各自管什麼（spec 084）。bit 7 沒設整條不做事，
+// 少判這一個會讓不該扣血的地方扣血。
+func TestDamageRequestFlags(t *testing.T) {
+	quiet := gamepack.NewDamageRequest([gamepack.DamageOperands]uint16{0x00, 1, 6, 0, 0})
+	if quiet.Applies() {
+		t.Fatal("bit 7 沒設卻要動手")
+	}
+	party := gamepack.NewDamageRequest([gamepack.DamageOperands]uint16{0x80 | 0x40 | 0x03, 2, 8, 3, 0x0f})
+	if !party.Applies() || !party.WholeParty() || !party.AllowsSave() {
+		t.Fatalf("%+v", party)
+	}
+	if party.SaveCategory() != 3 || party.SaveModifier != 7 {
+		t.Fatalf("category=%d modifier=%d", party.SaveCategory(), party.SaveModifier)
+	}
+	if party.DiceCount != 2 || party.DiceSides != 8 || party.Bonus != 3 {
+		t.Fatalf("%+v", party)
+	}
+	noSave := gamepack.NewDamageRequest([gamepack.DamageOperands]uint16{0x80 | 0x20, 1, 4, 0, 0})
+	if noSave.AllowsSave() || noSave.WholeParty() {
+		t.Fatalf("%+v", noSave)
+	}
+}

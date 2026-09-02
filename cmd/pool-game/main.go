@@ -156,6 +156,8 @@ type app struct {
 	// programManaging 為真時，隊伍管理畫面是 `38h PROGRAM` 從地圖上開的，
 	// 離開時要回地圖並讓 ECL 繼續，不是重新開始冒險。
 	programManaging bool
+	// savingThrows 是 DS:41E6h 那張表（spec 075），2Eh DAMAGE 擲豁免要用。
+	savingThrows *gamepack.SavingThrowTable
 	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
 	combatActive     bool
@@ -231,8 +233,13 @@ func newApp(zipPath, statePath string) (*app, error) {
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial event: %w", err)
 	}
+	savingThrows, err := gamepack.ReadDOSSavingThrowTable(zipPath)
+	if err != nil {
+		return nil, err
+	}
 	application.initialEvent = &initialEvent
 	application.itemTypes = itemTypes
+	application.savingThrows = savingThrows
 	spellParameters, err := gamepack.ReadDOSSpellParameters(zipPath)
 	if err != nil {
 		return nil, err
@@ -887,6 +894,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		}
 		if event, ok := programEvent(result); ok {
 			return a.enterProgram(event)
+		}
+		if event, ok := damageEvent(result); ok {
+			return a.applyDamageEvent(event)
 		}
 		return a.pauseAppliedCellResult(result)
 	}
