@@ -39,6 +39,11 @@
       "note": "港務長。"
     },
     {
+      "source": "'DO YOU SEEK A PARTNER FOR YOUR ADVENTURING?'",
+      "text": "「你們是來找冒險同伴的嗎？」",
+      "note": "訓練所與競技場。"
+    },
+    {
       "source": "'DUE TO YOUR VICIOUS ATTACK ON THOSE WHO PROTECT US, WE REFUSE YOU ALL SERVICE.'",
       "text": "「你們竟然攻擊保護我們的人，這裡不再為你們提供任何服務。」",
       "note": "神殿拒絕服務。"
@@ -109,9 +114,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "'THERE IS A FINE",
+      "text": "「費用是",
+      "note": "訓練所與競技場。接下一段。"
+    },
+    {
       "source": "'THERE IS A REWARD FOR CLEARING THE",
       "text": "「清空以下地方有報酬：",
       "note": "片段，接下一段。"
+    },
+    {
+      "source": "'THERE IS NO ONE WHO WILL GO WITH YOU.'",
+      "text": "「沒有人願意跟你們走。」",
+      "note": "訓練所與競技場。"
     },
     {
       "source": "'THESE ARE ALL OF THE COMMISSIONS CURRENTLY AVAILABLE.'",
@@ -129,6 +144,11 @@
       "note": "接下一段。"
     },
     {
+      "source": "'WE TRAIN ONLY",
+      "text": "「我們只訓練",
+      "note": "訓練所與競技場。接下一段。"
+    },
+    {
       "source": "'WHEN OLD PHLAN WAS OVERRUN, A FAMILY TREASURE WAS HIDDEN IN THE WESTERN BUILDING OF THE TEXTILE COMPLEX.",
       "text": "「舊菲蘭城淪陷時，一件傳家寶被藏在紡織行西側那棟建築裡。",
       "note": "接下一段。"
@@ -142,6 +162,11 @@
       "source": "'WILL YOU ACCOMPANY DIRTEN?'",
       "text": "「你們願意陪迪爾騰去嗎？」",
       "note": "巴西歐主教的委託；Dirten 為新增譯名。"
+    },
+    {
+      "source": "'WOULD YOU LIKE TO CONSIDER SOMEONE ELSE?'",
+      "text": "「要不要考慮換一個人？」",
+      "note": "訓練所與競技場。"
     },
     {
       "source": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '",
@@ -164,9 +189,24 @@
       "note": "同上，原版這一版帶括號。"
     },
     {
+      "source": ", BACKSTABS A PARTY MEMBER THEN DISAPPEARS THROUGH THE WALL.",
+      "text": "，從背後偷襲了一名隊員，然後穿牆而去。",
+      "note": "柯威大樓的盜賊據點。片段，承接上一段。"
+    },
+    {
       "source": "--TYRANTHRAXUS'",
       "text": "——泰蘭特拉克斯",
       "note": "署名片段，原版以兩個連字號起頭。"
+    },
+    {
+      "source": ".  HE TRIES TO ATTACK THE PARTY BUT YOU STOP HIM.  WHAT WILL YOU DO?",
+      "text": "。他想攻擊隊伍，但被你們制住了。要怎麼處置？",
+      "note": "柯威大樓的盜賊據點。片段。"
+    },
+    {
+      "source": ". IS THIS ACCEPTABLE?'",
+      "text": "。這樣可以嗎？」",
+      "note": "片段，承接上一段。"
     },
     {
       "source": "1 SHARE",
@@ -187,6 +227,11 @@
       "source": "4 SHARES",
       "text": "四份",
       "note": "同上。"
+    },
+    {
+      "source": "A",
+      "text": "甲",
+      "note": "選項編號，原版以 A～D 標示四個小箱。"
     },
     {
       "source": "A BUGBEAR LEADING",
@@ -219,6 +264,26 @@
       "note": "遭遇敘述的片段。"
     },
     {
+      "source": "A SCYTHING BLADE DROPS ACROSS THE DOORWAY, DAMAGING ONE OF THE CHARACTERS.",
+      "text": "一片鐮刀狀的刃器橫掃過門口，傷到了一名隊員。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "A SIGN ON THE NORTH DOOR READS 'FIGHTERS'.",
+      "text": "北邊那道門上寫著「戰士」。",
+      "note": "訓練所與競技場。"
+    },
+    {
+      "source": "A SIGN ON THE NORTH DOOR READS 'ROGUES'.",
+      "text": "北邊那道門上寫著「盜賊」。",
+      "note": "訓練所與競技場。"
+    },
+    {
+      "source": "A SIGN ON THE WALL DIRECTS MAGIC USERS TO GO THROUGH THE EAST DOOR AND CLERICS TO GO THROUGH THE WEST DOOR.",
+      "text": "牆上的指示牌要魔法師走東門、牧師走西門。",
+      "note": "訓練所與競技場。"
+    },
+    {
       "source": "A TRIBE OF LIZARDMEN IS PREPARING TO JOIN THE ENEMY.  PREVENT THIS.'",
       "text": "有一支蜥蜴人部族正準備投靠敵方，阻止他們。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -242,6 +307,16 @@
       "source": "ADVANCE CAUTIOUSLY",
       "text": "小心前進",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "AFTER THE PARTY ENTERS THE ROOM A NET LACED WITH SHARP BLADES FALLS ON THE PARTY.",
+      "text": "隊伍進房之後，一張綴滿利刃的網從上頭罩了下來。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AFTER YOU RELEASE HIM THE THIEF SLOWLY WALKS TOWARD THE FAR DOOR THANKING YOU ALL THE WAY.  PARTWAY THROUGH THE DOOR HE SAYS, 'SUCKERS', THEN SPRINTS AWAY.",
+      "text": "你們放他走後，那名盜賊一路道謝，慢慢走向遠處那道門。走到一半他丟下一句「蠢蛋」，拔腿就跑。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "AGREE",
@@ -284,6 +359,66 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "AS YOU ATTEMPT TO DEACTIVATE THE TRAP YOU SET IT OFF.  A POSIONED NEEDLE SHOOTS OUT AND PLUNGES INTO A PARTY MEMBER.",
+      "text": "你們試著解除陷阱卻反而觸發了它，一根毒針射出，扎進一名隊員身上。",
+      "note": "柯威大樓的盜賊據點。原版此處把 POISONED 拼成 POSIONED。"
+    },
+    {
+      "source": "AS YOU ATTEMPT TO DISARM THE TRAP, IT GOES OFF IN YOUR FACE!  A CLOUD OF POISONOUS YELLOW GAS FILLS THE ROOM.",
+      "text": "你們試圖解除陷阱，它卻當面炸開！一團黃色毒氣充滿整個房間。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU ENTER THE ROOM A THIEF WITH A SWORD COMES OUT OF NOWHERE",
+      "text": "你們一走進房間，一名持劍的盜賊憑空冒出來",
+      "note": "柯威大樓的盜賊據點。接下一段。"
+    },
+    {
+      "source": "AS YOU ENTER THE ROOM TWO THIEVES COME OUT OF NOWHERE AND ATTACK THE PARTY.  THEY FAIL MISERABLY AND RUN OUT THE EAST DOOR.  WILL YOU CHASE THEM?",
+      "text": "你們一進房，兩名盜賊憑空冒出來偷襲，卻慘敗而逃，往東門跑了。要追嗎？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU ENTER THE ROOM YOU ARE AMBUSHED BY SOME THIEVES.",
+      "text": "你們一走進房間就被幾名盜賊伏擊。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU ENTER THIS ROOM THE TWO THIEVES SPLIT; ONE GOING THROUGH THE EAST DOOR, THE OTHER GOING THROUGH THE SOUTH.  WHICH PATH WILL YOU TAKE?",
+      "text": "你們一進房，兩名盜賊便分頭逃走，一個走東門，一個走南門。要追哪一邊？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU EXAMINE THE CASKET A TRAP GOES OFF.  A DART SHOOTS OUT AND HITS ONE OF THE PARTY MEMBERS.",
+      "text": "你們查看小箱時觸動了陷阱，一支飛鏢射出來，打中一名隊員。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU NEAR THE PILE OF WEAPONS AN AWFUL SMELLING CLOUD OF GAS FORMS.  THIS FOUL SMELLING GAS STUNS THE PARTY ALLOWING A GROUP OF THIEVES TO JUMP OUT OF THE SHADOWS AND ATTACK AT WILL!",
+      "text": "你們一靠近那堆武器，一團惡臭的氣體便升起。臭氣把隊伍薰得動彈不得，一群盜賊趁機從暗處撲出來，任意攻擊！",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU NEAR THE PILE OF WEAPONS AN EXTREMELY BAD SMELLING GAS FILLS THE ROOM.  THE SMELL IS DISGUSTING BUT HARMLESS ENOUGH.",
+      "text": "你們一靠近那堆武器，房裡就充滿一股極難聞的氣體。臭歸臭，倒是無害。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU SEARCH THE CASKET YOU TRIGGER A TRAP.  FROM A SECRET COMPARTMENT IN THE WALL, A SHOWER OF DARTS RAINS DOWN UPON THE PARTY.",
+      "text": "你們搜小箱時觸發了陷阱，牆上的暗格射出一陣飛鏢，如雨般落在隊伍身上。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU SEARCH THE CASKET, YOU ACCIDENTLY SET OFF A TRAP.  A NOXIOUS POWDER SPRAYS INTO THE AIR DAMAGING THE PARTY.",
+      "text": "你們搜小箱時不慎觸動陷阱，一股毒粉噴散開來，傷到了隊伍。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU TRY TO DEACTIVATE THE TRAP YOU MANAGE TO SET IT OFF.  A LARGE NEEDLE SHOOTS OUT OF A HIDDEN COMPARTMENT HITTING A PARTY MEMBER.",
+      "text": "你們想解除陷阱，結果反而讓它啟動了。一根大針從暗格射出，扎中一名隊員。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "ASK FOR MORE MONEY",
       "text": "要求加價",
       "note": "遭遇選單。"
@@ -319,6 +454,16 @@
       "note": "同上。"
     },
     {
+      "source": "AVOID TRAP",
+      "text": "避開陷阱",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "B",
+      "text": "乙",
+      "note": "同上。"
+    },
+    {
       "source": "BAY",
       "text": "海灣",
       "note": "港務長航線選項。"
@@ -327,6 +472,11 @@
       "source": "BEAUTIFUL STOJANOW RIVER.",
       "text": "美麗的史塔傑諾河。",
       "note": "地點敘述；河名依 glossary。"
+    },
+    {
+      "source": "BEFORE YOU IS A TABLE WITH FOUR SMALL CASKETS ON TOP OF IT.  WHAT WILL YOU DO?",
+      "text": "你們面前有一張桌子，上面擺著四個小箱。要怎麼做？",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "BEHIND YOU.",
@@ -339,9 +489,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "BREAK",
+      "text": "砸開",
+      "note": "開鎖選項。"
+    },
+    {
       "source": "BRIBE",
       "text": "行賄",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "C",
+      "text": "丙",
+      "note": "同上。"
     },
     {
       "source": "CADORNA TEXTILE HOUSE.'",
@@ -349,9 +509,24 @@
       "note": "片段；地圖只標英文，此譯名為新增。"
     },
     {
+      "source": "CAST KNOCK",
+      "text": "施展敲擊術",
+      "note": "開鎖選項；Knock 是開鎖法術。"
+    },
+    {
+      "source": "CASTS A KNOCK SPELL AND OPENS THE LOCK.",
+      "text": "施展敲擊術，把鎖打開了。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "CITY",
       "text": "城區",
       "note": "地點選項。"
+    },
+    {
+      "source": "CLERICS",
+      "text": "牧師",
+      "note": "訓練所指示牌，複數。"
     },
     {
       "source": "COMBAT",
@@ -379,6 +554,21 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "CURATE",
+      "text": "教士",
+      "note": "AD&D 等級稱號（牧師）。"
+    },
+    {
+      "source": "D",
+      "text": "丁",
+      "note": "同上。"
+    },
+    {
+      "source": "DISARM TRAP",
+      "text": "解除陷阱",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "DO YOU TAKE IT?",
       "text": "要拿走嗎？",
       "note": "提問。"
@@ -387,6 +577,11 @@
       "source": "DOES ANYONE WANT TO GAMBLE?",
       "text": "有人要賭一把嗎？",
       "note": "酒館賭局。"
+    },
+    {
+      "source": "DON'T FOLLOW",
+      "text": "不追",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "DON'T KNOW",
@@ -409,9 +604,24 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "EVOKER",
+      "text": "咒法師",
+      "note": "AD&D 等級稱號（魔法師）。"
+    },
+    {
+      "source": "EXAMINE THE CABINET",
+      "text": "查看櫃子",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "FIGHT",
       "text": "開打",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "FIGHTERS",
+      "text": "戰士",
+      "note": "訓練所指示牌，複數。"
     },
     {
       "source": "FIND THE NOMADS AND STOP THEM FROM JOINING FORCES WITH OUR ENEMIES.'",
@@ -484,6 +694,16 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "HERE. DO YOU WANT TO TRAIN?'",
+      "text": "。你們要受訓嗎？」",
+      "note": "訓練所與競技場。片段。"
+    },
+    {
+      "source": "HERO",
+      "text": "英雄",
+      "note": "AD&D 等級稱號（戰士第四級）。"
+    },
+    {
       "source": "HOBGOBLINS",
       "text": "大哥布林",
       "note": "怪物名；與哥布林成對，取「大」以示體型。"
@@ -499,9 +719,24 @@
       "note": "酒館賭局。"
     },
     {
+      "source": "I CANNOT ARRANGE SUCH A DUEL.",
+      "text": "這樣的對決我安排不來。",
+      "note": "訓練所與競技場。"
+    },
+    {
       "source": "IGNORE",
       "text": "不理會",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "IN FRONT OF YOU ARE THREE CABINETS.  WHICH ONE WILL YOU EXAMINE?",
+      "text": "你們面前有三個櫃子。要查看哪一個？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "IN FRONT OF YOU IS A WOODEN CABINET.  WHAT WILL YOU DO?",
+      "text": "你們面前是一個木櫃。要怎麼做？",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "IN FRONT OF YOU.",
@@ -512,6 +747,41 @@
       "source": "IN THE COUNCIL CHAMBERS, THE ENTIRE CITY COUNCIL IS WAITING FOR YOU. THE LORD HIGH MAYOR, ULRICH EBERHARD, SPEAKS: 'OUR FORCES ARE MARSHALLED FOR THE ASSAULT ON VALJEVO CASTLE.",
       "text": "議事廳裡，全體市議會都在等你們。大市長亞爾瑞屈·艾伯哈德開口：「我軍已集結完畢，準備進攻瓦傑渥城堡。",
       "note": "接下一段。"
+    },
+    {
+      "source": "INSIDE THE CABINET YOU FIND EIGHTEEN SACKS FILLED WITH GOLD PIECES.",
+      "text": "櫃子裡有十八袋金幣。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "INSIDE THE CABINET YOU FIND FIFTEEN SACKS FILLED WITH SILVER PIECES.",
+      "text": "櫃子裡有十五袋銀幣。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "INSIDE THE CABINET YOU FIND SOME FILES.  YOU STUFF THE PAPERS INTO YOUR JOURNAL UNDER ENTRIES 23 AND 14.",
+      "text": "櫃子裡有幾份卷宗。你們把文件塞進手札第 23 與第 14 條。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "INSIDE THE CASKET ARE SOME BEAUTIFUL GEMS.",
+      "text": "小箱裡是幾顆漂亮的寶石。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "INSIDE THE CASKET IS A VARIETY OF GOLD CHAINS, PENDANTS AND JEWELRY.",
+      "text": "小箱裡是各式金鍊、墜飾與首飾。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "INSIDE THIS ROOM YOU FIND A LARGE PILE OF WEAPONS AND SHIELDS.  THEY APPEAR TO BE IN GOOD CONDITION AND OF FINE QUALITY.  WHAT WILL YOU DO?",
+      "text": "房裡堆著大量武器與盾牌，看起來狀況良好、品質不錯。你們要怎麼做？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "IT IS LOCKED.  HOW WILL YOU OPEN THE LOCK?",
+      "text": "上了鎖。你們要怎麼開？",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "IT'S BLUE.  YOU WIN.",
@@ -604,6 +874,11 @@
       "note": "NPC 稱謂。"
     },
     {
+      "source": "MAGIC USERS",
+      "text": "魔法師",
+      "note": "訓練所指示牌；遊戲寫 MAGIC USERS，沒有連字號。"
+    },
+    {
       "source": "MOVE ON",
       "text": "繼續走",
       "note": "遭遇選單。"
@@ -612,6 +887,11 @@
       "source": "NO",
       "text": "否",
       "note": "選單選項。"
+    },
+    {
+      "source": "NO ONE IN THE PARTY HAS THE KNOCK SPELL!  HOW WILL YOU OPEN THE LOCK?",
+      "text": "隊上沒有人會敲擊術！那要怎麼開鎖？",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "NO ONE IS WILLING TO GAMBLE WITH SOMEONE WHO LOOKS THAT BAD.",
@@ -629,9 +909,29 @@
       "note": "方位選項。"
     },
     {
+      "source": "NOTICES FOR TEACHERS AND STUDENTS ARE POSTED ON THE WALLS.  A NOTE DIRECTS MAGIC USERS AND CLERICS TO GO NORTH AND FIGHTERS AND 'ROGUES' TO GO EAST.",
+      "text": "牆上貼著給教習與學員的公告。有一張指示魔法師與牧師往北、戰士與「盜賊」往東。",
+      "note": "訓練所與競技場。"
+    },
+    {
       "source": "OGRES",
       "text": "食人魔",
       "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "ON A NEARBY WALL IS A SLATE.  DRAWN ON THE SLATE IS A COMPLEX MAZE WITH THE WORDS 'NW CASTLE' UNDER IT.  YOU COPY THE CASTLE INTO YOUR JOURNAL UNDER JOURNAL ENTRY 41.",
+      "text": "旁邊牆上有一塊石板，上頭畫著一座複雜的迷宮，底下寫著「城堡西北」。你們把它抄進手札第 41 條。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "ON THE FLOOR HERE YOU FIND SOME IMPORTANT LOOKING FILES.  YOU STUFF THE FILES INTO YOUR JOURNAL UNDER ENTRIES 38 AND 51.",
+      "text": "地上有幾份看來要緊的卷宗。你們把它們塞進手札第 38 與第 51 條。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "ON THE FLOOR IS A CRUDE MAP.  IT IS A MAP OF A COMPLEX MAZE WITH THE WORDS 'NE CASTLE' UNDER IT.  YOU TAKE THE MAP AND PUT IT IN YOUR JOURNAL UNDER JOURNAL ENTRY 29.",
+      "text": "地上有一張粗糙的地圖，畫的是一座複雜的迷宮，底下寫著「城堡東北」。你們收起地圖，放進手札第 29 條。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "ORCS",
@@ -647,6 +947,21 @@
       "source": "PAY",
       "text": "付錢",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "PICK",
+      "text": "撬鎖",
+      "note": "開鎖選項。"
+    },
+    {
+      "source": "PILED HERE IS VARIOUS LOOT.  THERE IS A WIDE VARIETY OF NICK NACKS FROM TARNISHED BRONZE CANDLESTICKS TO ONE OR TWO USEFUL ITEMS.",
+      "text": "這裡堆著各種贓物，從發黑的銅燭台到一兩樣有用的東西都有。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "PLUS A PICK OF SPECIAL ITEMS",
+      "text": "再加上幾樣特別的東西任選",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "PODAL PLAZA.'",
@@ -739,6 +1054,11 @@
       "note": "NPC 名，音近。"
     },
     {
+      "source": "ROBBER",
+      "text": "強盜",
+      "note": "AD&D 等級稱號（賊）。"
+    },
+    {
       "source": "RUN",
       "text": "快跑",
       "note": "遭遇選單。"
@@ -747,6 +1067,16 @@
       "source": "SEARCH",
       "text": "搜索",
       "note": "遭遇選單；說明書第四章的 SEARCH 指令。"
+    },
+    {
+      "source": "SEARCH A CASKET",
+      "text": "搜一個小箱",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "SEARCH THEM",
+      "text": "搜查他們",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "SKULLCRUSHER",
@@ -799,6 +1129,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "SWORDSMAN",
+      "text": "劍士",
+      "note": "AD&D 等級稱號（戰士）。"
+    },
+    {
       "source": "TAKE",
       "text": "拿取",
       "note": "遭遇選單。"
@@ -809,6 +1144,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "TAKE SOME",
+      "text": "拿一些",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "TALK",
       "text": "交談",
       "note": "遭遇選單。"
@@ -817,6 +1157,16 @@
       "source": "THAT PERSON WON'T PAY.",
       "text": "那個人不肯付。",
       "note": "敘述。"
+    },
+    {
+      "source": "THE ARENA MASTER ASKS IF YOU WISH TO DUEL.  'THE DUELS  ARE EVENLY MATCHED AND NORMALLY NOT TO THE DEATH. DO YOU DUEL?'",
+      "text": "競技場主事問你們要不要上場對決：「對手實力相當，通常不會打到死。要打嗎？」",
+      "note": "訓練所與競技場。"
+    },
+    {
+      "source": "THE CASKET IS FILLED WITH TINY PEARLS!",
+      "text": "小箱裡滿滿都是細小的珍珠！",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "THE CITY WATCH CHARGES IN. DO YOU RUN AWAY OR STAY TO CONFRONT THEM?",
@@ -904,6 +1254,11 @@
       "note": "瘋子事件。"
     },
     {
+      "source": "THE PARTY HEARS THE CRACKING OF GLASS.  A POISONOUS GAS FILLS THE AIR!",
+      "text": "隊伍聽到玻璃碎裂的聲音，毒氣瞬間瀰漫開來！",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "THE PRIESTS OF TEMPUS BID YOU WELCOME.",
       "text": "坦帕斯神殿的僧侶歡迎你們。",
       "note": "地點敘述。"
@@ -922,6 +1277,11 @@
       "source": "THE REMAINING GUARDS DECIDE TO LEAVE YOU ALONE.",
       "text": "剩下的守衛決定不再找你們麻煩。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE ROOM IS FILLED WITH DUELING PAIRS.",
+      "text": "房裡到處都是兩兩對決的人。",
+      "note": "訓練所與競技場。"
     },
     {
       "source": "THE SHOP SELLS SILVER ITEMS. 'WOULD YOU LIKE TO SEE OUR SELECTION?'",
@@ -979,6 +1339,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THEURGIST",
+      "text": "術士",
+      "note": "AD&D 等級稱號（魔法師）。"
+    },
+    {
       "source": "THEY ATTACK.",
       "text": "牠們發動攻擊。",
       "note": "遭遇敘述。"
@@ -987,6 +1352,16 @@
       "source": "THIEVES",
       "text": "盜賊",
       "note": "怪物名。與職業 Thief（賊）分開用字，避免混淆。"
+    },
+    {
+      "source": "THIS CABINET IS EMPTY.",
+      "text": "這個櫃子是空的。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "THIS CASKET IS EMPTY.",
+      "text": "這個小箱是空的。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.",
@@ -1039,6 +1414,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "WARRIOR",
+      "text": "武士",
+      "note": "AD&D 等級稱號（戰士）。"
+    },
+    {
       "source": "WE FIND THESE DISCOURSES VALUABLE.",
       "text": "這些論述對我們很有用。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -1074,9 +1454,39 @@
       "note": "遭遇提問。"
     },
     {
+      "source": "WHAT DO YOU WANT TO DO?",
+      "text": "你們要怎麼做？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "WHICH CASKET WILL YOU SEARCH?",
+      "text": "要搜哪一個小箱？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "WHILE IN CAMP YOU ARE SUDDENLY ATTACKED BY THREE THIEVES WITH SLINGS.  THEY LAUNCH THEIR BULLETS AT THE PARTY AND THEN RUN, DISAPPERING FROM SIGHT.",
+      "text": "你們紮營時突然遭到三名持投石索的盜賊襲擊。他們朝隊伍射完彈丸就跑，消失得無影無蹤。",
+      "note": "柯威大樓的盜賊據點。原版此處把 DISAPPEARING 拼成 DISAPPERING。"
+    },
+    {
+      "source": "WHO WILL DISARM THE TRAP?",
+      "text": "由誰來解除陷阱？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "WHO WILL DUEL?",
+      "text": "由誰上場？",
+      "note": "訓練所與競技場。"
+    },
+    {
       "source": "WHO WILL GAMBLE?",
       "text": "由誰下注？",
       "note": "酒館賭局提問。"
+    },
+    {
+      "source": "WHO WILL JOIN YOU FOR",
+      "text": "誰要一起去",
+      "note": "同伴徵詢，接下一段。"
     },
     {
       "source": "WHO WILL PAY?",
@@ -1084,9 +1494,19 @@
       "note": "提問。"
     },
     {
+      "source": "WHO WILL TRY TO PICK THE LOCK?",
+      "text": "由誰來撬鎖？",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "WILL YOU GO AGAIN?",
       "text": "要再來一次嗎？",
       "note": "酒館賭局提問。"
+    },
+    {
+      "source": "WITH ONE MIGHTY SWING YOU SMASH OPEN THE LOCK MAKING ENOUGH NOISE TO WAKE THE DEAD.",
+      "text": "你們用力一砸把鎖打開，那聲響大得足以吵醒死人。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARREN RIVER.",
@@ -1107,6 +1527,11 @@
       "source": "YOU ARE BY THE GATEWAY TO THE UNSETTLED AREAS. THE CITY WATCH EYES YOU SUSPICIOUSLY.",
       "text": "你們就在通往未開發地區的門邊。城衛隊用懷疑的眼神打量你們。",
       "note": "地點敘述。"
+    },
+    {
+      "source": "YOU ARE IN A ROOM THAT HAS BEEN CONVERTED TO A JAIL CELL.  IT IS EMPTY.",
+      "text": "你們在一間被改成牢房的房間裡，裡面空無一人。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "YOU ARE IN A TAVERN.  THE AIR IS FILLED WITH SMOKE AND GOSSIP.  PEOPLE ARE GAMBLING AT THE TABLES.",
@@ -1169,9 +1594,29 @@
       "note": "城衛隊事件。"
     },
     {
+      "source": "YOU AVOID THE TRAP BY NOT OPENING THE CABINET!",
+      "text": "你們沒有打開櫃子，因此避開了陷阱！",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU AVOID THE TRAP BY NOT OPENING THE CASKET.",
+      "text": "你們沒有打開小箱，因此避開了陷阱。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU AVOID THE TRAP BY NOT OPENNING THE CABINET.",
+      "text": "你們沒有打開櫃子，因此避開了陷阱。",
+      "note": "柯威大樓的盜賊據點。原版此處把 OPENING 拼成 OPENNING。"
+    },
+    {
       "source": "YOU BOARD A BOAT.",
       "text": "你們上了船。",
       "note": "敘述。"
+    },
+    {
+      "source": "YOU BYPASS THE TRAP BY NOT FOOLING WITH ANY OF THE WEAPONS.",
+      "text": "你們沒有去碰那些武器，因此躲過了陷阱。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "YOU CONVINCE THE",
@@ -1179,9 +1624,24 @@
       "note": "敘述片段。"
     },
     {
+      "source": "YOU COPY THE PAPERS INTO YOUR JOURNAL UNDER JOURNAL ENTRY 48.",
+      "text": "你們把這些文件抄進手札第 48 條。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU DEACTIVATE THE TRAP",
+      "text": "你們解除了陷阱",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "YOU DON'T HAVE ENOUGH PLATINUM.",
       "text": "你們的白金幣不夠。",
       "note": "敘述。"
+    },
+    {
+      "source": "YOU ENTER A ROOM THAT HAS BEEN CONVERTED TO A JAIL.  THERE ARE TEN YOUNG THUGS BEATING AN OLDER THIEF TO DEATH.  ONCE YOU ENTER THEY STOP AND ATTACK YOU.",
+      "text": "你們走進一間被改成牢房的屋子，十個年輕流氓正把一名年長的盜賊往死裡打。看到你們，他們停手轉而攻擊。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "YOU ENTER THE CITY HALL.  AS YOU FACE DOWN THE HALLWAY, YOU SEE A GUARDED DOOR.",
@@ -1194,9 +1654,29 @@
       "note": "扒手事件。"
     },
     {
+      "source": "YOU FIND A POUCH OF SMALL GEMS.",
+      "text": "你們找到一小袋寶石。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU FIND A WIDE VARIETY OF SCROLLS IN SCROLL CASES.",
+      "text": "你們在卷軸盒裡找到各式各樣的卷軸。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "YOU HAVE",
       "text": "你們有",
       "note": "敘述片段，後面接數量。"
+    },
+    {
+      "source": "YOU HAVE ALREADY TRIED TO PICK THIS LOCK AND HAVE FOUND THAT IT IS TOO COMPLEX FOR YOU TO HANDLE.",
+      "text": "這個鎖你們試過了，太複雜，撬不開。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU HAVE CAUGHT ONE OF THE THIEVES.  THE THIEF BEGS FOR MERCY AND SAYS, 'I AM THE GUILD MASTER.  IF YOU RELEASE ME, MY THIEVES WILL NO LONGER ATTACK YOU!'  WHAT WILL YOU DO?",
+      "text": "你們抓到其中一名盜賊。他求饒說：「我是公會會長。放了我，我的人就不再找你們麻煩！」你們要怎麼處置？",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "YOU HAVE CLEARED THE AREA NEXT TO THE EVIL TEMPLE.",
@@ -1204,9 +1684,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "YOU LEAVE THE WEAPONS ALONE.",
+      "text": "你們沒有去動那堆武器。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "YOU OVERHEAR TAVERN TALE",
       "text": "你們聽到酒館裡的傳言",
       "note": "敘述片段，後面接編號。"
+    },
+    {
+      "source": "YOU PICK THE LOCK!",
+      "text": "你們把鎖撬開了！",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "YOU REALIZE YOU HAVE BEEN VICTIMIZED BY A PICKPOCKET.",
@@ -1214,14 +1704,29 @@
       "note": "街頭事件。"
     },
     {
+      "source": "YOU RUSH TO HELP THE OLD THIEF BUT IT'S TOO LATE.  BEFORE HE DIES HE SAYS, 'THE BOSS HAS ALLIES EVERYWHERE.  TAKE THESE PAPERS.  THEY MAY HELP.'  HE THEN DIES.",
+      "text": "你們趕上前想救那名年長的盜賊，卻已經來不及。他臨死前說：「老大到處都有同夥。拿去這些文件，或許幫得上忙。」說完就斷了氣。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "YOU SEE A",
       "text": "你們看到",
       "note": "遭遇敘述的開頭片段，後面接怪物名。"
     },
     {
+      "source": "YOU SEE A WIDE COLLECTION OF RUGS AND TAPESTRIES.  TWO OF THEM LOOK EXTRAORDINARY WHILE THE OTHERS LOOK AVERAGE.",
+      "text": "你們看到一大批地毯與掛毯，其中兩件看來非凡，其餘平平。",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
       "source": "YOU SPOT A GROUP OF",
       "text": "你們發現一群",
       "note": "同上。"
+    },
+    {
+      "source": "YOU TRY TO PICK THE LOCK BUT IT IS TOO COMPLEX FOR YOU TO PICK.  YOU FAIL MISERABLY.",
+      "text": "你們試著撬鎖，但這鎖太複雜了，撬得一塌糊塗。",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "YOU WALK NEAR THE",
@@ -1237,6 +1742,16 @@
       "source": "YOUR ELIMINATION OF THE LIZARDMEN MENACE HAS GREATLY IMPROVED OUR STRATEGIC POSITION.",
       "text": "你們解除了蜥蜴人的威脅，我方的戰略處境大為改善。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOUR MAGIC DETECTS A TRAP!",
+      "text": "你們的法術偵測到陷阱！",
+      "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOUR PARTY DETECTS A TRAP!",
+      "text": "隊伍發現了陷阱！",
+      "note": "柯威大樓的盜賊據點。"
     },
     {
       "source": "YOUR SUCCESS AT PODAL PLAZA IS NOTED.",

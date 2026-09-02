@@ -462,9 +462,15 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Stojanow Gate | 史塔傑諾門 | `ECL3/8` 委託 | 與史塔傑諾河同名，Gate 作門 |
 | Cadorna Textile House | 卡多納紡織行 | `ECL3/8` 委託 | 說明書地圖只標英文；Cadorna 依 glossary |
 
+AD&D 的等級稱號在訓練所畫面上直接顯示，說明書沒收，一併記在這裡：
+WARRIOR 武士、SWORDSMAN 劍士、HERO 英雄（戰士）；CURATE 教士（牧師）；
+THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
+職業本身仍依說明書作戰士／牧師／魔法師／賊。
+
 原版在遊戲文字裡也有拼錯的地方，譯名一律照定案，不跟著錯字走：
 `PODAL PLAZA`（正為 PODOL）、`STOJONOW`（正為 STOJANOW）、`ZHENTIAL KEEP`
-（正為 ZHENTIL）。
+（正為 ZHENTIL）、`OPENNING`（正為 OPENING）、`POSIONED`（正為 POISONED）、
+`DISAPPERING`（正為 DISAPPEARING）。
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法
