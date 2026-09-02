@@ -455,6 +455,9 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Harash | 哈拉許 | 遭遇敘述 | 音近 |
 | Rhodia | 蘿蒂亞 | 遭遇敘述 | 音近 |
 | Lux | 勒克斯 | 遭遇敘述 | 音近 |
+| Dirten | 迪爾騰 | `ECL3/0` 提爾神殿 | 音近；伊爾瑪的僧侶 |
+| Ilmar | 伊爾瑪 | `ECL3/0` 提爾神殿 | 音近 |
+| Joy（Priestess Joy of Sune）| 喬伊 | `ECL3/0` 蘇妮神殿 | 音近；蘇妮的女祭司 |
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法

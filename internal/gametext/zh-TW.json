@@ -4,6 +4,11 @@
   "note": "原文逐字取自 docs/audit/dos-ecl-text-inventory.json；原版 block 不修改。專有名詞依 docs/reference/manual/glossary.md，說明書沒有的另記在該檔的「遊戲內文字新增譯名」一節。",
   "entries": [
     {
+      "source": "' DO YOU SEEK HEALING?'",
+      "text": "「你們是來求醫的嗎？」",
+      "note": "神殿的問句，原版開頭多一個空格。"
+    },
+    {
       "source": "'BEHIND THESE DOORS ARE THE SPECIAL TRAINING SCHOOLS  WHERE ADVENTURERS INCREASE THEIR SKILLS. LET US NOW GO TO THE CITY'S MOST IMPORTANT BUILDING.'",
       "text": "「這幾道門後面是各種訓練所，冒險者在裡面精進本事。接下來去看看城裡最重要的建築。」",
       "note": "Rolf 導覽第五頁。訓練所沿用說明書 p.9 的用詞。"
@@ -14,9 +19,34 @@
       "note": "Rolf 導覽第七頁。原版這一句沒有結尾引號，照原樣不補。"
     },
     {
+      "source": "'BY ORDER OF THE CITY COUNCIL,' THE HARBOR MASTER SAYS, 'THE ONLY BOAT OUT IS GOING TO SOKAL KEEP.  YOU CAN CATCH IT AT THE END OF THE PIER.'",
+      "text": "港務長說：「市議會有令，現在唯一出港的船是開往索卡爾城堡的。到碼頭盡頭就能搭上。」",
+      "note": "港口。"
+    },
+    {
+      "source": "'CATCH THE BOAT AT THE END OF THE PIER.'",
+      "text": "「到碼頭盡頭搭船。」",
+      "note": "港務長。"
+    },
+    {
+      "source": "'DUE TO YOUR VICIOUS ATTACK ON THOSE WHO PROTECT US, WE REFUSE YOU ALL SERVICE.'",
+      "text": "「你們竟然攻擊保護我們的人，這裡不再為你們提供任何服務。」",
+      "note": "神殿拒絕服務。"
+    },
+    {
       "source": "'GREETINGS, COURAGEOUS ONES, I AM ROLF, APPOINTED BY THE COUNCIL TO INTRODUCE NEWCOMERS TO THE FAIR CITY OF PHLAN. IF YOU WILL ACCOMPANY ME, I WILL START THE TOUR.'",
       "text": "「勇敢的朋友們，你們好。我是羅夫，市議會派我為新來的人介紹美麗的菲蘭城。願意跟我走一趟的話，導覽這就開始。」",
       "note": "Rolf 導覽第一頁。Phlan 依 glossary 定案作菲蘭；Rolf 說明書未收，見 glossary 的「遊戲內文字新增譯名」。"
+    },
+    {
+      "source": "'HE IS BOUND TO RECOVER THE TEMPLE WHICH HAS BEEN DESECRATED TO BANE.  GO WITH HIM ACROSS THE RIVER AND HELP HIM TO CLEANSE THE TEMPLE.  IN PAYMENT, YOU MAY KEEP THE HIDDEN TREASURES.'",
+      "text": "「他發願要奪回那座被獻給邪惡神的神殿。跟他過河去，幫他把神殿清乾淨。作為報酬，藏在裡面的財寶歸你們。」",
+      "note": "巴西歐主教的委託；Bane 依 glossary 作邪惡（神）。"
+    },
+    {
+      "source": "'IT WILL COST YOU 1 PLATINUM PIECE TO REST HERE.  DO YOU WANT TO STAY?'",
+      "text": "「在這裡休息要一枚白金幣。你們要住下嗎？」",
+      "note": "旅店。"
     },
     {
       "source": "'ON YOUR RIGHT IS ONE OF THE ENTRANCE'S TO SUNE'S TEMPLE. AS WITH ALL PHLAN'S TEMPLES, VARIOUS CLERICAL SERVICES ARE OFFERED INSIDE.  ON YOUR LEFT IS AN ENTRANCE TO THE CITY PARK.'",
@@ -29,9 +59,19 @@
       "note": "Rolf 導覽最後一頁。括號內是原版給玩家的旁白，不是羅夫的話。"
     },
     {
+      "source": "'THE GAME WORKS LIKE THIS.  WE SPIN THIS TOP. IF THE GREEN SIDE COMES UP, YOU GET DOUBLE YOUR MONEY BACK.  IF A BLUE SIDE COMES UP, YOU GET YOUR MONEY BACK.  IF A RED SIDE COMES UP, YOU LOSE.'",
+      "text": "「規則是這樣：我們轉這個陀螺。轉到綠面，你們拿回兩倍的錢；轉到藍面，錢原數奉還；轉到紅面，你們就輸了。」",
+      "note": "酒館賭局。"
+    },
+    {
       "source": "'WE ARE JUST OUTSIDE THE CITY HALL. PROCLAMATIONS ARE POSTED ON THESE WALLS. INSIDE, THE CITY CLERK AWARDS THE COUNCIL'S COMMISSIONS.  COMMISSIONS ARE THE QUICKEST WAY TO FAME AND FORTUNE.'",
       "text": "「我們就在市政廳外面。公告都貼在這幾面牆上。裡頭的書記官負責發放市議會的委託。想快點成名發財，接委託是最快的路。」",
       "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
+    },
+    {
+      "source": "'WILL YOU ACCOMPANY DIRTEN?'",
+      "text": "「你們願意陪迪爾騰去嗎？」",
+      "note": "巴西歐主教的委託；Dirten 為新增譯名。"
     },
     {
       "source": "'YOU NOW FACE AN ENTRANCE TO THE TEMPLE OF TYR.  THERE ARE THREE TEMPLES IN PHLAN: TYR'S, SUNE'S, AND TEMPUS. TYR'S IS THE LARGEST AND HOUSES BISHOP BRACCIO. IF YOU WILL TURN AROUND NOW, '",
@@ -42,6 +82,11 @@
       "source": "'YOU WILL SEE THE ENTRANCE TO THE PASSENGER DOCK AREA WE JUST DEPARTED.  FEW SHIPS DARE THE PERILOUS PASSAGE HERE, BUT THE COUNCIL IS DEVELOPING A PLAN TO OPEN UP THE SEA LANES.  PLEASE FOLLOW ME.'",
       "text": "「就會看到我們剛才離開的客運碼頭入口。敢走這條險路的船不多，不過市議會正在擬定計畫，要把航道打通。請跟我來。」",
       "note": "Rolf 導覽第三頁，承接上一頁的句子。The City Council 依 glossary 作市議會。"
+    },
+    {
+      "source": "'YOUR PARTY IS TOO LARGE TO JOIN AT THIS TIME.  RETURN WHEN IT IS SMALLER.'",
+      "text": "「你們人太多了，現在不能加入。等人少一點再來。」",
+      "note": "NPC 入隊限制。"
     },
     {
       "source": "(WHAT DO YOU DO?)",
@@ -79,6 +124,11 @@
       "note": "怪物名片段。"
     },
     {
+      "source": "A DRUNKEN BRAWL BREAKS OUT. YOU ARE CAUGHT IN THE MIDDLE.",
+      "text": "一場酒醉鬥毆爆發，你們正好被夾在中間。",
+      "note": "酒館事件。"
+    },
+    {
       "source": "A NET ENTANGLES YOU.",
       "text": "一張網把你們纏住了。",
       "note": "遭遇敘述。"
@@ -112,6 +162,11 @@
       "source": "AMBUSH AND KILL HIM",
       "text": "伏擊殺了他",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "AN AGED PRIEST APPROACHES, POINTING AT THE MAD MAN, HE SPEAKS, 'THAT MAN URGENTLY NEEDS OUR CARE.  DROP HIM FROM YOUR PARTY OR HE WILL BRING YOU TO GRIEF.  WE WILL CARE FOR HIM.'",
+      "text": "一位年長的僧侶走過來，指著那個瘋子說：「那個人急需我們照料。把他從隊伍裡放掉吧，不然他會給你們惹禍。我們會照顧他。」",
+      "note": "瘋子事件。"
     },
     {
       "source": "AND ITS RETAINERS.",
@@ -169,6 +224,16 @@
       "note": "同上。"
     },
     {
+      "source": "BAY",
+      "text": "海灣",
+      "note": "港務長航線選項。"
+    },
+    {
+      "source": "BEAUTIFUL STOJANOW RIVER.",
+      "text": "美麗的史塔傑諾河。",
+      "note": "地點敘述；河名依 glossary。"
+    },
+    {
       "source": "BEHIND YOU.",
       "text": "就在你們後面。",
       "note": "同上。"
@@ -192,6 +257,11 @@
       "source": "DO YOU TAKE IT?",
       "text": "要拿走嗎？",
       "note": "提問。"
+    },
+    {
+      "source": "DOES ANYONE WANT TO GAMBLE?",
+      "text": "有人要賭一把嗎？",
+      "note": "酒館賭局。"
     },
     {
       "source": "DON'T KNOW",
@@ -229,6 +299,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "FORCE YOUR WAY PAST",
+      "text": "硬闖過去",
+      "note": "選項。"
+    },
+    {
       "source": "GIVE THE PASSWORD",
       "text": "說出通關密語",
       "note": "遭遇選單。"
@@ -254,14 +329,34 @@
       "note": "怪物名，遊戲文字證實。"
     },
     {
+      "source": "GRAB",
+      "text": "抓住",
+      "note": "扒手事件的選項。"
+    },
+    {
       "source": "HARASH",
       "text": "哈拉許",
       "note": "NPC 名，音近。"
     },
     {
+      "source": "HE LEAVES.",
+      "text": "他離開了。",
+      "note": "敘述。"
+    },
+    {
       "source": "HOBGOBLINS",
       "text": "大哥布林",
       "note": "怪物名；與哥布林成對，取「大」以示體型。"
+    },
+    {
+      "source": "HOW MANY PLATINUM PIECES WILL YOU WAGER? (HOUSE LIMIT IS 1000)",
+      "text": "要下注幾枚白金幣？（莊家上限一千）",
+      "note": "酒館賭局。"
+    },
+    {
+      "source": "I CAN'T ACCEPT THAT WAGER.",
+      "text": "這個賭注我不能收。",
+      "note": "酒館賭局。"
     },
     {
       "source": "IGNORE",
@@ -272,6 +367,16 @@
       "source": "IN FRONT OF YOU.",
       "text": "就在你們前面。",
       "note": "遭遇敘述的方位片段，原版把句子拆成幾段拼起來。"
+    },
+    {
+      "source": "IT'S BLUE.  YOU WIN.",
+      "text": "是藍色，你們贏了。",
+      "note": "酒館賭局結果。"
+    },
+    {
+      "source": "IT'S GREEN.  YOU GET DOUBLE YOUR MONEY BACK.",
+      "text": "是綠色，你們拿回兩倍的錢。",
+      "note": "酒館賭局結果。"
     },
     {
       "source": "KILL IT",
@@ -344,6 +449,16 @@
       "note": "選單選項。"
     },
     {
+      "source": "NO ONE IS WILLING TO GAMBLE WITH SOMEONE WHO LOOKS THAT BAD.",
+      "text": "沒有人願意跟看起來這麼落魄的人賭。",
+      "note": "酒館賭局。"
+    },
+    {
+      "source": "NONE",
+      "text": "都不要",
+      "note": "選單選項。"
+    },
+    {
       "source": "NORTH",
       "text": "北",
       "note": "方位選項。"
@@ -369,6 +484,16 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "POISONOUS BARREN RIVER.",
+      "text": "有毒的荒蕪之河。",
+      "note": "地點敘述。"
+    },
+    {
+      "source": "PP.",
+      "text": "白金幣",
+      "note": "platinum pieces 的縮寫，說明書把 platinum 列為五種幣值之一。"
+    },
+    {
       "source": "PRESS <RETURN> OR BUTTON TO CONTINUE",
       "text": "按 <RETURN> 或按鈕繼續",
       "note": "原版的續行提示，四種拼法各自出現，逐一對應。"
@@ -387,6 +512,26 @@
       "source": "PRESS BUTTON OR <RETURN> TO CONTINUE",
       "text": "按按鈕或 <RETURN> 繼續",
       "note": "同上，這一版兩者順序相反。"
+    },
+    {
+      "source": "PROCLAMATION",
+      "text": "公告",
+      "note": "市政廳的公告，依 glossary 用詞。"
+    },
+    {
+      "source": "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE",
+      "text": "牆上貼著公告，你們把編號記進手札：",
+      "note": "市政廳外；journal 依專案用詞作手札。"
+    },
+    {
+      "source": "PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX.",
+      "text": "第六十四、七十八、一〇九與五十九號公告。",
+      "note": "公告編號，原版以羅馬數字書寫；譯文改用中文數字以便閱讀。"
+    },
+    {
+      "source": "RED. SORRY, YOU LOSE.",
+      "text": "紅色，很遺憾，你們輸了。",
+      "note": "酒館賭局結果。"
     },
     {
       "source": "REFUSE",
@@ -427,6 +572,16 @@
       "source": "SKULLCRUSHER",
       "text": "碎顱者",
       "note": "NPC 名，遊戲文字證實。"
+    },
+    {
+      "source": "SKULLCRUSHER SPEAKS, 'I MUST GO TO MY MASTER NOW.'",
+      "text": "碎顱者開口：「我得去見我的主人了。」",
+      "note": "NPC 離隊事件。"
+    },
+    {
+      "source": "SOKAL",
+      "text": "索卡爾",
+      "note": "港務長航線選項；Sokal Keep 依 glossary 作索卡爾城堡。"
     },
     {
       "source": "SOUTH",
@@ -474,9 +629,84 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "THAT PERSON WON'T PAY.",
+      "text": "那個人不肯付。",
+      "note": "敘述。"
+    },
+    {
+      "source": "THE CITY WATCH CHARGES IN. DO YOU RUN AWAY OR STAY TO CONFRONT THEM?",
+      "text": "城衛隊衝了進來。你們要跑，還是留下來面對他們？",
+      "note": "城衛隊事件。"
+    },
+    {
+      "source": "THE CITY WATCH RESPONDS TO THE NOISE.  DO YOU STAY TO FIGHT THEM OR RUN AWAY?",
+      "text": "城衛隊聞聲趕來。你們要留下來打，還是逃走？",
+      "note": "城衛隊事件。"
+    },
+    {
+      "source": "THE CITY WATCH STOPS YOU AND REMOVES CADORNA'S TREASURE FROM YOUR KEEPING.  THEY TELL YOU YOUR REWARD WAITS WITH THE CITY CLERK.",
+      "text": "城衛隊攔下你們，把卡多納的財寶收走，並告訴你們報酬在書記官那裡等著領。",
+      "note": "劇情事件；Cadorna 依 glossary 作卡多納。"
+    },
+    {
+      "source": "THE DOOR IS LOCKED.  DO YOU WANT TO BREAK IN?",
+      "text": "門鎖著。要破門進去嗎？",
+      "note": "互動提問。"
+    },
+    {
+      "source": "THE HARBOR MASTER TELLS YOU BOATS LEAVE FOR THE WEST, THE EAST, SOKAL KEEP, AND THE NORTH SIDE OF THE BAY.  'ROUND TRIP PASSAGE IS 1 PLATINUM PIECE. WHAT PASSAGE CAN I SELL YOU?'",
+      "text": "港務長告訴你們，有船開往西邊、東邊、索卡爾城堡與海灣北岸。「來回船票一枚白金幣。要買哪一趟？」",
+      "note": "港口。"
+    },
+    {
       "source": "THE LEADER ADVANCES.",
       "text": "領頭的走上前來。",
       "note": "遭遇敘述。"
+    },
+    {
+      "source": "THE MAD MAN SUDDENLY BEGINS TO SCREAM AND ATTACK EVERYONE WITHIN ARM'S REACH.",
+      "text": "那個瘋子突然尖叫起來，見人就打。",
+      "note": "瘋子事件。"
+    },
+    {
+      "source": "THE PRIESTS OF TEMPUS BID YOU WELCOME.",
+      "text": "坦帕斯神殿的僧侶歡迎你們。",
+      "note": "地點敘述。"
+    },
+    {
+      "source": "THE PRIESTS OF TYR WELCOME YOU TO THE TEMPLE.",
+      "text": "提爾神殿的僧侶歡迎你們入內。",
+      "note": "地點敘述。"
+    },
+    {
+      "source": "THE SHOP SELLS SILVER ITEMS. 'WOULD YOU LIKE TO SEE OUR SELECTION?'",
+      "text": "這家店賣銀器。「要看看我們的貨嗎？」",
+      "note": "商店。"
+    },
+    {
+      "source": "THE SHOP SPECIALIZES IN ARMS AND ARMOR. 'CAN I SHOW YOU OUR WARES?'",
+      "text": "這家店專賣武器與護甲。「要我拿貨給你們看嗎？」",
+      "note": "商店。"
+    },
+    {
+      "source": "THE SHOPKEEPER GREETS YOU AND OFFERS YOU ITEMS FOR SALE. 'CAN I SHOW YOU SOMETHING?'",
+      "text": "店主招呼你們，開始兜售商品。「要我拿些東西給你們看嗎？」",
+      "note": "商店。"
+    },
+    {
+      "source": "THE SHOPKEEPER OFFERS JEWELRY FOR SALE. 'CAN I SHOW YOU SOMETHING?'",
+      "text": "店主賣的是珠寶。「要我拿些東西給你們看嗎？」",
+      "note": "商店。"
+    },
+    {
+      "source": "THE TEMPLE GUARDS INFORM YOU THAT THE BISHOP IS NOT RECEIVING VISITORS AT THIS TIME.  WHAT DO YOU DO?",
+      "text": "神殿衛兵告訴你們，主教這時候不見客。你們要怎麼做？",
+      "note": "提爾神殿。"
+    },
+    {
+      "source": "THEN YOU MUST LEAVE.",
+      "text": "那你們得離開。",
+      "note": "敘述。"
     },
     {
       "source": "THEY ATTACK.",
@@ -492,6 +722,11 @@
       "source": "THROW A ROCK",
       "text": "丟石頭",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "TO THE NORTH IS THE PASSENGER DOCK.",
+      "text": "北邊是客運碼頭。",
+      "note": "地點敘述。"
     },
     {
       "source": "TO YOUR LEFT.",
@@ -534,14 +769,69 @@
       "note": "遭遇提問。"
     },
     {
+      "source": "WHO WILL GAMBLE?",
+      "text": "由誰下注？",
+      "note": "酒館賭局提問。"
+    },
+    {
+      "source": "WHO WILL PAY?",
+      "text": "由誰付錢？",
+      "note": "提問。"
+    },
+    {
+      "source": "WILL YOU GO AGAIN?",
+      "text": "要再來一次嗎？",
+      "note": "酒館賭局提問。"
+    },
+    {
       "source": "YES",
       "text": "是",
       "note": "選單選項。"
     },
     {
+      "source": "YOU ARE BY THE GATEWAY TO THE UNSETTLED AREAS. THE CITY WATCH EYES YOU SUSPICIOUSLY.",
+      "text": "你們就在通往未開發地區的門邊。城衛隊用懷疑的眼神打量你們。",
+      "note": "地點敘述。"
+    },
+    {
+      "source": "YOU ARE IN A TAVERN.  THE AIR IS FILLED WITH SMOKE AND GOSSIP.  PEOPLE ARE GAMBLING AT THE TABLES.",
+      "text": "你們在一間酒館裡，空氣中滿是煙味與閒話，桌邊有人在賭錢。",
+      "note": "地點敘述。"
+    },
+    {
+      "source": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS.",
+      "text": "你們站在市政廳外。書記官在裡面發放委託。",
+      "note": "地點敘述。"
+    },
+    {
+      "source": "YOU ARE ROUSTED BY THE CITY WATCH AND TOLD TO MOVE ALONG. WHAT DO YOU DO?",
+      "text": "城衛隊把你們趕起來，要你們別逗留。你們要怎麼做？",
+      "note": "城衛隊事件。"
+    },
+    {
       "source": "YOU ARE SURPRISED BY",
       "text": "你們被偷襲了，來的是",
       "note": "同上。"
+    },
+    {
+      "source": "YOU ARE USHERED INTO THE BISHOP'S STUDY. BISHOP BRACCIO SPEAKS, 'ALLOW ME TO INTRODUCE DIRTEN, PRIEST OF ILMAR.",
+      "text": "你們被帶進主教的書房。巴西歐主教說：「讓我介紹伊爾瑪的僧侶迪爾騰。",
+      "note": "提爾神殿；句子在原版就沒有收尾，接下一段。"
+    },
+    {
+      "source": "YOU ARE USHERED INTO THE STUDY WHERE DIRTEN WAITS.  'I AM ABOUT TO JOURNEY TO THE TEMPLE, WILL YOU COME WITH ME?'",
+      "text": "你們被帶進書房，迪爾騰在裡面等著。「我正要動身去那座神殿，你們願意同行嗎？」",
+      "note": "提爾神殿。"
+    },
+    {
+      "source": "YOU ARE WELCOMED BY PRIESTESS JOY OF SUNE.",
+      "text": "蘇妮神殿的喬伊女祭司歡迎你們。",
+      "note": "地點敘述。"
+    },
+    {
+      "source": "YOU ATTACKED THE CITY WATCH, YOU WON'T BEAT US SO EASILY!",
+      "text": "你們攻擊了城衛隊，沒那麼容易打贏我們！",
+      "note": "城衛隊事件。"
     },
     {
       "source": "YOU BOARD A BOAT.",
@@ -554,6 +844,31 @@
       "note": "敘述片段。"
     },
     {
+      "source": "YOU DON'T HAVE ENOUGH PLATINUM.",
+      "text": "你們的白金幣不夠。",
+      "note": "敘述。"
+    },
+    {
+      "source": "YOU FEEL A LIGHT TOUCH ON YOUR PURSE.  DO YOU IGNORE IT OR GRAB THE OFFENDING HAND?",
+      "text": "你們感覺錢袋被輕輕碰了一下。要不理會，還是抓住那隻手？",
+      "note": "扒手事件。"
+    },
+    {
+      "source": "YOU HAVE",
+      "text": "你們有",
+      "note": "敘述片段，後面接數量。"
+    },
+    {
+      "source": "YOU OVERHEAR TAVERN TALE",
+      "text": "你們聽到酒館裡的傳言",
+      "note": "敘述片段，後面接編號。"
+    },
+    {
+      "source": "YOU REALIZE YOU HAVE BEEN VICTIMIZED BY A PICKPOCKET.",
+      "text": "你們發現自己被扒了。",
+      "note": "街頭事件。"
+    },
+    {
       "source": "YOU SEE A",
       "text": "你們看到",
       "note": "遭遇敘述的開頭片段，後面接怪物名。"
@@ -562,6 +877,11 @@
       "source": "YOU SPOT A GROUP OF",
       "text": "你們發現一群",
       "note": "同上。"
+    },
+    {
+      "source": "YOU WALK NEAR THE",
+      "text": "你們走近",
+      "note": "敘述片段，後面接地名。"
     }
   ]
 }
