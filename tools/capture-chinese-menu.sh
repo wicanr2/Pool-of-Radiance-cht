@@ -102,5 +102,41 @@ if cmp -s docs/screenshots/pool-remake-chinese-class.png docs/screenshots/pool-r
   tail -20 /tmp/game.log >&2 || true
   exit 1
 fi
+# 走完建角、加入隊伍、開始冒險，拍下羅夫導覽的第一頁——那是原版敘述文字
+# 第一次以中文出現在畫面上的地方。
+pulse Return
+sleep 0.5
+xdotool type --delay 120 HERO
+pulse Return
+sleep 0.5
+pulse k
+sleep 0.8
+for key in h w p 1 2 s; do
+  pulse "$key"
+done
+sleep 0.5
+pulse Return
+sleep 0.5
+pulse y
+sleep 0.8
+pulse a
+sleep 0.8
+pulse b
+sleep 1.5
+shot docs/screenshots/pool-remake-chinese-tour.png
+if cmp -s docs/screenshots/pool-remake-chinese-sheet.png docs/screenshots/pool-remake-chinese-tour.png; then
+  echo "B did not begin the adventure" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
+# F5 開戰術盤面，確認那一頁在漢字字型下四行資訊與功能鍵列都不相疊。
+pulse F5
+sleep 0.8
+shot docs/screenshots/pool-remake-chinese-tactical.png
+if cmp -s docs/screenshots/pool-remake-chinese-tour.png docs/screenshots/pool-remake-chinese-tactical.png; then
+  echo "F5 did not open the tactical board" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
 sha256sum docs/screenshots/pool-remake-chinese-*.png
 '

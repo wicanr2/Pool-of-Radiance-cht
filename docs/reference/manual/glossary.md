@@ -137,7 +137,7 @@
 | 27 | Ogre（IV）| 食人鬼 | 原書 | p.16「食人鬼是強壯的戰士」、p.5「現在叫做食人鬼（Ogre）」 |
 | 28 | Orc（I）| 半獸人 | 原書 | p.6、p.10 等處通篇；一覽表說明另作「長著一張猪臉的類人生物」 |
 | 29 | Phase Spider（VI）| 次元蜘蛛 | 回推 | 「巨大而有毒的蜘蛛，具有自由進出另一個次元的能力」 |
-| 30 | Quickling（IV）| — | 待證 | 「矮小而行動迅速的生物…速度太快，在移動時會消失不見」，無可用構詞 |
+| 30 | Quickling（IV）| 迅捷妖 | 遊戲內文字 | 「矮小而行動迅速的生物…速度太快，在移動時會消失不見」；說明書未給名，譯名見「遊戲內文字新增譯名」 |
 | 31 | Skeleton（I）| 骷髏 | 原書 | p.16「這些活動的骷髏骨」、附錄 5 |
 | 32 | Spectre（VII）| — | 待證 | 附錄 5 有「幽靈」「妖怪」，但與 Wight／Wraith 三者對不上 |
 | 33 | Stirge（II）| 吸血鳥 | 回推 | 「小而以吸血維生的鳥」 |
@@ -447,9 +447,6 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Hobgoblin | 大哥布林 | 遭遇敘述 | 與哥布林成對，以「大」示體型 |
 | Gnoll | 豺狼人 | 遭遇敘述 | 形貌譯法 |
 | Lizard Man | 蜥蜴人 | 遭遇敘述 | 形貌譯法 |
-| Ogre | 食人魔 | 遭遇敘述 | 通行譯名 |
-| Bugbear | 熊妖 | 遭遇敘述 | 形貌譯法，兩字 |
-| Ankheg（原版拼 ANHKHEG）| 蟻獅 | 遭遇敘述 | 形貌譯法 |
 | Thieves（怪物）| 盜賊 | 遭遇敘述 | 與職業 Thief（賊）分開用字，避免同一畫面兩義 |
 | Skullcrusher | 碎顱者 | 遭遇敘述 | 意譯；`AD29h` 離隊事件的同一個名字 |
 | Harash | 哈拉許 | 遭遇敘述 | 音近 |
@@ -484,10 +481,13 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Al-Hyam Dhazid | 阿爾-海姆·達齊德 | `ECL5` 手札第 30 條 | 音近，保留連字號 |
 | Red Wizards of Thay | 塞伊紅袍法師 | `ECL5` 報告 | 通行譯名 |
 | Raven Clan | 渡鴉氏族 | `ECL5` 報告 | 意譯 |
-| Ettin | 雙頭巨人 | `ECL2` 遭遇 | 形貌譯法 |
 | Green Slime | 綠泥怪 | `ECL2` 遭遇 | 形貌譯法 |
 | Spectre | 幽魂 | `ECL2` 遭遇 | 通行譯名 |
-| Medusa | 蛇髮女妖 | `ECL2` 對話 | 通行譯名 |
+| Quickling | 迅捷妖 | `ECL6` 野外遭遇 | 意譯＋「妖」示體型；怪物表第 30 項原為待證 |
+| Diogenes（銀龍）| 狄奧根尼斯 | `ECL6` 山中洞穴 | 音近；希臘人名的通行譯法 |
+| Tirantikus | 提蘭提庫斯 | `ECL6` 指揮官晚宴 | 音近；原文與泰蘭特拉克斯是同一個存在的異名，字面不同故不合併 |
+| Buccaneer | 海盜 | `ECL6` 海盜據點 | 意譯；原版同時用 PIRATE，兩者在遊戲內無區別 |
+| Anhkheg（原版拼法）| 掘地蟲 | `ECL6` 野外遭遇 | 依下方對齊表 |
 
 AD&D 的等級稱號在訓練所畫面上直接顯示，說明書沒收，一併記在這裡：
 WARRIOR 武士、SWORDSMAN 劍士、HERO 英雄（戰士）；CURATE 教士（牧師）；
@@ -497,7 +497,7 @@ THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
 原版在遊戲文字裡也有拼錯的地方，譯名一律照定案，不跟著錯字走：
 `PODAL PLAZA`（正為 PODOL）、`STOJONOW`（正為 STOJANOW）、`ZHENTIAL KEEP`
 （正為 ZHENTIL）、`OPENNING`（正為 OPENING）、`POSIONED`（正為 POISONED）、
-`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）、`SARCOPHOGI`（SARCOPHAGI）、`WHATS`（WHAT'S）、`ALTER`（ALTAR）、`PEACE`（PIECE）、`DIMINSH`（DIMINISH）、`VISCIOUS`（VICIOUS）、`LORDBANE`（LORD BANE）。
+`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）、`SARCOPHOGI`（SARCOPHAGI）、`WHATS`（WHAT'S）、`ALTER`（ALTAR）、`PEACE`（PIECE）、`DIMINSH`（DIMINISH）、`VISCIOUS`（VICIOUS）、`LORDBANE`（LORD BANE）、`INTREST`／`INTRESTS`（INTEREST）、`BUCCANNEERS`（BUCCANEERS）、`DENSLY`（DENSELY）、`CONGRADULATE`（CONGRATULATE）、`TRESSPASSING`（TRESPASSING）、`CONSQUENCES`（CONSEQUENCES）、`DISSAPPEARS`（DISAPPEARS）、`APEASE`（APPEASE）、`ALOT`（A LOT）、`HORESBACK`（HORSEBACK）、`COMMING`（COMING）、`WIMPERS`（WHIMPERS）、`AMOUNG`（AMONG）、`DISSCUSION`（DISCUSSION）、`FLYS`（FLIES）、`POSSESION`（POSSESSION）、`FILED`（FILLED）、`HOWS`（HOW'S）、`GOTO`（GO TO）。口語縮寫 `OTTA'`（OUT OF）是刻意的角色口吻，不列為拼錯。
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法
@@ -567,7 +567,7 @@ Centaur 半人馬、Minotaur 牛頭人、Lizardman 蜥蜴人、Medusa 梅杜莎�
 
 ### 對齊後仍待原版證據
 
-Quickling、Spectre、Wight、Wraith 四項 CoAB 也沒有，維持待證；附錄 5 那三個對不上的
+Spectre、Wight、Wraith 三項 CoAB 也沒有，維持待證（Quickling 已由遊戲內文字接線時定名）；附錄 5 那三個對不上的
 不死怪物欄位（人類、幽靈、妖怪）同樣不動。
 
 ⚠ 這一節是**跨作品參考**，不是 Pool 的原版證據。依 AGENTS §4／§8，這些名稱在 Pool

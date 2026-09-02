@@ -119,6 +119,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "'FAR TO THE EAST THERE IS A LARGE KOBOLD COMPLEX.  THERE IS A SILVER BOTTLE OF GREAT POWER THERE THAT WILL HELP YOU ON YOUR QUEST.  RETRIEVE THAT BOTTLE THEN RETURN AND I WILL SEND YOU ON ANOTHER QUEST.'",
+      "text": "「遠在東邊有一片龐大的小妖魔巢穴，那裡有一只力量強大的銀瓶，能助你們一臂之力。把瓶子取回來，我再交給你們下一件任務。」",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
       "source": "'FREE ME AND I'LL HELP YOU.'",
       "text": "「放我自由，我就幫你們。」",
       "note": "瓦海登墳場的事件與敘述。"
@@ -127,6 +132,11 @@
       "source": "'FROGS AND TOADS NOT SAME THING. THEY NOT SAME, THEY DIF... THEY NOT SAME! ME RIGHT?'",
       "text": "「青蛙跟蟾蜍不一樣。不一樣，牠們不……反正就是不一樣！我沒說錯吧？」",
       "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
+    },
+    {
+      "source": "'FROM HERE YOU CAN ALSO SEE OUR SOLIDLY BUILT OUTSIDE WALL.  THIS WALL HAS SURVIVED MANY ATTACKS, INCLUDING ONE FROM A DRAGON.'",
+      "text": "「從這裡各位也看得到我們堅固的外牆。它挺過了多次攻擊，其中還有一次是龍。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "'GARWIN, I'LL GET YOU!' CRIES THE AUCTIONEER. HOWEVER, THE MAN HAS ESCAPED IN THE CONFUSION.",
@@ -199,6 +209,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "'HERE YOU SEE ONE OF OUR FINE WATCH TOWERS WHICH WERE BUILT BY THE FINEST STONE MASONS IN THE LAND.'",
+      "text": "「各位看到的是我們出色的瞭望塔之一，由全國最好的石匠所建。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "'HEY LOOK! IT MUST BE THEM INTRUDERS.'",
       "text": "「喂看！一定就是那些闖進來的。」",
       "note": "紡織行與巨人占據一帶的事件。原版用口語。"
@@ -222,6 +237,11 @@
       "source": "'HOW DARE YOU INTERFERE WITH THE BOSS'S BUSINESS?' THE LEADER ROARS.  'KILL THEM,' HE ORDERS.",
       "text": "「你們竟敢壞老大的事？」領頭的怒吼，「殺了他們。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I ACCEPT YOUR PLEDGE.  FOR YOUR FIRST DUTY, I COMMAND YOU TO RECOVER A POWERFUL MAGICAL BOTTLE FROM A KOBOLD SETTLEMENT IN THE HILLS FAR TO THE EAST.  THEN RETURN TO ME AND I SHALL GIVE YOU ANOTHER TASK.'",
+      "text": "「我接受你們的效忠。第一件差事：我命你們從遠東方山丘上的小妖魔聚落取回一只強大的魔法瓶，然後回來，我再交給你們下一件任務。」",
+      "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
       "source": "'I ALMOST KILLED THE LEADER OF THESE SCUMMY HOBGOBLINS, BUT THE REST JUMPED ME!'",
@@ -355,7 +375,7 @@
     },
     {
       "source": "'MORE OGRES ON THE STREET, SINCE THE GIANTS TOOK OVER THE CASTLE.'",
-      "text": "「自從巨人占了城堡，街上的食人魔就變多了。」",
+      "text": "「自從巨人占了城堡，街上的食人鬼就變多了。」",
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
@@ -370,7 +390,7 @@
     },
     {
       "source": "'NOT ONLY THAT THEY'RE AFRAID OF THEM ETTIN. MAKES 'EM REAL JUMPY. WOULDN'T GIVE 'EM NO BACK TALK IF I WERE YOU.'",
-      "text": "「不只這樣，他們還怕那些雙頭巨人，怕得神經兮兮。我是你們就不會頂嘴。」",
+      "text": "「不只這樣，他們還怕那些雙頭巨魔，怕得神經兮兮。我是你們就不會頂嘴。」",
       "note": "史塔傑諾門一帶的事件。"
     },
     {
@@ -390,7 +410,7 @@
     },
     {
       "source": "'OH, BY THE WAY. BETTER BEWARE OF THE GUARDS. EVER SINCE THE GIANTS MOVED INTO THE CASTLE AREA, BUGBEARS HAVE BEEN STUCK GUARDING THE GATE. AND THEY HATE IT.'",
-      "text": "「對了，守衛要當心。自從巨人搬進城堡一帶，守門的差事就落到熊妖頭上，牠們可討厭得很。」",
+      "text": "「對了，守衛要當心。自從巨人搬進城堡一帶，守門的差事就落到熊地精頭上，牠們可討厭得很。」",
       "note": "史塔傑諾門一帶的事件。"
     },
     {
@@ -489,6 +509,16 @@
       "note": "瓦海登墳場的事件與敘述。接下一段。"
     },
     {
+      "source": "'THAT BOTTLE CONTAINS A POWERFUL EFREET WHO WAS SUMMONED TO KILL VAMPIRES.  HE WILL BE A VALUABLE ALLY IN OLD PHLAN.  IN VALHINGEN GRAVEYARD THERE IS A VAMPIRE.'",
+      "text": "「那只瓶子裡封著一頭強大的伊弗利特，當年是為了獵殺吸血鬼而被召喚的。牠在舊菲蘭城會是可貴的盟友。瓦海登墳場裡就有一隻吸血鬼。」",
+      "note": "銀龍狄奧根尼斯的巢穴。Efreet 為新增譯名。"
+    },
+    {
+      "source": "'THAT YOUNG BOY WILL BRING A GOOD PRICE AT ZHENTIL KEEP.  I THINK I SHALL BUY HIM.'",
+      "text": "「那個男孩在漢提爾城堡能賣個好價錢。我看我就把他買下來吧。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "'THAT'S THEM! GET THEM!'",
       "text": "「就是他們！上！」",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -552,6 +582,11 @@
       "source": "'THERE IS NO ONE WHO WILL GO WITH YOU.'",
       "text": "「沒有人願意跟你們走。」",
       "note": "訓練所與競技場。"
+    },
+    {
+      "source": "'THERE YOU SHALL FIND A MAGICAL BOTTLE WHICH WILL HELP YOU IN CLEANSING OLD PHLAN OF ITS EVIL!'",
+      "text": "「你們會在那裡找到一只魔法瓶，它能幫你們把舊菲蘭城的邪惡清乾淨！」",
+      "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
       "source": "'THESE ARE ALL OF THE COMMISSIONS CURRENTLY AVAILABLE.'",
@@ -694,6 +729,11 @@
       "note": "原版此處把 ZHENTIL 拼成 ZHENTIAL。"
     },
     {
+      "source": "'WHEN YOU MEET THE VAMPIRE USE THE BOTTLE AND YOU MAY HAVE A CHANCE IN DEFEATING HIM.  I WISH YOU LUCK.'  AFTER SPEAKING DIOGENES FLIES THROUGH A HOLE IN THE CEILING AND DISSAPPEARS.",
+      "text": "「遇上那隻吸血鬼時就用那只瓶子，你們或許有機會擊敗牠。祝你們好運。」說完，狄奧根尼斯從天花板的洞飛了出去，消失無蹤。",
+      "note": "銀龍狄奧根尼斯的巢穴。原版把 DISAPPEARS 拼成 DISSAPPEARS。"
+    },
+    {
       "source": "'WHO HIM? OH WELL HE NO CAN HELP YOU NOW!'",
       "text": "「他？哼，他現在幫不了你們了！」",
       "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
@@ -752,6 +792,11 @@
       "source": "'YOU DON'T BELONG HERE!'",
       "text": "「你們不該待在這裡！」",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "'YOU FOOLS.  I AM A GOOD SILVER DRAGON NOT THE EVIL LEADER OF PHLAN.  DON'T YOU KNOW THAT WE METALLIC DRAGONS ARE GOOD CREATURES?'  WHAT WILL YOU DO?",
+      "text": "「你們這些蠢貨。我是善良的銀龍，不是菲蘭城那個邪惡首領。難道不知道我們金屬龍是善的嗎？」你們要怎麼做？",
+      "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
       "source": "'YOU HAVE DONE WELL. GIVE ME THE POTION AND YOU WILL BE REWARDED.' (WHAT DO YOU DO?)",
@@ -885,17 +930,17 @@
     },
     {
       "source": "A BUGBEAR LEADING",
-      "text": "一隻熊妖領著",
+      "text": "一隻熊地精領著",
       "note": "怪物名片段。"
     },
     {
       "source": "A BUGBEAR LEADING A PARTY OF",
-      "text": "一隻熊妖領著一隊",
+      "text": "一隻熊地精領著一隊",
       "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
       "source": "A BUGBEAR WALKS UP TO YOU. 'OKAY, LETS HAVE THE 15 GOLD.' DO YOU PAY HIM?",
-      "text": "一隻熊妖走上前來：「好啦，十五枚金幣拿來。」你們要付嗎？",
+      "text": "一隻熊地精走上前來：「好啦，十五枚金幣拿來。」你們要付嗎？",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
@@ -914,8 +959,18 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "A GIGANTIC SNAKE LIES IN FRONT OF YOU.  IT REARS AND ATTACKS.",
+      "text": "一條巨蛇橫在你們面前，昂起身子攻了上來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "A GROUP OF ARMED GUARDS RIDE BY.",
+      "text": "一隊武裝守衛騎馬經過。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "A GROUP OF BUGBEARS APPROACH. 'THROW DOWN YOUR WEAPONS!'",
-      "text": "一群熊妖走了過來：「把武器丟下！」",
+      "text": "一群熊地精走了過來：「把武器丟下！」",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
@@ -924,14 +979,34 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "A GROUP OF MEN ON HORSEBACK RIDE OUT TO MEET YOU.  THEIR LEADER SAYS, 'ARE YOU THE DIPLOMATIC ENVOYS FROM NEW PHLAN?'  WHAT WILL YOU SAY?",
+      "text": "一隊騎馬的人出來迎你們，領頭的問：「你們是新菲蘭城來的使節嗎？」你們要怎麼回答？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "A GROUP OF MONSTERS IS WAITING ON THE OTHER SIDE OF THE WALL",
       "text": "牆的另一邊有一群怪物等著",
       "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
+      "source": "A GUARD COMES BY AND SAYS 'IF YOU WISH TO CAMP, GO TO THE MERCHANTS AREA!'",
+      "text": "一名守衛走過來說：「要紮營就去商人區！」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "A HEALTHY-LOOKING GOBLIN IS INSTRUCTING A GROUP OF YOUNG WARRIORS.  HE SMILES AND SAYS, 'I SEE OUR OPPONENTS HAVE ARRIVED.'",
       "text": "一隻壯碩的哥布林正在指導一群年輕戰士。牠笑著說：「看來對手到了。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "A LARGE GROUP OF MEN LED BY A DWARF RUNS FOWARD TO ATTACK",
+      "text": "一大群人由一名矮人帶頭衝上來攻擊",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 FORWARD 拼成 FOWARD。"
+    },
+    {
+      "source": "A LARGE GROUP OF MEN LED BY THE COMMANDANT RUSH FOWARD AND ATTACK.",
+      "text": "一大群人由指揮官帶頭衝上前來攻擊。",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 FORWARD 拼成 FOWARD。"
     },
     {
       "source": "A LARGE GROUP OF THIEVES OPERATES OUT OF THE OLD KOVEL MANSION. THE COUNCIL WILL PAY TO HAVE THEM CLEANED OUT.'",
@@ -955,7 +1030,7 @@
     },
     {
       "source": "A MAN AND OGRE EXCHANGE THE WAND AND A LARGE BAG, THEN DISAPPEAR INTO THE CROWD.",
-      "text": "一個人和一隻食人魔交換了魔杖與一個大袋子，隨即消失在人群裡。",
+      "text": "一個人和一隻食人鬼交換了魔杖與一個大袋子，隨即消失在人群裡。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
@@ -970,7 +1045,7 @@
     },
     {
       "source": "A MEDUSA COMES RUNNING TOWARD YOU.",
-      "text": "一隻蛇髮女妖朝你們奔來。",
+      "text": "一隻梅杜莎朝你們奔來。",
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
@@ -1094,6 +1169,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "A SMALL CARAVAN OF SLAVERS RIDE BY YOU TOWARD THE BUCCANEER BASE.",
+      "text": "一小隊奴隸販子的商隊從你們身邊經過，朝海盜的據點去。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "A SPECTRE SUDDENLY APPEARS BEFORE YOU. 'THIEF! I DEFENDED THESE BOOKS IN LIFE AND I WILL DEFEND THEM IN DEATH!' IT ATTACKS YOU.",
       "text": "一隻幽魂突然出現在你們面前：「小偷！我生前守著這些書，死後照樣守！」牠攻了過來。",
       "note": "舊繩索公會的圖書室。"
@@ -1179,9 +1259,59 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "AFTER DEFEATING THE FIRST WAVE OF BUCCANEERS,  YOU SEE ANOTHER WAVE FORMING IN THE DISTANCE.  WITH A LOUD ROAR THEY ATTACK YOU IN FULL FORCE.",
+      "text": "打退第一波海盜後，你們看到遠處又集結了一波。他們一聲怒吼，全力攻了上來。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "AFTER DEFEATING THE LAST OF THE BUCCANNEERS THE REST SURRENDER OR FLEE.  YOU RESCUE THE SLAVES AND CAPTURE THE FORT.",
+      "text": "打倒最後一批海盜後，其餘的不是投降就是逃走。你們救出奴隸，占下了這座堡壘。",
+      "note": "海盜據點。原版把 BUCCANEERS 拼成 BUCCANNEERS。"
+    },
+    {
+      "source": "AFTER DEFEATING THE LAST, WAVE YOU SEE ANOTHER WAVE ATTACK FROM THE SOUTH OF THE COMPOUND.",
+      "text": "打退前一波之後，你們看到又一波從營區南邊攻了上來。",
+      "note": "野外與漢提爾前哨一帶的事件。原版逗號位置有誤。"
+    },
+    {
+      "source": "AFTER HEARING YOUR APOLOGY THE DRAGON SAYS, 'THOUGH YOU ARE FOOLISH I BELIEVE YOUR ACTS ARE NOBLE.  I WILL HELP YOU WITH YOUR QUEST TO CLEANSE THE CITY OF PHLAN FROM EVIL.'",
+      "text": "聽了你們的道歉，那條龍說：「你們雖然愚蠢，我相信你們的作為是高尚的。我會協助你們把菲蘭城的邪惡清乾淨。」",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
+      "source": "AFTER KILLING THE COMMANDANT THE REST OF THE OUTPOST EITHER SURRENDERS OR RUNS AWAY.",
+      "text": "指揮官一死，前哨其餘的人不是投降就是逃走。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AFTER RECOVERING FROM THE FIREBALL YOU SEARCH THE REST OF THE LAIR AND FIND NOTHING OF INTREST.",
+      "text": "從火球的衝擊中緩過來後，你們搜遍巢穴其餘的地方，沒發現什麼值得一提的。",
+      "note": "銀龍狄奧根尼斯的巢穴。原版把 INTEREST 拼成 INTREST。"
+    },
+    {
+      "source": "AFTER SAYING NO, THE RIDERS RETURN TO THE OUTPOST.  BEFORE LEAVING, THEIR LEADER SAYS, 'YOU ARE TRESSPASSING ON PRIVATE LAND.  I ADVISE YOU TO LEAVE.'",
+      "text": "你們否認後，那些騎兵便返回前哨。臨走前領頭的說：「你們擅闖私人領地，我勸你們離開。」",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 TRESPASSING 拼成 TRESSPASSING。"
+    },
+    {
+      "source": "AFTER SKIMMING THROUGH THE PAPERS THE COMMANDANT SAYS, 'I WELCOME YOU AND HOPE YOU WILL JOIN ME FOR DINNER TONIGHT.'  HE TELLS A GUARD TO GIVE YOU A TOUR OF THE OUTPOST.",
+      "text": "指揮官草草翻過文件後說：「歡迎各位，也希望今晚能一起用餐。」他吩咐一名守衛帶你們參觀前哨。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AFTER SPEAKING, THE DRAGON FLYS THROUGH AN OPENNING IN THE CEILING OF THE CAVE.  YOU EXIT THE CAVE TO CONTINUE YOUR QUEST.",
+      "text": "說完，那條龍從洞頂的開口飛了出去。你們走出洞穴，繼續踏上旅程。",
+      "note": "銀龍狄奧根尼斯的巢穴。原版把 FLIES 拼成 FLYS、OPENING 拼成 OPENNING。"
+    },
+    {
       "source": "AFTER THE PARTY ENTERS THE ROOM A NET LACED WITH SHARP BLADES FALLS ON THE PARTY.",
       "text": "隊伍進房之後，一張綴滿利刃的網從上頭罩了下來。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AFTER YOU DEFEAT THE GUARDS YOU SEE A CROWD HAS FORMED.  FROM WITHIN THE CROWD A LARGE MAN IN GLEAMING CHAIN MAIL STEPS OUT.  HE SAYS 'THAT WAS AMUSING BUT DO NOT CAUSE ANYMORE TROUBLE!'",
+      "text": "你們打倒守衛後，四周已聚了一群人。人群中走出一名身穿亮甲的高大男子：「這場面挺有趣，但別再惹事了！」",
+      "note": "海盜據點。"
     },
     {
       "source": "AFTER YOU RELEASE HIM THE THIEF SLOWLY WALKS TOWARD THE FAR DOOR THANKING YOU ALL THE WAY.  PARTWAY THROUGH THE DOOR HE SAYS, 'SUCKERS', THEN SPRINTS AWAY.",
@@ -1232,6 +1362,16 @@
       "source": "AN AGED PRIEST APPROACHES, POINTING AT THE MAD MAN, HE SPEAKS, 'THAT MAN URGENTLY NEEDS OUR CARE.  DROP HIM FROM YOUR PARTY OR HE WILL BRING YOU TO GRIEF.  WE WILL CARE FOR HIM.'",
       "text": "一位年長的僧侶走過來，指著那個瘋子說：「那個人急需我們照料。把他從隊伍裡放掉吧，不然他會給你們惹禍。我們會照顧他。」",
       "note": "瘋子事件。"
+    },
+    {
+      "source": "AN ALARM GOES OFF IN THE DISTANCE.",
+      "text": "遠處警報響起。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AN ALARM GOES OFF IN THE DISTANCE.  YOUR ONLY HOPE IS TO RUN FOR THE FRONT GATE.",
+      "text": "遠處警報響起。你們唯一的指望就是衝向前門。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "AN ALARM IS SOUNDING.",
@@ -1285,8 +1425,18 @@
     },
     {
       "source": "ANHKHEG",
-      "text": "蟻獅",
+      "text": "掘地蟲",
       "note": "怪物名，原版拼作 ANHKHEG（一般作 Ankheg）。"
+    },
+    {
+      "source": "ANIMALS ARE RUNNING ALL OVER THE COMPOUND.",
+      "text": "牲口在營區裡四處亂竄。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "ANOTHER WAVE OF MEN ATTACK YOU.",
+      "text": "又一波人攻了上來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "APOLOGIZE",
@@ -1299,6 +1449,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "ARE YOU GOING TO TALK ABOUT NEW OR OLD PHLAN?",
+      "text": "你們要談新菲蘭城還是舊菲蘭城？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "AS HE COMES THROUGH THE DOOR YOU KNOCK HIM OUT AND DRAG HIS FORM INTO A CORNER.",
       "text": "他一走進門就被你們打昏，屍身被拖進角落。",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -1307,6 +1462,11 @@
       "source": "AS HE COMES THROUGH THE DOOR YOU SLIT HIS THROAT. THE BODY IS DRAGGED INTO A CORNER.",
       "text": "他一走進門，喉嚨就被你們割開。屍體被拖進角落。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AS SOON AS YOU OPEN THE GATE THE ANIMALS INSIDE CHARGE OUT.  THEY STAMPEDE ACROSS THE COMPOUND.",
+      "text": "門一打開，裡面的牲口就衝了出來，在營區裡狂奔亂竄。",
+      "note": "海盜據點。"
     },
     {
       "source": "AS THE GIANT TURNS IN TRIUMPH TO HIS COMPANIONS, THE OTHERS PICK UP THEIR CLUBS. 'WHAT THEY KNOW? WE KNOCK DUMB LITTLE MEN'S BRAINS OUT!'",
@@ -1319,9 +1479,29 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "AS YOU APPROACH HER HAIR BRISTLES AND SHE ATTACKS!",
+      "text": "你們一走近，她便毛髮倒豎，撲了上來！",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AS YOU APPROACH THE CAPTAIN'S QUARTERS THE ELITE GUARDS SOUND AN ALARM AND GUARDS RUSH FORTH AND ATTACK.",
+      "text": "你們一靠近隊長的住處，精銳守衛就拉響警報，守衛蜂擁而上。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "AS YOU APPROACH THE KEEP, A GROUP OF ARMED MEN ON HORESBACK RIDE OUT TO MEET YOU.  THEIR LEADER SAYS 'YOU ARE TRESSPASSING ON PRIVATE LAND; LEAVE NOW OR FACE THE CONSQUENCES!'",
+      "text": "你們接近城堡時，一隊武裝騎兵出來迎面攔住：「你們擅闖私人領地，現在就走，否則後果自負！」",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 HORSEBACK 拼成 HORESBACK、CONSEQUENCES 拼成 CONSQUENCES。"
+    },
+    {
       "source": "AS YOU APPROACH THEY MOVE, ALLOWING YOU ENTRANCE INTO THE TEMPLE.",
       "text": "你們一走近，牠們就讓開，放你們進神廟。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "AS YOU ARE ENTERING THE CAVE, A MAGIC MOUTH APPEARS ON ONE OF THE WALLS.  IN A BOOMING VOICE IT SAYS, 'WHO ENTERS THE HOME OF DIOGENES?  SPEAK NOW AND DECLARE YOUR INTENT!'",
+      "text": "你們正要進洞，牆上浮現一張魔法之口，以洪亮的嗓音說：「是誰踏進狄奧根尼斯的居所？現在就報上來意！」",
+      "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
       "source": "AS YOU ATTEMPT TO DEACTIVATE THE TRAP YOU SET IT OFF.  A POSIONED NEEDLE SHOOTS OUT AND PLUNGES INTO A PARTY MEMBER.",
@@ -1349,9 +1529,19 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "AS YOU DEFEAT THE GUARDS SOME MORE MEN RUN IN AND ATTACK.",
+      "text": "你們打倒守衛後，又有人衝進來攻擊。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "AS YOU DESTROY THE ALTAR, THE TEMPLE DOORS FLY OPEN AND A SCREAMING HORDE OF ORCS LED BY A HALF-ORC CLERIC ATTACK.  YOU TURN TO FACE THEM.",
       "text": "你們一搗毀祭壇，神廟大門猛地打開，一群尖叫的半獸人由一名半獸人牧師率領撲了進來。你們轉身迎戰。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "AS YOU DON'T ANSWER THE LAST QUESTION THE COMMANDANT SMILES SLIGHTLY AND SAYS, 'I SEE THAT YOU ARE NOT FOOLISH AND LOOSE TONGUED.'",
+      "text": "你們沒回答上一個問題，指揮官微微一笑：「看來各位不是嘴上沒把門的傻子。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "AS YOU ENTER THE BUILDING YOU SEE A LARGE GROUP OF FOUL ORCS.  THEY SNARL AT YOU AND ATTACK!",
@@ -1362,6 +1552,11 @@
       "source": "AS YOU ENTER THE BUILDING YOU SEE A LARGE GROUP OF ORCS WHO ARE SURPRISED THAT YOU'RE HERE.  WITH CONFUSED LOOKS ON THEIR FACES THEY STARE AT YOU",
       "text": "你們一走進建築，就看到一大群半獸人。牠們沒料到你們會來，一臉困惑地盯著你們",
       "note": "邪惡神廟（Temple of Bane）一帶。片段。"
+    },
+    {
+      "source": "AS YOU ENTER THE CAVE YOU ARE GREETED BY DIOGENES, THE SILVER DRAGON.  HE SAYS 'I SEE YOU HAVE RECOVERED THE SILVER BOTTLE FROM THE KOBOLD CAVES.  I CONGRADULATE YOU.'",
+      "text": "你們一進洞，銀龍狄奧根尼斯便迎了上來：「看來你們把銀瓶從小妖魔的洞裡取回來了。恭喜。」",
+      "note": "銀龍狄奧根尼斯的巢穴。Diogenes 為新增譯名；原版把 CONGRATULATE 拼成 CONGRADULATE。"
     },
     {
       "source": "AS YOU ENTER THE ROOM A THIEF WITH A SWORD COMES OUT OF NOWHERE",
@@ -1380,7 +1575,7 @@
     },
     {
       "source": "AS YOU ENTER THE ROOM YOU SEE SIX ORCS LED BY A LARGE OGRE.  THEY LUNGE FOWARD AND ATTACK.",
-      "text": "你們一進房就看到六隻半獸人，由一隻高大的食人魔帶領。牠們撲上前來攻擊。",
+      "text": "你們一進房就看到六隻半獸人，由一隻高大的食人鬼帶領。牠們撲上前來攻擊。",
       "note": "邪惡神廟（Temple of Bane）一帶。原版把 FORWARD 拼成 FOWARD。"
     },
     {
@@ -1402,6 +1597,26 @@
       "source": "AS YOU EXIT THE TEMPLE YOU ARE ATTACKED BY A VERY LARGE GROUP OF ORCS.  LEADING THEM IS A HALF-ORC WHO IS SCREAMING 'KILL!  KILL, THE UNBELIEVING TOADS.  KILL THEM OR SUFFER MY WRATH!'",
       "text": "你們走出神廟時遭到一大群半獸人攻擊，領頭的半獸人尖叫著：「殺！殺了這些不信神的癩蛤蟆。殺了他們，不然就等著承受我的怒火！」",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "AS YOU HIKE THROUGH THE MOUNTAINS YOU SEE A LARGE CAVE.",
+      "text": "你們在山間跋涉時看到一個大洞穴。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AS YOU HIKE THROUGH THE MOUNTAINS, A LARGE DRAGON FLYS ABOVE YOU.  IT CIRCLES THEN SWOOPS DOWN AND LANDS IN FRONT OF A CAVE.  IT DISAPPEARS INTO A CAVE.",
+      "text": "你們在山間跋涉時，一條大龍從頭頂掠過。牠盤旋一圈後俯衝而下，落在一個洞穴前，隨即沒入洞中。",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 FLIES 拼成 FLYS。"
+    },
+    {
+      "source": "AS YOU MENTION POLITICS THE COMMANDANT SAYS 'I'VE HEARD THAT PHLAN'S TOWN COUNCIL IS CORRUPT, SPECIFICALLY ULRICH EBERHARD.  IS THIS TRUE?",
+      "text": "你們一提到政治，指揮官便說：「我聽說菲蘭城的市議會貪腐，尤其是亞爾瑞屈·艾伯哈德。是真的嗎？",
+      "note": "野外與漢提爾前哨一帶的事件。接下一段。"
+    },
+    {
+      "source": "AS YOU MENTION THE POOL OF RADIANCE THE COMMANDANT TELLS YOU A STORY ABOUT THAT VERY POOL.  YOU ENJOY THE STORY AND COPY IT INTO YOUR JOURNAL UNDER ENTRY 46.",
+      "text": "你們一提到光芒之池，指揮官便說了一個關於那池子的故事。你們聽得津津有味，把它抄進手札第 46 條。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "AS YOU MOVE AWAY THE MONSTERS GLANCE YOUR WAY,",
@@ -1444,6 +1659,11 @@
       "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
     },
     {
+      "source": "AS YOU READY YOUR WEAPONS TO ATTACK.  THE DRAGON TAKES FLIGHT AND ROARS, 'EVIL CREATURES, BEGONE FROM MY LAIR.'  HE THEN FLIES UP THROUGH A HOLE IN THE CEILING.",
+      "text": "你們正舉起武器要動手，那條龍便振翅而起，怒吼：「邪惡的生物，滾出我的巢穴。」隨即從天花板的洞飛了出去。",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
       "source": "AS YOU SEARCH THE BEDS A GROUP OF ORCS COMES INTO THE ROOM.  THEY ATTACK IMMEDIATELY.",
       "text": "你們正在搜床鋪，一群半獸人走進房裡，立刻發動攻擊。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -1484,9 +1704,29 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "AS YOU TALK ABOUT NEW PHLAN THE COMMANDANT LISTENS CAREFULLY.  THE COMMANDANT SAYS 'IS IT TRUE THAT THE REAL POWER IN NEW PHLAN IS BISHOP BRACCIO?'",
+      "text": "你們談起新菲蘭城，指揮官聽得仔細，然後問：「新菲蘭城真正掌權的是巴西歐主教，這是真的嗎？」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AS YOU TALK ABOUT OLD PHLAN'S INHABITANTS THE COMMANDANT SAYS 'I KNOW A LEGEND ABOUT A FIRE BEING CALLED TIRANTIKUS.  I BELIEVE, THAT TIRANTIKUS AND TYRANTHRAXUS ARE ONE AND THE SAME'.",
+      "text": "你們談起舊菲蘭城的住民，指揮官說：「我知道一則關於火之存在提蘭提庫斯的傳說。我相信提蘭提庫斯和泰蘭特拉克斯是同一個。」",
+      "note": "野外與漢提爾前哨一帶的事件。Tirantikus 為新增譯名。"
+    },
+    {
       "source": "AS YOU TRY TO DEACTIVATE THE TRAP YOU MANAGE TO SET IT OFF.  A LARGE NEEDLE SHOOTS OUT OF A HIDDEN COMPARTMENT HITTING A PARTY MEMBER.",
       "text": "你們想解除陷阱，結果反而讓它啟動了。一根大針從暗格射出，扎中一名隊員。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU WALK INTO THIS ROOM A GIANT SNAKE FALLS ON TOP OF THE PARTY.",
+      "text": "你們一走進這房間，一條巨蛇就落到隊伍身上。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AS YOU WALK THROUGH THIS AREA TWO ANHKHEGS ERUPT FROM THE GROUND BENEATH YOU.",
+      "text": "你們走過這一帶時，兩隻掘地蟲從腳下的地裡竄了出來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "ASIDE FROM A LAYER OF MUD, YOU DON'T FIND ANYTHING.",
@@ -1494,9 +1734,24 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "ASK DRAGON FOR ADVICE",
+      "text": "向那條龍請教",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "ASK FOR MORE MONEY",
       "text": "要求加價",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "AT DUSK A GUARD COMES BY TO ESCORT YOU TO DINNER.",
+      "text": "黃昏時一名守衛過來領你們去用晚餐。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AT THE END OF THE PASSAGEWAY ARE THREE LARGE WILD BOARS.  THEY CHARGE AT YOU AND ATTACK!",
+      "text": "通道盡頭有三頭大野豬，牠們朝你們衝了過來！",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "AT YOUR ENTRY, THE COUNCIL CLERK BEGINS LOOKING THROUGH A STACK OF PAPERS.  'BEFORE I CAN OFFER ANY COMMISSIONS, I MUST SEE IF YOU ARE DUE A CURRENT REWARD.",
@@ -1524,9 +1779,19 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "ATTACK GUARDS.",
+      "text": "攻擊守衛。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "ATTACK HIM",
       "text": "攻擊他",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "ATTACK YOU IMMEDIATELY!",
+      "text": "立刻攻擊你們！",
+      "note": "野外與漢提爾前哨一帶的事件。片段。"
     },
     {
       "source": "AVERAGE",
@@ -1580,8 +1845,13 @@
     },
     {
       "source": "BEFORE THE GATE YOU CAN MAKE OUT A MAN WITH A WAGON OF GOODS WHO IS TALKING TO TWO OF THE BUGBEARS. THE MAN HANDS SOMETHING TO THE BUGBEARS AND THE GATES OPEN.",
-      "text": "門前有個趕著貨車的人正和兩隻熊妖說話。那人遞了什麼東西過去，門就開了。",
+      "text": "門前有個趕著貨車的人正和兩隻熊地精說話。那人遞了什麼東西過去，門就開了。",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "BEFORE YOU ARE THREE THRI-KREEN WARRIORS.  THEY ATTACK YOU IMMEDIATELY.",
+      "text": "你們面前是三名昆蟲人戰士，牠們立刻發動攻擊。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "BEFORE YOU IS A GREAT HALL.  THE FLOOR IS LITTERED WITH ORC TRASH AND THE WALLS HAVE CRUDE BLACK HANDS PAINTED ON THEM.",
@@ -1655,13 +1925,23 @@
     },
     {
       "source": "BUGBEARS WERE WAITING ON THE OTHER SIDE OF THE GATE.",
-      "text": "門的另一邊有熊妖等著。",
+      "text": "門的另一邊有熊地精等著。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "BURIED AMID ALL THE TRASH YOU SEE A BOOK.",
       "text": "在成堆的垃圾裡，你們看到一本書。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "BUY PASS",
+      "text": "買通行證",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "BUY THE BOY",
+      "text": "把男孩買下來",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "C",
@@ -1689,9 +1969,19 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "CENTAURS",
+      "text": "半人馬",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "CHALLENGE",
       "text": "挑戰",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "CHALLENGE EVIL LEADER OF OLD PHLAN",
+      "text": "向舊菲蘭城的邪惡首領挑戰",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "CHRONICLES OF ARRAM.",
@@ -1717,6 +2007,11 @@
       "source": "CLIMB DOWN",
       "text": "爬下去",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "CLIMB OVER WALL",
+      "text": "翻牆過去",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "COMBAT",
@@ -1802,6 +2097,11 @@
       "source": "DISGUISE PARTY AS MONSTERS.",
       "text": "把隊伍偽裝成怪物。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "DO NOT RESCUE BOY NOW",
+      "text": "現在不救那個男孩",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "DO YOU LEAVE?",
@@ -1919,6 +2219,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "ENTER CAVE",
+      "text": "進洞",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "EVIL LOOKING FROGS BOIL UP FROM BELOW.",
       "text": "樣子邪惡的青蛙從底下湧了上來。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -1937,6 +2242,16 @@
       "source": "EXAMINE THE CABINET",
       "text": "查看櫃子",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "FALL FOR YOUR SPARKLING PERSONALITY AND WANDER AWAY WITHOUT A FIGHT.",
+      "text": "被你們的魅力折服，沒動手就走開了。",
+      "note": "野外與漢提爾前哨一帶的事件。片段。"
+    },
+    {
+      "source": "FAR TO THE EAST THERE IS A LARGE KOBOLD COMMUNITY.  THEY HAVE POSSESION OF A POWERFUL SILVER BOTTLE.  THIS BOTTLE WILL HELP YOU RID THE CITY OF ITS UNDEAD PROBLEM.  GET THE BOTTLE THEN RETURN TO ME.",
+      "text": "遠在東邊有一個龐大的小妖魔聚落，一只強大的銀瓶落在牠們手上。那只瓶子能幫你們解決城裡的不死怪物之患。取回瓶子再回來找我。",
+      "note": "銀龍狄奧根尼斯的巢穴。原版把 POSSESSION 拼成 POSSESION。"
     },
     {
       "source": "FERRAN SPEAKS: 'THE CITY FELL LONG AGO TO THE UNBLESSED CREATURES IMBUED WITH THE MIGHT OF A MAGICAL POOL.  CHIEF AMONG THESE WERE TYRANTHRAXUS, EDRANKA, AND TORATH.",
@@ -1979,8 +2294,13 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "FOLLOW DRAGON",
+      "text": "跟著那條龍",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "FOLLOW THE OGRE",
-      "text": "跟著食人魔",
+      "text": "跟著食人鬼",
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
@@ -2009,9 +2329,19 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "FROM HERE YOU SEE A LARGE INNER WALL AROUND THE CENTRAL KEEP.  THIS AREA IS BUSY WITH MEN ENTERING AND LEAVING BARRACKS.",
+      "text": "從這裡看得到主堡外的一道厚實內牆。這一帶人來人往，進出營房的人不少。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "FROM THE MAGICALLY-LIT TOMB OF A BRAVE KNIGHT, A BODY RISES FROM ITS RESTING PLACE TO LAY WEAPONS BEFORE THE PARTY.",
       "text": "在一位勇敢騎士的魔法照明墓穴裡，一具遺體從安息之處起身，把武器放到隊伍面前。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "FROM THE SOUTH, A LARGE ANHKHEG LUNGES OUT AND ATTACKS THE PARTY.",
+      "text": "一隻大掘地蟲從南邊竄出，撲向隊伍。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "FROM THE TOP OF THE GATE COMES A VOLLEY OF ROCKS.",
@@ -2024,9 +2354,24 @@
       "note": "紡織行與巨人占據一帶的事件。通關密語，音近。"
     },
     {
+      "source": "GET HIM",
+      "text": "抓住他",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "GHOSTLY SHAPES SCREECH OUT A DREADFUL KEENING HOWL",
       "text": "幽靈般的身影發出可怖的哀嚎",
       "note": "瓦海登墳場的事件與敘述。片段。"
+    },
+    {
+      "source": "GIANT MANTIS",
+      "text": "巨螳螂",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "GIANT SNAKES",
+      "text": "巨蛇",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "GIVE",
@@ -2054,6 +2399,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "GO BACK INSIDE.",
+      "text": "回到裡面。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "GO BACK OUTSIDE",
       "text": "退回外面",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -2069,6 +2419,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "GOTO SLEEP",
+      "text": "去睡覺",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 GO TO 連寫成 GOTO。"
+    },
+    {
       "source": "GRAB",
       "text": "抓住",
       "note": "扒手事件的選項。"
@@ -2082,6 +2437,11 @@
       "source": "GREET",
       "text": "打招呼",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "GREET YOU AND YOU EXCHANGE PLEASANTRIES.  THE",
+      "text": "向你們打招呼，雙方寒暄了幾句。",
+      "note": "野外與漢提爾前哨一帶的事件。片段。"
     },
     {
       "source": "GRUMBLE, AND TURN AWAY.",
@@ -2219,6 +2579,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "IGNORE CAVE",
+      "text": "不理會洞穴",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "IN A CHAMBER FILLED WITH RUINED PARCHMENTS, YOU SURPRISE A SHAPE THAT IS CREATING ZOMBIES.",
       "text": "在一間滿是毀壞羊皮紙的屋子裡，你們撞見一個身影正在製造殭屍。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -2349,6 +2714,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "IT IS NIGHT AND YOU ARE IN YOUR QUARTERS.",
+      "text": "入夜了，你們待在住處。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "IT SEEMS THAT THEIR SCREAMS WERE HEARD...",
       "text": "看來牠們的尖叫被聽見了……",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -2419,6 +2789,11 @@
       "note": "選單選項，出現 62 次，是最常見的一個。"
     },
     {
+      "source": "LEAVE CAVE",
+      "text": "離開洞穴",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "LEAVE HIM",
       "text": "放著他",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -2469,6 +2844,11 @@
       "note": "委託文字的結尾片段，原版把長句拆成幾段拼起來。"
     },
     {
+      "source": "LIE",
+      "text": "說謊",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "LIE?",
       "text": "說謊？",
       "note": "瓦海登墳場的事件與敘述。"
@@ -2514,9 +2894,24 @@
       "note": "NPC 名，音近。"
     },
     {
+      "source": "LYING ON THE FLOOR IS A LARGE, SHEDDED SNAKE SKIN.",
+      "text": "地上躺著一張碩大的蛇蛻。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "LYING ON THE GROUND HERE ARE THE DISSOLVING REMAINS OF A DWARF.  HE IS COVERED IN ACID.",
+      "text": "地上躺著一具正在溶解的矮人遺體，渾身沾滿酸液。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "MAD MAN",
       "text": "瘋子",
       "note": "NPC 稱謂。"
+    },
+    {
+      "source": "MAGIC",
+      "text": "魔法",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "MAGIC USERS",
@@ -2544,6 +2939,16 @@
       "note": "書名，出現在搜書的敘述裡。"
     },
     {
+      "source": "MENTION POOL OF RADIANCE",
+      "text": "提起光芒之池",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "MENTION YOUNG BOY",
+      "text": "提起那個男孩",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "MIX WITH MONSTERS",
       "text": "混進怪物裡",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -2569,6 +2974,16 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "MORE GUARDS COMMING RUNNING TOWARD YOU.  THEIR LEADER YELLS 'SURRENDER OR DIE!'  WHAT WILL YOU DO?",
+      "text": "更多守衛朝你們奔來，領頭的大喊：「投降不然就死！」你們要怎麼做？",
+      "note": "海盜據點。原版把 COMING 拼成 COMMING。"
+    },
+    {
+      "source": "MORE GUARDS RUSH UP TO ATTACK.",
+      "text": "更多守衛衝上來攻擊。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "MOVE IN CLOSER",
       "text": "靠近一點",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -2587,6 +3002,16 @@
       "source": "NEAR IT IS THE OFFERING BOX WITH SOME CHANGE IN IT.",
       "text": "旁邊有個奉獻箱，裡面有些零錢。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "NEAR YOU IS A LARGE, WILD BOAR SOW FEEDING HER YOUNG.  AS YOU NEAR SHE GROWLS A WARNING TO STAY AWAY.  WHAT WILL YOU DO?",
+      "text": "旁邊有一頭大母野豬正在餵幼崽。你們一靠近，牠就低吼著要你們走開。你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "NEW",
+      "text": "新的",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "NO",
@@ -2609,6 +3034,11 @@
       "note": "酒館賭局。"
     },
     {
+      "source": "NO TROUBLE",
+      "text": "不找麻煩",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "NONE",
       "text": "都不要",
       "note": "選單選項。"
@@ -2617,6 +3047,11 @@
       "source": "NORTH",
       "text": "北",
       "note": "方位選項。"
+    },
+    {
+      "source": "NOTHING",
+      "text": "什麼也不做",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "NOTICES FOR TEACHERS AND STUDENTS ARE POSTED ON THE WALLS.  A NOTE DIRECTS MAGIC USERS AND CLERICS TO GO NORTH AND FIGHTERS AND 'ROGUES' TO GO EAST.",
@@ -2639,14 +3074,29 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "OFF IN THE DISTANCE YOU SEE A LARGE DRAGON FLYING THROUGH THE AIR.  AS YOU WATCH, HE SWOOPS DOWN BEHIND A MOUNTAIN AND DISAPPEARS.",
+      "text": "遠處有一條大龍在空中飛行。你們看著牠俯衝到山後，消失了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "OFFER A GIFT",
+      "text": "送上禮物",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "OGRES",
-      "text": "食人魔",
+      "text": "食人鬼",
       "note": "怪物名，遊戲文字證實。"
     },
     {
       "source": "OHLO",
       "text": "歐洛",
       "note": "NPC 名，音近。"
+    },
+    {
+      "source": "OLD",
+      "text": "舊的",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "ON A HOBGOBLIN BODY, YOU FIND A NOTE THAT YOU COPY INTO YOUR JOURNAL AS ENTRY 57.",
@@ -2704,6 +3154,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "ONE OF THE COMMANDANT'S ADVISORS ASKS YOU IF YOU'VE HEARD OF ANY UNIQUE MAGICAL ITEMS OR PLACES?",
+      "text": "指揮官的一名顧問問你們，有沒有聽說過什麼特別的魔法物品或地方？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "ONE OF THE KOBOLDS SAYS, 'IF YOU SPARE OUR LIVES WE WILL TELL YOU ALL WE KNOW ABOUT THIS AREA!' WILL YOU SPARE THEM?",
       "text": "一隻小妖魔說：「饒我們一命，這一帶的事我們全告訴你們！」要放過牠們嗎？",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -2737,6 +3192,16 @@
       "source": "ORCS.",
       "text": "半獸人。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "OUT OF THE COMMOTION A GROUP OF GUARDS ATTACK THE PARTY.",
+      "text": "騷動之中，一隊守衛攻向你們。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "OUT OF THE SHADOWS, TWO LARGE WILD BOARS CHARGE.",
+      "text": "兩頭大野豬從暗處衝了出來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "OVER THIS DOOR IS A CRUDE SIGN SAYING, 'THE PITT.'",
@@ -2789,6 +3254,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "PLEDGE PARTY TO DRAGON'S SERVICE",
+      "text": "讓隊伍效忠那條龍",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "PLUS A PICK OF SPECIAL ITEMS",
       "text": "再加上幾樣特別的東西任選",
       "note": "柯威大樓的盜賊據點。"
@@ -2802,6 +3272,11 @@
       "source": "POISONOUS BARREN RIVER.",
       "text": "有毒的荒蕪之河。",
       "note": "地點敘述。"
+    },
+    {
+      "source": "POLITICS",
+      "text": "政治",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "PORPHYRYS CADORNA IS A TRAITOR TO THE CITY. IF YOU FIND HIM, KILL HIM.'",
@@ -2854,9 +3329,19 @@
       "note": "公告編號，原版以羅馬數字書寫；譯文改用中文數字以便閱讀。"
     },
     {
+      "source": "PUNCH MERCHANT",
+      "text": "揍那名商人",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "PUTTING DOWN THE PAPERS, SHE SAYS, 'I MUST BRING TO YOUR ATTENTION THE FOLLOWING CONCERNING VALHINGEN GRAVEYARD: '",
       "text": "她放下文件說：「關於瓦海登墳場，有件事必須讓你們知道：」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "QUICKLINGS",
+      "text": "迅捷妖",
+      "note": "野外與漢提爾前哨一帶的事件。怪物名，形貌譯法。"
     },
     {
       "source": "RED. SORRY, YOU LOSE.",
@@ -2879,9 +3364,19 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "RELAX",
+      "text": "放鬆",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "RELEASE",
       "text": "放走",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "RELEASE ANIMALS",
+      "text": "放走那些動物",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "RELEASE HIM",
@@ -2892,6 +3387,11 @@
       "source": "RELEASE THEM?",
       "text": "要放他們走嗎？",
       "note": "提問。"
+    },
+    {
+      "source": "RESCUE BOY",
+      "text": "救那個男孩",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "RETURN",
@@ -2942,6 +3442,16 @@
       "source": "SANCTIFY",
       "text": "淨化",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SAY LITTLE OR NOTHING",
+      "text": "少說或不說",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "SAY NOTHING",
+      "text": "什麼都不說",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "SAY,",
@@ -3004,6 +3514,11 @@
       "note": "瓦海登墳場的事件與敘述。通關密語，音近。"
     },
     {
+      "source": "SHOW PASS",
+      "text": "出示通行證",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "SKELETONS SILENTLY ATTACK.",
       "text": "骷髏無聲地攻了上來。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -3034,6 +3549,21 @@
       "note": "NPC 離隊事件。"
     },
     {
+      "source": "SLAY DRAGON",
+      "text": "殺了那條龍",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "SLEEP WITH A WATCH",
+      "text": "留人守夜",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "SNEAK INTO PEN",
+      "text": "潛進獸欄",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "SNEAK OUT QUIETLY",
       "text": "悄悄溜出去",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -3054,9 +3584,24 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "SOLDIERS",
+      "text": "士兵",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "SOME GHOULS DECIDE TO ADD YOU TO THEIR MENU.",
       "text": "幾隻食屍鬼決定把你們加進菜單。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SOME GUARDS RUSH FOWARD AND ATTACK.",
+      "text": "幾名守衛衝上前來攻擊。",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 FORWARD 拼成 FOWARD。"
+    },
+    {
+      "source": "SOME GUARDS SPOT YOU AND ATTACK.",
+      "text": "幾名守衛發現你們，攻了上來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "SOME HOBGOBLINS ARE ARGUING OVER A PILE OF GOLD.  'THIEVES!' THEY SCREAM WHEN THEY SEE YOU.",
@@ -3067,6 +3612,11 @@
       "source": "SOME MONSTERS ARE TOSSING A SACK OF GRAIN. WHEN THE SACK BREAKS THEY WAIL, 'OH, NO! WHAT CAN WE THROW NOW?' ONE LOOKS YOUR WAY. 'I KNOW,' HE SAYS.",
       "text": "幾隻怪物正把一袋穀子拋來拋去。袋子破了，牠們哀號：「糟了！那現在要丟什麼？」其中一隻朝你們看過來：「我知道了。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "SOME OF THE GUARDS SPOT YOU WITH THE BOY.",
+      "text": "幾名守衛看見你們帶著那個男孩。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "SOUTH",
@@ -3089,6 +3639,16 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "STANDING IN FRONT OF THE DOOR ARE TWO LARGE GUARDS.  ONE OF THEM SAYS 'DO YOU HAVE A PASS TO SEE THE CAPTAIN?'  WHAT WILL YOU DO?",
+      "text": "門前站著兩名壯碩的守衛，其中一個問：「你們有見隊長的通行證嗎？」你們要怎麼做？",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "STATE NAME AND INTENT",
+      "text": "報上姓名與來意",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "STAY",
       "text": "留下",
       "note": "遭遇選單。"
@@ -3097,6 +3657,11 @@
       "source": "STAY AND FIGHT",
       "text": "留下來打",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "STAY IN",
+      "text": "待在裡面",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "STOP THEM",
@@ -3117,6 +3682,11 @@
       "source": "STRONG",
       "text": "強",
       "note": "同上。"
+    },
+    {
+      "source": "SUDDENLY YOU ARE FACE TO FACE WITH A GROUP OF",
+      "text": "你們突然和一群",
+      "note": "野外與漢提爾前哨一帶的事件。片段，後接怪物名。"
     },
     {
       "source": "SUDDENLY, YOU SPOT A DULL BROWN REPTILIAN MONSTER WHICH IS JUST COMING AWAKE.",
@@ -3184,6 +3754,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THAT COMBAT IS NOT NECESSARY AND YOU GO ON YOUR WAY.",
+      "text": "這一仗沒有必要，你們就繼續上路了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "THAT ONE IS NOT WELL ENOUGH TO CLIMB.",
       "text": "那個人的狀況爬不動。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -3199,6 +3774,11 @@
       "note": "敘述。"
     },
     {
+      "source": "THE",
+      "text": "那個",
+      "note": "片段，原版把句子拆開拼接時用到。"
+    },
+    {
       "source": "THE AGED ORC COMES GRASPING TOWARD YOU.  WILL YOU LET HIM TOUCH YOU?",
       "text": "那隻年邁的半獸人伸著手朝你們摸過來。要讓他摸嗎？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -3207,6 +3787,11 @@
       "source": "THE AIR AROUND THE TOWER IS CHARGED WITH STATIC ELECTRICITY AND BALL LIGHTNING.",
       "text": "塔的四周瀰漫著靜電，還有滾動的球狀閃電。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE ANIMALS HAVE BEEN CAPTURED.",
+      "text": "那些動物已經被抓住了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "THE ARENA MASTER ASKS IF YOU WISH TO DUEL.  'THE DUELS  ARE EVENLY MATCHED AND NORMALLY NOT TO THE DEATH. DO YOU DUEL?'",
@@ -3245,7 +3830,7 @@
     },
     {
       "source": "THE BIDDING ESCALATES TO 5,000 GOLD PIECES -- HIGH BID FROM A MAN IN PLAIN CLOTHES, NEXT TO AN OGRE.",
-      "text": "價錢一路喊到五千枚金幣——最高價出自一個站在食人魔旁邊、穿著便服的人。",
+      "text": "價錢一路喊到五千枚金幣——最高價出自一個站在食人鬼旁邊、穿著便服的人。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
@@ -3265,13 +3850,38 @@
     },
     {
       "source": "THE BUGBEAR TAKES THE MONEY AND THE GATE OPENS. YOU PROCEED THROUGH.",
-      "text": "熊妖收下錢，門開了。你們走了進去。",
+      "text": "熊地精收下錢，門開了。你們走了進去。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
       "source": "THE BUGBEARS STRIP YOU OF ANYTHING REMOTELY VALUABLE AND SEND YOU ON YOUR WAY.",
-      "text": "熊妖把你們身上稍微值錢的東西全搜走，然後放你們走。",
+      "text": "熊地精把你們身上稍微值錢的東西全搜走，然後放你們走。",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "THE CAPTAIN LOOKS YOU OVER AND SAYS 'WHAT DO YOU WANT?'",
+      "text": "隊長把你們打量一番：「你們想幹什麼？」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE CAPTAIN SAYS 'YOU HAVE CHOSEN WISELY.'  SOME OF THE BUCCANEERS COME FORWARD AND STRIP YOU OF SOME OF YOUR ITEMS AND MONEY.  THEY ESCORT YOU OUT OF THE COMPOUND.",
+      "text": "隊長說：「你們選得明智。」幾名海盜上前搜走你們一部分財物與錢財，然後把你們押出營區。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "THE CAPTAIN SAYS 'YOU HAVE FOUGHT WELL.  YOU MAY RANSOM YOURSELVES OR DIE!'  WHAT WILL YOU DO?",
+      "text": "隊長說：「你們打得不錯。要嘛拿錢贖命，要嘛死。」你們要怎麼做？",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "THE CAPTAIN SAYS 'YOU HAVE MADE A GOOD DEAL.'  AFTER TALKING THE CAPTAIN MAKES A MOTION AND THE BOY IS BROUGHT TO YOU.",
+      "text": "隊長說：「這筆買賣划算。」談妥後他打了個手勢，男孩被帶了過來。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "THE CAPTAIN THEN LEAVES THE ROOM AND YOU ARE ESCORTED BACK OUTSIDE.",
+      "text": "隊長隨即離開房間，你們被護送回外面。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "THE CASKET IS FILLED WITH TINY PEARLS!",
@@ -3287,6 +3897,16 @@
       "source": "THE CHAMBER LIGHTS UP TO REVEAL A TALL, PALE MAN WITH VERY WHITE TEETH.",
       "text": "室內亮起，照出一個高瘦蒼白、牙齒極白的男人。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE CHARACTERS HEAR A LOUD FLAPPING NOISE AND THEN A WARM RUSH OF AIR HITS THEIR FACES.  STANDING BEFORE YOU NOW IS A GREAT SILVER DRAGON.  HE SAYS, 'YOU ARE WISE TO SEEK MY COUNCIL AND I CAN HELP YOU...'",
+      "text": "隊員聽見一陣響亮的振翅聲，接著一股暖風撲面而來。眼前站著一條巨大的銀龍：「你們來求我指點是明智的，我可以幫你們……」",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
+      "source": "THE CHARACTERS HEAR A LOUD FLAPPING NOISE AND THEN FEEL A WARM JET OF AIR HIT THEIR FACES.  A HUGE SILVER DRAGON FLIES DOWN TO MEET THEM.",
+      "text": "隊員聽見一陣響亮的振翅聲，接著一股暖風撲面而來。一條巨大的銀龍飛落下來。",
+      "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
       "source": "THE CITY WATCH CHARGES IN. DO YOU RUN AWAY OR STAY TO CONFRONT THEM?",
@@ -3317,6 +3937,41 @@
       "source": "THE COFFIN MAKES A MESS ON THE FLOOR.",
       "text": "棺材砸得滿地狼藉。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE COMMANDANT IS SURPRISED THAT YOUR CITY IS HAVING NO TROUBLE WITH TYRANTHRAXUS.  HE THEN SAYS, 'YOUR TOWN DEFENSES MUST BE STRONG IN ORDER TO HANDLE HIM.  HOW STRONG ARE THEY?'",
+      "text": "指揮官很意外貴城竟然沒有被泰蘭特拉克斯困擾，接著問：「能應付牠，貴城的防務想必很強。到底有多強？」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE COMMANDANT SAYS 'I EXPECT THERE WOULD BE TROUBLE; I'VE HEARD TYRANTHRAXUS IS A POWERFUL FIRE DEMON.  YOUR CITY'S DEFENCES MUST BE QUITE STRONG, HOW STRONG ARE THEY?'",
+      "text": "指揮官說：「我想總會有麻煩的；聽說泰蘭特拉克斯是一頭強大的火魔。貴城的防務想必相當堅實，究竟有多強？」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE COMMANDANT TURNS TO ONE OF THE CHARACTERS AND SAYS, 'SO, HOWS EVERYTHING IN PHLAN?'  WHAT WILL YOU TALK ABOUT?",
+      "text": "指揮官轉向其中一名隊員：「那麼，菲蘭城那邊一切都好嗎？」你們要談什麼？",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 HOW'S 寫成 HOWS。"
+    },
+    {
+      "source": "THE COMMOTION ALLOWS YOU TO GET TO THE FRONT GATE!",
+      "text": "這場騷動讓你們得以趕到前門！",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE CONVERSATION BEGINS TO DIE DOWN.  THE COMMANDANT  STARTS A CONVERSATION BY SAYING 'WELL, ARE YOU HAVING MUCH TROUBLE WITH THE CREATURES FROM OLD PHLAN?'",
+      "text": "談話漸漸冷了下來。指揮官起了個頭：「那麼，舊菲蘭城那些東西給你們添了不少麻煩吧？」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE CONVERSATION COMPLETELY DIES AND EVERYONE IS STARING AT EACH OTHER.  THE COMMANDANT EXCUSES HIMSELF AND LEAVES.  A GUARD TAKES YOU BACK TO YOUR QUARTERS.",
+      "text": "談話徹底冷場，眾人面面相覷。指揮官告退離席，一名守衛帶你們回住處。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE CONVERSATION GOES STALE AND THE COMMANDANT EXCUSES HIMSELF FROM THE TABLE.  YOU ARE ESCORTED BACK TO YOUR QUARTERS.",
+      "text": "談話冷了場，指揮官告退離席。你們被護送回住處。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "THE COUNCIL HAS AWARDED A BONUS FOR YOUR ELIMINATING NORRIS THE GRAY.",
@@ -3367,6 +4022,11 @@
       "source": "THE DOOR OF THE BUILDING YOU ARE PASSING SLAMS.",
       "text": "你們經過的那棟建築，門砰地關上。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "THE DRAGON LANDS, LOOKS THE PARTY OVER THEN SAYS 'YOU HAVE NOTHING THAT INTRESTS ME.  IF YOU WISH TO APEASE ME THEN GO EAST AND DESTROY THE KOBOLD COMMUNITY THERE.'",
+      "text": "那條龍落地，把隊伍打量一番後說：「你們身上沒有我感興趣的東西。想讓我消氣，就往東去，把那裡的小妖魔聚落滅了。」",
+      "note": "銀龍狄奧根尼斯的巢穴。原版把 INTERESTS 拼成 INTRESTS、APPEASE 拼成 APEASE。"
     },
     {
       "source": "THE ELF IS LONG DEAD.",
@@ -3429,14 +4089,44 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "THE GROUND HERE IS SOFT AND FRESHLY CHURNED.",
+      "text": "這裡的地面鬆軟，像是剛被翻動過。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "THE GROUP OF BUGBEARS COME OVER, 'WE WARNED YOU! WHAT'S THE MATTER? CAN'T YOU UNDERSTAND COMMON? I GUESS I'LL HAVE TO TEACH YOU.' THE LEADER SWINGS AT YOU.",
-      "text": "那群熊妖走了過來：「警告過你們了！怎麼，聽不懂通用語嗎？看來得教教你們。」領頭的一刀砍向你們。",
+      "text": "那群熊地精走了過來：「警告過你們了！怎麼，聽不懂通用語嗎？看來得教教你們。」領頭的一刀砍向你們。",
       "note": "史塔傑諾門一帶的事件。"
     },
     {
       "source": "THE GUARD CAPTAIN STEPS FORWARD. 'PLEASE LET US SHOW YOU THE WAY.'",
       "text": "衛隊長走上前來：「請讓我們帶路。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE GUARD GIVING THE TOUR SAYS 'HERE YOU SEE ONE OF OUR FINE BARRACKS.  THERE ARE SIX OF THESE HERE AND EACH CAN HOLD OVER A 100 MEN.'",
+      "text": "帶隊導覽的守衛說：「各位看到的是我們出色的營房之一。這裡有六座，每座可容納一百多人。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE GUARD SAYS 'HERE ARE YOUR QUARTERS.  DO NOT LEAVE THIS AREA.'  HE THEN LEAVES.",
+      "text": "守衛說：「這是你們的住處。不要離開這一帶。」說完就走了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE GUARD SAYS 'THAT CONCLUDES THE TOUR.  I WILL SHOW YOU TO YOUR QUARTERS.'",
+      "text": "守衛說：「導覽到此結束。我帶你們去住處。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE GUARDS IN THE BARRACKS ATTACK.",
+      "text": "營房裡的守衛動手了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE GUARDS LOOK AT YOUR PASS AND LET YOU PASS.",
+      "text": "守衛看了看你們的通行證，放行了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "THE HALL IS EMPTY, SAVE FOR SIGNS OF A RECENT BATTLE.",
@@ -3479,6 +4169,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE LAST OF THE BUCCANNEERS FORM INTO A FINAL WAVE AND ATTACK.",
+      "text": "剩下的海盜集結成最後一波攻了上來。",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 BUCCANEERS 拼成 BUCCANNEERS。"
+    },
+    {
       "source": "THE LEADER ADVANCES.",
       "text": "領頭的走上前來。",
       "note": "遭遇敘述。"
@@ -3500,7 +4195,7 @@
     },
     {
       "source": "THE MAIN WALL RISES 30 FEET WHILE THE TWO WATCHTOWER RISE TO 50 FEET. LOUNGING AROUND THE ENTRANCE ARE A GROUP OF BUGBEARS.",
-      "text": "主牆高三十呎，兩座瞭望塔高五十呎。入口附近懶散地聚著一群熊妖。",
+      "text": "主牆高三十呎，兩座瞭望塔高五十呎。入口附近懶散地聚著一群熊地精。",
       "note": "史塔傑諾門一帶的事件。"
     },
     {
@@ -3522,6 +4217,11 @@
       "source": "THE MAN TAKES THE POTION AND GULPS IT GREEDILY.  AS YOU WATCH, HE SEEMS TO GROW YOUNGER AND STRONGER. 'EXCELLENT,' HE SMACKS, 'YOUR REWARD.'",
       "text": "那人接過藥水，貪婪地一飲而盡。你們看著他彷彿變得更年輕、更強壯。「太好了。」他咂了咂嘴，「你們的報酬。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THE MAN THEN LEAVES AND BEFORE YOU IS THE SLEAZY MERCHANT.  HE BEGS FORGIVENESS THEN WIMPERS AWAY.",
+      "text": "那人離開後，眼前只剩那名下流的商人。他連聲討饒，然後嗚咽著走開。",
+      "note": "海盜據點。原版把 WHIMPERS 拼成 WIMPERS。"
     },
     {
       "source": "THE MAN THEN SPEAKS A WORD AND THE AUCTIONEER'S BLOCK IS ENVELOPED IN DARKNESS.",
@@ -3585,7 +4285,7 @@
     },
     {
       "source": "THE OGRE IS TACKLED AND SEARCHED. HE DOESN'T HAVE THE ITEM ON HIM.",
-      "text": "食人魔被撲倒搜身，東西不在牠身上。",
+      "text": "食人鬼被撲倒搜身，東西不在牠身上。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
@@ -3674,6 +4374,16 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "THE REMAINS OF SEVERAL OF THE ANHKHEG'S VICTIM.  ADMIST THE DEBRIS IS SOME TREASURE.",
+      "text": "幾名掘地蟲獵物的殘骸。碎屑之間有一些財寶。",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 AMIDST 拼成 ADMIST。"
+    },
+    {
+      "source": "THE RIDERS ESCORT YOU INTO THE OUTPOST.",
+      "text": "那些騎兵護送你們進入前哨。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "THE ROOM IS DIRTY AND HAS A STRONG AND UNPLEASANT ODOR.",
       "text": "房間很髒，還有一股濃烈的臭味。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -3729,6 +4439,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE SLAVES CHEER YOUR VICTORY.  A LARGE GROUP OF BUCCANEERS STANDS IN DISBELIEF.  THE BUCCANEERS PART AS A LARGE MAN IN GLEAMING CHAIN MAIL STEPS FORTH.  THE SLAVES FALL SILENT.",
+      "text": "奴隸為你們的勝利歡呼。一大群海盜難以置信地站著。人群分開，一名身穿亮甲的高大男子走了出來，奴隸頓時安靜下來。",
+      "note": "海盜據點。"
+    },
+    {
       "source": "THE SLUMS IMMEDIATELY TO OUR WEST NEED TO BE CLEARED OF MONSTERS.'",
       "text": "我們西邊那片貧民區的怪物必須清掉。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -3779,6 +4494,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE TOWER GUARDS ATTACK.",
+      "text": "塔上的守衛動手了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "THE UNDEAD ARE CROSSING THE RIVER IN HORDES AND KILLING OR CARRYING OFF OUR SETTLERS.  THE COUNCIL DEMANDS THESE ATTACKS BE STOPPED. A GENEROUS REWARD IS OFFERED.'",
       "text": "不死怪物成群渡河而來，殺害或擄走我們的移民。議會要求制止這些襲擊，並提供優厚報酬。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -3792,6 +4512,11 @@
       "source": "THE VAMPIRE TURNS INTO A VAPOR CLOUD AND FLOATS AWAY.",
       "text": "吸血鬼化成一團霧氣飄走了。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "THE WALL IS CLIMBABLE HERE, WILL YOU SCALE OVER IT?",
+      "text": "這一段牆爬得上去。要翻過去嗎？",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "THE WATER LOOKS COLD AND DEEP. DO YOU WANT TO DIVE IN?",
@@ -3824,9 +4549,19 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "THEN LEAVE AND BID YOU GOOD DAY.",
+      "text": "然後離開，向你們道別。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "THEN YOU MUST LEAVE.",
       "text": "那你們得離開。",
       "note": "敘述。"
+    },
+    {
+      "source": "THERE ARE FOUR GUARDS HERE.  THEIR LEADER SAYS, 'YOU ARE RESTRICTED TO YOUR QUARTERS.   RETURN TO THEM NOW.'  WHAT WILL YOU DO?",
+      "text": "這裡有四名守衛，領頭的說：「你們被限制在住處，現在就回去。」你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "THERE ARE LARGE SILVER HOLY SYMBOLS UP AND DOWN THE CRACK IN THE DOORWAY.",
@@ -3835,8 +4570,13 @@
     },
     {
       "source": "THERE ARE TWO HUMANS AND THREE ETTIN IN THE ROOM.",
-      "text": "房裡有兩個人類和三隻雙頭巨人。",
+      "text": "房裡有兩個人類和三隻雙頭巨魔。",
       "note": "貧民區（Slums）的事件與敘述。Ettin 為新增譯名。"
+    },
+    {
+      "source": "THERE ARE TWO THRI-KREEN HERE.  THEY BLOCK THE PASSAGE WITH THEIR BODIES.  WHAT WILL YOU DO?",
+      "text": "這裡有兩隻昆蟲人，牠們用身體堵住通道。你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "THERE IS A FEELING OF SOMETHING IMMENSE AND EVIL STARING DOWN AT YOU...",
@@ -3859,13 +4599,28 @@
       "note": "瓦傑渥城堡內部。"
     },
     {
+      "source": "THERE IS A SEEDY LITTLE MAN HERE WHO WHISPERS 'PSSST, BUDDY.  WANT TO BUY A PASS TO SEE THE CAPTAIN?'",
+      "text": "這裡有個賊頭賊腦的小個子低聲說：「喂，朋友。要不要買張見隊長的通行證？」",
+      "note": "海盜據點。"
+    },
+    {
       "source": "THERE IS A VAMPIRE HERE.",
       "text": "這裡有一隻吸血鬼。",
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THERE IS GREAT CONFUSION AS THE GUARDS RUN TO THEIR POSTS.",
+      "text": "守衛紛紛奔向崗位，場面一片混亂。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THERE IS MASS CONFUSION AS THE ANIMALS RUN AROUND THE COMPOUND.  GUARDS ARE LEAVING THEIR POSTS IN ORDER TO CONTROL THE ANIMALS.",
+      "text": "牲口在營區裡亂竄，場面一片混亂。守衛紛紛離開崗位去趕牲口。",
+      "note": "海盜據點。"
+    },
+    {
       "source": "THERE IS MASS CONFUSION. SUDDENLY, THE OGRE SPRINTS FROM THE DARKNESS.",
-      "text": "場面一片混亂。忽然，那隻食人魔從黑暗中衝了出來。",
+      "text": "場面一片混亂。忽然，那隻食人鬼從黑暗中衝了出來。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
@@ -4084,6 +4839,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "THRI-KREENS",
+      "text": "昆蟲人",
+      "note": "野外與漢提爾前哨一帶的事件。怪物名，音近。"
+    },
+    {
       "source": "THROW A ROCK",
       "text": "丟石頭",
       "note": "遭遇選單。"
@@ -4092,6 +4852,11 @@
       "source": "TIE THEM UP",
       "text": "把他們綁起來",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "TIGERS",
+      "text": "老虎",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "TO FIND ANYTHING MORE YOU WILL HAVE TO SPEND SO MUCH TIME THAT YOU WILL NEED TO CLEAR THE AREA FIRST.",
@@ -4129,6 +4894,11 @@
       "note": "紡織行與巨人占據一帶的事件。片段。"
     },
     {
+      "source": "TROUBLE",
+      "text": "找麻煩",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "TRY AGAIN?",
       "text": "要再試一次嗎？",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -4137,6 +4907,11 @@
       "source": "TRY TO LEAVE",
       "text": "試著離開",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "TRY TO SNEAK BY",
+      "text": "試著溜過去",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "TWO GIANTS COME BOUNDING OUT OF A DOORWAY. ONE STAYS BY THE DOOR.",
@@ -4212,6 +4987,11 @@
       "source": "WAIT FOR WINNER",
       "text": "等著看誰得標",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "WALK AROUND",
+      "text": "繞過去",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "WARNING VOICES CRY FROM WITHIN.  'WE ARE THE SPIRITS OF THOSE WHO FOUGHT THE DRAGONS.  LEAVE US OR DIE.'",
@@ -4319,6 +5099,16 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "WHAT WILL YOU DO?",
+      "text": "你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "WHAT WILL YOU SAY IS YOUR REASON FOR BEING HERE?",
+      "text": "你們要說自己為什麼來這裡？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "WHAT? EVERYONE KNOWS THAT... HEY, YOU DON'T BELONG HERE!",
       "text": "什麼？那大家都知道……喂，你們不該在這裡！",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -4404,6 +5194,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "WILD BOARS",
+      "text": "野豬",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "WILL YOU GO AGAIN?",
       "text": "要再來一次嗎？",
       "note": "酒館賭局提問。"
@@ -4469,6 +5264,11 @@
       "note": "選單選項。"
     },
     {
+      "source": "YOU AGREE WITH THE MERCHANT THAT THE YOUNG BOY IS VALUABLE.  THE MERCHANT LAUGHS THEN SAYS 'YOU'LL HAVE TO OUTBID ME FOR THE WAIF.'  THE SLEAZY MERCHANT THEN WALKS AWAY.",
+      "text": "你們附和那名商人，說那男孩確實值錢。商人笑道：「想要這小流浪兒，就得出得比我高。」說完便走開了。",
+      "note": "海盜據點。"
+    },
+    {
       "source": "YOU ARE APPALLED BY THE STENCH IN THIS DAMP BUILDING.",
       "text": "這棟潮濕建築裡的惡臭令你們作嘔。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -4477,6 +5277,21 @@
       "source": "YOU ARE APPROACHED BY A MAN CLAD IN MYSTIC ROBES.",
       "text": "一個身穿神祕長袍的人朝你們走來。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE AT THE GATE TO THE ANIMAL PENS.  THE ANIMALS ARE RESTLESS.  WHAT WILL YOU DO?",
+      "text": "你們在獸欄的門前，裡面的牲口躁動不安。你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE AT THE MAIN GATE TO THE COMPOUND.",
+      "text": "你們在營區大門前。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE ATTACKED BY FOUR GUARDS IN YOUR SLEEP",
+      "text": "你們在睡夢中遭到四名守衛襲擊",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU ARE ATTACKED BY WIGHTS.",
@@ -4492,6 +5307,11 @@
       "source": "YOU ARE BEING APPROACHED BY SOME ANGRY",
       "text": "有一群怒氣沖沖的",
       "note": "貧民區（Slums）的事件與敘述。片段，後接怪物名。"
+    },
+    {
+      "source": "YOU ARE BEING ESCORTED INTO ZHENTIL OUTPOST.",
+      "text": "你們正被護送進漢提爾前哨。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU ARE BLINDFOLDED AND TAKEN ON A LONG, TWISTING WALK, THEN UP A LADDER.'ONLY MEET US AT THE MAIN WELL.'",
@@ -4629,9 +5449,29 @@
       "note": "舊繩索公會的圖書室。"
     },
     {
+      "source": "YOU ARE IN THE MERCHANTS' CAMP AREA.",
+      "text": "你們在商人紮營的區域。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU ARE IN THE REMAINS OF A ONCE GREAT DINING ROOM.  FURNITURE LIES BURNED AND BROKEN THROUGHOUT THE ROOM.",
       "text": "你們在一間曾經氣派的餐廳廢墟裡，家具被燒毀砸爛，散了一地。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU ARE IN THE SLAVE PEN.  STANDING NEAR YOU IS THE YOUNG BOY.  WHAT WILL YOU DO?",
+      "text": "你們在奴隸欄裡，那個男孩就站在旁邊。你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE IN YOUR QUARTERS.  WILL YOU WALK AROUND OR WILL YOU JUST RELAX UNTIL DINNER?",
+      "text": "你們在住處裡。要四處走走，還是就這樣休息到晚餐？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE INSIDE THE COMMANDANT'S OFFICE.  HE GREETS YOU AND YOU HAND HIM THE PAPERS.",
+      "text": "你們在指揮官的辦公室裡。他招呼了你們，你們把文件交給他。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU ARE INTERCEPTED BY THE COUNCIL GUARD. 'HALT.  YOUR PRESENCE IS NOT AUTHORIZED.  LEAVE.'  DO YOU LEAVE?",
@@ -4639,9 +5479,74 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "YOU ARE JUST INSIDE THE MAIN GATE OF THE BUCCANEER'S BASE.  YOU ARE BEING TAKEN TO THE CENTER OF THE BASE WHERE THE MERCHANTS MAKE CAMP.",
+      "text": "你們剛進海盜據點的大門，正被帶往據點中央商人紮營的地方。",
+      "note": "海盜據點。"
+    },
+    {
       "source": "YOU ARE JUST NORTH OF THE ENTRY TO THE OLD ROPE GUILD.",
       "text": "你們就在舊繩索公會入口的北邊。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU ARE JUST OUTSIDE A PEN FOR HOLDING SLAVES.  THE PEOPLE HERE ARE WORN AND BEATEN, DESTINED TO A LIFE OF SLAVERY.  AROUND THE PEN THERE ARE MANY GUARDS AND SLEAZY MERCHANTS LOOKING AT THE SLAVES.",
+      "text": "你們就在關押奴隸的欄外。裡面的人個個憔悴、遍體鱗傷，注定要為奴一生。欄邊圍著不少守衛與下流的商人，正打量著這些奴隸。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU ARE JUST OUTSIDE AN UNGUARDED SLAVE PEN.",
+      "text": "你們就在一座無人看守的奴隸欄外。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE JUST OUTSIDE SOME EMPTY ANIMAL PENS.",
+      "text": "你們就在幾座空獸欄外。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE JUST OUTSIDE THE SLAVE PEN.",
+      "text": "你們就在奴隸欄外面。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE JUST OUTSIDE THE SLAVE PEN.  AMOUNG THE SLAVES IS A YOUNG BOY WITH A HEART-SHAPED BIRTHMARK.",
+      "text": "你們就在奴隸欄外。奴隸之中有個男孩，身上有一塊心形胎記。",
+      "note": "海盜據點。原版把 AMONG 拼成 AMOUNG。"
+    },
+    {
+      "source": "YOU ARE LED TOWARD THE CENTRAL KEEP.",
+      "text": "你們被領往中央的主堡。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE NEAR A DENSLY PACKED ANIMAL PEN.",
+      "text": "你們就在一座擠滿牲口的獸欄旁。",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 DENSELY 拼成 DENSLY。"
+    },
+    {
+      "source": "YOU ARE NEAR AN OPEN DOOR TO THE ANIMAL PENS.",
+      "text": "你們就在獸欄一道敞開的門旁。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE NEAR THE FRONT GATE TO THE SLAVE PEN.  TWO GUARDS GUARD THE DOOR.  WHAT WILL YOU DO?",
+      "text": "你們就在奴隸欄前門附近，兩名守衛看著門。你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE NEAR THE FRONT GATE.",
+      "text": "你們就在前門附近。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE NEAR THE GATE TO THE SLAVE PEN.",
+      "text": "你們就在奴隸欄的門附近。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE NEAR THE MAIN GATE TO THE COMPOUND.  SOME BUCCANEERS STAND GUARD NEAR THE ENTRANCE.",
+      "text": "你們就在營區大門附近，幾名海盜在入口處守著。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU ARE NOTICED.",
@@ -4694,6 +5599,11 @@
       "note": "同上。"
     },
     {
+      "source": "YOU ARE SURPRISED BY A GROUP OF",
+      "text": "你們被一群",
+      "note": "野外與漢提爾前哨一帶的事件。片段，後接怪物名。"
+    },
+    {
       "source": "YOU ARE USHERED INTO THE BISHOP'S STUDY. BISHOP BRACCIO SPEAKS, 'ALLOW ME TO INTRODUCE DIRTEN, PRIEST OF ILMAR.",
       "text": "你們被帶進主教的書房。巴西歐主教說：「讓我介紹伊爾梅特的僧侶迪爾騰。",
       "note": "提爾神殿；句子在原版就沒有收尾，接下一段。 原版把 ILMATER 拼成 ILMAR，譯名照定案作伊爾梅特。"
@@ -4707,6 +5617,36 @@
       "source": "YOU ARE WELCOMED BY PRIESTESS JOY OF SUNE.",
       "text": "蘇妮神殿的喬伊女祭司歡迎你們。",
       "note": "地點敘述。"
+    },
+    {
+      "source": "YOU ARRIVE AT THE OFFICERS MESS AND ARE SEATED WITH THE COMMANDANT AND HIS ADVISORS.  A FINE MEAL OF ROAST BOAR IS SERVED WITH A HEARTY RED WINE.",
+      "text": "你們來到軍官食堂，與指揮官和他的顧問同席。上的是一頓豐盛的烤野豬，配著濃郁的紅酒。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARRIVE BACK AT YOUR QUARTERS.",
+      "text": "你們回到了住處。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ATTACK THE BUCCANEERS.",
+      "text": "你們攻擊那群海盜。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ATTACK THE GUARDS.",
+      "text": "你們攻擊守衛。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ATTACK THE GUARDS.  THE GUARDS SOUND AN ALARM AND ATTACK.",
+      "text": "你們攻擊守衛。守衛拉響警報，反擊回來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ATTACK THE TOWER GUARDS.",
+      "text": "你們攻擊塔上的守衛。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU ATTACKED THE CITY WATCH, YOU WON'T BEAT US SO EASILY!",
@@ -4759,6 +5699,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU BUY THE PASS.  THE SEEDY LITTLE MAN DISAPPEARS AROUND A CORNER.",
+      "text": "你們買下通行證。那個賊頭賊腦的小個子消失在轉角。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU BYPASS THE TRAP BY NOT FOOLING WITH ANY OF THE WEAPONS.",
       "text": "你們沒有去碰那些武器，因此躲過了陷阱。",
       "note": "柯威大樓的盜賊據點。"
@@ -4769,6 +5714,16 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU CLIMB OVER THE WALL AND LEAVE THE OUTPOST.",
+      "text": "你們翻牆而過，離開了前哨。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU CLIMB TO THE SECOND LEVEL OF THE DRAGON'S DEN.  THERE IS THE DRAGON WAITING FOR YOU.  HE LOOKS EXTREMELY MAD!  WHAT WILL YOU DO?",
+      "text": "你們爬到龍穴的第二層，那條龍正等著你們，看起來火冒三丈！你們要怎麼做？",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
       "source": "YOU COLDLY KILL THE DEFENCELESS GOBLINS.",
       "text": "你們冷酷地殺光了毫無反抗之力的哥布林。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -4777,6 +5732,16 @@
       "source": "YOU CONFRONT AN ARMED MAN WHO IMMEDIATELY ATTACKS YOU.",
       "text": "你們迎上一個持械的人，他立刻動手。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU CONTINUE TO TALK ABOUT OLD PHLAN AND THE COMMANDANT SAYS 'IS NEW PHLAN HAVING ANY TROUBLE WITH TYRANTHRAXUS?'",
+      "text": "你們繼續談舊菲蘭城，指揮官問：「新菲蘭城被泰蘭特拉克斯困擾嗎？」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU CONTINUE YOUR CONVERSATION WITH THE COMMANDANT.  WHAT WILL BE YOUR NEXT TOPIC OF DISSCUSION?",
+      "text": "你們和指揮官繼續談下去。下一個話題要談什麼？",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 DISCUSSION 拼成 DISSCUSION。"
     },
     {
       "source": "YOU CONVINCE THE",
@@ -4804,6 +5769,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "YOU DO NOT HAVE A PASS TO SHOW THE GUARDS!",
+      "text": "你們沒有通行證可以給守衛看！",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU DON'T HAVE ENOUGH MONEY!",
       "text": "你們的錢不夠！",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -4814,6 +5784,11 @@
       "note": "敘述。"
     },
     {
+      "source": "YOU DRAW YOUR WEAPONS AND ATTACK.  THE CAPTAIN DRAWS HIS SWORD AND YELLS FOR HIS GUARDS TO ATTACK!",
+      "text": "你們拔出武器動手。隊長也抽出劍，喝令守衛攻擊！",
+      "note": "海盜據點。"
+    },
+    {
       "source": "YOU EASILY MURDER THE OLD WOMAN.  EXCEPT FOR A FEW COPPER PIECES YOU FIND NOTHING OF VALUE.  THE GODS HAVE NOTED YOUR ACTIONS.",
       "text": "你們輕易殺了那個老婦人。除了幾枚銅幣之外一無所獲。眾神記下了你們的作為。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -4822,6 +5797,11 @@
       "source": "YOU ENCOUNTER HOBGOBLINS!",
       "text": "你們遭遇了大哥布林！",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU ENTER A BARRACKS FILED WITH TWENTY BUCCANEERS.  ONE OF THE BUCCANEERS SAYS 'THIS AREA IS OFF LIMITS.  LEAVE NOW.' WHAT WILL YOU DO?",
+      "text": "你們走進一間住著二十名海盜的營房。其中一個說：「這裡禁止進入，馬上離開。」你們要怎麼做？",
+      "note": "海盜據點。原版把 FILLED 拼成 FILED。"
     },
     {
       "source": "YOU ENTER A BRIGHTLY LIT BUILDING WHICH REEKS OF TALLOW AND LEATHER. YOU SEE SIX SCRIBES BUSILY WRITING DOWN THE REPORTS OF A COUPLE OF OFFICERS.",
@@ -4837,6 +5817,11 @@
       "source": "YOU ENTER A BUILDING WHICH IS FILLED WITH TABLES AND WRITING SUPPLIES. THOUGH EMPTY, THERE ARE SIGNS THAT WORK HAS BEEN DONE HERE RECENTLY.",
       "text": "你們走進一棟滿是桌子與文具的建築。雖然空無一人，卻看得出不久前還有人在這裡辦公。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU ENTER A CAVE ROOM WITH FOUR THRI-KREEN WARRIORS IN IT.  ON THE FLOOR IS A CHEST WITH TREASURE IN IT.  AS YOU ENTER THEY ATTACK.",
+      "text": "你們走進一間洞室，裡面有四名昆蟲人戰士，地上有個裝著財寶的箱子。你們一進去牠們就攻了上來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU ENTER A CHAMBER WHICH IS LAVISHLY APPOINTED WITH HANGINGS, CARPETS AND FURNITURE. SITTING ON A THRONE IS A POWERFUL LOOKING MAN CLAD IN BARBARIC SPLENDOR.",
@@ -4889,9 +5874,24 @@
       "note": "紡織行與巨人占據一帶的事件。原版把 VICIOUS 拼成 VISCIOUS。"
     },
     {
+      "source": "YOU ENTER A ROOM WITH FOUR GUARDS IN GLEAMING CHAIN MAIL.  AS YOU ENTER, ONE OF THEM GOES THROUGH THE SOUTH DOOR AND RETURNS WITH THE BUCCANEER CAPTAIN.",
+      "text": "你們走進一間屋子，裡面有四名身穿亮甲的守衛。你們一進去，其中一個便走出南門，帶著海盜隊長回來。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU ENTER AN EMPTY BARRACKS.  IT SEEMS MOST OF THE MEN ARE OUTSIDE CHASING THE ANIMALS.",
+      "text": "你們走進一間空營房。看來大部分的人都在外面追牲口。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU ENTER INTO A FILTHY ROOM.  EIGHT ORC GUARDS ATTACK YOU IMMEDIATELY.",
       "text": "你們走進一間骯髒的屋子，八名半獸人守衛立刻撲了上來。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU ENTER THE CAVE.",
+      "text": "你們走進洞裡。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU ENTER THE CITY HALL.  AS YOU FACE DOWN THE HALLWAY, YOU SEE A GUARDED DOOR.",
@@ -4899,9 +5899,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "YOU ENTER THE ENORMOUS CAVE, SEARCH IT AND FIND NOTHING OF INTREST.  YOU THEN LEAVE.",
+      "text": "你們走進那個巨大的洞穴，搜了一遍卻沒發現什麼值得一提的，於是離開了。",
+      "note": "野外與漢提爾前哨一帶的事件。原版把 INTEREST 拼成 INTREST。"
+    },
+    {
       "source": "YOU ENTER THE KEEP'S OLD ARMORY.  ALL OF THE WEAPONS AND ARMOR HAVE DECAYED INTO USELESSNESS.",
       "text": "你們走進城堡的舊軍械庫，所有武器與護甲都已腐朽得不能用了。",
       "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
+      "source": "YOU ESCAPE FROM THE OUTPOST.",
+      "text": "你們逃出了前哨。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU FEEL A LIGHT TOUCH ON YOUR PURSE.  DO YOU IGNORE IT OR GRAB THE OFFENDING HAND?",
@@ -5089,6 +6099,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU GO BACK TO YOUR QUARTERS.",
+      "text": "你們回到住處。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU GO FORWARD AND KNEEL. 'IN THE NAME OF LORD BANE, GOD OF GODS, I BLESS YOU.'",
       "text": "你們上前跪下。「以眾神之神邪惡神之名，我為你們祝福。」",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -5164,6 +6179,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU HAVE ENTERED ONE OF THE GUARD TOWERS.  INSIDE ARE FOUR BUCCANEERS.  ONE OF THEM SAYS 'THIS IS A RESTRICTED AREA, LEAVE NOW!'  WHAT WILL YOU DO?",
+      "text": "你們走進其中一座守衛塔，裡面有四名海盜。其中一個說：「這裡是管制區，馬上離開！」你們要怎麼做？",
+      "note": "海盜據點。"
+    },
+    {
       "source": "YOU HAVE ENTERED THE MONSTER-CRAWLING SLUMS OF PHLAN.  SMALL, UGLY THINGS SCURRY FROM BENEATH YOUR FEET.  IN THE DISTANCE, AN ALARM SOUNDS.",
       "text": "你們踏進了怪物橫行的菲蘭城貧民區。醜陋的小東西從腳邊竄開。遠處傳來警報聲。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -5179,6 +6199,21 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU HAVE FOUND A PASSAGE WHICH LEADS OUTSIDE.  WILL YOU TAKE IT?",
+      "text": "你們找到一條通往外面的通道。要走嗎？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU HAVE FOUND A SMALL DARK CAVE.  WILL YOU ENTER?",
+      "text": "你們發現一個又小又暗的洞穴。要進去嗎？",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU HAVE INSULTED THE",
+      "text": "你們羞辱了",
+      "note": "野外與漢提爾前哨一帶的事件。片段。"
+    },
+    {
       "source": "YOU HAVE MANAGED TO SNEAK UP ON SOME",
       "text": "你們成功摸到了幾隻",
       "note": "瓦海登墳場的事件與敘述。片段。"
@@ -5187,6 +6222,16 @@
       "source": "YOU HAVE NO KEY TO UNLOCK THE PADLOCKS.",
       "text": "你們沒有鑰匙能打開那些掛鎖。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU HAVE REACHED THE BUCCANEER BASE.  A BAND OF BUCCANEERS RIDE OUT TO ESCORT YOU IN.  WHAT WILL YOU DO?",
+      "text": "你們抵達了海盜據點。一隊海盜騎馬出來要護送你們進去。你們要怎麼做？",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU HAVE RUN OUTSIDE THE CAPTAINS QUARTERS.  AN ALARM GOES OFF IN THE DISTANCE.  YOU SEE A LARGE GROUP OF ANGRY BUCCANEERS CHARGING TOWARD YOU!",
+      "text": "你們跑到隊長住處外面。遠處警報響起，一大群憤怒的海盜正朝你們衝來！",
+      "note": "海盜據點。"
     },
     {
       "source": "YOU HAVE SLAIN THE GARRISON. NOW IF YOU CAN BUT SLAY THE OUTSIDE GUARDS QUICKLY BEFORE THE ENEMY ARRIVES THE GATE WILL BE YOURS!",
@@ -5229,9 +6274,19 @@
       "note": "紡織行與巨人占據一帶的事件。原版把 LORD BANE 連寫成 LORDBANE。"
     },
     {
+      "source": "YOU HEAR A GREAT FLAPPING SOUND.  A STRONG WHOOSH OF AIR COMES DOWN UPON THE ADVENTURERS.  A LARGE SILVER DRAGON STANDS BEFORE YOU.  IN A BOOMING VOICE IT SAYS...",
+      "text": "你們聽見巨大的振翅聲，一股強風壓了下來。一條巨大的銀龍立在你們面前，以洪亮的嗓音說道……",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
       "source": "YOU HEAR A HISS. AS YOU LOOK DOWN YOU SUDDENLY SEE A DULL BROWN REPTILIAN MONSTER.",
       "text": "你們聽到嘶嘶聲，低頭一看，竟是一隻暗褐色的爬蟲怪物。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HEAR A ROAR THEN A GREAT FLAPPING SOUND.  A STRONG RUSH OF AIR BATTERS THE PARTY AS A LARGE SILVER DRAGON LANDS BEFORE THE ADVENTURERS.  IN A BOOMING VOICE IT SAYS...",
+      "text": "你們先聽見一聲咆哮，接著是巨大的振翅聲。一股強風撲向隊伍，一條巨大的銀龍落在冒險者面前，以洪亮的嗓音說道……",
+      "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
       "source": "YOU HEAR ONE OF THEM WHISPER, 'THEY DON'T BELONG HERE; THEY MUST HAVE COME TO KILL TYRANTHRAXUS'. A HALF-ORC WOMAN STEPS FORWARD 'WHAT DO YOU WANT OF US?'",
@@ -5249,6 +6304,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU IGNORE THE SLEAZY MERCHANT AND CONCENTRATE ON RESCUING THE BOY.",
+      "text": "你們不理會那名下流的商人，專心救那個男孩。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU INTERRUPT SOME FEEDING KOBOLDS.",
       "text": "你們打擾了一群正在進食的小妖魔。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -5262,6 +6322,16 @@
       "source": "YOU INTRUDE ON A GATHERING OF MONSTER LEADERS.",
       "text": "你們闖進了一場怪物首領的集會。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU KILL THE CAPTAIN.",
+      "text": "你們殺了那名隊長。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU KILL THE GUARDS BUT ARE CAUGHT DOING IT.  A LARGE GROUP OF GUARDS RUN TOWARD YOU AND ATTACK.",
+      "text": "你們殺了守衛，卻當場被逮個正著。一大群守衛朝你們衝來動手。",
+      "note": "海盜據點。"
     },
     {
       "source": "YOU LEAVE THE SHOP.",
@@ -5289,6 +6359,31 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU MAKE UP STORIES ABOUT WONDERFUL MAGICAL ITEMS AND PLACES.  YOU CAPTIVATE EVERYONE SITTING AROUND YOU.",
+      "text": "你們胡謅了一堆神奇魔法物品與地方的故事，把在座的人都聽住了。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU MANAGE TO RUN AWAY AND HIDE.  YOU HEAR AN ALARM IN THE DISTANCE AS GUARDS ARE ISSUING OUT OF BARRACKS.",
+      "text": "你們設法逃開躲了起來。遠處警報大作，守衛正從營房裡湧出。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU MAY EASILY FOLLOW THE DRAGON BY CLIMBING UP A WALL AND THEN THROUGH THE HOLE IN THE CEILING.  WHAT WILL YOU DO?",
+      "text": "你們可以輕易爬上牆、穿過天花板的洞跟上那條龍。要怎麼做？",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
+      "source": "YOU MENTION THE YOUNG BOY IN THE SLAVE PEN AND THE CAPTAIN SEEMS INTERESTED.  HE SAYS 'I CAN LET YOU BUY THE YOUNG BOY BUT IT WILL COST YOU ALOT!'  WHAT WILL YOU DO?",
+      "text": "你們提起奴隸欄裡那個男孩，隊長似乎有興趣：「那男孩可以賣你們，不過價錢不便宜！」你們要怎麼做？",
+      "note": "海盜據點。原版把 A LOT 連寫成 ALOT。"
+    },
+    {
+      "source": "YOU MOVE THROUGH THE CROWD NONCHALANTLY UNTIL YOU ARE NEAR THE FRONT GATE OF THE SLAVE PEN.",
+      "text": "你們若無其事地穿過人群，來到奴隸欄前門附近。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU NOW CAREFULLY AVOID THE GREEN SLIME.",
       "text": "你們小心地繞開那團綠泥怪。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -5297,6 +6392,11 @@
       "source": "YOU NOW SEE THE WAND ISN'T A MAJOR ARTIFACT, IT'S ONLY A WAND OF FEAR!",
       "text": "你們這才看清那根魔杖不是什麼重要神器，只是一根恐懼魔杖！",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "YOU OFFER THE GUARDS SOME MONEY BUT THEY REFUSE.  ONE OF THE GUARDS SAYS 'GET OTTA' HERE YA SCUM'",
+      "text": "你們塞錢給守衛，他們卻不收。其中一個說：「滾出去，渣滓。」",
+      "note": "海盜據點。原版用口語，把 OUT OF 寫成 OTTA'。"
     },
     {
       "source": "YOU OPENED THE DOOR INTO A DRUNK BUCCANEER.",
@@ -5310,7 +6410,7 @@
     },
     {
       "source": "YOU OVERHEAR THE FIGHTER TELL THE MAGE, 'YOU BETTER WATCH YOUR TALK. THE LAST GUY WHO GAVE THE BOSS LIP WAS THROWN THROUGH THE TRAPDOOR TO THE MEDUSA!'",
-      "text": "你們聽見那名戰士對法師說：「你講話最好小心點。上一個頂撞老大的，被從活門丟下去餵蛇髮女妖了！」",
+      "text": "你們聽見那名戰士對法師說：「你講話最好小心點。上一個頂撞老大的，被從活門丟下去餵梅杜莎了！」",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
@@ -5322,6 +6422,11 @@
       "source": "YOU PICK THE LOCK!",
       "text": "你們把鎖撬開了！",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU PUNCH THE MERCHANT IN THE NOSE AND HE FALLS TO THE GROUND, BADLY BLEEDING.  THE MERCHANT YELLS FOR HIS GUARDS AND THEY COME RUNNING.",
+      "text": "你們一拳打在那名商人鼻子上，他倒在地上血流不止，一邊叫來他的護衛，那些人跑了過來。",
+      "note": "海盜據點。"
     },
     {
       "source": "YOU QUICKLY KILL THE TRADER AND GRAB HIS WAGON.",
@@ -5339,9 +6444,54 @@
       "note": "街頭事件。"
     },
     {
+      "source": "YOU RUN AWAY FROM THE BATTLE BACK TO THE MERCHANT'S AREA.  FROM BEHIND YOU HEAR PEOPLE CALLING YOU NAMES LIKE 'PANSY' AND 'WIMP.'",
+      "text": "你們逃離戰鬥，跑回商人區。身後傳來一片「膽小鬼」「孬種」的叫罵。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU RUN FOR YOUR LIVES AS THE GARRISON CHASES BEHIND YOU.  YOU RUN FOR THE FRONT GATE BUT ARE STOPPED BY SOME GUARDS.",
+      "text": "駐軍在後面追，你們拚命逃。跑向前門時卻被幾名守衛攔了下來。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU RUN FROM THE BATTLE AND OUT THE OUTPOST GATE.  THE YOUNG BOY COULD NOT KEEP UP AND WAS LEFT BEHIND.",
+      "text": "你們逃離戰場，衝出前哨大門。那個男孩跟不上，被留在了後面。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU RUN INTO SOME MORE GUARDS.",
+      "text": "你們又撞上幾名守衛。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU RUSH TO HELP THE OLD THIEF BUT IT'S TOO LATE.  BEFORE HE DIES HE SAYS, 'THE BOSS HAS ALLIES EVERYWHERE.  TAKE THESE PAPERS.  THEY MAY HELP.'  HE THEN DIES.",
       "text": "你們趕上前想救那名年長的盜賊，卻已經來不及。他臨死前說：「老大到處都有同夥。拿去這些文件，或許幫得上忙。」說完就斷了氣。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU SAY THAT BISHOP BRACCIO IS NOT THE REAL POWER IN PHLAN AND THE COMMANDANT RESPONDS BY SAYING 'THE CITIZENS OF PHLAN ARE WISE TO NOT FOLLOW AN IDIOT FROM THE TEMPLE OF TYR!'",
+      "text": "你們說巴西歐主教並非菲蘭城真正掌權的人，指揮官回道：「菲蘭城的市民有智慧，不去跟隨提爾神殿的蠢貨！」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU SAY THAT BISHOP BRACCIO IS THE REAL POWER IN PHLAN AND THE COMMANDANT RESPONDS BY SAYING 'PHLAN MUST BE A CITY OF FOOLS IF A BISHOP OF TYR HAS POWER!'",
+      "text": "你們說巴西歐主教才是菲蘭城真正掌權的人，指揮官回道：「要是一個提爾的主教握有權力，那菲蘭城肯定滿城都是傻子！」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU SAY THAT ULRICH EBERHARD IS A LOYAL HONEST MAN.  THE COMMANDANT SMIRKS AND SAYS 'YES, OF COURSE HE IS.'",
+      "text": "你們說亞爾瑞屈·艾伯哈德是個忠誠正直的人。指揮官冷笑一下：「是啊，當然。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU SAY THAT ULRICH EBERHARD IS CORRUPT AND HE RESPONDS BY SAYING 'I WOULD ADVISE YOU TO BE CAREFUL WHEN DEALING WITH THE TOWN COUNCIL.'",
+      "text": "你們說亞爾瑞屈·艾伯哈德貪腐，他回道：「我勸各位跟市議會打交道時小心點。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU SAY THAT YOU DON'T KNOW ANYTHING ABOUT THAT MATTER AND THE COMMANDANT RESPONDS BY SAYING 'YES, OF COURSE YOU DON'T.'",
+      "text": "你們說對那件事一無所知，指揮官回道：「是啊，當然不知道。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU SCATTER THE DUST AND PLACE WHAT HOLY ITEMS YOU CAN SPARE INSIDE.",
@@ -5357,6 +6507,11 @@
       "source": "YOU SEE A",
       "text": "你們看到",
       "note": "遭遇敘述的開頭片段，後面接怪物名。"
+    },
+    {
+      "source": "YOU SEE A BOY THAT HAS A HEART-SHAPED BIRTHMARK ON HIS LEFT SHOULDER.  AS YOU STARE AT THE BOY, A SLEAZY FAT MERCHANT APPROACHES YOU AND SAYS ...",
+      "text": "你們看到一個男孩，左肩上有塊心形胎記。你們盯著他看時，一名肥胖下流的商人走過來說……",
+      "note": "海盜據點。"
     },
     {
       "source": "YOU SEE A CHAMBER FILLED WITH ROTTED FURNITURE AND BENCHES.",
@@ -5445,7 +6600,7 @@
     },
     {
       "source": "YOU SEE THE CHIEF OF THE HOBGOBLINS, A HUGE OGRE. AS YOU ENTER, HE RISES TO HIS FULL, TEN FEET OF HEIGHT; HIS HEAD WREATHED IN THE FLICKERING SHADOWS.",
-      "text": "你們看到大哥布林的首領，是一隻巨大的食人魔。你們一進來，牠便挺直了十呎高的身軀，腦袋沒入搖曳的陰影裡。",
+      "text": "你們看到大哥布林的首領，是一隻巨大的食人鬼。你們一進來，牠便挺直了十呎高的身軀，腦袋沒入搖曳的陰影裡。",
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
@@ -5509,6 +6664,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU SURPRISE A GROUP OF",
+      "text": "你們突襲了一群",
+      "note": "野外與漢提爾前哨一帶的事件。片段。"
+    },
+    {
       "source": "YOU SURPRISE A SHADOWY FORM CREATING NEW SKELETONS.",
       "text": "你們撞見一個陰影般的身影正在造新的骷髏。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -5519,9 +6679,54 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU SURRENDER.  THEY STRIP YOU OF ALL POSSESSIONS AND TOSS YOU OUT INTO THE WILDERNESS.'",
+      "text": "你們投降了。他們搜光你們的財物，把你們扔進荒野。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
       "source": "YOU SWIM DOWN UNTIL YOU FEEL YOUR PULSE BEATING IN YOUR EARS. YOU DON'T REACH THE BOTTOM.",
       "text": "你們一直往下潛，直到耳中傳來自己的脈搏聲，卻仍到不了底。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU TAKE THE YOUNG BOY AND LEAVE.  THE OTHER SLAVES ALSO RUN OUT THE SLAVE PEN.",
+      "text": "你們帶著那個男孩離開，其他奴隸也跟著跑出了奴隸欄。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU TALK A LITTLE WHILE LONGER THEN THE COMMANDANT STATES THAT HE HAS OTHER DUTIES TO ATTEND TO.  HE BIDS YOU GOOD NIGHT.",
+      "text": "又談了一會兒，指揮官表示還有別的公事要辦，向你們道了晚安。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU TELL THE COMMANDANT THAT NEW PHLAN'S FORCES ARE CAPABLE.  HE LOOKS AT YOU AND SAYS, 'I HOPE, FOR YOUR SAKE, THAT YOUR CITY'S FORCES CAN DEFEND THEMSELVES FROM TYRANTHRAXUS'S HORDE.'",
+      "text": "你們告訴指揮官新菲蘭城的兵力還算得力。他看著你們說：「為了各位好，但願貴城的兵力擋得住泰蘭特拉克斯的大軍。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU TELL THE COMMANDANT THAT NEW PHLAN'S FORCES ARE STRONG.  HE SEEMS IMPRESSED, AND SAYS 'IT SOUNDS LIKE YOUR CITY CAN HANDLE THAT FIRE DEMON TYRANTHRAXUS'",
+      "text": "你們告訴指揮官新菲蘭城兵力強盛。他似乎頗為佩服：「聽起來貴城應付得了泰蘭特拉克斯那頭火魔。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU TELL THE COMMANDANT THAT NEW PHLAN'S FORCES ARE WEAK.  HE SMILES AND SAYS, 'I HOPE THAT PHLAN CAN DEFEND ITSELF.'",
+      "text": "你們告訴指揮官新菲蘭城兵力薄弱。他笑了笑：「但願菲蘭城守得住自己。」",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU THROW CAUTION TO THE WIND AND ATTACK.  THE CAPTAIN SMILES AND THEN RUSHES TO BATTLE.",
+      "text": "你們豁出去動手了。隊長笑了笑，隨即投入戰鬥。",
+      "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU TRY TO ATTACK THE DRAGON BUT SEEM TO BE FROZEN IN TIME.  THE DRAGON THROWS A FIREBALL IN THE MIDDLE OF THE PARTY AND THEN DISAPPEARS.  YOU HAVE A STRANGE FEELING THAT YOU JUST MADE A BIG MISTAKE.",
+      "text": "你們想攻擊那條龍，卻像被定在時間裡動彈不得。牠朝隊伍中央丟出一顆火球後便消失了。你們隱隱覺得自己剛剛鑄下大錯。",
+      "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
+      "source": "YOU TRY TO FLEE BUT ARE STOPPED BY SOME GUARDS.",
+      "text": "你們想逃，卻被幾名守衛攔了下來。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU TRY TO PICK THE LOCK BUT IT IS TOO COMPLEX FOR YOU TO PICK.  YOU FAIL MISERABLY.",
@@ -5529,9 +6734,29 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU TRY TO RUN BUT ARE CAUGHT.  YOU ARE CAPTURED, STRIPPED AND TOSSED OUT INTO THE WILDERNESS.",
+      "text": "你們想逃卻被抓住，財物被搜光，人被扔進荒野。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU TRY TO RUN FROM THE GUARDS BUT ARE CUT OFF BY NEW ARRIVALS.  THE YOUNG BOY IS SLOWING YOU DOWN.  IF YOU RUN AGAIN YOU WILL LEAVE HIM BEHIND.",
+      "text": "你們想甩開守衛，卻被新趕來的人截住。那個男孩拖慢了你們的腳步，再逃一次就得把他丟下。",
+      "note": "海盜據點。"
+    },
+    {
+      "source": "YOU TRY TO SNEAK UP PAST THE GUARDS BUT THEY ARE TOO ALERT.  YOU CANNOT GET BY THE GUARDS INTO THE SLAVE PEN.  WHAT WILL YOU DO?",
+      "text": "你們想溜過守衛，他們卻警覺得很，怎麼也進不了奴隸欄。你們要怎麼做？",
+      "note": "海盜據點。"
+    },
+    {
       "source": "YOU UP THE BID. MONSTERS NEARBY TURN, STARE,",
       "text": "你們加了價。附近的怪物轉過頭來盯著，",
       "note": "片段。"
+    },
+    {
+      "source": "YOU WAIT IN YOUR ROOM FOR ABOUT TWO HOURS WHEN SUDDENLY FOUR ARMED GUARDS BURST IN AND ATTACK YOU.",
+      "text": "你們在房裡等了約莫兩個小時，四名武裝守衛突然闖進來攻擊。",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOU WALK NEAR THE",
@@ -5542,6 +6767,11 @@
       "source": "YOU WANDER IN THE OLD HEMP MARKET.  MONSTERS SCURRY AT YOUR APPROACH.  YOU OCCASSIONALLY CATCH SNATCHES OF CONVERSATIONS.",
       "text": "你們在舊麻市裡走著，怪物一見你們就四下逃竄，偶爾能聽見隻字片語。",
       "note": "貧民區（Slums）的事件與敘述。原版此處把 OCCASIONALLY 拼成 OCCASSIONALLY。"
+    },
+    {
+      "source": "YOU'VE ANGERED THE GUARDS.  THEY DEMAND THAT YOU RETURN TO YOUR QUARTERS.  WHAT WILL YOU DO?",
+      "text": "你們惹惱了守衛，他們要你們回住處去。你們要怎麼做？",
+      "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
       "source": "YOUR ACTIONS ANGER THE PATRONS AND THEY ATTACK.",

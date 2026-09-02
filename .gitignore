@@ -12,3 +12,6 @@
 *.exe
 *.AppImage
 
+# go build 在 repo 根目錄產出的 cmd 執行檔
+/pool-*
+!/pool-*.md
