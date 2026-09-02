@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
 // 只用正常按鍵，從標題一路走到「隊伍在地圖上動了一步」。這條路徑上任何一段
@@ -98,7 +100,33 @@ func TestNormalKeysReachTheFirstDungeonStep(t *testing.T) {
 	}
 	t.Log(fmt.Sprintf("走到 %+v，狀態列：%s", application.spawn, application.statusLine))
 
+	// 存檔與讀檔也只用按鍵：F10 存、重開一份再按 L 讀回來。
+	var saved poolsave.State
+	application.saveState = func(state poolsave.State) error { saved = cloneSaveState(state); return nil }
 	if err := press(application, ebiten.KeyF10); !errors.Is(err, ebiten.Termination) {
 		t.Fatalf("F10 save=%v", err)
+	}
+	if saved.Campaign == nil {
+		t.Fatal("F10 saved no campaign")
+	}
+	restored, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	restored.mode = modeMenu
+	restored.loadState = func() (poolsave.State, error) { return cloneSaveState(saved), nil }
+	if err := press(restored, ebiten.KeyL); err != nil {
+		t.Fatal(err)
+	}
+	if restored.mode != modeAdventure || restored.spawn != application.spawn || len(restored.state.Party) != 1 {
+		t.Fatalf("load restored mode=%d spawn=%+v party=%d", restored.mode, restored.spawn, len(restored.state.Party))
+	}
+	// 讀回來之後也要能繼續走，不是只把畫面切過去。
+	resumed := restored.spawn
+	if err := press(restored, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	if restored.spawn.X == resumed.X && restored.spawn.Y == resumed.Y {
+		t.Fatalf("the restored party could not move: %q", restored.statusLine)
 	}
 }

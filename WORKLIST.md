@@ -290,8 +290,14 @@
   除以 2。契約見 spec 076。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
   已有 `TestNormalKeysReachTheFirstDungeonStep`：只用按鍵從標題走到建角、
-  加入隊伍、Begin、推完開場與 34 步導覽，然後在地圖上實際走出一步。
-  還缺戰鬥與讀檔那兩段。
+  加入隊伍、Begin、推完開場與 34 步導覽，在地圖上走出一步，F10 存檔後
+  重開一份按 L 讀回來並繼續走。**還缺戰鬥那一段**——見下一條。
+- [ ] `29h ENCOUNTER MENU`：只用按鍵走出去，會經過渡船抵達索寇要塞
+  （archive 4、block 21），然後停在「opcode 0x29 has no core handler or
+  adapter passthrough」。4000 步的隨機走查一次戰鬥都沒觸發，這條 opcode
+  很可能就是原因。常式在 overlay-03 `20B1h`，取 14 個運算元（spec 077 已
+  量出整條派發鏈的個數）。**語意讀完再實作**——先宣告成 passthrough 會讓
+  它靜靜跳過，而跳過 encounter 與正確執行它在報表上分不出來。
 
 ## 發行
 

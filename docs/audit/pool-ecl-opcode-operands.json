@@ -1,0 +1,399 @@
+{
+  "schema": "pool-ecl-opcode-operands-v1",
+  "overlay": 3,
+  "dispatch_chain": "overlay-03 的 cmp ax,opcode / jne / push cs / call 鏈",
+  "operand_fetch": "mov al,N / push ax / lcall 0045h:002Ah",
+  "opcode_count": 55,
+  "opcodes": [
+    {
+      "opcode": "0x00",
+      "name": "EXIT",
+      "handler": "0x0001",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x01",
+      "name": "GOTO",
+      "handler": "0x00ed",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x02",
+      "name": "GOSUB",
+      "handler": "0x010c",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x03",
+      "name": "COMPARE",
+      "handler": "0x0123",
+      "operands": 2,
+      "engine_arity": 2
+    },
+    {
+      "opcode": "0x06",
+      "name": "DIVIDE",
+      "handler": "0x01a0",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x07",
+      "name": "MULTIPLY",
+      "handler": "0x01a0",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x08",
+      "name": "RANDOM",
+      "handler": "0x0237",
+      "operands": 2,
+      "engine_arity": 2
+    },
+    {
+      "opcode": "0x09",
+      "name": "SAVE",
+      "handler": "0x0295",
+      "operands": 2,
+      "engine_arity": 2
+    },
+    {
+      "opcode": "0x0a",
+      "name": "LOAD CHARACTER",
+      "handler": "0x02e3",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x0b",
+      "name": "LOAD MONSTER",
+      "handler": "0x044d",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x0c",
+      "name": "SETUP MONSTER",
+      "handler": "0x03b1",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x0d",
+      "name": "APPROACH",
+      "handler": "0x07e1",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x0e",
+      "name": "PICTURE",
+      "handler": "0x0822",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x0f",
+      "name": "INPUT NUMBER",
+      "handler": "0x091d",
+      "operands": 2,
+      "engine_arity": 2
+    },
+    {
+      "opcode": "0x10",
+      "name": "INPUT STRING",
+      "handler": "0x0960",
+      "operands": 2,
+      "engine_arity": 2
+    },
+    {
+      "opcode": "0x11",
+      "name": "PRINT",
+      "handler": "0x09d5",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x12",
+      "name": "PRINTCLEAR",
+      "handler": "0x09d5",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x13",
+      "name": "RETURN",
+      "handler": "0x0a6b",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x14",
+      "name": "COMPARE AND",
+      "handler": "0x0ab5",
+      "operands": 4,
+      "engine_arity": 4
+    },
+    {
+      "opcode": "0x15",
+      "name": "VERTICAL MENU",
+      "handler": "0x0fee",
+      "operands": 3,
+      "engine_arity": 0,
+      "variable_length": true
+    },
+    {
+      "opcode": "0x1a",
+      "name": "IF \u003c=",
+      "handler": "0x0c5a",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x1b",
+      "name": "IF \u003e=",
+      "handler": "0x0c5a",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x1c",
+      "name": "CLEARMONSTERS",
+      "handler": "0x133d",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x1d",
+      "name": "PARTYSTRENGTH",
+      "handler": "0x13a0",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x1e",
+      "name": "CHECKPARTY",
+      "handler": "0x1512",
+      "operands": 6,
+      "engine_arity": 6
+    },
+    {
+      "opcode": "0x20",
+      "name": "NEWECL",
+      "handler": "0x0cdd",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x21",
+      "name": "LOAD FILES",
+      "handler": "0x0d80",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x22",
+      "name": "PARTY SURPRISE",
+      "handler": "0x16fc",
+      "operands": 2,
+      "engine_arity": 2
+    },
+    {
+      "opcode": "0x23",
+      "name": "SURPRISE",
+      "handler": "0x1798",
+      "operands": 4,
+      "engine_arity": 4
+    },
+    {
+      "opcode": "0x24",
+      "name": "COMBAT",
+      "handler": "0x186c",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x25",
+      "name": "ON GOTO",
+      "handler": "0x19c9",
+      "operands": 2,
+      "engine_arity": 0,
+      "variable_length": true
+    },
+    {
+      "opcode": "0x26",
+      "name": "ON GOSUB",
+      "handler": "0x19c9",
+      "operands": 2,
+      "engine_arity": 0,
+      "variable_length": true
+    },
+    {
+      "opcode": "0x27",
+      "name": "TREASURE",
+      "handler": "0x1a81",
+      "operands": 8,
+      "engine_arity": 8
+    },
+    {
+      "opcode": "0x28",
+      "name": "ROB",
+      "handler": "0x1ea4",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x29",
+      "name": "ENCOUNTER MENU",
+      "handler": "0x20b1",
+      "operands": 14,
+      "engine_arity": 14
+    },
+    {
+      "opcode": "0x2a",
+      "name": "GETTABLE",
+      "handler": "0x0f44",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x2b",
+      "name": "HORIZONTAL MENU",
+      "handler": "0x11b1",
+      "operands": 2,
+      "engine_arity": 0,
+      "variable_length": true
+    },
+    {
+      "opcode": "0x2c",
+      "name": "PARLAY",
+      "handler": "0x27a8",
+      "operands": 6,
+      "engine_arity": 6
+    },
+    {
+      "opcode": "0x2d",
+      "name": "CALL",
+      "handler": "0x3026",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x2e",
+      "name": "DAMAGE",
+      "handler": "0x2ae2",
+      "operands": 5,
+      "engine_arity": 5
+    },
+    {
+      "opcode": "0x2f",
+      "name": "AND",
+      "handler": "0x0ed5",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x30",
+      "name": "OR",
+      "handler": "0x0ed5",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x31",
+      "name": "SPRITE OFF",
+      "handler": "0x2df9",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x32",
+      "name": "FIND ITEM",
+      "handler": "0x2847",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x33",
+      "name": "PRINT RETURN",
+      "handler": "0x2e44",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x34",
+      "name": "ECL CLOCK",
+      "handler": "0x2e1a",
+      "operands": 1,
+      "engine_arity": 2,
+      "disagrees": true
+    },
+    {
+      "opcode": "0x35",
+      "name": "SAVE TABLE",
+      "handler": "0x0fa2",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x36",
+      "name": "ADD NPC",
+      "handler": "0x2edb",
+      "operands": 2,
+      "engine_arity": 2
+    },
+    {
+      "opcode": "0x37",
+      "name": "LOAD PIECES",
+      "handler": "0x0d80",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x38",
+      "name": "PROGRAM",
+      "handler": "0x3167",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x39",
+      "name": "WHO",
+      "handler": "0x2e90",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x3a",
+      "name": "DELAY",
+      "handler": "0x28f3",
+      "operands": 0,
+      "engine_arity": 0
+    },
+    {
+      "opcode": "0x3b",
+      "name": "SPELL",
+      "handler": "0x2f64",
+      "operands": 3,
+      "engine_arity": 3
+    },
+    {
+      "opcode": "0x3c",
+      "name": "PROTECTION",
+      "handler": "0x31d8",
+      "operands": 1,
+      "engine_arity": 1
+    },
+    {
+      "opcode": "0x3d",
+      "name": "CLEAR BOX",
+      "handler": "0x2e6f",
+      "operands": 0,
+      "engine_arity": 0
+    }
+  ]
+}
