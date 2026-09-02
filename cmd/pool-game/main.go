@@ -22,6 +22,7 @@ import (
 	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/temple"
 	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
@@ -100,6 +101,7 @@ type app struct {
 	help             bool
 	tacticalPreview  bool
 	language         language
+	gameText         *gametext.Catalogue
 	tactical         *tacticalState
 	modern           bool
 	statusLine       string
@@ -1405,6 +1407,8 @@ func (a *app) cellMenuLabel() string {
 	}
 	parts := make([]string, len(a.cellMenuOptions))
 	for index, option := range a.cellMenuOptions {
+		// 選項的比對仍以原文進行（見 cellMenuOptions 的使用點），這裡只換顯示。
+		option = a.gameText.Translate(option)
 		if index == a.cellMenuCursor {
 			parts[index] = "> " + option
 		} else {
@@ -1427,7 +1431,7 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 	}
 	for _, event := range result.Events {
 		if event.Text != "" {
-			a.eventText = event.Text
+			a.eventText = a.gameText.Translate(event.Text)
 		}
 	}
 }
@@ -1799,16 +1803,17 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		if a.eventLabel != "" {
 			label = a.eventLabel
 		}
-		drawDialogue(screen, message, label, foreground, accent)
+		drawDialogue(screen, a.gameText.Translate(message), a.gameText.Translate(label), foreground, accent)
 		dialogueVisible = true
 	} else if a.tourActive && a.tourPage >= 0 && a.initialEvent != nil && a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour) {
 		step := a.initialEvent.Tour[a.tourStep]
 		if a.tourPage < len(step.Messages) {
-			drawDialogue(screen, step.Messages[a.tourPage], a.initialEvent.ContinueLabel, foreground, accent)
+			drawDialogue(screen, a.gameText.Translate(step.Messages[a.tourPage]),
+				a.gameText.Translate(a.initialEvent.ContinueLabel), foreground, accent)
 			dialogueVisible = true
 		}
 	} else if a.cellEventPending && a.eventText != "" {
-		drawDialogue(screen, a.eventText, a.eventLabel, foreground, accent)
+		drawDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
 		dialogueVisible = true
 	}
 	if a.statusLine != "" && !dialogueVisible {
@@ -1855,7 +1860,7 @@ func drawDialogue(screen *ebiten.Image, message, label string, foreground, accen
 		screen.Set(40, y, accent)
 		screen.Set(599, y, accent)
 	}
-	for index, line := range wrapASCII(message, 74) {
+	for index, line := range wrapDisplay(message, 68) {
 		if index >= 6 {
 			break
 		}
@@ -2079,11 +2084,15 @@ func main() {
 		log.Fatal(err)
 	}
 	uiFace = face
+	catalogue, err := gameTextFor(uiLanguage)
+	if err != nil {
+		log.Fatal(err)
+	}
 	game, err := newApp(*zipPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	game.language = uiLanguage
+	game.language, game.gameText = uiLanguage, catalogue
 	ebiten.SetWindowSize(960, 600)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("Pool of Radiance Remake")

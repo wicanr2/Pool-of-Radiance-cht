@@ -8,6 +8,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/etenfont"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
 )
@@ -237,4 +238,114 @@ func (a *app) abilityName(index int) string {
 		return abilityNames[index][1]
 	}
 	return abilityNames[index][0]
+}
+
+// gameTextFor 取出該語言的原版敘述文字譯文表。英文模式沒有表，
+// 於是 Translate 一律原樣回傳，走的是同一條路徑。
+func gameTextFor(lang language) (*gametext.Catalogue, error) {
+	if lang != languageTraditionalChinese {
+		return nil, nil
+	}
+	return gametext.TraditionalChinese()
+}
+
+// runeWidth 回傳一個字元佔的半形格數。倚天字型的漢字是 16 像素寬、ASCII 是 8，
+// 所以換行是以半形格為單位算的。
+func runeWidth(r rune) int {
+	switch {
+	case r >= 0x1100 && r <= 0x115F, // 韓文字母
+		r >= 0x2E80 && r <= 0x303E, // 部首與 CJK 標點
+		r >= 0x3041 && r <= 0x33FF, // 假名、注音、相容字
+		r >= 0x4E00 && r <= 0x9FFF, // 漢字
+		r >= 0xF900 && r <= 0xFAFF, // 相容漢字
+		r >= 0xFE30 && r <= 0xFE4F, // 縱書標點
+		r >= 0xFF00 && r <= 0xFF60, // 全形 ASCII
+		r >= 0xFFE0 && r <= 0xFFE6:
+		return 2
+	default:
+		return 1
+	}
+}
+
+// closingPunctuation 是不該落在行首的字元。中文排版裡把它們留在上一行末尾，
+// 即使那一行因此多出一格。
+const closingPunctuation = "。，、；：？！）」』〉》”’,.;:?!)]}"
+
+// wrapDisplay 依半形格數換行，同時吃得下中英文。ASCII 以空白斷詞、整個詞不拆；
+// 漢字每一個字都可以斷。行首不放收尾標點。
+//
+// wrapASCII 只看空白，中文一整段沒有空白，用它會得到一條長到溢出對話框的線。
+func wrapDisplay(value string, columns int) []string {
+	if columns < 1 {
+		return nil
+	}
+	type token struct {
+		text  string
+		width int
+	}
+	var tokens []token
+	var word strings.Builder
+	flush := func() {
+		if word.Len() == 0 {
+			return
+		}
+		text := word.String()
+		width := 0
+		for _, r := range text {
+			width += runeWidth(r)
+		}
+		tokens = append(tokens, token{text, width})
+		word.Reset()
+	}
+	for _, r := range value {
+		switch {
+		case r == ' ' || r == '\t' || r == '\n':
+			flush()
+		case runeWidth(r) == 2:
+			flush()
+			tokens = append(tokens, token{string(r), 2})
+		default:
+			word.WriteRune(r)
+		}
+	}
+	flush()
+
+	var lines []string
+	var line strings.Builder
+	used := 0
+	for index := 0; index < len(tokens); index++ {
+		current := tokens[index]
+		separator := ""
+		if used > 0 && current.width == 1 && line.Len() > 0 {
+			last, _ := utf8DecodeLast(line.String())
+			if runeWidth(last) == 1 {
+				separator = " "
+			}
+		}
+		need := current.width + len(separator)
+		if used > 0 && used+need > columns {
+			// 收尾標點寧可讓這一行多一格，也不要落到下一行的行首。
+			if !strings.ContainsRune(closingPunctuation, []rune(current.text)[0]) {
+				lines = append(lines, line.String())
+				line.Reset()
+				used, separator, need = 0, "", current.width
+			}
+		}
+		line.WriteString(separator)
+		line.WriteString(current.text)
+		used += need
+	}
+	if line.Len() > 0 {
+		lines = append(lines, line.String())
+	}
+	return lines
+}
+
+// utf8DecodeLast 取出字串最後一個字元。
+func utf8DecodeLast(value string) (rune, bool) {
+	runes := []rune(value)
+	if len(runes) == 0 {
+		return 0, false
+	}
+	return runes[len(runes)-1], true
 }
