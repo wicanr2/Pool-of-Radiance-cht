@@ -1,13 +1,13 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-02",
-  "source_commit": "e92242d4a97bde2fa1afa0e677510e33abd3ce88",
+  "source_commit": "57cacca03bb0d65491fab4926f8044357b7e59e6",
   "method": "Docker/Xvfb real Ebitengine window with sequential key input",
   "state_relation": "normal-remake-player-path; tactical map preview toggled with F5",
   "screenshots": [
     {
       "path": "docs/screenshots/pool-remake-tactical-preview.png",
-      "sha256": "269fac09ca1cc60ce70954b167428bb67446b14876f32d61d7065ca3189ca70d",
+      "sha256": "cb0b5ca66b3ed73151d5a8cc86fcc90f5bbc4eaa39ac82d99c12a8733a0c8fa5",
       "width": 960,
       "height": 600
     }

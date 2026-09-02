@@ -108,9 +108,14 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 overlay-10 `0138h` 分成開放、牆與門三種，界外一律當牆、只有隊伍那一列的東西向
 例外。綠色是隊伍成員；這條擷取路徑上沒有 staged 怪物，所以敵方是 0。
 
-部署位置仍是暫定的：原版由執行期填的陣型樣板決定誰站哪一格，那張表不在檔案裡
-（Spec 061），填寫者未解，因此畫面上標著 `PROVISIONAL LAYOUT`。輸入與回合流程
-尚未接上。來源提交與雜湊見
+原版 Move 命令的八個方向鍵（`H I M Q P O K G`）已經接上移動判定。圖中的狀態是
+按了兩次正東再按一次右上斜向之後：預算由 24 扣成 20（兩步正東、每步 2），
+第三步因為右上那格在牆線上而回報 `BLOCKED`。撞到人會走攻擊分支，走出盤面會走
+離開戰鬥的詢問分支。
+
+兩處仍是暫定的，都標在畫面上：部署位置由原版執行期填的陣型樣板決定，那張表不在
+檔案裡（Spec 061）；移動預算在沒有 staged 怪物時用暫定基礎值，因為 remake 的角色
+記錄還沒有移動欄位。回合流程尚未接上。來源提交與雜湊見
 [戰術預覽截圖 manifest](docs/audit/remake-tactical-screenshot-manifest.json)。
 
 | Rolf 34-step 導覽的 Tyr 停靠點（正常 Return 路徑） |
