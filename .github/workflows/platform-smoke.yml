@@ -1,0 +1,55 @@
+# Windows 與 macOS 的原生建置與測試。
+#
+# 本機的 osxcross 與 appimagetool 建得出三平台的執行檔，但那是交叉編譯；
+# 原生工具鏈、原生路徑處理與原生測試行為都還沒在那兩個平台上跑過。
+# 這兩台我沒有實體機器，只有 runner 上跑得到。
+#
+# **只用手動觸發**（workflow_dispatch）。改成 on: push 之前要先想清楚：
+# 這個 repo 目前是 private，Actions 的用量與 log 可見性都跟著 repository
+# visibility 走，那是還沒定案的事（見 WORKLIST 的「發行」段）。
+#
+# **這裡不啟動遊戲執行檔。** 實測過：Ebitengine 的 GLFW 在套件 init 就初始化，
+# 沒有顯示器時連 `-h` 都會 panic（不是我們的錯誤處理，是 process 起不來）。
+# 因此「跑得起來」這件事在無頭 runner 上驗不了；能驗的是原生建置與測試，
+# 而那兩件事交叉編譯給不了。真正的啟動驗收仍需要有桌面工作階段的機器。
+name: platform build and test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-13, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      # 共用 engine 以 replace 指過去，與 tools/go.sh 同一套。
+      - name: check out the shared engine
+        uses: actions/checkout@v4
+        with:
+          repository: wicanr2/golden-box-remake-engine
+          path: .engine
+
+      - name: point the module at the checked-out engine
+        shell: bash
+        run: |
+          go mod edit -replace github.com/wicanr2/golden-box-remake-engine=./.engine
+          go mod download
+
+      - name: build the game natively
+        run: go build -trimpath ./cmd/pool-game
+
+      # 原版資料不在 repo 裡，需要它的測試會自己 skip；其餘照跑。
+      - name: unit tests
+        run: go test ./internal/... ./cmd/...

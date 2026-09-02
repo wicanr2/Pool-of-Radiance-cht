@@ -64,6 +64,24 @@ version `GLIBC_2.38' not found (required by .../usr/lib/libX11.so.6)
 - Windows 與 macOS 目前只有「建得出來、包得起來」；真機啟動尚未驗收，
   不宣稱可用。
 
+## 無頭環境跑不動這個執行檔
+
+實測：Ebitengine 的 GLFW 在**套件 init** 就初始化，沒有顯示器時連 `-h` 都會
+panic——不是我們的錯誤處理沒接上，是 process 根本起不來。
+
+```
+PlatformError: X11: The DISPLAY environment variable is missing
+panic: NotInitialized: The GLFW library is not initialized
+```
+
+因此「啟得動」這件事在無頭環境驗不了，Linux 那支 smoke 測試才要起 Xvfb。
+`.github/workflows/platform-smoke.yml` 對 Windows 與 macOS 只驗原生建置與
+測試（那兩件事交叉編譯給不了），不嘗試啟動執行檔；真正的啟動驗收仍需要
+有桌面工作階段的機器。
+
+該 workflow **只用手動觸發**：repo 目前是 private，Actions 的用量與 log
+可見性都跟著 repository visibility 走，而那還沒定案。
+
 ## 不做
 
 - 不把原版 ZIP 或倚天字型放進任何可公開散布的包。

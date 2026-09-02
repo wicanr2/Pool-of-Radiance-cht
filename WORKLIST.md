@@ -274,5 +274,9 @@
   AppImage 已由 `tools/linux-release-smoke.sh` 在容器裡實際啟動並截圖。
   契約見 spec 066。
 - [ ] Windows 與 macOS 的真機啟動驗收。目前只證明得出「建得出來、包得起來」。
+  `.github/workflows/platform-smoke.yml` 已寫好（只手動觸發），在 runner 上驗
+  原生建置與測試——那兩件事交叉編譯給不了。**啟動仍驗不了**：實測 Ebitengine
+  的 GLFW 在套件 init 就初始化，無頭環境連 `-h` 都 panic（見 spec 066）。
+  要啟用該 workflow 得先定 repository visibility。
 - [ ] repository visibility 與原版素材 deny-list（等待使用者）。
   現階段 GitHub repository 採 private。
