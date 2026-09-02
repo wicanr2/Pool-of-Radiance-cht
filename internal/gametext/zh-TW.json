@@ -9,6 +9,11 @@
       "note": "神殿的問句，原版開頭多一個空格。"
     },
     {
+      "source": "'A TENTH OF YOUR MONEY THEN.'DO YOU ACCEPT?",
+      "text": "「那就你們錢財的十分之一。」你們接受嗎？",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "'ALL RIGHT, GET OUT OF HERE THEN. COME BACK WHEN YOU'VE LEARNED THE RULES.'",
       "text": "「那就滾吧。等你們學會規矩再回來。」",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -54,6 +59,11 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "'DO YOU THINK HE'LL REALLY SHOW UP -- THE BOSS I MEAN?'",
+      "text": "「你覺得他真的會現身嗎——我是說老大。」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "'DON'T GO THERE! DON'T GO ON THE HILL!'",
       "text": "「別去那裡！別上那座山丘！」",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -67,6 +77,21 @@
       "source": "'EXCELLENT.'",
       "text": "「太好了。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'GARWIN, I'LL GET YOU!' CRIES THE AUCTIONEER. HOWEVER, THE MAN HAS ESCAPED IN THE CONFUSION.",
+      "text": "「加文，我不會放過你！」拍賣官大叫。但那人已趁亂逃走了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。Garwin 為新增譯名。"
+    },
+    {
+      "source": "'GET OUTA HERE BEFORE WE MAKE YOU LEAVE' THE MONSTERS YELL.  'AND YOU WONT COME BACK IF YOU KNOW WHATS GOOD FER YA'  THE MONSTERS THEN LEAVE.",
+      "text": "「趁我們還沒動手，快滾。」怪物吼道，「識相的話就別再回來。」說完牠們就走了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。原版此處刻意用不標準的口語。"
+    },
+    {
+      "source": "'GOING... GOING... GONE!' THE AUCTIONEER CRIES.",
+      "text": "「一次……兩次……成交！」拍賣官喊道。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "'GREETINGS, COURAGEOUS ONES, I AM ROLF, APPOINTED BY THE COUNCIL TO INTRODUCE NEWCOMERS TO THE FAIR CITY OF PHLAN. IF YOU WILL ACCOMPANY ME, I WILL START THE TOUR.'",
@@ -87,6 +112,11 @@
       "source": "'HE IS WRAPPED IN FIRE AND SO CRUEL!'",
       "text": "「他渾身裹著火，殘忍極了！」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'HE MELTED INTO A PUDDLE OF LARD WHEN HE TOUCHED THE THING!'",
+      "text": "「他一碰那東西就化成一灘油了！」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "'HEY, WAIT A MINUTE. THEY ARE IMPOSTERS! ALL RIGHT, THROW DOWN YOUR WEAPONS!'",
@@ -124,6 +154,11 @@
       "note": "貧民區（Slums）的事件與敘述。接下一段。"
     },
     {
+      "source": "'IF YOU CHANGE YOUR MIND, RETURN IN TWO HOURS.' HE ESCORTS YOU OUT.",
+      "text": "「改變主意的話，兩小時後再來。」他送你們出去。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "'IT IS IMPERATIVE THAT A MESSAGE BE DELIVERED TO THE ZHENTIL OUTPOST TO THE WEST.  I AM SENDING YOU AS DIPLOMATIC ENVOYS.",
       "text": "「有一封信務必送到西邊的漢提爾前哨。我要派你們以使節的身分前往。",
       "note": "接下一段。"
@@ -144,9 +179,39 @@
       "note": "旅店。"
     },
     {
+      "source": "'IT'S A STAFF OF COMMAND. I COULD HAVE MY OWN ARMY!'",
+      "text": "「那是統御法杖。我可以有自己的軍隊了！」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "'IT'S A WAND OF ILLUMINATION. WHO CARES, I SEE IN THE DARK ANYWAY!'",
+      "text": "「那是照明魔杖。誰在乎，反正我在暗處也看得見！」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "'LET ME GIVE YOU A PIECE OF ADVICE,' THEIR LEADER SAYS.  'STAY AWAY FROM THE TEXTILE HOUSE. THE UNDEAD ARE GOING CRAZY UP THERE.'  THE MONSTERS TURN TO LEAVE. (WHAT DO YOU DO?)",
       "text": "「給你們一個忠告，」領頭的說，「離紡織行遠一點。那裡的不死怪物已經瘋了。」怪物轉身要走。（你們要怎麼做？）",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'MEET HERE IN TWO HOURS. YOU MAY MEET HIGH PRIEST MACE.' HE ESCORTS YOU OUT.",
+      "text": "「兩小時後在這裡碰面，或許能見到梅斯大祭司。」他送你們出去。",
+      "note": "邪惡神廟（Temple of Bane）一帶。Mace 為新增譯名。"
+    },
+    {
+      "source": "'MORE OGRES ON THE STREET, SINCE THE GIANTS TOOK OVER THE CASTLE.'",
+      "text": "「自從巨人占了城堡，街上的食人魔就變多了。」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "'MOVE IT, TROLL-BAIT!' THEY SNARL AND MOVE OFF.",
+      "text": "「讓開，巨魔的餌！」牠們咆哮著走開。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "'NORTH WALL.  RI  T FRONT GLAS . SE'",
+      "text": "「北牆。右　前　玻璃　。看」",
+      "note": "牆上被刮花的訊息，原版就是殘缺的，譯文照樣留空。"
     },
     {
       "source": "'NOT ONLY THAT THEY'RE AFRAID OF THEM ETTIN. MAKES 'EM REAL JUMPY. WOULDN'T GIVE 'EM NO BACK TALK IF I WERE YOU.'",
@@ -162,6 +227,11 @@
       "source": "'OH, BY THE WAY. BETTER BEWARE OF THE GUARDS. EVER SINCE THE GIANTS MOVED INTO THE CASTLE AREA, BUGBEARS HAVE BEEN STUCK GUARDING THE GATE. AND THEY HATE IT.'",
       "text": "「對了，守衛要當心。自從巨人搬進城堡一帶，守門的差事就落到熊妖頭上，牠們可討厭得很。」",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "'OH, YOU'RE HERE FOR THE BOSS.'",
+      "text": "「喔，你們是來找老大的。」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "'ON YOUR RIGHT IS ONE OF THE ENTRANCE'S TO SUNE'S TEMPLE. AS WITH ALL PHLAN'S TEMPLES, VARIOUS CLERICAL SERVICES ARE OFFERED INSIDE.  ON YOUR LEFT IS AN ENTRANCE TO THE CITY PARK.'",
@@ -194,9 +264,19 @@
       "note": "接下一段。"
     },
     {
+      "source": "'THE AUCTION IS CANCELLED!' YELLS THE AUCTIONEER AS HE FLEES.",
+      "text": "「拍賣取消！」拍賣官一邊逃一邊喊。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "'THE BIG ONE, THE EVIL ONE IN THE CASTLE OF FLOWERS -- HE IS COMING! IT IS COMING!'",
       "text": "「那個大的、住在花之城堡裡的邪物——他要來了！牠要來了！」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'THE BOSS WILL BE THE GUY BIDDING UP THE PRICE.'",
+      "text": "「一直把價錢往上喊的那個，就是老大。」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "'THE FAITHFUL SERVANT SENT TO FETCH IT NEVER RETURNED.  THE COMPLEX IS JUST SOUTH OF PODOL PLAZA.  BRING THE TREASURE TO ME AND YOU WILL BE WELL REWARDED.'",
@@ -212,6 +292,11 @@
       "source": "'THE GATE IS TOO STRONG TO BE TAKEN BY STORM. A SMALL BAND MUST SLIP INSIDE AND HOLD UNTIL RELIEVED. YOU ARE THE BEST AND THE BRAVEST. THE COUNCIL HAS INSTRUCTED ME TO ENTRUST THE TASK TO YOU.'",
       "text": "「那道門太堅固，硬攻是攻不下的。得有一小隊人潛進去撐到援軍抵達。你們是最強也最勇敢的一群，議會指示我把這件事託付給你們。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'THE PLAZA'S BANE TEMPLE IS RECRUITING FOR MACE AGAIN. GRISHNAK WON'T BE HAPPY.'",
+      "text": "「廣場那邊的邪惡神廟又在替梅斯招人了。格里希納克可不會高興。」",
+      "note": "波多廣場的拍賣會與街頭遭遇。Grishnak 為新增譯名。"
     },
     {
       "source": "'THERE IS A FINE",
@@ -244,6 +329,11 @@
       "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
     },
     {
+      "source": "'WE GOTTA KEEP ALL YOU NONBELIVERS OUTA HERE' THE MONSTERS SAY AS THEY BEGIN TO LEAVE.  'SO HIT THE ROAD YA BUMS.'  THE MONSTERS TURN AND LEAVE.",
+      "text": "「我們得把你們這些異教徒擋在外頭。」怪物一邊說一邊要走，「所以上路吧，混帳。」說完轉身離去。",
+      "note": "波多廣場的拍賣會與街頭遭遇。原版把 NONBELIEVERS 拼成 NONBELIVERS，並刻意用不標準的口語。"
+    },
+    {
       "source": "'WE HAVE BEEN INFORMED YOU HAVE ELIMINATED SOME UNDEAD FROM THE GRAVEYARD.",
       "text": "「我們接獲通報，你們清掉了墳場裡的一些不死怪物。",
       "note": "接下一段。"
@@ -252,6 +342,16 @@
       "source": "'WE TRAIN ONLY",
       "text": "「我們只訓練",
       "note": "訓練所與競技場。接下一段。"
+    },
+    {
+      "source": "'WE'LL LET YOU OFF THIS TIME.' THE MONSTERS SCUTTLE AWAY.",
+      "text": "「這次先放過你們。」怪物窸窸窣窣地散開。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "'WE'RE GONNA HAVE TA TEACH YOU A LESSON!'",
+      "text": "「看來得給你們上一課！」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "'WELL BOYS, I THINK WE HAVE THE INTRUDERS HERE. GET THEM!'",
@@ -299,6 +399,11 @@
       "note": "訓練所與競技場。"
     },
     {
+      "source": "'YOU CAN REST HERE AS LONG AS YOU WISH.' SHE THEN LEAVES.",
+      "text": "「你們想休息多久都行。」說完她就離開了。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "'YOU HAVE DONE WELL. GIVE ME THE POTION AND YOU WILL BE REWARDED.' (WHAT DO YOU DO?)",
       "text": "「幹得好。把藥水給我，少不了你們的報酬。」（你們要怎麼做？）",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -342,6 +447,11 @@
       "source": "--TYRANTHRAXUS'",
       "text": "——泰蘭特拉克斯",
       "note": "署名片段，原版以兩個連字號起頭。"
+    },
+    {
+      "source": ".",
+      "text": "。",
+      "note": "單獨的句點，原版用來把拆開的句子接起來。"
     },
     {
       "source": ".  HE TRIES TO ATTACK THE PARTY BUT YOU STOP HIM.  WHAT WILL YOU DO?",
@@ -414,6 +524,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "A DECAYED BUILDING LEFT TO THE RATS.",
+      "text": "一棟朽壞的建築，如今只剩老鼠。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "A DRUNKEN BRAWL BREAKS OUT. YOU ARE CAUGHT IN THE MIDDLE.",
       "text": "一場酒醉鬥毆爆發，你們正好被夾在中間。",
       "note": "酒館事件。"
@@ -449,6 +564,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "A MAN AND OGRE EXCHANGE THE WAND AND A LARGE BAG, THEN DISAPPEAR INTO THE CROWD.",
+      "text": "一個人和一隻食人魔交換了魔杖與一個大袋子，隨即消失在人群裡。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "A MAN DRIVING A WAGON FULL OF FOOD AND EQUIPMENT STARTS TO DRIVE PAST YOU, GOING NORTH.",
       "text": "一個人趕著滿載食物與裝備的貨車，正要往北從你們身邊經過。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -477,6 +597,11 @@
       "source": "A POWERFUL ONE BECOMES AWARE OF YOUR DEEDS AND SEEKS TO DESTROY YOU.  A WEAK ONE SEES YOU AS A PATH TO POWER.",
       "text": "一位強者察覺了你們的作為，想除掉你們；一位弱者則把你們看成通往力量的路。",
       "note": "貧民區（Slums）的事件與敘述。算命內容。"
+    },
+    {
+      "source": "A ROBED ORC IS SITTING HERE. WHAT DO YOU DO?",
+      "text": "一隻穿長袍的半獸人坐在這裡。你們要怎麼做？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "A SCYTHING BLADE DROPS ACROSS THE DOORWAY, DAMAGING ONE OF THE CHARACTERS.",
@@ -524,6 +649,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "A YOUNG WOMAN COMES FORWARD 'WE PROVIDE HELP FOR THOSE WHO CAN REACH US. ARE YOU IN NEED OF HEALING?",
+      "text": "一名年輕女子走上前來：「凡是能來到這裡的人，我們都提供幫助。你們需要治療嗎？",
+      "note": "邪惡神廟（Temple of Bane）一帶。接下一段。"
+    },
+    {
       "source": "ACCEPT BLESSING",
       "text": "接受祝福",
       "note": "遭遇選單。"
@@ -537,6 +667,11 @@
       "source": "ACOLYTE",
       "text": "見習僧侶",
       "note": "NPC 稱謂。"
+    },
+    {
+      "source": "ADMIST THE BODIES YOU FIND SOME JEWELRY.  WILL YOU TAKE IT?",
+      "text": "在屍堆裡你們找到一些首飾。要拿走嗎？",
+      "note": "邪惡神廟（Temple of Bane）一帶。原版把 AMIDST 拼成 ADMIST。"
     },
     {
       "source": "ADVANCE CAUTIOUSLY",
@@ -574,6 +709,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "AN ABANDONED SHOP. BROKEN SHELVES ARE ALL THAT REMAIN.",
+      "text": "一間廢棄的店鋪，只剩下斷裂的貨架。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "AN AGED PRIEST APPROACHES, POINTING AT THE MAD MAN, HE SPEAKS, 'THAT MAN URGENTLY NEEDS OUR CARE.  DROP HIM FROM YOUR PARTY OR HE WILL BRING YOU TO GRIEF.  WE WILL CARE FOR HIM.'",
       "text": "一位年長的僧侶走過來，指著那個瘋子說：「那個人急需我們照料。把他從隊伍裡放掉吧，不然他會給你們惹禍。我們會照顧他。」",
       "note": "瘋子事件。"
@@ -589,6 +729,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "AND DEMAND, 'WHO ARE YOU?'",
+      "text": "並喝問：「你們是誰？」",
+      "note": "片段。"
+    },
+    {
       "source": "AND ITS RETAINERS.",
       "text": "和牠的隨從。",
       "note": "遭遇敘述的片段。"
@@ -597,6 +742,11 @@
       "source": "AND WALK ON.",
       "text": "然後繼續走。",
       "note": "遭遇敘述的片段。"
+    },
+    {
+      "source": "AND YELL 'SETTLERS! KILL THEM!'",
+      "text": "然後大喊：「移民！殺了他們！」",
+      "note": "片段。"
     },
     {
       "source": "ANHKHEG",
@@ -614,6 +764,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "AS YOU APPROACH THEY MOVE, ALLOWING YOU ENTRANCE INTO THE TEMPLE.",
+      "text": "你們一走近，牠們就讓開，放你們進神廟。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "AS YOU ATTEMPT TO DEACTIVATE THE TRAP YOU SET IT OFF.  A POSIONED NEEDLE SHOOTS OUT AND PLUNGES INTO A PARTY MEMBER.",
       "text": "你們試著解除陷阱卻反而觸發了它，一根毒針射出，扎進一名隊員身上。",
       "note": "柯威大樓的盜賊據點。原版此處把 POISONED 拼成 POSIONED。"
@@ -622,6 +777,31 @@
       "source": "AS YOU ATTEMPT TO DISARM THE TRAP, IT GOES OFF IN YOUR FACE!  A CLOUD OF POISONOUS YELLOW GAS FILLS THE ROOM.",
       "text": "你們試圖解除陷阱，它卻當面炸開！一團黃色毒氣充滿整個房間。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU BACK AWAY AGAIN THE OLD BLIND ORC IS CONVINCED YOU ARE NOT WORSHIPPERS.  HE GRUNTS AN ORDER TO ATTACK.",
+      "text": "你們再度後退，那隻盲眼老半獸人確信你們不是信徒，低吼一聲下令攻擊。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "AS YOU BACK AWAY THE BLIND ORC SAYS, 'I MUST CHECK IF YOU ARE WORTHY TO ENTER THE TEMPLE OF BANE, DO NEED NOT BE AFRAID.'",
+      "text": "你們一後退，那隻盲眼半獸人說：「我得檢查你們配不配進邪惡神廟，不必怕。」",
+      "note": "邪惡神廟（Temple of Bane）一帶。原版此處語句本身就不通（DO NEED NOT BE AFRAID）。"
+    },
+    {
+      "source": "AS YOU DESTROY THE ALTAR, THE TEMPLE DOORS FLY OPEN AND A SCREAMING HORDE OF ORCS LED BY A HALF-ORC CLERIC ATTACK.  YOU TURN TO FACE THEM.",
+      "text": "你們一搗毀祭壇，神廟大門猛地打開，一群尖叫的半獸人由一名半獸人牧師率領撲了進來。你們轉身迎戰。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "AS YOU ENTER THE BUILDING YOU SEE A LARGE GROUP OF FOUL ORCS.  THEY SNARL AT YOU AND ATTACK!",
+      "text": "你們一走進建築就看到一大群骯髒的半獸人。牠們朝你們咆哮，撲了上來！",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "AS YOU ENTER THE BUILDING YOU SEE A LARGE GROUP OF ORCS WHO ARE SURPRISED THAT YOU'RE HERE.  WITH CONFUSED LOOKS ON THEIR FACES THEY STARE AT YOU",
+      "text": "你們一走進建築，就看到一大群半獸人。牠們沒料到你們會來，一臉困惑地盯著你們",
+      "note": "邪惡神廟（Temple of Bane）一帶。片段。"
     },
     {
       "source": "AS YOU ENTER THE ROOM A THIEF WITH A SWORD COMES OUT OF NOWHERE",
@@ -639,6 +819,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "AS YOU ENTER THE ROOM YOU SEE SIX ORCS LED BY A LARGE OGRE.  THEY LUNGE FOWARD AND ATTACK.",
+      "text": "你們一進房就看到六隻半獸人，由一隻高大的食人魔帶領。牠們撲上前來攻擊。",
+      "note": "邪惡神廟（Temple of Bane）一帶。原版把 FORWARD 拼成 FOWARD。"
+    },
+    {
       "source": "AS YOU ENTER THIS ROOM THE TWO THIEVES SPLIT; ONE GOING THROUGH THE EAST DOOR, THE OTHER GOING THROUGH THE SOUTH.  WHICH PATH WILL YOU TAKE?",
       "text": "你們一進房，兩名盜賊便分頭逃走，一個走東門，一個走南門。要追哪一邊？",
       "note": "柯威大樓的盜賊據點。"
@@ -649,9 +834,24 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "AS YOU EXIT THE TEMPLE YOU ARE ATTACKED BY A VERY LARGE GROUP OF ORCS.  LEADING THEM IS A HALF-ORC WHO IS SCREAMING 'KILL!  KILL, THE UNBELIEVING TOADS.  KILL THEM OR SUFFER MY WRATH!'",
+      "text": "你們走出神廟時遭到一大群半獸人攻擊，領頭的半獸人尖叫著：「殺！殺了這些不信神的癩蛤蟆。殺了他們，不然就等著承受我的怒火！」",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "AS YOU MOVE AWAY THE MONSTERS GLANCE YOUR WAY,",
+      "text": "你們走開時，怪物瞥了你們一眼，",
+      "note": "片段。"
+    },
+    {
       "source": "AS YOU MOVE THROUGH THE GARDEN",
       "text": "你們穿過花園時",
       "note": "貧民區（Slums）的事件與敘述。片段。"
+    },
+    {
+      "source": "AS YOU MOVE YOU OVERHEAR SOME",
+      "text": "你們走著走著，聽見一些",
+      "note": "片段。"
     },
     {
       "source": "AS YOU NEAR THE PILE OF WEAPONS AN AWFUL SMELLING CLOUD OF GAS FORMS.  THIS FOUL SMELLING GAS STUNS THE PARTY ALLOWING A GROUP OF THIEVES TO JUMP OUT OF THE SHADOWS AND ATTACK AT WILL!",
@@ -662,6 +862,11 @@
       "source": "AS YOU NEAR THE PILE OF WEAPONS AN EXTREMELY BAD SMELLING GAS FILLS THE ROOM.  THE SMELL IS DISGUSTING BUT HARMLESS ENOUGH.",
       "text": "你們一靠近那堆武器，房裡就充滿一股極難聞的氣體。臭歸臭，倒是無害。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "AS YOU SEARCH THE BEDS A GROUP OF ORCS COMES INTO THE ROOM.  THEY ATTACK IMMEDIATELY.",
+      "text": "你們正在搜床鋪，一群半獸人走進房裡，立刻發動攻擊。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "AS YOU SEARCH THE CASKET YOU TRIGGER A TRAP.  FROM A SECRET COMPARTMENT IN THE WALL, A SHOWER OF DARTS RAINS DOWN UPON THE PARTY.",
@@ -729,6 +934,16 @@
       "note": "同上。"
     },
     {
+      "source": "BACK OFF",
+      "text": "退開",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "BACK OFF AGAIN",
+      "text": "再退開",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "BAY",
       "text": "海灣",
       "note": "港務長航線選項。"
@@ -742,6 +957,11 @@
       "source": "BEFORE THE GATE YOU CAN MAKE OUT A MAN WITH A WAGON OF GOODS WHO IS TALKING TO TWO OF THE BUGBEARS. THE MAN HANDS SOMETHING TO THE BUGBEARS AND THE GATES OPEN.",
       "text": "門前有個趕著貨車的人正和兩隻熊妖說話。那人遞了什麼東西過去，門就開了。",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "BEFORE YOU IS A GREAT HALL.  THE FLOOR IS LITTERED WITH ORC TRASH AND THE WALLS HAVE CRUDE BLACK HANDS PAINTED ON THEM.",
+      "text": "你們面前是一座大廳，地上滿是半獸人的垃圾，牆上畫著粗糙的黑手。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "BEFORE YOU IS A TABLE WITH FOUR SMALL CASKETS ON TOP OF IT.  WHAT WILL YOU DO?",
@@ -809,6 +1029,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "CHALLENGE",
+      "text": "挑戰",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "CHRONICLES OF ARRAM.",
       "text": "《阿蘭姆編年史》。",
       "note": "書名，出現在搜書的敘述裡。Arram 為新增譯名。"
@@ -859,6 +1084,21 @@
       "note": "同上。"
     },
     {
+      "source": "DESTROY ALTAR",
+      "text": "搗毀祭壇",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "DIRTEN",
+      "text": "迪爾騰",
+      "note": "NPC 名，依 glossary。"
+    },
+    {
+      "source": "DIRTEN SAYS, 'THANK YOU FOR HELPING US REGAIN OUR TEMPLE.  I MUST STAY HERE NOW.  I BID YOU FAREWELL.'",
+      "text": "迪爾騰說：「謝謝你們幫我們奪回神殿。我必須留在這裡了。就此別過。」",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "DISARM TRAP",
       "text": "解除陷阱",
       "note": "柯威大樓的盜賊據點。"
@@ -867,6 +1107,11 @@
       "source": "DISCOURSE ON THE NATURE OF WRITING.",
       "text": "《論書寫的本質》。",
       "note": "書名，出現在搜書的敘述裡。"
+    },
+    {
+      "source": "DISGUISE PARTY AS MONSTERS.",
+      "text": "把隊伍偽裝成怪物。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "DO YOU TAKE IT?",
@@ -902,6 +1147,11 @@
       "source": "DON'T TALK",
       "text": "不交談",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "DRINK HEAVILY",
+      "text": "放開喝",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "EAST",
@@ -947,6 +1197,11 @@
       "source": "FLEE",
       "text": "逃走",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "FOLLOW THE OGRE",
+      "text": "跟著食人魔",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "FORCE THE GATE OPEN",
@@ -1009,6 +1264,16 @@
       "note": "扒手事件的選項。"
     },
     {
+      "source": "GREET",
+      "text": "打招呼",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "GRUMBLE, AND TURN AWAY.",
+      "text": "咕噥幾句，轉身走開。",
+      "note": "片段。"
+    },
+    {
       "source": "GUARDS RUN TO INTERCEPT YOU.",
       "text": "守衛跑過來攔截你們。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -1017,6 +1282,11 @@
       "source": "HARASH",
       "text": "哈拉許",
       "note": "NPC 名，音近。"
+    },
+    {
+      "source": "HE GLARES AT YOU,'ONE OF YOU SHALL PAY FOR THIS INSULT. WHO WILL IT BE?'WHAT DO YOU DO?",
+      "text": "他瞪著你們：「你們得有一個人為這句羞辱付出代價。誰？」你們要怎麼做？",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "HE LEAVES.",
@@ -1084,6 +1354,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "IN A DEEP THREATENING VOICE ONE OF THE ORCS SAYS 'YOU MOLES BETTER WATCH YOUR STEP OR YOU SHALL FEEL THE WRATH OF BANE!'  AFTER SAYING THIS HE SPITS AND LEAVES.",
+      "text": "其中一隻半獸人壓低嗓子威脅道：「你們這些鼴鼠最好給我小心點，不然就等著嘗嘗邪惡神的怒火！」說完啐了一口就走。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "IN FRONT OF YOU ARE THREE CABINETS.  WHICH ONE WILL YOU EXAMINE?",
       "text": "你們面前有三個櫃子。要查看哪一個？",
       "note": "柯威大樓的盜賊據點。"
@@ -1094,6 +1369,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "IN FRONT OF YOU IS AN ALTAR THAT IS SMEARED WITH BLOOD AND COVERED WITH CRUDE BLACK HAND PRINTS.  WHAT WILL YOU DO?",
+      "text": "你們面前是一座沾滿血跡、印著粗糙黑手印的祭壇。要怎麼做？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "IN FRONT OF YOU.",
       "text": "就在你們前面。",
       "note": "遭遇敘述的方位片段，原版把句子拆成幾段拼起來。"
@@ -1102,6 +1382,16 @@
       "source": "IN THE COUNCIL CHAMBERS, THE ENTIRE CITY COUNCIL IS WAITING FOR YOU. THE LORD HIGH MAYOR, ULRICH EBERHARD, SPEAKS: 'OUR FORCES ARE MARSHALLED FOR THE ASSAULT ON VALJEVO CASTLE.",
       "text": "議事廳裡，全體市議會都在等你們。大市長亞爾瑞屈·艾伯哈德開口：「我軍已集結完畢，準備進攻瓦傑渥城堡。",
       "note": "接下一段。"
+    },
+    {
+      "source": "IN THE RUBBLE YOU SPOT A BEAUTIFUL TAPESTRY.  WILL YOU TAKE IT?",
+      "text": "你們在瓦礫裡看到一幅漂亮的掛毯。要拿走嗎？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "IN THIS ROOM ARE SOME GOBLIN SLAVES THAT ARE COWERING IN THE CORNER.  THEY ALL SCREAM 'PLEASE DON'T KILL US.'  WHAT WILL YOU DO?",
+      "text": "房裡有幾隻哥布林奴隸縮在角落，全都尖叫著：「求求你們別殺我們。」你們要怎麼做？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "INSIDE THE CABINET YOU FIND EIGHTEEN SACKS FILLED WITH GOLD PIECES.",
@@ -1134,6 +1424,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "INSULT BACK",
+      "text": "回敬幾句",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "IT HISSES AT YOU.",
       "text": "牠朝你們嘶叫。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -1152,6 +1447,11 @@
       "source": "IT'S GREEN.  YOU GET DOUBLE YOUR MONEY BACK.",
       "text": "是綠色，你們拿回兩倍的錢。",
       "note": "酒館賭局結果。"
+    },
+    {
+      "source": "JOIN IN HEAVY DRINKING",
+      "text": "跟著大喝",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "JUNIOR COUNCILMAN CADORNA HAS A SPECIAL COMMISSION FOR YOU.  HIS CHAMBERS ARE THROUGH THE EAST DOOR.'",
@@ -1179,6 +1479,11 @@
       "note": "同上，原版這一版帶句點。"
     },
     {
+      "source": "LAUGH TO THEMSELVES AND WALK ON.",
+      "text": "自顧自地笑著走開。",
+      "note": "片段。"
+    },
+    {
       "source": "LEAVE",
       "text": "離開",
       "note": "選單選項，出現 62 次，是最常見的一個。"
@@ -1194,9 +1499,24 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "LEAVE TRAPDOOR",
+      "text": "不動活門",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "LET HIM CHECK",
+      "text": "讓他檢查",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "LET HIM GO",
       "text": "放他走",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "LET HIM TOUCH YOU",
+      "text": "讓他摸",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "LET THEM GO",
@@ -1209,9 +1529,19 @@
       "note": "委託文字的結尾片段，原版把長句拆成幾段拼起來。"
     },
     {
+      "source": "LISTEN TO COMMENTS",
+      "text": "聽他們說",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "LIZARD MEN",
       "text": "蜥蜴人",
       "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "LOOK FOR THE MAN IN PLAIN CLOTHES",
+      "text": "找那個穿便服的人",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "LOOKING UP FROM A TABLE ARE FIVE KOBOLDS.",
@@ -1244,6 +1574,16 @@
       "note": "訓練所指示牌；遊戲寫 MAGIC USERS，沒有連字號。"
     },
     {
+      "source": "MAKE A BID",
+      "text": "出價",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "MANY CREATURES HAVE GATHERED. THE ROBED ORC STANDS AND CALLS OUT,'FIRST, TO SHOW YOUR LOYALTIES, KILL THE UNBELIEVERS.' HE POINTS AT YOUR GROUP.",
+      "text": "許多生物聚了過來。那隻穿長袍的半獸人站起身喊道：「首先，為了表明你們的忠誠，殺了異教徒。」牠指向你們這一隊。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "MATHEMATICS.",
       "text": "《數學》。",
       "note": "書名，出現在搜書的敘述裡。"
@@ -1252,6 +1592,11 @@
       "source": "MEDITATIONS.",
       "text": "《沉思錄》。",
       "note": "書名，出現在搜書的敘述裡。"
+    },
+    {
+      "source": "MIX WITH MONSTERS",
+      "text": "混進怪物裡",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "MONSTERS ARE CHARGING TOWARD YOU FROM THE FAR TOWER.",
@@ -1264,14 +1609,29 @@
       "note": "史塔傑諾門一帶的事件。"
     },
     {
+      "source": "MONSTERS INSULT YOUR ABILITIES AND PARENTAGE.",
+      "text": "怪物把你們的本事和祖宗一起羞辱了一遍。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "MONSTERS THUNDER DOWN THE STEPS OF THE TOWER NEXT TO YOU.",
       "text": "怪物從你們旁邊那座塔的階梯上轟隆隆衝下來。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "MOVE IN CLOSER",
+      "text": "靠近一點",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "MOVE ON",
       "text": "繼續走",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "MOVE QUIETLY AWAY",
+      "text": "悄悄走開",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "NO",
@@ -1319,6 +1679,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "ON THE DEAD BODY OF THE HALF-ORC CLERIC YOU FIND A PIECE OF PAPER.  YOU PUT THE PAPER IN YOUR JOURNAL UNDER ENTRY 25.",
+      "text": "你們在半獸人牧師的屍體上找到一張紙，把它放進手札第 25 條。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "ON THE FLOOR HERE YOU FIND SOME IMPORTANT LOOKING FILES.  YOU STUFF THE FILES INTO YOUR JOURNAL UNDER ENTRIES 38 AND 51.",
       "text": "地上有幾份看來要緊的卷宗。你們把它們塞進手札第 38 與第 51 條。",
       "note": "柯威大樓的盜賊據點。"
@@ -1327,6 +1692,16 @@
       "source": "ON THE FLOOR IS A CRUDE MAP.  IT IS A MAP OF A COMPLEX MAZE WITH THE WORDS 'NE CASTLE' UNDER IT.  YOU TAKE THE MAP AND PUT IT IN YOUR JOURNAL UNDER JOURNAL ENTRY 29.",
       "text": "地上有一張粗糙的地圖，畫的是一座複雜的迷宮，底下寫著「城堡東北」。你們收起地圖，放進手札第 29 條。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "ON THE FLOOR YOU FIND A TRAP DOOR.  WILL YOU OPEN IT?",
+      "text": "你們在地板上發現一道活門。要打開嗎？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "ON THE WALL HERE IS A POORLY SCRATCHED OUT MESSAGE.  YOU CAN BARELEY MAKE OUT THE WORDS",
+      "text": "牆上有一則被草草刮掉的訊息，你們勉強辨認出幾個字",
+      "note": "波多廣場的拍賣會與街頭遭遇。原版把 BARELY 拼成 BARELEY。接下一段。"
     },
     {
       "source": "ON WHOSE AUTHORITY ARE YOU HERE?'",
@@ -1339,6 +1714,21 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "ONE OF THE ORCS SAYS, 'OH, YEAH YOUSE THEM GUYS WHO KNOW WHERE DE TREASURE IS.  WE NOT SUPPOSED TO KILL YOU YET.'  THE ORCS THEN WANDER AWAY.",
+      "text": "其中一隻半獸人說：「喔對，你們就是知道寶藏在哪的那票人。現在還不能殺你們。」說完半獸人就晃走了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。原版此處刻意用不標準的口語。"
+    },
+    {
+      "source": "OPEN",
+      "text": "打開",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "OPEN TRAPDOOR",
+      "text": "打開活門",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "ORCS",
       "text": "半獸人",
       "note": "怪物名，遊戲文字證實。"
@@ -1347,6 +1737,11 @@
       "source": "ORCS.",
       "text": "半獸人。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "OVER THIS DOOR IS A CRUDE SIGN SAYING, 'THE PITT.'",
+      "text": "門上掛著一塊粗糙的牌子，寫著「深坑」。",
+      "note": "波多廣場的拍賣會與街頭遭遇。原版把 PIT 拼成 PITT。"
     },
     {
       "source": "PARLAY",
@@ -1494,6 +1889,16 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "RUSH TO ATTACK.",
+      "text": "衝上去攻擊。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "SAY,",
+      "text": "說：",
+      "note": "片段。"
+    },
+    {
       "source": "SEARCH",
       "text": "搜索",
       "note": "遭遇選單；說明書第四章的 SEARCH 指令。"
@@ -1502,6 +1907,11 @@
       "source": "SEARCH A CASKET",
       "text": "搜一個小箱",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "SEARCH THE BEDS",
+      "text": "搜床鋪",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "SEARCH THEM",
@@ -1527,6 +1937,11 @@
       "source": "SKULLCRUSHER SPEAKS, 'I MUST GO TO MY MASTER NOW.'",
       "text": "碎顱者開口：「我得去見我的主人了。」",
       "note": "NPC 離隊事件。"
+    },
+    {
+      "source": "SNEAK, REMAINING UNSEEN",
+      "text": "潛行，不讓人發現",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "SOKAL",
@@ -1559,6 +1974,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "STAND AND LISTEN",
+      "text": "站著聽",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "STAY",
       "text": "留下",
       "note": "遭遇選單。"
@@ -1572,6 +1992,11 @@
       "source": "STOP THEM",
       "text": "阻止他們",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "STRIDE BOLDLY FORWARD!",
+      "text": "大步走上前！",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "STROM'S DISCUSSIONS OF POETICS.",
@@ -1634,14 +2059,64 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "THAT ONE IS UNACCEPTABLE. CHOOSE ANOTHER.",
+      "text": "這個不行，換一個。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "THAT PERSON WON'T PAY.",
       "text": "那個人不肯付。",
       "note": "敘述。"
     },
     {
+      "source": "THE AGED ORC COMES GRASPING TOWARD YOU.  WILL YOU LET HIM TOUCH YOU?",
+      "text": "那隻年邁的半獸人伸著手朝你們摸過來。要讓他摸嗎？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "THE ARENA MASTER ASKS IF YOU WISH TO DUEL.  'THE DUELS  ARE EVENLY MATCHED AND NORMALLY NOT TO THE DEATH. DO YOU DUEL?'",
       "text": "競技場主事問你們要不要上場對決：「對手實力相當，通常不會打到死。要打嗎？」",
       "note": "訓練所與競技場。"
+    },
+    {
+      "source": "THE AUCTION ENDS. YOU DON'T SEE WHO BOUGHT THE ITEM.",
+      "text": "拍賣結束，你們沒看清是誰買走了那件東西。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE AUCTION OVER, THE MONSTERS GRUMBLE AND TURN AWAY.'",
+      "text": "拍賣結束，怪物咕噥著轉身散去。」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE AUCTIONEER CRIES 'CREATURES OF ALL AGES, WELCOME TO THIS AUCTION FOR AN ITEM BOTH MAGICAL AND POWERFUL!'",
+      "text": "拍賣官高喊：「各族的朋友們，歡迎來到這場拍賣，今天的物件既有魔力又強大！」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE AUCTIONEER HAS EITHER A WAND OR STAFF.",
+      "text": "拍賣官手上不是魔杖就是法杖。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE BAR LOOKS LIKE IT WAS DESTROYED BY EXPERTS.",
+      "text": "這間酒吧看起來像是被行家砸過。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE BATTLE IS OVER, THE PATRONS RETURN TO DRINKING.",
+      "text": "打鬥結束，客人們又回去喝酒了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE BIDDING ESCALATES TO 5,000 GOLD PIECES -- HIGH BID FROM A MAN IN PLAIN CLOTHES, NEXT TO AN OGRE.",
+      "text": "價錢一路喊到五千枚金幣——最高價出自一個站在食人魔旁邊、穿著便服的人。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE BUCCANEER SMILES.'THAT IS SUFFICIENT PAYMENT.' HE LEAVES.",
+      "text": "那名海盜笑了笑：「這樣就夠了。」隨即離去。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "THE BUGBEAR TAKES THE MONEY AND THE GATE OPENS. YOU PROCEED THROUGH.",
@@ -1714,6 +2189,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "THE CREATURES IGNORE YOU FOR THE MOMENT.",
+      "text": "那些東西暫時沒有理會你們。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "THE DOOR IS LOCKED.  DO YOU WANT TO BREAK IN?",
       "text": "門鎖著。要破門進去嗎？",
       "note": "互動提問。"
@@ -1779,6 +2259,26 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THE MAN THEN SPEAKS A WORD AND THE AUCTIONEER'S BLOCK IS ENVELOPED IN DARKNESS.",
+      "text": "那人念了一個字，拍賣台隨即被黑暗吞沒。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE MINUTE YOU FIND THE TREASURE A LARGE GROUP OF ORCS CHARGE THROUGH THE TEMPLE DOORS.  LEADING THEM IS A HALF-ORC WHO IS SCREAMING 'KILL!  KILL, THESE SCUM WHO WOULD STEAL FROM OUR TEMPLE.'",
+      "text": "你們一找到寶藏，一大群半獸人就從神廟大門衝了進來，領頭的半獸人尖叫著：「殺！殺了這些膽敢偷我們神廟東西的渣滓。」",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "THE MONSTERS LOOK AROUND FOR A SCAPEGOAT. THEIR EYES FALL UPON YOUR PARTY, THEN THEY",
+      "text": "怪物四下張望想找個替罪羊，目光落在你們身上，接著牠們",
+      "note": "片段。"
+    },
+    {
+      "source": "THE MONSTERS PREPARE",
+      "text": "怪物準備",
+      "note": "片段。"
+    },
+    {
       "source": "THE MONSTERS RESPOND, 'DA BOSS DON'T LIKE YOUSE GUYS. GIVE US SUMPTIN AN MAYBE WE'LL FERGET WE SEEN YAS.' (WHAT DO YOU DO?)",
       "text": "怪物回話：「老大不喜歡你們這票人。給點好處，說不定我們就當沒看見。」（你們要怎麼做？）",
       "note": "貧民區（Slums）的事件與敘述。原版此處刻意用不標準的口語。"
@@ -1789,9 +2289,59 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THE MONSTERS SCREAM 'OH YEAH, WELL I GUESS WERE JUST GONNA HAVE TO TEACH YOUSE GUYS A LESSON OR TWO'  THEY RUSH FOWARD TO ATTACK.",
+      "text": "怪物大叫：「是喔，那看來我們得給你們這票人上一兩課了。」牠們衝上前來攻擊。",
+      "note": "波多廣場的拍賣會與街頭遭遇。原版此處刻意用不標準的口語，並把 FORWARD 拼成 FOWARD。"
+    },
+    {
+      "source": "THE MONSTERS SHOOT YOU ANGRY LOOKS,",
+      "text": "怪物朝你們投來惡狠狠的目光，",
+      "note": "片段。"
+    },
+    {
+      "source": "THE MONSTERS STAND READY",
+      "text": "怪物嚴陣以待",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE OGRE IS TACKLED AND SEARCHED. HE DOESN'T HAVE THE ITEM ON HIM.",
+      "text": "食人魔被撲倒搜身，東西不在牠身上。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE OLD BLIND ORC PAWS THE CHARACTERS LOOKING FOR SOMETHING.  FINDING THE LEATHER HOLY SYMBOL, HE SMILES THEN GRUNTS 'WELCOME TO THE TEMPLE OF BANE, SUPREME GOD OF THE REALMS.'",
+      "text": "那隻盲眼老半獸人在隊員身上摸索著找東西。摸到那枚皮製聖徽後，他笑了，低聲說：「歡迎來到邪惡神廟，祂是這片國度的至高神。」",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "THE OLD BLIND ORC PAWS THE PARTY AS IF LOOKING FOR SOMETHING.  AFTER A CAREFULL PAWING, HE BACKS AWAY AND YELLS 'GUARDS, IN THE NAME OF BANE, KILL THESE UNBELIEVERS!'",
+      "text": "那隻盲眼老半獸人在隊伍身上摸索，像在找什麼。仔細摸過一遍後，他退開大喊：「守衛，以邪惡神之名，殺了這些異教徒！」",
+      "note": "邪惡神廟（Temple of Bane）一帶。原版把 CAREFUL 拼成 CAREFULL。"
+    },
+    {
+      "source": "THE ORC SMILES CROOKEDLY.'GREETINGS FROM BANE.",
+      "text": "那隻半獸人歪嘴一笑：「邪惡神向你們問好。",
+      "note": "邪惡神廟（Temple of Bane）一帶。接下一段。"
+    },
+    {
+      "source": "THE ORCS READY THEIR SPEARS",
+      "text": "半獸人舉起長矛",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE ORCS YELL OUT, 'WE HAVE ORDERS TO CHECK OUT SUSPICIOUS INDIVIDUALS, BUT YOUSE GUYS LOOK HARMLESS ENOUGH.'  AFTER TALKING THE FOUR ORCS WANDER AWAY.",
+      "text": "半獸人喊道：「上頭要我們盤查可疑的人，不過你們這票看起來人畜無害。」說完那四隻半獸人就晃走了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "THE PARTY HEARS THE CRACKING OF GLASS.  A POISONOUS GAS FILLS THE AIR!",
       "text": "隊伍聽到玻璃碎裂的聲音，毒氣瞬間瀰漫開來！",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "THE PARTY RUNS AND ESCAPES.",
+      "text": "隊伍拔腿逃了出去。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "THE PRIESTS OF TEMPUS BID YOU WELCOME.",
@@ -1812,6 +2362,11 @@
       "source": "THE REMAINING GUARDS DECIDE TO LEAVE YOU ALONE.",
       "text": "剩下的守衛決定不再找你們麻煩。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE REMAINS OF AN EVIL ALTAR ARE NEARBY.",
+      "text": "附近有一座邪惡祭壇的殘跡。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "THE ROOM IS DIRTY AND HAS A STRONG AND UNPLEASANT ODOR.",
@@ -1889,6 +2444,11 @@
       "note": "貧民區（Slums）的事件與敘述。Ettin 為新增譯名。"
     },
     {
+      "source": "THERE IS MASS CONFUSION. SUDDENLY, THE OGRE SPRINTS FROM THE DARKNESS.",
+      "text": "場面一片混亂。忽然，那隻食人魔從黑暗中衝了出來。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "THESE ARE THE LIBRARY STACKS. OLD AND MOLDERING BOOKS ARE STORED ON SHELVES. A SIGN OVER THE ENTRANCE READS",
       "text": "這裡是書庫，架上堆著發霉的舊書。入口上方的牌子寫著",
       "note": "舊繩索公會的圖書室。片段，後接書名。"
@@ -1914,14 +2474,34 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THEY ARE AS SURPRISED AS YOU.",
+      "text": "牠們和你們一樣措手不及。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "THEY ATTACK.",
       "text": "牠們發動攻擊。",
       "note": "遭遇敘述。"
     },
     {
+      "source": "THEY CHECK OUT YOUR PARTY,",
+      "text": "牠們把你們的隊伍打量一番，",
+      "note": "片段。"
+    },
+    {
       "source": "THEY DESCRIBE THE SURROUNDING AREA TO YOU. YOU LISTEN CAREFULLY, QUESTION THEM AND FROM THIS, SKETCH A MAP INTO YOUR JOURNAL CALLING IT ENTRY 10.",
       "text": "牠們把附近的地形說給你們聽。你們仔細聽、細細問，據此在手札裡畫了一張圖，編為第 10 條。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "THEY GLARE AT YOUR PARTY,",
+      "text": "牠們瞪著你們的隊伍，",
+      "note": "片段。"
+    },
+    {
+      "source": "THEY GRUMBLE AND MOVE ON.",
+      "text": "牠們咕噥著走開了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "THEY PAW THROUGH YOUR COINS AND LEAVE.",
@@ -1949,6 +2529,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THEY YELL 'SETTLERS! KILL THEM!'",
+      "text": "牠們大喊：「移民！殺了他們！」",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "THIEVES",
       "text": "盜賊",
       "note": "怪物名。與職業 Thief（賊）分開用字，避免混淆。"
@@ -1962,6 +2547,16 @@
       "source": "THIS CASKET IS EMPTY.",
       "text": "這個小箱是空的。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "THIS IS A HIDDEN TEMPLE OF ILMATER. YOU FEEL SAFE HERE.",
+      "text": "這是一座隱密的伊爾梅特神殿，在這裡你們覺得安全。",
+      "note": "邪惡神廟（Temple of Bane）一帶。Ilmater 為新增譯名。"
+    },
+    {
+      "source": "THIS IS A SMALL SHRINE. SYMBOLS OF BANE HAVE REPLACED THOSE OF ILMATER.",
+      "text": "這是一座小祠堂，伊爾梅特的聖徽已被邪惡神的取代。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "THIS LARGE ROOM IS APPARENTLY EMPTY.",
@@ -2024,9 +2619,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "UNDERNEATH A BROKEN TABLE YOU FIND A CRUSHED SKELETON.  IT HAS SOME JEWELRY ON IT; WILL YOU TAKE IT?",
+      "text": "斷裂的桌子底下有一具被壓碎的骸骨，身上戴著一些首飾。要拿走嗎？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "WAIT",
       "text": "等待",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "WAIT FOR WINNER",
+      "text": "等著看誰得標",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "WARRIOR",
@@ -2037,6 +2642,16 @@
       "source": "WATCHING YOU WARILY, HE INCHES AWAY. WHEN HE IS OUT OF SWORD'S REACH HE SCRAMBLES TO HIS FEET AND FLEES THE ROOM.",
       "text": "他一邊警戒地盯著你們，一邊慢慢挪開。退到刀劍搆不著的地方，就爬起來奪門而出。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "WE ARE HIRING CREATURES TO RECOVER OUR TEMPLE. ARE YOU INTERESTED?'",
+      "text": "我們正在招人手奪回神廟。有興趣嗎？」",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "WE ARE RECRUITING CREATURES FOR OUR TEMPLE TO THE NORTHEAST. ARE YOU INTERESTED?'",
+      "text": "我們正在替東北邊的神廟招人。有興趣嗎？」",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "WE FIND THESE DISCOURSES VALUABLE.",
@@ -2094,9 +2709,19 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "WHILE IN CAMP YOU ARE SUDDENLY ATTACKED BY ORCS.",
+      "text": "你們紮營時突然遭到半獸人襲擊。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "WHILE IN CAMP YOU ARE SUDDENLY ATTACKED BY THREE THIEVES WITH SLINGS.  THEY LAUNCH THEIR BULLETS AT THE PARTY AND THEN RUN, DISAPPERING FROM SIGHT.",
       "text": "你們紮營時突然遭到三名持投石索的盜賊襲擊。他們朝隊伍射完彈丸就跑，消失得無影無蹤。",
       "note": "柯威大樓的盜賊據點。原版此處把 DISAPPEARING 拼成 DISAPPERING。"
+    },
+    {
+      "source": "WHO WILL CHALLENGE THE BUCCANEER?",
+      "text": "由誰去向那名海盜挑戰？",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "WHO WILL DISARM THE TRAP?",
@@ -2174,9 +2799,19 @@
       "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
+      "source": "YOU ARE IN A ROOM FILLED WITH RUBBLE AND WASTE.",
+      "text": "你們在一間堆滿瓦礫與廢物的屋子裡。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "YOU ARE IN A ROOM THAT HAS BEEN CONVERTED TO A JAIL CELL.  IT IS EMPTY.",
       "text": "你們在一間被改成牢房的房間裡，裡面空無一人。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU ARE IN A ROOM THAT IS FILLED WITH THE DEAD BODIES OF THE ORC'S PREVIOUS VICTIMS.",
+      "text": "你們在一間堆滿屍體的屋子裡，都是半獸人先前的犧牲者。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "YOU ARE IN A SMALL ROOM HAVING LITTLE MORE THAN A BENCH AND A SMALL DESK.",
@@ -2192,6 +2827,11 @@
       "source": "YOU ARE IN THE ILLUMINATORS CARRELS. ALL THEIR EQUIPMENT HAS DECAYED AND LIES ROTTING ON THE FLOOR.",
       "text": "你們在繕寫師的小隔間裡，所有器具都腐朽了，散落一地。",
       "note": "舊繩索公會的圖書室。"
+    },
+    {
+      "source": "YOU ARE IN THE REMAINS OF A ONCE GREAT DINING ROOM.  FURNITURE LIES BURNED AND BROKEN THROUGHOUT THE ROOM.",
+      "text": "你們在一間曾經氣派的餐廳廢墟裡，家具被燒毀砸爛，散了一地。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "YOU ARE INTERCEPTED BY THE COUNCIL GUARD. 'HALT.  YOUR PRESENCE IS NOT AUTHORIZED.  LEAVE.'  DO YOU LEAVE?",
@@ -2219,6 +2859,11 @@
       "note": "城衛隊事件。"
     },
     {
+      "source": "YOU ARE SUDDENLY FACE TO FACE WITH A GROUP OF",
+      "text": "你們冷不防和一群",
+      "note": "片段，後接怪物名。"
+    },
+    {
       "source": "YOU ARE SUMMONED BY THE BISHOP OF BRACCIO OF TYR. REPORT TO HIM AT TYR'S TEMPLE.'",
       "text": "提爾神殿的巴西歐主教召見你們，到提爾神殿去見他。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -2235,8 +2880,8 @@
     },
     {
       "source": "YOU ARE USHERED INTO THE BISHOP'S STUDY. BISHOP BRACCIO SPEAKS, 'ALLOW ME TO INTRODUCE DIRTEN, PRIEST OF ILMAR.",
-      "text": "你們被帶進主教的書房。巴西歐主教說：「讓我介紹伊爾瑪的僧侶迪爾騰。",
-      "note": "提爾神殿；句子在原版就沒有收尾，接下一段。"
+      "text": "你們被帶進主教的書房。巴西歐主教說：「讓我介紹伊爾梅特的僧侶迪爾騰。",
+      "note": "提爾神殿；句子在原版就沒有收尾，接下一段。 原版把 ILMATER 拼成 ILMAR，譯名照定案作伊爾梅特。"
     },
     {
       "source": "YOU ARE USHERED INTO THE STUDY WHERE DIRTEN WAITS.  'I AM ABOUT TO JOURNEY TO THE TEMPLE, WILL YOU COME WITH ME?'",
@@ -2289,6 +2934,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU COLDLY KILL THE DEFENCELESS GOBLINS.",
+      "text": "你們冷酷地殺光了毫無反抗之力的哥布林。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "YOU CONVINCE THE",
       "text": "你們說服了",
       "note": "敘述片段。"
@@ -2302,6 +2952,11 @@
       "source": "YOU DEACTIVATE THE TRAP",
       "text": "你們解除了陷阱",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU DESTROY THE EVIL ALTAR AND THE UNEASY FEELING LEAVES YOU.",
+      "text": "你們搗毀了邪惡祭壇，那股不安的感覺也隨之消散。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "YOU DON'T HAVE ENOUGH MONEY!",
@@ -2332,6 +2987,21 @@
       "source": "YOU ENTER A ROOM THAT HAS BEEN CONVERTED TO A JAIL.  THERE ARE TEN YOUNG THUGS BEATING AN OLDER THIEF TO DEATH.  ONCE YOU ENTER THEY STOP AND ATTACK YOU.",
       "text": "你們走進一間被改成牢房的屋子，十個年輕流氓正把一名年長的盜賊往死裡打。看到你們，他們停手轉而攻擊。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU ENTER A ROOM THAT HAS BEEN COVERTED INTO A CELL.",
+      "text": "你們走進一間被改成牢房的屋子。",
+      "note": "邪惡神廟（Temple of Bane）一帶。原版把 CONVERTED 拼成 COVERTED。"
+    },
+    {
+      "source": "YOU ENTER A ROOM THAT HAS SOME CRUDE HAY BEDS. WHAT WILL YOU DO?",
+      "text": "你們走進一間擺著幾張粗陋草床的屋子。要怎麼做？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU ENTER INTO A FILTHY ROOM.  EIGHT ORC GUARDS ATTACK YOU IMMEDIATELY.",
+      "text": "你們走進一間骯髒的屋子，八名半獸人守衛立刻撲了上來。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "YOU ENTER THE CITY HALL.  AS YOU FACE DOWN THE HALLWAY, YOU SEE A GUARDED DOOR.",
@@ -2369,9 +3039,19 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU FIND A PIECE OF PAPER ON THE FLOOR IN THE ROOM.  YOU PLACE IT IN YOUR JOURNAL UNDER ENTRY 53",
+      "text": "你們在房間地上撿到一張紙，把它放進手札第 53 條",
+      "note": "邪惡神廟（Temple of Bane）一帶。片段。"
+    },
+    {
       "source": "YOU FIND A POUCH OF SMALL GEMS.",
       "text": "你們找到一小袋寶石。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU FIND A TRAP DOOR.  WILL YOU OPEN IT?",
+      "text": "你們發現一道活門。要打開嗎？",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
       "source": "YOU FIND A WIDE VARIETY OF SCROLLS IN SCROLL CASES.",
@@ -2424,9 +3104,19 @@
       "note": "舊繩索公會的圖書室。"
     },
     {
+      "source": "YOU FINISH SEARCHING THE BEDS BUT YOU FIND NOTHING BUT LICE AND HAIR.",
+      "text": "床鋪搜完了，除了蝨子和毛髮什麼也沒有。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "YOU GO BACK OUT THE DOOR.",
       "text": "你們退出門外。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU HAD A GREAT TIME UNTIL YOU ALL PASSED OUT. YOUR PURSE IS MISSING.",
+      "text": "你們玩得很盡興，直到全部醉倒。錢袋不見了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "YOU HAVE",
@@ -2457,6 +3147,11 @@
       "source": "YOU HAVE CLEARED THE AREA NEXT TO THE EVIL TEMPLE.",
       "text": "你們清空了邪惡神廟旁的區域。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOU HAVE ENTERED A CROWDED TAVERN.",
+      "text": "你們走進一間擠滿人的酒館。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "YOU HAVE ENTERED A SMALL STORAGE ROOM.",
@@ -2499,6 +3194,11 @@
       "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
+      "source": "YOU HAVE SURPRISED THEM.",
+      "text": "你們突襲了牠們。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "YOU HAVE TAKEN THE GATE! YOU OPEN THE GREAT PORTALS AS 20  HUMAN AND DEMI-HUMAN GUARDS IMMEDIATELY TAKE POSSESSION OF THE GUARD TOWERS.",
       "text": "你們拿下了這道門！大門一開，二十名人類與半人類守衛立刻接管了兩座守衛塔。",
       "note": "史塔傑諾門一帶的事件。"
@@ -2519,6 +3219,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU INTIMIDATE THE MONSTERS SO MUCH THEY RUN AWAY!",
+      "text": "你們把怪物嚇得拔腿就跑！",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "YOU INTRUDE ON A GATHERING OF MONSTER LEADERS.",
       "text": "你們闖進了一場怪物首領的集會。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -2534,9 +3239,24 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU LET THE GOBLINS GO.  AS THEY LEAVE ONE OF THEM SAYS 'TO ENTER THE TEMPLE YOU NEED A HOLY SYMBOL OF BANE.'",
+      "text": "你們放走了哥布林。臨走前有一隻說：「要進神廟，得有邪惡神的聖徽。」",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "YOU NOW CAREFULLY AVOID THE GREEN SLIME.",
       "text": "你們小心地繞開那團綠泥怪。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU NOW SEE THE WAND ISN'T A MAJOR ARTIFACT, IT'S ONLY A WAND OF FEAR!",
+      "text": "你們這才看清那根魔杖不是什麼重要神器，只是一根恐懼魔杖！",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "YOU OPENED THE DOOR INTO A DRUNK BUCCANEER.",
+      "text": "你們一開門就撞上一名喝醉的海盜。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "YOU OVERHEAR TAVERN TALE",
@@ -2574,6 +3294,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU SEARCH THE BEDS BUT FIND NOTHING.",
+      "text": "你們搜遍床鋪，什麼也沒找到。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "YOU SEE A",
       "text": "你們看到",
       "note": "遭遇敘述的開頭片段，後面接怪物名。"
@@ -2587,6 +3312,11 @@
       "source": "YOU SEE A DULL BROWN REPTILIAN MONSTER. IT DOESN'T SEEM AWARE OF YOU.",
       "text": "你們看到一隻暗褐色的爬蟲怪物，牠似乎沒有察覺你們。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "YOU SEE A GROUP OF FOUR ORCS WHOSE SHIELDS BEAR A BLACK HAND ON A RED FIELD.  THEY CAUTIOSLY LOOK YOU OVER.",
+      "text": "你們看到四隻半獸人，盾上是紅底黑手的紋樣。牠們謹慎地打量你們。",
+      "note": "邪惡神廟（Temple of Bane）一帶。原版把 CAUTIOUSLY 拼成 CAUTIOSLY。"
     },
     {
       "source": "YOU SEE A JAR UNDER THE FLOORBOARDS.",
@@ -2634,14 +3364,34 @@
       "note": "貧民區（Slums）的事件與敘述。片段。"
     },
     {
+      "source": "YOU STAND IN FRONT OF THE ENTRANCE TO A LARGE SHADOWY TEMPLE.  AN OLD BLIND DECREPIT ORC STANDS OUTSIDE WITH EIGHT ORC GUARDS.",
+      "text": "你們站在一座陰森大神廟的入口前。門外站著一隻年邁失明、形容枯槁的半獸人，還有八名半獸人守衛。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU STAND OUTSIDE A LARGE MANSION.  ON THE WALLS OF THE MANSION ARE CRUDE BLACK HAND PRINTS.",
+      "text": "你們站在一棟大宅外面，牆上印著粗糙的黑手印。",
+      "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
       "source": "YOU STEP INTO A STRANGE GREEN PLANT GROWTH... IT'S GREEN SLIME! QUICKLY, YOU SCRAPE IT OFF, TAKING A GOOD DEAL OF DAMAGE.",
       "text": "你們踩進一團奇怪的綠色黏狀物……是綠泥怪！你們趕緊刮掉，還是受了不小的傷。",
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU STOP, AND THEY MOVE ON.",
+      "text": "你們停下腳步，牠們就走開了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "YOU TRY TO PICK THE LOCK BUT IT IS TOO COMPLEX FOR YOU TO PICK.  YOU FAIL MISERABLY.",
       "text": "你們試著撬鎖，但這鎖太複雜了，撬得一塌糊塗。",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOU UP THE BID. MONSTERS NEARBY TURN, STARE,",
+      "text": "你們加了價。附近的怪物轉過頭來盯著，",
+      "note": "片段。"
     },
     {
       "source": "YOU WALK NEAR THE",
@@ -2654,9 +3404,24 @@
       "note": "貧民區（Slums）的事件與敘述。原版此處把 OCCASIONALLY 拼成 OCCASSIONALLY。"
     },
     {
+      "source": "YOUR ACTIONS ANGER THE PATRONS AND THEY ATTACK.",
+      "text": "你們的舉動惹惱了客人，他們動手了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "YOUR ACTIONS TRIGGER A FREE FOR ALL.",
+      "text": "你們的舉動引爆了一場大亂鬥。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
       "source": "YOUR CLEARING OF THE SLUM AREAS PERMITS US TO EXPAND.",
       "text": "你們清空了貧民區，我們才得以往外拓展。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOUR COVER IS BLOWN.",
+      "text": "你們的偽裝被識破了。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "YOUR ELIMINATION OF THE LIZARDMEN MENACE HAS GREATLY IMPROVED OUR STRATEGIC POSITION.",
@@ -2672,6 +3437,11 @@
       "source": "YOUR PARTY DETECTS A TRAP!",
       "text": "隊伍發現了陷阱！",
       "note": "柯威大樓的盜賊據點。"
+    },
+    {
+      "source": "YOUR PARTY SLIPS PAST THEM.",
+      "text": "你們的隊伍從牠們身邊溜了過去。",
+      "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
       "source": "YOUR SUCCESS AT PODAL PLAZA IS NOTED.",

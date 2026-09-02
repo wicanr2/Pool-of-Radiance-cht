@@ -456,7 +456,7 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Rhodia | 蘿蒂亞 | 遭遇敘述 | 音近 |
 | Lux | 勒克斯 | 遭遇敘述 | 音近 |
 | Dirten | 迪爾騰 | `ECL3/0` 提爾神殿 | 音近；伊爾瑪的僧侶 |
-| Ilmar | 伊爾瑪 | `ECL3/0` 提爾神殿 | 音近 |
+| Ilmater（原版 `ECL3/0` 拼作 ILMAR）| 伊爾梅特 | `ECL3/0` 提爾神殿、`ECL1` 神殿 | 音近；兩處是同一位神，譯名統一 |
 | Joy（Priestess Joy of Sune）| 喬伊 | `ECL3/0` 蘇妮神殿 | 音近；蘇妮的女祭司 |
 | Bivant | 畢凡特 | `ECL3/8` 委託 | 音近；菲蘭城的一個家族 |
 | Stojanow Gate | 史塔傑諾門 | `ECL3/8` 委託 | 與史塔傑諾河同名，Gate 作門 |
@@ -468,6 +468,11 @@ Lis River、Tesh River、Stormy Bay、Twilight Marsh、Yulash。它們是背景�
 | Urgund | 烏爾岡 | `ECL2` 書名 | 音近 |
 | Tomarus | 托馬魯斯 | `ECL2` 書名 | 音近 |
 | Lex Geographica | 地理法典 | `ECL2` 書名 | 拉丁書名，意譯 |
+| Mace（High Priest）| 梅斯 | `ECL1` 邪惡神廟 | 音近 |
+| Grishnak | 格里希納克 | `ECL1` 街談 | 音近 |
+| Garwin | 加文 | `ECL1` 拍賣會 | 音近 |
+| The Pitt（原版拼法）| 深坑 | `ECL1` 酒館招牌 | 意譯；原版把 PIT 拼成 PITT |
+| Black Hand | 黑手 | `ECL1` 邪惡神廟 | 邪惡神的標記，意譯 |
 | Ettin | 雙頭巨人 | `ECL2` 遭遇 | 形貌譯法 |
 | Green Slime | 綠泥怪 | `ECL2` 遭遇 | 形貌譯法 |
 | Spectre | 幽魂 | `ECL2` 遭遇 | 通行譯名 |
@@ -481,7 +486,7 @@ THEURGIST 術士、EVOKER 咒法師（魔法師）；ROBBER 強盜（賊）。
 原版在遊戲文字裡也有拼錯的地方，譯名一律照定案，不跟著錯字走：
 `PODAL PLAZA`（正為 PODOL）、`STOJONOW`（正為 STOJANOW）、`ZHENTIAL KEEP`
 （正為 ZHENTIL）、`OPENNING`（正為 OPENING）、`POSIONED`（正為 POISONED）、
-`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）。
+`DISAPPERING`（正為 DISAPPEARING）、`OCCASSIONALLY`（正為 OCCASIONALLY）、`COVERTED`（CONVERTED）、`ADMIST`（AMIDST）、`BARELEY`（BARELY）、`FOWARD`（FORWARD）、`CAUTIOSLY`（CAUTIOUSLY）、`CAREFULL`（CAREFUL）、`NONBELIVERS`（NONBELIEVERS）、`ILMAR`（ILMATER）。
 
 `PRESS <RETURN> OR BUTTON TO CONTINUE` 這類介面提示在原版有四種拼法
 （有無句點、有無按鈕、兩者順序相反），逐一對應而不合併——合併會讓某一種拼法
