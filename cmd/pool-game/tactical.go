@@ -574,33 +574,81 @@ func (a *app) foeTurn(state *tacticalState) error {
 		if err != nil {
 			return err
 		}
-		direction, ok := stepTowards(state.Roster[mover].X, state.Roster[mover].Y,
-			state.Roster[target].X, state.Roster[target].Y)
-		if !ok {
-			break
+		here := state.Roster[mover]
+		goal := state.Roster[target]
+		// 八個方向都問一次，挑「走得進去而且離目標最近」的那一個。
+		//
+		// 只問 `stepTowards` 給的那一個方向是不夠的：實測最後一隻殭屍站在
+		// (42,10)、目標在西邊，而它西邊那兩格是牆，其餘六個方向全都走得進去
+		// ——原本的寫法在那一個方向上撞牆就收工，回報「走了零步」，於是雙方
+		// 隔著地形永遠對峙。
+		//
+		// **繞路的規則不是原版的**：原版的敵方回合在 overlay-09 entry 1
+		// （code `000Fh`），還沒讀。這裡只挑一步，不做完整選路。
+		bestDirection, bestDistance := -1, chebyshev(here.X, here.Y, goal.X, goal.Y)
+		// 先問原版的方向表要的那一格；走得進去就走，繞路只是備案。
+		preferred := -1
+		if direction, ok := stepTowards(here.X, here.Y, goal.X, goal.Y); ok {
+			preferred = int(direction)
 		}
-		outcome, err := combat.ResolveDestination(snapshot, mover, direction, state.Budget())
-		if err != nil {
-			return err
+		order := make([]uint8, 0, 8)
+		if preferred >= 0 {
+			order = append(order, uint8(preferred))
 		}
-		if outcome.Action == combat.MovementAttack {
-			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
+		for direction := uint8(0); direction < 8; direction++ {
+			if int(direction) != preferred {
+				order = append(order, direction)
+			}
+		}
+		for _, direction := range order {
+			outcome, err := combat.ResolveDestination(snapshot, mover, direction, state.Budget())
+			if err != nil {
 				return err
 			}
-			state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
-			state.endTurn(a.rollDice, false)
-			return nil
+			if outcome.Action == combat.MovementAttack {
+				if same, err := state.sameSide(mover, outcome.Target); err != nil {
+					return err
+				} else if same {
+					continue
+				}
+				if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
+					return err
+				}
+				state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
+				state.endTurn(a.rollDice, false)
+				return nil
+			}
+			if outcome.Action != combat.MovementEnter {
+				continue
+			}
+			x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
+			if err != nil {
+				return err
+			}
+			distance := chebyshev(x, y, goal.X, goal.Y)
+			if distance >= bestDistance {
+				continue
+			}
+			bestDirection, bestDistance = int(direction), distance
+			if int(direction) == preferred {
+				// 方向表要的那一格走得進去，就不必再看別的。
+				break
+			}
 		}
-		if outcome.Action != combat.MovementEnter {
+		if bestDirection < 0 {
 			break
 		}
-		x, y, err := combat.AdvanceTacticalCoordinate(state.Roster[mover].X, state.Roster[mover].Y, direction)
+		direction := uint8(bestDirection)
+		x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
 		if err != nil {
 			return err
 		}
 		budget, err := combat.SpendMovementStep(state.Budget(), direction)
 		if err != nil {
 			return err
+		}
+		if budget == state.Budget() {
+			break
 		}
 		state.Roster[mover].X, state.Roster[mover].Y = x, y
 		state.Budgets[mover] = budget
