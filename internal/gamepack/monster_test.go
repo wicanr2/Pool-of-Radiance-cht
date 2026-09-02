@@ -116,3 +116,37 @@ func TestRealMON2CHASlumsOrcs(t *testing.T) {
 		}
 	}
 }
+
+// 經驗值是「基礎值加每點生命值的加成」，與 AD&D 一版逐筆相同。
+func TestMonsterExperienceMatchesTheOriginal(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	for _, want := range []struct {
+		block     uint8
+		name      string
+		base      uint16
+		perHP     uint8
+		hitPoints int
+		value     uint32
+	}{
+		{0, "KOBOLD", 5, 1, 3, 8},
+		{4, "ORC", 10, 1, 5, 15},
+		{8, "OGRE", 90, 5, 21, 195},
+		{17, "SPECTRE", 1650, 10, 38, 2030},
+	} {
+		record, err := ReadDOSMonsterRecord(zipPath, 2, want.block)
+		if err != nil {
+			t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+		}
+		if record.Name != want.name {
+			t.Fatalf("block %d 是 %q，預期 %q", want.block, record.Name, want.name)
+		}
+		if record.ExperienceBase() != want.base || record.ExperiencePerHitPoint() != want.perHP {
+			t.Errorf("%s 的經驗值欄位是 %d 加每點 %d，原版是 %d 加每點 %d",
+				want.name, record.ExperienceBase(), record.ExperiencePerHitPoint(), want.base, want.perHP)
+		}
+		if got := record.ExperienceValue(want.hitPoints); got != want.value {
+			t.Errorf("%s 有 %d 點生命值應該值 %d，算出 %d",
+				want.name, want.hitPoints, want.value, got)
+		}
+	}
+}

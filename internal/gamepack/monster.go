@@ -32,6 +32,27 @@ func (record MonsterRecord) DamageDieSides() uint8   { return record.Raw[0x117] 
 func (record MonsterRecord) DamageBonus() int8       { return int8(record.Raw[0x119]) }
 func (record MonsterRecord) Movement() uint8         { return record.Raw[0x11C] }
 
+// 經驗值（spec 097）。overlay-05 entry 2 的 `00C0h..00F4h` 算的是
+// `+0B8h + +0BAh × +0B1h`：AD&D 一版的「基礎值加每點生命值的加成」。
+//
+// `+0B1h` 在活著的戰鬥員身上是牠擲出來的生命值；樣板記錄裡多半與 `+32h`
+// 相同，但不是每一筆都填了（HOBGOBLIN 的是 0），所以算的時候要用實際的
+// 生命值，不要讀樣板的那一格。
+func (record MonsterRecord) ExperienceBase() uint16 {
+	return uint16(record.Raw[0xB8]) | uint16(record.Raw[0xB9])<<8
+}
+
+// ExperiencePerHitPoint 是每點生命值再加多少。
+func (record MonsterRecord) ExperiencePerHitPoint() uint8 { return record.Raw[0xBA] }
+
+// ExperienceValue 是打倒這一隻值多少經驗值。
+func (record MonsterRecord) ExperienceValue(hitPoints int) uint32 {
+	if hitPoints < 0 {
+		hitPoints = 0
+	}
+	return uint32(record.ExperienceBase()) + uint32(record.ExperiencePerHitPoint())*uint32(hitPoints)
+}
+
 func (record MonsterRecord) BaseAttackRate(slot uint8) (uint8, error) {
 	if slot < 1 || slot > 2 {
 		return 0, fmt.Errorf("Pool monster attack slot %d is outside 1..2", slot)

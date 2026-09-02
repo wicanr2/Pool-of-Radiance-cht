@@ -1096,6 +1096,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		a.statusLine = "Tactical preview finished; no encounter was staged."
 		return nil
 	}
+	a.awardCombatExperience()
 	a.combatActive, a.combatMonsters = false, nil
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.eventText, a.eventLabel = "", ""
@@ -1201,4 +1202,40 @@ func (state *tacticalState) sideCounts() combat.SideCounts {
 		}
 	}
 	return counts
+}
+
+// awardCombatExperience 把這一場的經驗值發給隊伍（spec 097）。
+//
+// 原版是先把所有敵方的經驗值加總、除以「有資格分的人數」，再由每個人依自己的
+// 複合職業碼調整：純職業的主屬性超過 15 多拿十分之一，複合職業除以職業數。
+//
+// **有資格的判準還沒讀完**：原版跳過 `+10Dh` 為 0 與狀態為 1 的成員，兩個欄位
+// 的語意都還沒閉合，所以這裡讓全隊都分。倒下的成員在原版一樣分得到——
+// 它擋的不是死亡。
+func (a *app) awardCombatExperience() {
+	if len(a.state.Party) == 0 || len(a.combatMonsters) == 0 {
+		return
+	}
+	total := uint32(0)
+	for _, monster := range a.combatMonsters {
+		value := monster.Record.ExperienceValue(int(monster.Record.MaxHitPoints()))
+		total += value * uint32(monster.Spawn.Count)
+	}
+	share := gamepack.DivideExperience(total, len(a.state.Party))
+	if share == 0 {
+		return
+	}
+	for index := range a.state.Party {
+		member := &a.state.Party[index]
+		code, ok := creation.ClassDOSCode(member.ClassID)
+		if !ok {
+			// NPC 帶的是自己的 285-byte 記錄，職業碼在 `+2Fh`。
+			if len(member.Record) > gamepack.ClassCodeOffset {
+				code = member.Record[gamepack.ClassCodeOffset]
+			} else {
+				continue
+			}
+		}
+		member.Experience += gamepack.ExperienceShare(share, code, member.Abilities)
+	}
 }

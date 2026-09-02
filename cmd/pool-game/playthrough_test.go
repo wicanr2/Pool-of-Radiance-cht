@@ -568,7 +568,15 @@ func TestAnEquippedPartyWinsTheFirstFight(t *testing.T) {
 	if application.combatActive {
 		t.Fatal("the encounter is still staged after the fight")
 	}
-	t.Logf("索寇要塞第一場：%d 隻怪物，隊伍勝出", foesAtStart)
+	// 經驗值要真的發下去（spec 097）。零就代表 finishCombat 沒走到發放那一段——
+	// 上面那些斷言全部通過也看不出來。
+	for _, member := range application.state.Party {
+		if member.Experience == 0 {
+			t.Fatalf("%s 打贏了卻沒拿到經驗值", member.Name)
+		}
+	}
+	t.Logf("索寇要塞第一場：%d 隻怪物，隊伍勝出，每人 %d 點經驗值",
+		foesAtStart, application.state.Party[0].Experience)
 }
 
 // premadeReadiedKit 借原版預設人物 chrdatd2 身上穿戴中的東西當裝備：
