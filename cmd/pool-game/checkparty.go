@@ -66,9 +66,20 @@ func (a *app) applyCheckParty(event eclvm.Event) error {
 			values = append(values, movement)
 		}
 		stats = gamepack.CheckPartySummary(values)
+	case gamepack.CheckPartyFieldFindTraps:
+		// 記錄 `+79h` 是賊技能的「找／解陷阱」（spec 095）。remake 還沒有
+		// 賊技能的產生端，所以非賊一律 0——那是正確答案，不是佔位。
+		values := make([]uint8, 0, len(a.state.Party))
+		for _, member := range a.state.Party {
+			skill := uint8(0)
+			if len(member.ThiefSkills) > gamepack.ThiefSkillFindRemoveTraps {
+				skill = member.ThiefSkills[gamepack.ThiefSkillFindRemoveTraps]
+			}
+			values = append(values, skill)
+		}
+		stats = gamepack.CheckPartySummary(values)
 	default:
-		return fmt.Errorf("Pool CHECKPARTY selector %#04x reads record +79h, "+
-			"a field whose meaning is not closed (spec 092)", address)
+		return fmt.Errorf("Pool CHECKPARTY selector %#04x is not one of the three known modes", address)
 	}
 	for index, value := range []uint8{stats.Minimum, stats.Maximum, stats.Average, stats.Flag} {
 		destination, err := ecl.WordAddress(instruction.Operands[2+index])

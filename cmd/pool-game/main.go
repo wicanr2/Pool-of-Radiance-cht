@@ -156,6 +156,11 @@ type app struct {
 	// programManaging 為真時，隊伍管理畫面是 `38h PROGRAM` 從地圖上開的，
 	// 離開時要回地圖並讓 ECL 繼續，不是重新開始冒險。
 	programManaging bool
+	// programAsking 為真時選單正在問「要不要開隊伍管理」（`38h` 的值 9）。
+	programAsking bool
+	// programExitsBlock 為真時，關掉隊伍管理之後這個 ECL block 就結束，
+	// 不是從原地繼續——值 9 的結尾是呼叫 EXIT 的 handler。
+	programExitsBlock bool
 	// savingThrows 是 DS:41E6h 那張表（spec 075），2Eh DAMAGE 擲豁免要用。
 	savingThrows *gamepack.SavingThrowTable
 	// parlay 是進行中的交涉選單（spec 086）。
@@ -651,6 +656,9 @@ func (a *app) Update() error {
 					if a.whoPending {
 						return a.selectWhoOption()
 					}
+					if a.programAsking {
+						return a.selectProgramOption()
+					}
 					var selection *uint16
 					if a.cellWaitingMenu {
 						value := uint16(a.cellMenuCursor)
@@ -900,11 +908,7 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			continue
 		}
 		if result.Exited && !result.WaitingForMenu && len(result.Events) == 0 {
-			a.cellEventPending, a.cellWaitingMenu = false, false
-			a.templeActive = false
-			a.cellMenuOptions, a.cellMenuCursor = nil, 0
-			a.eventText, a.eventLabel = "", ""
-			a.statusLine = "Moved using original GEO data; per-turn and SearchLocation returned normally."
+			a.finishCellBlock()
 			return nil
 		}
 		if a.isSuneTempleBoundary(result) {
@@ -1532,6 +1536,17 @@ func (a *app) leaveSuneTemple() error {
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText, a.eventLabel = "", ""
 	return a.continueInitialSearch(nil)
+}
+
+// finishCellBlock 收掉這一格的 ECL：`00h EXIT` 走完之後畫面回到移動狀態。
+// `38h PROGRAM` 的值 9 也走這裡——原版在那一支的結尾就是呼叫 EXIT 的
+// handler（spec 081）。
+func (a *app) finishCellBlock() {
+	a.cellEventPending, a.cellWaitingMenu = false, false
+	a.templeActive = false
+	a.cellMenuOptions, a.cellMenuCursor = nil, 0
+	a.eventText, a.eventLabel = "", ""
+	a.statusLine = "Moved using original GEO data; per-turn and SearchLocation returned normally."
 }
 
 func (a *app) pauseInitialCellResult(result eclvm.Result) error {

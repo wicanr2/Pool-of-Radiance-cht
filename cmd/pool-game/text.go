@@ -78,6 +78,9 @@ var messages = map[messageID][2]string{
 	msgProgramManaging:      {"Party management; B or ESC returns to the map.", "隊伍管理；B 或 ESC 回到地圖。"},
 	msgProgramReturn:        {"B  RETURN TO THE MAP", "B　回到地圖"},
 	msgProgramNeedsParty:    {"The party cannot be empty on the map.", "地圖上的隊伍不能是空的。"},
+	msgProgramAsk:           {"Do you want to change the party?", "要調整隊伍嗎？"},
+	msgProgramYes:           {"YES", "要"},
+	msgProgramNo:            {"NO", "不要"},
 	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
@@ -466,6 +469,9 @@ const (
 	msgProgramManaging
 	msgProgramReturn
 	msgProgramNeedsParty
+	msgProgramAsk
+	msgProgramYes
+	msgProgramNo
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved

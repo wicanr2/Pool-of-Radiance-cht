@@ -14,9 +14,9 @@ const (
 	// 掛著運算元 2 那個效果碼。
 	CheckPartyEffectMode = 0
 
-	// CheckPartyFieldSeventyNine 是運算元 1 指到 `DS:6BA7h` 時要統計的欄位
-	//（記錄 `+79h`）。那個欄位的語意還沒讀出來。
-	CheckPartyFieldSeventyNine = 0x6ba7
+	// CheckPartyFieldFindTraps 是運算元 1 指到 `DS:6BA7h` 時要統計的欄位：
+	// 記錄 `+79h`，也就是賊技能的「找／解陷阱」（spec 095）。
+	CheckPartyFieldFindTraps = 0x6ba7
 	// CheckPartyFieldMovement 是運算元 1 指到 `DS:6C1Bh` 時要統計的欄位
 	//（記錄 `+11Ch`，spec 079 的移動力）。
 	CheckPartyFieldMovement = 0x6c1b
@@ -75,7 +75,7 @@ func CheckPartyMode(literal bool, address uint16) (uint16, error) {
 		return CheckPartyEffectMode, nil
 	}
 	switch address {
-	case CheckPartyFieldSeventyNine, CheckPartyFieldMovement:
+	case CheckPartyFieldFindTraps, CheckPartyFieldMovement:
 		return address, nil
 	}
 	return 0, fmt.Errorf("Pool CHECKPARTY selector %#04x is not one of the two known fields", address)

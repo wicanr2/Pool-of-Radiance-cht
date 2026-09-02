@@ -66,6 +66,10 @@ type Character struct {
 	// Record 是 NPC 的 285-byte MON*CHA 記錄。戰鬥數值直接讀它，
 	// 不硬把 NPC 塞進建角那一套欄位。
 	Record []byte `json:"record,omitempty"`
+	// ThiefSkills 是記錄 `+77h` 起的八個賊技能百分比（spec 095）。
+	// `1Eh CHECKPARTY` 的 `6BA7h` 模式統計的是其中的「找／解陷阱」。
+	// remake 還沒有賊技能的產生端，非賊本來就是 0。
+	ThiefSkills []uint8 `json:"thief_skills,omitempty"`
 	// Memorised 是記憶法術陣列（spec 070，記錄 `+1Fh` 起 13 格）。
 	// `3Bh SPELL` 問的就是這個；法術還沒接上來所以目前是空的。
 	Memorised []uint8 `json:"memorised,omitempty"`

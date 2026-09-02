@@ -46,7 +46,7 @@ func TestCheckPartyModeRefusesUnknownSelectors(t *testing.T) {
 	if mode, err := gamepack.CheckPartyMode(true, 0); err != nil || mode != gamepack.CheckPartyEffectMode {
 		t.Fatalf("字面值 0 應該是效果模式：%d %v", mode, err)
 	}
-	for _, address := range []uint16{gamepack.CheckPartyFieldSeventyNine, gamepack.CheckPartyFieldMovement} {
+	for _, address := range []uint16{gamepack.CheckPartyFieldFindTraps, gamepack.CheckPartyFieldMovement} {
 		if mode, err := gamepack.CheckPartyMode(false, address); err != nil || mode != address {
 			t.Fatalf("%#04x：%d %v", address, mode, err)
 		}
