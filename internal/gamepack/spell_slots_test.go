@@ -101,3 +101,14 @@ func TestSlotTableDoesNotCoverLevelOne(t *testing.T) {
 		}
 	}
 }
+
+// 建角只給一格第一級法術，而且不套睿智加成——overlay-23 的加成在
+// 「等級大於 1」的分支裡，一級角色走不到。照原版行為，不照規則書補。
+func TestFirstLevelSlotsComeFromCharacterCreation(t *testing.T) {
+	if got := gamepack.FirstLevelSpellSlots(); got != (gamepack.SpellSlots{1, 0, 0}) {
+		t.Fatalf("a new caster starts with %v, want [1 0 0]", got)
+	}
+	if got := gamepack.WisdomBonusSlots(18, gamepack.FirstLevelSpellSlots()); got[0] != 3 {
+		t.Fatalf("the bonus helper itself changed shape: %v", got)
+	}
+}

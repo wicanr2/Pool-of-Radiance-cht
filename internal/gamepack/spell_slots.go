@@ -33,6 +33,14 @@ const (
 	wisdomOffset = 0x12
 )
 
+// FirstLevelSpellSlots 是建角時寫下的格數。overlay-16 的建角常式走過職業
+// 陣列，等級大於零的職業各給一格第一級法術：職業 0（牧師）寫 `+0B2h = 1`、
+// 職業 5（法師）寫 `+0B5h = 1`。
+//
+// **第 1 級沒有睿智加成**：overlay-23 的加成是在等級大於 1 的分支裡呼叫的，
+// 一級角色走不到那裡。照原版的行為接，不照規則書補。
+func FirstLevelSpellSlots() SpellSlots { return SpellSlots{1, 0, 0} }
+
 // SpellSlots 是三個法術等級的可記憶數。
 type SpellSlots [SpellSlotLevels]uint8
 
