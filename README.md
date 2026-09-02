@@ -18,13 +18,15 @@
   16x15 點陣字，屬第三方資產、不進 repo，執行時以 `-eten-font` 指定；
   `-lang zh` 沒有字型會失敗即關閉，不會默默用英文跑。截圖見
   `docs/screenshots/pool-remake-chinese-*.png`。
-- 遊戲內的敘述文字也開始接線：原版的 ECL 文字全部盤點過，共 **1,731 句、
+- 遊戲內的敘述文字**全部翻完**。原版的 ECL 文字盤點下來共 **1,731 句、
   110,473 個字元**（`docs/audit/dos-ecl-text-inventory.json`），那就是遊戲內文字的
-  翻譯總量。譯文以原文整句為鍵放在 `internal/gametext`，原版檔案一個位元組都不改；
-  目前翻了 **176 句（10.2%）／6,098 字元（5.5%）**：羅夫導覽全部八頁、遭遇選單、
-  九種怪物名，以及新菲蘭城起始地圖上會遇到的全部敘述。覆蓋率由
-  `cmd/pool-text-inventory -coverage` 量出來，譯文表出現盤點檔沒有的原文時失敗即關閉。
-  戰術畫面已中文化；Journal 仍是英文。
+  翻譯總量，現在覆蓋率是 **1,731 句（100%）／110,473 字元（100%）**：八個 ECL
+  封存檔的敘述、對話、選單選項與怪物名一句不漏。譯文以原文整句為鍵放在
+  `internal/gametext`，原版檔案一個位元組都不改。覆蓋率由
+  `cmd/pool-text-inventory -coverage` 量出來，譯文表出現盤點檔沒有的原文時失敗即關閉；
+  另有測試拿盤點檔逐條核對每個原文都真的存在。用詞以軟體世界的官方說明書與
+  探險者手冊為準，說明書沒收的專名逐條記在 `docs/reference/manual/glossary.md`。
+  戰術畫面已中文化；探險者手冊本身還沒進遊戲內。
 - 已固定 DOS ZIP、歷史中文 RAR 與八張 D64 輸入雜湊。
 - 已盤點 DOS ZIP 168 個檔案；包含 `START.EXE`、`GAME.OVR`、八組
   ECL／GEO／WALLDEF／PIC／SPRIT DAX 與角色存檔樣本。

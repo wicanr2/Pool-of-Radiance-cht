@@ -94,6 +94,11 @@
       "note": "遊牧民營地。"
     },
     {
+      "source": "'DIE HAPPY FIENDS, YOUR DEATHS SHALL BE MY FREEDOM.'",
+      "text": "「痛快地死吧，惡徒；你們的死就是我的自由。」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "'DO YOU SEEK A PARTNER FOR YOUR ADVENTURING?'",
       "text": "「你們是來找冒險同伴的嗎？」",
       "note": "訓練所與競技場。"
@@ -124,9 +129,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "'FACE ME OR FIND SOME FOOL TO CHAMPION YOU!' THE OLD LIZARD MAN TURNS TO YOU AND SAYS, 'OUR CAUSE IS ONE. WILL YOU CHAMPION ME?'",
+      "text": "「跟我單挑，不然就找個傻子替你出戰！」年老的蜥蜴人轉向你們：「我們立場一致。願意替我出戰嗎？」",
+      "note": "沼澤的蜥蜴人部族。"
+    },
+    {
       "source": "'FAR TO THE EAST THERE IS A LARGE KOBOLD COMPLEX.  THERE IS A SILVER BOTTLE OF GREAT POWER THERE THAT WILL HELP YOU ON YOUR QUEST.  RETRIEVE THAT BOTTLE THEN RETURN AND I WILL SEND YOU ON ANOTHER QUEST.'",
       "text": "「遠在東邊有一片龐大的小妖魔巢穴，那裡有一只力量強大的銀瓶，能助你們一臂之力。把瓶子取回來，我再交給你們下一件任務。」",
       "note": "銀龍狄奧根尼斯的巢穴。"
+    },
+    {
+      "source": "'FOOLS, SUMMON ME ONLY WHEN A VAMPIRE IS NEAR OR FACE MY WRATH.' HE RETURNS TO THE BOTTLE.",
+      "text": "「蠢貨，附近有吸血鬼才准召喚我，否則後果自負。」說完他回到了瓶中。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "'FREE ME AND I'LL HELP YOU.'",
@@ -259,9 +274,24 @@
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
+      "source": "'I AM PRINCESS FATIMA.' THE PRINCESS CONTINUES.",
+      "text": "「我是法蒂瑪公主。」公主接著說。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "'I AM SORRY,' THE MAN SAYS, 'I CANNOT HELP YOU.'",
       "text": "那人說：「抱歉，我幫不上忙。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "'I AM THE EFREETI SAMIR AHWAHL. YOU ARE NOT MY MASTER. ARE YOU, PERCHANCE, VAMPIRES?'",
+      "text": "「我是伊弗利特薩米爾·阿瓦爾。你們不是我的主人。莫非，你們是吸血鬼？」",
+      "note": "古托井與井下的小妖魔洞穴。Samir Ahwahl 為新增譯名；Efreeti 依對齊表作伊弗利特。"
+    },
+    {
+      "source": "'I AM TO ESCORT YOU TO OUR TREASURE.'",
+      "text": "「我奉命帶各位去看我們的寶藏。」",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "'I AND MY PEOPLE THANK YOU. AND KNOW THAT WE HAVE HONOR. YOU SHALL BE RICHLY REWARDED FOR YOUR GENEROUS AID.'",
@@ -372,6 +402,11 @@
       "source": "'IT'S A WAND OF ILLUMINATION. WHO CARES, I SEE IN THE DARK ANYWAY!'",
       "text": "「那是照明魔杖。誰在乎，反正我在暗處也看得見！」",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "'JUST AROUND THE CORNER IS OUR TREASURE. TAKE WHAT YOU WISH AND LEAVE US. GOOD DAY.'",
+      "text": "「轉個彎就是我們的寶藏。各位要什麼儘管拿，然後放過我們。告辭。」",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "'JUST LET ME GO, OKAY?",
@@ -524,6 +559,11 @@
       "note": "貧民區（Slums）的事件與敘述。接下一段；原版口語作 DON'T GOT。"
     },
     {
+      "source": "'STILL MY PEOPLE STILL ARE HOSTILE TO STRANGERS. I THINK IT IS BEST IF YOU LEAVE.' HE TURNS AND DISAPPEARS INTO THE WILDERNESS.",
+      "text": "「不過我的族人對外人仍有敵意。各位還是走為上策。」他轉身沒入荒野。",
+      "note": "沼澤的蜥蜴人部族。原版重複了 STILL。"
+    },
+    {
       "source": "'TELL ME PASSWORD OR I KILL YOU. NOW!'",
       "text": "「說出密語，不然我殺了你們。快！」",
       "note": "紡織行與巨人占據一帶的事件。原版文法本身就不通。"
@@ -604,6 +644,16 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "'THEN FOLLOW ME.'",
+      "text": "「那就跟我來。」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "'THEN I MUST FIGHT HIM MYSELF.' THE COMBAT IS EXTREMELY SHORT IN DURATION. WHEN IT IS FINISHED DRYTHH TURNS TO HIS FOLLOWERS, 'KILL THEM!'",
+      "text": "「那我只好親自跟他打。」那場決鬥極短。結束後德萊特轉向手下：「殺了他們！」",
+      "note": "沼澤的蜥蜴人部族。"
+    },
+    {
       "source": "'THEN YOU MUST LEAVE US,' HE RESPONDS WITH AS MUCH DIGNITY AS HE CAN MUSTER. DO YOU LEAVE?",
       "text": "「那你們得離開我們了。」他盡可能保住體面地回話。要走嗎？",
       "note": "遊牧民營地。"
@@ -682,6 +732,11 @@
       "source": "'WE HAVE BEEN INFORMED YOU HAVE ELIMINATED SOME UNDEAD FROM THE GRAVEYARD.",
       "text": "「我們接獲通報，你們清掉了墳場裡的一些不死怪物。",
       "note": "接下一段。"
+    },
+    {
+      "source": "'WE HAVE TO KEEP THIS AREA FREE OF INTRUDERS -- BOSS'S ORDERS.  WE'LL LET YOU GO THIS TIME.  BUT IF YOU COME BACK, YOU'LL FACE BIG TROUBLE.' THE MONSTERS LEAVE.",
+      "text": "「這一帶不許外人進來——首領的命令。這次放你們一馬，再回來就有大麻煩了。」怪物們隨即離去。",
+      "note": "荒野。"
     },
     {
       "source": "'WE TRAIN ONLY",
@@ -819,6 +874,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "'YOU ARE NOT THEY WHO RESCUED MY CHILDREN, BUT ARE MURDEROUS PIRATES! THEN YOU ARE NOT SAFE HERE!' HE DISAPPEARS WITH AMAZING SPEED INTO THE WILDERNESS AROUND YOU.",
+      "text": "「你們不是救我族中孩子的那些人，而是殺人的海盜！那你們在這裡就不安全了！」他以驚人的速度沒入四周的荒野。",
+      "note": "沼澤的蜥蜴人部族。"
+    },
+    {
       "source": "'YOU ARE SEEKING THE TEXTILE HOUSE. WE CAN GET YOU IN UNSEEN AND POSSIBLY HELP YOU WITH THE TREASURE. INTERESTED?'",
       "text": "「你們要找的是紡織行。我們可以帶你們神不知鬼不覺地進去，說不定還能幫你們弄到那批財寶。有興趣嗎？」",
       "note": "瓦海登墳場的事件與敘述。"
@@ -877,6 +937,11 @@
       "source": "'YOU WILL SEE THE ENTRANCE TO THE PASSENGER DOCK AREA WE JUST DEPARTED.  FEW SHIPS DARE THE PERILOUS PASSAGE HERE, BUT THE COUNCIL IS DEVELOPING A PLAN TO OPEN UP THE SEA LANES.  PLEASE FOLLOW ME.'",
       "text": "「就會看到我們剛才離開的客運碼頭入口。敢走這條險路的船不多，不過市議會正在擬定計畫，要把航道打通。請跟我來。」",
       "note": "Rolf 導覽第三頁，承接上一頁的句子。The City Council 依 glossary 作市議會。"
+    },
+    {
+      "source": "'YOUR GROUP IS TOO LARGE.'",
+      "text": "「你們這隊人太多了。」",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "'YOUR PARTY IS TOO LARGE TO JOIN AT THIS TIME.  RETURN WHEN IT IS SMALLER.'",
@@ -954,9 +1019,39 @@
       "note": "分配戰利品的份數。"
     },
     {
+      "source": "16",
+      "text": "16",
+      "note": "古托井與井下的小妖魔洞穴。編號片段。"
+    },
+    {
+      "source": "16.",
+      "text": "16。",
+      "note": "古托井與井下的小妖魔洞穴。編號片段。"
+    },
+    {
+      "source": "2 LIZARD MEN AND A GIANT LIZARD CHARGE AT YOU.",
+      "text": "兩名蜥蜴人和一隻巨蜥朝你們衝來。",
+      "note": "荒野。"
+    },
+    {
       "source": "2 SHARES",
       "text": "兩份",
       "note": "同上。"
+    },
+    {
+      "source": "20.",
+      "text": "20。",
+      "note": "古托井與井下的小妖魔洞穴。編號片段。"
+    },
+    {
+      "source": "28.",
+      "text": "28。",
+      "note": "古托井與井下的小妖魔洞穴。編號片段。"
+    },
+    {
+      "source": "3 GIANT LIZARDS CHARGE TOWARD YOU.",
+      "text": "三隻巨蜥朝你們衝來。",
+      "note": "荒野。"
     },
     {
       "source": "3 SHARES",
@@ -969,6 +1064,11 @@
       "note": "同上。"
     },
     {
+      "source": "42.",
+      "text": "42。",
+      "note": "古托井與井下的小妖魔洞穴。編號片段。"
+    },
+    {
       "source": "?",
       "text": "？",
       "note": "介面提示。"
@@ -977,6 +1077,21 @@
       "source": "A",
       "text": "甲",
       "note": "選項編號，原版以 A～D 標示四個小箱。"
+    },
+    {
+      "source": "A BAND OF KOBOLDS CLIMBS FROM THE WELL AND ATTACKS.",
+      "text": "一群小妖魔從井裡爬上來攻擊。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "A BAND OF KOBOLDS CLIMBS FROM THE WELL BEHIND YOU AND ATTACKS.",
+      "text": "一群小妖魔從你們身後的井裡爬上來攻擊。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "A BOULDER BLOCKS OFF THE PASSAGE. USING A LEVER, THE KOBOLD DISLODGES IT AND PROCEEDS. DO YOU?",
+      "text": "一塊巨石堵住通道。那隻小妖魔用槓桿把它撬開後繼續前進。你們要跟嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "A BROKEN HEARTH AND BELLOWS DOMINATES THE COLLAPSED REMAINS OF A BLACKSMITH'S SHOP.  THE FLOOR IS SPONGEY AND DAMP.  THE CROAKING OF FROGS GREETS YOUR ENTRY.",
@@ -1014,6 +1129,11 @@
       "note": "酒館事件。"
     },
     {
+      "source": "A DRUNKEN KOBOLD LIES HERE.",
+      "text": "一隻喝醉的小妖魔倒在這裡。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "A FIGHTER EMERGES FROM THE BUILDING NEARBY AND CONFRONTS YOU.",
       "text": "一名戰士從附近的建築走出來攔住你們。",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -1037,6 +1157,16 @@
       "source": "A GROUP OF FOUR GIANTS CHARGE OUT OF A NEARBY BUILDING.",
       "text": "四名巨人從附近一棟建築裡衝了出來。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "A GROUP OF HUMANS WERE DESCRIBED TO ME BY THREE OF OUR PEOPLE WHOM THEY RESCUED. IF YOU ARE THEY YOU WILL HAVE BEEN SHOWN OUR TRIBAL FRIEND-WORD.",
+      "text": "我們有三名族人被一群人類救過，他們向我描述了那些人。各位若就是他們，應該看過我們部族的友好暗語。",
+      "note": "沼澤的蜥蜴人部族。"
+    },
+    {
+      "source": "A GROUP OF LIZARD MEN SLITHER OUT OF THE WATER AND THROW JAVELINS AT YOU.",
+      "text": "一群蜥蜴人滑出水面，朝你們投擲標槍。",
+      "note": "荒野。"
     },
     {
       "source": "A GROUP OF MEN ON HORSEBACK RIDE OUT TO MEET YOU.  THEIR LEADER SAYS, 'ARE YOU THE DIPLOMATIC ENVOYS FROM NEW PHLAN?'  WHAT WILL YOU SAY?",
@@ -1074,6 +1204,11 @@
       "note": "遊牧民營地。"
     },
     {
+      "source": "A KOBOLD APPROACHES WAVING A WHITE FLAG.",
+      "text": "一隻小妖魔舉著白旗走了過來。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "A LARGE GROUP OF MEN LED BY A DWARF RUNS FOWARD TO ATTACK",
       "text": "一大群人由一名矮人帶頭衝上來攻擊",
       "note": "野外與漢提爾前哨一帶的事件。原版把 FORWARD 拼成 FOWARD。"
@@ -1102,6 +1237,11 @@
       "source": "A LETTER FROM THE BOSS, TELLING YARASH TO JOIN OR DIE. (ENTRY 33)",
       "text": "一封來自首領的信，要亞拉斯歸順，否則就死。（線索報導 33）",
       "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "A LIZARDMAN LEADS A PACK OF GIANT LIZARDS ON PATROL BEFORE A DOOR THAT HAS BEEN NAILED CLOSED.  SEEING YOU, THE MONSTERS ATTACK!",
+      "text": "一名蜥蜴人帶著一群巨蜥，在一道被釘死的門前巡邏。看到你們，怪物們就攻了上來！",
+      "note": "荒野。"
     },
     {
       "source": "A LOUD COMMOTION RISES FROM THE COURTYARD.  BASHING OPEN THE DOOR, A LARGE FORCE OF ORCS AND HOBGOBLINS RUSHES YOU.",
@@ -1199,6 +1339,11 @@
       "note": "紡織行與巨人占據一帶的事件。原版把 ALTAR 拼成 ALTER。"
     },
     {
+      "source": "A RAIN OF ARROWS POURS OVER YOU.",
+      "text": "一陣箭雨潑向你們。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "A ROBED ORC IS SITTING HERE. WHAT DO YOU DO?",
       "text": "一隻穿長袍的半獸人坐在這裡。你們要怎麼做？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -1207,6 +1352,16 @@
       "source": "A ROPE IS TOSSED UP AND THE REST OF THE PARTY COMES DOWN. THE OLD THIEF SAYS 'OUR RULES REQUIRE YOU TO BE BLINDFOLDED IN OUR GUILD HOUSE, OKAY?'",
       "text": "一條繩子被拋了上來，隊伍其餘的人也下來了。那名年長的盜賊說：「按規矩，在我們公會裡各位得蒙上眼，可以吧？」",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "A RUINED BALLISTA LIES HERE.",
+      "text": "這裡躺著一架毀壞的弩砲。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "A SCREAMING HORDE OF KOBOLDS ATTACKS THE PARTY.",
+      "text": "一大群小妖魔尖叫著撲向隊伍。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "A SCRIBE WALKS INTO THE ROOM. HE SEES YOU AND LETS OUT A GASP. HE DROPS HIS BOOKS AND RUNS OUT THE DOOR.",
@@ -1274,6 +1429,11 @@
       "note": "野外。"
     },
     {
+      "source": "A TERRIBLE WYVERN CHARGES TO ATTACK THE PARTY!",
+      "text": "一頭凶惡的雙足飛龍衝上來攻擊隊伍！",
+      "note": "荒野。"
+    },
+    {
       "source": "A THICK CARPET OF FUNGUS COVERS THE FLOOR OF THIS ROOM.",
       "text": "這房間的地板上鋪著一層厚厚的真菌。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -1317,6 +1477,16 @@
       "source": "A WEAPON OF GREAT POWER IS TO BE AUCTIONED TO OUR ENEMIES. THIS AUCTION IS TO BE HELD IN PODAL PLAZA.  FIND OUT WHAT THE WEAPON IS AND RETURN.'",
       "text": "有一件威力強大的武器要拍賣給我們的敵人，拍賣會就辦在波多廣場。查清楚那是什麼武器，然後回報。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "A WIDE-EYED WOMAN IS SEATED ON A RUG.  AT YOUR ENTRY, SHE STANDS. 'GREETINGS BOLD ONES, I HAVE LONG AWAITED YOUR COMING.  MY TIME HERE IS SHORT FOR THE WORLD ENTERS A NEW AGE.",
+      "text": "一名睜著大眼的女子坐在地毯上。你們一進門，她便站起身：「勇者們，你們好，我等候多時了。我在此的時間不多，因為世界正邁入新的紀元。",
+      "note": "古托井與井下的小妖魔洞穴。接下一段。"
+    },
+    {
+      "source": "A WOMAN APPEARS BEFORE YOU.'I AM THE PRINCESS FATIMA, AID ME IN THIS BATTLE.'",
+      "text": "一名女子出現在你們面前：「我是法蒂瑪公主，這一戰請助我一臂之力。」",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "A YOUNG WOMAN COMES FORWARD 'WE PROVIDE HELP FOR THOSE WHO CAN REACH US. ARE YOU IN NEED OF HEALING?",
@@ -1384,6 +1554,11 @@
       "note": "銀龍狄奧根尼斯的巢穴。"
     },
     {
+      "source": "AFTER IT IS DONE, IT LEAVES.",
+      "text": "說完牠便離開了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "AFTER KILLING THE COMMANDANT THE REST OF THE OUTPOST EITHER SURRENDERS OR RUNS AWAY.",
       "text": "指揮官一死，前哨其餘的人不是投降就是逃走。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -1429,6 +1604,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "AHEAD OF YOU IS A MOAT FILLED WITH SLUDGE AND THORNS. YOU CANNOT PROCEED BECAUSE THE MUD WOULD SURELY DRAG YOU DOWN TO YOUR DEATH.",
+      "text": "前方是一條滿是爛泥與荊棘的護城河。過不去——那些泥必定會把你們拖下去淹死。",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
       "source": "ALL AROUND THE TOWER, PILES OF HAIR AND FUR COVER THE AREA.",
       "text": "塔的四周堆滿了毛髮與獸皮。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -1467,6 +1647,11 @@
       "source": "AMONG THE PAPERS ON THE DESK YOU FIND THE FOLLOWING AND SLIP THEM INTO YOUR JOURNAL:",
       "text": "你們在桌上的文件裡找到下面這些，把它們夾進手冊：",
       "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "AMONGST A NEST OF LOGS YOU FIND SOME TREASURE.",
+      "text": "在一堆交錯的原木間，你們找到一些財寶。",
+      "note": "荒野。"
     },
     {
       "source": "AN ABANDONED SHOP. BROKEN SHELVES ARE ALL THAT REMAIN.",
@@ -1509,9 +1694,19 @@
       "note": "野外。"
     },
     {
+      "source": "AN EVIL SPIRIT FROM AN UNHOLY POOL GUIDES YOUR ENEMIES. IT HIDES BEHIND A FAIR COUNTENANCE. BE NOT DECEIVED.' WITH THAT, THE WOMAN IS GONE.",
+      "text": "一個來自不潔之池的邪靈在指引你們的敵人。它藏在一副美好的面容之後。莫要受騙。」話音一落，那女子便消失了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "AN OFFICER LOOKS AT YOU, 'WHAT ARE YOU DOING HERE?'",
       "text": "一名軍官看向你們：「你們在這裡做什麼？」",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "AN OLD LIZARDMAN APPEARS BEFORE YOU, HAND RAISED IN A GESTURE OF PEACE.",
+      "text": "一名年老的蜥蜴人出現在你們面前，舉起手做出示好的姿勢。",
+      "note": "沼澤的蜥蜴人部族。"
     },
     {
       "source": "AN OLD THIEF STANDS HERE.'WELCOME TO MY GUILD. I AM RESTAL.' HE BOWS LOW.",
@@ -1824,6 +2019,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "AS YOU PULL, THE STOPPER COMES LOOSE AND SMOKE BILLOWS OUT, FORMING INTO A GIANT, REDDISH HUMANOID.",
+      "text": "你們一拉，瓶塞鬆脫，煙霧滾滾湧出，凝成一個巨大的赤紅人形。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "AS YOU PUSH THE DOOR OPEN THE CEILING CAVES IN.",
       "text": "你們一推開門，天花板就塌了下來。",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -1929,9 +2129,19 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "AT THE BOTTOM THE KOBOLD DIVES BENEATH SOME RUBBLE.",
+      "text": "到了底下，那隻小妖魔鑽進一堆瓦礫底下。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "AT THE END OF THE PASSAGEWAY ARE THREE LARGE WILD BOARS.  THEY CHARGE AT YOU AND ATTACK!",
       "text": "通道盡頭有三頭大野豬，牠們朝你們衝了過來！",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "AT THE SAME TIME GIANT LIZARDS CHARGE OUT OF HIDDEN TUNNELS.",
+      "text": "同時，巨蜥從隱密的隧道裡衝了出來。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "AT YOUR ENTRY, THE COUNCIL CLERK BEGINS LOOKING THROUGH A STACK OF PAPERS.  'BEFORE I CAN OFFER ANY COMMISSIONS, I MUST SEE IF YOU ARE DUE A CURRENT REWARD.",
@@ -1964,9 +2174,19 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "ATTACK HER",
+      "text": "攻擊她",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "ATTACK HIM",
       "text": "攻擊他",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "ATTACK IT",
+      "text": "攻擊牠",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "ATTACK YOU IMMEDIATELY!",
@@ -2034,14 +2254,29 @@
       "note": "史塔傑諾門一帶的事件。"
     },
     {
+      "source": "BEFORE THEY CAN RETURN TO THE WATER YOU ENGAGE THEM. THEY TURN AND FIGHT FANATICALLY.",
+      "text": "牠們還來不及回到水裡就被你們纏上，只得回身死戰。",
+      "note": "荒野。"
+    },
+    {
       "source": "BEFORE YOU ARE THREE THRI-KREEN WARRIORS.  THEY ATTACK YOU IMMEDIATELY.",
       "text": "你們面前是三名昆蟲人戰士，牠們立刻發動攻擊。",
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "BEFORE YOU CAN REACT THEY TURN AND DIVE BACK INTO THE WATER.",
+      "text": "你們還來不及反應，牠們就轉身潛回水裡。",
+      "note": "荒野。"
+    },
+    {
       "source": "BEFORE YOU IS A GREAT HALL.  THE FLOOR IS LITTERED WITH ORC TRASH AND THE WALLS HAVE CRUDE BLACK HANDS PAINTED ON THEM.",
       "text": "你們面前是一座大廳，地上滿是半獸人的垃圾，牆上畫著粗糙的黑手。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "BEFORE YOU IS A HORDE OF KOBOLDS. BEHIND THEM ARE TWO MEN AND AN ANCIENT KOBOLD ON A WOODEN THRONE.",
+      "text": "眼前是一大群小妖魔，後方站著兩個人類，還有一隻年邁的小妖魔坐在木製王座上。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "BEFORE YOU IS A TABLE WITH FOUR SMALL CASKETS ON TOP OF IT.  WHAT WILL YOU DO?",
@@ -2059,9 +2294,24 @@
       "note": "史塔傑諾門一帶的事件。"
     },
     {
+      "source": "BEFORE YOU LIES A HUGE WYVERN. IT RISES UP AND CHARGES.",
+      "text": "眼前伏著一頭巨大的雙足飛龍。牠站起身衝了過來。",
+      "note": "荒野。"
+    },
+    {
+      "source": "BEFORE YOU LIES KUTO'S WELL.  IT IS A SOURCE OF WATER IN ALL SEASONS.",
+      "text": "眼前就是古托井，一年四季都出水。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "BEFORE YOU OPEN THE DOOR ALL THE WAY, YOU NOTICE A BUCKET ABOVE THE DOOR. YOU KICK THE DOOR OPEN LETTING THE BUCKET FALL HARMLESSLY TO THE GROUND.",
       "text": "門還沒完全推開，你們就注意到門上架著一只桶子。一腳把門踹開，桶子無害地落到地上。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "BEFORE YOU RECOVER, KOBOLDS ARRIVE.",
+      "text": "你們還沒回過神，小妖魔就到了。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "BEHIND THE ALTER ARE TWO CROSSED SWORDS. DO YOU TAKE THEM?",
@@ -2077,6 +2327,11 @@
       "source": "BENEATH A FLOORBOARD YOU FIND SOME GEMS AND A FEW PAGES OF A DIARY.  YOU COPY THESE PAGES INTO YOUR JOURNAL AS ENTRY 3.",
       "text": "地板底下有幾顆寶石和幾頁日記。你們把這幾頁抄進手冊，成為線索報導 3。",
       "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
+      "source": "BENEATH A RUG YOU FIND A COMPARTMENT CONTAINING ARMS AND ARMOR.  DO YOU TAKE THEM?",
+      "text": "地毯底下有個暗格，裡面放著武器與護甲。要拿嗎？",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
     },
     {
       "source": "BIVANT WAS DELIGHTED WITH THE CHILD'S RESCUE.  THEY LEFT SOME TRINKETS FOR YOU.",
@@ -2344,6 +2599,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "DISARM IT",
+      "text": "拆掉它",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "DISARM TRAP",
       "text": "解除陷阱",
       "note": "柯威大樓的盜賊據點。"
@@ -2367,6 +2627,11 @@
       "source": "DO NOT RESCUE BOY NOW",
       "text": "現在不救那個男孩",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "DO YOU GO UP?",
+      "text": "要上去嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "DO YOU LEAVE?",
@@ -2422,6 +2687,11 @@
       "source": "DO YOU WANT TO GO UPSTAIRS?",
       "text": "要上樓嗎？",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "DO YOU WANT TO LEAVE?",
+      "text": "要離開嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "DO YOU WANT TO TAKE A BOAT BACK TO PHLAN?",
@@ -2484,6 +2754,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "DRYTHH TURNS TO HIS CONFIDENT FOLLOWERS, 'KILL THEM!'",
+      "text": "德萊特轉向他那些自信滿滿的手下：「殺了他們！」",
+      "note": "沼澤的蜥蜴人部族。"
+    },
+    {
       "source": "DURING THE FESTIVITIES THE CHIEF (HIS TONGUE LOOSENED BY DRINK) TELLS YOU OF THE DANGERS OF THE REGION. YOU MAKE HASSAD AHWAL'S TALK ENTRY 55 IN YOUR JOURNAL.",
       "text": "慶典上酋長酒後話多，跟你們說起這一帶的凶險。你們把哈薩德·阿瓦爾這番話寫進手冊，成為線索報導 55。",
       "note": "遊牧民營地。Hassad Ahwal 為新增譯名。"
@@ -2529,9 +2804,19 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "EXIT",
+      "text": "離開",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "FALL FOR YOUR SPARKLING PERSONALITY AND WANDER AWAY WITHOUT A FIGHT.",
       "text": "被你們的魅力折服，沒動手就走開了。",
       "note": "野外與漢提爾前哨一帶的事件。片段。"
+    },
+    {
+      "source": "FALLS INTO A POOL OF WATER.",
+      "text": "落進一池水裡。",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
     },
     {
       "source": "FAR TO THE EAST THERE IS A LARGE KOBOLD COMMUNITY.  THEY HAVE POSSESION OF A POWERFUL SILVER BOTTLE.  THIS BOTTLE WILL HELP YOU RID THE CITY OF ITS UNDEAD PROBLEM.  GET THE BOTTLE THEN RETURN TO ME.",
@@ -2552,6 +2837,16 @@
       "source": "FIGHT",
       "text": "開打",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "FIGHT THEM?",
+      "text": "要跟牠們打嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "FIGHT?",
+      "text": "要打嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "FIGHTERS",
@@ -2579,6 +2874,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "FOLLOW",
+      "text": "跟上去",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "FOLLOW DRAGON",
       "text": "跟著那條龍",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -2599,6 +2899,11 @@
       "note": "選項。"
     },
     {
+      "source": "FOUR GIANT LIZARDS RUN UP AND ATTACK THE PARTY!",
+      "text": "四隻巨蜥奔上來攻擊隊伍！",
+      "note": "荒野。"
+    },
+    {
       "source": "FREE",
       "text": "放他自由",
       "note": "瓦海登墳場的事件與敘述。"
@@ -2617,6 +2922,11 @@
       "source": "FROM HERE YOU SEE A LARGE INNER WALL AROUND THE CENTRAL KEEP.  THIS AREA IS BUSY WITH MEN ENTERING AND LEAVING BARRACKS.",
       "text": "從這裡看得到主堡外的一道厚實內牆。這一帶人來人往，進出營房的人不少。",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "FROM NEARBY A GROUP OF LIZARD MEN APPEAR. ONE LARGER THAN THE REST MOVES TO THE FRONT, 'YOUR TIME IS THROUGH OLD ONE. YOUR CLAWS ARE BLUNT.'",
+      "text": "附近出現一群蜥蜴人，一名比其他都高大的走到前面：「你的時代結束了，老東西。你的爪子已經鈍了。」",
+      "note": "沼澤的蜥蜴人部族。"
     },
     {
       "source": "FROM THE MAGICALLY-LIT TOMB OF A BRAVE KNIGHT, A BODY RISES FROM ITS RESTING PLACE TO LAY WEAPONS BEFORE THE PARTY.",
@@ -2649,6 +2959,11 @@
       "note": "瓦海登墳場的事件與敘述。片段。"
     },
     {
+      "source": "GIANT LIZARDS",
+      "text": "巨蜥",
+      "note": "荒野。"
+    },
+    {
       "source": "GIANT MANTIS",
       "text": "巨螳螂",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -2662,6 +2977,11 @@
       "source": "GIVE",
       "text": "給他",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "GIVE IT WATER",
+      "text": "給牠水",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "GIVE THE PASSWORD",
@@ -2692,6 +3012,11 @@
       "source": "GO BACK OUTSIDE",
       "text": "退回外面",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "GO ON",
+      "text": "繼續前進",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "GOBLINS",
@@ -2754,6 +3079,11 @@
       "note": "片段。"
     },
     {
+      "source": "GUARDING THIS CHAMBER ARE TWO GIANT LIZARDS.  AS YOU APPROACH, THEY ATTACK.",
+      "text": "兩隻巨蜥守著這間石室。你們一靠近，牠們就攻了上來。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "GUARDS RUN TO INTERCEPT YOU.",
       "text": "守衛跑過來攔截你們。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -2772,6 +3102,16 @@
       "source": "HE LEAVES.",
       "text": "他離開了。",
       "note": "敘述。"
+    },
+    {
+      "source": "HE LOOKS AT YOU PATIENTLY.",
+      "text": "他耐著性子看著你們。",
+      "note": "荒野。"
+    },
+    {
+      "source": "HE LOOKS CONFUSED,'OH, THE ENVOYS. DO YOU WISH AN ESCORT TO THE KING?'",
+      "text": "他一臉茫然：「喔，是使節。要人帶你們去見王嗎？」",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "HE LOOKS RELUCTANT AND SAYS, 'BUT HIS MINIONS ARE THERE. HE WILL COME TOO!' DO YOU INSIST HE COME?",
@@ -2819,6 +3159,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "HERE CRUDE TABLES, LITTERED WITH BONES, ARE SCATTERED AROUND.",
+      "text": "這裡零亂擺著幾張粗製的桌子，上頭滿是骨頭。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "HERE IS A LAUGHING THIEF.",
       "text": "這裡有個在笑的盜賊。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -2837,6 +3182,16 @@
       "source": "HERO",
       "text": "英雄",
       "note": "AD&D 等級稱號（戰士第四級）。"
+    },
+    {
+      "source": "HIDDEN IN A NARROW CREVICE IS AN OLD CRIPPLED KOBOLD. IT CROAKS WEAKLY FOR WATER.",
+      "text": "一隻又老又跛的小妖魔藏在窄縫裡，有氣無力地嘶聲討水。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "HIPPOGRIFFS",
+      "text": "鷹馬",
+      "note": "荒野。"
     },
     {
       "source": "HISTORY.",
@@ -2939,6 +3294,11 @@
       "note": "遭遇敘述的方位片段，原版把句子拆成幾段拼起來。"
     },
     {
+      "source": "IN IT IS A KOBOLD'S CRUDE DRAWING.",
+      "text": "裡面是一幅小妖魔畫的粗糙圖畫。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "IN THE CENTER OF THE ROOM IS A GLOWING POOL. AN ANCIENT BRONZE DRAGON, SURROUNDED BY A FIERY AURA, RISES FROM WHERE IT WAS COILED NEARBY.",
       "text": "房間正中是一池發光的水。一條蒼老的青銅龍裹著火焰般的靈光，從一旁盤踞之處立起。",
       "note": "瓦傑渥城堡內部。"
@@ -2979,9 +3339,24 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "IN THIS ROOM ARE SOME GNOLLS AND TROLLS.  THEY ATTACK YOU IMMEDIATELY.",
+      "text": "這間屋裡有幾隻豺狼人和巨魔，牠們立刻攻了上來。",
+      "note": "荒野。"
+    },
+    {
       "source": "IN THIS ROOM ARE SOME GOBLIN SLAVES THAT ARE COWERING IN THE CORNER.  THEY ALL SCREAM 'PLEASE DON'T KILL US.'  WHAT WILL YOU DO?",
       "text": "房裡有幾隻哥布林奴隸縮在角落，全都尖叫著：「求求你們別殺我們。」你們要怎麼做？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "IN THIS ROOM ARE THE HORRID REMAINS OF SOME ELVES.",
+      "text": "這間屋裡是幾具精靈的殘骸，慘不忍睹。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "IN THIS ROOM IS A YOUNG WOMAN IN BARBARIAN FINERY. SHE DROPS A KOBOLD SHE WAS STRANGLING WHEN SHE SEES YOU.",
+      "text": "這間屋裡有個穿著蠻族華服的年輕女子。看到你們，她鬆手扔下正被她掐著的小妖魔。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "IN THIS ROOM THERE ARE FOUR LARGE LIZARD MEN.  AS YOU ENTER ONE OF THEM YELLS 'KILL' AND THEY ATTACK.",
@@ -3079,6 +3454,11 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "JUST ABOVE THE WATERLINE, A SECRET DOOR HAS BEEN LEFT AJAR IN THE SOUTH WALL OF THE WELL.  DO YOU WANT TO CLIMB UP THE RUNGS?",
+      "text": "水面上方一點，井的南壁有一道暗門半開著。要爬踏階上去嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "KILL HIM",
       "text": "殺了他",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -3109,9 +3489,29 @@
       "note": "怪物名；Kobold 依 glossary 定案作小妖魔。"
     },
     {
+      "source": "KOBOLDS APPEAR AND BOMBARD YOU WITH ROCKS.",
+      "text": "小妖魔冒了出來，朝你們扔石頭。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "KOBOLDS BLOCK ALL THE EXITS.",
+      "text": "小妖魔堵住了所有出口。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "KOBOLDS SEEM TO BOIL UP FROM NOWHERE.",
+      "text": "小妖魔像是憑空冒出來似的湧上。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "KOBOLDS.",
       "text": "小妖魔。",
       "note": "同上，原版這一版帶句點。"
+    },
+    {
+      "source": "LARGE",
+      "text": "大的",
+      "note": "荒野。"
     },
     {
       "source": "LAUGH TO THEMSELVES AND WALK ON.",
@@ -3169,6 +3569,16 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "LET IT GO",
+      "text": "放牠走",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "LET IT LEAVE",
+      "text": "讓牠離開",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "LET THEM GO",
       "text": "放他們走",
       "note": "遭遇選單。"
@@ -3204,6 +3614,11 @@
       "note": "怪物名，遊戲文字證實。"
     },
     {
+      "source": "LIZARDMEN.",
+      "text": "蜥蜴人。",
+      "note": "荒野。"
+    },
+    {
       "source": "LOOK FOR THE MAN IN PLAIN CLOTHES",
       "text": "找那個穿便服的人",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -3237,6 +3652,11 @@
       "source": "LUX",
       "text": "勒克斯",
       "note": "NPC 名，音近。"
+    },
+    {
+      "source": "LYING HERE ARE THE PARTIALLY EATEN REMAINS OF A HALFING.",
+      "text": "這裡躺著一具半身人的殘骸，被啃食了一部分。",
+      "note": "荒野。原版把 HALFLING 拼成 HALFING，說明書 p.11 也照此拼法。"
     },
     {
       "source": "LYING ON THE FLOOR IS A LARGE, SHEDDED SNAKE SKIN.",
@@ -3299,6 +3719,11 @@
       "note": "野外。"
     },
     {
+      "source": "MINOTAURS",
+      "text": "牛頭人",
+      "note": "荒野。"
+    },
+    {
       "source": "MIX WITH MONSTERS",
       "text": "混進怪物裡",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -3312,6 +3737,11 @@
       "source": "MONSTERS ARE CHARGING TOWARD YOU FROM THE FAR TOWER. AT THE SAME TIME MONSTERS BURST ON YOU FROM THE TOWER NEXT TO YOU.",
       "text": "怪物從遠處的塔朝你們衝來，同時旁邊那座塔裡也竄出怪物撲向你們。",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "MONSTERS FROM THE SURROUNDING BUILDINGS ATTACK YOU.",
+      "text": "四周建築裡的怪物撲向你們。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "MONSTERS INSULT YOUR ABILITIES AND PARENTAGE.",
@@ -3419,6 +3849,11 @@
       "note": "方位選項。"
     },
     {
+      "source": "NORTH WALL.",
+      "text": "北牆。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "NOTHING",
       "text": "什麼也不做",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -3442,6 +3877,11 @@
       "source": "NOXIOUS FUMES TEAR AT YOUR THROAT AS YOU CRUNCH THROUGH PILES OF DRIED BONES.",
       "text": "你們踩過成堆的乾骨，刺鼻的毒氣灼著喉嚨。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "OF KUTO'S WELL.",
+      "text": "古托井的。",
+      "note": "古托井與井下的小妖魔洞穴。句子片段；Kuto's Well 依說明書作古托井。"
     },
     {
       "source": "OFF IN THE DISTANCE YOU SEE A LARGE DRAGON FLYING THROUGH THE AIR.  AS YOU WATCH, HE SWOOPS DOWN BEHIND A MOUNTAIN AND DISAPPEARS.",
@@ -3509,6 +3949,11 @@
       "note": "紡織行與巨人占據一帶的事件。原版把 PIECE 拼成 PEACE。"
     },
     {
+      "source": "ON THE LEADER'S BODY, YOU FIND A CURIOUS MESSAGE THAT YOU PLACE IN YOUR JOURNAL AS ENTRY 50.",
+      "text": "你們在首領屍體上找到一則耐人尋味的訊息，把它放進手冊，成為線索報導 50。",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
       "source": "ON THE WALL HERE IS A POORLY SCRATCHED OUT MESSAGE.  YOU CAN BARELEY MAKE OUT THE WORDS",
       "text": "牆上有一則被草草刮掉的訊息，你們勉強辨認出幾個字",
       "note": "波多廣場的拍賣會與街頭遭遇。原版把 BARELY 拼成 BARELEY。接下一段。"
@@ -3537,6 +3982,16 @@
       "source": "ONE OF THE ORCS SAYS, 'OH, YEAH YOUSE THEM GUYS WHO KNOW WHERE DE TREASURE IS.  WE NOT SUPPOSED TO KILL YOU YET.'  THE ORCS THEN WANDER AWAY.",
       "text": "其中一隻半獸人說：「喔對，你們就是知道寶藏在哪的那票人。現在還不能殺你們。」說完半獸人就晃走了。",
       "note": "波多廣場的拍賣會與街頭遭遇。原版此處刻意用不標準的口語。"
+    },
+    {
+      "source": "ONE OF YOU BUSILY SCRIBBLE IT INTO THE JOURNAL AS ENTRY 31.",
+      "text": "你們其中一人忙著把它抄進手冊，成為線索報導 31。",
+      "note": "古托井與井下的小妖魔洞穴。原版動詞未配合單數主詞。"
+    },
+    {
+      "source": "ONE SAYS,'THESE MEN ARE ENEMIES. DEFEAT THEM AND MY LORD SHALL BE MOST GENEROUS.' THE KING LOOKS AT HIM, AND THEN AT YOU. HE SMILES AND SCREAMS, 'KILL THEM!'",
+      "text": "其中一人說：「這些人是敵人。打倒他們，我主必有重賞。」那位王看看他，又看看你們，笑著尖叫：「殺了他們！」",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "OPEN",
@@ -3599,6 +4054,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "PHASE SPIDERS",
+      "text": "相位蜘蛛",
+      "note": "荒野。"
+    },
+    {
       "source": "PHILOSOPHY.",
       "text": "《哲學》。",
       "note": "書名，出現在搜書的敘述裡。"
@@ -3622,6 +4082,11 @@
       "source": "PILED UP OUT OF THE WAY ARE AN ASSORTMENT OF WEAPONS AND ARMOR.",
       "text": "角落堆著各式各樣的武器與護甲。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "PLEASE, BE SERIOUS.",
+      "text": "拜託，正經一點。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "PLEDGE PARTY TO DRAGON'S SERVICE",
@@ -3684,6 +4149,11 @@
       "note": "紡織行與巨人占據一帶的事件。續行提示的另一種拼法。"
     },
     {
+      "source": "PRINCESS FATIMA",
+      "text": "法蒂瑪公主",
+      "note": "古托井與井下的小妖魔洞穴。Fatima 為新增譯名。"
+    },
+    {
       "source": "PROCLAMATION",
       "text": "公告字號",
       "note": "接在後面的公告編號之前，與手冊的「公告字號」欄位同一個詞。"
@@ -3699,6 +4169,11 @@
       "note": "公告編號，與手冊『公告字號』欄位對應，保留原版的羅馬數字以便查閱。"
     },
     {
+      "source": "PULL IT OUT",
+      "text": "把它拔出來",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "PUNCH MERCHANT",
       "text": "揍那名商人",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -3709,9 +4184,19 @@
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
+      "source": "QUESTION THEM?",
+      "text": "要盤問牠們嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "QUICKLINGS",
       "text": "迅捷妖",
       "note": "野外與漢提爾前哨一帶的事件。怪物名，形貌譯法。"
+    },
+    {
+      "source": "RATS ARE HUNG HERE TO AGE. MOLDY ROOTS LIE IN PILES.",
+      "text": "這裡吊著風乾的老鼠，發霉的根莖堆成一堆。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "RED. SORRY, YOU LOSE.",
@@ -3784,6 +4269,11 @@
       "note": "AD&D 等級稱號（賊）。"
     },
     {
+      "source": "RUBBLE",
+      "text": "瓦礫",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "RUN",
       "text": "快跑",
       "note": "遭遇選單。"
@@ -3799,6 +4289,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "RUNGS ARE SET IN THE SIDES OF THE WELL WALL.  DO YOU WANT TO CLIMB DOWN?",
+      "text": "井壁上嵌著踏階。要爬下去嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "RUSH TO ATTACK.",
       "text": "衝上去攻擊。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -3812,6 +4307,11 @@
       "source": "SANCTIFY",
       "text": "淨化",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SAVIOR",
+      "text": "救星",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "SAY LITTLE OR NOTHING",
@@ -3854,9 +4354,19 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "SEARCHING THROUGH THE",
+      "text": "你們翻找",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
+    },
+    {
       "source": "SEATED AT A TABLE IS A RAGGED OLD WOMAN. SHE GREETS YOU. 'WELCOME. FOR THE PRICE OF A FEW COPPERS, I WILL TELL YOUR FORTUNE.' (WHAT DO YOU DO?)",
       "text": "桌邊坐著一位衣衫破舊的老婦人。她招呼你們：「來啦。幾枚銅幣，我替你們算個命。」（你們要怎麼做？）",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "SEEING THEIR LEADER FALL, THE OTHER LIZARD MEN WITHDRAW. THE OLD LIZARD MAN TURNS TO YOU, 'YOU HAVE DONE ME GREAT SERVICE. REST ASSURED THAT MY PEOPLE WILL NOT JOIN TYRANTHRAXUS.'",
+      "text": "見首領倒下，其餘蜥蜴人紛紛退去。年老的蜥蜴人轉向你們：「各位幫了我大忙。請放心，我的族人不會投靠泰蘭特拉克斯。」",
+      "note": "沼澤的蜥蜴人部族。"
     },
     {
       "source": "SEND HIM AWAY",
@@ -3877,6 +4387,16 @@
       "source": "SHADOWY FORMS FLOW FROM BETWEEN THE DOORS AND ATTACK.",
       "text": "陰影般的身影從門縫間湧出，發動攻擊。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SHE OFFERS TO JOIN YOUR BAND.",
+      "text": "她提議加入你們這一隊。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "SHE SMILES.'SO I SHALL CUT MY OWN WAY OUT. GOOD HUNTING.' SHE LEAVES.",
+      "text": "她笑了笑：「那我就自己殺出去。祝你們順利。」說完便走了。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "SHESTNI",
@@ -3939,6 +4459,16 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "SLIP PAST",
+      "text": "溜過去",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "SMALL",
+      "text": "小的",
+      "note": "荒野。"
+    },
+    {
       "source": "SNEAK INTO PEN",
       "text": "潛進獸欄",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -3989,9 +4519,19 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "SOME ITEMS WERE LOST RECOVERING",
+      "text": "取回時弄丟了一些物品",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
+    },
+    {
       "source": "SOME MONSTERS ARE TOSSING A SACK OF GRAIN. WHEN THE SACK BREAKS THEY WAIL, 'OH, NO! WHAT CAN WE THROW NOW?' ONE LOOKS YOUR WAY. 'I KNOW,' HE SAYS.",
       "text": "幾隻怪物正把一袋穀子拋來拋去。袋子破了，牠們哀號：「糟了！那現在要丟什麼？」其中一隻朝你們看過來：「我知道了。」",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "SOME MOVEMENT OCCURS IN THE ROOM'S FAR CORNER AND THEN A VOLLEY OF ARROWS TEARS INTO THE GROUP.",
+      "text": "屋子那頭的角落動了一下，接著一排箭矢射進隊伍。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "SOME OF THE GUARDS SPOT YOU WITH THE BOY.",
@@ -4004,6 +4544,11 @@
       "note": "方位選項。"
     },
     {
+      "source": "SOUTH WALL.",
+      "text": "南牆。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "SPEAK",
       "text": "說話",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -4012,6 +4557,11 @@
       "source": "SPECIAL STANDS IN THE NORTHWESTERN CORNER HOLD EQUIPMENT.",
       "text": "西北角的特製架上放著裝備。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "SPIKES SPRING OUT AND IMPALE YOU.",
+      "text": "尖刺彈出，把你們刺穿。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "STAND AND LISTEN",
@@ -4059,6 +4609,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "STREWN ACROSS THE FLOOR IS THE ACCUMULATED WEALTH OF THE KOBOLD COMMUNITY.",
+      "text": "地上散落著這個小妖魔聚落積攢下來的全部財富。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "STRIDE BOLDLY FORWARD!",
       "text": "大步走上前！",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -4074,9 +4629,24 @@
       "note": "同上。"
     },
     {
+      "source": "SUDDENLY 3 GIANT LIZARDS APPEAR FROM BEHIND A MOUND OF RUBBLE. YOU FREEZE A MOMENT AS THEY CHARGE YOU!",
+      "text": "三隻巨蜥突然從一堆瓦礫後面竄出。牠們衝來時，你們愣了一瞬！",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "SUDDENLY A HIDDEN DOOR BURSTS OPEN AND A HORRIBLE MONSTER BURSTS FORTH SHOUTING 'KIAIAIAIAIAIAIAI!' IT WADES INTO YOU TEARING YOU APART WITH 3-INCH LONG CLAWS.",
       "text": "一道暗門突然撞開，一頭猙獰的怪物衝了出來，大吼「唭啊啊啊啊啊啊啊！」牠殺進隊伍，用三吋長的利爪把你們撕開。",
       "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "SUDDENLY LIZARD MEN JUMP UP FROM WHERE THEY WERE HIDING AND THROW JAVELINS AT YOU.",
+      "text": "蜥蜴人突然從藏身處跳起，朝你們投擲標槍。",
+      "note": "荒野。"
+    },
+    {
+      "source": "SUDDENLY YOU ARE ATTACKED BY TWO LIZARD MEN AND A GIANT LIZARD!",
+      "text": "兩名蜥蜴人和一隻巨蜥突然襲來！",
+      "note": "荒野。"
     },
     {
       "source": "SUDDENLY YOU ARE FACE TO FACE WITH A GROUP OF",
@@ -4097,6 +4667,11 @@
       "source": "SURRENDER",
       "text": "投降",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "SWAMP",
+      "text": "沼澤",
+      "note": "荒野。"
     },
     {
       "source": "SWORDSMAN",
@@ -4212,6 +4787,11 @@
       "source": "THE AUCTIONEER HAS EITHER A WAND OR STAFF.",
       "text": "拍賣官手上不是魔杖就是法杖。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "THE BALLISTA ARE RELOADED. THE KING CALLS OUT,'DEATH OR IMPRISONMENT.'",
+      "text": "弩砲重新上弦。那位王喊道：「要死還是要坐牢。」",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "THE BAR LOOKS LIKE IT WAS DESTROYED BY EXPERTS.",
@@ -4419,6 +4999,16 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE DOOR HAS BEEN NAILED SHUT.  WILL YOU FORCE IT OPEN?",
+      "text": "這道門被釘死了。要硬撬開嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE DOOR IS FREED.",
+      "text": "門被弄開了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THE DOOR IS LOCKED.  DO YOU WANT TO BREAK IN?",
       "text": "門鎖著。要破門進去嗎？",
       "note": "互動提問。"
@@ -4594,6 +5184,101 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE KING CALLS OUT,'YOU SEEM VALUABLE. SURRENDER OR DIE.'",
+      "text": "那位王喊道：「你們看來挺值錢。投降，不然就死。」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KING HAS ESCAPED DURING THE FIGHT.",
+      "text": "打鬥之中，那位王逃走了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KING, FROTHING AT THE MOUTH, CRIES, 'USE THE SECRET WEAPONS.' BALLISTA APPEAR AND FIRE.",
+      "text": "那位王口吐白沫地喊：「用秘密兵器！」弩砲推了出來，開火。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KING, PANICKED, HAS FALLEN INTO HIS OWN SPIKED PIT AND DIED.",
+      "text": "那位王驚慌之下掉進自己的尖刺坑，死了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD BOWS AND SAYS,'YOU ARE QUITE DANGEROUS, WE WILL PAY FOR A TRUCE.'",
+      "text": "那隻小妖魔躬身道：「各位相當難惹，我們願意出錢求和。」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD CALLS OUT,'THE ENVOYS ARE HERE, GREAT KING.' AN AGED VOICE REPLIES 'SEND THEM FORWARD.' YOUR GUIDE, HOWEVER, HAS FALLEN INTO A STUPOR.",
+      "text": "那隻小妖魔高聲道：「使節到了，偉大的王。」一個蒼老的聲音回道：「帶他們上前。」不過你們的嚮導已經醉倒了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD CRIES OUT, 'I'LL NOT GO ALONE!'",
+      "text": "那隻小妖魔大喊：「我不會一個人上路！」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD DIES.",
+      "text": "那隻小妖魔死了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD DISAPPEARS BEYOND THE BOULDER.",
+      "text": "那隻小妖魔閃到巨石後面不見了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD PAUSES, IDLY TAPS THE WALL, THEN PROCEEDS.",
+      "text": "那隻小妖魔停下腳步，隨手敲了敲牆，接著繼續走。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD PROMPTLY RETURNS TO SLEEP.",
+      "text": "那隻小妖魔轉眼又睡了過去。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD RETREATS AROUND A BEND.",
+      "text": "那隻小妖魔退到轉角後面。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLD RETREATS, THEN STRIKES THE WALL.",
+      "text": "那隻小妖魔退了幾步，接著敲了敲牆。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLDS ARE TRYING TO SNEAK OFF.",
+      "text": "那些小妖魔想偷偷溜走。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLDS CHASE FOR A WHILE, BUT YOU ESCAPE.",
+      "text": "小妖魔追了一段，你們還是脫身了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLDS COLLAPSE INTO A PATHETIC, MEWING HEAP. 'PLEASE, OH PLEASE DON'T HURT US,' THEY WAIL.  'WE KNOW NOTHING.  WE ARE POOR LOST SOULS LOOKING FOR OUR HOMES.' (WHAT DO YOU DO?)",
+      "text": "那群小妖魔癱成可憐兮兮、嗚咽成一團的一堆。「求求你們，別傷害我們，」牠們哀號，「我們什麼都不知道，只是找不到家的可憐蟲。」（你們要怎麼做？）",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLDS FAWN ON YOU PATHETICALLY.  'PLEASE, OH PLEASE NOBLE ONES, DON'T HURT US,' THEY BEG.  'WE WERE SENT ON A SCOUTING MISSION BY OUR KING.  RUMORS OF A WONDROUS POOL CAME TO HIM IN HIS LAIR.",
+      "text": "那群小妖魔可憐兮兮地向你們獻媚。「求求高貴的各位，別傷害我們，」牠們哀求，「我們是奉王命出來探路的。有一池奇妙之水的傳聞傳到了他的巢穴。",
+      "note": "古托井與井下的小妖魔洞穴。接下一段。"
+    },
+    {
+      "source": "THE KOBOLDS HERD YOU TOWARD YOUR PRISON. SOME NAB BITS OF YOUR EQUIPMENT AND LEAVE.",
+      "text": "小妖魔把你們趕往牢房，途中有幾隻順走了一些裝備就走開了。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE KOBOLDS SCAMPER QUICKLY AWAY.  JUST BEFORE PASSING OUT OF SIGHT, ONE TURNS AND RAISES HIS HAND IN A GESTURE, AS IF TO WAVE FAREWELL.",
+      "text": "小妖魔一溜煙跑遠。就在消失前，其中一隻回過頭抬起手，像是在道別。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THE LAST OF THE BUCCANNEERS FORM INTO A FINAL WAVE AND ATTACK.",
       "text": "剩下的海盜集結成最後一波攻了上來。",
       "note": "野外與漢提爾前哨一帶的事件。原版把 BUCCANEERS 拼成 BUCCANNEERS。"
@@ -4664,6 +5349,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE MEN SNEER AT THE KING AND ONE SAYS,'LET US SHOW YOU HOW WARRIORS FIGHT.'",
+      "text": "那兩個人朝王冷笑，其中一個說：「讓你見識見識戰士怎麼打。」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THE MINUTE YOU FIND THE TREASURE A LARGE GROUP OF ORCS CHARGE THROUGH THE TEMPLE DOORS.  LEADING THEM IS A HALF-ORC WHO IS SCREAMING 'KILL!  KILL, THESE SCUM WHO WOULD STEAL FROM OUR TEMPLE.'",
       "text": "你們一找到寶藏，一大群半獸人就從神廟大門衝了進來，領頭的半獸人尖叫著：「殺！殺了這些膽敢偷我們神廟東西的渣滓。」",
       "note": "邪惡神廟（Temple of Bane）一帶。"
@@ -4714,6 +5404,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THE NOISE HAS DISTURBED SOMETHING. WITH A BEATING OF WINGS, A HUGE BEAST LANDS UPON YOU.",
+      "text": "聲響驚動了什麼。一陣振翅之後，一頭巨獸落到你們頭上。",
+      "note": "荒野。"
+    },
+    {
       "source": "THE NOMADS WAIT FOR YOU TO MAKE THE FIRST MOVE.",
       "text": "遊牧民等著你們先動。",
       "note": "遊牧民營地。"
@@ -4732,6 +5427,11 @@
       "source": "THE OLD BLIND ORC PAWS THE PARTY AS IF LOOKING FOR SOMETHING.  AFTER A CAREFULL PAWING, HE BACKS AWAY AND YELLS 'GUARDS, IN THE NAME OF BANE, KILL THESE UNBELIEVERS!'",
       "text": "那隻盲眼老半獸人在隊伍身上摸索，像在找什麼。仔細摸過一遍後，他退開大喊：「守衛，以邪惡神之名，殺了這些異教徒！」",
       "note": "邪惡神廟（Temple of Bane）一帶。原版把 CAREFUL 拼成 CAREFULL。"
+    },
+    {
+      "source": "THE OLD LIZARD MAN RECOGNIZES THE WORD AND HIS LIPS PART IN A TOOTHY GRIN. YOU ALL GATHER CLOSE AS HE BEGINS HIS STORY.",
+      "text": "那名年老的蜥蜴人認得這個字，咧開嘴露出滿口利齒。你們湊近圍好，聽他說起故事。",
+      "note": "沼澤的蜥蜴人部族。"
     },
     {
       "source": "THE OLD THIEF LAUGHS, 'PERHAPS WE SHALL MEET AGAIN.'",
@@ -4789,6 +5489,11 @@
       "note": "地點敘述。"
     },
     {
+      "source": "THE PRINCESS SAYS,'I SHALL GO MY OWN WAY NOW, BUT YOU WILL ALWAYS BE REMEMBERED. GOOD HUNTING.'",
+      "text": "公主說：「我要走自己的路了，但各位我永誌不忘。祝你們順利。」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THE RECORDS PROVIDE INSIGHTS INTO MUCH THAT WAS PUZZLING.",
       "text": "這些記錄解開了不少一直想不通的事。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -4817,6 +5522,11 @@
       "source": "THE RIDERS ESCORT YOU INTO THE OUTPOST.",
       "text": "那些騎兵護送你們進入前哨。",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "THE ROOF COLLAPSES.",
+      "text": "屋頂塌了下來。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "THE ROOM IS DIRTY AND HAS A STRONG AND UNPLEASANT ODOR.",
@@ -4939,6 +5649,16 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "THE TUNNEL BEGINS TO SLOPE UP.",
+      "text": "隧道開始往上斜。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "THE TWO ENVOYS WAIT AT THE THRONE. THEY SMILE. 'A REMATCH THEN. PREPARE FOR DEATH.'",
+      "text": "兩名使節在王座旁等著，臉上帶笑：「那就再打一場。準備受死吧。」",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THE UNDEAD ARE CROSSING THE RIVER IN HORDES AND KILLING OR CARRYING OFF OUR SETTLERS.  THE COUNCIL DEMANDS THESE ATTACKS BE STOPPED. A GENEROUS REWARD IS OFFERED.'",
       "text": "不死怪物成群渡河而來，殺害或擄走我們的移民。議會要求制止這些襲擊，並提供優厚報酬。」",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
@@ -5034,6 +5754,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "THERE IS A BOAT DOCKED HERE THAT WILL RETURN YOU TO THE CIVILIZED SECTION OF PHLAN.  WILL YOU TAKE IT?",
+      "text": "這裡停著一艘船，可以載你們回菲蘭城的文明區。要搭嗎？",
+      "note": "荒野。"
+    },
+    {
       "source": "THERE IS A BOAT HERE THAT WILL TAKE YOU BACK TO THE CIVILISED SECTION OF PHLAN.  WILL YOU TAKE IT?",
       "text": "這裡有一艘船，可以載你們回菲蘭城的文明區。要搭嗎？",
       "note": "城郊出入口。"
@@ -5067,6 +5792,11 @@
       "source": "THERE IS A SEEDY LITTLE MAN HERE WHO WHISPERS 'PSSST, BUDDY.  WANT TO BUY A PASS TO SEE THE CAPTAIN?'",
       "text": "這裡有個賊頭賊腦的小個子低聲說：「喂，朋友。要不要買張見隊長的通行證？」",
       "note": "海盜據點。"
+    },
+    {
+      "source": "THERE IS A STEEP RUBBLED SLOPE. WILL YOU GO UP?",
+      "text": "有一道陡峭的瓦礫坡。要爬上去嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "THERE IS A VAMPIRE HERE.",
@@ -5224,6 +5954,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "THEY TURN TO DIVE BACK IN THE WATER.",
+      "text": "牠們轉身要潛回水裡。",
+      "note": "荒野。"
+    },
+    {
       "source": "THEY YELL 'SETTLERS! KILL THEM!'",
       "text": "牠們大喊：「移民！殺了他們！」",
       "note": "波多廣場的拍賣會與街頭遭遇。"
@@ -5284,6 +6019,11 @@
       "note": "亞拉斯的金字塔。"
     },
     {
+      "source": "THIS IS THE LIVING AREAS. FEMALE AND CHILD KOBOLDS FLEE.",
+      "text": "這是起居區，母小妖魔與幼崽四散奔逃。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THIS LARGE ROOM IS APPARENTLY EMPTY.",
       "text": "這間大房間看來是空的。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -5309,6 +6049,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "THIS ROOM IS FILLED WITH HUMAN BONES.",
+      "text": "這間屋子裡堆滿了人骨。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THIS ROOM WAS ONCE A STUDY. IT IS NOW A SHATTERED RUIN.",
       "text": "這裡本來是書房，如今只剩一片殘破。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -5319,9 +6064,19 @@
       "note": "紡織行與巨人占據一帶的事件。原版用不標準的口語。"
     },
     {
+      "source": "THIS WAS A PRISON CELL. BROKEN BINDINGS AND SIX DEAD KOBOLDS ARE STREWN ON THE FLOOR.",
+      "text": "這裡曾是牢房，地上散著扯斷的束縛與六隻小妖魔的屍體。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "THIS WAS ONCE THE CHAPEL OF THE KEEP.  INSIDE THE DOORWAY ARE THE DRIED HUSKS OF TWO ORCS, THEIR FACES TWISTED WITH TERROR.  A LARGE ALTAR DOMINATES THE SOUTHERN WALL.",
       "text": "這裡曾是城堡的禮拜堂。門內躺著兩具乾癟的半獸人屍殼，臉上滿是驚恐。南牆前立著一座大祭壇。",
       "note": "索卡爾城堡的事件與敘述。"
+    },
+    {
+      "source": "THREATEN IT",
+      "text": "恐嚇牠",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "THREE GIANTS STEP UP TO YOU.",
@@ -5332,6 +6087,11 @@
       "source": "THRI-KREENS",
       "text": "昆蟲人",
       "note": "野外與漢提爾前哨一帶的事件。怪物名，音近。"
+    },
+    {
+      "source": "THROUGH THE SMOKE AND DARKNESS, A DIMLY SEEN FIGURE FIRES AN ARROW INTO THE PARTY.  THE FIGURE FADES AWAY.",
+      "text": "煙塵與黑暗之中，一個依稀可辨的身影朝隊伍射出一箭，隨即淡去。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "THROW A ROCK",
@@ -5347,6 +6107,11 @@
       "source": "TIGERS",
       "text": "老虎",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "TIMBERS LINE THE WALLS HERE. A BOULDER BLOCKS THE FAR END.",
+      "text": "這裡的牆邊架著坑木，盡頭被一塊巨石堵住。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "TO FIND ANYTHING MORE YOU WILL HAVE TO SPEND SO MUCH TIME THAT YOU WILL NEED TO CLEAR THE AREA FIRST.",
@@ -5392,6 +6157,11 @@
       "source": "TONIGHT",
       "text": "今晚",
       "note": "遊牧民營地。"
+    },
+    {
+      "source": "TROLLS",
+      "text": "巨魔",
+      "note": "荒野。"
     },
     {
       "source": "TROUBLE",
@@ -5494,6 +6264,11 @@
       "note": "波多廣場的拍賣會與街頭遭遇。"
     },
     {
+      "source": "WAKE IT",
+      "text": "叫醒牠",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "WALK AROUND",
       "text": "繞過去",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -5512,6 +6287,11 @@
       "source": "WATCHING YOU WARILY, HE INCHES AWAY. WHEN HE IS OUT OF SWORD'S REACH HE SCRAMBLES TO HIS FEET AND FLEES THE ROOM.",
       "text": "他一邊警戒地盯著你們，一邊慢慢挪開。退到刀劍搆不著的地方，就爬起來奪門而出。",
       "note": "貧民區（Slums）的事件與敘述。"
+    },
+    {
+      "source": "WE ARE ALL THAT REMAINS OF THE MIGHTY BAND THAT WAS SENT WEST TO TEST THE TALES.  WE MEAN YOU NO HARM.  WE ONLY SEEK TO RETURN TO OUR FAMILIES.'  (WHAT DO YOU DO?)",
+      "text": "我們是那支西行查證傳聞的大隊僅存的殘部。我們無意傷害各位，只想回到家人身邊。」（你們要怎麼做？）",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "WE ARE HIRING CREATURES TO RECOVER OUR TEMPLE. ARE YOU INTERESTED?'",
@@ -5599,6 +6379,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "WHAT IS IT?",
+      "text": "那是什麼？",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "WHAT PASSWORD DO YOU GIVE?",
       "text": "你們要說哪個密語？",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -5624,6 +6409,16 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "WHEN YOU GIVE IT WATER, IT CRAWLS OUT AND TELLS YOU ITS TALE.",
+      "text": "你們給了牠水，牠便爬出來，把自己的來歷說了一遍。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "WHEN YOU REST, FATIMA TELLS YOU OF HER TRIBE.",
+      "text": "休息時，法蒂瑪跟你們說起她的部族。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "WHICH CASKET WILL YOU SEARCH?",
       "text": "要搜哪一個小箱？",
       "note": "柯威大樓的盜賊據點。"
@@ -5637,6 +6432,11 @@
       "source": "WHILE IN CAMP YOU ARE SUDDENLY ATTACKED BY THREE THIEVES WITH SLINGS.  THEY LAUNCH THEIR BULLETS AT THE PARTY AND THEN RUN, DISAPPERING FROM SIGHT.",
       "text": "你們紮營時突然遭到三名持投石索的盜賊襲擊。他們朝隊伍射完彈丸就跑，消失得無影無蹤。",
       "note": "柯威大樓的盜賊據點。原版此處把 DISAPPEARING 拼成 DISAPPERING。"
+    },
+    {
+      "source": "WHO WILL BE MY CHAMPION?",
+      "text": "誰願意當我的戰士？",
+      "note": "荒野。"
     },
     {
       "source": "WHO WILL CHALLENGE THE BUCCANEER?",
@@ -5764,6 +6564,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "WYVERNS",
+      "text": "雙足飛龍",
+      "note": "荒野。"
+    },
+    {
       "source": "YES",
       "text": "是",
       "note": "選單選項。"
@@ -5804,9 +6609,19 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "YOU ARE ATTACKED BY A GROUP OF MAD KOBOLDS.",
+      "text": "一群發狂的小妖魔撲了上來。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU ARE ATTACKED BY FOUR GUARDS IN YOUR SLEEP",
       "text": "你們在睡夢中遭到四名守衛襲擊",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU ARE ATTACKED BY SOME GNOLLS.",
+      "text": "幾隻豺狼人攻擊你們。",
+      "note": "荒野。"
     },
     {
       "source": "YOU ARE ATTACKED BY WIGHTS.",
@@ -5822,6 +6637,11 @@
       "source": "YOU ARE BEING APPROACHED BY SOME ANGRY",
       "text": "有一群怒氣沖沖的",
       "note": "貧民區（Slums）的事件與敘述。片段，後接怪物名。"
+    },
+    {
+      "source": "YOU ARE BEING AVOIDED BY SOME",
+      "text": "有幾隻在躲著你們",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
     },
     {
       "source": "YOU ARE BEING ESCORTED INTO ZHENTIL OUTPOST.",
@@ -5867,6 +6687,11 @@
       "source": "YOU ARE IN A BUILDING THAT WAS ONCE A BARRACKS BUT HAS NOW BEEN CONVERTED TO A TEMPLE OF BANE. AT THE FAR END OF THE ROOM IS A CRUDE ALTER.",
       "text": "你們在一棟原本是營房、如今被改成邪惡神廟的建築裡。房間另一頭立著一座粗陋的祭壇。",
       "note": "紡織行與巨人占據一帶的事件。原版把 ALTAR 拼成 ALTER。"
+    },
+    {
+      "source": "YOU ARE IN A CRUDE BARRACKS. ON ONE WALL IS A CRUDE MAP.",
+      "text": "你們身在一間簡陋的營房，一面牆上釘著一張粗糙的地圖。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU ARE IN A DESERTED BUILDING. THERE ARE NOTHING BUT VERY LARGE COBWEBS HERE.",
@@ -5954,6 +6779,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU ARE IN FRONT OF A DEEP POOL OF WATER. DO YOU WISH TO DIVE IN AND SEARCH IT?",
+      "text": "你們面前是一池深水。要潛下去搜一搜嗎？",
+      "note": "荒野。"
+    },
+    {
       "source": "YOU ARE IN FRONT OF A MAGNIFICENT PYRAMID.  YOU HAVE FOUND A SECRET DOOR THAT LEADS INTO THE PYRAMID.  WHAT WILL YOU DO?",
       "text": "你們站在一座宏偉的金字塔前，找到了一道通往塔內的暗門。要怎麼做？",
       "note": "野外。"
@@ -6002,6 +6832,11 @@
       "source": "YOU ARE INTERCEPTED BY THE COUNCIL GUARD. 'HALT.  YOUR PRESENCE IS NOT AUTHORIZED.  LEAVE.'  DO YOU LEAVE?",
       "text": "議會衛兵攔下你們：「站住。你們沒有獲准進入，離開。」你們要離開嗎？",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOU ARE JUST",
+      "text": "你們就在",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
     },
     {
       "source": "YOU ARE JUST INSIDE THE MAIN GATE OF THE BUCCANEER'S BASE.  YOU ARE BEING TAKEN TO THE CENTER OF THE BASE WHERE THE MERCHANTS MAKE CAMP.",
@@ -6074,6 +6909,11 @@
       "note": "野外與漢提爾前哨一帶的事件。"
     },
     {
+      "source": "YOU ARE NO LONGER GOING DOWN. SUDDENLY YOU HEAR A NOISE. THERE ARE GIANT LIZARDS CHARGING! THERE IS NO TIME TO REACT. COMBAT IS UPON YOU!",
+      "text": "路不再往下了。忽然一陣聲響——巨蜥衝了過來！根本來不及反應，戰鬥已經開始！",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU ARE NOTICED.",
       "text": "你們被發現了。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -6114,6 +6954,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU ARE STRIPPED OF ALL VALUABLES AND BLINDFOLDED.  THE BANDITS RELEASE YOU SOMEWHERE ABOVE GROUND.",
+      "text": "你們的財物被搜光、眼睛被蒙上。盜匪把你們放在地面上某處。",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
       "source": "YOU ARE SUDDENLY CONFRONTED BY",
       "text": "你們突然遭遇了",
       "note": "瓦海登墳場的事件與敘述。片段。"
@@ -6122,6 +6967,11 @@
       "source": "YOU ARE SUDDENLY FACE TO FACE WITH A GROUP OF",
       "text": "你們冷不防和一群",
       "note": "片段，後接怪物名。"
+    },
+    {
+      "source": "YOU ARE SUDDENLY FACE TO FACE WITH ARMED",
+      "text": "你們冷不防與武裝的",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
     },
     {
       "source": "YOU ARE SUMMONED BY THE BISHOP OF BRACCIO OF TYR. REPORT TO HIM AT TYR'S TEMPLE.'",
@@ -6142,6 +6992,16 @@
       "source": "YOU ARE SURPRISED BY A GROUP OF",
       "text": "你們被一群",
       "note": "野外與漢提爾前哨一帶的事件。片段，後接怪物名。"
+    },
+    {
+      "source": "YOU ARE SURROUNDED BY THE BANDIT BAND OF THE INFAMOUS NORRIS THE  GRAY.  'YOU DARE TO INVADE MY HALLS?', HE SNARLS. 'SURRENDER OR DIE!'",
+      "text": "你們被惡名昭彰的灰袍挪里斯的盜匪團團團圍住。「你們竟敢闖我的地盤？」他咆哮道，「投降不然就死！」",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。Norris the Gray 依說明書 p.42 作挪里斯。"
+    },
+    {
+      "source": "YOU ARE THROWN INTO A CELL BEREFT OF EQUIPMENT.",
+      "text": "你們被扔進牢房，裝備全被搜走。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU ARE TREATED AS HONORED GUESTS FOR THE REST OF THE DAY. THERE ARE CONTESTS OF STRENGTH AND SKILL IN YOUR HONOR.",
@@ -6269,6 +7129,11 @@
       "note": "遊牧民營地。"
     },
     {
+      "source": "YOU CLAMBER NOISILY DOWN A SLOPE OF RUBBLE.",
+      "text": "你們踩著瓦礫坡往下爬，弄出好大聲響。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU CLIMB OVER THE WALL AND LEAVE THE OUTPOST.",
       "text": "你們翻牆而過，離開了前哨。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -6314,6 +7179,16 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU CROSS OVER A PIT.",
+      "text": "你們越過一個坑。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU CUT DOWN THE KOBOLD.",
+      "text": "你們砍倒了那隻小妖魔。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU DEACTIVATE THE TRAP",
       "text": "你們解除了陷阱",
       "note": "柯威大樓的盜賊據點。"
@@ -6327,6 +7202,31 @@
       "source": "YOU DESTROY THE EVIL ALTAR AND THE UNEASY FEELING LEAVES YOU.",
       "text": "你們搗毀了邪惡祭壇，那股不安的感覺也隨之消散。",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU DISARM A DEADFALL TRAP.",
+      "text": "你們拆掉了一個落石陷阱。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU DISARM A NET TRAP.",
+      "text": "你們拆掉了一個網陷阱。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU DISARM A SPIKE TRAP.",
+      "text": "你們拆掉了一個尖刺陷阱。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU DISLODGE A NUMBER OF ROCKS.",
+      "text": "你們弄落了一些石塊。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU DIVE INTO THE POOL AND BEGIN TO SEARCH BY TOUCH. SUDDENLY BEFORE YOUR CLOUDED VISION YOU SEE SOME LIZARD MEN...",
+      "text": "你們潛進水裡摸索著搜尋。忽然，在一片模糊的視野中出現了幾名蜥蜴人……",
+      "note": "荒野。"
     },
     {
       "source": "YOU DO NOT HAVE A PASS TO SHOW THE GUARDS!",
@@ -6379,6 +7279,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU ENTER A BUILDING WHOSE WALLS ARE MORE OR LESS INTACT, THOUGH THE ROOF HAS FALLEN IN. RUBBLE MAKES PASSAGE DIFFICULT.",
+      "text": "你們走進一棟牆還算完整的建築，屋頂卻已塌落，瓦礫讓人難以通行。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU ENTER A CAVE ROOM WITH FOUR THRI-KREEN WARRIORS IN IT.  ON THE FLOOR IS A CHEST WITH TREASURE IN IT.  AS YOU ENTER THEY ATTACK.",
       "text": "你們走進一間洞室，裡面有四名昆蟲人戰士，地上有個裝著財寶的箱子。你們一進去牠們就攻了上來。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -6387,6 +7292,11 @@
       "source": "YOU ENTER A CHAMBER WHICH IS LAVISHLY APPOINTED WITH HANGINGS, CARPETS AND FURNITURE. SITTING ON A THRONE IS A POWERFUL LOOKING MAN CLAD IN BARBARIC SPLENDOR.",
       "text": "你們走進一間布置奢華的廳室，掛毯、地毯與家具一應俱全。王座上坐著一個外表強悍、穿戴著蠻族華服的男人。",
       "note": "瓦傑渥城堡內部。"
+    },
+    {
+      "source": "YOU ENTER A CHAMBER WITH FOUR GIANT LIZARDS AND TWO MINOTAURS.  THE MINOTAURS ORDER THE LIZARDS TO ATTACK.",
+      "text": "你們走進一間石室，裡面有四隻巨蜥和兩頭牛頭人。牛頭人喝令巨蜥攻擊。",
+      "note": "荒野。"
     },
     {
       "source": "YOU ENTER A GUARD ROOM. THERE ARE TABLES, CHAIRS, AND BEDS HERE. ALL BUT TWO OF THE BEDS ARE 14 FEET LONG!",
@@ -6474,6 +7384,11 @@
       "note": "索卡爾城堡的事件與敘述。"
     },
     {
+      "source": "YOU ENTER THE REMAINS OF THE CENTRAL KEEP. THE CEILING AND WALLS HAVE COLLAPSED TO THE POINT WHERE THE INTERIOR IS CHOKED WITH RUBBLE.",
+      "text": "你們走進主堡的殘骸。天花板與牆面塌得太厲害，裡頭全被瓦礫堵滿。",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
       "source": "YOU ESCAPE FROM THE OUTPOST.",
       "text": "你們逃出了前哨。",
       "note": "野外與漢提爾前哨一帶的事件。"
@@ -6502,6 +7417,11 @@
       "source": "YOU FIND A GIANT SKELETON",
       "text": "你們發現一具巨大的骷髏",
       "note": "瓦海登墳場的事件與敘述。片段。"
+    },
+    {
+      "source": "YOU FIND A HIDDEN TUNNEL LEADING DOWN. DO YOU TAKE IT?",
+      "text": "你們找到一條往下的隱密隧道。要走嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU FIND A LARGE NUMBER OF VALUABLES.",
@@ -6534,9 +7454,19 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU FIND A PASSAGEWAY GOING OUT.  WHAT WILL YOU DO?",
+      "text": "你們找到一條往外的通道。要怎麼做？",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU FIND A PIECE OF PAPER ON THE FLOOR IN THE ROOM.  YOU PLACE IT IN YOUR JOURNAL UNDER ENTRY 53",
       "text": "你們在房間地上撿到一張紙，把它放進手冊，成為線索報導 53",
       "note": "邪惡神廟（Temple of Bane）一帶。片段。"
+    },
+    {
+      "source": "YOU FIND A PILE OF MINE TAILINGS.",
+      "text": "你們發現一堆礦渣。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU FIND A POUCH OF SMALL GEMS.",
@@ -6554,9 +7484,34 @@
       "note": "紡織行與巨人占據一帶的事件。Raven Clan 為新增譯名。"
     },
     {
+      "source": "YOU FIND A RUINED CASTLE SURROUNDED BY QUICKSAND.   AN OLD WORN DRAWBRIDGE IS THE ONLY SAFE WAY ACROSS THE QUAGMIRE.  WILL YOU ENTER THE RUINED CASTLE?",
+      "text": "你們找到一座被流沙環繞的廢棄城堡。一道年久失修的吊橋是安全穿越泥沼的唯一途徑。要進去嗎？",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
+      "source": "YOU FIND A SECRET DOOR IN THE",
+      "text": "你們找到一道暗門，位在",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
+    },
+    {
+      "source": "YOU FIND A SECRET DOOR IN THE NORTH WALL.",
+      "text": "你們在北牆找到一道暗門。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU FIND A SET OF STAIRS LEADING UP.",
+      "text": "你們找到一段往上的階梯。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU FIND A TRAP DOOR.  WILL YOU OPEN IT?",
       "text": "你們發現一道活門。要打開嗎？",
       "note": "邪惡神廟（Temple of Bane）一帶。"
+    },
+    {
+      "source": "YOU FIND A TRAP, BUT THE TUNNEL IS TOO NARROW TO AVOID IT.",
+      "text": "你們發現一個陷阱，但隧道太窄，避不開。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU FIND A WIDE VARIETY OF SCROLLS IN SCROLL CASES.",
@@ -6567,6 +7522,11 @@
       "source": "YOU FIND AN IRON BOX, ACROSS THE LOCK IS THE SEAL OF THE FAMILY OF CADORNA. OPENING THE BOX WILL DAMAGE THE SEAL BEYOND REPAIR. WHAT DO YOU DO?",
       "text": "你們找到一個鐵盒，鎖上蓋著卡多納家族的封印。打開盒子會把封印毀得無法修復。你們要怎麼做？",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND AN OLD AND PARTIALLY BLOCKED SET OF STAIRS LEADING DOWN INTO THE DARK. DO YOU TAKE THEM?",
+      "text": "你們找到一段老舊、半被堵住的階梯，通往下方的黑暗。要走嗎？",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU FIND ASSORTED REPORTS.",
@@ -6609,6 +7569,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU FIND SOME TREASURE!",
+      "text": "你們找到一些財寶！",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU FIND SOME TREASURE.",
       "text": "你們找到一些財寶。",
       "note": "紡織行與巨人占據一帶的事件。"
@@ -6642,6 +7607,11 @@
       "source": "YOU FIND THE VAMPIRE'S TREASURE TROVE.  DO YOU TAKE IT?",
       "text": "你們找到了吸血鬼的寶藏。要拿走嗎？",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "YOU FIND TWO CAVES;  A SMALL, WELL-HIDDEN CAVE AND A LARGER, MORE OBVIOUS CAVE.  WHAT CAVE WILL YOU ENTER?",
+      "text": "你們找到兩個洞穴：一個窄小隱蔽，一個較大也較顯眼。要進哪一個？",
+      "note": "荒野。"
     },
     {
       "source": "YOU FIND URGUND'S DESCRIPTION OF DARKNESS. THIS IS AN ACCOUNT OF HIS IMPRISONMENT IN THE LOWER REALMS. THERE IS A PASSAGE OF INTEREST WHICH YOU COPY AS ENTRY 19 IN YOUR JOURNAL.",
@@ -6694,6 +7664,11 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU GRAB THE LOOT.",
+      "text": "你們抄起了戰利品。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU HACK THE BODY TO BITS.",
       "text": "你們把屍體砍成碎塊。",
       "note": "瓦海登墳場的事件與敘述。"
@@ -6719,6 +7694,11 @@
       "note": "柯威大樓的盜賊據點。"
     },
     {
+      "source": "YOU HAVE ALSO TAKEN POSSESSION OF A HIDEOUT IN WHICH YOU MAY REST UNDISTURBED FROM THE RIGORS OF YOUR QUESTING.",
+      "text": "你們也接收了一處藏身地，可以在此不受打擾地歇息，喘口氣。",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
       "source": "YOU HAVE ANGERED THE",
       "text": "你們惹惱了",
       "note": "貧民區（Slums）的事件與敘述。片段。"
@@ -6732,6 +7712,11 @@
       "source": "YOU HAVE CLEARED THE AREA NEXT TO THE EVIL TEMPLE.",
       "text": "你們清空了邪惡神廟旁的區域。",
       "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOU HAVE DEFEATED THE DREADED BANDIT GANG AND RID PHLAN OF A GREAT EVIL.  THE HONEST SETTLERS WILL CHEER YOUR DEEDS!",
+      "text": "你們擊潰了那個令人聞風喪膽的盜匪團，替菲蘭城除去一大禍害。老實的墾民會為你們喝采！",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
     },
     {
       "source": "YOU HAVE DESTROYED THE LAST PIECE OF EQUIPMENT.",
@@ -6777,6 +7762,11 @@
       "source": "YOU HAVE ENTERED AN ARMORY. INSIDE IS A LARGE ASSORTMENT OF ARMOR AND WEAPONS.",
       "text": "你們走進一間軍械庫，裡面有大批各式護甲與武器。",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU HAVE ENTERED AN L-SHAPED BUILDING. IT IS REASONALBLY INTACT... THERE ARE EVEN PORTIONS OF ROOF OVERHEAD!",
+      "text": "你們走進一棟 L 形建築。它保存得還算完整……頭頂甚至還留著一部分屋頂！",
+      "note": "古托井與井下的小妖魔洞穴。原版把 REASONABLY 拼成 REASONALBLY。"
     },
     {
       "source": "YOU HAVE ENTERED ONE OF THE GUARD TOWERS.  INSIDE ARE FOUR BUCCANEERS.  ONE OF THEM SAYS 'THIS IS A RESTRICTED AREA, LEAVE NOW!'  WHAT WILL YOU DO?",
@@ -6829,9 +7819,29 @@
       "note": "野外。"
     },
     {
+      "source": "YOU HAVE FOUND A SMALL, DARK CAVE.  WILL YOU ENTER?",
+      "text": "你們找到一個窄小昏暗的洞穴。要進去嗎？",
+      "note": "荒野。"
+    },
+    {
       "source": "YOU HAVE FOUND SOME RUINED HUTS.  WILL YOU INVESTIGATE?",
       "text": "你們發現幾間毀壞的棚屋。要查看嗎？",
       "note": "野外。"
+    },
+    {
+      "source": "YOU HAVE FOUND SOME TREASURE.",
+      "text": "你們找到了一些財寶。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU HAVE FOUND THE BANDIT'S TREASURE.  DO YOU TAKE IT?",
+      "text": "你們找到了盜匪的寶藏。要拿走嗎？",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
+      "source": "YOU HAVE FOUND THE WYVERN'S TREASURE!",
+      "text": "你們找到了雙足飛龍的寶藏！",
+      "note": "荒野。"
     },
     {
       "source": "YOU HAVE INSULTED THE",
@@ -6849,6 +7859,11 @@
       "note": "瓦海登墳場的事件與敘述。"
     },
     {
+      "source": "YOU HAVE OFFENDED THE",
+      "text": "你們冒犯了",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
+    },
+    {
       "source": "YOU HAVE REACHED THE BUCCANEER BASE.  A BAND OF BUCCANEERS RIDE OUT TO ESCORT YOU IN.  WHAT WILL YOU DO?",
       "text": "你們抵達了海盜據點。一隊海盜騎馬出來要護送你們進去。你們要怎麼做？",
       "note": "海盜據點。"
@@ -6862,6 +7877,11 @@
       "source": "YOU HAVE SLAIN THE GARRISON. NOW IF YOU CAN BUT SLAY THE OUTSIDE GUARDS QUICKLY BEFORE THE ENEMY ARRIVES THE GATE WILL BE YOURS!",
       "text": "你們殲滅了守軍。只要能在敵人趕到前迅速解決外頭的守衛，這道門就是你們的了！",
       "note": "史塔傑諾門一帶的事件。"
+    },
+    {
+      "source": "YOU HAVE STUMBLED ACROSS A FEROCIOUS WYVERN.  IT CHARGES AND ATTACKS!",
+      "text": "你們撞上一頭凶猛的雙足飛龍，牠衝上來攻擊！",
+      "note": "荒野。"
     },
     {
       "source": "YOU HAVE STUMBLED INTO A TREASURE ROOM.",
@@ -6924,9 +7944,19 @@
       "note": "亞拉斯的金字塔。"
     },
     {
+      "source": "YOU HEAR MUFFLED SOUNDS AND TURN TO INVESTIGATE.",
+      "text": "你們聽見一陣悶響，轉身查看。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU HEAR ONE OF THEM WHISPER, 'THEY DON'T BELONG HERE; THEY MUST HAVE COME TO KILL TYRANTHRAXUS'. A HALF-ORC WOMAN STEPS FORWARD 'WHAT DO YOU WANT OF US?'",
       "text": "你們聽見其中一人低聲說：「他們不該在這裡，一定是來殺泰蘭特拉克斯的。」一名半獸人女子上前一步：「你們要我們做什麼？」",
       "note": "紡織行與巨人占據一帶的事件。"
+    },
+    {
+      "source": "YOU HEAR THE VOICES OF HUMANS AND KOBOLDS.",
+      "text": "你們聽見人類與小妖魔的說話聲。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU HEAR WAR CRIES AND THE CLANG OF METAL",
@@ -6974,6 +8004,11 @@
       "note": "海盜據點。"
     },
     {
+      "source": "YOU LASH OUT WITH YOUR WEAPON DEALING ONE SWIFT, DEADLY BLOW. THE OLD LIZARD MAN TOTTERS FOR A MOMENT WITH A SURPRISED LOOK ON HIS FACE, AND THEN COLLAPSES.",
+      "text": "你們揮出武器，一擊致命。那名年老的蜥蜴人踉蹌了一下，臉上寫滿錯愕，隨即倒地。",
+      "note": "沼澤的蜥蜴人部族。"
+    },
+    {
       "source": "YOU LEAVE THE SHOP.",
       "text": "你們離開了店裡。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -6999,9 +8034,19 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU MAKE THE LONG, ARDUOUS CLIMB UP THE WELL.",
+      "text": "你們沿著井壁費力地爬了很久才上來。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU MAKE UP STORIES ABOUT WONDERFUL MAGICAL ITEMS AND PLACES.  YOU CAPTIVATE EVERYONE SITTING AROUND YOU.",
       "text": "你們胡謅了一堆神奇魔法物品與地方的故事，把在座的人都聽住了。",
       "note": "野外與漢提爾前哨一帶的事件。"
+    },
+    {
+      "source": "YOU MANAGE TO GET OUT OF THE POOL BEFORE THEY FINISH YOU OFF.",
+      "text": "你們趕在牠們解決你們之前爬出了水池。",
+      "note": "荒野。"
     },
     {
       "source": "YOU MANAGE TO RUN AWAY AND HIDE.  YOU HEAR AN ALARM IN THE DISTANCE AS GUARDS ARE ISSUING OUT OF BARRACKS.",
@@ -7059,6 +8104,11 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU PASS INTO HIDDEN CATACOMBS. THIS LARGE ROOM IS DIMLY LIT BY SPUTTERING TORCHES. THROUGH THE SMOKE YOU SEE CURTAINS HUNG TO COVER DOORWAYS.",
+      "text": "你們走進隱密的地下墓道。這間大廳只有幾支劈啪作響的火把照明，煙霧中看得見門口掛著布簾。",
+      "note": "沼澤中的廢棄城堡，挪里斯的盜匪團。"
+    },
+    {
       "source": "YOU PICK THE LOCK!",
       "text": "你們把鎖撬開了！",
       "note": "柯威大樓的盜賊據點。"
@@ -7084,9 +8134,19 @@
       "note": "紡織行與巨人占據一帶的事件。"
     },
     {
+      "source": "YOU REACH THE KING'S QUARTERS AND CONFRONT HIS GUARDS.",
+      "text": "你們來到王的居所，與他的護衛正面相對。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU REALIZE YOU HAVE BEEN VICTIMIZED BY A PICKPOCKET.",
       "text": "你們發現自己被扒了。",
       "note": "街頭事件。"
+    },
+    {
+      "source": "YOU RECORD IT IN YOUR JOURNAL UNDER ENTRY",
+      "text": "你們把它記進手冊，編為線索報導",
+      "note": "古托井與井下的小妖魔洞穴。句子片段，後面接編號。"
     },
     {
       "source": "YOU RELEASE THE KOBOLDS AND THEY THANK YOU.  ONE OF THEM SAYS, 'WATCH OUT FOR THE MUTANT LIZARD MEN, THEY'RE KILLERS!'  THEY THEN RUN OUT THE DOOR.",
@@ -7159,6 +8219,11 @@
       "note": "邪惡神廟（Temple of Bane）一帶。"
     },
     {
+      "source": "YOU SEARCH UNTIL YOU FEEL THE PULSE POUNDING IN YOUR EARS. NOTHING IS FOUND. WITH THAT YOU RESURFACE.",
+      "text": "你們一直找到耳中脈搏轟響，什麼也沒找到，只好浮出水面。",
+      "note": "荒野。"
+    },
+    {
       "source": "YOU SEE A",
       "text": "你們看到",
       "note": "遭遇敘述的開頭片段，後面接怪物名。"
@@ -7167,6 +8232,11 @@
       "source": "YOU SEE A BOY THAT HAS A HEART-SHAPED BIRTHMARK ON HIS LEFT SHOULDER.  AS YOU STARE AT THE BOY, A SLEAZY FAT MERCHANT APPROACHES YOU AND SAYS ...",
       "text": "你們看到一個男孩，左肩上有塊心形胎記。你們盯著他看時，一名肥胖下流的商人走過來說……",
       "note": "海盜據點。"
+    },
+    {
+      "source": "YOU SEE A BRASS BOTTLE JAMMED INTO A CRACK HERE.",
+      "text": "你們看到一只黃銅瓶卡在這裡的裂縫中。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU SEE A CHAMBER FILLED WITH ROTTED FURNITURE AND BENCHES.",
@@ -7229,6 +8299,11 @@
       "note": "亞拉斯的金字塔。"
     },
     {
+      "source": "YOU SEE A SMALL GROUP OF KOBOLDS ENTERING A SMALL,   CONCEALED CAVE.  A LARGER, MORE NOTICEABLE CAVE LIES JUST EAST OF THE SMALL HIDDEN, CAVE.  WHAT CAVE WILL YOU ENTER?",
+      "text": "你們看到一小群小妖魔鑽進一個隱蔽的小洞。小洞東邊還有一個較大、較顯眼的洞穴。要進哪一個？",
+      "note": "荒野。"
+    },
+    {
       "source": "YOU SEE A STRANGE GREEN PLANT GROWTH WHICH YOU RECOGNIZE AS GREEN SLIME. YOU CAREFULLY MOVE AROUND IT.",
       "text": "你們看到一團奇怪的綠色黏狀物，認出那是綠泥怪，於是小心地繞了過去。",
       "note": "貧民區（Slums）的事件與敘述。"
@@ -7262,6 +8337,11 @@
       "source": "YOU SEE ROCKS SCATTERED ABOUT THE SMOOTH FLAGSTONES.",
       "text": "平整的石板上散落著一些石塊。",
       "note": "亞拉斯的金字塔。"
+    },
+    {
+      "source": "YOU SEE SOME BLOODTHIRSTY",
+      "text": "你們看到幾隻嗜血的",
+      "note": "古托井與井下的小妖魔洞穴。句子片段。"
     },
     {
       "source": "YOU SEE SOME GIANTS PUTTING ON THEIR ARMOR.",
@@ -7299,6 +8379,21 @@
       "note": "貧民區（Slums）的事件與敘述。"
     },
     {
+      "source": "YOU SENSE AN ANTI-MAGIC SHELL AROUND YOU.",
+      "text": "你們感覺到身邊罩著一層反魔法殼。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU SLIP BY WITH EASE.",
+      "text": "你們輕鬆溜了過去。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
+      "source": "YOU SLOWLY CLIMB DOWN THE SLIPPERY RUNGS.",
+      "text": "你們沿著濕滑的踏階慢慢往下爬。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU SPIN TO FACE THE SOUND.",
       "text": "你們循聲轉過身去。",
       "note": "亞拉斯的金字塔。"
@@ -7307,6 +8402,11 @@
       "source": "YOU SPOT A GROUP OF",
       "text": "你們發現一群",
       "note": "同上。"
+    },
+    {
+      "source": "YOU SPOT A SMALL BAND OF SICKLY KOBOLDS CAREFULLY PICKING ITS WAY THROUGH THE RUBBLE.  WHEN THEY SPOT YOU, THEY STOP AND STARE IN SURPRISE.",
+      "text": "你們看見一小群病懨懨的小妖魔小心翼翼地在瓦礫間穿行。牠們發現你們後停下腳步，吃驚地盯著看。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU SPY A GROUP OF SEEDY-LOOKING",
@@ -7347,6 +8447,11 @@
       "source": "YOU STOP, AND THEY MOVE ON.",
       "text": "你們停下腳步，牠們就走開了。",
       "note": "波多廣場的拍賣會與街頭遭遇。"
+    },
+    {
+      "source": "YOU STUMBLE ON SOME WAITING KOBOLDS!",
+      "text": "你們一頭撞上埋伏在那裡的小妖魔！",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU SURPRISE A FIGURE AS IT SUMMONS A WIGHT.",
@@ -7449,6 +8554,11 @@
       "note": "海盜據點。"
     },
     {
+      "source": "YOU TUMBLE DOWN A STEEP, LOOSE SLOPE, MAKING A LOUD CLATTER.",
+      "text": "你們滾下一道陡峭鬆動的斜坡，弄出好大聲響。",
+      "note": "古托井與井下的小妖魔洞穴。"
+    },
+    {
       "source": "YOU UP THE BID. MONSTERS NEARBY TURN, STARE,",
       "text": "你們加了價。附近的怪物轉過頭來盯著，",
       "note": "片段。"
@@ -7467,6 +8577,11 @@
       "source": "YOU WANDER IN THE OLD HEMP MARKET.  MONSTERS SCURRY AT YOUR APPROACH.  YOU OCCASSIONALLY CATCH SNATCHES OF CONVERSATIONS.",
       "text": "你們在舊麻市裡走著，怪物一見你們就四下逃竄，偶爾能聽見隻字片語。",
       "note": "貧民區（Slums）的事件與敘述。原版此處把 OCCASIONALLY 拼成 OCCASSIONALLY。"
+    },
+    {
+      "source": "YOU WANDER IN THE PLAZA NEAR KUTO'S WELL.",
+      "text": "你們在古托井旁的廣場上走著。",
+      "note": "古托井與井下的小妖魔洞穴。"
     },
     {
       "source": "YOU'VE ANGERED THE GUARDS.  THEY DEMAND THAT YOU RETURN TO YOUR QUARTERS.  WHAT WILL YOU DO?",
