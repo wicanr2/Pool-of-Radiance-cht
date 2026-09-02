@@ -1,7 +1,7 @@
 # Spec 056：戰術鄰近格位查詢與敵對側篩選
 
-狀態：CONFORMED（overlay-25 entry 32 的完整資料流、篩選與輸出語意）；
-DRAFT（`sub_13BE` 如何產生鄰近格位表、每筆前兩 byte 的語意、`6674h` 表的容量上限）。
+狀態：CONFORMED（overlay-25 entry 32 的完整資料流、篩選與輸出語意；鄰近格位產生者定位到 overlay-31 `0912h` 與其三候選結構）；
+DRAFT（`13Dh:2Ah` 的偏移表、每筆前兩 byte 的語意、`6674h` 表的容量上限）。
 日期：2026-09-02。
 
 ## 為什麼需要這一段
@@ -34,10 +34,51 @@ spec 053 的 `ResolveMovementProbe` 以 `attackTargetID` 決定目的格是進�
 因此本函式同時是 in-place filter（`6674h` 表）與 index 匯出（`6CD7h` 陣列）。
 spec 053 對它的描述「只留下 `+10Eh` 等於 mover 反值者」在此得到完整證實。
 
+## 鄰近格位表的產生者：overlay-31 `0912h`（2026-09-02 閉合定位）
+
+`0138h` 是 Borland overlay 的 **entry stub 段**，不是函式所在段。stub 取自
+`START.EXE`：MZ header 為 59 paragraphs，故段 `0138h` 的 file base 是
+`3B0h + 138h×16 = 1730h`，每個 stub **5 bytes**（`0034h`、`0039h`、`003Eh` 間隔 5）：
+
+| stub | bytes | 目標 offset |
+|---|---|---|
+| `0138h:0034h` | `CD 3F 79 05 00` | `0579h` |
+| `0138h:003Eh` | `CD 3F 12 09 00` | `0912h` |
+
+`CD 3F` 即 INT 3Fh，Borland overlay manager 的載入中斷。目標 overlay 由實測定出：
+掃過全部 overlay，**只有 `overlay-31.bin` 在 `0579h` 與 `0912h` 兩處同時是
+`55 89 E5`（`push bp; mov bp,sp`）函式序言**；IDA 對該檔解出的兩個函式邊界
+`0579h..0912h` 與 `0912h..0BDFh` 相鄰不重疊，且 `0BDFh` 正好是同一 stub 表另一筆
+（`1750h`）的目標，三項互相支持。證據：
+`docs/audit/ida-overlay31-nearby-cell-builder.json`，overlay-31 SHA-256
+`64f1f7b8…151df`。
+
+因此 spec 053 所稱的「overlay-25 entry 32 呼叫 `sub_13BE`」，真正的被呼叫者是
+**overlay-31 `0912h`**。
+
+### `0912h` 的結構（exact）
+
+1. 先以迴圈 `var_3 = 1..3` 產生**三個候選**：每次以 `arg_4` 與迴圈索引呼叫另一個
+   stub `13Dh:2Ah`，取回兩個 byte 偏移；回傳 `al != 0` 時把偏移分別加上基準座標
+   `arg_C`／`arg_A`，存進兩個堆疊陣列（`var_F` 一組、`var_13` 一組）；回傳 0 時
+   該格寫 `0FFh` 作為無效標記。**列舉是三格，不是八方向掃描。**
+2. 清空 `ds:6678h`（結果筆數，即 spec 前段那張表的計數），再以 `ds:5E88h` 取得
+   combatant 總數，逐一走訪。
+3. combatant 屬性表基底為 **`ds:5E85h`，每筆 4 bytes**；`5E85h` 與 `5E88h` 是同一筆
+   內的兩個欄位（相距 3）。索引以 `index×4` 計算，第 0 筆的欄位同時被當成總數使用
+   ——這與結果表 `6674h`／`6678h` 的「表首兼放 count」是同一種佈局慣例，
+   使前段標為 `strong inference` 的那一點多了一個獨立例證。
+4. 逐 combatant 再次呼叫 `13Dh:2Ah`，這次帶入該 combatant 的 `+3` 欄位與內層索引，
+   偏移加上該 combatant 的座標欄位（`5E85h` 一組）後展開——對應大型怪佔多格的情形。
+
 ## 尚未閉合
 
-- 鄰近格位表的產生規則：格位如何列舉、距離參數如何影響、是否含 mover 自身。
-  這是完整 occupancy 的另一半，也是把 `attackTargetID` 接進 probe 的前提。
+- **`13Dh:2Ah`**：偏移表的實際內容。它同樣是 overlay stub，要照本節的方法再解一層
+  （`013Dh` 的 file base 為 `3B0h + 13Dh×16 = 1780h`）。解出它才知道三個候選格的
+  幾何關係，以及大型怪的 footprint 展開規則。
+- `arg_4`／`arg_A`／`arg_C` 的來源與語意（距離參數與基準座標的對應）。
+- `0138h:0034h` → overlay-31 `0579h` 是被 overlay-13 的 move-probe 與
+  move-budget-step、overlay-24 effect-apply 共用的另一個服務，尚未解讀。
 
 ### ⚠ `sub_13BE` 這個名字不是 overlay-25 的位址
 
