@@ -36,22 +36,54 @@ spec 053 對它的描述「只留下 `+10Eh` 等於 mover 反值者」在此得�
 
 ## 尚未閉合
 
-- `sub_13BE` 的產生規則：格位如何列舉、距離參數如何影響、是否含 mover 自身。
+- 鄰近格位表的產生規則：格位如何列舉、距離參數如何影響、是否含 mover 自身。
   這是完整 occupancy 的另一半，也是把 `attackTargetID` 接進 probe 的前提。
-  **已試過一次並確認此路不通，下一輪不要重跑同一條**：以
-  `ida-pro-9.4-idapython:locked-v1` 對 `overlay-25.bin`（SHA-256
-  `9fede24b…50c0e`，與 `ida-overlay25-nearby-opponents.json` 記錄的完全相同）
-  跑 `tools/ida-export-overlay-functions.py`，`POOL_IDA_SEEDS=5054`（＝`13BEh`），
-  輸出檔非空但**解碼錯位**：第一條是 `adc ax, [bx+si]`，結尾卻是 `retf 4`。
-  兩件事同時成立——檔案一致，且 `13BEh` 不是 file offset 上的指令邊界——指向
-  `call sub_13BE` 是 near call，其目標是**段內偏移**，而 overlay-25 的 file offset
-  與段偏移之間存在位移。因此要先解 overlay-25 的段結構（`dos-ovr-manifest.json`
-  與 TPOV entry stub），把段基底算出來，才能得到正確 seed。
-  參考 `~/.claude/knowledge-base/retro/borland-tpov-overlay-re.md` 的
-  「stub offset 撞號要比 segment」。
-  另注意：對已存在的 `.i64` 直接跑 `idat -A -B` 會以
-  `Failed to initialize IDA as library (error code 1)` 失敗，要對 raw bin 重跑；
-  raw binary 沒有 entry point，IDA 不會自動建立任何函式，函式清單會是空的。
+
+### ⚠ `sub_13BE` 這個名字不是 overlay-25 的位址
+
+`ida-overlay25-nearby-opponents.json` 在 `2468h`（十進位 9384）的那條指令，
+原始 bytes 是 **`9A 3E 00 38 01`**。`9Ah` 是 **far call**，其後依序是 offset 與
+segment，因此目標是 **`0138h:003Eh`**。IDA 顯示的 `sub_13BE` 是把它線性化
+（`0138h × 16 + 3Eh = 13BEh`）之後的自動命名，**與本檔其餘位址所用的
+「overlay-local file offset, base 0」是兩個不同的位址基準**。
+
+實測可證：`overlay-25.bin` 的 file offset `13BEh` 落在 `cmp ax, 13h`
+（`3D 13 00`，起於 `13BDh`）的中間，不是指令邊界。以
+`POOL_IDA_SEEDS=5054` 對該檔重跑匯出，得到的是首條 `adc ax, [bx+si]`、
+尾為 `retf 4` 的錯位解碼。檔案本身無誤（SHA-256 `9fede24b…50c0e`，與該份
+匯出記錄的完全相同）。
+
+因此下一步不是在 overlay-25 內找 `13BEh`。掃過既有的 IDA 匯出可知，
+**`0138h` 是被多個 overlay 共用的 stub 段**：
+
+| 呼叫端 | bytes | 目標 |
+|---|---|---|
+| `ida-overlay13-move-probe.json` | `9A 34 00 38 01` | `0138h:0034h` |
+| `ida-overlay13-move-budget-step.json` | `9A 34 00 38 01` | 同上 |
+| `ida-overlay24-effect-apply-one.json` | `9A 34 00 38 01` | 同上 |
+| `ida-overlay22-spell-dispatch.json` | `9A 3E 00 38 01` | `0138h:003Eh` |
+| `ida-overlay25-nearby-opponents.json` | `9A 3E 00 38 01` | 同上 |
+
+五個不同 overlay 只呼叫同一段的兩個 offset，且 segment 是硬編常數——這是 Borland
+overlay 的 **entry stub 表**特徵，不是一般函式位址。真正的被呼叫者由 stub 內的
+`CD 3F` 中斷加 overlay 編號與段內 offset 決定，必須先解 stub 才知道目標落在哪個
+overlay 的哪個 offset。方法見
+`~/.claude/knowledge-base/retro/borland-tpov-overlay-re.md`（`CD 3F` entry stub、
+far call 目標查不到函式、stub offset 撞號要比 segment）。
+
+`docs/audit/dos-ovr-manifest.json` 有 774 個 entry 的 `code_offset`／
+`control_file_offset`／`executable_file_offset`，但沒有段載入位址，因此 stub 的
+內容要回到 `START.EXE` 的 resident 部分取得。
+
+這也是全域反組譯規則的實例：同時引用 IDA 命名與檔案偏移時必須逐項標明基準，
+不可把兩種基準的數值並列成同一個位址。
+
+### IDA 操作上已踩過的兩個坑
+
+- 對已存在的 `.i64` 直接跑 `idat -A -B` 會以
+  `Failed to initialize IDA as library (error code 1)` 失敗，要對 raw bin 重跑。
+- raw binary 沒有 entry point，IDA 不會自動建立任何函式，函式清單會是空的；
+  必須由 `POOL_IDA_SEEDS` 明確種入。
 - 每筆 3 bytes 的前兩 byte 語意（合理推測是格座標，但未證）。
 - 迴圈從 1 起算，因此 `6678h`（＝`6676h+2`，即筆 0 的第三欄）與筆 0 的前兩欄
   是否為保留槽或另有用途，屬 `strong inference`，未證實。
