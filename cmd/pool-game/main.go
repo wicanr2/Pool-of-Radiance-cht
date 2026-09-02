@@ -888,7 +888,7 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		if event, ok := programEvent(result); ok {
 			return a.enterProgram(event)
 		}
-		return a.pauseInitialCellResult(result)
+		return a.pauseAppliedCellResult(result)
 	}
 	return fmt.Errorf("Pool SearchLocation exceeded presentation boundary limit")
 }
@@ -1475,6 +1475,13 @@ func (a *app) leaveSuneTemple() error {
 
 func (a *app) pauseInitialCellResult(result eclvm.Result) error {
 	a.applyCellECLResult(result)
+	return a.pauseAppliedCellResult(result)
+}
+
+// pauseAppliedCellResult 是同一件事，但**不再套用一次**。`33h PRINT RETURN`
+// 之後文字框的內容會隨套用次數改變，所以同一個 result 只能套一次；先前
+// 每則訊息蓋掉上一則，套兩次看不出差別，這個重複因此一直沒被發現。
+func (a *app) pauseAppliedCellResult(result eclvm.Result) error {
 	a.templeActive = false
 	a.cellEventPending = true
 	a.cellWaitingMenu = result.WaitingForMenu
@@ -1526,27 +1533,34 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 			a.spawn.Facing = uint8(write.Value)
 		}
 	}
-	// 同一個 result 裡的訊息屬於同一頁，要拼起來；`33h PRINT RETURN` 是頁內
-	// 換行，`3Dh CLEAR BOX` 把已經拼好的部分清掉（spec 082）。一頁只印一則的
-	// 情況與先前相同，印兩則以上的先前只看得到最後一則。
+	// 文字框（spec 082）。`RunUntilEvent` 一遇到事件就返回，所以每個 result
+	// 通常只帶一則——文字框的狀態因此要跨 result 留著，不能每次重建。
 	//
-	// **頁與頁之間仍是取代**：原版靠什麼在兩頁之間清框還沒讀出來（這幾個
-	// block 沒有 `3Dh`），所以維持已經對過原版的逐頁行為，不改成跨頁累積。
-	page := ""
+	//   - `3Dh CLEAR BOX` 清掉整個框。
+	//   - `33h PRINT RETURN` 換行。
+	//   - 有文字的事件：**上一則以換行收尾就接上去，否則這是新的一頁**。
+	//
+	// 最後那條是刻意的：原版靠什麼在兩頁之間清框還沒讀出來（市政廳那幾個
+	// block 根本沒有 `3Dh`），而逐頁取代已經對過原版（spec 015／016 的市政廳
+	// 流程逐頁比對文字）。沒有 `33h` 的地方維持驗過的行為，有 `33h` 的地方
+	// 那一行才真的接得起來。
 	for _, event := range result.Events {
 		switch event.Opcode {
 		case gamepack.ClearBoxOpcode:
-			page = ""
+			a.eventText = ""
 		case gamepack.PrintReturnOpcode:
-			page += "\n"
+			a.eventText += "\n"
 		default:
-			if event.Text != "" {
-				page += a.gameText.Translate(event.Text)
+			if event.Text == "" {
+				continue
+			}
+			line := a.gameText.Translate(event.Text)
+			if strings.HasSuffix(a.eventText, "\n") {
+				a.eventText += line
+			} else {
+				a.eventText = line
 			}
 		}
-	}
-	if page = strings.Trim(page, "\n"); page != "" {
-		a.eventText = page
 	}
 }
 

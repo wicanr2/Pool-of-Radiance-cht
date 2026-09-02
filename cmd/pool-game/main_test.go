@@ -999,26 +999,30 @@ func TestGlobalHotkeysDoNotConsumeKeysOutsideAdventure(t *testing.T) {
 // 先前每則訊息蓋掉上一則，一頁印三行只看得到最後一行。
 func TestCellTextBuildsOnePageFromEveryMessage(t *testing.T) {
 	application := &app{}
-	application.applyCellECLResult(eclvm.Result{Events: []eclvm.Event{
-		{Opcode: 0x12, Text: "FIRST LINE"},
-		{Opcode: gamepack.PrintReturnOpcode},
-		{Opcode: 0x12, Text: "SECOND LINE"},
-	}})
+	// 每個 result 一則：RunUntilEvent 一遇到事件就返回，所以狀態要跨 result。
+	apply := func(events ...eclvm.Event) {
+		application.applyCellECLResult(eclvm.Result{Events: events})
+	}
+	apply(eclvm.Event{Opcode: 0x12, Text: "FIRST LINE"})
+	apply(eclvm.Event{Opcode: gamepack.PrintReturnOpcode})
+	apply(eclvm.Event{Opcode: 0x12, Text: "SECOND LINE"})
 	if application.eventText != "FIRST LINE\nSECOND LINE" {
 		t.Fatalf("page is %q", application.eventText)
 	}
-	// CLEAR BOX 之後的才算數。
-	application.applyCellECLResult(eclvm.Result{Events: []eclvm.Event{
-		{Opcode: 0x12, Text: "DISCARDED"},
-		{Opcode: gamepack.ClearBoxOpcode},
-		{Opcode: 0x12, Text: "KEPT"},
-	}})
-	if application.eventText != "KEPT" {
-		t.Fatalf("after CLEAR BOX the page is %q", application.eventText)
+	// 沒有換行收尾的下一則是新的一頁，不是接在後面。
+	apply(eclvm.Event{Opcode: 0x12, Text: "NEW PAGE"})
+	if application.eventText != "NEW PAGE" {
+		t.Fatalf("page is %q", application.eventText)
 	}
-	// 沒有文字的 result 不動文字框：頁與頁之間靠有文字的那一頁取代。
-	application.applyCellECLResult(eclvm.Result{Events: []eclvm.Event{{Opcode: 0x0E}}})
-	if application.eventText != "KEPT" {
-		t.Fatalf("an empty result changed the page to %q", application.eventText)
+	// CLEAR BOX 清掉整個框。
+	apply(eclvm.Event{Opcode: gamepack.ClearBoxOpcode})
+	if application.eventText != "" {
+		t.Fatalf("CLEAR BOX left %q", application.eventText)
+	}
+	apply(eclvm.Event{Opcode: 0x12, Text: "AFTER CLEAR"})
+	// 沒有文字的事件不動文字框。
+	apply(eclvm.Event{Opcode: 0x0E})
+	if application.eventText != "AFTER CLEAR" {
+		t.Fatalf("an empty event changed the page to %q", application.eventText)
 	}
 }
