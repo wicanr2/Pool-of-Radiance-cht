@@ -128,6 +128,26 @@ func eclHandlerOperands(code []byte, start, end int) int {
 	return 0
 }
 
+// ReadDOSOverlayCode 取出一個 overlay 的碼段位元組。
+func ReadDOSOverlayCode(zipPath string, index int) ([]byte, error) {
+	executable, err := readStartExecutable(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	overlayFile, err := readArchiveMember(zipPath, "GAME.OVR")
+	if err != nil {
+		return nil, err
+	}
+	overlays, err := tpov.Decode(executable, overlayFile)
+	if err != nil {
+		return nil, fmt.Errorf("decode GAME.OVR: %w", err)
+	}
+	if index < 0 || index >= len(overlays) {
+		return nil, fmt.Errorf("GAME.OVR has %d overlays, index %d is outside", len(overlays), index)
+	}
+	return overlays[index].Code, nil
+}
+
 // ReadDOSECLOpcodeTable 從原版 ZIP 解出 opcode 表。
 func ReadDOSECLOpcodeTable(zipPath string) ([]ECLOpcode, error) {
 	executable, err := readStartExecutable(zipPath)
