@@ -138,5 +138,29 @@ if cmp -s docs/screenshots/pool-remake-chinese-tour.png docs/screenshots/pool-re
   tail -20 /tmp/game.log >&2 || true
   exit 1
 fi
+# F5 關掉盤面，J 開探險者手冊，再打 46 + ENTER 跳到遊戲文字實際引用的那一條——
+# 「抄進手冊，成為線索報導 46」在畫面上說得出口，這裡就要翻得到。
+pulse F5
+sleep 0.5
+pulse j
+sleep 0.8
+shot docs/screenshots/pool-remake-chinese-journal.png
+if cmp -s docs/screenshots/pool-remake-chinese-tour.png docs/screenshots/pool-remake-chinese-journal.png; then
+  echo "J did not open the journal" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
+pulse 4
+sleep 0.4
+pulse 6
+sleep 0.4
+pulse Return
+sleep 0.8
+shot docs/screenshots/pool-remake-chinese-journal-46.png
+if cmp -s docs/screenshots/pool-remake-chinese-journal.png docs/screenshots/pool-remake-chinese-journal-46.png; then
+  echo "typing 46 did not jump to clue 46" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+fi
 sha256sum docs/screenshots/pool-remake-chinese-*.png
 '

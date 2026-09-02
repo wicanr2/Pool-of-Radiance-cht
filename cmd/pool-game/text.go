@@ -269,12 +269,19 @@ func runeWidth(r rune) int {
 
 // closingPunctuation 是不該落在行首的字元。中文排版裡把它們留在上一行末尾，
 // 即使那一行因此多出一格。
+// closingPunctuationSlack 是允許收尾標點超出的格數：一個全形標點。
+const closingPunctuationSlack = 2
+
 const closingPunctuation = "。，、；：？！）」』〉》”’,.;:?!)]}"
 
 // wrapDisplay 依半形格數換行，同時吃得下中英文。ASCII 以空白斷詞、整個詞不拆；
 // 漢字每一個字都可以斷。行首不放收尾標點。
 //
 // wrapASCII 只看空白，中文一整段沒有空白，用它會得到一條長到溢出對話框的線。
+// displayText 把字型沒有字模的排版符號換成有的形狀；替換表在 etenfont，
+// 與字型覆蓋率稽核共用同一份，兩邊才不會對不上。
+func displayText(value string) string { return etenfont.ReplaceUnavailable(value) }
+
 func wrapDisplay(value string, columns int) []string {
 	if columns < 1 {
 		return nil
@@ -315,8 +322,12 @@ func wrapDisplay(value string, columns int) []string {
 	used := 0
 	for index := 0; index < len(tokens); index++ {
 		current := tokens[index]
+		// 兩個半形詞會相鄰，只可能是原文那裡本來就有空白——切詞時全形字自成一個
+		// token，半形的一串只在遇到空白時才斷。所以這裡補回來的空白就是原本那個。
+		// 舊版的條件寫成「這個 token 寬度是 1」，於是 `PRESS RETURN OR BUTTON`
+		// 會被接成 `PRESSRETURNORBUTTON`。
 		separator := ""
-		if used > 0 && current.width == 1 && line.Len() > 0 {
+		if used > 0 && line.Len() > 0 && runeWidth([]rune(current.text)[0]) == 1 {
 			last, _ := utf8DecodeLast(line.String())
 			if runeWidth(last) == 1 {
 				separator = " "
@@ -324,8 +335,10 @@ func wrapDisplay(value string, columns int) []string {
 		}
 		need := current.width + len(separator)
 		if used > 0 && used+need > columns {
-			// 收尾標點寧可讓這一行多一格，也不要落到下一行的行首。
-			if !strings.ContainsRune(closingPunctuation, []rune(current.text)[0]) {
+			// 收尾標點寧可讓這一行多一格，也不要落到下一行的行首；但只讓一個
+			// 標點溢位，否則連續的「。」」會一路把字推出畫面外。
+			closer := strings.ContainsRune(closingPunctuation, []rune(current.text)[0])
+			if !closer || used+need > columns+closingPunctuationSlack {
 				lines = append(lines, line.String())
 				line.Reset()
 				used, separator, need = 0, "", current.width

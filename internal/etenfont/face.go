@@ -12,6 +12,7 @@ import (
 	"image"
 	"image/color"
 	"os"
+	"strings"
 	"sync"
 
 	"golang.org/x/image/font"
@@ -118,6 +119,9 @@ func (f *Face) Glyph(dot fixed.Point26_6, r rune) (image.Rectangle, image.Image,
 
 // bitmap is retained for the focused raster tests. Production callers should
 // use font.Face methods, which also preserve each glyph's native advance.
+// Bitmap 回傳一個字的字模；取不到代表這套字型沒有這個字。
+func (f *Face) Bitmap(r rune) (*image.Alpha, bool) { return f.bitmap(r) }
+
 func (f *Face) bitmap(r rune) (*image.Alpha, bool) {
 	glyph, ok := f.glyph(r)
 	if !ok {
@@ -161,12 +165,84 @@ func rasterGlyph(raw []byte, width, bytesPerRow int, bold bool) *image.Alpha {
 	return mask
 }
 
+// big5Variant maps variant Han forms the ETen font has no glyph for onto the
+// standard form it does ship. Most of them are outside Big5 altogether; 裏 has
+// only a compatibility code point (F9D8), past where the font's glyph table ends. The Softworld manual was typeset
+// in Big5, so these variants come from the transcription rather than the page;
+// the transcript keeps them, and this table is what lets the font draw them.
+// Without it each one renders as an empty box, which reads as a broken font
+// rather than a character the font never had.
+var big5Variant = map[rune]rune{
+	'兎': '兔', '册': '冊', '冲': '沖', '刧': '劫', '却': '卻',
+	'携': '攜', '敍': '敘', '着': '著', '羣': '群', '衞': '衛',
+	'裏': '裡', '踪': '蹤', '靑': '青',
+}
+
+// big5Code 由「解碼」建出 Unicode → Big5 的對照，不用編碼器。
+//
+// Big5 有一批字帶兩個碼位：正規的常用字碼，以及 F9xx–FExx 的重複區。
+// x/text 的編碼器對其中幾個字（包、港、偽、撐、煮、冲…）會回重複區那一個，
+// 而倚天的 stdfont.15 只排到常用字與次常用字，於是那幾個常見字取不到字模，
+// 畫面上是一個空白方塊——看起來像字型壞了，實際上是查錯碼位。
+//
+// 逐一解碼再反向建表，就會拿到每個字最低的那個碼位，也就是字型排的那一個。
+var (
+	big5Once sync.Once
+	big5Code map[rune]int
+)
+
+func big5Index(r rune) (int, bool) {
+	big5Once.Do(func() {
+		big5Code = make(map[rune]int, 14000)
+		decoder := traditionalchinese.Big5.NewDecoder()
+		scan := func(firstLead, lastLead int) {
+			for high := firstLead; high <= lastLead; high++ {
+				for low := 0x40; low <= 0xfe; low++ {
+					if low > 0x7e && low < 0xa1 {
+						continue
+					}
+					decoded, err := decoder.Bytes([]byte{byte(high), byte(low)})
+					if err != nil {
+						continue
+					}
+					runes := []rune(string(decoded))
+					if len(runes) != 1 || runes[0] == '\uFFFD' {
+						continue
+					}
+					if _, seen := big5Code[runes[0]]; seen {
+						continue
+					}
+					big5Code[runes[0]] = rawBig5(high, low)
+				}
+			}
+		}
+		// 漢字區先掃，符號區後掃。Big5 在符號區重複收了幾個字（十 A2CC 與
+		// A451、卅 A2CE 與 A4CA…），先掃符號區會讓「十」指到符號字型那一格，
+		// 而符號字型多半沒有載入——於是最常見的字反而畫不出來。
+		scan(0xa4, 0xf9)
+		scan(0xa1, 0xa3)
+	})
+	raw, ok := big5Code[r]
+	return raw, ok
+}
+
+// unavailable 是這套字型畫不出字模的排版符號。倚天的符號字型（SPCFONT.15）
+// 不在字型目錄裡，破折號與刪節號因此沒有字模；留著會是一串空白方塊，
+// 看起來像缺字而不是「這套字型沒有這個符號」。
+var unavailable = strings.NewReplacer("…", "...", "—", "--", "－", "-", "～", "~", "〜", "~")
+
+// ReplaceUnavailable 把畫不出來的排版符號換成畫得出來的形狀。
+// 顯示端與字型覆蓋率稽核都走這一個，兩邊才不會對不上。
+func ReplaceUnavailable(value string) string { return unavailable.Replace(value) }
+
 func (f *Face) standardGlyph(r rune) ([]byte, bool) {
-	encoded, err := traditionalchinese.Big5.NewEncoder().Bytes([]byte(string(r)))
-	if err != nil || len(encoded) != 2 {
+	if standard, ok := big5Variant[r]; ok {
+		r = standard
+	}
+	raw, ok := big5Index(r)
+	if !ok {
 		return nil, false
 	}
-	raw := rawBig5(int(encoded[0]), int(encoded[1]))
 	lastSymbol := rawBig5(0xa3, 0xbf)
 	if raw <= lastSymbol {
 		return glyphAt(f.symbols, raw)
@@ -210,6 +286,7 @@ func etenASCIICode(r rune) (byte, bool) {
 		'％': '%', '＆': '&', '＊': '*', '＜': '<', '＞': '>', '｜': '|',
 		'「': '"', '」': '"', '『': '"', '』': '"', '〈': '<', '〉': '>',
 		'《': '<', '》': '>', '【': '[', '】': ']', '〔': '[', '〕': ']',
+		'～': '~', '〜': '~',
 	}
 	value, ok := aliases[r]
 	return value, ok

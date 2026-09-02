@@ -139,3 +139,50 @@ func TestTacticalStatusFallsBackToEnglishWithoutALanguage(t *testing.T) {
 		t.Fatalf("victory: %q", got)
 	}
 }
+
+// 半形詞之間的空白要留著。原本的條件只看 token 寬度是不是 1，
+// 於是整句英文會被接成一個字：`PRESS RETURN` → `PRESSRETURN`。
+// 遊戲的事件文字在英文模式與未翻的句子都走這條路徑。
+func TestWrapDisplayKeepsSpacesBetweenWords(t *testing.T) {
+	lines := wrapDisplay("PRESS <RETURN> OR BUTTON TO CONTINUE", 68)
+	if len(lines) != 1 {
+		t.Fatalf("wrapped into %d lines: %q", len(lines), lines)
+	}
+	if lines[0] != "PRESS <RETURN> OR BUTTON TO CONTINUE" {
+		t.Fatalf("lost the spacing: %q", lines[0])
+	}
+}
+
+// 中英混排時，全形字兩側不補空白，半形詞之間補。
+func TestWrapDisplayMixesHanAndLatin(t *testing.T) {
+	lines := wrapDisplay("Hills with cave 有山洞的山丘", 68)
+	if len(lines) != 1 || lines[0] != "Hills with cave有山洞的山丘" {
+		t.Fatalf("mixed line came out as %q", lines)
+	}
+}
+
+// 換行寬度是硬界限：一行最多讓一個收尾標點溢位。
+func TestWrapDisplayBoundsTheClosingPunctuationOverflow(t *testing.T) {
+	value := strings.Repeat("字、", 60) + "。」』〉》"
+	for _, line := range wrapDisplay(value, 40) {
+		width := 0
+		for _, r := range line {
+			width += runeWidth(r)
+		}
+		if width > 40+closingPunctuationSlack {
+			t.Fatalf("line is %d columns wide: %q", width, line)
+		}
+	}
+}
+
+// 字型沒有破折號與刪節號的字模，畫出來會是空白方塊。顯示前換成畫得出來的
+// 形狀，而不是留著讓玩家以為是缺字。
+func TestDisplayTextReplacesGlyphsTheFontLacks(t *testing.T) {
+	got := displayText("等一下…那是什麼—一把劍～")
+	if strings.ContainsAny(got, "…—～") {
+		t.Fatalf("display text still carries glyphs the font lacks: %q", got)
+	}
+	if got != "等一下...那是什麼--一把劍~" {
+		t.Fatalf("display text came out as %q", got)
+	}
+}

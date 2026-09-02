@@ -103,6 +103,8 @@ type app struct {
 	language         language
 	gameText         *gametext.Catalogue
 	tactical         *tacticalState
+	journal          *journalState
+	journalOpen      bool
 	modern           bool
 	statusLine       string
 	keys             keySource
@@ -305,6 +307,16 @@ func (a *app) Update() error {
 				a.statusLine = err.Error()
 			}
 		}
+	}
+	if a.journalOpen {
+		a.journalInput()
+		return nil
+	}
+	if a.justPressed(ebiten.KeyJ) && a.mode == modeAdventure && !a.help {
+		if err := a.openJournal(); err != nil {
+			a.statusLine = err.Error()
+		}
+		return nil
 	}
 	if a.tacticalPreview && a.mode == modeAdventure && !a.help {
 		if err := a.tacticalInput(); err != nil {
@@ -1744,6 +1756,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.help {
 		drawHelp(screen, background, foreground, accent)
 	}
+	if a.journalOpen && a.journal != nil {
+		drawJournal(screen, a, background, foreground, accent)
+	}
 }
 
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
@@ -2060,6 +2075,7 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 		"F2: switch original/modern presentation",
 		"B: begin adventure after adding a party member",
 		"F10: save the remake state and quit",
+		"J: open the adventurer's journal (-lang zh)",
 	}
 	for index, line := range lines {
 		drawText(screen, line, 104, 120+index*30, foreground)
@@ -2067,7 +2083,7 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 }
 
 func drawText(screen *ebiten.Image, value string, x, y int, ink color.Color) {
-	text.Draw(screen, strings.ToUpper(value), uiFace, x, y, ink)
+	text.Draw(screen, strings.ToUpper(displayText(value)), uiFace, x, y, ink)
 }
 
 func (a *app) Layout(_, _ int) (int, int) { return logicalWidth, logicalHeight }
