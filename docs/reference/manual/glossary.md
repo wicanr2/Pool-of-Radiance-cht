@@ -154,3 +154,172 @@
 | Fighter | 戰士 |
 | Magic-User | 魔術師（內文亦稱巫師、魔法師）|
 | Thief | 小偷（內文亦稱神偷）|
+
+## 下冊：種族、職業與屬性
+
+| 英文 | 說明書譯名 | 出處（下冊）|
+|---|---|---|
+| Dwarf | 矮人 | p.10 |
+| Gnome | 侏儒 | p.10 |
+| Half-Elf | 半精靈 | p.10（原書拼作 HALE-ELF）|
+| Halfling | 半身人 | p.11（原書拼作 HALFING）|
+| Human | 人類 | p.11 |
+| Elf | 精靈 | p.11 |
+| Cleric | 牧師 | p.13 |
+| Fighter | 戰士 | p.13 |
+| Magic-User | 魔法師 | p.14（內文亦稱法師）|
+| Thief | 賊 | p.14 |
+| Strength | 力量（str）| p.11 |
+| Intelligence | 智慧（Int）| p.11（原書作 Intelligent）|
+| Wisdom | 睿智（Wis）| p.12 |
+| Dexterity | 敏捷（Dex）| p.12 |
+| Constitution | 體質（Con）| p.12（原書作 Constitation）|
+| Charisma | 魅力（Cha）| p.12 |
+| Hit Points | 生命力（H、P）| p.12 |
+| NPC | 特別隊員 | p.18 |
+
+## 下冊：陣營（p.15）
+
+| 英文 | 說明書譯名 |
+|---|---|
+| Lawful Good | 嚴守善良 |
+| Lawful Neutral | 嚴守中立 |
+| Lawful Evil | 嚴守邪惡 |
+| Neutral Good | 普通善良 |
+| True Neutral | 真正中立 |
+| Neutral Evil | 普通邪惡 |
+| Chaotic Good | 混亂的善良 |
+| Chaotic Neutral | 混亂的中立（原書英文誤植為 Chaotic Good）|
+| Chaotic Evil | 混亂的邪惡 |
+
+## 下冊：人物狀況（p.23）
+
+| 英文 | 說明書譯名 |
+|---|---|
+| OK | 平安無事 |
+| UNCONSCIOUS | 不省人事 |
+| DYING | 瀕死 |
+| DEAD | 死亡 |
+| FLED | 逃跑 |
+| GONE | 毀滅 |
+
+## 下冊：介面指令
+
+| 場景 | 指令與譯名 | 出處 |
+|---|---|---|
+| 旅行畫面 | AREA、VIEW（檢視）、CAST、ENCAMP（紮營）、SEARCH（邊走邊搜）、LOOK | p.19–p.31 |
+| 紮營 | SAVE、VIEW、MAGIC、REST（休息）、ALTER、EXIT（拔營）| p.26–p.30 |
+| 魔法 | CAST（施法）、MEMORIZE（記憶）、SCRIBE（抄寫）、DISPLAY（顯示法術）、REST | p.27–p.28 |
+| 設定 | ORDER（排列次序）、DROP、SPEED、ICON（戰鬥造形）、PICS（肖像顯示）| p.29–p.30 |
+| 物品 | READY（裝備）、USE、TRADE（交換）、DROP、HALVE（分半）、JOIN（集合）、SELL、ID（驗證）| p.24–p.25 |
+| 錢財 | TAKE（拿取）、POOL（集中）、SHARE（均分）、APPRAISE（估價）| p.33–p.34 |
+| 相遇 | COMBAT（戰鬥）、WAIT（等候）、FLEE（逃走）、ADVANCE（前進）、PARLAY（談話）| p.36 |
+| 談話態度 | HAUGHTY（傲慢的）、SLY（陰險的）、MEEK（謙恭的）、NICE（友善的）、ABUSIVE（殘酷的）| p.36–p.37 |
+| 戰鬥 | MOVE（移動）、VIEW（檢視）、AIM（瞄準）、USE（使用）、CAST（施法）、TURN（轉變）、QUICK（自動戰鬥）、DONE（特殊事項）| p.38–p.41 |
+| 戰鬥特殊事項 | GUARD（守衛）、DELAY（延遲）、QUIT（離開）、BANDAGE（包紮裹傷）、SPEED、EXIT | p.41 |
+| 瞄準 | NEXT、PREV、MANUAL、TARGET | p.39–p.40 |
+| 人物管理 | CREATE、DROP、MODIFY、TRAIN、VIEW、ADD、REMOVE、LOAD SAVED GAME、SAVE CURRENT GAME、BEGIN ADVENTURING、EXIT TO DOS | p.8–p.10 |
+| 戰鬥造形 | PARTS（WEAPON／HEAD）、COLOR（COLOR1／COLOR2 下有 WEAPON／BODY／CAP／HAIR／SHIELD／ARM／LEG）、SIZE | p.16–p.17 |
+
+## 下冊：規則名詞
+
+| 英文 | 說明書譯名 | 出處 |
+|---|---|---|
+| THAC0 | 攻擊命中率 | p.23、p.43 |
+| AC | 裝甲防護力 | p.23 |
+| Movement | 移動力 | p.38 |
+| Encumbrance | 負荷 | p.22（畫面欄位）|
+| Saving Throw | 閃躲率 | p.57 |
+| Backstab | 背刺 | p.43 |
+| Sweep | 揮砍 | p.39 |
+| Round | 戰鬥回合 | p.35（下冊 p.42 另把戰鬥回合寫成 TURN）|
+| Turn | 普通回合（10 分鐘）| p.35 |
+| Duel | 對打 | p.32 |
+| Share | 分得的一份 | p.32 |
+| Copper／Silver／Electrum／Gold／Platinum pieces | 銅幣／銀幣／金銀合金幣／金幣／白金幣 | p.22 |
+| Gem／Jewelry | 寶石／珠寶 | p.22 |
+
+## 下冊：城中設施（p.31–p.34）
+
+| 英文 | 說明書譯名 |
+|---|---|
+| The City Council | 市議會（原書拼作 COONCIL）|
+| Docks | 碼頭 |
+| Inns | 旅店 |
+| Taverns | 酒店 |
+| The Training Hall | 訓練所 |
+| Shops | 商店 |
+| Temples | 神殿 |
+| Mission | 任務 |
+| Guardian | 警衛 |
+
+## 下冊：法術譯名
+
+神術（CLERIC SPELL）
+
+| 級 | 英文 | 說明書譯名 |
+|---:|---|---|
+| 1 | Bless | 祝福術 |
+| 1 | Curse | 咀咒術 |
+| 1 | Cure Light Wounds | 治療輕傷 |
+| 1 | Cause Light Wounds | 引起輕傷 |
+| 1 | Detect Magic | 搜尋魔法物品 |
+| 1 | Protection From Evil | 免於受邪害／免受邪惡侵害 |
+| 1 | Protect From Good | 免受善良侵害 |
+| 1 | Resist Cold | 耐冰術 |
+| 2 | Find Trap | 搜尋陷阱 |
+| 2 | Hold Person | 束縛敵人 |
+| 2 | Resist Fire | 耐火術 |
+| 2 | Silence 15' Radius | 半徑 15 格的沈靜術 |
+| 2 | Slow Poison | 緩毒術 |
+| 2 | Snake Charm | 蛇魅術 |
+| 2 | Spiritual Hammer | 心靈之鎚（原書拼作 SPIRITOAL）|
+| 3 | Animate Dead | 活動死屍 |
+| 3 | Cure Blindness | 醫治失明 |
+| 3 | Cause Blindness | 引起失明 |
+| 3 | Cure Disease | 醫治疾病 |
+| 3 | Cause Disease | 引起疾病 |
+| 3 | Dispel Magic | 解除法術 |
+| 3 | Prayer | 祈禱 |
+| 3 | Remove Curse | 除去咀咒 |
+| 3 | Bestow Curse | 散佈咀咒（原書拼作 BESTOW URSE）|
+
+巫術（MAGIC USER SPELL）
+
+| 級 | 英文 | 說明書譯名 |
+|---:|---|---|
+| 1 | Burning Hands | 燃燒之手 |
+| 1 | Charm Person | 迷惑術 |
+| 1 | Detect Magic | 搜尋魔法物品 |
+| 1 | Enlarge | 巨大術 |
+| 1 | Reduce | 縮小術 |
+| 1 | Friends | 友好術 |
+| 1 | Magic Missile | 魔法飛彈 |
+| 1 | Protection From Evil | 免受邪惡侵害 |
+| 1 | Protection From Good | 免受善良侵害 |
+| 1 | Read Magic | 閱讀魔法 |
+| 1 | Shield | 魔盾術 |
+| 1 | Shocking Grasp | 電擊術 |
+| 1 | Sleep | 催眠術 |
+| 2 | Detect Invisibility | 搜尋隱形物品 |
+| 2 | Invisibility | 隱形術 |
+| 2 | Knock | 踢開術 |
+| 2 | Mirror Image | 幻影術 |
+| 2 | Ray of Enfeeblement | 衰弱術（原書拼作 KEY OF ENFEEBLEMENT）|
+| 2 | Stinking Cloud | 臭雲術（原書拼作 Stinking cioud；p.44 另作「毒雲」）|
+| 2 | Strength | 大力術 |
+| 3 | Blink | 閃爍術 |
+| 3 | Dispel Magic | 解除法術 |
+| 3 | Fireball | 火球術 |
+| 3 | Haste | 加倍術 |
+| 3 | Hold Person | 束縛敵人 |
+| 3 | Invisibility, 10' Radius | 半徑十呎的隱形術 |
+| 3 | Lightning Bolt | 閃電術（原書拼作 LIGHTNENG）|
+| 3 | Protection From Evil | 免受邪惡傷害 |
+| 3 | Protection From Good | 免受善良傷害 |
+| 3 | Protection From Normal Missiles | 免受一般飛彈傷害（原書拼作 MISSILF）|
+| 3 | Slow | 減緩術 |
+
+⚠ 上冊附錄 2 的法術清單與下冊逐條說明有出入：上冊把 `Neutralize Poison`（中和毒性）
+列為只有 NPC 會的法術（下冊 p.50），而上冊附錄未列 Sleep、Friends 等；接線時以下冊
+逐條說明為準，並回頭與原版資料核對。
