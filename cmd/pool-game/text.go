@@ -102,6 +102,16 @@ var messages = map[messageID][2]string{
 	msgCastHint:             {"C cast", "C 施法"},
 	msgCastSlept:            {"%s puts %d foes to sleep.", "%s 催眠了 %d 個敵人。"},
 	msgCastSleptNone:        {"%s puts nobody to sleep.", "%s 沒有催眠到任何人。"},
+	msgCampNeedsParty:       {"Make camp with a party first.", "先有隊伍才紮得了營。"},
+	msgCampRest:             {"REST", "休息"},
+	msgCampMemorise:         {"MEMORIZE SPELLS", "記憶法術"},
+	msgCampExit:             {"EXIT", "離開"},
+	msgCampTitle:            {"CAMP", "紮營"},
+	msgCampHint:             {"E camp", "E 紮營"},
+	msgCampRested:           {"%d spells memorised; the rest took %d hours.", "記完 %d 條法術，休息了 %d 小時。"},
+	msgCampHealedOnly:       {"The whole party is healed.", "整隊都治好了。"},
+	msgCampPending:          {"Still memorising: %s", "還在記：%s"},
+	msgCampNothingPending:   {"Nothing is waiting to be memorised.", "沒有等著記完的法術。"},
 	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
 	msgDamageDies:           {"%s dies.", "%s 死了。"},
 	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
@@ -514,6 +524,16 @@ const (
 	msgCastHint
 	msgCastSlept
 	msgCastSleptNone
+	msgCampNeedsParty
+	msgCampRest
+	msgCampMemorise
+	msgCampExit
+	msgCampTitle
+	msgCampHint
+	msgCampRested
+	msgCampHealedOnly
+	msgCampPending
+	msgCampNothingPending
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved

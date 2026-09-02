@@ -85,7 +85,12 @@ func FreeSpellSlots(maxima, used SpellSlotCounts) SpellSlotCounts {
 	return free
 }
 
-// Memorise 把一個法術寫進記憶陣列的第一個空格。
+// Memorise 把一個法術寫進記憶陣列的第一個空格，並標成**還沒記完**。
+//
+// 第 7 位是「待記完」：overlay-15 `0000h` 只看設了第 7 位的格子，拿它查
+// 參數表的法術等級（那是休息要花的時間）；休息時 overlay-20 `0945h` 用
+// `subb $80h` 把它清掉，同時印出 "has memorized"。所以選好法術之後
+// **要休息過才施得出來**，預設人物檔一個第 7 位都沒設，因為他們是休息完的狀態。
 //
 // 記憶陣列傳進來會被就地修改。格子滿了或那一級沒有空位就回錯誤，
 // 呼叫端要把它當成「這個選擇不合法」，不是當機。
@@ -106,11 +111,49 @@ func Memorise(memorised []uint8, id uint8, parameters []SpellParameters,
 	}
 	for index := range memorised {
 		if memorised[index] == 0 {
-			memorised[index] = id
+			memorised[index] = id | MemorisedSpellFlag
 			return nil
 		}
 	}
 	return fmt.Errorf("Pool memorised spell array is full")
+}
+
+// MemorisedSpellIsReady 說這一格施得出來了沒有。第 7 位還在就是還沒記完。
+func MemorisedSpellIsReady(value uint8) bool {
+	return value != 0 && value&MemorisedSpellFlag == 0
+}
+
+// PendingMemorisationTime 是還沒記完的法術要花的時間總量。
+//
+// overlay-20 `08DFh` 一次回報一個待記法術的**法術等級**，休息的迴圈拿它
+// 當這一條要花的時間；記完就清掉第 7 位再問下一條。所以整批的時間就是
+// 各法術等級的總和。
+func PendingMemorisationTime(memorised []uint8, parameters []SpellParameters) int {
+	total := 0
+	for _, value := range memorised {
+		if value == 0 || value&MemorisedSpellFlag == 0 {
+			continue
+		}
+		id := value & memorisedSpellIDMask
+		if int(id) >= len(parameters) {
+			continue
+		}
+		total += parameters[id].Level()
+	}
+	return total
+}
+
+// CompletePendingMemorisation 把所有待記的法術記完，回傳完成了幾條。
+// 對應休息走完之後的狀態：`subb $80h` 逐格清掉第 7 位。
+func CompletePendingMemorisation(memorised []uint8) int {
+	done := 0
+	for index, value := range memorised {
+		if value != 0 && value&MemorisedSpellFlag != 0 {
+			memorised[index] = value &^ MemorisedSpellFlag
+			done++
+		}
+	}
+	return done
 }
 
 // ForgetMemorised 清掉一格。原版清格子寫的是 0（overlay-14 `0698h`）。

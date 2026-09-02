@@ -167,6 +167,9 @@ type app struct {
 	trainParty int
 	// spellMember 是法術畫面上選中的成員，記憶指令對他生效。
 	spellMember int
+	// 紮營選單（原版 overlay-20）。
+	campOpen   bool
+	campCursor int
 	// 戰鬥中的施法清單（spec 098）。
 	castOpen    bool
 	castOptions []castOption
@@ -411,6 +414,13 @@ func (a *app) Update() error {
 	}
 	if a.spellsOpen {
 		a.spellsInput()
+		return nil
+	}
+	if a.campOpen {
+		return a.campInput()
+	}
+	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.justPressed(ebiten.KeyE) {
+		a.openCamp()
 		return nil
 	}
 	if a.mode == modeAdventure && !a.help && a.justPressed(ebiten.KeyK) {
@@ -2101,6 +2111,24 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	if a.statusLine != "" && !dialogueVisible {
 		drawText(screen, a.statusLine, 42, 342, foreground)
 	}
+	drawCamp(screen, a, foreground, accent)
+}
+
+// drawCamp 畫紮營選單。原版的選單列是 `Rest daYs Hours Mins Inc Dec Exit`，
+// 挑時間那一段還沒接，所以這裡只有三項。
+func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	if !a.campOpen {
+		return
+	}
+	drawText(screen, a.text(msgCampTitle), 260, 120, accent)
+	for index, label := range a.campOptionLabels() {
+		cursor, ink := " ", foreground
+		if index == a.campCursor {
+			cursor, ink = ">", accent
+		}
+		drawText(screen, cursor+label, 244, 150+index*18, ink)
+	}
+	drawText(screen, a.campPendingLine(), 100, 230, foreground)
 }
 
 func poolFirstPersonStageFill() (viewport.StageInsetFill, error) {

@@ -158,3 +158,49 @@ func TestComputedSpellSlotsMatchTheRecords(t *testing.T) {
 		t.Fatalf("只對到 %d 個施法者，預設人物裡有十個——掃描面漏了", checked)
 	}
 }
+
+// 選好的法術要休息過才施得出來：Memorise 設第 7 位，休息把它清掉。
+func TestMemorisationNeedsRest(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	var maxima SpellSlotCounts
+	maxima[SpellSlotGroupMagicUser][0] = 1 // 魔法飛彈：法師第 1 級
+	maxima[SpellSlotGroupMagicUser][2] = 1 // 火球術：法師第 3 級
+	memorised := make([]uint8, MemorisedSpellSlots)
+	if err := Memorise(memorised, SpellIDMagicMissile, parameters, maxima); err != nil {
+		t.Fatal(err)
+	}
+	if err := Memorise(memorised, SpellIDFireball, parameters, maxima); err != nil {
+		t.Fatal(err)
+	}
+	for _, value := range memorised {
+		if value != 0 && MemorisedSpellIsReady(value) {
+			t.Fatalf("剛選好的 %#02x 不該是可施展的狀態", value)
+		}
+	}
+	// 時間是各法術等級的總和：第 1 級加第 3 級。
+	if got := PendingMemorisationTime(memorised, parameters); got != 4 {
+		t.Errorf("待記時間應該是 1 加 3 ＝ 4，算出 %d", got)
+	}
+	if done := CompletePendingMemorisation(memorised); done != 2 {
+		t.Errorf("應該記完兩條，記完 %d 條", done)
+	}
+	ready := 0
+	for _, value := range memorised {
+		if MemorisedSpellIsReady(value) {
+			ready++
+		}
+	}
+	if ready != 2 {
+		t.Errorf("休息完應該有兩條可以施，只有 %d 條", ready)
+	}
+	if got := PendingMemorisationTime(memorised, parameters); got != 0 {
+		t.Errorf("記完之後不該還有待記時間，算出 %d", got)
+	}
+	// 記完之後編號要還原得回去，不能被旗標污染。
+	if SearchMemorisedSpell(memorised, SpellIDFireball) == SpellSearchNotFound {
+		t.Error("記完之後查不到火球術")
+	}
+}

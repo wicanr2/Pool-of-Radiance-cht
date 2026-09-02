@@ -220,3 +220,69 @@ func TestCastMagicMissileInCombat(t *testing.T) {
 		t.Fatal("整場都沒有機會施法")
 	}
 }
+
+// 選好的法術要休息過才施得出來：法術畫面記下、紮營休息、才進得了施法清單。
+func TestMemorisedSpellsNeedRestBeforeCasting(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	levels := make([]uint8, gamepack.ClassThac0ClassCount)
+	levels[gamepack.ClassSlotMagicUser] = 6
+	member := poolsave.Character{Name: "A", RaceID: "human", GenderID: "male",
+		ClassID: "magic-user", AlignmentID: "lawful-good",
+		Abilities: [6]int{10, 18, 10, 10, 10, 10}, MaxHP: 30, CurrentHP: 12,
+		PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+		ClassLevels: append([]uint8(nil), levels...)}
+	application.state = poolsave.State{Schema: poolsave.Schema,
+		CharacterLibrary: []poolsave.Character{member}, Party: []poolsave.Character{member}}
+	if err := application.openSpells(); err != nil {
+		t.Fatal(err)
+	}
+	// 切到法師第 1 級那一頁，游標停在魔法飛彈上。
+	for application.spells.group != 3 {
+		press(application, ebiten.KeyTab)
+	}
+	found := false
+	for index, spell := range application.spells.current() {
+		if uint8(spell.Index+1) == gamepack.SpellIDMagicMissile {
+			application.spells.cursor, found = index, true
+			break
+		}
+	}
+	if !found {
+		t.Fatal("法師第 1 級那一頁找不到魔法飛彈")
+	}
+	press(application, ebiten.KeyDigit1)
+	press(application, ebiten.KeyM)
+	stored := application.state.Party[0].Memorised
+	if len(stored) == 0 || stored[0]&0x7f != gamepack.SpellIDMagicMissile {
+		t.Fatalf("沒有記下魔法飛彈：%v（狀態列 %q）", stored, application.statusLine)
+	}
+	if gamepack.MemorisedSpellIsReady(stored[0]) {
+		t.Fatal("剛選好就變成可施展了，應該要先休息")
+	}
+	// 紮營休息：記完，而且整隊回滿。
+	application.spellsOpen = false
+	application.mode = modeAdventure
+	press(application, ebiten.KeyE)
+	if !application.campOpen {
+		t.Fatalf("按 E 沒有開出紮營選單（狀態列 %q）", application.statusLine)
+	}
+	press(application, ebiten.KeyEnter) // 游標在「休息」上
+	if application.campOpen {
+		t.Fatal("休息完應該關掉紮營選單")
+	}
+	rested := application.state.Party[0]
+	if !gamepack.MemorisedSpellIsReady(rested.Memorised[0]) {
+		t.Fatalf("休息完應該記好了，還是 %#02x（狀態列 %q）",
+			rested.Memorised[0], application.statusLine)
+	}
+	if rested.CurrentHP != rested.MaxHP {
+		t.Errorf("休息完整隊要回滿，還是 %d/%d", rested.CurrentHP, rested.MaxHP)
+	}
+	if application.state.CharacterLibrary[0].CurrentHP != rested.MaxHP {
+		t.Error("角色庫沒有跟著更新")
+	}
+}

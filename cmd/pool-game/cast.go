@@ -42,8 +42,12 @@ func (a *app) openCastMenu() {
 	member := a.state.Party[index]
 	options := make([]castOption, 0, gamepack.MemorisedSpellSlots)
 	for slot, value := range member.Memorised {
+		// 還沒記完的（第 7 位還在）施不出來，要休息過（spec 070）。
+		if !gamepack.MemorisedSpellIsReady(value) {
+			continue
+		}
 		id := value & 0x7f
-		if id == 0 || !gamepack.SpellIsImplemented(id) {
+		if !gamepack.SpellIsImplemented(id) {
 			continue
 		}
 		label := fmt.Sprintf("%d", id)
