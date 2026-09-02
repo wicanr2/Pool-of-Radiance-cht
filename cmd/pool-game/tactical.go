@@ -548,12 +548,25 @@ func (a *app) foeTurn(state *tacticalState) error {
 	if err != nil {
 		return err
 	}
-	if len(targets) == 0 {
+	target := uint8(0)
+	if len(targets) != 0 {
+		target = targets[0]
+	} else if nearest, ok := state.nearestOpposing(mover); ok {
+		// 反應距離內沒人時，改追盤面上最近的敵人。
+		//
+		// **這不是原版的演算法**：原版的敵方回合在 overlay-09 entry 1
+		// （code `000Fh`），還沒讀出來。`OpposingNearbyAt` 重現的是
+		// overlay-25 entry 32 的「鄰接反應」搜尋（spec 059），拿它當目標選擇
+		// 本來就是借用。少了這個退路，站得遠的怪物會回報找不到目標然後原地
+		// 結束回合——實測索寇要塞那一場，最後兩隻殭屍與隊伍隔著 22 格互相
+		// 不動，戰鬥永遠打不完。
+		target = nearest
+	}
+	if target == 0 {
 		state.FoeLog = state.say(msgFoeNoTarget, mover)
 		state.endTurn(a.rollDice, false)
 		return nil
 	}
-	target := targets[0]
 
 	steps := 0
 	for ; steps < foeMaxStepsPerTurn; steps++ {
@@ -872,6 +885,45 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 }
 
 // sideCounts 數出兩邊還站著的人，對應原版的 DS:6772h 與 DS:6773h。
+// nearestOpposing 回報盤面上離 mover 最近、還站著的敵對參戰者。
+// 距離用原版走位的切比雪夫距離（八方向一步一格）。
+func (state *tacticalState) nearestOpposing(mover uint8) (uint8, bool) {
+	if int(mover) >= len(state.Friendly) || mover == 0 {
+		return 0, false
+	}
+	best, bestDistance := uint8(0), 0
+	from := state.Roster[mover]
+	for index := 1; index < len(state.Roster); index++ {
+		if state.Friendly[index] == state.Friendly[mover] {
+			continue
+		}
+		if state.Roster[index].FootprintClass == 0 {
+			continue
+		}
+		to := state.Roster[index]
+		distance := chebyshev(from.X, from.Y, to.X, to.Y)
+		if best == 0 || distance < bestDistance {
+			best, bestDistance = uint8(index), distance
+		}
+	}
+	return best, best != 0
+}
+
+// chebyshev 是八方向走位下的步數距離。
+func chebyshev(ax, ay, bx, by uint8) int {
+	dx, dy := int(ax)-int(bx), int(ay)-int(by)
+	if dx < 0 {
+		dx = -dx
+	}
+	if dy < 0 {
+		dy = -dy
+	}
+	if dx > dy {
+		return dx
+	}
+	return dy
+}
+
 // sameSide 說兩個參戰者是不是同一邊。
 func (state *tacticalState) sameSide(a, b uint8) (bool, error) {
 	if int(a) >= len(state.Friendly) || int(b) >= len(state.Friendly) || a == 0 || b == 0 {

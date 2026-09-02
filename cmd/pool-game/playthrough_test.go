@@ -208,3 +208,87 @@ func TestNormalKeysReachTheFirstCombat(t *testing.T) {
 	}
 	t.Fatalf("no combat in 4000 steps; last position %+v, encounter seen=%v", application.spawn, sawEncounter)
 }
+
+// 戰鬥要打得完。隊伍全程按 ENTER 不還手，怪物必須自己走過來把它打倒——
+// 在敵方回合加上「追最近的敵人」這條退路之前，站得遠的怪物會回報找不到
+// 目標然後原地結束回合，雙方隔著二十幾格互相不動，戰鬥永遠不結束。
+func TestPassiveCombatTerminates(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	party := make([]poolsave.Character, 0, 4)
+	for index := 0; index < 4; index++ {
+		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
+			GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good",
+			Abilities: [6]int{18, 10, 10, 16, 10, 10}, MaxHP: 40, CurrentHP: 40,
+			PortraitHead: 1, PortraitBody: 1, IconSize: 1})
+	}
+	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
+	application.saveState = func(poolsave.State) error { return nil }
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 20000 && !application.introDone; tick++ {
+		if application.introWaiting || application.tourPage >= 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		application.keys = scriptedKeys{}
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	random := rand.New(rand.NewSource(7))
+	for step := 0; step < 4000 && !application.combatActive; step++ {
+		var err error
+		switch {
+		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
+			err = press(application, ebiten.KeyEnter)
+		default:
+			if random.Intn(3) == 0 {
+				err = press(application, ebiten.KeyArrowRight)
+			} else {
+				err = press(application, ebiten.KeyArrowUp)
+			}
+		}
+		if err != nil {
+			t.Fatalf("step %d: %v", step, err)
+		}
+	}
+	if !application.combatActive {
+		t.Fatal("never reached combat")
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if application.tactical == nil {
+		t.Fatalf("tactical state absent: %q", application.statusLine)
+	}
+	for tick := 0; tick < 40000; tick++ {
+		state := application.tactical
+		if state == nil || state.Finished {
+			break
+		}
+		key := ebiten.KeyEnter
+		if state.Prompt {
+			key = ebiten.KeyY
+		}
+		if err := press(application, key); err != nil {
+			t.Fatalf("combat tick %d: %v", tick, err)
+		}
+	}
+	if application.tactical != nil {
+		t.Fatalf("combat never ended: round %d, status %q, foe log %q",
+			application.tactical.Round, application.tactical.Status, application.tactical.FoeLog)
+	}
+	if !strings.Contains(application.statusLine, "defeated") {
+		t.Fatalf("a party that never fought back ended with %q", application.statusLine)
+	}
+}
