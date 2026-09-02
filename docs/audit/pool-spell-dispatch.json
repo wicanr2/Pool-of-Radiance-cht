@@ -1,0 +1,620 @@
+{
+  "schema": "pool-spell-dispatch-v1",
+  "overlay": 22,
+  "init_entry": 10,
+  "call_entry": 5,
+  "table_address": "0x6a7c",
+  "hook_address": "0x6a78",
+  "slot_count": 67,
+  "distinct_handler_count": 53,
+  "slots": [
+    {
+      "spell_id": 1,
+      "name": "Bless",
+      "stub_offset": "0x0075",
+      "entry_index": 17,
+      "code_offset": "0x0ff5",
+      "init_offset": "0x33f3"
+    },
+    {
+      "spell_id": 2,
+      "name": "Curse",
+      "stub_offset": "0x007a",
+      "entry_index": 18,
+      "code_offset": "0x1026",
+      "init_offset": "0x3400"
+    },
+    {
+      "spell_id": 3,
+      "name": "Cure Light Wounds",
+      "stub_offset": "0x007f",
+      "entry_index": 19,
+      "code_offset": "0x1051",
+      "init_offset": "0x340d"
+    },
+    {
+      "spell_id": 4,
+      "name": "Cause Light Wounds",
+      "stub_offset": "0x0084",
+      "entry_index": 20,
+      "code_offset": "0x108f",
+      "init_offset": "0x341a"
+    },
+    {
+      "spell_id": 5,
+      "name": "Detect Magic",
+      "stub_offset": "0x0089",
+      "entry_index": 21,
+      "code_offset": "0x10d1",
+      "init_offset": "0x3427"
+    },
+    {
+      "spell_id": 6,
+      "name": "Protection From Evil",
+      "stub_offset": "0x008e",
+      "entry_index": 22,
+      "code_offset": "0x110b",
+      "init_offset": "0x3434"
+    },
+    {
+      "spell_id": 7,
+      "name": "Protection from Good",
+      "stub_offset": "0x008e",
+      "entry_index": 22,
+      "code_offset": "0x110b",
+      "init_offset": "0x3441"
+    },
+    {
+      "spell_id": 8,
+      "name": "Resist Cold",
+      "stub_offset": "0x0093",
+      "entry_index": 23,
+      "code_offset": "0x114a",
+      "init_offset": "0x344e"
+    },
+    {
+      "spell_id": 9,
+      "name": "Burning Hands",
+      "stub_offset": "0x0098",
+      "entry_index": 24,
+      "code_offset": "0x1178",
+      "init_offset": "0x345b"
+    },
+    {
+      "spell_id": 10,
+      "name": "Charm Person",
+      "stub_offset": "0x009d",
+      "entry_index": 25,
+      "code_offset": "0x11c5",
+      "init_offset": "0x3468"
+    },
+    {
+      "spell_id": 11,
+      "name": "Detect Magic",
+      "stub_offset": "0x0089",
+      "entry_index": 21,
+      "code_offset": "0x10d1",
+      "init_offset": "0x3475"
+    },
+    {
+      "spell_id": 12,
+      "name": "Enlarge",
+      "stub_offset": "0x00a2",
+      "entry_index": 26,
+      "code_offset": "0x128d",
+      "init_offset": "0x3482"
+    },
+    {
+      "spell_id": 13,
+      "name": "Reduce",
+      "stub_offset": "0x00a7",
+      "entry_index": 27,
+      "code_offset": "0x135e",
+      "init_offset": "0x348f"
+    },
+    {
+      "spell_id": 14,
+      "name": "Friends",
+      "stub_offset": "0x00ac",
+      "entry_index": 28,
+      "code_offset": "0x13c8",
+      "init_offset": "0x349c"
+    },
+    {
+      "spell_id": 15,
+      "name": "Magic Missile",
+      "stub_offset": "0x00b1",
+      "entry_index": 29,
+      "code_offset": "0x1429",
+      "init_offset": "0x34a9"
+    },
+    {
+      "spell_id": 16,
+      "name": "Protection From Evil",
+      "stub_offset": "0x008e",
+      "entry_index": 22,
+      "code_offset": "0x110b",
+      "init_offset": "0x34b6"
+    },
+    {
+      "spell_id": 17,
+      "name": "Protection From Good",
+      "stub_offset": "0x008e",
+      "entry_index": 22,
+      "code_offset": "0x110b",
+      "init_offset": "0x34c3"
+    },
+    {
+      "spell_id": 18,
+      "name": "Read Magic",
+      "stub_offset": "0x0089",
+      "entry_index": 21,
+      "code_offset": "0x10d1",
+      "init_offset": "0x34d0"
+    },
+    {
+      "spell_id": 19,
+      "name": "Shield",
+      "stub_offset": "0x00b6",
+      "entry_index": 30,
+      "code_offset": "0x1491",
+      "init_offset": "0x34dd"
+    },
+    {
+      "spell_id": 20,
+      "name": "Shocking Grasp",
+      "stub_offset": "0x00bb",
+      "entry_index": 31,
+      "code_offset": "0x14bf",
+      "init_offset": "0x34ea"
+    },
+    {
+      "spell_id": 21,
+      "name": "Sleep",
+      "stub_offset": "0x00c0",
+      "entry_index": 32,
+      "code_offset": "0x1513",
+      "init_offset": "0x34f7"
+    },
+    {
+      "spell_id": 22,
+      "name": "Find Traps",
+      "stub_offset": "0x0089",
+      "entry_index": 21,
+      "code_offset": "0x10d1",
+      "init_offset": "0x3504"
+    },
+    {
+      "spell_id": 23,
+      "name": "Hold Person",
+      "stub_offset": "0x00c5",
+      "entry_index": 33,
+      "code_offset": "0x1650",
+      "init_offset": "0x3511"
+    },
+    {
+      "spell_id": 24,
+      "name": "Resist Fire",
+      "stub_offset": "0x00ca",
+      "entry_index": 34,
+      "code_offset": "0x17d4",
+      "init_offset": "0x351e"
+    },
+    {
+      "spell_id": 25,
+      "name": "Silence, 15' Radius",
+      "stub_offset": "0x00cf",
+      "entry_index": 35,
+      "code_offset": "0x180d",
+      "init_offset": "0x352b"
+    },
+    {
+      "spell_id": 26,
+      "name": "Slow Poison",
+      "stub_offset": "0x00d4",
+      "entry_index": 36,
+      "code_offset": "0x1846",
+      "init_offset": "0x3538"
+    },
+    {
+      "spell_id": 27,
+      "name": "Snake Charm",
+      "stub_offset": "0x00d9",
+      "entry_index": 37,
+      "code_offset": "0x18f9",
+      "init_offset": "0x3545"
+    },
+    {
+      "spell_id": 28,
+      "name": "Spiritual Hammer",
+      "stub_offset": "0x00de",
+      "entry_index": 38,
+      "code_offset": "0x19a8",
+      "init_offset": "0x3552"
+    },
+    {
+      "spell_id": 29,
+      "name": "Detect Invisibility",
+      "stub_offset": "0x0089",
+      "entry_index": 21,
+      "code_offset": "0x10d1",
+      "init_offset": "0x355f"
+    },
+    {
+      "spell_id": 30,
+      "name": "Invisibility",
+      "stub_offset": "0x00e3",
+      "entry_index": 39,
+      "code_offset": "0x19fb",
+      "init_offset": "0x356c"
+    },
+    {
+      "spell_id": 31,
+      "name": "Knock",
+      "stub_offset": "0x00e8",
+      "entry_index": 40,
+      "code_offset": "0x1a34",
+      "init_offset": "0x3579"
+    },
+    {
+      "spell_id": 32,
+      "name": "Mirror Image",
+      "stub_offset": "0x00ed",
+      "entry_index": 41,
+      "code_offset": "0x1a6f",
+      "init_offset": "0x3586"
+    },
+    {
+      "spell_id": 33,
+      "name": "Ray of Enfeeblement",
+      "stub_offset": "0x00f2",
+      "entry_index": 42,
+      "code_offset": "0x1ab1",
+      "init_offset": "0x3593"
+    },
+    {
+      "spell_id": 34,
+      "name": "Stinking Cloud",
+      "stub_offset": "0x00f7",
+      "entry_index": 43,
+      "code_offset": "0x1af6",
+      "init_offset": "0x35a0"
+    },
+    {
+      "spell_id": 35,
+      "name": "Strength",
+      "stub_offset": "0x00fc",
+      "entry_index": 44,
+      "code_offset": "0x1f16",
+      "init_offset": "0x35ad"
+    },
+    {
+      "spell_id": 36,
+      "name": "Animate Dead",
+      "stub_offset": "0x0101",
+      "entry_index": 45,
+      "code_offset": "0x2043",
+      "init_offset": "0x35ba"
+    },
+    {
+      "spell_id": 37,
+      "name": "Cure Blindness",
+      "stub_offset": "0x0106",
+      "entry_index": 46,
+      "code_offset": "0x21e8",
+      "init_offset": "0x35c7"
+    },
+    {
+      "spell_id": 38,
+      "name": "Cause Blindness",
+      "stub_offset": "0x010b",
+      "entry_index": 47,
+      "code_offset": "0x222e",
+      "init_offset": "0x35d4"
+    },
+    {
+      "spell_id": 39,
+      "name": "Cure Disease",
+      "stub_offset": "0x0115",
+      "entry_index": 49,
+      "code_offset": "0x2300",
+      "init_offset": "0x35e1"
+    },
+    {
+      "spell_id": 40,
+      "name": "Cause Disease",
+      "stub_offset": "0x011a",
+      "entry_index": 50,
+      "code_offset": "0x231d",
+      "init_offset": "0x35ee"
+    },
+    {
+      "spell_id": 41,
+      "name": "Dispel Magic",
+      "stub_offset": "0x011f",
+      "entry_index": 51,
+      "code_offset": "0x2356",
+      "init_offset": "0x35fb"
+    },
+    {
+      "spell_id": 42,
+      "name": "Prayer",
+      "stub_offset": "0x0124",
+      "entry_index": 52,
+      "code_offset": "0x249d",
+      "init_offset": "0x3608"
+    },
+    {
+      "spell_id": 43,
+      "name": "Remove Curse",
+      "stub_offset": "0x004d",
+      "entry_index": 9,
+      "code_offset": "0x2508",
+      "init_offset": "0x3615"
+    },
+    {
+      "spell_id": 44,
+      "name": "Bestow Curse",
+      "stub_offset": "0x0129",
+      "entry_index": 53,
+      "code_offset": "0x25c7",
+      "init_offset": "0x3622"
+    },
+    {
+      "spell_id": 45,
+      "name": "Blink",
+      "stub_offset": "0x012e",
+      "entry_index": 54,
+      "code_offset": "0x2600",
+      "init_offset": "0x362f"
+    },
+    {
+      "spell_id": 46,
+      "name": "Dispel Magic",
+      "stub_offset": "0x011f",
+      "entry_index": 51,
+      "code_offset": "0x2356",
+      "init_offset": "0x363c"
+    },
+    {
+      "spell_id": 47,
+      "name": "Fireball",
+      "stub_offset": "0x0133",
+      "entry_index": 55,
+      "code_offset": "0x262e",
+      "init_offset": "0x3649"
+    },
+    {
+      "spell_id": 48,
+      "name": "Haste",
+      "stub_offset": "0x013d",
+      "entry_index": 57,
+      "code_offset": "0x2852",
+      "init_offset": "0x3656"
+    },
+    {
+      "spell_id": 49,
+      "name": "Hold Person",
+      "stub_offset": "0x00c5",
+      "entry_index": 33,
+      "code_offset": "0x1650",
+      "init_offset": "0x3663"
+    },
+    {
+      "spell_id": 50,
+      "name": "Invisibility, 10' Radius",
+      "stub_offset": "0x00e3",
+      "entry_index": 39,
+      "code_offset": "0x19fb",
+      "init_offset": "0x3670"
+    },
+    {
+      "spell_id": 51,
+      "name": "Lightning Bolt",
+      "stub_offset": "0x014c",
+      "entry_index": 60,
+      "code_offset": "0x2b75",
+      "init_offset": "0x367d"
+    },
+    {
+      "spell_id": 52,
+      "name": "Protection From Evil, 10' Radius",
+      "stub_offset": "0x008e",
+      "entry_index": 22,
+      "code_offset": "0x110b",
+      "init_offset": "0x368a"
+    },
+    {
+      "spell_id": 53,
+      "name": "Protection From Good, 10' Radius",
+      "stub_offset": "0x008e",
+      "entry_index": 22,
+      "code_offset": "0x110b",
+      "init_offset": "0x3697"
+    },
+    {
+      "spell_id": 54,
+      "name": "Protection From Normal Missiles",
+      "stub_offset": "0x008e",
+      "entry_index": 22,
+      "code_offset": "0x110b",
+      "init_offset": "0x36a4"
+    },
+    {
+      "spell_id": 55,
+      "name": "Slow",
+      "stub_offset": "0x0151",
+      "entry_index": 61,
+      "code_offset": "0x2bc7",
+      "init_offset": "0x36b1"
+    },
+    {
+      "spell_id": 56,
+      "name": "Restoration",
+      "stub_offset": "0x0156",
+      "entry_index": 62,
+      "code_offset": "0x2c01",
+      "init_offset": "0x36be"
+    },
+    {
+      "spell_id": 57,
+      "stub_offset": "0x015b",
+      "entry_index": 63,
+      "code_offset": "0x2db7",
+      "init_offset": "0x36cb"
+    },
+    {
+      "spell_id": 58,
+      "stub_offset": "0x0160",
+      "entry_index": 64,
+      "code_offset": "0x2e02",
+      "init_offset": "0x36d8"
+    },
+    {
+      "spell_id": 59,
+      "stub_offset": "0x0165",
+      "entry_index": 65,
+      "code_offset": "0x2e9a",
+      "init_offset": "0x36e5"
+    },
+    {
+      "spell_id": 60,
+      "stub_offset": "0x016a",
+      "entry_index": 66,
+      "code_offset": "0x2f02",
+      "init_offset": "0x36f2"
+    },
+    {
+      "spell_id": 61,
+      "stub_offset": "0x016f",
+      "entry_index": 67,
+      "code_offset": "0x2f4e",
+      "init_offset": "0x36ff"
+    },
+    {
+      "spell_id": 62,
+      "stub_offset": "0x0174",
+      "entry_index": 68,
+      "code_offset": "0x2f85",
+      "init_offset": "0x370c"
+    },
+    {
+      "spell_id": 63,
+      "stub_offset": "0x0179",
+      "entry_index": 69,
+      "code_offset": "0x2fe0",
+      "init_offset": "0x3719"
+    },
+    {
+      "spell_id": 64,
+      "stub_offset": "0x0133",
+      "entry_index": 55,
+      "code_offset": "0x262e",
+      "init_offset": "0x3726"
+    },
+    {
+      "spell_id": 65,
+      "stub_offset": "0x017e",
+      "entry_index": 70,
+      "code_offset": "0x300e",
+      "init_offset": "0x3733"
+    },
+    {
+      "spell_id": 66,
+      "stub_offset": "0x0183",
+      "entry_index": 71,
+      "code_offset": "0x3049",
+      "init_offset": "0x3740"
+    },
+    {
+      "spell_id": 67,
+      "stub_offset": "0x0188",
+      "entry_index": 72,
+      "code_offset": "0x305b",
+      "init_offset": "0x374d"
+    }
+  ],
+  "shared_handlers": [
+    {
+      "code_offset": "0x10d1",
+      "spell_ids": [
+        5,
+        11,
+        18,
+        22,
+        29
+      ],
+      "names": [
+        "Detect Magic",
+        "Detect Magic",
+        "Read Magic",
+        "Find Traps",
+        "Detect Invisibility"
+      ]
+    },
+    {
+      "code_offset": "0x110b",
+      "spell_ids": [
+        6,
+        7,
+        16,
+        17,
+        52,
+        53,
+        54
+      ],
+      "names": [
+        "Protection From Evil",
+        "Protection from Good",
+        "Protection From Evil",
+        "Protection From Good",
+        "Protection From Evil, 10' Radius",
+        "Protection From Good, 10' Radius",
+        "Protection From Normal Missiles"
+      ]
+    },
+    {
+      "code_offset": "0x1650",
+      "spell_ids": [
+        23,
+        49
+      ],
+      "names": [
+        "Hold Person",
+        "Hold Person"
+      ]
+    },
+    {
+      "code_offset": "0x19fb",
+      "spell_ids": [
+        30,
+        50
+      ],
+      "names": [
+        "Invisibility",
+        "Invisibility, 10' Radius"
+      ]
+    },
+    {
+      "code_offset": "0x2356",
+      "spell_ids": [
+        41,
+        46
+      ],
+      "names": [
+        "Dispel Magic",
+        "Dispel Magic"
+      ]
+    },
+    {
+      "code_offset": "0x262e",
+      "spell_ids": [
+        47,
+        64
+      ],
+      "names": [
+        "Fireball"
+      ]
+    }
+  ]
+}
