@@ -141,3 +141,74 @@ func TestDelayKeepsTheActorSelectable(t *testing.T) {
 		t.Fatalf("delayed score %d, want %d", state.Scores[actor], combat.DelayInitiative())
 	}
 }
+
+// fixedRoller 依骰面夾住，免得 d20 的固定值被拿去當 d8 的結果。
+type fixedRoller struct{ value int }
+
+func (roller fixedRoller) Roll(_, sides int) int {
+	if roller.value > sides {
+		return sides
+	}
+	return roller.value
+}
+
+func newAttackState() *tacticalState {
+	state := newRoundState(2)
+	state.Friendly[1] = true
+	state.HitPoints = []int{0, 10, 6}
+	state.THAC0 = []uint8{0, 40, 40}
+	state.ArmorClass = []int{0, 50, 50}
+	state.Damage = []combat.DamageDice{{}, {Count: 1, Sides: 8}, {Count: 1, Sides: 8}}
+	state.Roster[1].FootprintClass = 1
+	state.Roster[2].FootprintClass = 1
+	state.Mover = 1
+	return state
+}
+
+// d20 為 1 一定失手，目標的 HP 不動。
+func TestResolveTacticalAttackMisses(t *testing.T) {
+	state := newAttackState()
+	a := &app{roller: fixedRoller{1}, tactical: state}
+	if err := a.resolveTacticalAttack(state, 2); err != nil {
+		t.Fatal(err)
+	}
+	if state.HitPoints[2] != 6 {
+		t.Fatalf("target hit points %d after a miss", state.HitPoints[2])
+	}
+}
+
+// 打倒目標之後它的體型類別歸零，不再佔格也不再參與；敵方清空即為勝。
+func TestResolveTacticalAttackDownsTheTargetAndEndsTheCombat(t *testing.T) {
+	state := newAttackState()
+	a := &app{roller: fixedRoller{20}, tactical: state}
+	if err := a.resolveTacticalAttack(state, 2); err != nil {
+		t.Fatal(err)
+	}
+	if state.HitPoints[2] != 0 {
+		t.Fatalf("target hit points %d, want 0", state.HitPoints[2])
+	}
+	if state.Roster[2].FootprintClass != 0 {
+		t.Fatal("a downed combatant still occupies its cells")
+	}
+	if state.Status != "VICTORY" {
+		t.Fatalf("status %q, want VICTORY", state.Status)
+	}
+}
+
+// 兩邊都還有人時戰鬥繼續。
+func TestCombatOutcomeStaysOngoingWhileBothSidesStand(t *testing.T) {
+	state := newAttackState()
+	over, outcome := state.combatOutcome()
+	if over || outcome != combat.CombatOngoing {
+		t.Fatalf("over %v outcome %v, want an ongoing combat", over, outcome)
+	}
+}
+
+func TestCombatOutcomeReportsDefeatWhenThePartyIsGone(t *testing.T) {
+	state := newAttackState()
+	state.Roster[1].FootprintClass = 0
+	over, outcome := state.combatOutcome()
+	if !over || outcome != combat.CombatDefeat {
+		t.Fatalf("over %v outcome %v, want defeat", over, outcome)
+	}
+}

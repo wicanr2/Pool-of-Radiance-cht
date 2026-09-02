@@ -109,23 +109,30 @@ func ProbeDestination(state TacticalState, moverIndex uint8, direction uint8) (t
 	return target, class, nil
 }
 
-// ResolveDestination 把 ProbeDestination 的兩個 byte 接到 ResolveMovementProbe：
-// 類別 0 代表目的格在盤面外，原版此時不是擋住而是問玩家要不要離開戰鬥，
-// 所以這裡分成獨立的一個結果，不混進 MovementBlocked。
-func ResolveDestination(state TacticalState, moverIndex uint8, direction uint8, budget uint8) (MovementProbeAction, bool, error) {
+// DestinationOutcome 是一次目的格判定的完整結果。Target 非 0 時就是撞到的
+// combatant；Leaving 為真代表目的格在盤面外，原版此時不是擋住，而是問玩家
+// 要不要離開戰鬥，所以它與 MovementBlocked 分開。
+type DestinationOutcome struct {
+	Action  MovementProbeAction
+	Target  uint8
+	Leaving bool
+}
+
+// ResolveDestination 把 ProbeDestination 的兩個 byte 接到 ResolveMovementProbe。
+func ResolveDestination(state TacticalState, moverIndex uint8, direction uint8, budget uint8) (DestinationOutcome, error) {
 	target, class, err := ProbeDestination(state, moverIndex, direction)
 	if err != nil {
-		return MovementBlocked, false, err
+		return DestinationOutcome{}, err
 	}
 	if target != 0 {
-		return MovementAttack, false, nil
+		return DestinationOutcome{Action: MovementAttack, Target: target}, nil
 	}
 	if class == OffBoardDestinationClass {
-		return MovementBlocked, true, nil
+		return DestinationOutcome{Action: MovementBlocked, Leaving: true}, nil
 	}
 	cellClass, err := CellClassAt(state.Classes, class)
 	if err != nil {
-		return MovementBlocked, false, err
+		return DestinationOutcome{}, err
 	}
-	return ResolveMovementProbe(budget, 0, cellClass.EntryThreshold), false, nil
+	return DestinationOutcome{Action: ResolveMovementProbe(budget, 0, cellClass.EntryThreshold)}, nil
 }

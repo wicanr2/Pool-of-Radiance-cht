@@ -225,6 +225,11 @@ type tacticalState struct {
 	Scores       []uint8
 	Budgets      []uint8
 	BaseMovement []uint8
+	HitPoints    []int
+	THAC0        []uint8
+	ArmorClass   []int
+	Damage       []combat.DamageDice
+	StatsSource  string
 	Round        int
 	Mover        uint8
 	BudgetSource string
@@ -297,6 +302,15 @@ func (state *tacticalState) endTurn(roll func(count, sides int) int, delay bool)
 // 讓移動判定可以被實際走一次，畫面上會標明它的來源。
 const placeholderBaseMovement = 12
 
+// 隊伍成員的戰鬥數值暫定值。remake 的角色記錄目前只有 HP，沒有 AC、THAC0
+// 與傷害骰；原版那三項在 285-byte record 的 +110h／+111h／+115h..+119h。
+// THAC0 與 AC 這裡存的是原版的內部編碼（60 減去顯示值），與 ResolveHit 一致。
+const (
+	placeholderHitPoints          = 8
+	placeholderInternalTHAC0      = 40
+	placeholderInternalArmorClass = 50
+)
+
 // dexterityAbilityIndex 是能力值陣列裡的 DEX，順序為 STR／INT／WIS／DEX／CON／CHA。
 // placeholderDexterity 給沒有能力值的一方用；怪物的 DEX 在 285-byte record 的
 // `+13h`，還沒接上來。
@@ -334,13 +348,41 @@ func (a *app) enterTacticalPreview() error {
 		BaseMovement: make([]uint8, size),
 		BudgetSource: source,
 	}
+	state.HitPoints = make([]int, size)
+	state.THAC0 = make([]uint8, size)
+	state.ArmorClass = make([]int, size)
+	state.Damage = make([]combat.DamageDice, size)
+	state.StatsSource = "PARTY PLACEHOLDER"
+	if len(a.combatMonsters) > 0 {
+		state.StatsSource = "MONSTER RECORD / PARTY PLACEHOLDER"
+	}
 	party := 0
 	for index := 1; index < size; index++ {
 		state.BaseMovement[index] = base
 		state.Dexterity[index] = placeholderDexterity
+		state.HitPoints[index] = placeholderHitPoints
+		state.THAC0[index] = placeholderInternalTHAC0
+		state.ArmorClass[index] = placeholderInternalArmorClass
+		state.Damage[index] = combat.DamageDice{Count: 1, Sides: 8}
 		if friendly[index] && party < len(a.state.Party) {
-			state.Dexterity[index] = uint8(a.state.Party[party].Abilities[dexterityAbilityIndex])
+			member := a.state.Party[party]
+			state.Dexterity[index] = uint8(member.Abilities[dexterityAbilityIndex])
+			if member.CurrentHP > 0 {
+				state.HitPoints[index] = member.CurrentHP
+			}
 			party++
+			continue
+		}
+		if record, ok := a.stagedRecordFor(index, friendly); ok {
+			state.BaseMovement[index] = record.Movement()
+			state.HitPoints[index] = int(record.CurrentHitPoints())
+			state.THAC0[index] = uint8(60 - record.THAC0())
+			state.ArmorClass[index] = 60 - record.ArmorClass()
+			state.Damage[index] = combat.DamageDice{
+				Count: record.DamageDiceCount(),
+				Sides: record.DamageDieSides(),
+				Bonus: record.DamageBonus(),
+			}
 		}
 	}
 	state.startRound(a.rollDice)
@@ -389,16 +431,18 @@ func (a *app) tacticalInput() error {
 			Cells:     state.Roster,
 			Classes:   state.Classes,
 		}
-		action, leaving, err := combat.ResolveDestination(tactical, state.Mover, uint8(direction), state.Budget())
+		outcome, err := combat.ResolveDestination(tactical, state.Mover, uint8(direction), state.Budget())
 		if err != nil {
 			return err
 		}
 		switch {
-		case leaving:
+		case outcome.Leaving:
 			state.Status = "OFF BOARD: LEAVE COMBAT PROMPT"
-		case action == combat.MovementAttack:
-			state.Status = "ATTACK TARGET"
-		case action == combat.MovementBlocked:
+		case outcome.Action == combat.MovementAttack:
+			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
+				return err
+			}
+		case outcome.Action == combat.MovementBlocked:
 			state.Status = "BLOCKED"
 		default:
 			mover := state.Roster[state.Mover]
@@ -417,4 +461,86 @@ func (a *app) tacticalInput() error {
 		return nil
 	}
 	return nil
+}
+
+// stagedRecordFor 找出敵方第 index 筆對應的原版怪物記錄。staged 的每一筆帶著
+// 數量，所以要依序展開才對得回去。
+func (a *app) stagedRecordFor(index int, friendly []bool) (gamepack.MonsterRecord, bool) {
+	position := 0
+	for slot := 1; slot < index; slot++ {
+		if !friendly[slot] {
+			position++
+		}
+	}
+	for _, monster := range a.combatMonsters {
+		if position < int(monster.Spawn.Count) {
+			return monster.Record, true
+		}
+		position -= int(monster.Spawn.Count)
+	}
+	return gamepack.MonsterRecord{}, false
+}
+
+// resolveTacticalAttack 以既有的命中與傷害規則（spec 050／051）解一次攻擊。
+// 目標歸零時把它的體型類別寫 0，與原版一樣讓它不再佔格、也不再參與。
+func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
+	if int(target) >= len(state.HitPoints) {
+		return fmt.Errorf("Pool attack target %d is outside the roster", target)
+	}
+	roll := uint8(a.rollDice(1, 20))
+	hit, err := combat.ResolveHit(roll, state.THAC0[state.Mover], state.ArmorClass[target], 0)
+	if err != nil {
+		return err
+	}
+	if !hit {
+		state.Status = fmt.Sprintf("ATTACK %d MISSED (D20 %d)", target, roll)
+		return nil
+	}
+	dice := state.Damage[state.Mover]
+	rolls := make([]uint8, dice.Count)
+	for index := range rolls {
+		rolls[index] = uint8(a.rollDice(1, int(dice.Sides)))
+	}
+	damage, err := combat.ResolveDamage(dice, rolls, 1)
+	if err != nil {
+		return err
+	}
+	state.HitPoints[target] -= damage
+	if state.HitPoints[target] > 0 {
+		state.Status = fmt.Sprintf("HIT %d FOR %d (HP %d)", target, damage, state.HitPoints[target])
+		return nil
+	}
+	state.HitPoints[target] = 0
+	state.Roster[target].FootprintClass = 0
+	state.Scores[target] = 0
+	state.Status = fmt.Sprintf("%d IS DOWN", target)
+	if over, outcome := state.combatOutcome(); over {
+		switch outcome {
+		case combat.CombatVictory:
+			state.Status = "VICTORY"
+		case combat.CombatDefeat:
+			state.Status = "DEFEAT"
+		}
+	}
+	return nil
+}
+
+// combatOutcome 依兩邊還站著的人數判定戰鬥是否結束。清光敵人之後原版還會問
+// 一次要不要繼續，這裡先不問，直接當成結束。
+func (state *tacticalState) combatOutcome() (bool, combat.CombatOutcome) {
+	counts := combat.SideCounts{}
+	for index := 1; index < len(state.Roster); index++ {
+		if state.Roster[index].FootprintClass == 0 {
+			continue
+		}
+		if state.Friendly[index] {
+			counts.Party++
+		} else {
+			counts.Foes++
+		}
+	}
+	if !combat.RoundEndsCombat(counts, 0, false) {
+		return false, combat.CombatOngoing
+	}
+	return true, combat.ResolveCombatOutcome(counts)
 }

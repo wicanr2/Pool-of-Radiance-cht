@@ -136,43 +136,46 @@ func TestResolveDestinationRoutesToAttackBeforeTheThresholdGate(t *testing.T) {
 	state := newTacticalState(1, 10, 10)
 	state.put(11, 10, 3)
 	state.setTerrain(11, 10, blockedTerrain)
-	action, prompt, err := ResolveDestination(state, 1, 2, 0)
+	outcome, err := ResolveDestination(state, 1, 2, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if action != MovementAttack || prompt {
-		t.Fatalf("action %v prompt %v, want attack", action, prompt)
+	if outcome.Action != MovementAttack || outcome.Leaving {
+		t.Fatalf("outcome %+v, want attack", outcome)
+	}
+	if outcome.Target != 3 {
+		t.Fatalf("target %d, want 3", outcome.Target)
 	}
 }
 
 func TestResolveDestinationEntersAndBlocks(t *testing.T) {
 	state := newTacticalState(1, 10, 10)
-	action, prompt, err := ResolveDestination(state, 1, 2, 1)
+	outcome, err := ResolveDestination(state, 1, 2, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if action != MovementEnter || prompt {
-		t.Fatalf("action %v prompt %v, want enter", action, prompt)
+	if outcome.Action != MovementEnter || outcome.Leaving {
+		t.Fatalf("outcome %+v, want enter", outcome)
 	}
 
 	state.setTerrain(11, 10, blockedTerrain)
-	action, prompt, err = ResolveDestination(state, 1, 2, 200)
+	outcome, err = ResolveDestination(state, 1, 2, 200)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if action != MovementBlocked || prompt {
-		t.Fatalf("action %v prompt %v, want blocked", action, prompt)
+	if outcome.Action != MovementBlocked || outcome.Leaving {
+		t.Fatalf("outcome %+v, want blocked", outcome)
 	}
 }
 
 // 盤面外不是「擋住」，原版會問玩家要不要離開戰鬥。
 func TestResolveDestinationAsksBeforeLeavingTheBoard(t *testing.T) {
 	state := newTacticalState(1, 0, 10)
-	action, prompt, err := ResolveDestination(state, 1, 6, 10)
+	outcome, err := ResolveDestination(state, 1, 6, 10)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !prompt {
-		t.Fatalf("action %v prompt %v, want the leave-combat prompt", action, prompt)
+	if !outcome.Leaving {
+		t.Fatalf("outcome %+v, want the leave-combat prompt", outcome)
 	}
 }
