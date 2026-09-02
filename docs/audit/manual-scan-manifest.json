@@ -1,0 +1,890 @@
+{
+ "source": "珍009-光芒之池.rar／軟體世界珍藏版 9《光芒之池》說明書掃描",
+ "scans": 68,
+ "with_ocr": 25,
+ "pages": [
+  {
+   "file": "Pic0001.jpg",
+   "bytes": 548100,
+   "sha256": "74f8952d839bbdb2e316d0f42f0ead6a74e84f1b27a08e9cc40e74047880dc87",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": null,
+     "lines": 12,
+     "chars": 68
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 18,
+     "chars": 128
+    }
+   ],
+   "size": [
+    1389,
+    1079
+   ]
+  },
+  {
+   "file": "Pic0002.jpg",
+   "bytes": 589965,
+   "sha256": "37743cf789fe352aa90722a92759280d6318de7d9ff415283d64ecdd164a4613",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": null,
+     "lines": 39,
+     "chars": 407
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 43,
+     "chars": 467
+    }
+   ],
+   "size": [
+    1386,
+    1082
+   ]
+  },
+  {
+   "file": "Pic0003.jpg",
+   "bytes": 483925,
+   "sha256": "bb821f70060e2c84d555c218b0a13a87bbe875b6c5dcd6e2c8fb5c458cedb51d",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": null,
+     "lines": 7,
+     "chars": 38
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 7,
+     "chars": 34
+    }
+   ],
+   "size": [
+    1117,
+    1099
+   ]
+  },
+  {
+   "file": "Pic0004.jpg",
+   "bytes": 384585,
+   "sha256": "224940c7ed5e25c87e4f52ddbcff15abdccd535b24af528eee0bbb7cd7a61227",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": null,
+     "lines": 0,
+     "chars": 0
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 42,
+     "chars": 737
+    }
+   ],
+   "size": [
+    2225,
+    1093
+   ]
+  },
+  {
+   "file": "Pic0005.jpg",
+   "bytes": 767791,
+   "sha256": "b7da05e5537d1c5893d14337f4d544dc2412617557bcaebba7d208db1e4aa7cb",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 48,
+     "volume": null,
+     "lines": 25,
+     "chars": 209
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 16,
+     "chars": 315
+    }
+   ],
+   "size": [
+    2208,
+    1104
+   ]
+  },
+  {
+   "file": "Pic0006.jpg",
+   "bytes": 661382,
+   "sha256": "104abd57f62fcfe6e7486eae1f500057c9393822365a7f5068314c91a8d88bb9",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": "上",
+     "lines": 20,
+     "chars": 588
+    },
+    {
+     "half": "right",
+     "page_number": 3,
+     "volume": null,
+     "lines": 25,
+     "chars": 630
+    }
+   ],
+   "size": [
+    2201,
+    1106
+   ]
+  },
+  {
+   "file": "Pic0007.jpg",
+   "bytes": 714775,
+   "sha256": "3f37614ac111a1cc50c0fbcaae0b17b67aa55cf1ac9422f60127c659d0659807",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": "上",
+     "lines": 24,
+     "chars": 756
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 22,
+     "chars": 614
+    }
+   ],
+   "size": [
+    2203,
+    1075
+   ]
+  },
+  {
+   "file": "Pic0008.jpg",
+   "bytes": 732650,
+   "sha256": "b50a8f015b786ad3f4c43686985c4e0a4ad088ace0e4c6ad3c6907810319bf8f",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": "上",
+     "lines": 24,
+     "chars": 728
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 24,
+     "chars": 705
+    }
+   ],
+   "size": [
+    2188,
+    1081
+   ]
+  },
+  {
+   "file": "Pic0009.jpg",
+   "bytes": 711355,
+   "sha256": "0e1f3fd96f4f23f3e80712f64367f68cd448885e163efeaeda29bcd6ebd1afe9",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": null,
+     "volume": null,
+     "lines": 23,
+     "chars": 688
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 24,
+     "chars": 645
+    }
+   ],
+   "size": [
+    2172,
+    1099
+   ]
+  },
+  {
+   "file": "Pic0010.jpg",
+   "bytes": 708134,
+   "sha256": "d66c99dd32e864499bcd812cf09b0eda51da979989ee3ee73fc839e09052b66e",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 10,
+     "volume": "上",
+     "lines": 24,
+     "chars": 663
+    },
+    {
+     "half": "right",
+     "page_number": 11,
+     "volume": null,
+     "lines": 25,
+     "chars": 711
+    }
+   ],
+   "size": [
+    2198,
+    1106
+   ]
+  },
+  {
+   "file": "Pic0011.jpg",
+   "bytes": 737053,
+   "sha256": "d9badbb671e81d159458b06bbaa3b24d85d1425b258b87ebae3807f532877c4f",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 12,
+     "volume": "上",
+     "lines": 23,
+     "chars": 651
+    },
+    {
+     "half": "right",
+     "page_number": 13,
+     "volume": null,
+     "lines": 24,
+     "chars": 524
+    }
+   ],
+   "size": [
+    2216,
+    1113
+   ]
+  },
+  {
+   "file": "Pic0012.jpg",
+   "bytes": 426715,
+   "sha256": "eadc768efb1a05736318f948f98e2d81d930d003381c7a283b9c2a5fd296a42b",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 14,
+     "volume": "上",
+     "lines": 24,
+     "chars": 413
+    },
+    {
+     "half": "right",
+     "page_number": 15,
+     "volume": null,
+     "lines": 25,
+     "chars": 386
+    }
+   ],
+   "size": [
+    2210,
+    1118
+   ]
+  },
+  {
+   "file": "Pic0013.jpg",
+   "bytes": 437995,
+   "sha256": "500174fdf097ee6f4c042c9bfaa9a51ac724960f2fc486c632842ab048e4b544",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 16,
+     "volume": "上",
+     "lines": 24,
+     "chars": 435
+    },
+    {
+     "half": "right",
+     "page_number": null,
+     "volume": null,
+     "lines": 23,
+     "chars": 325
+    }
+   ],
+   "size": [
+    2203,
+    1125
+   ]
+  },
+  {
+   "file": "Pic0014.jpg",
+   "bytes": 581317,
+   "sha256": "ed24f5917e9fa245aa38a621fffa4e79ce807bf9aea37378a028c35599629062",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 18,
+     "volume": "上",
+     "lines": 21,
+     "chars": 439
+    },
+    {
+     "half": "right",
+     "page_number": 19,
+     "volume": null,
+     "lines": 25,
+     "chars": 562
+    }
+   ],
+   "size": [
+    2196,
+    1094
+   ]
+  },
+  {
+   "file": "Pic0015.jpg",
+   "bytes": 578450,
+   "sha256": "ecaed25b0be2415d0ffdbfefe599eca29798e875b5b38eeb68547c65b80a3b75",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 20,
+     "volume": "上",
+     "lines": 24,
+     "chars": 497
+    },
+    {
+     "half": "right",
+     "page_number": 21,
+     "volume": null,
+     "lines": 23,
+     "chars": 552
+    }
+   ],
+   "size": [
+    2194,
+    1088
+   ]
+  },
+  {
+   "file": "Pic0016.jpg",
+   "bytes": 699352,
+   "sha256": "c4633a0344d827b8c6762f0b8500ecd1406b79f86a8f2e1ecd7b3d60d951b19a",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 22,
+     "volume": "上",
+     "lines": 23,
+     "chars": 524
+    },
+    {
+     "half": "right",
+     "page_number": 23,
+     "volume": null,
+     "lines": 44,
+     "chars": 590
+    }
+   ],
+   "size": [
+    2194,
+    1072
+   ]
+  },
+  {
+   "file": "Pic0017.jpg",
+   "bytes": 661324,
+   "sha256": "82995049b3822388228f430d334c2e1cf9a6c8243d47448ed9b1b2a2cc607687",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 24,
+     "volume": "上",
+     "lines": 25,
+     "chars": 598
+    },
+    {
+     "half": "right",
+     "page_number": 25,
+     "volume": null,
+     "lines": 25,
+     "chars": 596
+    }
+   ],
+   "size": [
+    2201,
+    1077
+   ]
+  },
+  {
+   "file": "Pic0018.jpg",
+   "bytes": 542420,
+   "sha256": "e888a89b8d414bfa6e491a949005f01b4c6fbba8c4219d83e5945e4030586f90",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 26,
+     "volume": "上",
+     "lines": 23,
+     "chars": 398
+    },
+    {
+     "half": "right",
+     "page_number": 27,
+     "volume": null,
+     "lines": 25,
+     "chars": 429
+    }
+   ],
+   "size": [
+    2201,
+    1077
+   ]
+  },
+  {
+   "file": "Pic0019.jpg",
+   "bytes": 587446,
+   "sha256": "001ef078c157633bcb85086df6b0cef10001add910f31cce5844952ca8f1e0ba",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 28,
+     "volume": "上",
+     "lines": 25,
+     "chars": 553
+    },
+    {
+     "half": "right",
+     "page_number": 29,
+     "volume": null,
+     "lines": 25,
+     "chars": 620
+    }
+   ],
+   "size": [
+    2230,
+    1132
+   ]
+  },
+  {
+   "file": "Pic0020.jpg",
+   "bytes": 642941,
+   "sha256": "49a4557328b59bee9f0a6cd8e2ec969b3d0eea0fb37c2fc03ac97cd5c5c67fb2",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 30,
+     "volume": "上",
+     "lines": 23,
+     "chars": 523
+    },
+    {
+     "half": "right",
+     "page_number": 31,
+     "volume": null,
+     "lines": 25,
+     "chars": 535
+    }
+   ],
+   "size": [
+    2201,
+    1074
+   ]
+  },
+  {
+   "file": "Pic0021.jpg",
+   "bytes": 685304,
+   "sha256": "727885e69394f1dafacad665bd1310704e143a618d9e4796feed78d5c24f8243",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 32,
+     "volume": "上",
+     "lines": 25,
+     "chars": 539
+    },
+    {
+     "half": "right",
+     "page_number": 33,
+     "volume": null,
+     "lines": 24,
+     "chars": 482
+    }
+   ],
+   "size": [
+    2206,
+    1084
+   ]
+  },
+  {
+   "file": "Pic0022.jpg",
+   "bytes": 592088,
+   "sha256": "2d6dfe9d0f48f59a53175438aea663e8ad9ad0632f03b92347ee43a0e698d710",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 34,
+     "volume": "上",
+     "lines": 25,
+     "chars": 520
+    },
+    {
+     "half": "right",
+     "page_number": 35,
+     "volume": null,
+     "lines": 22,
+     "chars": 539
+    }
+   ],
+   "size": [
+    2194,
+    1081
+   ]
+  },
+  {
+   "file": "Pic0023.jpg",
+   "bytes": 686825,
+   "sha256": "1e5b5775a3bf959e1893f7e14e33dda7bc9b786fabf502e5cbf5d70ccf633533",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 36,
+     "volume": "上",
+     "lines": 105,
+     "chars": 605
+    },
+    {
+     "half": "right",
+     "page_number": 37,
+     "volume": null,
+     "lines": 25,
+     "chars": 503
+    }
+   ],
+   "size": [
+    2201,
+    1072
+   ]
+  },
+  {
+   "file": "Pic0024.jpg",
+   "bytes": 671896,
+   "sha256": "ffdc74bfed7522cccf6978d196cf1210d081c8b00e2fb740542bafcc36bc907c",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 38,
+     "volume": "上",
+     "lines": 41,
+     "chars": 598
+    },
+    {
+     "half": "right",
+     "page_number": 39,
+     "volume": null,
+     "lines": 25,
+     "chars": 582
+    }
+   ],
+   "size": [
+    2206,
+    1079
+   ]
+  },
+  {
+   "file": "Pic0025.jpg",
+   "bytes": 656731,
+   "sha256": "fb6e7112f768b914b16fa44459282844b69d3308a43770aae5131720af68b636",
+   "halves": [
+    {
+     "half": "left",
+     "page_number": 40,
+     "volume": "上",
+     "lines": 24,
+     "chars": 577
+    },
+    {
+     "half": "right",
+     "page_number": 41,
+     "volume": null,
+     "lines": 25,
+     "chars": 536
+    }
+   ],
+   "size": [
+    2186,
+    1086
+   ]
+  },
+  {
+   "file": "Pic0026.jpg",
+   "bytes": 560983,
+   "sha256": "6ce48a35703b09ef9941c9ef5af51245c553cc52d012212665b86e99b23b0294",
+   "halves": []
+  },
+  {
+   "file": "Pic0027.jpg",
+   "bytes": 590366,
+   "sha256": "dd8f73c31421117dc9ae494448677d48a0e88989aa4368e627a9c107e4c16845",
+   "halves": []
+  },
+  {
+   "file": "Pic0028.jpg",
+   "bytes": 469647,
+   "sha256": "de5408b01bb0c62f846012653f1fa30f8eb7e45815c1dc65ce2d1466627619ba",
+   "halves": []
+  },
+  {
+   "file": "Pic0029.jpg",
+   "bytes": 386367,
+   "sha256": "88b1501407ece94b3e133d51bccc095264557228deceb3866570ecbb48dc0efe",
+   "halves": []
+  },
+  {
+   "file": "Pic0030.jpg",
+   "bytes": 389615,
+   "sha256": "2f3af83bdedd56b87288282cc51ee55c1f0dc747b87796a2bad091e14f3f2fbe",
+   "halves": []
+  },
+  {
+   "file": "Pic0031.jpg",
+   "bytes": 387017,
+   "sha256": "29d11d55df82c377532bd77960a7510e905783cd5f60bfb2014b14b07ea4cdea",
+   "halves": []
+  },
+  {
+   "file": "Pic0032.jpg",
+   "bytes": 185114,
+   "sha256": "ddb324dffb60599d11487532377ac575d006c53529358b3feae2d512912c000d",
+   "halves": []
+  },
+  {
+   "file": "Pic0033.jpg",
+   "bytes": 856431,
+   "sha256": "f6306596519619f196c97913829357abd8d2add3325b706c7ebb8c63db542da8",
+   "halves": []
+  },
+  {
+   "file": "Pic0034.jpg",
+   "bytes": 334156,
+   "sha256": "3249d1d743104ce6c21b80feb32010066846f0f93beeba2a52014672d21af3e7",
+   "halves": []
+  },
+  {
+   "file": "Pic0035.jpg",
+   "bytes": 744835,
+   "sha256": "201560c8cb629aa93cde621194c7da00e35261f4a259686a425d71796c88378e",
+   "halves": []
+  },
+  {
+   "file": "Pic0036.jpg",
+   "bytes": 595275,
+   "sha256": "ae6215412fa7fd10293ac321e9025b5001f770f05d380a33cd415a8fbbb77e63",
+   "halves": []
+  },
+  {
+   "file": "Pic0037.jpg",
+   "bytes": 543225,
+   "sha256": "4bb2ff87cdfd7fc209c33b8beaac6aa476bf9e165e4c8c21cc65d9e548131845",
+   "halves": []
+  },
+  {
+   "file": "Pic0038.jpg",
+   "bytes": 532487,
+   "sha256": "42f0fc68d65b9ad67fdc866576bf08ef3e35ee8aa5072f33db2d182832433736",
+   "halves": []
+  },
+  {
+   "file": "Pic0039.jpg",
+   "bytes": 575701,
+   "sha256": "316b9ba7716f036f9df6ccef522929f0861656238b8f9eb17d4e92dad6830314",
+   "halves": []
+  },
+  {
+   "file": "Pic0040.jpg",
+   "bytes": 588752,
+   "sha256": "311c67c652294e7d821485a9ac7a2ab3c3df35fbc4f9577eb9e3f0b069d877a2",
+   "halves": []
+  },
+  {
+   "file": "Pic0041.jpg",
+   "bytes": 533577,
+   "sha256": "adb57861dc1ae6df8abd8d98b563d1bafd3c18e832363a453739be855ef4f5e7",
+   "halves": []
+  },
+  {
+   "file": "Pic0042.jpg",
+   "bytes": 623683,
+   "sha256": "0e9c5cd4e59dff12ab370dfb015dacb67a942e6dd0475a1327c1473b620c2d53",
+   "halves": []
+  },
+  {
+   "file": "Pic0043.jpg",
+   "bytes": 512680,
+   "sha256": "029ec38d907a03a02cee7298dc3fbac742ae8786d96ad9fe2b9bf7673f60ee5c",
+   "halves": []
+  },
+  {
+   "file": "Pic0044.jpg",
+   "bytes": 619013,
+   "sha256": "1274200d04c7f5c605a61b3583f44baf33862c8c9c630e2fe07f38004e4f1da6",
+   "halves": []
+  },
+  {
+   "file": "Pic0045.jpg",
+   "bytes": 460897,
+   "sha256": "b05562857b2c8294639f702b602a8a98128adeb416a1b5186df2b2e628a07237",
+   "halves": []
+  },
+  {
+   "file": "Pic0046.jpg",
+   "bytes": 652788,
+   "sha256": "90bd8288cd172b9604c961f435eea5e068c831104a8994e68c9206e3ac425db9",
+   "halves": []
+  },
+  {
+   "file": "Pic0047.jpg",
+   "bytes": 544581,
+   "sha256": "9b30be4d064efb6c75eba694b4dc38bf6c61f1c588d77985e1b9a6776e703189",
+   "halves": []
+  },
+  {
+   "file": "Pic0048.jpg",
+   "bytes": 523208,
+   "sha256": "5ca31a6b55fdebde94d419b1cd21ff2fa8b8a6df6da7ac28818f2b0dd30465ce",
+   "halves": []
+  },
+  {
+   "file": "Pic0049.jpg",
+   "bytes": 552690,
+   "sha256": "25b6328e041e66deeda48b43593280fbcc9eafd98e5aa8d731012d31987c4ca9",
+   "halves": []
+  },
+  {
+   "file": "Pic0050.jpg",
+   "bytes": 581056,
+   "sha256": "4efd124822c1c2ef36c2ca4bf53f18576e7e00435180a2ee5bde8405359affff",
+   "halves": []
+  },
+  {
+   "file": "Pic0051.jpg",
+   "bytes": 626848,
+   "sha256": "d878ed1d7a715675589260e0441a5d250e1d12a8a7cea7c94eea28c6e4bd6985",
+   "halves": []
+  },
+  {
+   "file": "Pic0052.jpg",
+   "bytes": 550082,
+   "sha256": "f95f0e06adda9496918a44677d8efc1698252688d4f4a81f694514b5aac2863a",
+   "halves": []
+  },
+  {
+   "file": "Pic0053.jpg",
+   "bytes": 641868,
+   "sha256": "d4d12b6c41f45eea331e69f8d7301fde1fc3a319457687c5d132f60ae6b54ddd",
+   "halves": []
+  },
+  {
+   "file": "Pic0054.jpg",
+   "bytes": 520154,
+   "sha256": "23f796f2621546b3f79f4c49fddd4cf1f8db53d3e14d1d47b2e9d4bbea2702b9",
+   "halves": []
+  },
+  {
+   "file": "Pic0055.jpg",
+   "bytes": 699723,
+   "sha256": "a9447df404b07c771103bc38109b6ee3c3ce48939f756d652c36ca8a2b2de750",
+   "halves": []
+  },
+  {
+   "file": "Pic0056.jpg",
+   "bytes": 626601,
+   "sha256": "5bf95d8b7a020d9c04ed6c2b653d816487a8cdec2f2bc14eafb2729bc82a0629",
+   "halves": []
+  },
+  {
+   "file": "Pic0057.jpg",
+   "bytes": 664492,
+   "sha256": "9f3480c41f25fc6203d5da3d0d8efa8ba14d96148f7ab8e47f6f6e22c73f5237",
+   "halves": []
+  },
+  {
+   "file": "Pic0058.jpg",
+   "bytes": 624756,
+   "sha256": "7e308c493e88f7ced779d0dda4a848494bedbfb4a0adbdac783a3b33755e5a56",
+   "halves": []
+  },
+  {
+   "file": "Pic0059.jpg",
+   "bytes": 657572,
+   "sha256": "9f2b630028c58da716332f35d06fdc40d142f537a1a10372fa31af9112446c5d",
+   "halves": []
+  },
+  {
+   "file": "Pic0060.jpg",
+   "bytes": 556961,
+   "sha256": "d1965844aa5fb6fb7513cbb90dac3ec3816fb11600266eb8ac0632f5b70ecfcd",
+   "halves": []
+  },
+  {
+   "file": "Pic0061.jpg",
+   "bytes": 544791,
+   "sha256": "5060e64fbb395306dba8784b2f09b57d72f341d5d6dc35702b785be4b863149b",
+   "halves": []
+  },
+  {
+   "file": "Pic0062.jpg",
+   "bytes": 477925,
+   "sha256": "8d068ba9f59b67edd50933afeef3cffa328f8d8a41c7d68a66bd39169ab0c86c",
+   "halves": []
+  },
+  {
+   "file": "Pic0063.jpg",
+   "bytes": 485694,
+   "sha256": "2f98ccd6c241139fbdb9c91e56dd7c598e9b711b8599c8491332c275d7ea6efa",
+   "halves": []
+  },
+  {
+   "file": "Pic0064.jpg",
+   "bytes": 635028,
+   "sha256": "c513a32d338041de6d3b9ad8d349eefb178ec5d52a30183973032d44def539a4",
+   "halves": []
+  },
+  {
+   "file": "Pic0065.jpg",
+   "bytes": 620520,
+   "sha256": "d1848c0861d8a3a4fac6af5a7c892bfec2870c8c31ae44f2c7ea0905fdc9e7e5",
+   "halves": []
+  },
+  {
+   "file": "Pic0066.jpg",
+   "bytes": 488705,
+   "sha256": "94b96b4784ed2e56cddb163db0d38ff4ce74a1b5752bbfa129e771a41c25c241",
+   "halves": []
+  },
+  {
+   "file": "Pic0067.jpg",
+   "bytes": 492136,
+   "sha256": "dc9ad6aab6d7cae9e5bc000ac9aef1fb8efc5048243ae3107eb8ad113232affb",
+   "halves": []
+  },
+  {
+   "file": "Pic0068.jpg",
+   "bytes": 861850,
+   "sha256": "80ccbb8eb2ae235583ad8a468bf40856ec79fd1c252780d10cfe9340f73f7bca",
+   "halves": []
+  }
+ ]
+}

@@ -466,3 +466,16 @@ predicate 尚未閉合。故目前只完成資料／規則 primitive，戰術畫
 已同步到 Spec 048～053，並以 `docs/audit/remake-screenshot-manifest.json` 固定七張正常
 玩家路徑重拍圖的來源提交、尺寸與 SHA-256；戰鬥目前沒有正常可達 runtime 截圖，不能
 用 direct-entry 畫面替代。
+
+2026-09-02 說明書 Journal corpus 上冊完成（Spec 054）。`珍009-光芒之池.rar` 的 68 張
+跨頁掃描已確認是軟體世界珍藏版 9 的官方繁中說明書，上冊即 Adventurers Journal，
+所以這批工作是轉錄與校對，不是重新翻譯。上冊 p.1–54 已逐頁對掃描原圖轉錄成
+`docs/reference/manual/journal-vol1.md`，頁碼連續無缺，含線索報導 1–58、酒店傳言
+1–23、議會公告 18 則與七節附錄（金錢換算、法術表、裝備、昇級經驗、對抗不死怪物、
+職業裝備、武器表），未轉錄數 0；`docs/reference/manual/glossary.md` 固定當年譯名並
+標出原書自身的異名，其中 Yulash（城市）與 Yarash（巫師）在內文都譯成「亞拉斯」，
+接線時必須依上下文判別。來源清冊 `docs/audit/manual-scan-manifest.json` 登記 68 張
+掃描的 SHA-256 與尺寸。RapidOCR 對這份掃描會穩定掉繁體特有字（放大兩倍實測無效），
+因此 OCR 只留作行序與覆蓋率對照，跑到 25／68 後停止以歸還機器資源；corpus 的內容
+一律以逐頁校讀為準。下冊操作手冊與上冊第二輪覆核仍未做，corpus 也尚未接進遊戲內
+Journal／UI，不得據此宣稱遊戲內中文化完成。
