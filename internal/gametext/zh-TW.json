@@ -9,6 +9,11 @@
       "note": "神殿的問句，原版開頭多一個空格。"
     },
     {
+      "source": "'BACK SO SOON? I CAN ONLY REPEAT THE EARLIER OFFERS: '",
+      "text": "「這麼快就回來了？我能給的還是先前那幾項：」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "'BEHIND THESE DOORS ARE THE SPECIAL TRAINING SCHOOLS  WHERE ADVENTURERS INCREASE THEIR SKILLS. LET US NOW GO TO THE CITY'S MOST IMPORTANT BUILDING.'",
       "text": "「這幾道門後面是各種訓練所，冒險者在裡面精進本事。接下來去看看城裡最重要的建築。」",
       "note": "Rolf 導覽第五頁。訓練所沿用說明書 p.9 的用詞。"
@@ -24,6 +29,11 @@
       "note": "港口。"
     },
     {
+      "source": "'BY THE WAY, YOUR BUNGLING THE BIVANT RESCUE HAS COST US.'",
+      "text": "「對了，畢凡特那次救援你們搞砸了，我們付出了代價。」",
+      "note": "Bivant 為新增譯名。"
+    },
+    {
       "source": "'CATCH THE BOAT AT THE END OF THE PIER.'",
       "text": "「到碼頭盡頭搭船。」",
       "note": "港務長。"
@@ -34,6 +44,11 @@
       "note": "神殿拒絕服務。"
     },
     {
+      "source": "'EXCELLENT.'",
+      "text": "「太好了。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "'GREETINGS, COURAGEOUS ONES, I AM ROLF, APPOINTED BY THE COUNCIL TO INTRODUCE NEWCOMERS TO THE FAIR CITY OF PHLAN. IF YOU WILL ACCOMPANY ME, I WILL START THE TOUR.'",
       "text": "「勇敢的朋友們，你們好。我是羅夫，市議會派我為新來的人介紹美麗的菲蘭城。願意跟我走一趟的話，導覽這就開始。」",
       "note": "Rolf 導覽第一頁。Phlan 依 glossary 定案作菲蘭；Rolf 說明書未收，見 glossary 的「遊戲內文字新增譯名」。"
@@ -42,6 +57,21 @@
       "source": "'HE IS BOUND TO RECOVER THE TEMPLE WHICH HAS BEEN DESECRATED TO BANE.  GO WITH HIM ACROSS THE RIVER AND HELP HIM TO CLEANSE THE TEMPLE.  IN PAYMENT, YOU MAY KEEP THE HIDDEN TREASURES.'",
       "text": "「他發願要奪回那座被獻給邪惡神的神殿。跟他過河去，幫他把神殿清乾淨。作為報酬，藏在裡面的財寶歸你們。」",
       "note": "巴西歐主教的委託；Bane 依 glossary 作邪惡（神）。"
+    },
+    {
+      "source": "'I HAVE BEEN AUTHORIZED TO GIVE YOU AN ENCHANTED WEAPON IF YOU ACCEPT THE COMMISSION TO END THE GRAVEYARD MENACE.  DO YOU ACCEPT?'",
+      "text": "「只要你們接下解除墳場之患的委託，我獲准贈與一件附魔武器。你們接嗎？」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'IT IS IMPERATIVE THAT A MESSAGE BE DELIVERED TO THE ZHENTIL OUTPOST TO THE WEST.  I AM SENDING YOU AS DIPLOMATIC ENVOYS.",
+      "text": "「有一封信務必送到西邊的漢提爾前哨。我要派你們以使節的身分前往。",
+      "note": "接下一段。"
+    },
+    {
+      "source": "'IT IS THE UNANIMOUS REQUEST OF THE COUNCIL THAT YOU LEAD THE ATTACK. YOUR SKILL AND BRAVERY HAVE WON THE ADMIRATION OF ALL PHLAN.  WE LOOK TO YOU TO HELP US WIN OUR FREEDOM.'",
+      "text": "「議會一致請求由你們領軍。你們的本事與膽識已贏得全菲蘭城的敬佩。我們指望你們幫我們贏回自由。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "'IT WILL COST YOU 1 PLATINUM PIECE TO REST HERE.  DO YOU WANT TO STAY?'",
@@ -59,14 +89,54 @@
       "note": "Rolf 導覽最後一頁。括號內是原版給玩家的旁白，不是羅夫的話。"
     },
     {
+      "source": "'THANK YOU FOR COMING.  I MUST BE BRIEF FOR OUR NEED IS URGENT.  OUR ONE CHANCE TO DEFEAT THE ENEMY IS THROUGH AN ASSAULT ON THE CASTLE. TO DO THIS, WE MUST FIRST SECURE STOJANOW GATE.",
+      "text": "「多謝你們前來。事情緊急，我就長話短說。要擊敗敵人只有一條路——強攻城堡。而要做到這一點，得先拿下史塔傑諾門。",
+      "note": "接下一段。"
+    },
+    {
+      "source": "'THE FAITHFUL SERVANT SENT TO FETCH IT NEVER RETURNED.  THE COMPLEX IS JUST SOUTH OF PODOL PLAZA.  BRING THE TREASURE TO ME AND YOU WILL BE WELL REWARDED.'",
+      "text": "「派去取回它的忠僕再也沒有回來。那片建築就在波多廣場南邊。把寶物帶回來給我，必有重賞。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "'THE GAME WORKS LIKE THIS.  WE SPIN THIS TOP. IF THE GREEN SIDE COMES UP, YOU GET DOUBLE YOUR MONEY BACK.  IF A BLUE SIDE COMES UP, YOU GET YOUR MONEY BACK.  IF A RED SIDE COMES UP, YOU LOSE.'",
       "text": "「規則是這樣：我們轉這個陀螺。轉到綠面，你們拿回兩倍的錢；轉到藍面，錢原數奉還；轉到紅面，你們就輸了。」",
       "note": "酒館賭局。"
     },
     {
+      "source": "'THE GATE IS TOO STRONG TO BE TAKEN BY STORM. A SMALL BAND MUST SLIP INSIDE AND HOLD UNTIL RELIEVED. YOU ARE THE BEST AND THE BRAVEST. THE COUNCIL HAS INSTRUCTED ME TO ENTRUST THE TASK TO YOU.'",
+      "text": "「那道門太堅固，硬攻是攻不下的。得有一小隊人潛進去撐到援軍抵達。你們是最強也最勇敢的一群，議會指示我把這件事託付給你們。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "'THERE IS A REWARD FOR CLEARING THE",
+      "text": "「清空以下地方有報酬：",
+      "note": "片段，接下一段。"
+    },
+    {
+      "source": "'THESE ARE ALL OF THE COMMISSIONS CURRENTLY AVAILABLE.'",
+      "text": "「目前能接的委託就這些。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "'WE ARE JUST OUTSIDE THE CITY HALL. PROCLAMATIONS ARE POSTED ON THESE WALLS. INSIDE, THE CITY CLERK AWARDS THE COUNCIL'S COMMISSIONS.  COMMISSIONS ARE THE QUICKEST WAY TO FAME AND FORTUNE.'",
       "text": "「我們就在市政廳外面。公告都貼在這幾面牆上。裡頭的書記官負責發放市議會的委託。想快點成名發財，接委託是最快的路。」",
       "note": "Rolf 導覽第四頁。commission 沿用專案既有的「委託」。"
+    },
+    {
+      "source": "'WE HAVE BEEN INFORMED YOU HAVE ELIMINATED SOME UNDEAD FROM THE GRAVEYARD.",
+      "text": "「我們接獲通報，你們清掉了墳場裡的一些不死怪物。",
+      "note": "接下一段。"
+    },
+    {
+      "source": "'WHEN OLD PHLAN WAS OVERRUN, A FAMILY TREASURE WAS HIDDEN IN THE WESTERN BUILDING OF THE TEXTILE COMPLEX.",
+      "text": "「舊菲蘭城淪陷時，一件傳家寶被藏在紡織行西側那棟建築裡。",
+      "note": "接下一段。"
+    },
+    {
+      "source": "'WHEN YOU GET TO ZHENTIAL KEEP, PRESENT THIS PACKET TO ITS COMMANDANT.  DO NOT BREAK THE SEALS OR YOU WILL BE SEIZED AS SPIES.'",
+      "text": "「到了漢提爾城堡，把這包文件交給指揮官。千萬別拆封，否則會被當成間諜逮捕。」",
+      "note": "原版此處把 ZHENTIL 拼成 ZHENTIAL。"
     },
     {
       "source": "'WILL YOU ACCOMPANY DIRTEN?'",
@@ -129,6 +199,16 @@
       "note": "酒館事件。"
     },
     {
+      "source": "A LARGE GROUP OF THIEVES OPERATES OUT OF THE OLD KOVEL MANSION. THE COUNCIL WILL PAY TO HAVE THEM CLEANED OUT.'",
+      "text": "一大群盜賊以舊柯威大樓為據點。議會願意出錢把他們清掉。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "A LARGE TRIBE OF KOBOLDS IS BEING RECRUITED BY THE ENEMY.  MAKE SURE THEY DON'T JOIN THE ENEMY FORCES.'",
+      "text": "敵方正在招攬一支龐大的小妖魔部族，別讓他們加入敵軍。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "A NET ENTANGLES YOU.",
       "text": "一張網把你們纏住了。",
       "note": "遭遇敘述。"
@@ -137,6 +217,16 @@
       "source": "A PARTY OF",
       "text": "一隊",
       "note": "遭遇敘述的片段。"
+    },
+    {
+      "source": "A TRIBE OF LIZARDMEN IS PREPARING TO JOIN THE ENEMY.  PREVENT THIS.'",
+      "text": "有一支蜥蜴人部族正準備投靠敵方，阻止他們。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "A WEAPON OF GREAT POWER IS TO BE AUCTIONED TO OUR ENEMIES. THIS AUCTION IS TO BE HELD IN PODAL PLAZA.  FIND OUT WHAT THE WEAPON IS AND RETURN.'",
+      "text": "有一件威力強大的武器要拍賣給我們的敵人，拍賣會就辦在波多廣場。查清楚那是什麼武器，然後回報。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "ACCEPT BLESSING",
@@ -199,6 +289,11 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "AT YOUR ENTRY, THE COUNCIL CLERK BEGINS LOOKING THROUGH A STACK OF PAPERS.  'BEFORE I CAN OFFER ANY COMMISSIONS, I MUST SEE IF YOU ARE DUE A CURRENT REWARD.",
+      "text": "你們一進門，議會書記官便開始翻一疊文件：「在談委託之前，我得先看看你們有沒有該領的報酬。",
+      "note": "接下一段。"
+    },
+    {
       "source": "ATTACK",
       "text": "攻擊",
       "note": "遭遇選單，出現 32 次。"
@@ -239,9 +334,19 @@
       "note": "同上。"
     },
     {
+      "source": "BIVANT WAS DELIGHTED WITH THE CHILD'S RESCUE.  THEY LEFT SOME TRINKETS FOR YOU.",
+      "text": "孩子獲救，畢凡特家欣喜不已，留了些小飾物給你們。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "BRIBE",
       "text": "行賄",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "CADORNA TEXTILE HOUSE.'",
+      "text": "卡多納紡織行。」",
+      "note": "片段；地圖只標英文，此譯名為新增。"
     },
     {
       "source": "CITY",
@@ -252,6 +357,26 @@
       "source": "COMBAT",
       "text": "戰鬥",
       "note": "選項。"
+    },
+    {
+      "source": "CONGRATULATIONS! YOUR QUEST IS OVER! TYRANTHRAXUS IS DEFEATED! PHLAN IS FREE! IF YOU WISH, YOU MAY CONTINUE TO HELP US CLEAR ANY REMAINING MONSTERS. ALL PHLAN SALUTES YOU!",
+      "text": "恭喜！你們的任務完成了！泰蘭特拉克斯已被擊敗！菲蘭城自由了！若你們願意，還可以繼續幫我們清剿剩下的怪物。全菲蘭城向你們致敬！",
+      "note": "破關訊息。"
+    },
+    {
+      "source": "CONGRATULATIONS, YOU MAY KEEP ALL YOU FOUND IN THE TEMPLE OF BANE AS A REWARD.'",
+      "text": "恭喜，邪惡神廟裡找到的東西全歸你們，就當作報酬。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "COUNCILMAN CADORNA CONFRONTS YOU. 'YOU HAVE TAKEN MY FAMILY TREASURE. I DON'T FORGET SUCH THINGS.' HE STRIDES OFF.",
+      "text": "卡多納議員迎面攔住你們：「你們拿走了我家的寶物。這種事我記得住。」說完大步離去。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "COUNCILMAN CADORNA LEFT THIS PAYMENT FOR SOME SERVICE YOU HAD RENDERED.",
+      "text": "卡多納議員留下這筆錢，酬謝你們先前效的勞。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "DO YOU TAKE IT?",
@@ -287,6 +412,16 @@
       "source": "FIGHT",
       "text": "開打",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "FIND THE NOMADS AND STOP THEM FROM JOINING FORCES WITH OUR ENEMIES.'",
+      "text": "找到那群遊牧民，別讓他們和敵人聯手。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "FIND THE SOURCE OF THE RIVER'S POLLUTION AND END IT.'",
+      "text": "找出河水污染的源頭，把它斷掉。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "FLEE",
@@ -344,6 +479,11 @@
       "note": "敘述。"
     },
     {
+      "source": "HERE IS YOUR REWARD.'",
+      "text": "這是你們的報酬。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "HOBGOBLINS",
       "text": "大哥布林",
       "note": "怪物名；與哥布林成對，取「大」以示體型。"
@@ -369,6 +509,11 @@
       "note": "遭遇敘述的方位片段，原版把句子拆成幾段拼起來。"
     },
     {
+      "source": "IN THE COUNCIL CHAMBERS, THE ENTIRE CITY COUNCIL IS WAITING FOR YOU. THE LORD HIGH MAYOR, ULRICH EBERHARD, SPEAKS: 'OUR FORCES ARE MARSHALLED FOR THE ASSAULT ON VALJEVO CASTLE.",
+      "text": "議事廳裡，全體市議會都在等你們。大市長亞爾瑞屈·艾伯哈德開口：「我軍已集結完畢，準備進攻瓦傑渥城堡。",
+      "note": "接下一段。"
+    },
+    {
       "source": "IT'S BLUE.  YOU WIN.",
       "text": "是藍色，你們贏了。",
       "note": "酒館賭局結果。"
@@ -377,6 +522,11 @@
       "source": "IT'S GREEN.  YOU GET DOUBLE YOUR MONEY BACK.",
       "text": "是綠色，你們拿回兩倍的錢。",
       "note": "酒館賭局結果。"
+    },
+    {
+      "source": "JUNIOR COUNCILMAN CADORNA HAS A SPECIAL COMMISSION FOR YOU.  HIS CHAMBERS ARE THROUGH THE EAST DOOR.'",
+      "text": "資淺議員卡多納有一件特別的委託要交給你們。他的房間走東邊那道門。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "KILL IT",
@@ -424,9 +574,24 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "LIBRARY.'",
+      "text": "圖書館。」",
+      "note": "委託文字的結尾片段，原版把長句拆成幾段拼起來。"
+    },
+    {
       "source": "LIZARD MEN",
       "text": "蜥蜴人",
       "note": "怪物名，遊戲文字證實。"
+    },
+    {
+      "source": "LORD CADORNA HAS A DELICATE DIPLOMATIC MISSION THAT REQUIRES YOUR PARTICULAR SKILLS.  YOU ARE SUMMONED TO HIS CHAMBERS. GO THROUGH THE SOUTH DOOR.'",
+      "text": "卡多納大人有一樁棘手的外交任務，正需要你們這樣的本事。他召你們到他房裡，走南門進去。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "LORD URSLINGEN WISHES URGENTLY TO SPEAK WITH YOU.  GO THROUGH THE SOUTH DOOR OF THE TRAITOR CADORNA'S OLD QUARTERS.'",
+      "text": "烏斯林根大人急著要見你們。走叛徒卡多納舊居的南門進去。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "LUX",
@@ -484,9 +649,19 @@
       "note": "遭遇選單。"
     },
     {
+      "source": "PODAL PLAZA.'",
+      "text": "波多廣場。」",
+      "note": "片段；原版此處把 PODOL 拼成 PODAL，譯名不隨錯字改。"
+    },
+    {
       "source": "POISONOUS BARREN RIVER.",
       "text": "有毒的荒蕪之河。",
       "note": "地點敘述。"
+    },
+    {
+      "source": "PORPHYRYS CADORNA IS A TRAITOR TO THE CITY. IF YOU FIND HIM, KILL HIM.'",
+      "text": "普洛菲力·卡多納背叛了這座城。找到他就殺了他。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "PP.",
@@ -527,6 +702,11 @@
       "source": "PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX.",
       "text": "第六十四、七十八、一〇九與五十九號公告。",
       "note": "公告編號，原版以羅馬數字書寫；譯文改用中文數字以便閱讀。"
+    },
+    {
+      "source": "PUTTING DOWN THE PAPERS, SHE SAYS, 'I MUST BRING TO YOUR ATTENTION THE FOLLOWING CONCERNING VALHINGEN GRAVEYARD: '",
+      "text": "她放下文件說：「關於瓦海登墳場，有件事必須讓你們知道：」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "RED. SORRY, YOU LOSE.",
@@ -582,6 +762,11 @@
       "source": "SOKAL",
       "text": "索卡爾",
       "note": "港務長航線選項；Sokal Keep 依 glossary 作索卡爾城堡。"
+    },
+    {
+      "source": "SOKAL KEEP ON THORN ISLAND MUST BE CLEARED.'",
+      "text": "荊棘島上的索卡爾城堡必須清空。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "SOUTH",
@@ -649,14 +834,64 @@
       "note": "劇情事件；Cadorna 依 glossary 作卡多納。"
     },
     {
+      "source": "THE CLERK SHUFFLES THROUGH HER PAPERS. 'ON THE MATTER OF COMMISSION,' SHE SAYS, 'I CAN OFFER THE FOLLOWING: '",
+      "text": "書記官翻了翻手邊的文件：「關於委託，」她說，「我能提供以下幾項：」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE CLERK SPEAKS. '",
+      "text": "書記官開口說：「",
+      "note": "片段，後面接委託內容。"
+    },
+    {
+      "source": "THE COUNCIL HAS AWARDED A BONUS FOR YOUR ELIMINATING NORRIS THE GRAY.",
+      "text": "你們除掉了挪里斯，議會另發一筆獎金。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE COUNCIL HAS NOTED THE PASSING OF THE TRAITOR CADORNA.'",
+      "text": "議會已知悉叛徒卡多納的死訊。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE COUNCIL HAS VOTED A SPECIAL PRIZE FOR ENDING THE GRAVEYARD MENACE.",
+      "text": "你們解除了墳場之患，議會表決通過一筆特別獎賞。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE COUNCIL IS OFFERING A REWARD FOR BOOKS, MAPS, TOMES, ETC. WHICH PROVIDE USEFUL INFORMATION ABOUT PHLAN BEFORE THE FALL.  THE REWARD IS TIED TO THE VALUE OF THE INFORMATION.'",
+      "text": "議會懸賞書籍、地圖、典籍等一切能提供菲蘭城陷落前資訊的東西，賞金視資訊價值而定。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE COUNCIL WAS PLEASED BY THE ELIMINATION OF THE THIEVES IN KOVEL MANSION.",
+      "text": "你們肅清了柯威大樓裡的盜賊，議會相當滿意。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE COUNCIL WILL BE AMUSED BY THE DESCRIPTIONS.",
+      "text": "議會看了這些記述會很有意思。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "THE DOOR IS LOCKED.  DO YOU WANT TO BREAK IN?",
       "text": "門鎖著。要破門進去嗎？",
       "note": "互動提問。"
     },
     {
+      "source": "THE GUARD CAPTAIN STEPS FORWARD. 'PLEASE LET US SHOW YOU THE WAY.'",
+      "text": "衛隊長走上前來：「請讓我們帶路。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "THE HARBOR MASTER TELLS YOU BOATS LEAVE FOR THE WEST, THE EAST, SOKAL KEEP, AND THE NORTH SIDE OF THE BAY.  'ROUND TRIP PASSAGE IS 1 PLATINUM PIECE. WHAT PASSAGE CAN I SELL YOU?'",
       "text": "港務長告訴你們，有船開往西邊、東邊、索卡爾城堡與海灣北岸。「來回船票一枚白金幣。要買哪一趟？」",
       "note": "港口。"
+    },
+    {
+      "source": "THE HEIR TO THE HOUSE OF BIVANT MUST BE RESCUED.  WE WILL PAY GENEROUSLY FOR HIS SAFE RETURN.'",
+      "text": "畢凡特家的繼承人必須救回來。平安帶回，重金酬謝。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "THE LEADER ADVANCES.",
@@ -679,6 +914,16 @@
       "note": "地點敘述。"
     },
     {
+      "source": "THE RECORDS PROVIDE INSIGHTS INTO MUCH THAT WAS PUZZLING.",
+      "text": "這些記錄解開了不少一直想不通的事。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE REMAINING GUARDS DECIDE TO LEAVE YOU ALONE.",
+      "text": "剩下的守衛決定不再找你們麻煩。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "THE SHOP SELLS SILVER ITEMS. 'WOULD YOU LIKE TO SEE OUR SELECTION?'",
       "text": "這家店賣銀器。「要看看我們的貨嗎？」",
       "note": "商店。"
@@ -699,14 +944,39 @@
       "note": "商店。"
     },
     {
+      "source": "THE SLUMS IMMEDIATELY TO OUR WEST NEED TO BE CLEARED OF MONSTERS.'",
+      "text": "我們西邊那片貧民區的怪物必須清掉。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "THE TEMPLE GUARDS INFORM YOU THAT THE BISHOP IS NOT RECEIVING VISITORS AT THIS TIME.  WHAT DO YOU DO?",
       "text": "神殿衛兵告訴你們，主教這時候不見客。你們要怎麼做？",
       "note": "提爾神殿。"
     },
     {
+      "source": "THE UNDEAD ARE CROSSING THE RIVER IN HORDES AND KILLING OR CARRYING OFF OUR SETTLERS.  THE COUNCIL DEMANDS THESE ATTACKS BE STOPPED. A GENEROUS REWARD IS OFFERED.'",
+      "text": "不死怪物成群渡河而來，殺害或擄走我們的移民。議會要求制止這些襲擊，並提供優厚報酬。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THE WAY IS BLOCKED.",
+      "text": "路被擋住了。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "THEN YOU MUST LEAVE.",
       "text": "那你們得離開。",
       "note": "敘述。"
+    },
+    {
+      "source": "THESE HISTORIES CONTAIN MUCH USEFUL INFORMATION.",
+      "text": "這些史料裡有很多有用的東西。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THESE MAPS SHOULD HELP US TO LOCATE SEVERAL LEGENDARY BUILDINGS.",
+      "text": "這些地圖應該能幫我們找出幾座傳說中的建築。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "THEY ATTACK.",
@@ -717,6 +987,16 @@
       "source": "THIEVES",
       "text": "盜賊",
       "note": "怪物名。與職業 Thief（賊）分開用字，避免混淆。"
+    },
+    {
+      "source": "THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.",
+      "text": "小妖魔的兵力折損，對敵方是一大打擊。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "THIS MATERIAL IS OF SMALL VALUE.",
+      "text": "這份資料價值不高。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "THROW A ROCK",
@@ -749,9 +1029,34 @@
       "note": "依 glossary 定案。"
     },
     {
+      "source": "UNDEAD FROM THE GRAVEYARD HAVE GROWN MORE DANGEROUS THAN ALL OF THE OTHER FORCES WHICH CONFRONT US.",
+      "text": "墳場裡的不死怪物，如今比其他所有敵人都還危險。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "WAIT",
       "text": "等待",
       "note": "遭遇選單。"
+    },
+    {
+      "source": "WE FIND THESE DISCOURSES VALUABLE.",
+      "text": "這些論述對我們很有用。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "WE NEED YOU TO DELIVER A MESSAGE TO THE ZHENTIL KEEP TO THE WEST. BE CAREFUL, THE TRAITOR CADORNA MAY HAVE TAMPERED WITH THE MESSAGE PACKET BEFORE HE FLED.'",
+      "text": "我們需要你們把一封信送到西邊的漢提爾城堡。小心，叛徒卡多納逃走前可能動過那包文件。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "WE WERE MUCH RELIEVED BY THE NEWS YOU BRING FROM THE NOMAD CAMP.",
+      "text": "你們從遊牧民營地帶回的消息讓我們鬆了一口氣。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "WE WERE PLEASANTLY SURPRISED THAT YOU COMPLETED YOUR MISSION SO SWIFTLY.  CADORNA WAS WAGERING YOUR RETURN WOULD BE MUCH DELAYED.",
+      "text": "你們這麼快就辦完了，令我們喜出望外。卡多納還打賭你們會拖上許久才回來。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "WEAK",
@@ -784,6 +1089,16 @@
       "note": "酒館賭局提問。"
     },
     {
+      "source": "WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARREN RIVER.",
+      "text": "索卡爾城堡到手之後，我們就能走船繞過那條荒蕪之河。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "WITH THE CLEARING OF THE STOJONOW RIVER, WE CAN OPEN UP THE HINTERLANDS FOR TRADE.",
+      "text": "史塔傑諾河清乾淨了，內陸的商路就能打通。",
+      "note": "原版此處把 STOJANOW 拼成 STOJONOW。"
+    },
+    {
       "source": "YES",
       "text": "是",
       "note": "選單選項。"
@@ -799,14 +1114,34 @@
       "note": "地點敘述。"
     },
     {
+      "source": "YOU ARE INTERCEPTED BY THE COUNCIL GUARD. 'HALT.  YOUR PRESENCE IS NOT AUTHORIZED.  LEAVE.'  DO YOU LEAVE?",
+      "text": "議會衛兵攔下你們：「站住。你們沒有獲准進入，離開。」你們要離開嗎？",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD COMMISSIONS.",
       "text": "你們站在市政廳外。書記官在裡面發放委託。",
       "note": "地點敘述。"
     },
     {
+      "source": "YOU ARE OUTSIDE THE CLERK'S OFFICE. GUARDS POSTED AROUND A DOOR IN THE SOUTH WALL WATCH YOU CLOSELY.",
+      "text": "你們在書記官辦公室外。南牆那道門邊站著衛兵，緊盯著你們。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "YOU ARE ROUSTED BY THE CITY WATCH AND TOLD TO MOVE ALONG. WHAT DO YOU DO?",
       "text": "城衛隊把你們趕起來，要你們別逗留。你們要怎麼做？",
       "note": "城衛隊事件。"
+    },
+    {
+      "source": "YOU ARE SUMMONED BY THE BISHOP OF BRACCIO OF TYR. REPORT TO HIM AT TYR'S TEMPLE.'",
+      "text": "提爾神殿的巴西歐主教召見你們，到提爾神殿去見他。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOU ARE SUMMONED TO A SPECIAL COUNCIL MEETING.  YOU ARE TO BE AWARDED A VALUABLE COMMISSION. THE CITY GUARDS WILL SHOW YOU THE WAY.'",
+      "text": "議會召開特別會議，要授予你們一件重要的委託。城衛隊會帶路。」",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "YOU ARE SURPRISED BY",
@@ -849,6 +1184,11 @@
       "note": "敘述。"
     },
     {
+      "source": "YOU ENTER THE CITY HALL.  AS YOU FACE DOWN THE HALLWAY, YOU SEE A GUARDED DOOR.",
+      "text": "你們走進市政廳。順著走廊看去，有一道門守著衛兵。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
       "source": "YOU FEEL A LIGHT TOUCH ON YOUR PURSE.  DO YOU IGNORE IT OR GRAB THE OFFENDING HAND?",
       "text": "你們感覺錢袋被輕輕碰了一下。要不理會，還是抓住那隻手？",
       "note": "扒手事件。"
@@ -857,6 +1197,11 @@
       "source": "YOU HAVE",
       "text": "你們有",
       "note": "敘述片段，後面接數量。"
+    },
+    {
+      "source": "YOU HAVE CLEARED THE AREA NEXT TO THE EVIL TEMPLE.",
+      "text": "你們清空了邪惡神廟旁的區域。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     },
     {
       "source": "YOU OVERHEAR TAVERN TALE",
@@ -882,6 +1227,26 @@
       "source": "YOU WALK NEAR THE",
       "text": "你們走近",
       "note": "敘述片段，後面接地名。"
+    },
+    {
+      "source": "YOUR CLEARING OF THE SLUM AREAS PERMITS US TO EXPAND.",
+      "text": "你們清空了貧民區，我們才得以往外拓展。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOUR ELIMINATION OF THE LIZARDMEN MENACE HAS GREATLY IMPROVED OUR STRATEGIC POSITION.",
+      "text": "你們解除了蜥蜴人的威脅，我方的戰略處境大為改善。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOUR SUCCESS AT PODAL PLAZA IS NOTED.",
+      "text": "你們在波多廣場的表現已記錄在案。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
+    },
+    {
+      "source": "YOUR TAKING THE GATE WILL ENABLE OUR FORCES TO ASSAULT THE ENEMY STRONGHOLD. RETURN THERE TO LEAD THE ATTACK.",
+      "text": "你們拿下那道門，我軍才能進攻敵方要塞。回去領頭發動攻擊。",
+      "note": "市政廳書記官的委託與回報。專名依 glossary。"
     }
   ]
 }
