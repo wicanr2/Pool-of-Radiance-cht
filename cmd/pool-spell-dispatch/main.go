@@ -17,6 +17,7 @@ type report struct {
 	InitEntry     int     `json:"init_entry"`
 	CallEntry     int     `json:"call_entry"`
 	TableAddress  string  `json:"table_address"`
+	ParameterAddress string `json:"parameter_table_address"`
 	HookAddress   string  `json:"hook_address"`
 	SlotCount     int     `json:"slot_count"`
 	DistinctCount int     `json:"distinct_handler_count"`
@@ -25,12 +26,18 @@ type report struct {
 }
 
 type slot struct {
-	SpellID    int    `json:"spell_id"`
-	Name       string `json:"name,omitempty"`
-	StubOffset string `json:"stub_offset"`
-	EntryIndex int    `json:"entry_index"`
-	CodeOffset string `json:"code_offset"`
-	InitOffset string `json:"init_offset"`
+	SpellID          int    `json:"spell_id"`
+	Name             string `json:"name,omitempty"`
+	Message          string `json:"message,omitempty"`
+	StubOffset       string `json:"stub_offset"`
+	EntryIndex       int    `json:"entry_index"`
+	CodeOffset       string `json:"code_offset"`
+	InitOffset       string `json:"init_offset"`
+	Parameters       string `json:"parameters"`
+	RequiresAttack   bool   `json:"requires_attack_roll"`
+	SaveCategory     uint8  `json:"save_category"`
+	SaveModifier     uint8  `json:"save_modifier"`
+	EffectCode       string `json:"effect_code"`
 }
 
 type group struct {
@@ -58,6 +65,10 @@ func run(zipPath, outPath string) error {
 	if err != nil {
 		return err
 	}
+	parameters, err := gamepack.ReadDOSSpellParameters(zipPath)
+	if err != nil {
+		return err
+	}
 	nameOf := func(id int) string {
 		if id < 1 || id > len(names) {
 			return ""
@@ -70,19 +81,27 @@ func run(zipPath, outPath string) error {
 		InitEntry:    gamepack.SpellDispatchInitEntry,
 		CallEntry:    gamepack.SpellDispatchCallEntry,
 		TableAddress: fmt.Sprintf("%#04x", gamepack.SpellDispatchTableAddress),
+		ParameterAddress: fmt.Sprintf("%#04x", gamepack.SpellParameterTableAddress),
 		HookAddress:  fmt.Sprintf("%#04x", gamepack.SpellDispatchHookAddress),
 		SlotCount:    len(table),
 	}
 	distinct := make(map[uint16]struct{}, len(table))
 	for _, entry := range table {
 		distinct[entry.CodeOffset] = struct{}{}
+		record := parameters[entry.SpellID]
 		r.Slots = append(r.Slots, slot{
-			SpellID:    entry.SpellID,
-			Name:       nameOf(entry.SpellID),
-			StubOffset: fmt.Sprintf("%#04x", entry.StubOffset),
-			EntryIndex: entry.EntryIndex,
-			CodeOffset: fmt.Sprintf("%#04x", entry.CodeOffset),
-			InitOffset: fmt.Sprintf("%#04x", entry.InitOffset),
+			SpellID:        entry.SpellID,
+			Name:           nameOf(entry.SpellID),
+			Message:        entry.Message,
+			StubOffset:     fmt.Sprintf("%#04x", entry.StubOffset),
+			EntryIndex:     entry.EntryIndex,
+			CodeOffset:     fmt.Sprintf("%#04x", entry.CodeOffset),
+			InitOffset:     fmt.Sprintf("%#04x", entry.InitOffset),
+			Parameters:     hexBytes(record.Raw[:]),
+			RequiresAttack: record.RequiresAttackRoll(),
+			SaveCategory:   record.SaveCategory(),
+			SaveModifier:   record.SaveModifier(),
+			EffectCode:     fmt.Sprintf("%#02x", record.EffectCode()),
 		})
 	}
 	r.DistinctCount = len(distinct)
@@ -106,6 +125,19 @@ func run(zipPath, outPath string) error {
 		return err
 	}
 	return os.WriteFile(outPath, encoded, 0o644)
+}
+
+// hexBytes 把整筆記錄印成十六進位，讓還沒解讀的欄位也留在證據裡。
+func hexBytes(raw []byte) string {
+	out := make([]byte, 0, len(raw)*3)
+	const digits = "0123456789abcdef"
+	for index, value := range raw {
+		if index > 0 {
+			out = append(out, ' ')
+		}
+		out = append(out, digits[value>>4], digits[value&0xf])
+	}
+	return string(out)
 }
 
 func sortGroups(groups []group) {

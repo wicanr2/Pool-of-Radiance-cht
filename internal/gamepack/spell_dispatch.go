@@ -57,6 +57,8 @@ const (
 	// 是物品與怪物特殊效果借用同一條派發路徑。
 	SpellDispatchCount = 67
 
+	// spellDispatchMessageMax 是效果訊息的最大長度，用來限制往回找的範圍。
+	spellDispatchMessageMax = 63
 	// spellDispatchInitStride 是填一格所需的碼長度。
 	spellDispatchInitStride = 13
 	// overlayControlHeaderSize 是控制段前面那段標頭，換算段號時要扣掉。
@@ -75,6 +77,55 @@ type SpellDispatchEntry struct {
 	CodeOffset uint16
 	// InitOffset 是填這一格的那段碼的位置，留著當證據。
 	InitOffset int
+	// Message 是處理常式印出來的效果訊息，例如 Bless 的 `is Blessed`。
+	// 它是一段 Pascal 字串，就放在處理常式的第一個 byte 前面；沒有訊息的
+	// 常式這裡是空字串。
+	Message string
+	// MessageOffset 是那段字串的長度 byte 位置；沒有訊息時是 -1。
+	MessageOffset int
+}
+
+// spellDispatchMessage 取處理常式前面那段 Pascal 字串。
+//
+// 只認「本體真的用到它」的那些：字串必須以某個 16-bit 立即數的形式出現在
+// 這支常式的碼裡（Turbo Pascal 是 `mov di, imm16` 再 `push cs; push di`）。
+// 少了這道檢查，往回找長度 byte 這個手法會把碰巧成立的位元組收成訊息。
+func spellDispatchMessage(code []byte, start, end int) (string, int) {
+	for length := 1; length <= spellDispatchMessageMax; length++ {
+		at := start - 1 - length
+		if at < 0 {
+			return "", -1
+		}
+		if int(code[at]) != length {
+			continue
+		}
+		text := code[at+1 : at+1+length]
+		printable := true
+		for _, b := range text {
+			if b < 0x20 || b > 0x7e {
+				printable = false
+				break
+			}
+		}
+		if !printable {
+			continue
+		}
+		if !referencesWord(code[start:end], uint16(at)) {
+			return "", -1
+		}
+		return string(text), at
+	}
+	return "", -1
+}
+
+// referencesWord 說這段碼裡有沒有出現這個 16-bit 立即數。
+func referencesWord(code []byte, value uint16) bool {
+	for offset := 0; offset+1 < len(code); offset++ {
+		if binary.LittleEndian.Uint16(code[offset:]) == value {
+			return true
+		}
+	}
+	return false
 }
 
 // ParseSpellDispatchTable 從 overlay-22 的碼段還原整張表。
@@ -124,7 +175,21 @@ func ParseSpellDispatchTable(overlay tpov.Overlay) ([]SpellDispatchEntry, error)
 		if previous, clash := found[id]; clash {
 			return nil, fmt.Errorf("spell %d is filled twice, at %#x and %#x", id, previous.InitOffset, offset)
 		}
-		found[id] = SpellDispatchEntry{SpellID: id, StubOffset: pointerOffset, EntryIndex: entry.Index, CodeOffset: entry.CodeOffset, InitOffset: offset}
+		found[id] = SpellDispatchEntry{SpellID: id, StubOffset: pointerOffset, EntryIndex: entry.Index, CodeOffset: entry.CodeOffset, InitOffset: offset, MessageOffset: -1}
+	}
+
+	bounds := make([]int, 0, len(found))
+	for _, entry := range found {
+		bounds = append(bounds, int(entry.CodeOffset))
+	}
+	sort.Ints(bounds)
+	next := func(start int) int {
+		for _, candidate := range bounds {
+			if candidate > start {
+				return candidate
+			}
+		}
+		return len(code)
 	}
 
 	table := make([]SpellDispatchEntry, 0, SpellDispatchCount)
@@ -133,6 +198,8 @@ func ParseSpellDispatchTable(overlay tpov.Overlay) ([]SpellDispatchEntry, error)
 		if !ok {
 			return nil, fmt.Errorf("spell %d has no dispatch slot", id)
 		}
+		start := int(entry.CodeOffset)
+		entry.Message, entry.MessageOffset = spellDispatchMessage(code, start, next(start))
 		table = append(table, entry)
 	}
 	if len(found) != SpellDispatchCount {

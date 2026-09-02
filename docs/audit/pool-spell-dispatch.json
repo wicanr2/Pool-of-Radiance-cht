@@ -4,6 +4,7 @@
   "init_entry": 10,
   "call_entry": 5,
   "table_address": "0x6a7c",
+  "parameter_table_address": "0x3196",
   "hook_address": "0x6a78",
   "slot_count": 67,
   "distinct_handler_count": 53,
@@ -11,18 +12,30 @@
     {
       "spell_id": 1,
       "name": "Bless",
+      "message": "is Blessed",
       "stub_offset": "0x0075",
       "entry_index": 17,
       "code_offset": "0x0ff5",
-      "init_offset": "0x33f3"
+      "init_offset": "0x33f3",
+      "parameters": "06 00 06 00 0a 04 00 04 01 02 0a 02 00 00 00 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x01"
     },
     {
       "spell_id": 2,
       "name": "Curse",
+      "message": "is Cursed",
       "stub_offset": "0x007a",
       "entry_index": 18,
       "code_offset": "0x1026",
-      "init_offset": "0x3400"
+      "init_offset": "0x3400",
+      "parameters": "06 00 06 00 0a 00 00 04 02 01 0a 03 01 00 00 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x02"
     },
     {
       "spell_id": 3,
@@ -30,7 +43,12 @@
       "stub_offset": "0x007f",
       "entry_index": 19,
       "code_offset": "0x1051",
-      "init_offset": "0x340d"
+      "init_offset": "0x340d",
+      "parameters": "00 00 00 00 04 02 00 04 00 02 05 01 00 00 00 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 4,
@@ -38,39 +56,68 @@
       "stub_offset": "0x0084",
       "entry_index": 20,
       "code_offset": "0x108f",
-      "init_offset": "0x341a"
+      "init_offset": "0x341a",
+      "parameters": "ff 00 00 00 04 00 00 04 00 01 05 02 01 00 00 01",
+      "requires_attack_roll": true,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 5,
       "name": "Detect Magic",
+      "message": "is affected",
       "stub_offset": "0x0089",
       "entry_index": 21,
       "code_offset": "0x10d1",
-      "init_offset": "0x3427"
+      "init_offset": "0x3427",
+      "parameters": "03 00 0a 00 00 01 00 04 05 02 01 00 00 00 00 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x05"
     },
     {
       "spell_id": 6,
       "name": "Protection From Evil",
+      "message": "is protected",
       "stub_offset": "0x008e",
       "entry_index": 22,
       "code_offset": "0x110b",
-      "init_offset": "0x3434"
+      "init_offset": "0x3434",
+      "parameters": "00 00 00 03 04 02 00 04 08 02 04 01 00 00 00 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x08"
     },
     {
       "spell_id": 7,
       "name": "Protection from Good",
+      "message": "is protected",
       "stub_offset": "0x008e",
       "entry_index": 22,
       "code_offset": "0x110b",
-      "init_offset": "0x3441"
+      "init_offset": "0x3441",
+      "parameters": "00 00 00 03 04 02 00 04 09 02 04 02 00 00 00 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x09"
     },
     {
       "spell_id": 8,
       "name": "Resist Cold",
+      "message": "is cold-resistant",
       "stub_offset": "0x0093",
       "entry_index": 23,
       "code_offset": "0x114a",
-      "init_offset": "0x344e"
+      "init_offset": "0x344e",
+      "parameters": "00 00 00 0a 04 02 00 04 0a 02 0a 00 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x0a"
     },
     {
       "spell_id": 9,
@@ -78,47 +125,82 @@
       "stub_offset": "0x0098",
       "entry_index": 24,
       "code_offset": "0x1178",
-      "init_offset": "0x345b"
+      "init_offset": "0x345b",
+      "parameters": "00 00 00 00 04 00 00 04 00 01 01 04 01 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 10,
       "name": "Charm Person",
+      "message": "is charmed",
       "stub_offset": "0x009d",
       "entry_index": 25,
       "code_offset": "0x11c5",
-      "init_offset": "0x3468"
+      "init_offset": "0x3468",
+      "parameters": "0c 00 00 00 04 00 01 04 0b 01 01 06 01 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x0b"
     },
     {
       "spell_id": 11,
       "name": "Detect Magic",
+      "message": "is affected",
       "stub_offset": "0x0089",
       "entry_index": 21,
       "code_offset": "0x10d1",
-      "init_offset": "0x3475"
+      "init_offset": "0x3475",
+      "parameters": "00 00 00 02 00 01 00 04 05 02 01 00 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x05"
     },
     {
       "spell_id": 12,
       "name": "Enlarge",
+      "message": "is stronger",
       "stub_offset": "0x00a2",
       "entry_index": 26,
       "code_offset": "0x128d",
-      "init_offset": "0x3482"
+      "init_offset": "0x3482",
+      "parameters": "00 02 00 0a 04 02 00 04 0c 02 01 00 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x0c"
     },
     {
       "spell_id": 13,
       "name": "Reduce",
+      "message": "has been reduced",
       "stub_offset": "0x00a7",
       "entry_index": 27,
       "code_offset": "0x135e",
-      "init_offset": "0x348f"
+      "init_offset": "0x348f",
+      "parameters": "00 02 00 0a 04 02 01 04 0d 02 01 00 01 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x0d"
     },
     {
       "spell_id": 14,
       "name": "Friends",
+      "message": "is friendly",
       "stub_offset": "0x00ac",
       "entry_index": 28,
       "code_offset": "0x13c8",
-      "init_offset": "0x349c"
+      "init_offset": "0x349c",
+      "parameters": "00 00 00 01 00 01 00 04 0e 00 01 00 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x0e"
     },
     {
       "spell_id": 15,
@@ -126,39 +208,68 @@
       "stub_offset": "0x00b1",
       "entry_index": 29,
       "code_offset": "0x1429",
-      "init_offset": "0x34a9"
+      "init_offset": "0x34a9",
+      "parameters": "06 04 00 00 04 00 00 04 00 01 01 06 01 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 16,
       "name": "Protection From Evil",
+      "message": "is protected",
       "stub_offset": "0x008e",
       "entry_index": 22,
       "code_offset": "0x110b",
-      "init_offset": "0x34b6"
+      "init_offset": "0x34b6",
+      "parameters": "00 00 00 02 04 02 00 04 08 02 01 01 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x08"
     },
     {
       "spell_id": 17,
       "name": "Protection From Good",
+      "message": "is protected",
       "stub_offset": "0x008e",
       "entry_index": 22,
       "code_offset": "0x110b",
-      "init_offset": "0x34c3"
+      "init_offset": "0x34c3",
+      "parameters": "00 00 00 02 04 02 00 04 09 02 01 02 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x09"
     },
     {
       "spell_id": 18,
       "name": "Read Magic",
+      "message": "is affected",
       "stub_offset": "0x0089",
       "entry_index": 21,
       "code_offset": "0x10d1",
-      "init_offset": "0x34d0"
+      "init_offset": "0x34d0",
+      "parameters": "00 00 00 02 00 01 00 04 10 00 0a 00 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x10"
     },
     {
       "spell_id": 19,
       "name": "Shield",
+      "message": "is shielded",
       "stub_offset": "0x00b6",
       "entry_index": 30,
       "code_offset": "0x1491",
-      "init_offset": "0x34dd"
+      "init_offset": "0x34dd",
+      "parameters": "00 00 00 05 00 01 00 04 11 02 01 03 00 00 01 01",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x11"
     },
     {
       "spell_id": 20,
@@ -166,63 +277,110 @@
       "stub_offset": "0x00bb",
       "entry_index": 31,
       "code_offset": "0x14bf",
-      "init_offset": "0x34ea"
+      "init_offset": "0x34ea",
+      "parameters": "ff 00 00 00 04 00 00 04 00 01 01 04 01 00 01 01",
+      "requires_attack_roll": true,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 21,
       "name": "Sleep",
+      "message": "falls asleep",
       "stub_offset": "0x00c0",
       "entry_index": 32,
       "code_offset": "0x1513",
-      "init_offset": "0x34f7"
+      "init_offset": "0x34f7",
+      "parameters": "03 04 00 05 09 00 00 04 35 01 01 07 01 01 00 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x35"
     },
     {
       "spell_id": 22,
       "name": "Find Traps",
+      "message": "is affected",
       "stub_offset": "0x0089",
       "entry_index": 21,
       "code_offset": "0x10d1",
-      "init_offset": "0x3504"
+      "init_offset": "0x3504",
+      "parameters": "00 00 1e 00 00 01 00 04 13 00 05 00 00 00 00 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x13"
     },
     {
       "spell_id": 23,
       "name": "Hold Person",
+      "message": "is held",
       "stub_offset": "0x00c5",
       "entry_index": 33,
       "code_offset": "0x1650",
-      "init_offset": "0x3511"
+      "init_offset": "0x3511",
+      "parameters": "06 00 04 01 06 00 01 04 34 01 05 07 01 00 00 02",
+      "requires_attack_roll": false,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x34"
     },
     {
       "spell_id": 24,
       "name": "Resist Fire",
+      "message": "is fire resistant",
       "stub_offset": "0x00ca",
       "entry_index": 34,
       "code_offset": "0x17d4",
-      "init_offset": "0x351e"
+      "init_offset": "0x351e",
+      "parameters": "00 00 00 0a 04 02 00 04 14 02 05 02 00 00 00 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x14"
     },
     {
       "spell_id": 25,
       "name": "Silence, 15' Radius",
+      "message": "is silenced",
       "stub_offset": "0x00cf",
       "entry_index": 35,
       "code_offset": "0x180d",
-      "init_offset": "0x352b"
+      "init_offset": "0x352b",
+      "parameters": "0c 00 00 02 1f 00 03 04 15 01 05 04 01 01 00 02",
+      "requires_attack_roll": false,
+      "save_category": 3,
+      "save_modifier": 4,
+      "effect_code": "0x15"
     },
     {
       "spell_id": 26,
       "name": "Slow Poison",
+      "message": "is affected",
       "stub_offset": "0x00d4",
       "entry_index": 36,
       "code_offset": "0x1846",
-      "init_offset": "0x3538"
+      "init_offset": "0x3538",
+      "parameters": "00 00 00 3c 04 02 00 04 16 02 01 00 00 00 00 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x16"
     },
     {
       "spell_id": 27,
       "name": "Snake Charm",
+      "message": "is charmed",
       "stub_offset": "0x00d9",
       "entry_index": 37,
       "code_offset": "0x18f9",
-      "init_offset": "0x3545"
+      "init_offset": "0x3545",
+      "parameters": "03 00 00 00 f0 00 00 04 33 01 05 00 01 00 00 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x33"
     },
     {
       "spell_id": 28,
@@ -230,87 +388,152 @@
       "stub_offset": "0x00de",
       "entry_index": 38,
       "code_offset": "0x19a8",
-      "init_offset": "0x3552"
+      "init_offset": "0x3552",
+      "parameters": "03 00 00 01 00 01 00 04 17 02 05 01 00 00 01 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x17"
     },
     {
       "spell_id": 29,
       "name": "Detect Invisibility",
+      "message": "is affected",
       "stub_offset": "0x0089",
       "entry_index": 21,
       "code_offset": "0x10d1",
-      "init_offset": "0x355f"
+      "init_offset": "0x355f",
+      "parameters": "00 04 00 05 00 01 00 04 18 02 02 01 00 00 01 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x18"
     },
     {
       "spell_id": 30,
       "name": "Invisibility",
+      "message": "is invisible",
       "stub_offset": "0x00e3",
       "entry_index": 39,
       "code_offset": "0x19fb",
-      "init_offset": "0x356c"
+      "init_offset": "0x356c",
+      "parameters": "00 00 00 00 04 02 00 04 19 02 02 02 00 00 01 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x19"
     },
     {
       "spell_id": 31,
       "name": "Knock",
+      "message": "Knock-Knock",
       "stub_offset": "0x00e8",
       "entry_index": 40,
       "code_offset": "0x1a34",
-      "init_offset": "0x3579"
+      "init_offset": "0x3579",
+      "parameters": "00 00 00 00 00 00 00 04 00 00 01 00 00 00 01 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 32,
       "name": "Mirror Image",
+      "message": "is duplicated",
       "stub_offset": "0x00ed",
       "entry_index": 41,
       "code_offset": "0x1a6f",
-      "init_offset": "0x3586"
+      "init_offset": "0x3586",
+      "parameters": "00 00 00 02 00 01 00 04 1c 02 02 03 00 00 01 02",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x1c"
     },
     {
       "spell_id": 33,
       "name": "Ray of Enfeeblement",
+      "message": "is weakened",
       "stub_offset": "0x00f2",
       "entry_index": 42,
       "code_offset": "0x1ab1",
-      "init_offset": "0x3593"
+      "init_offset": "0x3593",
+      "parameters": "01 01 00 01 04 00 01 04 1d 01 02 02 01 00 01 02",
+      "requires_attack_roll": false,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x1d"
     },
     {
       "spell_id": 34,
       "name": "Stinking Cloud",
+      "message": "Creates a noxious cloud",
       "stub_offset": "0x00f7",
       "entry_index": 43,
       "code_offset": "0x1af6",
-      "init_offset": "0x35a0"
+      "init_offset": "0x35a0",
+      "parameters": "03 00 00 01 09 00 03 00 1e 01 02 07 01 01 01 02",
+      "requires_attack_roll": false,
+      "save_category": 3,
+      "save_modifier": 0,
+      "effect_code": "0x1e"
     },
     {
       "spell_id": 35,
       "name": "Strength",
+      "message": "is stronger",
       "stub_offset": "0x00fc",
       "entry_index": 44,
       "code_offset": "0x1f16",
-      "init_offset": "0x35ad"
+      "init_offset": "0x35ad",
+      "parameters": "00 00 00 3c 00 02 00 04 26 00 0a 00 00 00 00 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x26"
     },
     {
       "spell_id": 36,
       "name": "Animate Dead",
+      "message": "is animated",
       "stub_offset": "0x0101",
       "entry_index": 45,
       "code_offset": "0x2043",
-      "init_offset": "0x35ba"
+      "init_offset": "0x35ba",
+      "parameters": "01 00 00 00 f0 04 00 04 20 02 0a 02 00 00 00 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x20"
     },
     {
       "spell_id": 37,
       "name": "Cure Blindness",
+      "message": "can see",
       "stub_offset": "0x0106",
       "entry_index": 46,
       "code_offset": "0x21e8",
-      "init_offset": "0x35c7"
+      "init_offset": "0x35c7",
+      "parameters": "00 00 00 00 04 02 00 04 00 02 0a 00 00 00 00 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 38,
       "name": "Cause Blindness",
+      "message": "is blind",
       "stub_offset": "0x010b",
       "entry_index": 47,
       "code_offset": "0x222e",
-      "init_offset": "0x35d4"
+      "init_offset": "0x35d4",
+      "parameters": "ff 00 00 00 04 00 01 04 21 01 0a 03 01 00 00 03",
+      "requires_attack_roll": true,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x21"
     },
     {
       "spell_id": 39,
@@ -318,63 +541,110 @@
       "stub_offset": "0x0115",
       "entry_index": 49,
       "code_offset": "0x2300",
-      "init_offset": "0x35e1"
+      "init_offset": "0x35e1",
+      "parameters": "00 00 00 00 00 02 00 04 00 00 64 00 00 00 00 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 40,
       "name": "Cause Disease",
+      "message": "is diseased",
       "stub_offset": "0x011a",
       "entry_index": 50,
       "code_offset": "0x231d",
-      "init_offset": "0x35ee"
+      "init_offset": "0x35ee",
+      "parameters": "ff 00 00 00 04 00 01 04 22 01 64 04 01 00 00 03",
+      "requires_attack_roll": true,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x22"
     },
     {
       "spell_id": 41,
       "name": "Dispel Magic",
+      "message": "is affected",
       "stub_offset": "0x011f",
       "entry_index": 51,
       "code_offset": "0x2356",
-      "init_offset": "0x35fb"
+      "init_offset": "0x35fb",
+      "parameters": "06 00 00 00 09 02 00 04 00 02 04 05 01 01 00 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 42,
       "name": "Prayer",
+      "message": "is praying",
       "stub_offset": "0x0124",
       "entry_index": 52,
       "code_offset": "0x249d",
-      "init_offset": "0x3608"
+      "init_offset": "0x3608",
+      "parameters": "00 00 00 01 00 01 00 04 31 02 06 06 00 00 00 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x31"
     },
     {
       "spell_id": 43,
       "name": "Remove Curse",
+      "message": "'s item is un-cursed",
       "stub_offset": "0x004d",
       "entry_index": 9,
       "code_offset": "0x2508",
-      "init_offset": "0x3615"
+      "init_offset": "0x3615",
+      "parameters": "00 00 00 00 04 02 00 04 00 02 06 00 00 00 00 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 44,
       "name": "Bestow Curse",
+      "message": "has been cursed!",
       "stub_offset": "0x0129",
       "entry_index": 53,
       "code_offset": "0x25c7",
-      "init_offset": "0x3622"
+      "init_offset": "0x3622",
+      "parameters": "ff 00 00 0a 04 00 01 04 24 01 06 04 01 00 01 03",
+      "requires_attack_roll": true,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x24"
     },
     {
       "spell_id": 45,
       "name": "Blink",
+      "message": "is blinking",
       "stub_offset": "0x012e",
       "entry_index": 54,
       "code_offset": "0x2600",
-      "init_offset": "0x362f"
+      "init_offset": "0x362f",
+      "parameters": "00 00 00 01 00 01 00 04 25 01 01 02 00 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x25"
     },
     {
       "spell_id": 46,
       "name": "Dispel Magic",
+      "message": "is affected",
       "stub_offset": "0x011f",
       "entry_index": 51,
       "code_offset": "0x2356",
-      "init_offset": "0x363c"
+      "init_offset": "0x363c",
+      "parameters": "0c 00 00 01 09 02 00 04 00 02 03 02 01 01 01 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 47,
@@ -382,31 +652,54 @@
       "stub_offset": "0x0133",
       "entry_index": 55,
       "code_offset": "0x262e",
-      "init_offset": "0x3649"
+      "init_offset": "0x3649",
+      "parameters": "0a 01 00 00 0b 00 02 04 00 01 03 07 01 03 01 03",
+      "requires_attack_roll": false,
+      "save_category": 2,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 48,
       "name": "Haste",
+      "message": "is Hasted",
       "stub_offset": "0x013d",
       "entry_index": 57,
       "code_offset": "0x2852",
-      "init_offset": "0x3656"
+      "init_offset": "0x3656",
+      "parameters": "06 00 03 01 0a 04 00 04 27 02 03 03 00 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x27"
     },
     {
       "spell_id": 49,
       "name": "Hold Person",
+      "message": "is held",
       "stub_offset": "0x00c5",
       "entry_index": 33,
       "code_offset": "0x1650",
-      "init_offset": "0x3663"
+      "init_offset": "0x3663",
+      "parameters": "0c 00 00 02 07 00 01 04 34 01 03 06 01 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 1,
+      "save_modifier": 4,
+      "effect_code": "0x34"
     },
     {
       "spell_id": 50,
       "name": "Invisibility, 10' Radius",
+      "message": "is invisible",
       "stub_offset": "0x00e3",
       "entry_index": 39,
       "code_offset": "0x19fb",
-      "init_offset": "0x3670"
+      "init_offset": "0x3670",
+      "parameters": "00 00 00 00 09 04 00 04 19 02 03 01 00 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x19"
     },
     {
       "spell_id": 51,
@@ -414,124 +707,221 @@
       "stub_offset": "0x014c",
       "entry_index": 60,
       "code_offset": "0x2b75",
-      "init_offset": "0x367d"
+      "init_offset": "0x367d",
+      "parameters": "04 01 00 00 08 00 02 04 00 01 03 07 01 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 2,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 52,
       "name": "Protection From Evil, 10' Radius",
+      "message": "is protected",
       "stub_offset": "0x008e",
       "entry_index": 22,
       "code_offset": "0x110b",
-      "init_offset": "0x368a"
+      "init_offset": "0x368a",
+      "parameters": "00 00 00 02 04 02 00 04 2d 02 03 01 00 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x2d"
     },
     {
       "spell_id": 53,
       "name": "Protection From Good, 10' Radius",
+      "message": "is protected",
       "stub_offset": "0x008e",
       "entry_index": 22,
       "code_offset": "0x110b",
-      "init_offset": "0x3697"
+      "init_offset": "0x3697",
+      "parameters": "00 00 00 02 04 02 00 04 2e 02 03 02 00 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x2e"
     },
     {
       "spell_id": 54,
       "name": "Protection From Normal Missiles",
+      "message": "is protected",
       "stub_offset": "0x008e",
       "entry_index": 22,
       "code_offset": "0x110b",
-      "init_offset": "0x36a4"
+      "init_offset": "0x36a4",
+      "parameters": "00 00 00 0a 04 02 00 04 29 02 03 03 00 00 01 03",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x29"
     },
     {
       "spell_id": 55,
       "name": "Slow",
+      "message": "is Slowed",
       "stub_offset": "0x0151",
       "entry_index": 61,
       "code_offset": "0x2bc7",
-      "init_offset": "0x36b1"
+      "init_offset": "0x36b1",
+      "parameters": "09 01 03 01 0a 00 00 04 2a 01 03 05 01 00 00 07",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x2a"
     },
     {
       "spell_id": 56,
       "name": "Restoration",
+      "message": "is restored",
       "stub_offset": "0x0156",
       "entry_index": 62,
       "code_offset": "0x2c01",
-      "init_offset": "0x36be"
+      "init_offset": "0x36be",
+      "parameters": "00 00 00 00 04 02 00 04 00 02 06 00 00 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 57,
+      "message": "is Speedy",
       "stub_offset": "0x015b",
       "entry_index": 63,
       "code_offset": "0x2db7",
-      "init_offset": "0x36cb"
+      "init_offset": "0x36cb",
+      "parameters": "00 00 00 00 00 01 00 04 27 02 00 03 00 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x27"
     },
     {
       "spell_id": 58,
+      "message": "is Healed",
       "stub_offset": "0x0160",
       "entry_index": 64,
       "code_offset": "0x2e02",
-      "init_offset": "0x36d8"
+      "init_offset": "0x36d8",
+      "parameters": "00 00 00 00 04 02 00 04 00 02 00 01 00 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 59,
+      "message": "is stronger",
       "stub_offset": "0x0165",
       "entry_index": 65,
       "code_offset": "0x2e9a",
-      "init_offset": "0x36e5"
+      "init_offset": "0x36e5",
+      "parameters": "00 00 00 00 00 01 00 04 26 02 00 01 00 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x26"
     },
     {
       "spell_id": 60,
       "stub_offset": "0x016a",
       "entry_index": 66,
       "code_offset": "0x2f02",
-      "init_offset": "0x36f2"
+      "init_offset": "0x36f2",
+      "parameters": "04 04 00 00 04 00 02 04 00 01 00 07 01 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 2,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 61,
+      "message": "is paralyzed",
       "stub_offset": "0x016f",
       "entry_index": 67,
       "code_offset": "0x2f4e",
-      "init_offset": "0x36ff"
+      "init_offset": "0x36ff",
+      "parameters": "06 00 00 00 04 00 01 00 34 01 00 07 01 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 1,
+      "save_modifier": 0,
+      "effect_code": "0x34"
     },
     {
       "spell_id": 62,
+      "message": "is Healed",
       "stub_offset": "0x0174",
       "entry_index": 68,
       "code_offset": "0x2f85",
-      "init_offset": "0x370c"
+      "init_offset": "0x370c",
+      "parameters": "00 00 00 00 00 01 00 04 27 02 00 01 00 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x27"
     },
     {
       "spell_id": 63,
+      "message": "is invisible",
       "stub_offset": "0x0179",
       "entry_index": 69,
       "code_offset": "0x2fe0",
-      "init_offset": "0x3719"
+      "init_offset": "0x3719",
+      "parameters": "00 00 00 00 07 04 00 04 47 02 00 02 00 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x47"
     },
     {
       "spell_id": 64,
       "stub_offset": "0x0133",
       "entry_index": 55,
       "code_offset": "0x262e",
-      "init_offset": "0x3726"
+      "init_offset": "0x3726",
+      "parameters": "07 00 00 00 0b 00 02 04 00 01 00 07 01 03 02 06",
+      "requires_attack_roll": false,
+      "save_category": 2,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 65,
       "stub_offset": "0x017e",
       "entry_index": 70,
       "code_offset": "0x300e",
-      "init_offset": "0x3733"
+      "init_offset": "0x3733",
+      "parameters": "0c 00 00 00 04 00 00 04 00 01 00 06 01 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 66,
       "stub_offset": "0x0183",
       "entry_index": 71,
       "code_offset": "0x3049",
-      "init_offset": "0x3740"
+      "init_offset": "0x3740",
+      "parameters": "00 00 00 00 00 01 00 04 00 02 00 00 00 00 02 06",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x00"
     },
     {
       "spell_id": 67,
+      "message": "is Reading",
       "stub_offset": "0x0188",
       "entry_index": 72,
       "code_offset": "0x305b",
-      "init_offset": "0x374d"
+      "init_offset": "0x374d",
+      "parameters": "00 00 00 00 00 01 00 04 04 00 00 00 00 00 0a 00",
+      "requires_attack_roll": false,
+      "save_category": 0,
+      "save_modifier": 4,
+      "effect_code": "0x04"
     }
   ],
   "shared_handlers": [
