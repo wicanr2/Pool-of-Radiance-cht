@@ -110,7 +110,7 @@ Arts of War`、`Fyeredeth's Discurses on power`、`Urgund's Descriptions of Dark
 
 | 英文 | 攻略中文 | 與說明書的關係 |
 |---|---|---|
-| Mantor's Library | 曼多爾圖書館 | 說明書地圖只標 `MENDOR LIBRARY`，未給中文；⚠ 兩者英文拼法不同（Mantor／Mendor），須以原版資料判定 |
+| Mendor's Library | 曼多爾圖書館 | 說明書地圖標 `MENDOR LIBRARY` 但未給中文，中文名由攻略補上。攻略內文寫的 `Mantor` 是桌上模組的名稱，見下方說明 |
 | Cadorna Textile House | 卡德納紡織廠 | 說明書地圖只標英文 |
 | Sokal Keep | 索卡爾城堡 | 與說明書 p.44／p.45 一致，支持已定案的「索卡爾城堡」 |
 | Podol Plaza | 波多廣場 | 與說明書 p.13 一致 |
@@ -126,11 +126,29 @@ Arts of War`、`Fyeredeth's Discurses on power`、`Urgund's Descriptions of Dark
 譯名取捨仍以 [`manual/glossary.md`](manual/glossary.md) 的定案為準：說明書 >
 CoAB > 攻略。攻略只在說明書與 CoAB 都沒有時才作候選，且要標明來源。
 
+## Mendor 與 Mantor：兩份官方資料的差異，不是筆誤
+
+`Mendor's Library` 與 `Mantor's Library` 指同一座圖書館，但出自不同來源：
+
+| 來源 | 名稱 | 設定 |
+|---|---|---|
+| SSI 1988 電腦遊戲 Pool of Radiance | **Mendor's Library** | Mendor 是館務管理者，設定於 DR 908 前後亡故，館名沿用其名 |
+| AD&D 桌上模組 Ruins of Adventure | Mantor's Library | Mantor 是創立該館的賢者，該館屬 Scholar's Square |
+
+兩者的地圖版面也不同：遊戲是 16×16 地圖中的 13×12 建築，模組則佔滿整張圖。模組本身
+還在索卡爾城堡的一段遭遇裡提到「the sage Mendor」，可見原作內部也混用過。
+
+**本專案以 DOS 遊戲為 oracle，因此正名一律用 `Mendor's Library`**，中文沿用攻略補的
+「曼多爾圖書館」（音譯對 Mendor 亦成立）。說明書地圖的 `MENDOR LIBRARY` 是對的；
+攻略內文的 `Mantor` 來自模組那一系，不採。
+
+遊戲內建築佔 13×12、外框 16×16 這一點，可作為 spec 009 的 GEO 尺寸旁證，但仍要由
+原始 GEO 自行解出，不採信二手描述。
+
 ## 待驗證
 
 - 攻略列出的事件點數量（24／16／10／9／15／4／9）是否與 ECL 解出的事件數相符。
   數量對不上時，先懷疑自己的掃描面有洞，再懷疑攻略漏列。
-- `Mantor` 與說明書地圖的 `MENDOR` 何者為原版拼法。
 - 索卡爾城堡的三個密語是否為原版 ECL 的字串比對，以及大小寫與觸發條件。
 - 曼多爾圖書館指向的 Journal Entry 10／19 與線索報導 21／8／37／7，是否與轉錄的
   上冊條目編號完全一致。

@@ -49,7 +49,7 @@
 | Scoured Lands | 被洗刷過的土地 | p.10 | |
 | Lazara | 拉撒拉 | p.40 | 硬殼生物對月之海的稱呼 |
 | Cadorna Textile House | （地圖只標英文）| p.36 | |
-| Mendor Library | （地圖只標英文）| p.36 | |
+| Mendor's Library | 曼多爾圖書館 | p.36 | 說明書地圖只標 `MENDOR LIBRARY`；中文取自《軟體世界》創刊號攻略。桌上模組 Ruins of Adventure 作 `Mantor's Library`，是另一系設定，本專案以 DOS 遊戲為準 |
 
 ## 人物
 
