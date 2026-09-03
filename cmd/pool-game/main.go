@@ -791,6 +791,9 @@ func (a *app) moveInitialDungeonForward() error {
 		a.statusLine = "Face a cardinal direction before moving forward."
 		return nil
 	}
+	if a.inWilderness() {
+		return a.moveWildernessForward()
+	}
 	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
 		a.statusLine = "A wall or locked door blocks the way."
 		return nil
@@ -820,6 +823,57 @@ func (a *app) moveInitialDungeonForward() error {
 	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
+}
+
+// moveWildernessForward 走野外的一步（spec 105）。
+//
+// 野外的移動是 ECL 自己做的：入口 0 把 `49C3`／`49C4` 抄進 `00FB`／`00FC`，
+// 再用八支 `ON GOSUB` 依 `DS:033Dh` 的方向 ±1；不給走的時候寫
+// `DS:6DC9h = 255`。所以前端只要給方向、事後把算出來的位置收回去。
+//
+// **畫面那一層還沒接**：野外用哪一張圖、怎麼投影成格子還沒讀（spec 105 的
+// OPEN），所以隊伍在 GEO 上的座標不動，只有野外座標在走。
+func (a *app) moveWildernessForward() error {
+	if a.eventMachine == nil {
+		return fmt.Errorf("Pool wilderness step needs the event machine")
+	}
+	a.eventMachine.Memory[wildernessFacing] = wildernessFacingIndex(a.spawn.Facing)
+	a.eventMachine.Memory[wildernessRefuse] = 0
+	result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
+	if err != nil {
+		return fmt.Errorf("dispatch Pool wilderness cell: %w", err)
+	}
+	result, err = a.consumeInitialTransitionResources(result)
+	if err != nil {
+		return err
+	}
+	if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
+		return a.pauseInitialCellResult(result)
+	}
+	if a.eventMachine.Memory[wildernessRefuse] == 255 {
+		a.statusLine = "The wilderness step was refused by the original script."
+		return a.beginInitialSearch()
+	}
+	a.eventMachine.Memory[wildernessX] = a.eventMachine.Memory[wildernessNextX]
+	a.eventMachine.Memory[wildernessY] = a.eventMachine.Memory[wildernessNextY]
+	return a.beginInitialSearch()
+}
+
+// wildernessFacingIndex 把四方位的朝向換成那張八支 `ON GOSUB` 的索引。
+// 記錄順序是北、東北、東、東南、南、西南、西、西北（arm 依序落在
+// ecl7/26 的 `9A9Dh`、`9AA7h`、`9AB0h`、`9ABAh`、`9AC3h`、`9ACDh`、
+// `9AD6h`、`9A94h`），所以四方位對到 1、3、5、7。
+func wildernessFacingIndex(facing uint8) uint16 {
+	switch facing {
+	case 0:
+		return 1
+	case 1:
+		return 3
+	case 2:
+		return 5
+	default:
+		return 7
+	}
 }
 
 func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Result, error) {
@@ -1756,6 +1810,31 @@ func (a *app) cellMenuLabel() string {
 // **原版的寫入點還沒找到**（沒有任何 ECL 寫它，執行檔裡也沒有直接定址它），
 // 所以語意是 strong inference，不是 exact。
 const mapExitFlagAddress = 0x6DD5
+
+// 野外地圖（ECL block 25、26、27，spec 105）。
+const (
+	// wildernessX／wildernessY 是隊伍在野外的位置。X 的範圍 2..15、
+	// Y 的範圍 8..33，所以它們不是格子座標。
+	wildernessX = 0x49C3
+	wildernessY = 0x49C4
+	// wildernessNextX／wildernessNextY 是入口 0 算出來的「這一步要去哪」。
+	wildernessNextX = 0x00FB
+	wildernessNextY = 0x00FC
+	// wildernessFacing 是那張八支 `ON GOSUB` 的索引（ecl7/26 `9A18h` 的
+	// 運算元就是這個位址），順序為北、東北、東、東南、南、西南、西、西北。
+	wildernessFacing = 0x033D
+	// wildernessRefuse 由 ECL 寫 255 表示「這一步不給走」。三處都是這個
+	// 意思：撞到不可通行表、Y 到北緣、跨圖的例外座標。
+	wildernessRefuse = 0x6DC9
+)
+
+// wildernessBlocks 是三張野外圖的 ECL 區塊編號（spec 105）。
+var wildernessBlocks = map[uint16]bool{25: true, 26: true, 27: true}
+
+// inWilderness 說目前的腳本區塊是不是野外圖。
+func (a *app) inWilderness() bool {
+	return a.eventSession != nil && wildernessBlocks[a.eventSession.CurrentBlockID()]
+}
 
 // mapExitCommitCall 是 `2Dh CALL C01Eh` 的選擇子。
 //
