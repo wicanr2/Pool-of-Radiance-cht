@@ -14,11 +14,13 @@ const (
 	EncounterChoiceWait = 1
 	// EncounterChoiceFlee 是逃跑。
 	EncounterChoiceFlee = 2
-	// EncounterChoiceParley 是第四項的 PARLAY 版。
-	EncounterChoiceParley = 3
-	// EncounterChoiceAdvance 是第四項換成 ADVANCE 時的編號。原版在
-	// `23B2h` 把選擇 3 改寫成 4，所以兩版共用同一張五格表的不同格。
-	EncounterChoiceAdvance = 4
+	// EncounterChoiceAdvance 是第四項是 ADVANCE 時的編號——**選單上的第 3 項
+	// 就是表的第 3 格**，不改寫。
+	EncounterChoiceAdvance = 3
+	// EncounterChoiceParley 是第四項是 PARLAY 時的編號。原版在 `23B2h` 把
+	// 選單索引 3 改寫成 **4**，而改寫的條件（`+582h == 0` 或 `+1CCh == 0`）
+	// 與「第四項顯示 PARLAY」的條件是同一個。所以 PARLAY 指到表的第 4 格。
+	EncounterChoiceParley = 4
 
 	// EncounterMessageWait 是雙方按兵不動。
 	EncounterMessageWait = "Both sides wait."
@@ -65,6 +67,13 @@ func ResolveEncounterChoice(in EncounterInputs) (EncounterOutcome, error) {
 		}
 		return EncounterOutcome{Message: EncounterMessageWait, Repeat: true}
 	}
+	// 距離大於零就拉近一格再問；距離為零時 PARLAY 這一支才真的成立。
+	parley := func() EncounterOutcome {
+		if in.Distance > 0 {
+			return EncounterOutcome{Approach: true, Repeat: true}
+		}
+		return EncounterOutcome{Store: true, ResultCode: 3}
+	}
 	switch in.Kind {
 	case 0:
 		if in.Choice == EncounterChoiceFlee {
@@ -76,6 +85,8 @@ func ResolveEncounterChoice(in EncounterInputs) (EncounterOutcome, error) {
 		}
 		return EncounterOutcome{Store: true, ResultCode: 1}, nil
 	case 1:
+		// `241Bh`：戰鬥直接開打、等待只印字、逃跑存 2、ADVANCE 拉近、
+		// PARLAY 在距離為零時存 3。
 		switch in.Choice {
 		case EncounterChoiceCombat:
 			return EncounterOutcome{Store: true, ResultCode: 1}, nil
@@ -83,13 +94,10 @@ func ResolveEncounterChoice(in EncounterInputs) (EncounterOutcome, error) {
 			return EncounterOutcome{Message: EncounterMessageWait, Repeat: true}, nil
 		case EncounterChoiceFlee:
 			return EncounterOutcome{Store: true, ResultCode: 2}, nil
-		case EncounterChoiceParley:
-			return approach(), nil
 		case EncounterChoiceAdvance:
-			if in.Distance == 0 {
-				return EncounterOutcome{Store: true, ResultCode: 3}, nil
-			}
-			return EncounterOutcome{Approach: true, Repeat: true}, nil
+			return approach(), nil
+		case EncounterChoiceParley:
+			return parley(), nil
 		}
 	case 2:
 		if in.Choice == EncounterChoiceCombat && in.AdvanceThreshold <= in.FastestMovement {
@@ -97,13 +105,28 @@ func ResolveEncounterChoice(in EncounterInputs) (EncounterOutcome, error) {
 		}
 		return EncounterOutcome{Store: true, ResultCode: 0, Message: EncounterMessageFlee}, nil
 	case 3:
+		// `25EDh`：等待與 ADVANCE 走同一支（`260Ch` 同時比 1 與 3），
+		// PARLAY 另有一支（`2686h`）。
 		switch in.Choice {
 		case EncounterChoiceCombat:
 			return EncounterOutcome{Store: true, ResultCode: 1}, nil
-		case EncounterChoiceWait, EncounterChoiceParley:
+		case EncounterChoiceWait, EncounterChoiceAdvance:
 			return approach(), nil
 		case EncounterChoiceFlee:
 			return EncounterOutcome{Store: true, ResultCode: 2}, nil
+		case EncounterChoiceParley:
+			return parley(), nil
+		}
+	case 4:
+		// `26DBh`：等待、ADVANCE 與 PARLAY 三個走同一支（`26F4h` 同時比
+		// 1、3、4），距離為零就存 3。
+		switch in.Choice {
+		case EncounterChoiceCombat:
+			return EncounterOutcome{Store: true, ResultCode: 1}, nil
+		case EncounterChoiceFlee:
+			return EncounterOutcome{Store: true, ResultCode: 2}, nil
+		case EncounterChoiceWait, EncounterChoiceAdvance, EncounterChoiceParley:
+			return parley(), nil
 		}
 	}
 	return EncounterOutcome{}, fmt.Errorf("Pool encounter kind %d with choice %d is not reverse engineered", in.Kind, in.Choice)
@@ -121,9 +144,11 @@ func EncounterMenuOptions(distance int, hasMonsterGroup bool) []string {
 // EncounterChoiceIndex 把畫面上的第幾項換成類型表的索引。ADVANCE 那一版的
 // 第四項在原版被改寫成 4（`23B2h`），所以兩版指到表裡不同格。
 func EncounterChoiceIndex(selected int, options []string) int {
-	if selected == EncounterChoiceParley && len(options) > EncounterChoiceParley &&
-		options[EncounterChoiceParley] == EncounterMenuAdvanceChoices[EncounterChoiceParley] {
+	if selected != EncounterChoiceAdvance || len(options) <= EncounterChoiceAdvance {
+		return selected
+	}
+	if options[EncounterChoiceAdvance] == EncounterMenuAdvanceChoices[EncounterChoiceAdvance] {
 		return EncounterChoiceAdvance
 	}
-	return selected
+	return EncounterChoiceParley
 }

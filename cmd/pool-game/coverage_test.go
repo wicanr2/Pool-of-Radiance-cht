@@ -592,6 +592,12 @@ walk:
 					int(application.spawn.Map.BlockID),
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
 				word := eclPasswords[menuTurn[key]%len(eclPasswords)]
+				// 推主線那一條走有目的的路：索寇要塞登陸那一格的亡魂只問
+				// 一次（問完 `SAVE 255 @4A13`），答錯就再也不出現，所以
+				// 輪流試沒有用——直接說它要的字。
+				if flags != nil && application.spawn.Map.BlockID == 21 {
+					word = "LUX"
+				}
 				menuTurn[key]++
 				application.keys = scriptedChars(word)
 				if err := application.Update(); err != nil {
@@ -626,6 +632,17 @@ walk:
 				//（「要不要拿走裝備」答 NO 就推不動要塞那一段）。
 				if flags != nil && strings.EqualFold(application.cellMenuOptions[0], "YES") {
 					want = 0
+				}
+				// 同一條路上要走到亡魂那一段：登陸的遭遇要選「交涉」，
+				// 費蘭問話要選「說謊」——後者是目前對船票旗標最像的解釋
+				//（spec 102 的 `ABBDh SAVE 255 @4A01`）。
+				if flags != nil {
+					for index, option := range application.cellMenuOptions {
+						if strings.EqualFold(option, "LIE?") ||
+							strings.EqualFold(option, "Parlay") {
+							want = index
+						}
+					}
 				}
 				for _, option := range application.cellMenuOptions {
 					if strings.EqualFold(option, "SOKAL") {

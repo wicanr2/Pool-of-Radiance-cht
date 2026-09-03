@@ -21,12 +21,14 @@ func TestResolveEncounterChoice(t *testing.T) {
 			gamepack.EncounterOutcome{Store: true, ResultCode: 1}},
 		{"類型 1 等待", gamepack.EncounterInputs{Kind: 1, Choice: gamepack.EncounterChoiceWait},
 			gamepack.EncounterOutcome{Message: gamepack.EncounterMessageWait, Repeat: true}},
+		// `24E9h`：PARLAY 距離大於零先拉近，距離為零才存 3。
 		{"類型 1 交涉時拉近", gamepack.EncounterInputs{Kind: 1, Choice: gamepack.EncounterChoiceParley, Distance: 2},
 			gamepack.EncounterOutcome{Approach: true, Repeat: true}},
-		{"類型 1 已經貼身", gamepack.EncounterInputs{Kind: 1, Choice: gamepack.EncounterChoiceParley, Distance: 0},
-			gamepack.EncounterOutcome{Message: gamepack.EncounterMessageWait, Repeat: true}},
-		{"類型 1 逼近到底", gamepack.EncounterInputs{Kind: 1, Choice: gamepack.EncounterChoiceAdvance, Distance: 0},
+		{"類型 1 貼身交涉成立", gamepack.EncounterInputs{Kind: 1, Choice: gamepack.EncounterChoiceParley, Distance: 0},
 			gamepack.EncounterOutcome{Store: true, ResultCode: 3}},
+		// `2483h`：ADVANCE 距離為零只印「雙方按兵不動」再問一次。
+		{"類型 1 逼近到底", gamepack.EncounterInputs{Kind: 1, Choice: gamepack.EncounterChoiceAdvance, Distance: 0},
+			gamepack.EncounterOutcome{Message: gamepack.EncounterMessageWait, Repeat: true}},
 		{"類型 2 追得上", gamepack.EncounterInputs{Kind: 2, Choice: gamepack.EncounterChoiceCombat, FastestMovement: 12, AdvanceThreshold: 9},
 			gamepack.EncounterOutcome{Store: true, ResultCode: 1}},
 		{"類型 2 追不上", gamepack.EncounterInputs{Kind: 2, Choice: gamepack.EncounterChoiceCombat, FastestMovement: 6, AdvanceThreshold: 9},
@@ -35,6 +37,20 @@ func TestResolveEncounterChoice(t *testing.T) {
 			gamepack.EncounterOutcome{Store: true, ResultCode: 1}},
 		{"類型 3 逃跑不用擲", gamepack.EncounterInputs{Kind: 3, Choice: gamepack.EncounterChoiceFlee},
 			gamepack.EncounterOutcome{Store: true, ResultCode: 2}},
+		// `260Ch`：類型 3 的等待與 ADVANCE 走同一支。
+		{"類型 3 逼近到底", gamepack.EncounterInputs{Kind: 3, Choice: gamepack.EncounterChoiceAdvance, Distance: 0},
+			gamepack.EncounterOutcome{Message: gamepack.EncounterMessageWait, Repeat: true}},
+		// `2686h`：類型 3 的 PARLAY 貼身就存 3。索寇要塞登陸的那個亡魂
+		// （ecl4/21 `AA0Ah`，五格類型表是 0 3 1 1 4）走的就是類型 4 這一支。
+		{"類型 3 貼身交涉成立", gamepack.EncounterInputs{Kind: 3, Choice: gamepack.EncounterChoiceParley, Distance: 0},
+			gamepack.EncounterOutcome{Store: true, ResultCode: 3}},
+		// `26F4h`：類型 4 的等待、ADVANCE、PARLAY 三個走同一支。
+		{"類型 4 貼身交涉成立", gamepack.EncounterInputs{Kind: 4, Choice: gamepack.EncounterChoiceParley, Distance: 0},
+			gamepack.EncounterOutcome{Store: true, ResultCode: 3}},
+		{"類型 4 距離還在就拉近", gamepack.EncounterInputs{Kind: 4, Choice: gamepack.EncounterChoiceWait, Distance: 3},
+			gamepack.EncounterOutcome{Approach: true, Repeat: true}},
+		{"類型 4 開打", gamepack.EncounterInputs{Kind: 4, Choice: gamepack.EncounterChoiceCombat},
+			gamepack.EncounterOutcome{Store: true, ResultCode: 1}},
 	} {
 		got, err := gamepack.ResolveEncounterChoice(item.in)
 		if err != nil {
@@ -49,8 +65,8 @@ func TestResolveEncounterChoice(t *testing.T) {
 // 沒讀出來的組合要回錯誤，不要猜一個看起來合理的行為。
 func TestResolveEncounterChoiceRefusesUnreadCombinations(t *testing.T) {
 	for _, in := range []gamepack.EncounterInputs{
-		{Kind: 3, Choice: gamepack.EncounterChoiceAdvance},
-		{Kind: 4, Choice: gamepack.EncounterChoiceCombat},
+		{Kind: 5, Choice: gamepack.EncounterChoiceCombat},
+		{Kind: 9, Choice: gamepack.EncounterChoiceParley},
 	} {
 		if _, err := gamepack.ResolveEncounterChoice(in); err == nil {
 			t.Fatalf("kind %d choice %d was resolved without evidence", in.Kind, in.Choice)
