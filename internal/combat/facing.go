@@ -108,8 +108,16 @@ func FacingArcContains(fromX, fromY, toX, toY uint8, direction uint8) (bool, err
 
 // RequiredFacing 重現 overlay-31 `0912h` 決定結果第三個 byte 的方式：指定的方向
 // 小於 DirectionAny 時直接沿用，否則自 0 起遞增取第一個成立的方向。
-// DirectionAny 恆真，因此搜尋一定會停。
+//
+// **DirectionAny 只在盤面內恆真**：`FacingArcContains` 的第一道是界限檢查，
+// 兩組座標任一出界就一律回 false，`DirectionAny` 也不例外——所以搜尋在出界時
+// 走完九個候選一個都不成立。出界因此先在這裡失敗即關閉，錯誤訊息直接指出是
+// 哪一組座標，不要讓呼叫端拿著「八個方向都不通」這種形狀去猜。
 func RequiredFacing(fromX, fromY, toX, toY uint8, direction uint8) (uint8, error) {
+	if !withinTactical(fromX, fromY) || !withinTactical(toX, toY) {
+		return 0, fmt.Errorf("Pool facing needs both cells on the board: (%d,%d) to (%d,%d), limits X<=%d Y<=%d",
+			fromX, fromY, toX, toY, TacticalMaxX, TacticalMaxY)
+	}
 	if direction < DirectionAny {
 		return direction, nil
 	}

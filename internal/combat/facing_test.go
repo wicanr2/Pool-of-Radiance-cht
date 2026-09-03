@@ -220,3 +220,21 @@ func TestAdvanceTacticalCoordinateAgreesWithTheDirectionTable(t *testing.T) {
 		}
 	}
 }
+
+// 盤面外的座標要當場失敗，不是回報「八個方向都不通」。
+//
+// `FacingArcContains` 的界限檢查對 `DirectionAny` 一樣生效，所以出界時九個
+// 候選一個都不成立。先前那條註解寫「DirectionAny 恆真，搜尋一定會停」，
+// 在出界這一組輸入下是假的。
+func TestRequiredFacingRejectsCellsOffTheBoard(t *testing.T) {
+	if _, err := RequiredFacing(35, TacticalMaxY+1, 19, 11, DirectionAny); err == nil {
+		t.Fatal("盤面外的起點沒有失敗")
+	}
+	if _, err := RequiredFacing(19, 11, TacticalMaxX+1, 11, DirectionAny); err == nil {
+		t.Fatal("盤面外的目標沒有失敗")
+	}
+	// 正對照：同一組輸入搬回盤面內就要成功。
+	if _, err := RequiredFacing(35, TacticalMaxY, 19, 11, DirectionAny); err != nil {
+		t.Fatalf("盤面內的座標反而失敗：%v", err)
+	}
+}

@@ -412,6 +412,21 @@ func (state *tacticalState) startRound(roll func(count, sides int) int) {
 		if err != nil {
 			score = 0
 		}
+		// 已經離場的（體型 0，對應原版記錄的 `+10Dh`）分數一律 0。原版的先攻
+		// 選取（overlay-08 `0124h`）**只看 runtime `+3`**，沒有另一道存活檢查，
+		// 所以離場者的 `+3` 在原版必然是 0；死亡當場兩個入口都歸零了，漏的是
+		// 這裡——每回合重擲會把死者的先攻復活，它於是又被選成行動者。
+		//
+		// 接下來會連鎖：體型 0 的 mover 在 `ProbeDestination` 裡取不到佔格偏移，
+		// 於是**整個略過出界與地形檢查**（那一段是照原版寫的），它一路走出盤面，
+		// 再由 `RequiredFacing` 對出界座標回錯誤，而錯誤被 `Update` 收進狀態列，
+		// 每個影格重試一次——外觀就是戰鬥停住。
+		//
+		// 骰子照擲、結果丟掉：原版在哪裡清掉離場者的 `+3` 還沒讀到（spec 062
+		// 的未閉合項），沒有證據前不改動亂數流。
+		if state.Roster[index].FootprintClass == 0 {
+			score = 0
+		}
 		state.Scores[index] = score
 	}
 	state.selectActor(roll)

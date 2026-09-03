@@ -86,6 +86,37 @@ func newRoundState(members int) *tacticalState {
 	return state
 }
 
+// 打倒的槽不會在下一個回合又拿到先攻。
+//
+// 原版的先攻選取（overlay-08 `0124h`，spec 062）只看 runtime `+3`，沒有第二道
+// 存活檢查，所以離場者的 `+3` 必須是 0。死亡當場兩個入口都歸零了，漏掉的是
+// 每回合重擲——復活之後的連鎖整條都是無聲的：體型 0 的 mover 在目的格探測裡
+// 取不到佔格偏移，出界與地形檢查那一整段被略過（那一段是照原版寫的），它於是
+// 走出盤面，`RequiredFacing` 開始回錯誤，而錯誤被 `Update` 收進狀態列，每個
+// 影格重試一次。外觀只是「戰鬥停住」，沒有任何一則錯誤浮到測試上來。
+func TestStartRoundKeepsTheFallenOutOfInitiative(t *testing.T) {
+	state := newRoundState(3)
+	state.Friendly[2] = true
+	// 名冊 3 被打倒：`resolveTacticalAttack` 與法術傷害都留下這個形狀。
+	state.Roster[3].FootprintClass = 0
+	state.Scores[3] = 0
+	state.States[3] = combat.DyingState
+
+	state.startRound(fixedRoll)
+
+	// 正對照：站著的槽必須真的拿到分數，否則「打倒的沒拿到」什麼都證明不了。
+	if state.Scores[1] == 0 || state.Scores[2] == 0 {
+		t.Fatalf("正對照失敗：站著的槽也沒拿到先攻（%d、%d）",
+			state.Scores[1], state.Scores[2])
+	}
+	if state.Scores[3] != 0 {
+		t.Fatalf("打倒的槽在第 %d 回合又拿到先攻分數 %d", state.Round, state.Scores[3])
+	}
+	if state.Mover == 3 {
+		t.Fatal("打倒的槽被選成行動者")
+	}
+}
+
 // 每個回合都重擲先攻並重設移動預算，不是整場排一次。
 func TestStartRoundResetsBudgetsAndScores(t *testing.T) {
 	state := newRoundState(2)

@@ -589,13 +589,22 @@ walk:
 				counts := application.tactical.sideCounts()
 				failures = append(failures, fmt.Sprintf(
 					"戰術地圖卡住：GEO%d/%d 第 %d 回合行動者 %d（提示 %v，我方 %d 敵方 %d，"+
-						"名冊 %d，施法選單 %v/%v，狀態 %q，是我方 %v）",
+						"名冊 %d，施法選單 %v/%v，狀態 %q，是我方 %v，狀態列 %q）",
 					application.spawn.Map.Archive, application.spawn.Map.BlockID,
 					application.tactical.Round, application.tactical.Mover,
 					application.tactical.Prompt, counts.Party, counts.Foes,
 					len(application.tactical.Roster), application.castOpen,
 					application.castTargeting, application.tactical.Status,
-					application.tactical.Friendly[application.tactical.Mover]))
+					application.tactical.Friendly[application.tactical.Mover],
+					application.statusLine))
+				for index := 1; index < len(application.tactical.Roster); index++ {
+					cell := application.tactical.Roster[index]
+					t.Logf("    名冊 %d：(%d,%d) 體型 %d 我方 %v 分數 %d 額度 %d",
+						index, cell.X, cell.Y, cell.FootprintClass,
+						application.tactical.Friendly[index],
+						application.tactical.Scores[index],
+						application.tactical.Budgets[index])
+				}
 				reason = "戰術地圖卡住"
 				break walk
 			}
@@ -607,12 +616,21 @@ walk:
 			spin["格子選單"]++
 			menuStall++
 			if menuStall > exploreMaxCombatStall {
+				block := -1
+				if application.eventSession != nil {
+					block = int(application.eventSession.CurrentBlockID())
+				}
 				failures = append(failures, fmt.Sprintf(
-					"格子選單卡住：GEO%d/%d (%d,%d) 游標 %d／%v 標籤 %q 文字 %q",
+					"格子選單卡住：GEO%d/%d (%d,%d) 游標 %d／%v 標籤 %q 文字 %q 狀態列 %q "+
+						"block %d 這一格答過 %d 次",
 					application.spawn.Map.Archive, application.spawn.Map.BlockID,
 					application.spawn.X, application.spawn.Y,
 					application.cellMenuCursor, application.cellMenuOptions,
-					application.eventLabel, application.eventText))
+					application.eventLabel, application.eventText,
+					application.statusLine, block,
+					menuTurn[[3]int{int(application.spawn.Map.Archive),
+						int(application.spawn.Map.BlockID),
+						int(application.spawn.Y)*100 + int(application.spawn.X)}]))
 				reason = "格子選單卡住"
 				break walk
 			}
@@ -1056,6 +1074,11 @@ walk:
 	}
 	t.Logf("  這一趟踩過：%v（重走 %d 次）", perMap, spin["重走"])
 	if hardFailures != nil {
+		for _, failure := range failures {
+			// 印 seed 才回得去：彙總那一層會把訊息去重，重現得靠這一行認出
+			// 是哪一趟。少了它只知道「某一趟卡住」，得把 22 趟重跑一遍才找得到。
+			t.Logf("  硬失敗（seed %d）：%s", seed, failure)
+		}
 		*hardFailures = append(*hardFailures, failures...)
 	}
 	if flags != nil && application.eventMachine != nil {
