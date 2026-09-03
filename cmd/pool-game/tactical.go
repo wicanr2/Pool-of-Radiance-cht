@@ -1347,3 +1347,16 @@ func (state *tacticalState) tacticalRange(from, to uint8) (int, bool) {
 	}
 	return int(trace.Cost) / 2, true
 }
+
+
+// withinArea 是原版判斷「在不在範圍內」的方式（spec 098）：`0912h` 把預算
+// 交給 `0419h`（TraceMovement）當上限，走得到的才收進清單。
+func (state *tacticalState) withinArea(from, to uint8, budget uint16) bool {
+	if int(from) >= len(state.Roster) || int(to) >= len(state.Roster) {
+		return false
+	}
+	source, target := state.Roster[from], state.Roster[to]
+	trace, err := combat.TraceMovement(state.Grid, state.Classes,
+		int(source.X), int(source.Y), int(target.X), int(target.Y), budget)
+	return err == nil && trace.Complete
+}

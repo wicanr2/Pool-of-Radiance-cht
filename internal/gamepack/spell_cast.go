@@ -21,6 +21,11 @@ type CastEffect struct {
 	WholeSide bool
 	// Area 為真代表這是範圍法術（處理常式先寫 `DS:677Eh = 1`）。
 	Area bool
+	// AreaBudget 是範圍法術收人的預算，直接傳給 `0419h`（TraceMovement）
+	// 當上限：走得到的才在範圍內。火球術的那一支寫死 2
+	// （overlay-22 `2675h` 推給 `0138h:003Eh` 的第三個引數）。
+	// 為零代表**還沒讀出那一支的預算**，呼叫端只好收下整邊。
+	AreaBudget int
 	// SleepBudget 是催眠術能放倒的生命骰總量（`DS:47A6h`）。大於零時
 	// 呼叫端要依 SleepHitDiceCost 逐個目標扣，扣得動的就睡著。
 	SleepBudget int
@@ -50,6 +55,10 @@ type AbilityBonus struct {
 	// Cap 是上限；原版是先加再夾。
 	Cap int
 }
+
+// FireballAreaBudget 是火球術收人的預算（overlay-22 `2675h`）。
+// 它會傳給 `0419h` 當上限，所以「在範圍內」＝ 那個預算內走得到。
+const FireballAreaBudget = 2
 
 // SlowEffectCode 是緩速術掛上去的效果碼（`2BCDh` 推的 27h）。
 // overlay-15 的名稱鏈沒有它，所以它沒有顯示名稱。
@@ -324,7 +333,12 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 	case SpellIDNoOperation:
 		// `3049h` 整支只有 push bp / mov bp,sp / mov sp,bp / pop bp / retf——
 		// **原版就是什麼都不做**。接成 no-op 是照實接，不是還沒做。
-	case SpellIDFireball, SpellIDLightningBolt, SpellIDFireballAlt:
+	case SpellIDFireball, SpellIDFireballAlt:
+		// `2675h` 推給 `0138h:003Eh` 的預算是 2，方向 FFh（不限方向）。
+		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
+		effect.AreaBudget = FireballAreaBudget
+	case SpellIDLightningBolt:
+		// 閃電束走的是 `287Ch` 那條（目標模式 8＝直線），預算還沒讀。
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
 	default:
 		return CastEffect{}, fmt.Errorf(

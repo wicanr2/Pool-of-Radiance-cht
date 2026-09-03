@@ -326,6 +326,12 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 				state.Friendly[index] == state.Friendly[state.Mover] {
 				continue
 			}
+			// 有讀出預算的就照原版收人：那個預算內走得到才算在範圍裡
+			// （`0912h` 把預算交給 `0419h` 當上限）。沒讀出來的先收整邊。
+			if effect.AreaBudget > 0 && !state.withinArea(state.Mover, uint8(index),
+				uint16(effect.AreaBudget)) {
+				continue
+			}
 			a.applySpellDamage(state, uint8(index), effect.Damage)
 			hit++
 		}

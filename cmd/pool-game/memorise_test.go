@@ -416,3 +416,31 @@ func TestAimedAttackRespectsWeaponRange(t *testing.T) {
 		t.Errorf("相鄰打完應該換人，還停在 %d（%q）", state.Mover, state.Status)
 	}
 }
+
+// 火球術的範圍照原版收人：預算 2 內走得到的才吃傷害。
+func TestFireballAreaUsesTheOriginalBudget(t *testing.T) {
+	state := &tacticalState{
+		Roster:    make([]combat.CombatantCell, 4),
+		Friendly:  []bool{false, true, false, false},
+		HitPoints: []int{0, 20, 20, 20},
+		Grid: combat.TacticalGrid{IgnoreTerrain: true,
+			Terrain: make([]uint8, combat.TacticalRowStride*(combat.TacticalMaxY+1))},
+		Mover: 1,
+	}
+	state.Roster[1] = combat.CombatantCell{X: 2, Y: 2, FootprintClass: 1}
+	state.Roster[2] = combat.CombatantCell{X: 3, Y: 2, FootprintClass: 1}  // 旁邊
+	state.Roster[3] = combat.CombatantCell{X: 30, Y: 2, FootprintClass: 1} // 老遠
+	if !state.withinArea(1, 2, gamepack.FireballAreaBudget) {
+		t.Error("旁邊那個應該在範圍內")
+	}
+	if state.withinArea(1, 3, gamepack.FireballAreaBudget) {
+		t.Error("老遠那個不該在範圍內")
+	}
+	// 距離也用同一套：旁邊是 1、老遠的走得到但很遠。
+	if distance, ok := state.tacticalRange(1, 2); !ok || distance > 1 {
+		t.Errorf("旁邊那個的距離應該是 1 以內，算出 %d（走得到 %t）", distance, ok)
+	}
+	if distance, ok := state.tacticalRange(1, 3); !ok || distance < 10 {
+		t.Errorf("老遠那個的距離應該很大，算出 %d（走得到 %t）", distance, ok)
+	}
+}
