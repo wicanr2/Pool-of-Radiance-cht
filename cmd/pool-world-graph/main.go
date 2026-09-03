@@ -48,7 +48,11 @@ type geoBlock struct {
 	Components int `json:"components"`
 	// CellComponents 是 16 列 × 16 行的元件編號，[y][x]。要問「這兩格走
 	// 不走得到彼此」的時候查它。
-	CellComponents [][]int   `json:"cell_components"`
+	CellComponents [][]int `json:"cell_components"`
+	// CellTerrain 是每一格的原始 terrain byte（[y][x]）。ECL 的城區腳本以
+	// `AND 127, @C04F → @6E82` 把它當成**這一格是哪個地點**的索引，
+	// 再用 `ON GOTO` 分派（ecl3/0 `9965h`／`99F7h`／`9B4Ch`）。
+	CellTerrain [][]int `json:"cell_terrain"`
 	Exits          []geoExit `json:"boundary_exits"`
 }
 
@@ -316,10 +320,13 @@ func readGEO(number int, block dax.Block) (geoBlock, error) {
 	}
 	row.Components = next
 	row.CellComponents = make([][]int, geometry.Height)
+	row.CellTerrain = make([][]int, geometry.Height)
 	for y := 0; y < geometry.Height; y++ {
 		row.CellComponents[y] = make([]int, geometry.Width)
+		row.CellTerrain[y] = make([]int, geometry.Width)
 		for x := 0; x < geometry.Width; x++ {
 			row.CellComponents[y][x] = component[[2]int{x, y}]
+			row.CellTerrain[y][x] = int(grid.Cells[y][x].Terrain)
 		}
 	}
 	for y := 0; y < geometry.Height; y++ {

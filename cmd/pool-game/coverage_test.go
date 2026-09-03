@@ -138,7 +138,10 @@ var exploreDeltas = [4][2]int{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
 //
 // 用的是原始 GEO 的 CanMoveDungeonWrapped，跟遊戲自己判斷能不能走同一支，
 // 所以這條路徑不會宣告出資料裡沒有的通路。
-func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) []exploreStep {
+// explorePlan 回傳走去最近一格「還沒踩過」的路，以及那一格的鍵。
+// 目標要回傳出去：踩不到的格子得記次數，不然規劃器會一直挑同一格，
+// 隊伍在半路來回走而 stuck 永遠不增加——實測一趟走六萬步只踩到 479 格。
+func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) ([]exploreStep, [3]int) {
 	type node struct{ x, y int }
 	start := node{int(app.spawn.X), int(app.spawn.Y)}
 	from := map[node]node{start: start}
@@ -153,7 +156,7 @@ func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) []explore
 			for cursor := current; cursor != start; cursor = from[cursor] {
 				steps = append([]exploreStep{{facing: via[cursor]}}, steps...)
 			}
-			return steps
+			return steps, key
 		}
 		for step := 0; step < 4; step++ {
 			// rotate 讓每一趟從不同的方向先展開，見 planToCells 的說明。
@@ -177,7 +180,7 @@ func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) []explore
 			queue = append(queue, next)
 		}
 	}
-	return nil
+	return nil, [3]int{}
 }
 
 // treasureMenuChoice 挑寶物那一串選單要停在哪一項：認得出 Exit 就選 Exit，
@@ -363,6 +366,9 @@ const exploreMaxTransitionHops = 60
 // 動」的上限。一場架正常會一直換行動者，停住就是卡住了。
 const exploreMaxCombatStall = 4000
 
+// exploreMaxTargetTries 是同一格被規劃成目標幾次還沒踩到就放棄。
+const exploreMaxTargetTries = 12
+
 // 有目的地走：把每一張圖上「走得到的格子」逐格踩過，換圖就換到新圖上繼續。
 //
 // 隨機走路量的是「不會炸掉」，這一條量的是**世界有多少走得到**——兩個不同的
@@ -425,6 +431,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// 記成硬失敗，不要靜靜地把預算吃掉。
 	stallKey, stall := [3]int{-1, -1, -1}, 0
 	menuStall := 0
+	tries := map[[3]int]int{}
 	var exit *areaExit
 	var failures []string
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
@@ -595,6 +602,15 @@ walk:
 				if flags != nil && strings.EqualFold(application.cellMenuOptions[0], "YES") {
 					want = 0
 				}
+				for _, option := range application.cellMenuOptions {
+					if strings.EqualFold(option, "SOKAL") {
+						t.Logf("碼頭選單 GEO%d/%d (%d,%d) 選 %d／%v",
+							application.spawn.Map.Archive, application.spawn.Map.BlockID,
+							application.spawn.X, application.spawn.Y, want,
+							application.cellMenuOptions)
+						break
+					}
+				}
 				if application.cellMenuCursor != want {
 					if err := press(application, ebiten.KeyArrowRight); err != nil {
 						failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
@@ -644,7 +660,37 @@ walk:
 			}
 		}
 		if len(plan) == 0 && exit == nil {
-			plan = explorePlan(application, walked, avoid, rotate)
+			var target [3]int
+			plan, target = explorePlan(application, walked, avoid, rotate)
+			if len(plan) != 0 {
+				spin["規劃"]++
+				// 挑同一格挑太多次還沒踩到，就當它走不進去。原因可能是
+				// 單向的邊、也可能是那一格的事件把隊伍推回來；兩種都會讓
+				// 規劃器永遠有事做，而 stuck 永遠是 0。
+				tries[target]++
+				if tries[target] > exploreMaxTargetTries {
+					avoid[target] = true
+					plan = nil
+					continue
+				}
+			}
+			// 這一張踩完了，先回頭踩已知的換圖點。碼頭就是這樣再用一次的：
+			// 第一趟船去索寇要塞，回來之後要塞的旗標已經開了其他航線，
+			// 但那一格早就進了 avoid，規劃器不會再挑它。
+			if len(plan) == 0 && hops < exploreMaxTransitionHops {
+				if cell, ok := chooseTransitionCell(application, transitionUses); ok {
+					plan = planToCells(application, rotate, func(x, y int) bool {
+						return x == cell[0] && y == cell[1]
+					})
+					if len(plan) != 0 {
+						transitionUses[[3]int{int(application.spawn.Map.Archive),
+							int(application.spawn.Map.BlockID),
+							cell[1]*100 + cell[0]}]++
+						hops++
+						continue
+					}
+				}
+			}
 			if len(plan) == 0 && hops < exploreMaxTransitionHops {
 				if next, ok := chooseAreaExit(application, exitUses); ok {
 					// 選中就記一次。走不到那一格的出口不記的話，
@@ -659,6 +705,7 @@ walk:
 					int(application.spawn.Map.BlockID)}
 				if rewalks[here] < rewalkLimit {
 					rewalks[here]++
+					spin["重走"]++
 					for key := range walked {
 						if key[0] == here[0] && key[1] == here[1] {
 							delete(walked, key)
@@ -714,6 +761,25 @@ walk:
 		parts = append(parts, fmt.Sprintf("%s %d", key, spin[key]))
 	}
 	t.Logf("  這一趟的迴圈花在：%s", strings.Join(parts, "、"))
+	transitionKeys := make([][3]int, 0, len(transitionUses))
+	for key := range transitionUses {
+		transitionKeys = append(transitionKeys, key)
+	}
+	sort.Slice(transitionKeys, func(i, j int) bool {
+		return transitionKeys[i][0]*10000+transitionKeys[i][1]*100+transitionKeys[i][2] <
+			transitionKeys[j][0]*10000+transitionKeys[j][1]*100+transitionKeys[j][2]
+	})
+	labels := make([]string, 0, len(transitionKeys))
+	for _, key := range transitionKeys {
+		labels = append(labels, fmt.Sprintf("GEO%d/%d (%d,%d)×%d",
+			key[0], key[1], key[2]%100, key[2]/100, transitionUses[key]))
+	}
+	t.Logf("  這一趟用過的換圖點：%s", strings.Join(labels, "、"))
+	perMap := map[[2]int]int{}
+	for key := range walked {
+		perMap[[2]int{key[0], key[1]}]++
+	}
+	t.Logf("  這一趟踩過：%v（重走 %d 次）", perMap, spin["重走"])
 	if hardFailures != nil {
 		*hardFailures = append(*hardFailures, failures...)
 	}
@@ -832,7 +898,7 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		// 第二輪一開始就被擋在碼頭外面。
 		avoid = map[[3]int]bool{}
 		transitionUses = map[[3]int]int{}
-		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 20, 600000,
+		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 2, 600000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
 			visited, maps, blocks, flags, &hardFailures)
 		if !reachable {
@@ -860,6 +926,29 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	if !blocks[21] {
 		t.Errorf("沒走到索寇要塞（ECL block 21），走到的是 %v", blocks)
 	}
+}
+
+// chooseTransitionCell 從這一張圖上已知的換圖點裡挑一個用得最少的。
+//
+// 換圖點是**量出來的**：走到那一格之後地圖換了，就記一次（見走路迴圈開頭）。
+// 站著的那一格不算——再踩一次不會重新觸發。
+func chooseTransitionCell(application *app, uses map[[3]int]int) ([2]int, bool) {
+	here := [2]int{int(application.spawn.X), int(application.spawn.Y)}
+	best, bestUses, found := [2]int{}, 0, false
+	for key, count := range uses {
+		if key[0] != int(application.spawn.Map.Archive) ||
+			key[1] != int(application.spawn.Map.BlockID) {
+			continue
+		}
+		cell := [2]int{key[2] % 100, key[2] / 100}
+		if cell == here {
+			continue
+		}
+		if !found || count < bestUses {
+			best, bestUses, found = cell, count, true
+		}
+	}
+	return best, found
 }
 
 // areaExit 是「站在這一格、面向這個方向往前一步就離開這一區」。
