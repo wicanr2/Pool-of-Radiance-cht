@@ -678,3 +678,14 @@ ECL 的 active-character 視窗補上了金錢那一格。原版 `5CF0h` 是指�
 都走不下去。remake 的記憶體是 map，沒有那種疊合，改用
 `gamepack.CharacterBinding` 做「選進來抄進去、換人之前抄回來」，收尾再 `Flush`
 一次；`cmd/pool-game` 的 window 直接讀寫 `state.Party`。
+
+野外的移動方向修好了。那張八支 `26h ON GOSUB`（ecl7/26 `9A18h`）的索引**從 0
+起算**，順序是北、東北、東、東南、南、西南、西、西北，所以四方位是 0、2、4、6；
+remake 先前用 1、3、5、7，於是每一步都走成斜的——往東走一步，X 與 Y 會同時加一。
+這跟城區分派那個坑是同一類：`ON GOTO`／`ON GOSUB` 的目標順序與起算基準只能從
+`cmd/pool-ecl-trace` 的 `branch_targets` 讀，靜態圖的 `edges` 排序過。
+
+野外的可通行判定還是空的：`9A53h..9A90h` 拿 `DS:035Fh` 去比兩張表，而 `035Fh`
+在 29 個 ECL 區塊裡只有三處 `COMPARE`、沒有人寫，`9A36h` 的 `CALL @C01B`
+在 `2Dh` 分派器裡也沒有對應分支。所以隊伍現在可以一直往東走出地圖範圍。
+排除過的可能與兩張表的內容記在 spec 105。

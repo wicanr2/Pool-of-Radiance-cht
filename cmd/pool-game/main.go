@@ -866,20 +866,19 @@ func (a *app) moveWildernessForward() error {
 }
 
 // wildernessFacingIndex 把四方位的朝向換成那張八支 `ON GOSUB` 的索引。
-// 記錄順序是北、東北、東、東南、南、西南、西、西北（arm 依序落在
-// ecl7/26 的 `9A9Dh`、`9AA7h`、`9AB0h`、`9ABAh`、`9AC3h`、`9ACDh`、
-// `9AD6h`、`9A94h`），所以四方位對到 1、3、5、7。
+//
+// `26h ON GOSUB` 的索引**從 0 起算**（引擎 `machine.go` 的 `targets[index]`），
+// 而八支的順序照 `branch_targets` 讀出來是：
+//
+//	0 `9A9Dh` Y−1（北）      1 `9AA7h` Y−1 X+1（東北）
+//	2 `9AB0h` X+1（東）      3 `9ABAh` X+1 Y+1（東南）
+//	4 `9AC3h` Y+1（南）      5 `9ACDh` Y+1 X−1（西南）
+//	6 `9AD6h` X−1（西）      7 `9A94h` X−1 Y−1（西北）
+//
+// 所以四方位是 0、2、4、6，也就是朝向乘二。用 1、3、5、7 的話每一步都會
+// 斜著走——實測往東走一步，X 與 Y 會同時加一。
 func wildernessFacingIndex(facing uint8) uint16 {
-	switch facing {
-	case 0:
-		return 1
-	case 1:
-		return 3
-	case 2:
-		return 5
-	default:
-		return 7
-	}
+	return uint16(facing%4) * 2
 }
 
 func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Result, error) {
