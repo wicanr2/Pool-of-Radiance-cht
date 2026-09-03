@@ -151,6 +151,7 @@ const (
 	SpellIDLesserHeal     = 62 // 2F85h
 	SpellIDHaste          = 48 // 2852h
 	SpellIDSlowPoison     = 26 // 1846h
+	SpellIDEnlarge        = 12 // 128Dh
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -245,6 +246,7 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	27h Cure Disease   2300h  轉呼叫 225Bh：拿掉六個病痛類的效果碼
 //	2Ah Prayer         249Dh  `(哪一邊 << 4) + 等級` 推在等級覆寫那一格
 //	1Ch Spiritual H.   19A8h  四個覆寫參數 0／1／0／0（生出鎚子那段未讀）
+//	0Ch Enlarge        128Dh  效果碼 12h，強度依施法者等級查表
 //	1Ah Slow Poison    1846h  目前生命值是 0 就墊成 1，再走 08BCh
 //	30h Haste          2852h  推效果碼 2Ah 走 2724h，整邊
 //	37h Slow           2BC7h  推效果碼 27h 走 2724h，範圍法術
@@ -297,6 +299,11 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `19AEh` 的四個覆寫參數是 0／1／0／0。08BCh 之後還有一段
 		// （`19D1h` 起，推效果碼 17h）還沒讀，那是把鎚子生出來的部分。
 		effect.EffectParameter = 1
+	case SpellIDEnlarge:
+		// `1293h` 把效果碼 12h 寫進 `DS:47A6h`，再依施法者等級把
+		// `DS:47A7h` 設成 EnlargeMagnitudeByLevel 那一格。
+		effect.EffectCode = EnlargeEffectCode
+		effect.EffectParameter = int(enlargeMagnitude(casterLevel))
 	case SpellIDSlowPoison:
 		// `1873h` 先問 `010Ah:00A7h(目標, 37h)`（中毒），接著若目前生命值
 		// 是 0 就墊成 1（`1892h`），最後走 `08BCh`，等級覆寫推的是 FFh。
@@ -381,6 +388,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDCureBlindness, SpellIDRemoveCurse, SpellIDFireballAlt,
 		SpellIDMagicMissileAlt, SpellIDNoOperation, SpellIDGuardedGeneric,
 		SpellIDGreaterHeal, SpellIDLesserHeal, SpellIDHaste, SpellIDSlowPoison,
+		SpellIDEnlarge,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}
@@ -421,3 +429,54 @@ var EnlargeMagnitudeByLevel = [7]uint8{0, 0, 1, 0x33, 0x4c, 0x5b, 0x64}
 
 // EnlargeEffectCode 是變大術掛的效果碼。
 const EnlargeEffectCode = 0x12
+
+// enlargeMagnitude 取變大術那張表的一格。等級超出範圍就取最後一格——
+// 原版的比較鏈只寫到 6，再上去不會改 `DS:47A7h`，而它上一輪留下的值
+// 就是第 6 級那個。
+func enlargeMagnitude(casterLevel int) uint8 {
+	if casterLevel < 0 {
+		return 0
+	}
+	if casterLevel >= len(EnlargeMagnitudeByLevel) {
+		return EnlargeMagnitudeByLevel[len(EnlargeMagnitudeByLevel)-1]
+	}
+	return EnlargeMagnitudeByLevel[casterLevel]
+}
+
+// RestorationOutcome 是「恢復術」還給角色的東西（overlay-22 `2C01h`，spec 097）。
+type RestorationOutcome struct {
+	// Restored 為真代表真的還了一級。身上沒有被吸取的等級就什麼都不做
+	//（`2C16h` 的 `cmpb $0, es:[di+74h]`）。
+	Restored bool
+	// HitPoints 是還回來的生命值：欠的 HP 除以欠的等級數。
+	HitPoints int
+	// DrainedLevels／DrainedHitPoints 是還完之後剩下的欠帳。
+	DrainedLevels    int
+	DrainedHitPoints int
+}
+
+// Restore 重現 overlay-22 `2C01h` 的還帳那一段：
+//
+//	2c35  gain = +75h ÷ +74h
+//	2c40  +32h  += gain      （最大生命值）
+//	2c4a  +11Bh += gain      （目前生命值）
+//	2c55  +0B1h += gain
+//	2c60  +75h  -= gain
+//	2c67  +74h  -= 1
+//
+// **還沒接進遊戲**：remake 還沒有能量吸取（overlay-12 `21C4h`），
+// 沒有欠帳就沒有東西可還。規則先寫下來並釘住，接上吸取時就能直接用。
+func Restore(drainedLevels, drainedHitPoints int) RestorationOutcome {
+	if drainedLevels <= 0 {
+		return RestorationOutcome{
+			DrainedLevels: drainedLevels, DrainedHitPoints: drainedHitPoints,
+		}
+	}
+	gain := drainedHitPoints / drainedLevels
+	return RestorationOutcome{
+		Restored:         true,
+		HitPoints:        gain,
+		DrainedLevels:    drainedLevels - 1,
+		DrainedHitPoints: drainedHitPoints - gain,
+	}
+}

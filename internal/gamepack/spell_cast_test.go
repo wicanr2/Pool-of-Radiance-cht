@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 27 || generic != 25 || total != 52 {
+	if read != 28 || generic != 25 || total != 53 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 27／25／52，改了實作要一起改", read, generic, total)
+			"文件寫的是 28／25／53，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -527,5 +527,51 @@ func TestSlowPoisonRaisesZeroHitPoints(t *testing.T) {
 	// 等級覆寫推的是 FFh，照實接。
 	if effect.CasterLevelOverride != 0xff {
 		t.Errorf("等級覆寫應該是 FFh，算出 %#02x", effect.CasterLevelOverride)
+	}
+}
+
+// 變大術的強度依施法者等級查表。
+func TestEnlargeMagnitude(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	for level, want := range map[int]int{1: 0, 2: 1, 3: 0x33, 4: 0x4c, 5: 0x5b, 6: 0x64} {
+		effect, err := CastSpell(SpellIDEnlarge, parameters, level, maxRoller{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if effect.EffectParameter != want {
+			t.Errorf("第 %d 級的強度應該是 %#02x，算出 %#02x",
+				level, want, effect.EffectParameter)
+		}
+		if effect.EffectCode != EnlargeEffectCode {
+			t.Errorf("效果碼應該是 %#02x，算出 %#02x", EnlargeEffectCode, effect.EffectCode)
+		}
+	}
+}
+
+// 恢復術還一級：HP 是「欠的 HP 除以欠的等級數」，還完欠帳各少一份。
+func TestRestoreRepaysOneLevel(t *testing.T) {
+	// 欠三級、欠 12 點：一次還 4 點，剩兩級、8 點。
+	outcome := Restore(3, 12)
+	if !outcome.Restored || outcome.HitPoints != 4 ||
+		outcome.DrainedLevels != 2 || outcome.DrainedHitPoints != 8 {
+		t.Fatalf("還一級的結果不對：%+v", outcome)
+	}
+	// 連還三次要把欠帳清光。
+	second := Restore(outcome.DrainedLevels, outcome.DrainedHitPoints)
+	third := Restore(second.DrainedLevels, second.DrainedHitPoints)
+	if third.DrainedLevels != 0 || third.DrainedHitPoints != 0 {
+		t.Errorf("還三次應該清光，剩 %d 級 %d 點",
+			third.DrainedLevels, third.DrainedHitPoints)
+	}
+	if outcome.HitPoints+second.HitPoints+third.HitPoints != 12 {
+		t.Errorf("還回來的總和應該是 12，拿到 %d",
+			outcome.HitPoints+second.HitPoints+third.HitPoints)
+	}
+	// 沒有欠帳就什麼都不做。
+	if Restore(0, 0).Restored {
+		t.Error("沒有被吸取過就不該還")
 	}
 }
