@@ -27,8 +27,32 @@ func (record MonsterRecord) MaxHitPoints() uint8     { return record.Raw[0x32] }
 func (record MonsterRecord) CurrentHitPoints() uint8 { return record.Raw[0x11B] }
 func (record MonsterRecord) ArmorClass() int         { return 60 - int(record.Raw[0x111]) }
 func (record MonsterRecord) THAC0() int              { return 60 - int(record.Raw[0x110]) }
-func (record MonsterRecord) DamageDiceCount() uint8  { return record.Raw[0x115] }
-func (record MonsterRecord) DamageDieSides() uint8   { return record.Raw[0x117] }
+// 傷害骰有**兩格**：`+115h`／`+117h` 是第一格，`+116h`／`+118h` 是第二格。
+// 兩格都存在是量出來的——overlay-13 有兩處寫入，`3AE5h` 寫第一格的顆數 3、
+// `3AEEh` 寫第一格的面數 4，`39E3h`／`39ECh` 寫的是第二格的 2 與 4。
+//
+// 168 份記錄裡有 162 份填第一格。**剩下六份只填第二格**，而且都是帶特殊攻擊
+// 的那幾隻：POISONOUS FROG、MEDUSA、GIANT SNAKE（兩份）、DRIDER、
+// PHASE SPIDER。只讀第一格的話牠們每一擊都是 0 點——實測索寇要塞那一場
+// 四隻毒蛙對完全不還手的隊伍打了 10792 次、一次都沒扣到血，那一場永遠打不完。
+//
+// **第一格空的就退到第二格。** 填了第一格的那 162 份第二格都是 0，所以這個
+// 退路不會動到牠們。**原版依什麼挑格還沒讀出來**（`0119h` 的加值只在第一格
+// 有意義，而角色表的顯示常式 overlay-19 `06F0h` 讀的是第一格），
+// 所以這是推論，不是原版規則的重現。
+func (record MonsterRecord) DamageDiceCount() uint8 {
+	if record.Raw[0x115] == 0 && record.Raw[0x117] == 0 {
+		return record.Raw[0x116]
+	}
+	return record.Raw[0x115]
+}
+
+func (record MonsterRecord) DamageDieSides() uint8 {
+	if record.Raw[0x115] == 0 && record.Raw[0x117] == 0 {
+		return record.Raw[0x118]
+	}
+	return record.Raw[0x117]
+}
 func (record MonsterRecord) DamageBonus() int8       { return int8(record.Raw[0x119]) }
 func (record MonsterRecord) Movement() uint8         { return record.Raw[0x11C] }
 

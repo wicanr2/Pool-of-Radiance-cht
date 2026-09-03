@@ -150,3 +150,48 @@ func TestMonsterExperienceMatchesTheOriginal(t *testing.T) {
 		}
 	}
 }
+
+// 六份只填第二格傷害骰的記錄。只讀第一格的話牠們每一擊都是 0 點，
+// 那一場架就永遠打不完（實測毒蛙對不還手的隊伍打了 10792 次沒扣到血）。
+func TestMonstersWithOnlyTheSecondDamageSlot(t *testing.T) {
+	for _, want := range []struct {
+		archive, block uint8
+		name           string
+		count, sides   uint8
+	}{
+		{4, 38, "POISONOUS FROG", 1, 1},
+		{5, 49, "MEDUSA", 1, 4},
+		{5, 60, "GIANT SNAKE", 3, 6},
+		{6, 60, "GIANT SNAKE", 3, 6},
+		{7, 69, "DRIDER", 1, 4},
+		{8, 116, "PHASE SPIDER", 1, 6},
+	} {
+		record, err := ReadDOSMonsterRecord(poolZipPath(), want.archive, want.block)
+		if err != nil {
+			t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+		}
+		if record.Name != want.name {
+			t.Errorf("MON%d/%d 是 %q，預期 %q", want.archive, want.block, record.Name, want.name)
+			continue
+		}
+		if record.Raw[0x115] != 0 || record.Raw[0x117] != 0 {
+			t.Errorf("%s 的第一格不是空的：%d／%d", want.name, record.Raw[0x115], record.Raw[0x117])
+		}
+		if record.DamageDiceCount() != want.count || record.DamageDieSides() != want.sides {
+			t.Errorf("%s 的傷害骰是 %dd%d，預期 %dd%d", want.name,
+				record.DamageDiceCount(), record.DamageDieSides(), want.count, want.sides)
+		}
+	}
+}
+
+// 反過來釘住：填了第一格的記錄不受退路影響。
+func TestMonstersWithTheFirstDamageSlotAreUnchanged(t *testing.T) {
+	record, err := ReadDOSMonsterRecord(poolZipPath(), 1, 2)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	if record.Name != "GOBLIN GUARD" || record.DamageDiceCount() != 1 || record.DamageDieSides() != 6 {
+		t.Fatalf("%q 的傷害骰是 %dd%d，預期 GOBLIN GUARD 1d6",
+			record.Name, record.DamageDiceCount(), record.DamageDieSides())
+	}
+}
