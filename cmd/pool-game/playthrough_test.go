@@ -276,7 +276,12 @@ func TestPassiveCombatTerminates(t *testing.T) {
 		}
 	}
 	if !application.combatActive {
-		t.Fatal("never reached combat")
+		t.Fatalf("never reached combat: GEO%d/%d (%d,%d) mode=%d 管理=%v 寶物=%v 輸入=%v 選單=%v 狀態=%q",
+			application.spawn.Map.Archive, application.spawn.Map.BlockID,
+			application.spawn.X, application.spawn.Y, application.mode,
+			application.programManaging, application.treasureActive,
+			application.eclInput != nil, application.cellMenuOptions,
+			application.statusLine)
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
@@ -368,7 +373,12 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 		}
 	}
 	if !application.combatActive {
-		t.Fatal("never reached combat")
+		t.Fatalf("never reached combat: GEO%d/%d (%d,%d) mode=%d 管理=%v 寶物=%v 輸入=%v 選單=%v 狀態=%q",
+			application.spawn.Map.Archive, application.spawn.Map.BlockID,
+			application.spawn.X, application.spawn.Y, application.mode,
+			application.programManaging, application.treasureActive,
+			application.eclInput != nil, application.cellMenuOptions,
+			application.statusLine)
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
@@ -543,7 +553,12 @@ func TestAnEquippedPartyWinsTheFirstFight(t *testing.T) {
 		}
 	}
 	if !application.combatActive {
-		t.Fatal("never reached combat")
+		t.Fatalf("never reached combat: GEO%d/%d (%d,%d) mode=%d 管理=%v 寶物=%v 輸入=%v 選單=%v 狀態=%q",
+			application.spawn.Map.Archive, application.spawn.Map.BlockID,
+			application.spawn.X, application.spawn.Y, application.mode,
+			application.programManaging, application.treasureActive,
+			application.eclInput != nil, application.cellMenuOptions,
+			application.statusLine)
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)

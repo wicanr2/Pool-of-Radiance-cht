@@ -27,6 +27,7 @@ import (
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/temple"
 	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
+	"github.com/wicanr2/golden-box-remake-engine/ecl"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
@@ -1684,7 +1685,78 @@ func (a *app) cellMenuLabel() string {
 	return strings.Join(parts, "   ")
 }
 
+// mapExitFlagAddress 是「隊伍正要走出這一區」的 ECL 變數（spec 100）。
+//
+// **還沒有人寫它**：原版的寫入點沒找到，remake 這邊也還沒接
+//（接了會讓九個逐鍵重現的測試變紅，見 spec 100）。所以下面那三個分支目前
+// 都走不到，`applyMapExitCommit` 也就不會觸發。留著的是已經讀清楚的那一半。
+//
+// 三個地方讀它，讀到非零就離開這一區：城區的西門（`ecl3` block 0 `993Ah`
+// → 貧民窟）、貧民窟的邊界（`ecl2` block 20 `9934h`，**用朝向挑鄰居**）、
+// 索寇要塞的碼頭（`ecl4` block 21 `9918h` → 回菲蘭的船）。
+//
+// 座標本身是繞回去的（overlay-30 `0358h` 在查牆之前把 X／Y 夾回 0..15，
+// spec 099），所以繞回之後那一格看起來合法——引擎另外記下「這一步本來會
+// 走出去」才說得通。攻略也是這樣寫的：菲蘭分成幾區，**區與區之間靠邊界上的
+// 城門相接，走過去就到隔壁區**。
+//
+// **原版的寫入點還沒找到**（沒有任何 ECL 寫它，執行檔裡也沒有直接定址它），
+// 所以語意是 strong inference，不是 exact。
+const mapExitFlagAddress = 0x6DD5
+
+// mapExitCommitCall 是 `2Dh CALL C01Eh` 的選擇子。
+//
+// `2Dh` 的處理常式（overlay-03 `3026h`）拿運算元的值減 `7FFFh` 之後分派；
+// `C01Eh` 那一支（`30FAh`）呼叫 overlay-07 `1A17h`，而那一支做的事很明確：
+//
+//	1a1a  al = DS:6A0Dh                ; 朝向
+//	1a1f  0（北）→ Y > 0 就 Y--，否則 Y = 15
+//	1a38  2（東）→ X < 15 就 X++，否則 X = 0
+//	1a51  4（南）→ Y < 15 就 Y++，否則 Y = 0
+//	1a6a  6（西）→ X > 0 就 X--，否則 X = 15
+//	1a81  重算地形與牆的暫存
+//
+// 就是**把這一步走掉，而且在邊界繞回去**。三個讀 `6DD5h` 的分支後面都緊跟著
+// 它，所以走出這一區的那一步是由 ECL 自己叫這一支完成的，不是引擎默默做的。
+const mapExitCommitCall = 0xC01E
+
+// applyMapExitCommit 走 `2Dh CALL C01Eh` 那一步：依朝向移動一格、邊界繞回，
+// 並把離開旗標清掉。
+//
+// 選擇子要看**運算元本身的字**，不是它指到的值：共用 VM 會把那個運算元當成
+// 記憶體參照解出來（實測拿到的是 0），原版的處理常式比的是字本身。
+func (a *app) applyMapExitCommit(result eclvm.Result) {
+	if a.eventMachine == nil {
+		return
+	}
+	for _, event := range result.Events {
+		if event.Opcode != 0x2D {
+			continue
+		}
+		instruction, err := a.eclInstruction(event.PC)
+		if err != nil || len(instruction.Operands) == 0 {
+			continue
+		}
+		selector, err := ecl.WordAddress(instruction.Operands[0])
+		if err != nil || selector != mapExitCommitCall {
+			continue
+		}
+		switch a.spawn.Facing {
+		case 0:
+			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)-1, geometry.Height))
+		case 1:
+			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+1, geometry.Width))
+		case 2:
+			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+1, geometry.Height))
+		case 3:
+			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)-1, geometry.Width))
+		}
+		a.eventMachine.Memory[mapExitFlagAddress] = 0
+	}
+}
+
 func (a *app) applyCellECLResult(result eclvm.Result) {
+	a.applyMapExitCommit(result)
 	for _, write := range result.Writes {
 		switch write.Address {
 		case 0xC04B:
