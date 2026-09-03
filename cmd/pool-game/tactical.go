@@ -331,6 +331,9 @@ type tacticalState struct {
 	SleepFlag []uint8
 	// Asleep 是被催眠的格子。睡著的一輪到就直接結束回合。
 	Asleep []bool
+	// HeldRounds 是被定身的剩餘回合數（定身術，效果碼 `34h`）。
+	// 大於零的那一格輪到就直接結束回合，回合開始時各減一。
+	HeldRounds []int
 	// SaveTargets 是每一格的五個豁免目標值（記錄 `+6Dh` 起，spec 075），
 	// SaveBonus 是記錄 `+101h` 的修正。隊員的目標值由職業等級查表算出來。
 	SaveTargets [][gamepack.SavingThrowCategories]uint8
@@ -382,6 +385,11 @@ func (state *tacticalState) Budget() uint8 {
 // 原版每回合都重擲，不是整場排一次。
 func (state *tacticalState) startRound(roll func(count, sides int) int) {
 	state.Round++
+	for index := 1; index < len(state.HeldRounds); index++ {
+		if state.HeldRounds[index] > 0 {
+			state.HeldRounds[index]--
+		}
+	}
 	for index := 1; index < len(state.Roster); index++ {
 		state.Budgets[index] = combat.InitialMovementBudgetBeforeEffects(state.BaseMovement[index], false, 0)
 		modifier := combat.DexterityInitiativeModifier(state.Dexterity[index])
@@ -520,6 +528,7 @@ func (a *app) enterTacticalPreview() error {
 	state.HitDice = make([]uint8, size)
 	state.SleepFlag = make([]uint8, size)
 	state.Asleep = make([]bool, size)
+	state.HeldRounds = make([]int, size)
 	state.SaveTargets = make([][gamepack.SavingThrowCategories]uint8, size)
 	state.SaveBonus = make([]int, size)
 	for index := range state.SaveTargets {
@@ -1057,6 +1066,16 @@ func (a *app) tacticalInput() error {
 		if a.justPressed(ebiten.KeyN) {
 			state.Prompt = false
 			state.Finished, state.Outcome = true, combat.ResolveCombatOutcome(state.sideCounts())
+			return a.finishCombat(state.Outcome)
+		}
+		return nil
+	}
+	// 被定身的一輪到也直接結束回合（定身術，效果碼 `34h`）。
+	if state.Mover != 0 && int(state.Mover) < len(state.HeldRounds) &&
+		state.HeldRounds[state.Mover] > 0 {
+		state.Status = state.say(msgStatusHeld, state.Mover)
+		state.endTurn(a.rollDice, false)
+		if state.Finished {
 			return a.finishCombat(state.Outcome)
 		}
 		return nil

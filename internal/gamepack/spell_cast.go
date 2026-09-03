@@ -77,6 +77,16 @@ const SlowEffectCode = 0x27
 // 2Ch 是致病、32h 是木乃伊惡疾、1Fh 是無助，與 overlay-15 的名稱鏈相符。
 var CureDiseaseEffectCodes = [6]uint8{0x22, 0x2b, 0x2c, 0x1f, 0x32, 0x39}
 
+// HoldPersonEffectCode 是定身術掛上去的效果碼（參數表 `+0Ah`，spec 074）。
+// 兩個編號（23 與 49）用同一個碼。
+const HoldPersonEffectCode = 0x34
+
+// SpellIDHoldPerson 與 SpellIDHoldPersonAlt 是定身術的兩個編號。
+const (
+	SpellIDHoldPerson    = 23
+	SpellIDHoldPersonAlt = 49
+)
+
 // SleepEffectCode 是催眠術掛上去的效果碼（`15DEh` 推的 35h）。
 // overlay-15 的名稱鏈把它叫 "Funky--"（spec 069）。
 const SleepEffectCode = 0x35

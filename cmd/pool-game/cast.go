@@ -317,6 +317,29 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		syncTrainedLibraryCharacter(&a.state, *member)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured),
 			strings.TrimSpace(member.Name), removed))
+	case effect.EffectCode == gamepack.HoldPersonEffectCode:
+		// 定身術：規則 1（豁免成功完全無效，spec 074）。中了就照參數表的
+		// 持續回合數定住，那一格輪到就直接結束回合。
+		picked, found := target, chosen
+		if !found {
+			picked, found = state.nearestReachableOpposing(state.Mover)
+		}
+		if !found {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
+		}
+		rounds := a.spellParameters[option.ID].Duration(casterLevel)
+		if rounds < 1 {
+			rounds = 1
+		}
+		if a.savedAgainstSpell(state, picked, option.ID) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
+			break
+		}
+		if int(picked) < len(state.HeldRounds) {
+			state.HeldRounds[picked] = rounds
+		}
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), picked, rounds))
 	case effect.SleepBudget > 0:
 		a.applySleep(state, member.Name, option.Label, effect.SleepBudget)
 	case effect.Heal > 0:
@@ -393,35 +416,38 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 // 原版在共用施法常式 `08BCh` 裡先擲一次豁免（`096Bh` 呼叫 overlay-24 entry 7），
 // 把布林結果和規則值一起交給 overlay-24 entry 19（`133Ah`）處置。
 func (a *app) damageAfterSave(state *tacticalState, target, spell uint8, damage int) int {
-	if state == nil || int(target) >= len(state.SaveTargets) {
+	if !a.savedAgainstSpell(state, target, spell) {
 		return damage
+	}
+	return gamepack.DamageAfterSave(a.spellParameters[spell].SaveRule(), damage)
+}
+
+// savedAgainstSpell 讓目標對這一支法術擲一次豁免。不用擲（規則 0）或資料
+// 不齊時回 false，讓呼叫端照「沒豁免成功」處理。
+func (a *app) savedAgainstSpell(state *tacticalState, target, spell uint8) bool {
+	if state == nil || int(target) >= len(state.SaveTargets) {
+		return false
 	}
 	if int(spell) >= len(a.spellParameters) {
-		return damage
+		return false
 	}
 	parameters := a.spellParameters[spell]
-	rule := parameters.SaveRule()
-	if rule == gamepack.SaveRuleNone {
-		return damage
+	if parameters.SaveRule() == gamepack.SaveRuleNone {
+		return false
 	}
 	category := parameters.SaveCategory()
 	if int(category) >= gamepack.SavingThrowCategories {
-		return damage
+		return false
 	}
 	roll := a.rollDice(1, gamepack.SavingThrowDie)
-	saved := false
 	switch {
 	case roll == 1:
-		saved = false
+		return false
 	case roll == gamepack.SavingThrowDie:
-		saved = true
+		return true
 	default:
-		saved = int(state.SaveTargets[target][category]) <= roll+state.SaveBonus[target]
+		return int(state.SaveTargets[target][category]) <= roll+state.SaveBonus[target]
 	}
-	if !saved {
-		return damage
-	}
-	return gamepack.DamageAfterSave(rule, damage)
 }
 
 // applySpellDamage 用與攻擊同一套的收尾：歸零就不再佔格、不再參與。
