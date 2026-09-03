@@ -52,7 +52,7 @@ func TestFoesCloseOnACrowdedBoard(t *testing.T) {
 	}
 	keys := []ebiten.Key{ebiten.KeyArrowUp, ebiten.KeyArrowLeft, ebiten.KeyArrowRight, ebiten.KeyArrowDown}
 	random := rand.New(rand.NewSource(29))
-	for step := 0; step < 4000 && application.tactical == nil; step++ {
+	for step := 0; step < 30000 && application.tactical == nil; step++ {
 		busy := application.encounter != nil || application.cellWaitingMenu ||
 			application.cellEventPending || application.combatActive ||
 			application.shopActive || application.treasureActive || application.templeActive

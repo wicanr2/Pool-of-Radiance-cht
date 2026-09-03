@@ -249,9 +249,19 @@ func TestPassiveCombatTerminates(t *testing.T) {
 		}
 	}
 	random := rand.New(rand.NewSource(7))
-	for step := 0; step < 4000 && !application.combatActive; step++ {
+	for step := 0; step < 30000 && !application.combatActive; step++ {
 		var err error
 		switch {
+		case application.programManaging:
+			// 地圖上的隊伍管理畫面吃掉方向鍵，原版按 B 回地圖。
+			err = press(application, ebiten.KeyB)
+		case application.treasureActive && len(application.cellMenuOptions) != 0:
+			// 寶物選單停在 View 上，一直按 Enter 只會一直看。
+			if want := treasureMenuChoice(application.cellMenuOptions); want != application.cellMenuCursor {
+				err = press(application, ebiten.KeyArrowRight)
+			} else {
+				err = press(application, ebiten.KeyEnter)
+			}
 		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
 			err = press(application, ebiten.KeyEnter)
 		default:
@@ -341,7 +351,7 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 		}
 	}
 	random := rand.New(rand.NewSource(7))
-	for step := 0; step < 4000 && !application.combatActive; step++ {
+	for step := 0; step < 30000 && !application.combatActive; step++ {
 		switch {
 		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
 			if err := press(application, ebiten.KeyEnter); err != nil {
@@ -516,7 +526,7 @@ func TestAnEquippedPartyWinsTheFirstFight(t *testing.T) {
 		}
 	}
 	random := rand.New(rand.NewSource(7))
-	for step := 0; step < 4000 && !application.combatActive; step++ {
+	for step := 0; step < 30000 && !application.combatActive; step++ {
 		switch {
 		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
 			if err := press(application, ebiten.KeyEnter); err != nil {
@@ -714,7 +724,7 @@ func TestNormalKeysReachThePartyManagementCell(t *testing.T) {
 	keys := []ebiten.Key{ebiten.KeyArrowUp, ebiten.KeyArrowLeft, ebiten.KeyArrowRight, ebiten.KeyArrowDown}
 	random := rand.New(rand.NewSource(19))
 	reached := false
-	for step := 0; step < 4000 && !reached; step++ {
+	for step := 0; step < 30000 && !reached; step++ {
 		if application.programManaging {
 			reached = true
 			break

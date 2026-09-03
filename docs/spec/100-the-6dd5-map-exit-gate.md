@@ -148,9 +148,9 @@ dfd  cmpb $0FFh, 第三欄 ; je → 結束；不是 FFh 才走另一個 loader
 
 | | 接之前 | 接之後 |
 |---|---:|---:|
-| 走得到的地圖 | 2 | **11** |
+| 走得到的地圖 | 2 | **12** |
 | 走得到的 ECL block | 4 | **8**（0、8、11、18、20、21、26、29）|
-| archive | 3、4 | **1、2、3、4、7、8** |
+| archive | 3、4 | **1、2、3、4、5、7、8** |
 
 **但是還不能落地**，兩個原因：
 
@@ -158,10 +158,25 @@ dfd  cmpb $0FFh, 第三欄 ; je → 結束；不是 FFh 才走另一個 loader
   離開事件而不是移動，`TestNormalKeysReachTheFirstDungeonStep` 那一類
   逐鍵重現的測試全部對不上。那些測試對過原版的是別的段落（spec 022 的
   驗收是 Sune → City Hall），西邊那一步到底該不該離開**沒有對過原版**。
-- **走出去之後很快撞上一個沒解的硬失敗**：`ecl7` block 26 的
-  「YOU ARE ABOUT TO LEAVE THIS AREA. DO YOU WANT TO RETURN?」選 LEAVE 之後
-  是 `LOAD FILES 5,5,0`，而當下 archive 是 7、GEO7 沒有 block 5
-  （GEO7 只有 17／22／23／26）。
+- ~~走出去之後撞上 `LOAD FILES 5,5,0` 的硬失敗~~ —— **已解，見 spec 043**：
+  區塊編號在八個 GEO 檔裡全域唯一，所以拿編號查地圖就對了，不必追那個會
+  落後的 archive 值。這條已經落地（`GeometryCatalog.MapByBlock`），
+  接不接 `DS:6DD5h` 都成立。
+
+### 攻略把語意確認了
+
+外部佐證：菲蘭分成幾區，**區與區之間靠邊界上的城門相接，走過去就到隔壁區**；
+拿到第一份委任之後就是「往城門走、跨過去」進貧民窟。
+來源：<https://the-spoiler.com/RPG/SSI/pool.of.radiance.1/Pool%20of%20Radiance/css/Pool%20of%20Radiance_1.htm>、
+<http://crpgaddict.blogspot.com/2021/08/the-foundations-of-phlan-revisiting.html>。
+這與三個使用點在做的事完全一致。
+
+### 剩下的唯一阻礙：既有測試的路線
+
+現在擋著的只有一件事——**九個逐鍵重現的測試會紅**。它們靠固定亂數種子亂走
+到某一場架，而世界一變大，同一個種子就走去別的地方了；有幾個還會卡在
+新走得到的區域裡的選單。這不是遊戲壞了，是測試的路線要重新確立。
+要接上 `DS:6DD5h`，得連同這九個測試一起處理，不能只改遊戲。
 
 ### `+1CCh` 那道閘門查過了，不是答案
 

@@ -153,6 +153,25 @@ func (c GeometryCatalog) Map(key MapKey) (GeometryMap, bool) {
 }
 
 // Keys returns identities in deterministic archive/block order.
+// MapByBlock 依區塊編號找地圖，不看目前是哪一個 archive。
+//
+// **區塊編號在八個 GEO 檔裡是全域唯一的**（29 個編號、29 張圖，一個不重複），
+// 所以編號本身就決定了它在哪一個檔案。`21h LOAD FILES` 只帶區塊編號
+// （spec 043：第二欄整支沒有 consumer），原版靠 `DS:52D4h` 補 archive；
+// remake 追那個值會落後——實測從碼頭搭船到 `ecl7` block 26 之後，
+// 那一區要 `LOAD FILES 5`，而當下 archive 是 7、GEO7 沒有 block 5
+//（block 5 在 GEO5）。用編號查就不會有這個問題。
+//
+// 找不到就回 false，讓呼叫端失敗即關閉。
+func (c GeometryCatalog) MapByBlock(blockID uint8) (GeometryMap, bool) {
+	for key, value := range c.maps {
+		if key.BlockID == blockID {
+			return value, true
+		}
+	}
+	return GeometryMap{}, false
+}
+
 func (c GeometryCatalog) Keys() []MapKey {
 	keys := make([]MapKey, 0, len(c.maps))
 	for key := range c.maps {

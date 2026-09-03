@@ -113,3 +113,28 @@ func writeTestZIP(t *testing.T, path string, names []string) {
 		t.Fatal(err)
 	}
 }
+
+// 區塊編號在八個 GEO 檔裡全域唯一，所以編號本身就決定了 archive。
+// `21h LOAD FILES` 只帶編號，這條性質是拿編號查地圖的前提。
+func TestGeometryBlockIDsAreGloballyUnique(t *testing.T) {
+	catalog, err := ReadDOSGeometryCatalog(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	owner := map[uint8]uint8{}
+	for _, key := range catalog.Keys() {
+		if previous, clash := owner[key.BlockID]; clash {
+			t.Fatalf("block %d 同時在 GEO%d 與 GEO%d", key.BlockID, previous, key.Archive)
+		}
+		owner[key.BlockID] = key.Archive
+	}
+	if len(owner) != catalog.Len() {
+		t.Fatalf("%d 個編號對 %d 張圖", len(owner), catalog.Len())
+	}
+	for blockID, archive := range owner {
+		found, ok := catalog.MapByBlock(blockID)
+		if !ok || found.Key.Archive != archive || found.Key.BlockID != blockID {
+			t.Errorf("MapByBlock(%d) 找到 %v，要 GEO%d/%d", blockID, found.Key, archive, blockID)
+		}
+	}
+}

@@ -528,8 +528,18 @@
   `LOAD FILES 5,5,0`——當下 archive 是 7，而 GEO7 沒有 block 5。
   順帶排除掉一條：`LOAD FILES` 載地圖前看的 party `+1CCh` 閘門不是答案，
   全遊戲只有 overlay-07 `02D2h` 一處寫它而且只寫 1。
-  **下一步要的是原版當 oracle**（往西走一步到底會怎樣、怎麼走到 block 26），
-  不是再多讀一段碼。
+  **語意已經不必再查**：攻略寫得很直接——菲蘭分成幾區，區與區之間靠邊界上
+  的城門相接，走過去就到隔壁區（來源記在 spec 100）。
+  `LOAD FILES` 那個硬失敗也解掉了（見下一條）。
+  **現在擋著的只剩九個逐鍵重現的測試**：它們靠固定種子亂走到某一場架，
+  世界一變大同一個種子就走去別的地方。要接上 `DS:6DD5h` 得連它們一起處理。
+- [x] **`LOAD FILES` 用區塊編號查地圖**（2026-09-03，spec 043）。
+  區塊編號在八個 GEO 檔裡全域唯一（29 個編號對 29 張圖），而 `21h` 只帶編號
+  ——第二欄整支沒有 consumer。所以編號本身就決定了 archive，不必追那個會
+  落後的值。`TestGeometryBlockIDsAreGloballyUnique` 釘住那條性質。
+  同一輪把 `syncArchiveFromEventMachine` 裡「順手設 `spawn.Map.Archive`」拿掉
+  ——ECL 的 archive 與地圖的 archive 是兩回事，混在一起會生出 GEO1/21 這種
+  不存在的組合。
 - [x] **索寇要塞那一段推得動**（2026-09-03）。
   `TestSokalKeepOpensTheOtherBoatRoutes` 讓探索器拿到裝備、打贏那一場，
   `DS:4A21h` 變成 255；鬼魂說出通關密語 SAMOSUD，`DS:4AA7h` 變成 254，

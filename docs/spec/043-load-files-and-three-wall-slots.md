@@ -32,6 +32,29 @@ ECL2/block20 entry 4：
 2. `9A92h LOAD PIECES 2,4,1`，依序載入 `WALLDEF2` selectors 2／4／1 到 slots 1／2／3，
    symbol 來源為 `8X8D2` 的相應 blocks。
 
+## 區塊編號決定 archive
+
+`21h` 只帶區塊編號（第二欄整支沒有 consumer），archive 由 `DS:52D4h` 補。
+remake 這邊追那個值會落後：從碼頭搭船到 `ecl7` block 26 之後，那一區要
+`LOAD FILES 5`，而當下 archive 是 7 —— GEO7 只有 17／22／23／26，
+block 5 在 GEO5，於是硬失敗。
+
+不必追：**區塊編號在八個 GEO 檔裡是全域唯一的**——29 個編號對 29 張圖，
+一個不重複（`TestGeometryBlockIDsAreGloballyUnique` 釘住這條性質）。
+所以編號本身就決定了它在哪一個檔案。`GeometryCatalog.MapByBlock` 拿編號查，
+查不到就失敗即關閉。
+
+| GEO | 區塊 |
+|---:|---|
+| 1 | 18、24、31 |
+| 2 | 9、15、20 |
+| 3 | 0、14 |
+| 4 | 2、10、21 |
+| 5 | 3、4、5、6、7 |
+| 6 | 1、25、28 |
+| 7 | 17、22、23、26 |
+| 8 | 13、16、27、29、30、32 |
+
 ## 實作契約
 
 - game pack 提供三槽 loader；三次載入後建立 renderer view 時，WallDefs 與 symbol band

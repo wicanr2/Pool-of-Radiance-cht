@@ -864,13 +864,17 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 		if event.Arguments[0] > 0xFF {
 			return false, fmt.Errorf("Pool LOAD FILES has invalid arguments %v/%v", event.Arguments, event.ArgumentsValid)
 		}
-		key := gamepack.MapKey{Archive: a.spawn.Map.Archive, BlockID: uint8(event.Arguments[0])}
-		loaded, ok := a.geometryCatalog.Map(key)
+		// 用**區塊編號**查地圖，不用目前的 archive：編號在八個 GEO 檔裡全域
+		// 唯一（`TestGeometryBlockIDsAreGloballyUnique` 釘住這條性質），
+		// 而 `21h` 只帶編號（spec 043：第二欄整支沒有 consumer）。
+		// 追 archive 會落後——`ecl7` block 26 要 `LOAD FILES 5`，
+		// 當下 archive 是 7，而 block 5 在 GEO5。
+		loaded, ok := a.geometryCatalog.MapByBlock(uint8(event.Arguments[0]))
 		if !ok {
-			return false, fmt.Errorf("Pool LOAD FILES requested absent GEO%d block %d", key.Archive, key.BlockID)
+			return false, fmt.Errorf("Pool LOAD FILES requested absent GEO block %d", event.Arguments[0])
 		}
 		a.initialMap = &loaded
-		a.spawn.Map = key
+		a.spawn.Map = loaded.Key
 		return true, nil
 	case 0x37:
 		if reflect.DeepEqual(event.Arguments, []uint16{127, 127, 127}) {
@@ -932,7 +936,9 @@ func (a *app) syncArchiveFromEventMachine() error {
 		return fmt.Errorf("Pool ECL archive %d is unavailable", selector)
 	}
 	a.eclArchive = uint8(selector)
-	a.spawn.Map.Archive = uint8(selector)
+	// **不要**順手把 `spawn.Map.Archive` 也設成它。地圖的 archive 由
+	// `LOAD FILES` 的區塊編號決定（spec 043），ECL 的 archive 是另一回事；
+	// 兩者混在一起會生出 GEO1/21 這種不存在的組合。
 	return nil
 }
 
