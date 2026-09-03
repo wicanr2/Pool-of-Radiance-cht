@@ -34,6 +34,21 @@ type CastEffect struct {
 	// RemoveEffects 是要從目標身上拿掉的效果碼。解病術走的是這條路，
 	// 不掛新效果（overlay-22 `225Bh`）。
 	RemoveEffects []uint8
+	// BlockedByEffect 非零時代表：目標身上已經有這個效果就什麼都不做
+	// （處理常式先問 `0100h:006Bh`，回非零就直接返回）。
+	BlockedByEffect uint8
+	// AbilityBonus 是直接加在能力值上的法術（例如友誼術加魅力）。
+	AbilityBonus AbilityBonus
+}
+
+// AbilityBonus 是「把某個能力值加上去，加到上限為止」。
+type AbilityBonus struct {
+	// Ability 是能力值的索引（AbilityStrength 那一組）。Amount 為 0 時無效。
+	Ability int
+	// Amount 是加多少。
+	Amount int
+	// Cap 是上限；原版是先加再夾。
+	Cap int
 }
 
 // SlowEffectCode 是緩速術掛上去的效果碼（`2BCDh` 推的 27h）。
@@ -107,6 +122,9 @@ const (
 	SpellIDPrayer         = 42 // 249Dh
 	SpellIDSpiritHammer   = 28 // 19A8h
 	SpellIDSlow           = 55 // 2BC7h → 2724h
+	SpellIDFriends        = 14 // 13C8h
+	SpellIDCureBlindness  = 37 // 21E8h
+	SpellIDRemoveCurse    = 43 // 2508h
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -195,6 +213,9 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	14h Shocking Grasp 14BFh  Roll(1, 8) ＋ 等級
 //	20h Mirror Image   1A6Fh  Roll(1, 4) 推在施法者等級那一格
 //	28h Cause Disease  231Dh  四個覆寫參數 0／1／0／0，只掛效果
+//	0Eh Friends        13C8h  Roll(2, 4) 加在魅力上，上限 25
+//	25h Cure Blindness 21E8h  解掉效果碼 21h
+//	2Bh Remove Curse   2508h  解掉效果碼 24h，並清掉物品的 +36h
 //	27h Cure Disease   2300h  轉呼叫 225Bh：拿掉六個病痛類的效果碼
 //	2Ah Prayer         249Dh  `(哪一邊 << 4) + 等級` 推在等級覆寫那一格
 //	1Ch Spiritual H.   19A8h  四個覆寫參數 0／1／0／0（生出鎚子那段未讀）
@@ -246,6 +267,19 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `2BCDh` 先推效果碼 27h 再走 `2724h`——那一支會設 `DS:677Eh = 1`，
 		// 是範圍法術。
 		effect.Area, effect.EffectCode = true, SlowEffectCode
+	case SpellIDFriends:
+		// `13D9h` 的 Roll(2, 4) 加在記錄 `+15h`（魅力）上，上限 19h ＝ 25
+		// （`13F0h` 的 `cmpb $19h` 之後 `13FBh` 夾住）。
+		effect.AbilityBonus = AbilityBonus{
+			Ability: AbilityCharisma, Amount: roller.Roll(2, 4), Cap: 25,
+		}
+	case SpellIDCureBlindness:
+		// `21F6h` 問 `0100h:006Bh(目標, 21h)`，中了就解掉。
+		effect.RemoveEffects = []uint8{0x21}
+	case SpellIDRemoveCurse:
+		// `2516h` 問效果碼 24h；另外還會把物品的 `+36h`（詛咒旗標）清成 0，
+		// 那一段 remake 還沒有對應的欄位。
+		effect.RemoveEffects = []uint8{0x24}
 	case SpellIDCureDisease:
 		// `225Bh` 逐個問 `0100h:006Bh(目標, 碼)`，中了就用 `0100h:002Ah`
 		// 拿掉。碼與 overlay-15 的名稱鏈對得上：2Ch 是致病、32h 是
@@ -277,7 +311,8 @@ func SpellIsImplemented(id uint8) bool {
 	case SpellIDBless, SpellIDCurse, SpellIDCureLightWound, SpellIDCauseLightWound,
 		SpellIDBurningHands, SpellIDMagicMissile, SpellIDShockingGrasp,
 		SpellIDSleep, SpellIDMirrorImage, SpellIDCauseDisease, SpellIDCureDisease,
-		SpellIDPrayer, SpellIDSpiritHammer, SpellIDSlow,
+		SpellIDPrayer, SpellIDSpiritHammer, SpellIDSlow, SpellIDFriends,
+		SpellIDCureBlindness, SpellIDRemoveCurse,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}

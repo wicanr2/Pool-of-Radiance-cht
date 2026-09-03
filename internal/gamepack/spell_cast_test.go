@@ -326,3 +326,67 @@ func TestThirdBatchSpellFormulas(t *testing.T) {
 		t.Errorf("解病術不該有傷害或治療，算出 %+v", cure)
 	}
 }
+
+// 第四批：友誼術、解盲術、解除詛咒。
+func TestFourthBatchSpellFormulas(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	low, _ := CastSpell(SpellIDFriends, parameters, 6, minRoller{})
+	high, _ := CastSpell(SpellIDFriends, parameters, 6, maxRoller{})
+	if low.AbilityBonus.Ability != AbilityCharisma || high.AbilityBonus.Ability != AbilityCharisma {
+		t.Error("友誼術加的是魅力")
+	}
+	if low.AbilityBonus.Amount != 2 || high.AbilityBonus.Amount != 8 {
+		t.Errorf("友誼術是 2d4（2..8），算出 %d..%d",
+			low.AbilityBonus.Amount, high.AbilityBonus.Amount)
+	}
+	if high.AbilityBonus.Cap != 25 {
+		t.Errorf("上限應該是 25，算出 %d", high.AbilityBonus.Cap)
+	}
+	blind, _ := CastSpell(SpellIDCureBlindness, parameters, 6, maxRoller{})
+	if len(blind.RemoveEffects) != 1 || blind.RemoveEffects[0] != 0x21 {
+		t.Errorf("解盲術應該解掉 21h，算出 %v", blind.RemoveEffects)
+	}
+	// 交叉核對：致盲術（38，純泛型）掛的效果碼就是解盲術解掉的那一個。
+	if got := parameters[38].EffectCode(); got != 0x21 {
+		t.Errorf("致盲術掛的效果碼是 %#02x，解盲術解的是 21h——兩邊對不上", got)
+	}
+	curse, _ := CastSpell(SpellIDRemoveCurse, parameters, 6, maxRoller{})
+	if len(curse.RemoveEffects) != 1 || curse.RemoveEffects[0] != 0x24 {
+		t.Errorf("解除詛咒應該解掉 24h，算出 %v", curse.RemoveEffects)
+	}
+	// 同樣交叉核對：賦予詛咒（44，純泛型）掛的就是 24h。
+	if got := parameters[44].EffectCode(); got != 0x24 {
+		t.Errorf("賦予詛咒掛的效果碼是 %#02x，解除詛咒解的是 24h——兩邊對不上", got)
+	}
+}
+
+// 接得出來的總數。這一條是為了讓文件裡的數字不會過期：改了實作卻沒改
+// 文件就會紅。
+func TestImplementedSpellCount(t *testing.T) {
+	caster, err := ReadDOSSpellCaster(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	read, generic, total := 0, 0, 0
+	for id := 1; id <= SpellDispatchCount; id++ {
+		if !caster.Implemented(uint8(id)) {
+			continue
+		}
+		total++
+		if SpellIsImplemented(uint8(id)) {
+			read++
+		} else {
+			generic++
+		}
+	}
+	if read != 19 || generic != 25 || total != 44 {
+		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
+			"文件寫的是 19／25／44，改了實作要一起改", read, generic, total)
+	}
+	if SpellDispatchCount != 67 {
+		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
+	}
+}
