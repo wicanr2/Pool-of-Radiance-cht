@@ -624,15 +624,15 @@
   城區**（鎖住時 `chooseAreaExit`／`chooseTransitionCell` 都關了），
   不是再加一個優先級。
 
-- [ ] **野外／樞紐地圖（ECL block 25、26、27）還沒讀**。這是走到其餘區域的
-  真正入口：spec 101 量到 ecl7/26 一個區塊接十一個，而 spec 104 把
-  「每一格都停在 `2Dh CALL`」修掉之後，隊伍已經走得進去（治具
-  `TestWorldTourReachesTheAreasBehindTheHarbour` 走到 block 26 與 27）。
-  但**進去之後第一步就被送回城區**：ecl7/26 的入口 0 依 `DS:49C3h`／
-  `DS:49C4h` 分派，那兩個值是碼頭那一段設的（`9C04h SAVE 7 → 49C3`、
-  `SAVE 29 → 49C4`），數值超過 15，所以它們**不是格子座標**，是野外地圖上的
-  位置或區域編號。要接的是：那兩個變數的定義域、野外地圖怎麼投影成格子、
-  以及 `9989h`／`99B8h` 兩張 `ON GOTO` 的分支條件。
+- [x] **野外／樞紐地圖（ECL block 25、26、27）**：座標系統、三張圖怎麼接、
+  四張地點表、每一步的移動與地點派工都接上了（spec 105）。走得通的證據是
+  `TestAWildernessStepMovesBothPositions`（一步同時推 GEO 位置與野外座標，
+  牆擋住時兩個都不動）與 `TestAWildernessLocationDispatchesItsScript`
+  （踏進圖 27 的 (9,29) 會問「要不要搭船回文明區」，答應就換到 ECL block 20）。
+  三張圖的 `NEWECL` 目標合起來是 16 個區塊，所以野外確實是走到其餘區域的入口。
+  剩下的細節：GEO block 6 的 112 格與野外 14×26 之間怎麼對應、`49C4 <= 2`
+  的北緣那一支、46 個地點各自的腳本要用原始資料對回編號（都在 spec 105 的
+  OPEN）。
 - [x] `WALLDEF selector 3 is not present`：**archive 挑錯了**。`LOAD PIECES`
   是腳本要的資源，要用 ECL 的 archive，不是它載進來的 GEO 的——野外那幾張圖
   就不同號（ecl7/26 載的是 GEO5 的區塊，而 `WALLDEF5.DAX` 只有 1 與 24 兩塊）。
