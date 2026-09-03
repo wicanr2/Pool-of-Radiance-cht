@@ -73,8 +73,10 @@ OUT IS GOING TO SOKAL KEEP. YOU CAN CATCH IT AT THE END OF THE PIER.'」。
 397..3A5                          ; Y 同樣處理
 ```
 
-所以原版與 remake 一樣繞回。地圖沒有「走出邊界」這回事，換圖一律由格子
-事件的 `NEWECL`／`LOAD FILES` 完成。
+所以**牆的查詢**兩邊一樣繞回，換圖一律由格子事件的 `NEWECL`／`LOAD FILES`
+完成。但這只證明了「查牆時座標會夾回去」——引擎有沒有另外記下「這一步本來
+會走出地圖」是另一件事，見 spec 100：貧民窟與回程船都掛在 `DS:6DD5h` 上，
+而那個變數最可能就是這個訊號。
 
 ## 對 remake 的意思
 
@@ -84,3 +86,8 @@ OUT IS GOING TO SOKAL KEEP. YOU CAN CATCH IT AT THE END OF THE PIER.'」。
    沒有清掉索寇要塞，`DS:4AA7h` 就停在初始值。
 3. 因此下一步不是「做城區移動」，而是**把索寇要塞打完**——那需要的是
    戰鬥、法術與解謎能真的走完，不是新的畫面。
+   `TestSokalKeepOpensTheOtherBoatRoutes` 已經證明這一段推得動：探索器拿到
+   裝備、打贏那一場、`DS:4A21h` 變成 255，鬼魂說出 SAMOSUD，
+   `DS:4AA7h` 變成 254。
+4. **還缺一步**：要回碼頭去用那些航線，得先離開要塞，而離開要塞與往貧民窟
+   都掛在 `DS:6DD5h` 上，remake 從來沒寫過它。詳見 spec 100。

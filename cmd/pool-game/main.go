@@ -854,7 +854,11 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 	}
 	switch event.Opcode {
 	case 0x21:
-		if reflect.DeepEqual(event.Arguments, []uint16{0xFF, 0xFF, 0x7F}) {
+		// 第一欄是 `FFh` 或 `7Fh` 就不載地圖：原版的 handler 在這兩個值上
+		// 直接跳過 GEO loader（spec 043）。原本只認 `{FF,FF,7F}` 這**一組**，
+		// 於是索寇要塞的 `LOAD FILES FFh,2,FFh` 會被讀成「載入 block 255」
+		// 然後硬失敗——那條路正是清完要塞、開出其他航線的主線。
+		if event.Arguments[0] == 0xFF || event.Arguments[0] == 0x7F {
 			return true, nil
 		}
 		if event.Arguments[0] > 0xFF {

@@ -340,6 +340,9 @@ func planToCells(app *app, rotate int, wanted func(x, y int) bool) []exploreStep
 	return nil
 }
 
+// sokalKeepPassword 是鬼魂在索寇要塞說出來的通關密語（ecl4 block 21 `AD42h`）。
+const sokalKeepPassword = "SAMOSUD"
+
 // exploreMaxTransitionHops 是「這一張走完了，回頭走另一個換圖點」最多做幾次。
 // 沒有上限的話，所有圖都走完之後兩張圖之間會一直來回。
 const exploreMaxTransitionHops = 60
@@ -354,9 +357,19 @@ const exploreMaxTransitionHops = 60
 // avoid 收的是**已知的換圖點**。少了它，第一趟會在起點附近就踩到碼頭上船，
 // 之後困在索寇要塞回不來——起始圖 226 格只走了 31 格就再也沒機會走完。
 // 逐趟把已知的換圖點擋掉，下一趟就會先把這一張走完再換圖。
-func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
-	avoid map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
+func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
+	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
 	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool) (int, bool) {
+	return exploreWorldWithFlags(t, zipPath, seed, rotate, rewalkLimit, budget,
+		avoid, walked, transitionUses, menuTurn, visited, maps, blocks, nil)
+}
+
+// exploreWorldWithFlags 與 exploreWorld 相同，另外在結束時把幾個 ECL 變數
+// 抄進 flags，讓呼叫端可以斷言主線推到哪裡。
+func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
+	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
+	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool,
+	flags map[uint16]uint16) (int, bool) {
 	t.Helper()
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
@@ -387,8 +400,11 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
 	var plan []exploreStep
 	pilot := &tacticalPilot{}
 	stuck, hops, moved := 0, 0, 0
+	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
+	// 的路），要重走找出口時傳一份自己的。
+	rewalks := map[[2]int]int{}
 	lastMap, lastCell := application.spawn.Map, [2]int{-1, -1}
-	for step := 0; step < 300000; step++ {
+	for step := 0; step < budget; step++ {
 		if application.spawn.Map != lastMap {
 			// 換圖不是在「按下前進」那一 tick 發生的：格子事件先跑，
 			// LOAD FILES 是在事件那一段做掉的。所以要跨 tick 比對，
@@ -406,9 +422,10 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
 		if application.initialMap != nil {
 			maps[fmt.Sprintf("GEO%d/%d", application.spawn.Map.Archive,
 				application.spawn.Map.BlockID)] = true
-			visited[[3]int{int(application.spawn.Map.Archive),
+			key := [3]int{int(application.spawn.Map.Archive),
 				int(application.spawn.Map.BlockID),
-				int(application.spawn.Y)*100 + int(application.spawn.X)}] = true
+				int(application.spawn.Y)*100 + int(application.spawn.X)}
+			visited[key], walked[key] = true, true
 		}
 		if application.eventSession != nil {
 			blocks[int(application.eventSession.CurrentBlockID())] = true
@@ -435,6 +452,23 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
 				key = ebiten.KeyArrowRight
 			}
 			if err := press(application, key); err != nil {
+				t.Fatalf("第 %d 步硬失敗：%v", step, err)
+			}
+			continue
+		}
+		if application.eclInput != nil {
+			// 索寇要塞的不死者會問通關密語（`INPUT STRING`，spec 087）。
+			// 密語是鬼魂在遊戲裡說的：「TO PASS MY GUARDS ON THE WAY OUT,
+			// SPEAK THE WORD 'SAMOSUD'」。不打進去就出不了那張圖。
+			plan = nil
+			if application.eclInput.buffer == "" && !application.eclInput.numeric {
+				application.keys = scriptedChars(sokalKeepPassword)
+				if err := application.Update(); err != nil {
+					t.Fatalf("第 %d 步硬失敗：%v", step, err)
+				}
+				continue
+			}
+			if err := press(application, ebiten.KeyEnter); err != nil {
 				t.Fatalf("第 %d 步硬失敗：%v", step, err)
 			}
 			continue
@@ -468,7 +502,7 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
 			continue
 		}
 		if len(plan) == 0 {
-			plan = explorePlan(application, visited, avoid, rotate)
+			plan = explorePlan(application, walked, avoid, rotate)
 			if len(plan) == 0 && hops < exploreMaxTransitionHops {
 				// 這一張踩完了：走一個用得最少的換圖點。
 				here := [2]int{int(application.spawn.Map.Archive),
@@ -492,6 +526,17 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
 				}
 			}
 			if len(plan) == 0 {
+				here := [2]int{int(application.spawn.Map.Archive),
+					int(application.spawn.Map.BlockID)}
+				if rewalks[here] < rewalkLimit {
+					rewalks[here]++
+					for key := range walked {
+						if key[0] == here[0] && key[1] == here[1] {
+							delete(walked, key)
+						}
+					}
+					continue
+				}
 				stuck++
 				if stuck > 3 {
 					break
@@ -523,6 +568,11 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
 		moved++
 		plan = plan[1:]
 	}
+	if flags != nil && application.eventMachine != nil {
+		for _, address := range []uint16{0x4A21, 0x4AA7, 0x4AC4, 0x6E12} {
+			flags[address] = application.eventMachine.Memory[address]
+		}
+	}
 	return moved, true
 }
 
@@ -544,8 +594,8 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	blocks := map[int]bool{}
 	total := 0
 	for pass := 0; pass < 24; pass++ {
-		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, avoid,
-			transitionUses, menuTurn, visited, maps, blocks)
+		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 300000,
+			avoid, visited, transitionUses, menuTurn, visited, maps, blocks)
 		if !ok {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -579,5 +629,37 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	}
 	if len(blocks) < 4 {
 		t.Errorf("只走到 %d 個 ECL block", len(blocks))
+	}
+}
+
+// 主線第一段：清掉索寇要塞會把碼頭的其他航線開出來（spec 099）。
+//
+// 這一條與覆蓋率那一條問的不是同一件事。覆蓋率量「走得到多少」，這一條量
+// **主線推得動嗎**：拿到裝備、打贏那一場、鬼魂說出 SAMOSUD，`DS:4AA7h`
+// 才會被寫成 254，碼頭才會從「唯一的船是去索寇要塞的」變成五個選項。
+func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	avoid := map[[3]int]bool{}
+	transitionUses := map[[3]int]int{}
+	menuTurn := map[[3]int]int{}
+	visited := map[[3]int]bool{}
+	maps := map[string]bool{}
+	blocks := map[int]bool{}
+	flags := map[uint16]uint16{}
+	// 重走同一張圖是為了再踩到出口那一格：出口不會被記成「還沒踩過」，
+	// 所以踩完一遍之後規劃器就不會再挑它，隊伍會困在那一張圖上。
+	_, ok := exploreWorldWithFlags(t, zipPath, 7, 0, 6, 600000,
+		avoid, map[[3]int]bool{}, transitionUses, menuTurn, visited, maps, blocks, flags)
+	if !ok {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	t.Logf("走到的地圖：%d 張；ECL block：%d 個", len(maps), len(blocks))
+	t.Logf("旗標 4A21=%d（要塞的裝備與那一場架）4AA7=%d（碼頭航線）4AC4=%d 6E12=%d",
+		flags[0x4A21], flags[0x4AA7], flags[0x4AC4], flags[0x6E12])
+	if flags[0x4A21] != 255 {
+		t.Errorf("要塞那一段沒推完：4A21=%d，要 255", flags[0x4A21])
+	}
+	if flags[0x4AA7] != 254 {
+		t.Errorf("碼頭的航線沒開：4AA7=%d，要 254", flags[0x4AA7])
 	}
 }
