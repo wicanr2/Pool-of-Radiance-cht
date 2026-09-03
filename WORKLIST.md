@@ -735,14 +735,33 @@
   10 是 +10 的修正，不是第 10 個類別。spec 084 已更正，
   `TestDamageRequestFlags` 用 `旗標 0Ah／運算元5 0Ch` 釘住這一組。
 
-- [ ] **`NEWECL FF` 要當成「不換區」**——證據已閉合，見
-  [spec 107](docs/spec/107-newecl-ff-sentinel.md)，**只差動手**。
+- [x] **`NEWECL FF` 當成「不換區」**（2026-09-03 修在共用 engine，見
+  [spec 107](docs/spec/107-newecl-ff-sentinel.md)）。`eclvm` 加了
+  `NoBlockChange` 常數，`switchTo` 的呼叫端碰到它就不換、不回報 transition，
+  讓機器從 `NEWECL` 的下一條跑下去。世界巡迴的
+  `ECL session target block 0xFF is unavailable` 歸零，**GEO1/31 因此走得進去了**。
 
   三件事釘住了語意：八個封存檔的區塊編號最大是 29，**沒有 255**；全遊戲五張
   以變數當 `NEWECL` 目標的表裡**只有 `ecl1/24` 那張有 `FF`**，而且它跟同一列
   的 `LOAD FILES` 欄成對（`FF` 在那一欄已證實是「不載地圖」，spec 043）；
   拿原始 GEO 量兩張圖的邊界，走得到的五格裡有四格被腳本明文處理，剩下索引 6
   （GEO31 往南）兩欄都是 `FF`，沒有守衛——所以 `FF` 自己就得是無害的。
+
+- [ ] **GEO1/31 一走得進去就冒出來的兩類卡住**（2026-09-03 發現，還沒查）。
+  巡覽治具目前只記 log 不擋測試：`戰術地圖卡住：GEO1/31 第 20／23 回合
+  行動者 7／10`（都是敵方、提示 false、狀態 `TURN ENDED`），以及
+  `GEO7/23 (1,1) 游標 0／[YES NO]` 的選單卡住。
+  **第一件要先分清楚**：是原本就存在、只是先前走不到那一區，
+  還是敵方回合改成原版規則之後新出現的。
+
+- [ ] **平台驗收的 workflow 進不了共用 engine**（2026-09-03 實跑
+  `gh workflow run platform-smoke.yml` 量到）。`build (macos-14)` 與
+  `build (windows-latest)` 都掛在 **`check out the shared engine`** 那一步：
+  `actions/checkout` 去抓 `wicanr2/golden-box-remake-engine`，而
+  **兩個 repo 都是 private、這個 repo 一個 secret 都沒有**，預設的
+  `GITHUB_TOKEN` 只有本 repo 的權限，跨 repo 抓 private 一定失敗。
+  兩條路二選一，都要使用者決定：加一個有 engine 讀取權的 PAT secret，
+  或把 engine 改成 public。在那之前這個 workflow 驗不到任何東西。
 
   **這是世界巡迴治具目前唯一還在冒的硬失敗**（2026-09-03 量：22 趟裡 7 次，
   全部來自 ecl1/24）。修的位置在共用 engine 的 `eclvm.BlockSession.switchTo`，

@@ -1,13 +1,12 @@
 # Spec 107：`NEWECL FFh` 是「不換區塊」
 
 狀態：READY（`FFh` 不是合法目標、唯一走得到的那一格、與 `LOAD FILES FFh`
-成對）；OPEN（原版 handler 的收尾路徑）。日期：2026-09-03。
+成對；已實作並通過驗收）；OPEN（原版 handler 的收尾路徑）。日期：2026-09-03。
 
 ## 一句話
 
 `FFh` 在 `NEWECL` 的運算元裡是哨兵，跟 `LOAD FILES` 第一欄的 `FFh` 是同一個
-意思：**這個方向沒有東西要換**。目前共用 engine 對它直接報錯，是世界巡迴
-治具唯一還在冒出來的硬失敗（22 趟裡 7 次，全部來自 `ecl1/24`）。
+意思：**這個方向沒有東西要換**。
 
 ## 固定輸入
 
@@ -114,17 +113,25 @@ ECL  @99B0  FF   FF   FF   FF   0E   1A   FF   FF
 同一張 GEO。取「不換」是因為它跟 `LOAD FILES FFh` 的既有語意一致，且不會憑空
 產生一個不存在的區塊編號。
 
-## 六、驗收
+## 六、驗收（已通過）
 
-- 世界巡迴治具 `TestWorldTourReachesTheAreasBehindTheHarbour` 的硬失敗
-  `ECL session target block 0xFF is unavailable` 歸零（目前 22 趟 7 次）。
-- `ecl1/24` 走到 GEO31 南緣 (4,15) 或 (11,15) 往南一步之後：區塊仍是 24、
-  archive 仍是 1、座標由 `CALL @C01E` 繞回 y=0。
+- 世界巡迴治具 `TestWorldTourReachesTheAreasBehindTheHarbour` 的
+  `ECL session target block 0xFF is unavailable` 歸零（修之前 22 趟裡 7 次，
+  全部來自 `ecl1/24`）。修完之後那一趟走到 12 張圖、12 個 ECL block，
+  其中 **GEO1/31 是修之前走不進去的**。
+- Pool 整包測試與 engine 整包測試都綠。
 
-## 七、實作位置（尚未動工）
+## 七、實作位置
 
-判斷在共用 engine 的 `eclvm.BlockSession.switchTo`：目前對查不到的區塊一律
-回錯。要加的是「目標為 `FFh` 時不換、讓呼叫端繼續往下跑」。
-**那是另一個 repo（`golden-box-remake-engine`），本專案的 push 授權不涵蓋它，
-所以還沒有動。** 另外該 repo 的 `git config user.email` 目前是公司位址，
-動它之前要先設 repo-local 的 `wicanr2@gmail.com`。
+共用 engine 的 `eclvm.BlockSession.switchTo` 呼叫端：目標等於
+`eclvm.NoBlockChange`（`0FFh`）時不換區塊、不回報 transition，直接讓機器
+從 `NEWECL` 的下一條指令跑下去——PC 在 handler 裡已經跨過運算元了。
+測試是 `TestBlockSessionTreatsTheNoBlockChangeSentinelAsNoSwitch`。
+
+## 八、修完之後才看得到的東西
+
+GEO1/31 一走得進去，那一區的戰鬥就進了巡覽範圍，於是冒出**新的硬失敗類別**：
+`戰術地圖卡住：GEO1/31 第 20／23 回合行動者 7／10`（都是敵方，提示 false、
+狀態 `TURN ENDED`）。另有一次 `GEO7/23 (1,1) 游標 0／[YES NO]` 的選單卡住。
+巡覽治具目前只把它們記成 log、不擋測試。**還沒查**：這一類是原本就存在、
+只是先前走不到那一區，還是新出現的。
