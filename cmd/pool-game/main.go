@@ -148,6 +148,8 @@ type app struct {
 	eventLabel       string
 	cellEventPending bool
 	cellWaitingMenu  bool
+	// cellMovedByScript 記「這一步是腳本自己用 `CALL C01Eh` 走掉的」。
+	cellMovedByScript bool
 	cellMenuOptions  []string
 	cellMenuCursor   int
 	templeActive     bool
@@ -794,6 +796,7 @@ func (a *app) moveInitialDungeonForward() error {
 		return nil
 	}
 	if a.eventMachine != nil {
+		a.cellMovedByScript = false
 		a.setMapExitFlag(dx, dy)
 		result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 		if err != nil {
@@ -806,8 +809,11 @@ func (a *app) moveInitialDungeonForward() error {
 		if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
 			return a.pauseInitialCellResult(result)
 		}
-		a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
-		a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
+		// 腳本自己叫過 `CALL C01Eh` 就已經走過那一步了，不能再走一次。
+		if !a.cellMovedByScript {
+			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
+			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
+		}
 		return a.beginInitialSearch()
 	}
 	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
@@ -817,7 +823,9 @@ func (a *app) moveInitialDungeonForward() error {
 }
 
 func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Result, error) {
-	for boundary := 0; boundary < 8; boundary++ {
+	// 上限只是防呆。`2Dh CALL` 也走這條路之後，一次移動可以連續吃掉十幾個
+	// 邊界（樞紐那幾張圖每一格都有 CALL），8 太小會誤報成硬失敗。
+	for boundary := 0; boundary < 64; boundary++ {
 		if err := a.syncArchiveFromEventMachine(); err != nil {
 			return result, err
 		}
@@ -841,12 +849,29 @@ func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Resu
 		}
 		result = next
 	}
-	return result, fmt.Errorf("Pool transition resource boundary limit exceeded")
+	detail := ""
+	if len(result.Events) == 1 {
+		detail = fmt.Sprintf("，最後停在 opcode %02X @%04X",
+			result.Events[0].Opcode, result.Events[0].PC+0x9900)
+		if selector, ok := a.scriptCallSelector(result.Events[0]); ok {
+			detail += fmt.Sprintf(" 選擇子 %04X", selector)
+		}
+	}
+	return result, fmt.Errorf("Pool transition resource boundary limit exceeded%s", detail)
 }
 
 func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 	if len(event.Arguments) != len(event.ArgumentsValid) {
 		return false, fmt.Errorf("Pool resource event 0x%02X has mismatched argument validity", event.Opcode)
+	}
+	if event.Opcode == 0x2D {
+		// `2Dh CALL` 一律吃掉再往下跑。原版的分派只認五個選擇子，其餘什麼
+		// 都不做——讓它停在這裡的話，樞紐那幾張圖每一格都有一個 CALL，
+		// 隊伍一步都走不動（ecl6/25、ecl7/26、ecl8/27、ecl8/29 是每一格）。
+		if selector, ok := a.scriptCallSelector(event); ok {
+			a.applyScriptCall(selector)
+		}
+		return true, nil
 	}
 	allValid := true
 	for _, valid := range event.ArgumentsValid {
@@ -1061,8 +1086,15 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 	staged := make([]stagedMonster, 0, len(spawns))
 	labels := make([]string, 0, len(spawns))
 	for _, spawn := range spawns {
+		// 數量 0 的先跳過。貧民窟的隨機遭遇把數量放在 `DS:9808h`，那個值由
+		// 區塊的入口 4 算出來（`1Dh PARTYSTRENGTH` 之後 ÷3 ×2 +5），而換區
+		// 時原版是**先跑入口 0 再跑入口 4**（spec 025，有反組譯證據），
+		// 所以入口 0 讀到的還是 0。報錯會讓玩家從起點往西走一步就掛掉。
+		//
+		// OPEN：原版的 `0Bh LOAD MONSTER` 對數量 0 到底怎麼處置還沒讀，
+		// 這裡先取「不放這種怪」——那是唯一不會比崩潰更糟的選擇。
 		if spawn.Count == 0 {
-			return fmt.Errorf("Pool monster %d has zero encounter count", spawn.MonsterID)
+			continue
 		}
 		record, err := a.loadMonster(archive, spawn.MonsterID)
 		if err != nil {
@@ -1070,6 +1102,11 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 		}
 		staged = append(staged, stagedMonster{Spawn: spawn, Record: record})
 		labels = append(labels, fmt.Sprintf("%s ×%d", record.Name, spawn.Count))
+	}
+	if len(staged) == 0 {
+		// 一隻都沒放成，就不要開戰鬥；開了會是一場沒有敵人的架。
+		a.statusLine = "Original monster descriptors staged no monsters."
+		return nil
 	}
 	a.combatActive = true
 	a.combatMonsters = staged
@@ -1111,10 +1148,20 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 		}
 		if request.ItemBlock != 0 {
 			items, err := a.loadTreasure(a.spawn.Map.Archive, uint8(request.ItemBlock))
-			if err != nil {
+			switch {
+			case errors.Is(err, gamepack.ErrTreasureBlockAbsent):
+				// 那個編號在這個 ITEM 檔裡沒有。多半是腳本讀到還沒被主線
+				// 設起來的變數（探索器走到主線之前的格子時會這樣）。
+				// 原版不可能在這裡崩潰，所以當成「這一堆沒有物品」繼續。
+				//
+				// OPEN：原版的 `TREASURE` 對認不得的 item block 怎麼處置
+				// 還沒讀，也還沒確認該用哪一個 archive 去找 ITEM 檔。
+				a.statusLine = err.Error()
+			case err != nil:
 				return err
+			default:
+				loaded = append(loaded, items...)
 			}
-			loaded = append(loaded, items...)
 		}
 	}
 	a.state.PooledMoney = pooled
@@ -1766,18 +1813,54 @@ func (a *app) applyMapExitCommit(result eclvm.Result) {
 		if err != nil || selector != mapExitCommitCall {
 			continue
 		}
-		switch a.spawn.Facing {
-		case 0:
-			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)-1, geometry.Height))
-		case 1:
-			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+1, geometry.Width))
-		case 2:
-			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+1, geometry.Height))
-		case 3:
-			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)-1, geometry.Width))
-		}
+		a.applyScriptCall(selector)
+	}
+}
+
+// applyScriptCall 執行 `2Dh CALL` 的一個選擇子。
+//
+// 原版的分派在 overlay-03 `3026h`：把運算元減 `7FFFh` 之後只比五個值，
+// **其餘一律什麼都不做**（`3126h` 直接返回）。所以認不出來的選擇子不是
+// 「還沒接」，是原版本來就沒有動作——不能讓它擋住移動。
+//
+// 五個有動作的：`8000h`／`8001h`（overlay-07 `00A2h`）、`2C90h`（重算地形
+// 暫存）、`BA03h`（音效）、`C018h`（重算牆的暫存）、`C01Eh`（依朝向走一格、
+// 邊界繞回）。前四個在 remake 這邊每次查地圖時本來就重算，所以只有
+// `C01Eh` 需要動作。
+func (a *app) applyScriptCall(selector uint16) {
+	if selector != mapExitCommitCall {
+		return
+	}
+	switch a.spawn.Facing {
+	case 0:
+		a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)-1, geometry.Height))
+	case 1:
+		a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+1, geometry.Width))
+	case 2:
+		a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+1, geometry.Height))
+	case 3:
+		a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)-1, geometry.Width))
+	}
+	// 旗標只對「這一步」有效。不清的話換區之後的入口 0 還看得到 1，
+	// 於是又換一次區——實測會在城區與貧民窟之間換到邊界上限。
+	if a.eventMachine != nil {
 		a.eventMachine.Memory[mapExitFlagAddress] = 0
 	}
+	a.cellMovedByScript = true
+}
+
+// scriptCallSelector 取出 `2Dh CALL` 的選擇子。共用 VM 會把那個運算元當成
+// 記憶體參照解出來（實測拿到 0），原版比的是**字本身**，所以要回頭讀指令。
+func (a *app) scriptCallSelector(event eclvm.Event) (uint16, bool) {
+	instruction, err := a.eclInstruction(event.PC)
+	if err != nil || len(instruction.Operands) == 0 {
+		return 0, false
+	}
+	selector, err := ecl.WordAddress(instruction.Operands[0])
+	if err != nil {
+		return 0, false
+	}
+	return selector, true
 }
 
 func (a *app) applyCellECLResult(result eclvm.Result) {

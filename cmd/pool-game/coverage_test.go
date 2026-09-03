@@ -385,15 +385,19 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit,
 	blocks map[int]bool, hardFailures *[]string) (int, bool) {
 	return exploreWorldWithFlags(t, zipPath, seed, rotate, rewalkLimit, budget,
 		avoid, walked, transitionUses, menuTurn, exitUses, visited, maps, blocks,
-		nil, hardFailures)
+		nil, noBoatOverride, hardFailures)
 }
+
+// noBoatOverride 關掉航線覆寫（見 exploreWorldWithFlags 的 boat 參數）。
+const noBoatOverride = -1
 
 // exploreWorldWithFlags 與 exploreWorld 相同，另外在結束時把幾個 ECL 變數
 // 抄進 flags，讓呼叫端可以斷言主線推到哪裡。
 func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
 	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
 	exitUses map[[4]int]int, visited map[[3]int]bool, maps map[string]bool,
-	blocks map[int]bool, flags map[uint16]uint16, hardFailures *[]string) (int, bool) {
+	blocks map[int]bool, flags map[uint16]uint16, boat int,
+	hardFailures *[]string) (int, bool) {
 	t.Helper()
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
@@ -458,6 +462,15 @@ walk:
 				avoid[key] = true
 			}
 			lastMap = application.spawn.Map
+		}
+		// boat：**測試治具**，不是遊玩。港務長那一段目前推不動（船票旗標
+		// `4A01` 沒有人清回去，spec 102 的 OPEN），而碼頭的船照著 `4AC4`
+		// 決定去哪。把那三個值直接寫進去，就能把主線之後的區域先走一遍，
+		// 找出那些區域自己的問題——走得到不走得到是另一個問題。
+		if boat != noBoatOverride && application.eventMachine != nil {
+			application.eventMachine.Memory[0x4AA7] = 254
+			application.eventMachine.Memory[0x4A01] = 1
+			application.eventMachine.Memory[0x4AC4] = uint16(boat)
 		}
 		lastCell = [2]int{int(application.spawn.X), int(application.spawn.Y)}
 		if application.initialMap != nil {
@@ -928,7 +941,7 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		transitionUses = map[[3]int]int{}
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 2, 600000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
-			visited, maps, blocks, flags, &hardFailures)
+			visited, maps, blocks, flags, noBoatOverride, &hardFailures)
 		if !reachable {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -1066,4 +1079,63 @@ func chooseAreaExit(application *app, exitUses map[[4]int]int) (areaExit, bool) 
 		}
 	}
 	return best, found
+}
+
+// 世界巡迴：**測試治具**，不是玩家路徑。港務長那一段目前推不動
+//（船票旗標 `4A01` 沒有人清回去，spec 102 的 OPEN），所以主線之後的區域
+// 一直沒有被真的跑過——只有 spec 103 的入口掃描碰過它們，而那是乾淨變數的
+// 靜態掃描，沒有前端、沒有戰鬥、沒有選單。
+//
+// 這一條把碼頭的目的地直接寫進 `DS:4AC4h`，讓探索器把四條航線各走一遍，
+// 量「走到了哪些區塊、撞到哪些硬失敗」。它證明的是**那些區域的腳本在
+// 完整的前端底下跑不跑得動**，不是玩家走不走得到。
+func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	maps := map[string]bool{}
+	blocks := map[int]bool{}
+	visited := map[[3]int]bool{}
+	var hardFailures []string
+	ok := false
+	for _, destination := range []int{0, 1, 2, 3} {
+		avoid := map[[3]int]bool{}
+		transitionUses := map[[3]int]int{}
+		menuTurn := map[[3]int]int{}
+		_, reachable := exploreWorldWithFlags(t, zipPath, int64(13+destination), 0, 1, 200000,
+			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
+			visited, maps, blocks, nil, destination, &hardFailures)
+		if !reachable {
+			t.Skip("original DOS ZIP is intentionally not tracked")
+		}
+		ok = true
+	}
+	if !ok {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	mapNames := make([]string, 0, len(maps))
+	for name := range maps {
+		mapNames = append(mapNames, name)
+	}
+	sort.Strings(mapNames)
+	blockIDs := make([]int, 0, len(blocks))
+	for id := range blocks {
+		blockIDs = append(blockIDs, id)
+	}
+	sort.Ints(blockIDs)
+	t.Logf("走到的地圖 %d 張：%v", len(maps), mapNames)
+	t.Logf("走到的 ECL block %d 個：%v", len(blockIDs), blockIDs)
+	seen := map[string]int{}
+	for _, failure := range hardFailures {
+		key := failure
+		if index := strings.Index(failure, "："); index >= 0 {
+			key = failure[index+len("："):]
+		}
+		seen[key]++
+	}
+	for failure, count := range seen {
+		t.Logf("硬失敗 ×%d：%s", count, failure)
+	}
+	// 量到的下限。四條航線至少要把索寇要塞與兩個樞紐帶進來。
+	if len(blocks) < 5 {
+		t.Errorf("只走到 %d 個 ECL block：%v", len(blocks), blockIDs)
+	}
 }

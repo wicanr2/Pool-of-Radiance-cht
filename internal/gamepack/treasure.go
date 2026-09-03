@@ -1,6 +1,7 @@
 package gamepack
 
 import (
+	"errors"
 	"archive/zip"
 	"fmt"
 	"path/filepath"
@@ -64,10 +65,14 @@ func ReadDOSTreasureItemBlock(zipPath string, archiveNumber, blockID uint8) ([]T
 		payload = block.Data
 	}
 	if payload == nil {
-		return nil, fmt.Errorf("%s has no block 0x%02X", name, blockID)
+		return nil, fmt.Errorf("%s has no block 0x%02X: %w", name, blockID, ErrTreasureBlockAbsent)
 	}
 	return parseTreasureItemRecords(payload)
 }
+
+// ErrTreasureBlockAbsent 說那個編號在 ITEM 檔裡沒有這一塊。呼叫端可以據此
+// 分辨「這一格沒有東西」與「檔案讀壞了」——前者不該讓玩家路徑中斷。
+var ErrTreasureBlockAbsent = errors.New("Pool ITEM block is absent")
 
 func parseTreasureItemRecords(payload []byte) ([]TreasureItemRecord, error) {
 	if len(payload) == 0 || len(payload)%treasureItemRecordSize != 0 {
