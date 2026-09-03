@@ -630,9 +630,9 @@
   牆擋住時兩個都不動）與 `TestAWildernessLocationDispatchesItsScript`
   （踏進圖 27 的 (9,29) 會問「要不要搭船回文明區」，答應就換到 ECL block 20）。
   三張圖的 `NEWECL` 目標合起來是 16 個區塊，所以野外確實是走到其餘區域的入口。
-  剩下的細節：GEO block 6 的 112 格與野外 14×26 之間怎麼對應、`49C4 <= 2`
-  的北緣那一支、46 個地點各自的腳本要用原始資料對回編號（都在 spec 105 的
-  OPEN）。
+  邊界（北／西／東三張八支表，斜向也算）與 20 支地點腳本的入口與第一句
+  也都讀完了，46 個格子共用那 20 支。剩下的只有畫面細節：GEO block 6 的
+  112 格與野外 14×26 之間怎麼對應（spec 105 的 OPEN）。
 - [x] `WALLDEF selector 3 is not present`：**archive 挑錯了**。`LOAD PIECES`
   是腳本要的資源，要用 ECL 的 archive，不是它載進來的 GEO 的——野外那幾張圖
   就不同號（ecl7/26 載的是 GEO5 的區塊，而 `WALLDEF5.DAX` 只有 1 與 24 兩塊）。

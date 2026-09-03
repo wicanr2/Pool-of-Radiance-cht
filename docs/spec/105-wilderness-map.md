@@ -1,7 +1,8 @@
 # Spec 105：野外地圖——座標、三張圖怎麼接、地點表
 
-狀態：READY（座標系統、拼接條件、四張表的版面與內容）；
-DRAFT（每一步的可通行判定、地點腳本本身）
+狀態：READY（座標系統、拼接條件與三張邊界表、四張表的版面與內容、
+20 支地點腳本的入口與第一句、每一步的移動）；
+DRAFT（野外畫面與 GEO block 6 的對應細節）
 
 ## 一句話
 
@@ -131,6 +132,64 @@ Y 到北緣、跨圖的例外座標——三個獨立的來源都是同一個意
 牆擋住的時候兩個位置都不動。`TestAWildernessStepMovesBothPositions` 釘住這個
 配對；先前前端把野外整條移動路徑換掉，隊伍在 GEO 上不動，Y 也就一路走到 34、35。
 
+## 邊界：三個方向各一張八支表
+
+入口 0 在算下一步之前先過邊界檢查，每一支都是以 `DS:033Dh`（八方位索引，
+0 起算：北、東北、東、東南、南、西南、西、西北）分派的 `ON GOTO`：
+
+```
+9914  COMPARE @4A9E, 255 ; IF = ; EXIT     ; 這個開起來就整支不跑
+991C  COMPARE @49C4, 2  ; IF <= ; GOSUB 北緣
+9927  COMPARE @49C3, 2  ; IF <= ; GOSUB 西緣     （25／26）
+9932  COMPARE @49C3, 15 ; IF =  ; GOSUB 東緣
+```
+
+以 ecl6/25 為例，三張表分別是：
+
+| 邊 | 位址 | 拒絕的方向 | 其餘 |
+|---|---|---|---|
+| 北（`49C4 <= 2`）| `9942h` | 0 北、1 東北、7 西北 | 放行 |
+| 西（`49C3 <= 2`）| `9960h` | 5 西南、6 西、7 西北 | 放行 |
+| 東（`49C3 == 15`）| `9985h` | — | 1 東北、2 東 → 跨到圖 26（`49C3 = 3`、`6E12 = 7`、`NEWECL 26`）；3 東南 → `49C4 == 31` 就拒絕，否則同樣跨圖 |
+
+「拒絕」就是 `SAVE 255 → @6DC9`，也就是前端看到的「這一步不給走」。
+26 與 27 的三張表形狀相同（`9964h`／`99B8h`／`9989h` 與 `9950h`／`99A3h`／
+`9975h`），只是跨到的圖與新的 X 不同——這正是本規格前面那張跨圖表的來源，
+補上的是**斜向也算**：帶北向分量的三個方向都會被北緣擋下，
+帶西向分量的三個方向都會被西緣擋下。
+
+## 20 支地點腳本
+
+46 個格子對到的是 **20 支腳本**：每張圖的入口 1 找到列與行之後，用地點編號表
+的值做 `ON GOTO`（25 是 `9B13h` 八支、26 是 `9B9Bh` 八支、27 是 `9B38h` 四支）。
+每一支的第一句原文如下，名字直接取自原版，不是攻略：
+
+| 圖 | 編號 | 目標 | 第一句 |
+|---|---:|---|---|
+| 25 | 0 | `9B31h` | OFF IN THE DISTANCE YOU SEE A LARGE DRAGON FLYING THROUGH THE AIR… |
+| 25 | 1 | `9B32h` | （同上，差一個位元組的入口）|
+| 25 | 2 | `9BACh` | AS YOU HIKE THROUGH THE MOUNTAINS, A LARGE DRAGON FLYS ABOVE YOU… |
+| 25 | 3 | `9CBDh` | AS YOU WALK THROUGH THIS AREA TWO ANHKHEGS ERUPT FROM THE GROUND… |
+| 25 | 4 | `9D2Eh` | A SMALL CARAVAN OF SLAVERS RIDE BY YOU TOWARD THE BUCCANEER BASE. |
+| 25 | 5 | `9D87h` | YOU HAVE REACHED THE BUCCANEER BASE… |
+| 25 | 6 | `9E1Ch` | A GROUP OF ARMED GUARDS RIDE BY. |
+| 25 | 7 | `9E4Ch` | 'ARE YOU THE DIPLOMATIC ENVOYS FROM NEW PHLAN?' |
+| 26 | 0 | `9BB9h` | YOU FIND A RECENTLY ABBANDONED CAMP. |
+| 26 | 1 | `9BECh` | YOU HAVE STUMBLED UPON A LARGE NOMAD CAMP.  WILL YOU ENTER IT? |
+| 26 | 2 | `9C5Dh` | 北城門或墓園（NORTHERN CITY GATES / GRAVEYARD）|
+| 26 | 3 | `9D1Eh` | 城東緣：南北兩個入口與一艘小船 |
+| 26 | 4 | `9E3Eh` | 城西緣：南北兩個入口 |
+| 26 | 5 | `9F22h` | YOU HAVE FOUND A ROWBOAT HIDDEN AMOUNGST THE REEDS… TO THE PYRAMID? |
+| 26 | 6 | `9F80h` | 金字塔前的密門 |
+| 26 | 7 | `A02Fh` | 回文明區的船 |
+| 27 | 0 | `9B4Ah` | YOU FIND A RUINED CASTLE SURROUNDED BY QUICKSAND… |
+| 27 | 1 | `9C0Ch` | A SCREAMING HORDE OF KOBOLDS ATTACKS THE PARTY. |
+| 27 | 2 | `9C73h` | 兩個洞窟：一個隱密、一個明顯 |
+| 27 | 3 | `9DDFh` | 回文明區的船（`TestAWildernessLocationDispatchesItsScript` 走的就是這一支）|
+
+所以「46 個地點」是 46 個**格子**，共用這 20 支；同一支會掛在好幾格上
+（例如 25 的編號 1 掛在 (10,8)、(11,8)、(9,9)、(11,9)、(9,10)、(10,10) 六格）。
+
 ## 可通行判定：原版也沒有
 
 每一步的可通行判定：ecl7/26 `9A53h..9A90h` 用 `B019`（29 項）與 `B036`
@@ -216,8 +275,7 @@ ecl7/26 @B019 (29)  39 43 44 46 62 66 67 73 75 76 77 78 80 84 87 89 92 93
 
 ## OPEN
 
-- `49C4 <= 2` 那一支（北緣）。
-- 46 個地點各自的腳本；攻略可以命名，但要先用原始資料對回編號。
+
 - 野外的畫面細節：GEO block 6 的 112 格與野外的 14×26 之間怎麼對應
   （目前是各走各的：GEO 一格、野外一格，牆由 GEO 決定）。
   目前量到的：進野外時載入的是 **GEO block 6**（`LOAD FILES 6, 6, 0` 加
@@ -231,7 +289,6 @@ ecl7/26 @B019 (29)  39 43 44 46 62 66 67 73 75 76 77 78 80 84 87 89 92 93
   | 6/25 | 62 | 42 |
   | 8/27 | 62 | 39 |
 
-  25 與 27 幾乎每一格都自成一個元件，不像走得動的空間；6 與 26 才像。
-  另外野外那三個區塊裡**沒有** `CALL @C01E`（走一格並繞回，spec 104），
-  只有 `CALL @C018`（重畫牆）出現七次，所以隊伍在 GEO 上的座標本來就不會動。
+  25 與 27 幾乎每一格都自成一個元件，不像走得動的空間；6 與 26 才像，
+  而進野外載入的正是 6。
 - `LOAD PIECES repeats symbol block 17`（治具走到野外時出現兩次）。
