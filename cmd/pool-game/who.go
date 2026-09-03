@@ -65,6 +65,13 @@ func (a *app) resolveWhoChoice() error {
 		return fmt.Errorf("Pool WHO choice %d is outside the party", a.cellMenuCursor)
 	}
 	a.currentCharacter = a.cellMenuCursor
+	// 挑完人要把他投影進 active-character 視窗：原版的 `39h` 是寫
+	// `DS:5CF0h`（spec 090），後面的腳本讀的是視窗（spec 021）。
+	if a.eventMachine != nil && a.characterBinding != nil {
+		if err := a.characterBinding.Select(a.eventMachine, a.cellMenuCursor); err != nil {
+			return err
+		}
+	}
 	a.whoPending = false
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0

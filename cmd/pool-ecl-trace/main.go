@@ -38,6 +38,12 @@ type instructionRow struct {
 	Operands        []operandRow `json:"operands,omitempty"`
 	MenuDestination string       `json:"menu_destination,omitempty"`
 	MenuOptions     []string     `json:"menu_options,omitempty"`
+	// BranchIndex／BranchTargets 是 25h ON GOTO／26h ON GOSUB 的索引來源與
+	// **原始順序**的目標表。edges 是排序過的，拿它推「第幾個選項跳到哪」會
+	// 得到自洽但錯的結論——順序只能從這裡讀。索引 0 起算（引擎的
+	// `targets[index]`）。
+	BranchIndex   string   `json:"branch_index,omitempty"`
+	BranchTargets []string `json:"branch_targets,omitempty"`
 }
 type report struct {
 	Schema          string           `json:"schema"`
@@ -161,6 +167,25 @@ func trace(zipPath string, archiveNumber, blockID, entryIndex int) (report, erro
 			return report{}, err
 		}
 		row := instructionRow{Offset: ins.Offset, Address: fmt.Sprintf("0x%04X", codeBase+ins.Offset), Opcode: ins.Command.Opcode, Name: ins.Command.Name, RecordEnd: end}
+		if ins.Command.Opcode == 0x25 || ins.Command.Opcode == 0x26 {
+			targets, _, err := ecl.BranchTargetsAtBase(selected, ins.Offset, codeBase)
+			if err != nil {
+				return report{}, err
+			}
+			for _, target := range targets {
+				row.BranchTargets = append(row.BranchTargets,
+					fmt.Sprintf("0x%04X", codeBase+target))
+			}
+			head, _, err := ecl.ParseOperands(selected[2:], ins.Offset, 2)
+			if err != nil {
+				return report{}, err
+			}
+			if head[0].WordSet {
+				row.BranchIndex = fmt.Sprintf("@0x%04X", head[0].Word)
+			} else {
+				row.BranchIndex = fmt.Sprintf("%d", head[0].Low)
+			}
+		}
 		if ins.Command.Opcode == 0x15 || ins.Command.Opcode == 0x2B {
 			menu, err := ecl.DecodeMenuRecord(selected, ins.Offset)
 			if err != nil {

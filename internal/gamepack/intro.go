@@ -36,6 +36,117 @@ type InitialCharacter struct {
 	ExceptionalStrength int
 	CurrentHP           int
 	ControlMorale       uint8
+	// Platinum 是 ECL 的 active-character 視窗 `6BC3h` 那一格。原版的賭場
+	// 腳本（ecl3/0 `A513h`）把它印成 `'YOU HAVE' n 'PP.'`，港務長
+	// （`A1E5h`）拿它扣一枚白金當船資，所以它是**選到的那個人身上的白金**。
+	Platinum uint16
+}
+
+// CharacterPlatinumAddress 是 ECL 讀寫白金的位址。
+const CharacterPlatinumAddress = 0x6BC3
+
+// CharacterWindow 是 `0Ah LOAD CHARACTER` 選到的那個人的資料來源與去處。
+//
+// 原版的 `5CF0h` 是**指標**，指到那個人的 285-byte 記錄本身（spec 021），
+// 所以腳本對 `6BC3h` 的加減是直接改在那個人身上的——ecl3/0 `A1F0h` 扣掉的
+// 一枚白金、`A62Fh` 賭場寫回的餘額都是這樣留下來的。remake 的記憶體是
+// 一張 map，沒有這種疊合，所以要用「選進來時抄進去、換人時抄回來」補上；
+// 抄回來的那一半就是 `CommitPlatinum`。
+type CharacterWindow interface {
+	Character(index int) (InitialCharacter, bool)
+	CommitPlatinum(index int, platinum uint16)
+}
+
+// CharacterBinding 把一個 window 綁在一個 session 上，並記住現在視窗裡是誰。
+//
+// 記住是誰是必要的：視窗裡的值要在**換人之前**抄回去，否則腳本改過的白金
+// 會被下一次投影蓋掉。
+type CharacterBinding struct {
+	window  CharacterWindow
+	current int
+}
+
+// NewCharacterBinding 建一個綁定；current 從 -1 開始表示視窗還沒有人。
+func NewCharacterBinding(window CharacterWindow) *CharacterBinding {
+	return &CharacterBinding{window: window, current: -1}
+}
+
+// Projector 是給 `0Ah LOAD CHARACTER` 用的投影器。
+func (b *CharacterBinding) Projector() eclvm.CharacterProjector {
+	return func(selected eclvm.CharacterSelection, memory map[uint16]uint16,
+		strings map[uint16]string) error {
+		return b.project(int(selected.Index), memory, strings)
+	}
+}
+
+// Select 是 `39h WHO` 挑完人之後要做的事：原版寫 `5CF0h`（spec 090），
+// 而視窗照的就是那個指標。少了這一步，WHO 後面的 `COMPARE @6BB8`、
+// `SUBTRACT @6BC3` 讀到的還是上一個人的值。
+func (b *CharacterBinding) Select(machine *eclvm.Machine, index int) error {
+	if machine == nil {
+		return fmt.Errorf("Pool ECL machine is nil")
+	}
+	if index < 0 || index > 0x7F {
+		return fmt.Errorf("Pool character index %d is outside 0..127", index)
+	}
+	return b.project(index, machine.Memory, machine.Strings)
+}
+
+// Flush 把視窗現在的值抄回目前那個人。腳本跑完一段就該叫一次：
+// 有些腳本改完就不再選人，只靠換人時抄回來會漏掉。
+func (b *CharacterBinding) Flush(machine *eclvm.Machine) {
+	if b == nil || machine == nil || b.current < 0 {
+		return
+	}
+	b.window.CommitPlatinum(b.current, machine.Memory[CharacterPlatinumAddress])
+}
+
+func (b *CharacterBinding) project(index int, memory map[uint16]uint16,
+	strings map[uint16]string) error {
+	// 先抄回去再讀新的：同一個人再選一次時，腳本剛改過的值才不會被
+	// 舊值蓋掉（`ADD 128` 之後那次重選就是這個情形）。
+	if b.current >= 0 {
+		b.window.CommitPlatinum(b.current, memory[CharacterPlatinumAddress])
+	}
+	character, ok := b.window.Character(index)
+	if !ok {
+		// The DOS handler leaves DS:5CF0/5CF2 unchanged when the linked-list
+		// walk reaches nil, so the prior projection must remain intact.
+		return nil
+	}
+	strings[0x6B00] = character.Name
+	memory[0x6C00] = 1
+	memory[0x6BB8] = uint16(character.ControlMorale)
+	memory[CharacterPlatinumAddress] = character.Platinum
+	b.current = index
+	return nil
+}
+
+// staticCharacterWindow 是一份不會變的名單：投影得出去，寫不回來。
+// 掃描與測試用的 session 走這一條。
+type staticCharacterWindow []InitialCharacter
+
+func (w staticCharacterWindow) Character(index int) (InitialCharacter, bool) {
+	if index < 0 || index >= len(w) {
+		return InitialCharacter{}, false
+	}
+	return w[index], true
+}
+
+func (w staticCharacterWindow) CommitPlatinum(int, uint16) {}
+
+// SetCharacterWindow 換掉 session 的角色來源，讓腳本看到的是活的隊伍資料，
+// 並把綁定交回呼叫端——`39h WHO` 與收尾的 Flush 都要用同一個。
+func SetCharacterWindow(session *eclvm.BlockSession, window CharacterWindow) (*CharacterBinding, error) {
+	if session == nil || session.Machine() == nil {
+		return nil, fmt.Errorf("Pool ECL session is nil")
+	}
+	if window == nil {
+		return nil, fmt.Errorf("Pool character window is nil")
+	}
+	binding := NewCharacterBinding(window)
+	session.Machine().SetCharacterProjector(binding.Projector())
+	return binding, nil
 }
 
 // TourStep is one original scripted position frame. Most steps only move the
@@ -390,20 +501,8 @@ func initialCasterLevels(classID string) (cleric, magicUser int, ok bool) {
 }
 
 func initialCharacterProjector(characters []InitialCharacter) eclvm.CharacterProjector {
-	snapshot := append([]InitialCharacter(nil), characters...)
-	return func(selected eclvm.CharacterSelection, memory map[uint16]uint16, strings map[uint16]string) error {
-		index := int(selected.Index)
-		if index < 0 || index >= len(snapshot) {
-			// The DOS handler leaves DS:5CF0/5CF2 unchanged when the linked-list
-			// walk reaches nil, so the prior projection must remain intact.
-			return nil
-		}
-		character := snapshot[index]
-		strings[0x6B00] = character.Name
-		memory[0x6C00] = 1
-		memory[0x6BB8] = uint16(character.ControlMorale)
-		return nil
-	}
+	window := staticCharacterWindow(append([]InitialCharacter(nil), characters...))
+	return NewCharacterBinding(window).Projector()
 }
 
 // NewInitialEventMachine executes the original Pool bytecode through the

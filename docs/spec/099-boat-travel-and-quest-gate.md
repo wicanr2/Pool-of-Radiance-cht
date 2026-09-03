@@ -80,8 +80,9 @@ OUT IS GOING TO SOKAL KEEP. YOU CAN CATCH IT AT THE END OF THE PIER.'」。
 
 ## 對 remake 的意思
 
-1. 機制已經在了：`2Bh HORIZONTAL MENU` 由共用 VM 處理並回報選項，
-   `NEWECL` 與 archive 切換也接好了。**不需要新功能。**
+1. 選單與換區的機制在了：`2Bh HORIZONTAL MENU` 由共用 VM 處理並回報選項，
+   `NEWECL` 與 archive 切換也接好了。**付錢那一段要另外接**——船資是一枚
+   白金，而白金在 ECL 的 active-character 視窗 `6BC3h`（spec 090）。
 2. 走不到其餘 25 個 block 的原因是**主線進度**：探索用的六個第 1 級戰士
    沒有清掉索寇要塞，`DS:4AA7h` 就停在初始值。
 3. 因此下一步不是「做城區移動」，而是**把索寇要塞打完**——那需要的是
@@ -92,10 +93,19 @@ OUT IS GOING TO SOKAL KEEP. YOU CAN CATCH IT AT THE END OF THE PIER.'」。
 4. 要回碼頭去用那些航線，得先離開要塞；離開要塞與往貧民窟都掛在
    `DS:6DD5h` 上，那一條已經接上（spec 100）。
 
-## 現況（2026-09-03）
+## 這一段現在走得通
 
-探索器實際跑出 `DS:4A21h = 255`、`DS:4AA7h = 254`——**要塞打得完，碼頭的
-其他航線開得起來**。擋在中間的是兩個輸入層的東西，不是劇情：
+玩家的路徑整條有測試釘著（`cmd/pool-game/harbour_walk_test.go`）：從南邊往北
+走進港務長 (11,1) → 完整航線選單 → 選 EAST → `WHO` 挑人付一枚白金 → 走上
+碼頭 (15,1) → 落在野外圖的 (9,29)、ECL block 27。閘門與旗標的順序見 spec 102，
+白金那一格見 spec 090。
+
+`internal/gamepack/harbour_master_test.go` 另外直接拿原版 ECL 跑五個選項，
+不經過探索器。
+
+## 探索器那一頭（2026-09-03）
+
+擋在中間的兩個輸入層問題已經修掉：
 
 - 戰術地圖上的 I 與 K 被地圖上的「裝備」與「法術書」快捷鍵吃掉，而那兩個
   鍵是方向 1 與方向 6。角色往那兩個方向走會開錯畫面，回合結束不了，

@@ -374,6 +374,11 @@ const exploreMaxCombatStall = 4000
 // exploreMaxTargetTries 是同一格被規劃成目標幾次還沒踩到就放棄。
 const exploreMaxTargetTries = 12
 
+// exploreMaxWildernessSteps 是一趟在野外最多亂走幾步。野外沒有「這一格踩過
+// 了」可用（位置在 `DS:49C3h`／`DS:49C4h`，不是 GEO 格子，spec 105），
+// 所以隨機走不會自己停；沒有上限的話一趟就把整包預算花在那裡。
+const exploreMaxWildernessSteps = 3000
+
 // 有目的地走：把每一張圖上「走得到的格子」逐格踩過，換圖就換到新圖上繼續。
 //
 // 隨機走路量的是「不會炸掉」，這一條量的是**世界有多少走得到**——兩個不同的
@@ -414,7 +419,10 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 		party = append(party, poolsave.Character{Name: string(rune('A' + index)),
 			RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
 			AlignmentID: "lawful-good", Abilities: [6]int{18, 10, 10, 16, 10, 10},
-			MaxHP: 60, CurrentHP: 60, PortraitHead: 1, PortraitBody: 1, IconSize: 1})
+			// 白金給足：船資是一枚白金（spec 090），身上沒有的話港務長那
+			// 一段永遠停在「你的白金不夠」，探索器就永遠出不了海。
+			MaxHP: 60, CurrentHP: 60, PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+			Money: [7]uint16{4: 20}})
 	}
 	application.state = poolsave.State{Schema: poolsave.Schema,
 		CharacterLibrary: party, Party: party}
@@ -448,9 +456,31 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
 	// 的路），要重走找出口時傳一份自己的。
 	rewalks := map[[2]int]int{}
+	// heldBack 是「暫時擋住的換圖格」。清掉船票之後不能離開索寇要塞
+	//（見 mustSettleSokalGhost），但規劃器會把換圖格當成一般的沒踩過的格子
+	// 走上去，所以那段期間先把它們塞進 avoid，了結之後再拿回來。
+	heldBack := map[[3]int]bool{}
 	lastMap, lastCell := application.spawn.Map, [2]int{-1, -1}
+	// 主線旗標一動，走過的地點就要重走一次：地點腳本是旗標閘門的
+	//（港務長 `9C4Bh` 比 `4A01`、`9C5Ch` 比 `4AA7`，spec 102），
+	// 同一格在不同旗標下講不同的話。只記「這個方向走進去過」的話，
+	// 要塞回來之後港務長就再也不會被問第二次。
+	quest := [2]uint16{}
+	// 每一種選單只印一次，用來確認某一支腳本到底有沒有被觸發。
+	seenMenus := map[string]bool{}
+	heldHere := false
 walk:
 	for step := 0; step < budget; step++ {
+		if application.eventMachine != nil {
+			now := [2]uint16{application.eventMachine.Memory[0x4AA7],
+				application.eventMachine.Memory[0x4A01]}
+			if now != quest {
+				quest = now
+				for key := range approached {
+					delete(approached, key)
+				}
+			}
+		}
 		if application.spawn.Map != lastMap {
 			t.Logf("換圖 GEO%d/%d → GEO%d/%d 位置 (%d,%d) 朝向 %d",
 				lastMap.Archive, lastMap.BlockID,
@@ -627,6 +657,13 @@ walk:
 				key := [3]int{int(application.spawn.Map.Archive),
 					int(application.spawn.Map.BlockID),
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
+				if signature := strings.Join(application.cellMenuOptions, "|"); !seenMenus[signature] {
+					seenMenus[signature] = true
+					t.Logf("選單 GEO%d/%d (%d,%d) 朝向 %d：%v",
+						application.spawn.Map.Archive, application.spawn.Map.BlockID,
+						application.spawn.X, application.spawn.Y,
+						application.spawn.Facing, application.cellMenuOptions)
+				}
 				want := menuTurn[key] % len(application.cellMenuOptions)
 				// flags 非 nil 那一條要推主線，所以 YES／NO 一律答 YES
 				//（「要不要拿走裝備」答 NO 就推不動要塞那一段）。
@@ -644,6 +681,12 @@ walk:
 				// 說謊那一支**不寫 `4A26`**，所以亡魂還會再出現；說實話那一支
 				// 才寫（`ADA4h`），寫完就不再出現。兩件事因此都做得到。
 				if flags != nil {
+					// 港務長的完整航線選單：SOKAL 是回索寇要塞（已經走過），
+					// NONE 是不上船，所以在 EAST／WEST／BAY 之間輪流挑。
+					if len(application.cellMenuOptions) == 5 &&
+						strings.EqualFold(application.cellMenuOptions[0], "SOKAL") {
+						want = 1 + menuTurn[key]%3
+					}
 					for index, option := range application.cellMenuOptions {
 						if strings.EqualFold(option, "Parlay") {
 							want = index
@@ -657,6 +700,14 @@ walk:
 							application.eventMachine.Memory[0x4A01] == 1
 						if lie == holdsTicket {
 							want = index
+							t.Logf("費蘭選單 GEO%d/%d (%d,%d) 選 %s"+
+								"（4A01=%d 4A26=%d 4AA7=%d）",
+								application.spawn.Map.Archive,
+								application.spawn.Map.BlockID,
+								application.spawn.X, application.spawn.Y, option,
+								application.eventMachine.Memory[0x4A01],
+								application.eventMachine.Memory[0x4A26],
+								application.eventMachine.Memory[0x4AA7])
 						}
 					}
 				}
@@ -688,8 +739,16 @@ walk:
 			// 野外的位置存在 `DS:49C3h`／`DS:49C4h`，不在 GEO 格子上
 			//（spec 105），所以規劃器沒得規劃。輪流轉向再往前走，
 			// 讓它把野外那幾張圖走開。
+			//
+			// 要有上限：野外沒有「這一格踩過了」可用，隨機亂走不會自己停，
+			// 一趟就會把整包預算吃在那裡（實測連帶把整個 package 的
+			// 10 分鐘 timeout 用完）。
 			plan, exit = nil, nil
 			spin["野外"]++
+			if spin["野外"] > exploreMaxWildernessSteps {
+				reason = "野外走到上限"
+				break
+			}
 			key := ebiten.KeyArrowUp
 			switch application.roller.Roll(1, 6) {
 			case 1:
@@ -737,6 +796,32 @@ walk:
 			}
 		}
 		if len(plan) == 0 && exit == nil {
+			settling := mustSettleSokalGhost(application)
+			if settling != heldHere {
+				heldHere = settling
+				t.Logf("主線鎖 %v GEO%d/%d（4AA7=%d 4A01=%d 4A26=%d）", settling,
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.eventMachine.Memory[0x4AA7],
+					application.eventMachine.Memory[0x4A01],
+					application.eventMachine.Memory[0x4A26])
+			}
+			if settling {
+				for key := range transitionUses {
+					if key[0] != int(application.spawn.Map.Archive) ||
+						key[1] != int(application.spawn.Map.BlockID) {
+						continue
+					}
+					if !avoid[key] {
+						avoid[key], heldBack[key] = true, true
+					}
+				}
+			} else if len(heldBack) != 0 {
+				for key := range heldBack {
+					delete(avoid, key)
+					delete(heldBack, key)
+				}
+			}
+			leaving := hops < exploreMaxTransitionHops && !settling
 			var target [3]int
 			plan, target = explorePlan(application, walked, avoid, rotate)
 			if len(plan) != 0 {
@@ -756,7 +841,7 @@ walk:
 			// 這一格」不等於「試過這個地點」——terrain 索引非 0 的格子，
 			// 四個方向都要走進去一次。
 			if len(plan) == 0 {
-				if cell, facing, ok := chooseApproach(application, approached, rotate); ok {
+				if cell, facing, ok := chooseApproach(application, approached, avoid, rotate); ok {
 					approached[approachKey(application, cell, facing)] = true
 					step := exploreStep{facing: facing}
 					from := [2]int{cell[0] - exploreDeltas[facing][0],
@@ -780,7 +865,7 @@ walk:
 			// 這一張踩完了，先回頭踩已知的換圖點。碼頭就是這樣再用一次的：
 			// 第一趟船去索寇要塞，回來之後要塞的旗標已經開了其他航線，
 			// 但那一格早就進了 avoid，規劃器不會再挑它。
-			if len(plan) == 0 && hops < exploreMaxTransitionHops {
+			if len(plan) == 0 && leaving {
 				if cell, ok := chooseTransitionCell(application, transitionUses); ok {
 					plan = planToCells(application, rotate, func(x, y int) bool {
 						return x == cell[0] && y == cell[1]
@@ -794,7 +879,7 @@ walk:
 					}
 				}
 			}
-			if len(plan) == 0 && hops < exploreMaxTransitionHops {
+			if len(plan) == 0 && leaving {
 				if next, ok := chooseAreaExit(application, exitUses); ok {
 					// 選中就記一次。走不到那一格的出口不記的話，
 					// 下一輪會挑到同一個，隊伍就卡在原地重選到 hop 用完。
@@ -1047,6 +1132,34 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	}
 }
 
+// mustSettleSokalGhost 回答「現在還不能離開這一張圖嗎」。
+//
+// 費蘭那張選單的兩支各開一半的鎖（spec 102）：說謊寫 `4A01 = 255`（清掉
+// 只能去索寇要塞的那張船票），說實話（或打贏那一場）寫 `4AA7 = 254`
+// （開其他航線）並寫 `4A26 = 255`（亡魂不再出現）。兩件事要都成立，
+// 港務長才會再開口並給出完整的目的地選單。
+//
+// 中間**不能回城區**：`4AA7` 還沒開到 254 時，港務長走的是「唯一的船是去
+// 索寇要塞」那一支，`9DCEh` 會把 `4A01` 寫回 1，說謊那一步就白做了。
+// 所以票已經清掉、亡魂還沒了結的這段期間，探索器不挑換圖點也不挑出口。
+func mustSettleSokalGhost(application *app) bool {
+	if application.eventMachine == nil {
+		return false
+	}
+	memory := application.eventMachine.Memory
+	switch {
+	case application.spawn.Map.Archive == 4 && application.spawn.Map.BlockID == 21:
+		// 要塞：票清掉了但亡魂還沒了結。
+		return memory[0x4A01] == 255 && memory[0x4A26] != 255
+	case application.spawn.Map.Archive == 3 && application.spawn.Map.BlockID == 0:
+		// 城區：航線開了、票也不在手上，這一趟就是要去找港務長。
+		// 碼頭 (15,1) 就在港務長 (11,1) 旁邊，先上船的話 `4AC4 = 0`
+		// 又被載回索寇要塞，回來時入口 4 再把 `4AC4` 清成 0，繞不出去。
+		return memory[0x4AA7] == 254 && memory[0x4A01] != 1
+	}
+	return false
+}
+
 // approachKey 把「這一格＋走進去的方向」壓成 approached 的鍵。
 func approachKey(application *app, cell [2]int, facing uint8) [4]int {
 	return [4]int{int(application.spawn.Map.Archive), int(application.spawn.Map.BlockID),
@@ -1057,7 +1170,8 @@ func approachKey(application *app, cell [2]int, facing uint8) [4]int {
 //
 // 地點格＝`terrain & 0x7F` 非 0 的格子（spec 102）。方向要從地圖資料算：
 // 走進來的那一格得在圖內，而且那一步不能被牆擋著。
-func chooseApproach(application *app, approached map[[4]int]bool, rotate int) ([2]int, uint8, bool) {
+func chooseApproach(application *app, approached map[[4]int]bool,
+	avoid map[[3]int]bool, rotate int) ([2]int, uint8, bool) {
 	if application.initialMap == nil {
 		return [2]int{}, 0, false
 	}
@@ -1065,6 +1179,13 @@ func chooseApproach(application *app, approached map[[4]int]bool, rotate int) ([
 		for x := 0; x < geometry.Width; x++ {
 			cell, ok := application.initialMap.Grid.Cell(x, y)
 			if !ok || cell.Terrain&0x7F == 0 {
+				continue
+			}
+			// 被擋住的格子也不當走進去的目標：主線那幾段要把換圖格
+			// 暫時關掉（見 mustSettleSokalGhost），而換圖格自己多半
+			// 也是地點格——碼頭 (15,1) 就是。
+			if avoid[[3]int{int(application.spawn.Map.Archive),
+				int(application.spawn.Map.BlockID), y*100 + x}] {
 				continue
 			}
 			for step := 0; step < 4; step++ {

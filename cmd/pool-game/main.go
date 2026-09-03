@@ -151,6 +151,8 @@ type app struct {
 	// cellMovedByScript 記「這一步是腳本自己用 `CALL C01Eh` 走掉的」。
 	cellMovedByScript bool
 	cellMenuOptions  []string
+	// characterBinding 是 ECL 的 active-character 視窗與隊伍之間的來回。
+	characterBinding *gamepack.CharacterBinding
 	cellMenuCursor   int
 	templeActive     bool
 	templeStage      templeStage
@@ -1001,10 +1003,44 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 	}
 }
 
+// partyWindow 讓 ECL 的 active-character 視窗看到活的隊伍，而不是建 session
+// 當下的快照。賭場贏來的白金、船資扣掉的白金都要留在隊伍身上（spec 102）。
+type partyWindow struct{ app *app }
+
+func (w partyWindow) Character(index int) (gamepack.InitialCharacter, bool) {
+	if w.app == nil || index < 0 || index >= len(w.app.state.Party) {
+		return gamepack.InitialCharacter{}, false
+	}
+	character := w.app.state.Party[index]
+	return gamepack.InitialCharacter{
+		Name: character.Name, ClassID: character.ClassID, Abilities: character.Abilities,
+		ExceptionalStrength: character.ExceptionalStrength, CurrentHP: character.CurrentHP,
+		Platinum: character.Money[pooltreasure.Platinum],
+	}, true
+}
+
+func (w partyWindow) CommitPlatinum(index int, platinum uint16) {
+	if w.app == nil || index < 0 || index >= len(w.app.state.Party) {
+		return
+	}
+	w.app.state.Party[index].Money[pooltreasure.Platinum] = platinum
+	name := w.app.state.Party[index].Name
+	for library := range w.app.state.CharacterLibrary {
+		if w.app.state.CharacterLibrary[library].Name == name {
+			w.app.state.CharacterLibrary[library].Money[pooltreasure.Platinum] = platinum
+		}
+	}
+}
+
 func (a *app) configureEventSession(session *eclvm.BlockSession) error {
 	if session == nil {
 		return fmt.Errorf("Pool ECL session is nil")
 	}
+	binding, err := gamepack.SetCharacterWindow(session, partyWindow{app: a})
+	if err != nil {
+		return err
+	}
+	a.characterBinding = binding
 	return session.SetBlockCatalogResolver(func(_, _ uint16, memory map[uint16]uint16) (map[uint16][]byte, error) {
 		selector := memory[0x6E12]
 		if selector == 0 || selector == uint16(a.eclArchive) {
@@ -1750,6 +1786,11 @@ func (a *app) leaveSuneTemple() error {
 // `38h PROGRAM` 的值 9 也走這裡——原版在那一支的結尾就是呼叫 EXIT 的
 // handler（spec 081）。
 func (a *app) finishCellBlock() {
+	// 腳本這一段跑完了，把 active-character 視窗裡的值抄回隊伍：原版的視窗
+	// 就是那個人的記錄，腳本改的是本尊（spec 021）。
+	if a.characterBinding != nil {
+		a.characterBinding.Flush(a.eventMachine)
+	}
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.templeActive = false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
