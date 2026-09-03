@@ -17,6 +17,7 @@ import (
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 )
 
 // 只用正常按鍵，從標題一路走到「隊伍在地圖上動了一步」。這條路徑上任何一段
@@ -972,10 +973,15 @@ func slumsCommissionApp(t *testing.T, fights int) (*app, *eclvm.BlockSession, []
 	if err := application.configureEventSession(session); err != nil {
 		t.Fatal(err)
 	}
-	application.state.Party = []poolsave.Character{{
+	// 肖像與戰鬥圖示要填成合法值、人也要在角色庫裡：交差時的 Share 會存檔，
+	// 而存檔會驗這幾件事。
+	hero := poolsave.Character{
 		Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
 		AlignmentID: "lawful-good", MaxHP: 40, CurrentHP: 40,
-	}}
+		PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+	}
+	application.state.Party = []poolsave.Character{hero}
+	application.state.CharacterLibrary = []poolsave.Character{hero}
 	application.spawn = gamepack.Spawn{
 		Map: gamepack.MapKey{Archive: 2, BlockID: 20}, X: 3, Y: 4, Facing: 2,
 	}
@@ -1062,6 +1068,11 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 		t.Fatalf("進門之後停在區塊 %d，應該是 8", session.CurrentBlockID())
 	}
 	for step := 0; step < 40; step++ {
+		if application.treasureActive {
+			// 獎賞服務開起來就停下來，交給呼叫端決定收不收——
+			// 在這裡亂按 Enter 只會在 View 與 Return 之間來回。
+			break
+		}
 		if application.cellEventPending || application.cellWaitingMenu {
 			if err := press(application, ebiten.KeyEnter); err != nil {
 				break
@@ -1091,7 +1102,7 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 		}
 	}
 	for step := 0; step < 20; step++ {
-		if !application.cellEventPending && !application.cellWaitingMenu {
+		if application.treasureActive || (!application.cellEventPending && !application.cellWaitingMenu) {
 			break
 		}
 		if err := press(application, ebiten.KeyEnter); err != nil {
@@ -1099,6 +1110,54 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 		}
 	}
 	return strings.TrimSpace(application.eventText)
+}
+
+// selectMenuOption 把游標移到指定的選項再按 Enter。找不到就回 false。
+func selectMenuOption(t *testing.T, application *app, want string) error {
+	t.Helper()
+	for guard := 0; guard < 12; guard++ {
+		if len(application.cellMenuOptions) == 0 {
+			return fmt.Errorf("選單是空的")
+		}
+		if application.cellMenuOptions[application.cellMenuCursor] == want {
+			return press(application, ebiten.KeyEnter)
+		}
+		if err := press(application, ebiten.KeyArrowRight); err != nil {
+			return err
+		}
+	}
+	return fmt.Errorf("選單裡沒有 %q：%v", want, application.cellMenuOptions)
+}
+
+// collectCityHallReward 收下市政廳的獎賞：主選單挑 Share 把錢分給隊伍，
+// 再挑 Exit，腳本才會往下跑到 `9F5Ah` 把槽清成 `FFh`。
+func collectCityHallReward(t *testing.T, application *app) {
+	t.Helper()
+	if !application.treasureActive {
+		t.Fatal("獎賞服務沒有開起來")
+	}
+	if err := selectMenuOption(t, application, "Share"); err != nil {
+		t.Fatalf("按下 Share：%v（cursor=%d 選項 %v）",
+			err, application.cellMenuCursor, application.cellMenuOptions)
+	}
+	if err := selectMenuOption(t, application, "Exit"); err != nil {
+		t.Fatalf("按下 Exit：%v（選項 %v）", err, application.cellMenuOptions)
+	}
+	// 還有東西沒拿的話會問一次「真的要留在這裡嗎」。
+	if application.treasureActive && len(application.cellMenuOptions) != 0 &&
+		application.cellMenuOptions[0] == "Yes" {
+		if err := selectMenuOption(t, application, "Yes"); err != nil {
+			t.Fatalf("離開獎賞服務的確認選單：%v", err)
+		}
+	}
+	for step := 0; step < 20; step++ {
+		if !application.cellEventPending && !application.cellWaitingMenu {
+			break
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			break
+		}
+	}
 }
 
 // 貧民窟那一條委任的完整迴圈：打 25 場、走回城區、進市政廳交差、拿到報酬。
@@ -1129,14 +1188,34 @@ func TestTwentyFiveRealSlumsWinsEarnTheCityHallReward(t *testing.T) {
 	if machine.Memory[0x4AC1] != 1 {
 		t.Errorf("交差之後 4AC1=%d，應該是 1", machine.Memory[0x4AC1])
 	}
-	// 金額不是「有就好」：ECL3/8 的四張獎賞表（`B5EDh`／`B604h`／`B61Bh`／
-	// `B632h`）在槽 21 的原始位元組是 `FA 32 00 01` ＝ 250、50、0、1，
-	// 由 `9F28h TREASURE` 的第 4..7 欄送出。顯示的字要逐項對得上。
-	if want := "Gold 250 / Platinum 50 / Jewelry 1"; text != want {
-		t.Errorf("報酬是 %q，原版四張表在槽 21 給的是 %q", text, want)
+	if !application.treasureActive {
+		t.Fatalf("交差之後獎賞服務沒有開起來，最後看到的文字是 %q", text)
 	}
-	t.Logf("交差拿到 %q（4ABB=%d 4AC1=%d）", text,
+	// 金額不是「有就好」：ECL3/8 的四張獎賞表（`B5EDh`／`B604h`／`B61Bh`／
+	// `B632h`）在槽 21 的原始位元組是 `FA`、`32`、`00`、`01` ＝ 250、50、0、1，
+	// 由 `9F28h TREASURE` 的第 4..7 欄（金、白金、寶石、首飾）送出。
+	if want := ([7]uint32{3: 250, 4: 50, 6: 1}); application.state.PooledMoney != want {
+		t.Errorf("待分的獎賞是 %v，原版四張表在槽 21 給的是 %v",
+			application.state.PooledMoney, want)
+	}
+	t.Logf("交差拿到 %v（4ABB=%d 4AC1=%d）", application.state.PooledMoney,
 		machine.Memory[0x4ABB], machine.Memory[0x4AC1])
+
+	// 收下獎賞：腳本要走完獎賞選單與戰利品服務，`9F5Ah` 的
+	// `SAVE TABLE FF` 才會把槽清掉，這一條委任才算真的結案。
+	collectCityHallReward(t, application)
+	if got := machine.Memory[0x4ABB]; got != 0xFF {
+		t.Errorf("收下獎賞之後 4ABB=%d，應該是 FFh（`9F5Ah` 的 SAVE TABLE）", got)
+	}
+	member := application.state.Party[0]
+	gold := member.Money[pooltreasure.Gold]
+	platinum := member.Money[pooltreasure.Platinum]
+	if gold != 250 || platinum != 50 {
+		t.Errorf("錢沒有進到角色身上：金 %d 白金 %d，應該是 250／50（錢包 %v）",
+			gold, platinum, member.Money)
+	}
+	t.Logf("結案：4ABB=%d 4AC1=%d 錢包 %v",
+		machine.Memory[0x4ABB], machine.Memory[0x4AC1], member.Money)
 }
 
 // 負對照：一場都沒打就去交差，市政廳不該給錢。
@@ -1150,8 +1229,8 @@ func TestCityHallPaysNothingBeforeTheCommissionIsDone(t *testing.T) {
 		t.Fatalf("還沒打就已經 4ABB=%d", got)
 	}
 	text := handInAtCityHall(t, application, session)
-	if strings.Contains(text, "Gold") {
-		t.Errorf("委任還沒做完就給了報酬：%q", text)
+	if application.treasureActive || application.state.PooledMoney != ([7]uint32{}) {
+		t.Errorf("委任還沒做完就給了報酬：%q（待分 %v）", text, application.state.PooledMoney)
 	}
 	if machine.Memory[0x4AC1] != 0 {
 		t.Errorf("委任還沒做完 4AC1 就變成 %d", machine.Memory[0x4AC1])

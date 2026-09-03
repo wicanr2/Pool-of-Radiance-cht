@@ -10,9 +10,10 @@
 `Gold 250 / Platinum 50 / Jewelry 1`，`4AC1h` 由 0 變 1。負對照是「一場都
 不打去交差」，文字空的、旗標不動。這是第一條從頭到尾走得完的委任。
 
-交差當下 `4ABBh` 還是 `FEh` 不是壞掉：ECL3/8 在通知之後還有獎賞選單
-（`9EFEh HORIZONTAL MENU`）與戰利品服務（`9F28h TREASURE` ＋ `9F3Eh COMBAT`），
-`9F5Ah` 的 `SAVE TABLE FF` 要走完那一段才會執行。測試目前停在獎賞顯示。
+獎賞也收下來了：ECL3/8 在通知之後還有獎賞選單（`9EFEh HORIZONTAL MENU`）與
+戰利品服務（`9F28h TREASURE` ＋ `9F3Eh COMBAT`），挑 Share 分錢、挑 Exit 之後
+`9F5Ah` 的 `SAVE TABLE FF` 把槽清成 `FFh`，角色錢包收到金 250 白金 50 首飾 1。
+**這條委任從接到交差完整走得完。**
 
 ## 2026-09-03 生物種類與體型、四支法術、`NEWECL FF`
 
