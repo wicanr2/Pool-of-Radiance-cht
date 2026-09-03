@@ -331,6 +331,10 @@ type tacticalState struct {
 	SleepFlag []uint8
 	// Asleep 是被催眠的格子。睡著的一輪到就直接結束回合。
 	Asleep []bool
+	// SaveTargets 是每一格的五個豁免目標值（記錄 `+6Dh` 起，spec 075），
+	// SaveBonus 是記錄 `+101h` 的修正。隊員的目標值由職業等級查表算出來。
+	SaveTargets [][gamepack.SavingThrowCategories]uint8
+	SaveBonus   []int
 	Dexterity     []uint8
 	Scores        []uint8
 	Budgets       []uint8
@@ -516,6 +520,13 @@ func (a *app) enterTacticalPreview() error {
 	state.HitDice = make([]uint8, size)
 	state.SleepFlag = make([]uint8, size)
 	state.Asleep = make([]bool, size)
+	state.SaveTargets = make([][gamepack.SavingThrowCategories]uint8, size)
+	state.SaveBonus = make([]int, size)
+	for index := range state.SaveTargets {
+		for category := range state.SaveTargets[index] {
+			state.SaveTargets[index][category] = gamepack.SavingThrowWorstTarget
+		}
+	}
 	for index := 1; index < size; index++ {
 		state.BaseMovement[index] = base
 		state.Dexterity[index] = placeholderDexterity
@@ -548,6 +559,13 @@ func (a *app) enterTacticalPreview() error {
 					state.HitDice[index] = level
 				}
 			}
+			if a.savingThrows != nil {
+				targets, err := a.savingThrows.TargetsForLevels(levels)
+				if err != nil {
+					return err
+				}
+				state.SaveTargets[index] = targets
+			}
 			// 穿在身上的東西改 AC 與腳程（spec 079／080）：`partyCombatStats`
 			// 回的是建角值，那是「脫光了」的角色。
 			armor, movement, err = a.memberDefenceStats(member, armor, movement)
@@ -573,6 +591,16 @@ func (a *app) enterTacticalPreview() error {
 			state.BaseMovement[index] = record.Movement()
 			state.HitDice[index] = record.Raw[0x73]
 			state.SleepFlag[index] = record.Raw[0x2e]
+			// 怪物記錄與角色記錄同一份 285-byte 版面，豁免那五格在 `+6Dh`。
+			targets, err := gamepack.SavingThrowTargets(record.Raw[:])
+			if err != nil {
+				return err
+			}
+			bonus, err := gamepack.SavingThrowBonus(record.Raw[:])
+			if err != nil {
+				return err
+			}
+			state.SaveTargets[index], state.SaveBonus[index] = targets, bonus
 			state.HitPoints[index] = int(record.CurrentHitPoints())
 			state.THAC0[index] = uint8(60 - record.THAC0())
 			state.ArmorClass[index] = 60 - record.ArmorClass()

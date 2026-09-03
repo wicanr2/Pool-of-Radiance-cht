@@ -171,9 +171,34 @@ func (p SpellParameters) Duration(casterLevel int) int {
 	return int(p.Raw[spellParameterFixedDuration]) + int(p.Raw[spellParameterLevelDuration])*casterLevel
 }
 
-// SaveRule 是 0 就不擲豁免。非零代表要擲，值本身還會傳給後面兩支常式；
-// 1..3 分別是什麼處置（無效、減半、其他）還沒讀。
+// SaveRule 是 `+8`：豁免成功之後怎麼處置傷害。0 就不擲。
+//
+// 處置在 overlay-24 entry 19（code `133Ah`）：傷害先進 `DS:6776h`，
+// 豁免成功（`1354h` 的 `[bp+6]` 非 0）時依規則值分三支——
+// `135Dh` 值 1 把傷害清成 0、`1368h` 值 2 除以 2、其餘值不動傷害。
 func (p SpellParameters) SaveRule() uint8 { return p.Raw[spellParameterSaveRule] }
+
+// 豁免成功之後的三種處置（overlay-24 `133Ah`）。
+const (
+	// SaveRuleNone 是不用擲。
+	SaveRuleNone uint8 = 0
+	// SaveRuleNegates 是豁免成功就完全無效。
+	SaveRuleNegates uint8 = 1
+	// SaveRuleHalves 是豁免成功傷害減半（整數除法）。
+	SaveRuleHalves uint8 = 2
+)
+
+// DamageAfterSave 依規則值算豁免成功之後剩下多少傷害。
+func DamageAfterSave(rule uint8, damage int) int {
+	switch rule {
+	case SaveRuleNegates:
+		return 0
+	case SaveRuleHalves:
+		return damage / 2
+	default:
+		return damage
+	}
+}
 
 // AllowsSavingThrow 說目標有沒有豁免機會。
 func (p SpellParameters) AllowsSavingThrow() bool { return p.SaveRule() != 0 }

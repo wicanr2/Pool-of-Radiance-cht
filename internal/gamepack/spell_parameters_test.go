@@ -255,3 +255,46 @@ func TestSpellParameterRanges(t *testing.T) {
 	}
 }
 
+
+// 豁免成功之後的三種處置（overlay-24 `133Ah`）。少了這一條，火球術豁免成功
+// 會照樣打滿，而定身術豁免成功也照樣定住。
+func TestDamageAfterSaveFollowsTheOriginalRules(t *testing.T) {
+	for _, testCase := range []struct {
+		name   string
+		rule   uint8
+		damage int
+		want   int
+	}{
+		{"規則 1 完全無效", gamepack.SaveRuleNegates, 21, 0},
+		{"規則 2 減半（整數除法）", gamepack.SaveRuleHalves, 21, 10},
+		{"規則 3 不動傷害", 3, 21, 21},
+		{"規則 0 不該走到這裡，但也不動", gamepack.SaveRuleNone, 21, 21},
+	} {
+		if got := gamepack.DamageAfterSave(testCase.rule, testCase.damage); got != testCase.want {
+			t.Errorf("%s：得到 %d，預期 %d", testCase.name, got, testCase.want)
+		}
+	}
+}
+
+// 表裡誰用哪一條規則。這一條是語意上的交叉核對：規則 2 剛好就是火球術與
+// 閃電術這兩支「豁免減半」的傷害法術，規則 1 全是狀態類。
+func TestSaveRuleAssignmentsInTheOriginalTable(t *testing.T) {
+	parameters, err := gamepack.ReadDOSSpellParameters(dosZIP)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	counts := map[uint8]int{}
+	for id := 1; id < len(parameters); id++ {
+		counts[parameters[id].SaveRule()]++
+	}
+	for rule, want := range map[uint8]int{0: 52, 1: 9, 2: 4, 3: 2} {
+		if counts[rule] != want {
+			t.Errorf("規則 %d 有 %d 支，預期 %d", rule, counts[rule], want)
+		}
+	}
+	for _, id := range []int{gamepack.SpellIDFireball, gamepack.SpellIDLightningBolt} {
+		if got := parameters[id].SaveRule(); got != gamepack.SaveRuleHalves {
+			t.Errorf("法術 %d 的規則是 %d，預期 %d（豁免減半）", id, got, gamepack.SaveRuleHalves)
+		}
+	}
+}

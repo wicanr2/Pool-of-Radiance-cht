@@ -343,7 +343,8 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 				uint16(effect.AreaBudget)) {
 				continue
 			}
-			a.applySpellDamage(state, uint8(index), effect.Damage)
+			a.applySpellDamage(state, uint8(index),
+				a.damageAfterSave(state, uint8(index), option.ID, effect.Damage))
 			hit++
 		}
 		if hit == 0 {
@@ -361,7 +362,8 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
 			break
 		}
-		a.applySpellDamage(state, picked, effect.Damage)
+		a.applySpellDamage(state, picked,
+			a.damageAfterSave(state, picked, option.ID, effect.Damage))
 	case mode == gamepack.SpellTargetWholeSide:
 		// 模式 0Ah：整邊。原版走 0F35h，把效果掛給施法者那一邊的每個人。
 		affected := 0
@@ -383,6 +385,43 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		return a.finishCombat(state.Outcome)
 	}
 	return nil
+}
+
+// damageAfterSave 讓目標擲一次豁免，再依法術參數 `+8` 的規則處置傷害
+//（spec 074／075）：規則 0 不擲、1 豁免成功就完全無效、2 減半、其餘不動。
+//
+// 原版在共用施法常式 `08BCh` 裡先擲一次豁免（`096Bh` 呼叫 overlay-24 entry 7），
+// 把布林結果和規則值一起交給 overlay-24 entry 19（`133Ah`）處置。
+func (a *app) damageAfterSave(state *tacticalState, target, spell uint8, damage int) int {
+	if state == nil || int(target) >= len(state.SaveTargets) {
+		return damage
+	}
+	if int(spell) >= len(a.spellParameters) {
+		return damage
+	}
+	parameters := a.spellParameters[spell]
+	rule := parameters.SaveRule()
+	if rule == gamepack.SaveRuleNone {
+		return damage
+	}
+	category := parameters.SaveCategory()
+	if int(category) >= gamepack.SavingThrowCategories {
+		return damage
+	}
+	roll := a.rollDice(1, gamepack.SavingThrowDie)
+	saved := false
+	switch {
+	case roll == 1:
+		saved = false
+	case roll == gamepack.SavingThrowDie:
+		saved = true
+	default:
+		saved = int(state.SaveTargets[target][category]) <= roll+state.SaveBonus[target]
+	}
+	if !saved {
+		return damage
+	}
+	return gamepack.DamageAfterSave(rule, damage)
 }
 
 // applySpellDamage 用與攻擊同一套的收尾：歸零就不再佔格、不再參與。
