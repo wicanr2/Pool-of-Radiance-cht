@@ -61,6 +61,22 @@ func (e ItemTypeEntry) DamageBonus() uint8 { return e.Raw[0x0b] }
 // Flags 是 entry `+0Eh`。
 func (e ItemTypeEntry) Flags() uint8 { return e.Raw[0x0e] }
 
+// AttackRange 是這件武器打得到幾格（spec 065）。
+//
+// 出處是挑目標的介面：overlay-13 `358Dh` 取 `DS:54ECh + 型別×10h`
+// （也就是本表的 `+0Ch`）之後 `dec ax`，呼叫端再把 0 與 FFh 都當成 1。
+// 所以**表裡存的是「射程加一」，近戰武器存 0**：
+//
+//	0 或 1 → 1 格（相鄰）
+//	n > 1  → n − 1 格
+func (e ItemTypeEntry) AttackRange() int {
+	value := int(e.Raw[0x0c])
+	if value <= 1 {
+		return 1
+	}
+	return value - 1
+}
+
 // ItemTypeTable 是整張表。
 type ItemTypeTable struct {
 	// Header 是檔頭那兩個 byte，原樣保留：它的語意還沒閉合，

@@ -358,3 +358,55 @@ func TestCastTargetingCyclesTargets(t *testing.T) {
 		t.Error("ESC 應該離開選目標那一步")
 	}
 }
+
+// A 鍵瞄準攻擊：超出射程不打也不消耗回合，射程內才打。
+func TestAimedAttackRespectsWeaponRange(t *testing.T) {
+	state := &tacticalState{
+		Roster:     make([]combat.CombatantCell, 3),
+		Friendly:   []bool{false, true, false},
+		HitPoints:  []int{0, 20, 20},
+		PartySlot:  []int{-1, 0, -1},
+		States:     make([]uint8, 3),
+		Scores:     []uint8{0, 5, 5},
+		Budgets:    make([]uint8, 3),
+		HitDice:    make([]uint8, 3),
+		SleepFlag:  make([]uint8, 3),
+		Asleep:     make([]bool, 3),
+		ArmorClass: []int{0, 50, 50},
+		THAC0:      []uint8{0, 40, 40},
+		Damage:     []combat.DamageDice{{}, {Count: 1, Sides: 8}, {Count: 1, Sides: 8}},
+		Mover:      1,
+	}
+	state.Roster[1] = combat.CombatantCell{X: 1, Y: 1, FootprintClass: 1}
+	state.Roster[2] = combat.CombatantCell{X: 9, Y: 1, FootprintClass: 1} // 八格外
+	application := &app{tactical: state, tacticalPreview: true, mode: modeAdventure,
+		roller: diceRoller{random: rand.New(rand.NewSource(1))}}
+	application.state = poolsave.State{Party: []poolsave.Character{{Name: "A", ClassID: "fighter"}}}
+	press(application, ebiten.KeyA)
+	if !application.castTargeting || !application.castTargetingAttack {
+		t.Fatalf("按 A 應該進瞄準（狀態列 %q）", application.statusLine)
+	}
+	// 唯一的候選是八格外那個，空手只打得到一格。
+	// 判準用「回合有沒有結束」而不是「有沒有掉血」——打得到也可能沒打中，
+	// 而超出射程那條路在 endTurn 之前就返回了。
+	before := state.HitPoints[2]
+	mover := state.Mover
+	press(application, ebiten.KeyEnter)
+	if state.HitPoints[2] != before {
+		t.Errorf("超出射程不該打得到，血從 %d 變成 %d", before, state.HitPoints[2])
+	}
+	if state.Mover != mover {
+		t.Error("超出射程不該消耗回合")
+	}
+	// 拉到相鄰就打得到，回合也用掉。
+	state.Roster[2] = combat.CombatantCell{X: 2, Y: 1, FootprintClass: 1}
+	state.Mover = mover
+	press(application, ebiten.KeyA)
+	if !application.castTargetingAttack {
+		t.Fatalf("第二次按 A 沒有進瞄準（狀態列 %q）", application.statusLine)
+	}
+	press(application, ebiten.KeyEnter)
+	if state.Mover == mover && !state.Finished {
+		t.Errorf("相鄰打完應該換人，還停在 %d（%q）", state.Mover, state.Status)
+	}
+}

@@ -125,11 +125,77 @@ func (a *app) beginCastTargeting(option castOption) bool {
 	return true
 }
 
+// beginAimedAttack 是 A 鍵：拿現在裝備的武器瞄一個目標打。
+//
+// 原版把它掛在 `View Aim` 指令上（overlay-08 `05E1h` 起的指令字串），
+// 射程來自物品型別表的 `+0Ch`（spec 065）。**距離怎麼算還沒讀**——
+// 原版的挑目標介面會顯示 `Range = `，那一段在 overlay-13 `352Ch`。
+// 這裡用戰場座標的切比雪夫距離，是 remake 自己的選擇。
+func (a *app) beginAimedAttack() bool {
+	state := a.tactical
+	if state == nil || state.Mover == 0 {
+		return false
+	}
+	if !a.beginCastTargeting(castOption{Label: a.text(msgAimAttack)}) {
+		return false
+	}
+	a.castTargetingAttack = true
+	return true
+}
+
+// moverAttackRange 是現在這個角色打得到幾格。沒有裝備武器就是相鄰。
+func (a *app) moverAttackRange() int {
+	index, ok := a.moverPartyIndex(a.tactical.Mover)
+	if !ok {
+		return 1
+	}
+	weapon, ok := a.readiedWeapon(a.state.Party[index])
+	if !ok || a.itemTypes == nil {
+		return 1
+	}
+	if len(weapon.Raw) <= itemTypeOffset {
+		return 1
+	}
+	entry, err := a.itemTypes.Entry(weapon.Raw[itemTypeOffset])
+	if err != nil {
+		return 1
+	}
+	return entry.AttackRange()
+}
+
+// resolveAimedAttack 對挑中的目標打一次。超出射程就不打，也不消耗回合。
+func (a *app) resolveAimedAttack(target uint8) error {
+	state := a.tactical
+	from := state.Roster[state.Mover]
+	to := state.Roster[target]
+	distance := chebyshev(from.X, from.Y, to.X, to.Y)
+	if reach := a.moverAttackRange(); distance > reach {
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimOutOfRange), target, distance, reach))
+		return nil
+	}
+	if same, err := state.sameSide(state.Mover, target); err != nil {
+		return err
+	} else if same {
+		// 原版允許打自己人（`Attack Ally:` 會先問一句），那一句還沒讀，
+		// 所以這裡直接擋下來。
+		state.Status = state.say(msgStatusBlocked)
+		return nil
+	}
+	if err := a.resolveTacticalAttack(state, target); err != nil {
+		return err
+	}
+	state.endTurn(a.rollDice, false)
+	if state.Finished {
+		return a.finishCombat(state.Outcome)
+	}
+	return nil
+}
+
 // castTargetingInput 處理選目標那一步的按鍵。
 func (a *app) castTargetingInput() error {
 	switch {
 	case a.justPressed(ebiten.KeyEscape):
-		a.castTargeting = false
+		a.castTargeting, a.castTargetingAttack = false, false
 	case a.justPressed(ebiten.KeyP), a.justPressed(ebiten.KeyArrowLeft),
 		a.justPressed(ebiten.KeyArrowUp):
 		a.castTargetCursor = (a.castTargetCursor + len(a.castTargets) - 1) % len(a.castTargets)
@@ -138,7 +204,12 @@ func (a *app) castTargetingInput() error {
 		a.castTargetCursor = (a.castTargetCursor + 1) % len(a.castTargets)
 	case a.justPressed(ebiten.KeyEnter), a.justPressed(ebiten.KeySpace):
 		a.castTargeting = false
-		return a.finishCast(a.castPending, a.castTargets[a.castTargetCursor], true)
+		target := a.castTargets[a.castTargetCursor]
+		if a.castTargetingAttack {
+			a.castTargetingAttack = false
+			return a.resolveAimedAttack(target)
+		}
+		return a.finishCast(a.castPending, target, true)
 	}
 	return nil
 }

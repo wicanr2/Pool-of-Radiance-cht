@@ -83,3 +83,35 @@ func TestItemTypeEntryRejectsAnIndexOutsideTheTable(t *testing.T) {
 		t.Fatalf("the last entry was rejected: %v", err)
 	}
 }
+
+// 射程逐筆對原版的表：近戰武器存 0（＝相鄰），遠程的存「射程加一」。
+func TestItemTypeAttackRange(t *testing.T) {
+	table, err := gamepack.ReadDOSItemTypeTable(dosZIP)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	for _, testCase := range []struct {
+		itemType uint8
+		raw      uint8
+		want     int
+	}{
+		{0, 0, 1},  // 近戰：表裡 0，打相鄰
+		{1, 0, 1},  // 近戰
+		{2, 4, 3},  // 遠程：表裡 4 → 3 格
+		{8, 1, 1},  // 表裡 1 也是相鄰（原版 dec 之後變 0，呼叫端墊成 1）
+		{9, 6, 5},  // 表裡 6 → 5 格
+		{21, 7, 6}, // 表裡 7 → 6 格
+	} {
+		entry, err := table.Entry(testCase.itemType)
+		if err != nil {
+			t.Fatalf("型別 %d: %v", testCase.itemType, err)
+		}
+		if entry.Raw[0x0c] != testCase.raw {
+			t.Errorf("型別 %d 的 +0Ch 是 %d，原版是 %d",
+				testCase.itemType, entry.Raw[0x0c], testCase.raw)
+		}
+		if got := entry.AttackRange(); got != testCase.want {
+			t.Errorf("型別 %d 的射程算成 %d，預期 %d", testCase.itemType, got, testCase.want)
+		}
+	}
+}

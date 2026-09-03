@@ -1022,6 +1022,10 @@ func (a *app) tacticalInput() error {
 		a.openCastMenu()
 		return nil
 	}
+	if a.justPressed(ebiten.KeyA) && state.Mover != 0 {
+		a.beginAimedAttack()
+		return nil
+	}
 	if a.justPressed(ebiten.KeyEnter) {
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
@@ -1166,6 +1170,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	a.tacticalPreview, a.tactical = false, nil
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
+	a.castTargetingAttack = false
 	if outcome != combat.CombatVictory {
 		a.statusLine = "Party defeated; the post-combat script does not run."
 		return nil

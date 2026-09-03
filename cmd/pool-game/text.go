@@ -105,6 +105,8 @@ var messages = map[messageID][2]string{
 	msgCastCured:            {"%s is cured of %d afflictions.", "%s 解掉了 %d 個病痛。"},
 	msgCastArea:             {"%s hits %d foes for %d each.", "%s 打中 %d 個敵人，各 %d 點。"},
 	msgCastWholeSide:        {"%s casts %s over %d allies.", "%s 施展 %s，作用在 %d 名同伴身上。"},
+	msgAimAttack:            {"ATTACK", "攻擊"},
+	msgAimOutOfRange:        {"Target %d is %d away; this weapon reaches %d.", "目標 %d 在 %d 格外，這件武器只打得到 %d 格。"},
 	msgCastAiming:           {"%s -> target %d   N next  P prev  ENTER cast", "%s　目標 %d　N 下一個　P 上一個　ENTER 施展"},
 	msgCampNeedsParty:       {"Make camp with a party first.", "先有隊伍才紮得了營。"},
 	msgCampRest:             {"REST", "休息"},
@@ -532,6 +534,8 @@ const (
 	msgCastArea
 	msgCastWholeSide
 	msgCastAiming
+	msgAimAttack
+	msgAimOutOfRange
 	msgCampNeedsParty
 	msgCampRest
 	msgCampMemorise

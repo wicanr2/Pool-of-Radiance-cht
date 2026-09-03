@@ -175,7 +175,8 @@ type app struct {
 	castOptions []castOption
 	castCursor  int
 	// 選目標那一步（原版 overlay-13 的 `Next Prev Manual`）。
-	castTargeting    bool
+	castTargeting       bool
+	castTargetingAttack bool
 	castTargets      []uint8
 	castTargetCursor int
 	castPending      castOption
