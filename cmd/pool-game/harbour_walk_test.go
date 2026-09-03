@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -155,6 +156,35 @@ func TestBuyingTheEastRouteSailsIntoTheWilderness(t *testing.T) {
 // 同時把野外座標 `49C3`／`49C4` 往前推一格（spec 105）。走一步之後兩個位置
 // 都要動；被牆擋住時兩個都不動。
 func TestAWildernessStepMovesBothPositions(t *testing.T) {
+	application := sailEastIntoTheWilderness(t)
+	beforeCell := [2]uint8{application.spawn.X, application.spawn.Y}
+	beforeWild := [2]uint16{application.eventMachine.Memory[wildernessX],
+		application.eventMachine.Memory[wildernessY]}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	afterCell := [2]uint8{application.spawn.X, application.spawn.Y}
+	afterWild := [2]uint16{application.eventMachine.Memory[wildernessX],
+		application.eventMachine.Memory[wildernessY]}
+	if afterCell == beforeCell {
+		t.Fatalf("GEO 上的位置沒有動：%v（狀態 %q）", afterCell, application.statusLine)
+	}
+	if afterWild == beforeWild {
+		t.Fatalf("野外座標沒有動：%v（狀態 %q）", afterWild, application.statusLine)
+	}
+	// 往東走一步：GEO 的 X 加一（會繞回），野外的 X 也加一，Y 都不動。
+	if afterCell[1] != beforeCell[1] || afterWild[1] != beforeWild[1] {
+		t.Errorf("往東走卻改了 Y：GEO %v→%v 野外 %v→%v",
+			beforeCell, afterCell, beforeWild, afterWild)
+	}
+	if afterWild[0] != beforeWild[0]+1 {
+		t.Errorf("野外 X %d→%d，要加一", beforeWild[0], afterWild[0])
+	}
+}
+
+// sailEastIntoTheWilderness 把隊伍從城區帶到野外圖 27 的 (9,29)。
+func sailEastIntoTheWilderness(t *testing.T) *app {
+	t.Helper()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application := bootCityParty(t, zipPath)
 	if application.spawn.Map.BlockID != 0 {
@@ -189,35 +219,44 @@ func TestAWildernessStepMovesBothPositions(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if !application.inWilderness() {
-		t.Fatalf("沒有進到野外：ECL block %d", application.eventSession.CurrentBlockID())
-	}
 	for tick := 0; tick < 50 && application.cellEventPending; tick++ {
 		if err := press(application, ebiten.KeyEnter); err != nil {
 			t.Fatal(err)
 		}
 	}
-	beforeCell := [2]uint8{application.spawn.X, application.spawn.Y}
-	beforeWild := [2]uint16{application.eventMachine.Memory[wildernessX],
-		application.eventMachine.Memory[wildernessY]}
+	if !application.inWilderness() {
+		t.Fatalf("沒有進到野外：ECL block %d", application.eventSession.CurrentBlockID())
+	}
+	return application
+}
+
+// 野外的地點表（spec 105）真的會派工：踏進圖 27 的 (9,29)（地點 3）會問
+// 「要不要搭船回文明區」，答 YES 就換到 ECL block 20。
+func TestAWildernessLocationDispatchesItsScript(t *testing.T) {
+	application := sailEastIntoTheWilderness(t)
+	memory := application.eventMachine.Memory
+	// 從 (8,29) 往東踏一步進 (9,29)。
+	memory[wildernessX], memory[wildernessY] = 8, 29
+	application.spawn.Facing = 1
 	if err := press(application, ebiten.KeyArrowUp); err != nil {
 		t.Fatal(err)
 	}
-	afterCell := [2]uint8{application.spawn.X, application.spawn.Y}
-	afterWild := [2]uint16{application.eventMachine.Memory[wildernessX],
-		application.eventMachine.Memory[wildernessY]}
-	if afterCell == beforeCell {
-		t.Fatalf("GEO 上的位置沒有動：%v（狀態 %q）", afterCell, application.statusLine)
+	if got := [2]uint16{memory[wildernessX], memory[wildernessY]}; got != [2]uint16{9, 29} {
+		t.Fatalf("野外座標是 %v，要 (9,29)", got)
 	}
-	if afterWild == beforeWild {
-		t.Fatalf("野外座標沒有動：%v（狀態 %q）", afterWild, application.statusLine)
+	asked := false
+	for tick := 0; tick < 40 && application.cellEventPending; tick++ {
+		if strings.Contains(application.eventText, "RETURN YOU TO THE CIVILIZED SECTION") {
+			asked = true
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
 	}
-	// 往東走一步：GEO 的 X 加一（會繞回），野外的 X 也加一，Y 都不動。
-	if afterCell[1] != beforeCell[1] || afterWild[1] != beforeWild[1] {
-		t.Errorf("往東走卻改了 Y：GEO %v→%v 野外 %v→%v",
-			beforeCell, afterCell, beforeWild, afterWild)
+	if !asked {
+		t.Fatalf("地點 3 沒有問話：最後的文字是 %q", application.eventText)
 	}
-	if afterWild[0] != beforeWild[0]+1 {
-		t.Errorf("野外 X %d→%d，要加一", beforeWild[0], afterWild[0])
+	if got := application.eventSession.CurrentBlockID(); got != 20 {
+		t.Fatalf("答應搭船之後停在 ECL block %d，要 20", got)
 	}
 }

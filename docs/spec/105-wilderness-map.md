@@ -72,6 +72,11 @@ ecl8/27  (11,8)→0 (6,14)→1 (7,14)→1 (5,15)→1 (6,15)→2 (7,15)→1
          (6,16)→1 (7,16)→1 (9,29)→3
 ```
 
+**地點表真的會派工**：從城區買往東的船票、上碼頭、落在圖 27 的 (9,29)
+（地點 3），畫面問「THERE IS A BOAT DOCKED HERE THAT WILL RETURN YOU TO THE
+CIVILIZED SECTION OF PHLAN. WILL YOU TAKE IT?」，答應之後換到 ECL block 20。
+`TestAWildernessLocationDispatchesItsScript` 從頭走完這一條。
+
 **交叉核對**：碼頭那三條航線的登陸座標（ecl3/0 `9C04h`／`9C19h`／`9C2Eh`
 設的 `49C3`／`49C4`）每一個都落在這張表上——EAST (7,29) 是 26 的地點 7、
 WEST (13,27) 是 26 的地點 3、BAY (9,29) 是 27 的地點 3。座標是從另一個區塊
