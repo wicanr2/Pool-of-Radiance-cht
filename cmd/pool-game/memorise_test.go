@@ -146,10 +146,18 @@ func TestCastMagicMissileInCombat(t *testing.T) {
 			} else {
 				err = press(application, ebiten.KeyEnter)
 			}
+		case application.programManaging:
+			err = press(application, ebiten.KeyB)
+		case application.shopActive:
+			err = press(application, ebiten.KeyEscape)
 		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
-			err = press(application, ebiten.KeyEnter)
+			if key, ok := menuEscapeKey(application); ok {
+				err = press(application, key)
+			} else {
+				err = press(application, ebiten.KeyEnter)
+			}
 		default:
-			if random.Intn(3) == 0 {
+			if random.Intn(3) == 0 || forwardWouldLeaveTheArea(application) {
 				err = press(application, ebiten.KeyArrowRight)
 			} else {
 				err = press(application, ebiten.KeyArrowUp)

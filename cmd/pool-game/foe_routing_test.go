@@ -50,29 +50,23 @@ func TestFoesCloseOnACrowdedBoard(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	keys := []ebiten.Key{ebiten.KeyArrowUp, ebiten.KeyArrowLeft, ebiten.KeyArrowRight, ebiten.KeyArrowDown}
-	random := rand.New(rand.NewSource(29))
-	for step := 0; step < 30000 && application.tactical == nil; step++ {
-		busy := application.encounter != nil || application.cellWaitingMenu ||
-			application.cellEventPending || application.combatActive ||
-			application.shopActive || application.treasureActive || application.templeActive
-		var err error
-		switch {
-		case busy:
-			if application.cellWaitingMenu && len(application.cellMenuOptions) > 1 {
-				for k := random.Intn(len(application.cellMenuOptions)); k > 0 && err == nil; k-- {
-					err = press(application, ebiten.KeyArrowDown)
-				}
-			}
-			if err == nil {
-				err = press(application, ebiten.KeyEnter)
-			}
-		default:
-			err = press(application, keys[random.Intn(len(keys))])
+	// 逐格走，走到**夠擠的那一場**為止：路上遇到的小場面照打完再繼續。
+	// 原本靠種子 29 亂走碰運氣，世界一變大同一個種子就走去別的地方。
+	crowded := func() bool {
+		state := application.tactical
+		if state == nil {
+			return false
 		}
-		if err != nil {
-			t.Fatalf("step %d: %v", step, err)
+		foes := 0
+		for index := 1; index < len(state.Roster); index++ {
+			if state.Roster[index].FootprintClass != 0 && !state.Friendly[index] {
+				foes++
+			}
 		}
+		return foes >= 20
+	}
+	if !walkThisAreaUntil(t, application, 120000, crowded) {
+		t.Fatal("走完整區都沒碰到夠擠的那一場")
 	}
 	state := application.tactical
 	if state == nil {
@@ -88,6 +82,8 @@ func TestFoesCloseOnACrowdedBoard(t *testing.T) {
 	if foes < 20 {
 		t.Fatalf("這場只有 %d 隻敵人，擠不出繞路問題", foes)
 	}
+	t.Logf("擠的那一場在 GEO%d/%d：%d 隻敵人",
+		application.spawn.Map.Archive, application.spawn.Map.BlockID, foes)
 	for tick := 0; tick < 40000; tick++ {
 		current := application.tactical
 		if current == nil || current.Finished {

@@ -13,6 +13,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
@@ -105,6 +106,13 @@ func TestNormalKeysReachTheFirstDungeonStep(t *testing.T) {
 	}
 	t.Log(fmt.Sprintf("走到 %+v，狀態列：%s", application.spawn, application.statusLine))
 
+	// 走出這一區的那一步會留一段文字（spec 100：起點 (0,4) 就在西邊界上，
+	// 往西一步是穿過城門）。玩家會先按 RETURN 把它讀完，測試也照做——
+	// 對話開著的時候存不了檔。
+	for tick := 0; tick < 64 && (application.cellEventPending || application.cellWaitingMenu); tick++ {
+		step("讀完文字", ebiten.KeyEnter)
+	}
+
 	// 存檔與讀檔也只用按鍵：F10 存、重開一份再按 L 讀回來。
 	var saved poolsave.State
 	application.saveState = func(state poolsave.State) error { saved = cloneSaveState(state); return nil }
@@ -173,43 +181,31 @@ func TestNormalKeysReachTheFirstCombat(t *testing.T) {
 		t.Fatal("the opening never finished")
 	}
 
-	random := rand.New(rand.NewSource(7))
-	sawEncounter := false
-	for step := 0; step < 4000; step++ {
-		if application.combatActive {
-			if !sawEncounter {
-				t.Fatal("combat started without the encounter menu")
-			}
-			if !strings.Contains(application.eventText, "SKELETON") || !strings.Contains(application.eventText, "ZOMBIE") {
-				t.Fatalf("staged monsters are %q", application.eventText)
-			}
-			if application.spawn.Map.Archive != 4 {
-				t.Fatalf("combat happened on archive %d", application.spawn.Map.Archive)
-			}
-			return
-		}
-		var err error
-		switch {
-		case application.encounter != nil:
+	// 逐格走到第一場架。**不再釘住是哪一場**：世界接上「走出這一區」之後
+	// （spec 100），第一場遇到的架跟路線有關，原本釘的索寇要塞骷髏／殭屍是
+	// 舊世界的路線走出來的。這一條要驗的是**遭遇選單先出現、然後才進戰鬥**，
+	// 那條管線與是哪一場無關。
+	sawEncounter, menuShape := false, []string(nil)
+	reached := walkThisAreaUntil(t, application, 60000, func() bool {
+		if application.encounter != nil && !sawEncounter {
 			sawEncounter = true
-			if len(application.cellMenuOptions) != 4 || application.cellMenuOptions[0] != "COMBAT" {
-				t.Fatalf("encounter menu is %v", application.cellMenuOptions)
-			}
-			err = press(application, ebiten.KeyEnter) // COMBAT
-		case application.cellWaitingMenu, application.cellEventPending:
-			err = press(application, ebiten.KeyEnter)
-		default:
-			if random.Intn(3) == 0 {
-				err = press(application, ebiten.KeyArrowRight)
-			} else {
-				err = press(application, ebiten.KeyArrowUp)
-			}
+			menuShape = append([]string(nil), application.cellMenuOptions...)
 		}
-		if err != nil {
-			t.Fatalf("step %d at %+v: %v", step, application.spawn, err)
-		}
+		return application.combatActive
+	})
+	if !reached {
+		t.Fatalf("走完整區都沒打到架；最後在 %+v，遭遇選單出現過=%v",
+			application.spawn, sawEncounter)
 	}
-	t.Fatalf("no combat in 4000 steps; last position %+v, encounter seen=%v", application.spawn, sawEncounter)
+	if !sawEncounter {
+		t.Fatal("combat started without the encounter menu")
+	}
+	if len(menuShape) != 4 || menuShape[0] != "COMBAT" {
+		t.Fatalf("encounter menu is %v", menuShape)
+	}
+	t.Logf("第一場架在 GEO%d/%d (%d,%d)：%q",
+		application.spawn.Map.Archive, application.spawn.Map.BlockID,
+		application.spawn.X, application.spawn.Y, application.eventText)
 }
 
 // 戰鬥要打得完。隊伍全程按 ENTER 不還手，怪物必須自己走過來把它打倒——
@@ -262,10 +258,18 @@ func TestPassiveCombatTerminates(t *testing.T) {
 			} else {
 				err = press(application, ebiten.KeyEnter)
 			}
+		case application.programManaging:
+			err = press(application, ebiten.KeyB)
+		case application.shopActive:
+			err = press(application, ebiten.KeyEscape)
 		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
-			err = press(application, ebiten.KeyEnter)
+			if key, ok := menuEscapeKey(application); ok {
+				err = press(application, key)
+			} else {
+				err = press(application, ebiten.KeyEnter)
+			}
 		default:
-			if random.Intn(3) == 0 {
+			if random.Intn(3) == 0 || forwardWouldLeaveTheArea(application) {
 				err = press(application, ebiten.KeyArrowRight)
 			} else {
 				err = press(application, ebiten.KeyArrowUp)
@@ -355,23 +359,8 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	random := rand.New(rand.NewSource(7))
-	for step := 0; step < 30000 && !application.combatActive; step++ {
-		switch {
-		case application.encounter != nil, application.cellWaitingMenu, application.cellEventPending:
-			if err := press(application, ebiten.KeyEnter); err != nil {
-				t.Fatal(err)
-			}
-		default:
-			key := ebiten.KeyArrowUp
-			if random.Intn(3) == 0 {
-				key = ebiten.KeyArrowRight
-			}
-			if err := press(application, key); err != nil {
-				t.Fatal(err)
-			}
-		}
-	}
+	// 逐格走到第一場架。原本靠固定種子亂走碰運氣，世界一變大就走去別的地方。
+	walkThisAreaUntil(t, application, 60000, func() bool { return application.combatActive })
 	if !application.combatActive {
 		t.Fatalf("never reached combat: GEO%d/%d (%d,%d) mode=%d 管理=%v 寶物=%v 輸入=%v 選單=%v 狀態=%q",
 			application.spawn.Map.Archive, application.spawn.Map.BlockID,
@@ -404,7 +393,7 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 	}
 	fewestFoes := foesAtStart
 	sameCell := 0
-	for tick := 0; tick < 20000; tick++ {
+	for tick := 0; tick < 200000; tick++ {
 		state := application.tactical
 		if state == nil || state.Finished {
 			break
@@ -467,6 +456,21 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 			}
 		} else {
 			sameCell = 0
+		}
+	}
+	// 迴圈可能停在「這一場已經判定結束、但前端還沒收尾」那一刻，
+	// 所以先讓它收完再判。
+	for tick := 0; tick < 64 && application.tactical != nil; tick++ {
+		key := ebiten.KeyEnter
+		if application.tactical.Prompt {
+			// 敵方清光之後那一次問的是「還要不要繼續打」（spec 062）。
+			key = ebiten.KeyY
+			if application.tactical.sideCounts().Foes == 0 {
+				key = ebiten.KeyN
+			}
+		}
+		if err := press(application, key); err != nil {
+			t.Fatal(err)
 		}
 	}
 	if application.tactical != nil {
@@ -735,35 +739,14 @@ func TestNormalKeysReachThePartyManagementCell(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	// 種子 19 的隨機走查會在第 668 步踩到 ECL3／block 11 的 `PROGRAM 0`。
-	keys := []ebiten.Key{ebiten.KeyArrowUp, ebiten.KeyArrowLeft, ebiten.KeyArrowRight, ebiten.KeyArrowDown}
-	random := rand.New(rand.NewSource(19))
-	reached := false
-	for step := 0; step < 30000 && !reached; step++ {
-		if application.programManaging {
-			reached = true
-			break
-		}
-		if application.combatActive || application.tactical != nil {
-			t.Fatalf("walked into combat at step %d before reaching the PROGRAM cell", step)
-		}
-		if application.encounter != nil || application.cellWaitingMenu || application.cellEventPending {
-			if application.cellWaitingMenu && len(application.cellMenuOptions) > 1 {
-				for k := random.Intn(len(application.cellMenuOptions)); k > 0; k-- {
-					if err := press(application, ebiten.KeyArrowDown); err != nil {
-						t.Fatal(err)
-					}
-				}
-			}
-			if err := press(application, ebiten.KeyEnter); err != nil {
-				t.Fatal(err)
-			}
-			continue
-		}
-		if err := press(application, keys[random.Intn(len(keys))]); err != nil {
-			t.Fatal(err)
-		}
-	}
+	// 逐格走到 `PROGRAM` 那一格（ECL3／block 11）。原本靠種子 19 亂走碰運氣，
+	// 世界一變大就走去別的地方；逐格走不依賴種子。
+	//
+	// **不繞出這一區**：那一格在起始區裡，而 `escapeKeyForWalk` 會在隊伍管理
+	// 畫面按 B 回地圖——所以停止條件要在按鍵之前就檢查到。
+	reached := walkThisAreaUntil(t, application, 60000, func() bool {
+		return application.programManaging
+	})
 	if !reached {
 		t.Fatal("never reached the PROGRAM cell")
 	}
@@ -799,4 +782,164 @@ func TestNormalKeysReachThePartyManagementCell(t *testing.T) {
 			t.Fatalf("could not walk after party management: %v", err)
 		}
 	}
+}
+
+// forwardWouldLeaveTheArea 說往前一步會不會走出這一區（spec 100）。
+//
+// 只在起始區裡找架打的測試要靠它擋住那一步：世界接上「走出這一區」之後，
+// 起點 (0,4) 往西一步就出城了，固定種子的路線會走去別的地方。這些測試量的
+// 是戰鬥、記憶法術、裝備，不是地理，所以留在原地比重新挑種子誠實。
+func forwardWouldLeaveTheArea(application *app) bool {
+	dx, dy := 0, 0
+	switch application.spawn.Facing {
+	case 0:
+		dy = -1
+	case 1:
+		dx = 1
+	case 2:
+		dy = 1
+	case 3:
+		dx = -1
+	}
+	x, y := int(application.spawn.X)+dx, int(application.spawn.Y)+dy
+	return x < 0 || x >= geometry.Width || y < 0 || y >= geometry.Height
+}
+
+// menuEscapeKey 給「亂走找架」的迴圈用：選單裡有 Exit 就走過去按下確定。
+//
+// 世界變大之後這些迴圈會逛到神廟、商店這些帶選單的地方。一律按 Enter 會停在
+// 第一項（像神廟的「治療失明」），而那一項還沒接就會卡在原地。
+func menuEscapeKey(application *app) (ebiten.Key, bool) {
+	options := application.cellMenuOptions
+	if len(options) < 2 {
+		return 0, false
+	}
+	for index, option := range options {
+		if !strings.EqualFold(option, "Exit") {
+			continue
+		}
+		if application.cellMenuCursor != index {
+			return ebiten.KeyArrowRight, true
+		}
+		return ebiten.KeyEnter, true
+	}
+	return 0, false
+}
+
+// walkThisAreaUntil 在**這一區之內**逐格走，直到 stop 成立或走完整區。
+//
+// 原本這些測試靠固定亂數種子亂走碰運氣。世界接上「走出這一區」之後，同一個
+// 種子就走去別的地方；每修一次別處，路線又會變一次——挑種子挑不完。逐格走
+// 不依賴種子：廣度優先找最近一格沒踩過的走過去，不繞出這一區。
+func walkThisAreaUntil(t *testing.T, application *app, budget int, stop func() bool) bool {
+	t.Helper()
+	walked := map[[2]int]bool{}
+	var plan []exploreStep
+	for step := 0; step < budget; step++ {
+		if stop() {
+			return true
+		}
+		walked[[2]int{int(application.spawn.X), int(application.spawn.Y)}] = true
+		if key, busy := escapeKeyForWalk(application); busy {
+			plan = nil
+			if err := press(application, key); err != nil {
+				t.Fatalf("第 %d 步：%v", step, err)
+			}
+			continue
+		}
+		if len(plan) == 0 {
+			if plan = planInsideThisArea(application, walked); len(plan) == 0 {
+				return stop()
+			}
+		}
+		want := plan[0]
+		if application.spawn.Facing != want.facing {
+			key := ebiten.KeyArrowRight
+			if (int(want.facing)-int(application.spawn.Facing)+4)%4 == 3 {
+				key = ebiten.KeyArrowLeft
+			}
+			if err := press(application, key); err != nil {
+				t.Fatalf("第 %d 步：%v", step, err)
+			}
+			continue
+		}
+		before := application.spawn
+		if err := press(application, ebiten.KeyArrowUp); err != nil {
+			t.Fatalf("第 %d 步：%v", step, err)
+		}
+		if application.spawn.X == before.X && application.spawn.Y == before.Y {
+			plan = nil
+			continue
+		}
+		plan = plan[1:]
+	}
+	return stop()
+}
+
+// escapeKeyForWalk 回「現在有畫面擋著嗎、該按哪一鍵離開」。
+func escapeKeyForWalk(application *app) (ebiten.Key, bool) {
+	switch {
+	case application.programManaging:
+		return ebiten.KeyB, true
+	case application.shopActive:
+		return ebiten.KeyEscape, true
+	case application.tactical != nil:
+		if application.tactical.Prompt {
+			if application.tactical.sideCounts().Foes == 0 {
+				return ebiten.KeyN, true
+			}
+			return ebiten.KeyY, true
+		}
+		return ebiten.KeyEnter, true
+	case application.treasureActive && len(application.cellMenuOptions) != 0:
+		if want := treasureMenuChoice(application.cellMenuOptions); want != application.cellMenuCursor {
+			return ebiten.KeyArrowRight, true
+		}
+		return ebiten.KeyEnter, true
+	case application.encounter != nil, application.cellWaitingMenu,
+		application.cellEventPending, application.templeActive,
+		application.mode != modeAdventure:
+		if key, ok := menuEscapeKey(application); ok {
+			return key, true
+		}
+		return ebiten.KeyEnter, true
+	}
+	return 0, false
+}
+
+// planInsideThisArea 找最近一格沒踩過的，路徑不跨出這一區的邊界。
+func planInsideThisArea(application *app, walked map[[2]int]bool) []exploreStep {
+	type node struct{ x, y int }
+	start := node{int(application.spawn.X), int(application.spawn.Y)}
+	from := map[node]node{start: start}
+	via := map[node]uint8{}
+	queue := []node{start}
+	for len(queue) != 0 {
+		current := queue[0]
+		queue = queue[1:]
+		if current != start && !walked[[2]int{current.x, current.y}] {
+			steps := []exploreStep{}
+			for cursor := current; cursor != start; cursor = from[cursor] {
+				steps = append([]exploreStep{{facing: via[cursor]}}, steps...)
+			}
+			return steps
+		}
+		for facing := 0; facing < 4; facing++ {
+			if !application.initialMap.Grid.CanMoveDungeonWrapped(current.x, current.y, facing*2) {
+				continue
+			}
+			x := current.x + exploreDeltas[facing][0]
+			y := current.y + exploreDeltas[facing][1]
+			if x < 0 || x >= geometry.Width || y < 0 || y >= geometry.Height {
+				continue
+			}
+			next := node{x: x, y: y}
+			if _, seen := from[next]; seen {
+				continue
+			}
+			from[next], via[next] = current, uint8(facing)
+			queue = append(queue, next)
+		}
+	}
+	return nil
 }

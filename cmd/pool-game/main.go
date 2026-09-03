@@ -790,8 +790,7 @@ func (a *app) moveInitialDungeonForward() error {
 		return nil
 	}
 	if a.eventMachine != nil {
-		// **還沒接**：`setMapExitFlag(dx, dy)` 應該擺在這裡。接上去世界會從
-		// 兩張圖變成十二張，但目前還有四個逐鍵重現的測試跟不上（spec 100）。
+		a.setMapExitFlag(dx, dy)
 		result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 		if err != nil {
 			return fmt.Errorf("dispatch Pool initial cell: %w", err)
@@ -1724,9 +1723,6 @@ const mapExitFlagAddress = 0x6DD5
 const mapExitCommitCall = 0xC01E
 
 // setMapExitFlag 在跑格子入口 0 之前，把「這一步會不會走出這一區」寫進去。
-//
-// **目前沒有人呼叫它**：接上去之後有四個逐鍵重現的測試跟不上（走到的是另一
-// 場架，而那一場久久分不出勝負），見 spec 100。
 //
 // 座標本身是繞回去的（overlay-30 `0358h` 在查牆之前把 X／Y 夾回 0..15，
 // spec 099），所以繞回之後那一格看起來合法——引擎另外記下「這一步本來會

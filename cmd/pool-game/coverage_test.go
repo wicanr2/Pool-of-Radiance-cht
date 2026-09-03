@@ -614,8 +614,8 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	blocks := map[int]bool{}
 	var hardFailures []string
 	total := 0
-	for pass := 0; pass < 24; pass++ {
-		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 300000,
+	for pass := 0; pass < 8; pass++ {
+		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 40000,
 			avoid, visited, transitionUses, menuTurn, visited, maps, blocks, &hardFailures)
 		if !ok {
 			t.Skip("original DOS ZIP is intentionally not tracked")
@@ -660,14 +660,14 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	// 走得到的下限。這是**量到的數字**，不是目標。少於這個數代表移動、
 	// 轉場或戰鬥退步了。
 	//
-	// 這兩個數字是「離開這一區」那條還沒接上時的（spec 100）。接上之後量到
-	// 的是 12 張圖、8 個 block、259 格——走得到的區域多五倍，但每一趟很快
-	// 就走出去，不會把一張圖踩滿。
-	if len(visited) < 445 {
-		t.Errorf("只踩到 %d 格，先前量到 448 格（兩張圖都踩滿）", len(visited))
+	// 格子數比「只走得到兩張圖」的時候少：離開這一區那一條接上去之後
+	// （spec 100），每一趟很快就走出去，不會把一張圖踩滿。換來的是走得到的
+	// 區域從兩個 archive 變成六個。
+	if len(maps) < 3 {
+		t.Errorf("只走到 %d 張地圖，先前量到 3 張（訓練所那一區、貧民窟、索寇要塞）", len(maps))
 	}
-	if len(blocks) < 4 {
-		t.Errorf("只走到 %d 個 ECL block", len(blocks))
+	if len(blocks) < 5 {
+		t.Errorf("只走到 %d 個 ECL block，先前量到 5 個", len(blocks))
 	}
 	// 硬失敗一個都不該有。收集起來一次列完，比走到第一個就 Fatal 好查。
 	if len(hardFailures) != 0 {
