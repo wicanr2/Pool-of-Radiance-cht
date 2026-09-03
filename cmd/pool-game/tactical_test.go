@@ -260,15 +260,21 @@ func TestEndRoundAdvancesTheDyingCounter(t *testing.T) {
 	}
 }
 
-// Spec 046 契約 5：戰敗不得續跑戰後 ECL。這個測試刻意不給 eventSession——
-// 一旦 defeat 走到續跑就會 panic，所以它同時證明那條路徑碰不到 session。
+// Spec 046 契約 5：戰敗不得續跑戰後 ECL，而且要停下那條玩家路徑。
+// 這個測試刻意不給 eventSession——一旦 defeat 走到續跑就會 panic，
+// 所以它同時證明那條路徑碰不到 session。
+//
+// 排好的遭遇也要一起清掉。留著的話同一場架會被重新排出來，而戰鬥的生命值
+// 是另一份陣列、沒有寫回隊伍，於是隊伍又是滿血——打輸、重來、再打輸，
+// 那個迴圈不會停。
 func TestFinishCombatDoesNotRunThePostCombatScriptOnDefeat(t *testing.T) {
-	a := &app{combatActive: true, tacticalPreview: true, tactical: &tacticalState{}}
+	a := &app{combatActive: true, tacticalPreview: true, tactical: &tacticalState{},
+		combatMonsters: []stagedMonster{{}}}
 	if err := a.finishCombat(combat.CombatDefeat); err != nil {
 		t.Fatal(err)
 	}
-	if !a.combatActive {
-		t.Fatal("defeat cleared the encounter; the post-combat script must not be reached")
+	if a.combatActive || a.combatMonsters != nil {
+		t.Fatal("defeat left the encounter staged; the same fight restarts for ever")
 	}
 	if a.tacticalPreview || a.tactical != nil {
 		t.Fatal("the tactical screen stayed open after defeat")

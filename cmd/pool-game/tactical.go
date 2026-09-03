@@ -237,11 +237,17 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 	partySlot := []int{-1}
 	taken := map[[2]int]bool{}
 
-	assign := func(members []int, offsetX int, isParty bool) {
+	// reach 非 nil 時只收「與隊伍走得通」的格子，見 assignOpposing 的說明。
+	assign := func(members []int, offsetX int, isParty bool, reach map[int]int) int {
 		next := 0
 		for _, spot := range deploymentCandidates(grid, classes, offsetX, taken) {
 			if next >= len(members) {
-				return
+				return next
+			}
+			if reach != nil {
+				if _, ok := reach[tacticalCellKey(uint8(spot[0]), uint8(spot[1]))]; !ok {
+					continue
+				}
 			}
 			taken[[2]int{spot[0], spot[1]}] = true
 			cells = append(cells, combat.CombatantCell{
@@ -251,6 +257,7 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 			partySlot = append(partySlot, members[next])
 			next++
 		}
+		return next
 	}
 
 	allies, traitors := make([]int, 0, len(a.state.Party)), make([]int, 0, 1)
@@ -261,7 +268,7 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 		}
 		allies = append(allies, index)
 	}
-	assign(allies, provisionalPartyOffsetX, true)
+	assign(allies, provisionalPartyOffsetX, true, nil)
 	foes := 0
 	for _, monster := range a.combatMonsters {
 		foes += int(monster.Spawn.Count)
@@ -270,8 +277,41 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 	for index := 0; index < foes; index++ {
 		opposing = append(opposing, -1)
 	}
-	assign(opposing, provisionalFoeOffsetX, false)
+	assignOpposing(grid, classes, cells, assign, opposing)
 	return cells, friendly, partySlot
+}
+
+// assignOpposing 把敵方擺上去，而且**只擺在與隊伍走得通的格子**。
+//
+// 先照原本的偏移（`provisionalFoeOffsetX`）試，一個都擺不下才往別的偏移找，
+// 全部都不通才退回原本的偏移不設限地擺——寧可擺得下也不要整場沒有敵人。
+//
+// 為什麼要這一層：實測 GEO4 block 21 那一場，雙方各自被地形圍在兩塊不相連
+// 的區域裡（隊伍站 x=17..22、敵方站 x=36..38，中間走不過去）。誰都走不到
+// 誰、誰都打不到誰，回合數一路加到兩百多還在跑——**那一場永遠結束不了**，
+// 從外面看就像遊戲卡住。
+//
+// **這不是原版的部署演算法**：原版的部署還沒讀出來，整個 provisionalRoster
+// 都是暫時的。這一步只是讓暫時的版本不會生出打不完的架。
+func assignOpposing(grid combat.TacticalGrid, classes combat.CellClasses,
+	placed []combat.CombatantCell,
+	assign func(members []int, offsetX int, isParty bool, reach map[int]int) int,
+	opposing []int) {
+	if len(opposing) == 0 {
+		return
+	}
+	if len(placed) < 2 {
+		assign(opposing, provisionalFoeOffsetX, false, nil)
+		return
+	}
+	anchor := placed[1]
+	reach := tacticalStepDistances(grid, classes, anchor.X, anchor.Y)
+	for _, offsetX := range []int{provisionalFoeOffsetX, 1, 3, 0, -2, 4} {
+		if assign(opposing, offsetX, false, reach) != 0 {
+			return
+		}
+	}
+	assign(opposing, provisionalFoeOffsetX, false, nil)
 }
 
 // tacticalState 是戰術預覽跨影格保留的狀態。Scores 對應原版 runtime 的 `+3`
@@ -1172,6 +1212,14 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
 	a.castTargetingAttack = false
 	if outcome != combat.CombatVictory {
+		// 輸掉之後**要把排好的遭遇清掉**，否則同一場架會被重新排出來，
+		// 隊伍的生命值又回到滿的（戰鬥的生命值是另一份陣列，沒有寫回隊伍），
+		// 於是打輸、重來、再打輸——實測那個迴圈永遠不會停，從外面看就是
+		// 遊戲不動了。
+		//
+		// **原版輸掉之後做什麼還沒讀**（overlay-08 `0868h` 判完就返回給呼叫端，
+		// 呼叫端那一段還沒解）。所以這裡只做「不再重來」，沒有補上結束流程。
+		a.combatActive, a.combatMonsters = false, nil
 		a.statusLine = "Party defeated; the post-combat script does not run."
 		return nil
 	}
