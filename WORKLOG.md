@@ -29,9 +29,16 @@
   舊歷史留在本機 `backup-before-email-rewrite` 與 `refs/original/`（**不得推送**）。
   文件裡引用 Pool 自己的兩個 commit hash 已對回新值；其餘引用屬共用 engine 或是
   證據檔的 SHA-256 前綴，不受影響。
-- 已知但不處理：歷史裡有八個爆掉的 `WORKLIST.md` blob（13～88 MB），來自
-  AGENTS.md §9 記的空錨點 `str.replace`。push 時 GitHub 會警告檔案過大。
-  Markdown 的重複內容壓得很好，`.git` 實際只有 33 MB，所以不再為此改寫一次歷史。
+- 歷史裡八個爆掉的 `WORKLIST.md` blob（13～88 MB，原始合計 458 MB／磁碟 4.8 MB）
+  也清掉了：`filter-branch --index-filter` 把大於 1 MB 的 `WORKLIST.md` 換成壞掉前
+  最後的正常版本（29 KB），語意等於「那八個 commit 沒更新 WORKLIST」——與當初
+  `aa6b934` 的還原做法一致（它是從 `215f8fa` 取回清單，再把期間真正新增的項目併回）。
+  成因是 AGENTS.md §9 記的空錨點 `str.replace`。**內容沒有遺失**：抽驗確認壞檔裡的
+  插入物（`29h ENCOUNTER MENU`）就在還原版第 296 行。
+  驗收：逐一配對改寫前後的 313 個 commit，`git diff --name-only` 只出現
+  `WORKLIST.md`，其餘檔案一個都沒動；HEAD 的工作樹內容完全相同；整包測試綠；
+  push 不再出現 GitHub 的大檔警告。舊歷史留在 `backup-before-blob-cleanup`。
+  空間要等刪掉兩個 backup branch 與 `refs/original/` 再 `git gc` 才會回收。
 - Docker 清理：所有 Go／Xvfb 容器皆由 `tools/go.sh` 的 `--rm` 結束，無殘留。
 
 ## 2026-09-02：README 現況與截圖收據更新
