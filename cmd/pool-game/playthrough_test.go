@@ -13,6 +13,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
@@ -942,4 +944,217 @@ func planInsideThisArea(application *app, walked map[[2]int]bool) []exploreStep 
 		}
 	}
 	return nil
+}
+
+// slumsCommissionApp 起一個站在貧民窟遭遇格上的遊戲，`fights` 是要真的打贏
+// 幾場。回傳 app 與 session，供兩條測試共用（一條打滿 25 場，一條不打，
+// 當負對照）。
+func slumsCommissionApp(t *testing.T, fights int) (*app, *eclvm.BlockSession, []uint16) {
+	t.Helper()
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(2)
+	if !ok {
+		t.Fatal("ECL2 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 20, 0x9E5D)
+	if err != nil {
+		t.Fatal(err)
+	}
+	application.mode, application.introDone = modeAdventure, true
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 2
+	// 跨封存檔的 `NEWECL` 要靠 catalog resolver，正式遊戲是在這裡裝的；
+	// 少了它，走出貧民窟時會報「目標區塊不存在」。
+	if err := application.configureEventSession(session); err != nil {
+		t.Fatal(err)
+	}
+	application.state.Party = []poolsave.Character{{
+		Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
+		AlignmentID: "lawful-good", MaxHP: 40, CurrentHP: 40,
+	}}
+	application.spawn = gamepack.Spawn{
+		Map: gamepack.MapKey{Archive: 2, BlockID: 20}, X: 3, Y: 4, Facing: 2,
+	}
+
+	progress := make([]uint16, 0, fights)
+	for fight := 1; fight <= fights; fight++ {
+		// 每一場都從遭遇那一格的入口重新跑起——原版是隊伍再走進去一次，
+		// 這裡直接回到同一個入口，因為要測的是旗標與戰後腳本，不是走位。
+		if err := session.Machine().SetPC(0x9E5D - 0x9900); err != nil {
+			t.Fatalf("第 %d 場：%v", fight, err)
+		}
+		result, err := session.RunUntilEvent(4096, nil, true)
+		if err != nil {
+			t.Fatalf("第 %d 場擺場失敗：%v", fight, err)
+		}
+		if err := application.consumeInitialSearch(result); err != nil {
+			t.Fatalf("第 %d 場擺場失敗：%v", fight, err)
+		}
+		if !application.combatActive {
+			t.Fatalf("第 %d 場沒有擺出遭遇，事件文字是 %q", fight, application.eventText)
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatalf("第 %d 場進不了戰術盤：%v", fight, err)
+		}
+		state := application.tactical
+		if state == nil {
+			t.Fatalf("第 %d 場 ENTER 沒有進戰術盤", fight)
+		}
+		for index := 1; index < len(state.Roster); index++ {
+			if !state.Friendly[index] {
+				state.Roster[index].FootprintClass = 0
+				state.Scores[index] = 0
+				state.States[index] = combat.DyingState
+			}
+		}
+		state.Mover, state.Prompt = 0, false
+		state.endRound(application.rollDice)
+		if !state.Prompt {
+			t.Fatalf("第 %d 場清光敵人沒有跳出續戰詢問", fight)
+		}
+		if err := press(application, ebiten.KeyN); err != nil {
+			t.Fatalf("第 %d 場收尾失敗：%v", fight, err)
+		}
+		if application.combatActive {
+			t.Fatalf("第 %d 場打完之後遭遇還掛著", fight)
+		}
+		progress = append(progress, session.Machine().Memory[0x4ABB])
+	}
+	return application, session, progress
+}
+
+// handInAtCityHall 把隊伍從貧民窟送回城區、進市政廳、走到職員面前，
+// 回傳最後看到的文字。
+//
+// 走出貧民窟走的是原版的路：入口 0 在 `DS:6DD5h` 非零時依朝向挑鄰居，
+// 面向東走 archive 3 回城區（spec 100）。門口那一步是 spec 025／026 已經
+// 釘住的 `(3,4)` 往東進到 `(4,4)`，script block 換成 8。
+func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSession) string {
+	t.Helper()
+	machine := session.Machine()
+	machine.Memory[0xC04D] = 1
+	machine.Memory[0x6DD5] = 1
+	if err := session.SetEntry(0); err != nil {
+		t.Fatal(err)
+	}
+	result, err := session.RunUntilEvent(4096, nil, true)
+	if err != nil {
+		t.Fatalf("走出貧民窟：%v", err)
+	}
+	if _, err := application.consumeInitialTransitionResources(result); err != nil {
+		t.Fatalf("走出貧民窟：%v", err)
+	}
+	if application.eclArchive != 3 || session.CurrentBlockID() != 0 {
+		t.Fatalf("走出貧民窟之後停在 ecl%d/%d，應該是 ecl3/0",
+			application.eclArchive, session.CurrentBlockID())
+	}
+	application.spawn = gamepack.Spawn{
+		Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 3, Y: 4, Facing: 1,
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatalf("進市政廳：%v", err)
+	}
+	if session.CurrentBlockID() != 8 {
+		t.Fatalf("進門之後停在區塊 %d，應該是 8", session.CurrentBlockID())
+	}
+	for step := 0; step < 40; step++ {
+		if application.cellEventPending || application.cellWaitingMenu {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				break
+			}
+			continue
+		}
+		if int(application.spawn.X) == 5 && int(application.spawn.Y) == 5 {
+			break
+		}
+		plan := planToCells(application, 0, func(x, y int) bool { return x == 5 && y == 5 })
+		if len(plan) == 0 {
+			break
+		}
+		want := plan[0]
+		if application.spawn.Facing != want.facing {
+			key := ebiten.KeyArrowRight
+			if (int(want.facing)-int(application.spawn.Facing)+4)%4 == 3 {
+				key = ebiten.KeyArrowLeft
+			}
+			if err := press(application, key); err != nil {
+				break
+			}
+			continue
+		}
+		if err := press(application, ebiten.KeyArrowUp); err != nil {
+			break
+		}
+	}
+	for step := 0; step < 20; step++ {
+		if !application.cellEventPending && !application.cellWaitingMenu {
+			break
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			break
+		}
+	}
+	return strings.TrimSpace(application.eventText)
+}
+
+// 貧民窟那一條委任的完整迴圈：打 25 場、走回城區、進市政廳交差、拿到報酬。
+//
+// 先前只有兩種測試：進度 helper 的直接呼叫（第 24／25 次臨界）與**一場**
+// 真實戰鬥續跑腳本。兩者都不證明「委任做得完」——中間任何一場卡住、旗標少加
+// 一次、戰後腳本沒回到遭遇入口、跨封存檔換不過去、或交差不認帳，都會在這裡
+// 變紅。負對照在 TestCityHallPaysNothingBeforeTheCommissionIsDone。
+func TestTwentyFiveRealSlumsWinsEarnTheCityHallReward(t *testing.T) {
+	application, session, progress := slumsCommissionApp(t, 25)
+	for fight, got := range progress {
+		want := uint16(fight + 1)
+		if want == 25 {
+			want = 0xFE
+		}
+		if got != want {
+			t.Fatalf("第 %d 場之後 4ABB=%d，應該是 %d（整條進度是 %v）",
+				fight+1, got, want, progress)
+		}
+	}
+	machine := session.Machine()
+	text := handInAtCityHall(t, application, session)
+	// 進度旗標要跟著過來——它在 `4900h..4CFFh` 那一塊，不隨換區塊清掉
+	// （spec 106）。跟丟的話交差就永遠不會觸發。
+	if got := machine.Memory[0x4ABB]; got != 0xFE {
+		t.Fatalf("交差時 4ABB=%d，應該還是 FEh", got)
+	}
+	if machine.Memory[0x4AC1] != 1 {
+		t.Errorf("交差之後 4AC1=%d，應該是 1", machine.Memory[0x4AC1])
+	}
+	// 金額不是「有就好」：ECL3/8 的四張獎賞表（`B5EDh`／`B604h`／`B61Bh`／
+	// `B632h`）在槽 21 的原始位元組是 `FA 32 00 01` ＝ 250、50、0、1，
+	// 由 `9F28h TREASURE` 的第 4..7 欄送出。顯示的字要逐項對得上。
+	if want := "Gold 250 / Platinum 50 / Jewelry 1"; text != want {
+		t.Errorf("報酬是 %q，原版四張表在槽 21 給的是 %q", text, want)
+	}
+	t.Logf("交差拿到 %q（4ABB=%d 4AC1=%d）", text,
+		machine.Memory[0x4ABB], machine.Memory[0x4AC1])
+}
+
+// 負對照：一場都沒打就去交差，市政廳不該給錢。
+//
+// 沒有這一條的話，上面那個「拿到 Gold」證不了因果——職員本來就會講話，
+// 而任何一段文字裡都可能有 Gold。
+func TestCityHallPaysNothingBeforeTheCommissionIsDone(t *testing.T) {
+	application, session, _ := slumsCommissionApp(t, 0)
+	machine := session.Machine()
+	if got := machine.Memory[0x4ABB]; got != 0 {
+		t.Fatalf("還沒打就已經 4ABB=%d", got)
+	}
+	text := handInAtCityHall(t, application, session)
+	if strings.Contains(text, "Gold") {
+		t.Errorf("委任還沒做完就給了報酬：%q", text)
+	}
+	if machine.Memory[0x4AC1] != 0 {
+		t.Errorf("委任還沒做完 4AC1 就變成 %d", machine.Memory[0x4AC1])
+	}
+	t.Logf("沒做完的時候看到 %q（4AC1=%d）", text, machine.Memory[0x4AC1])
 }

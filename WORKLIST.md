@@ -409,6 +409,33 @@
   要往下推得靠**有目的地的走法**（照攻略的路線走），那是下一步。
   `TestRandomWalkReachesKnownContentWithoutFailing` 把這個下限釘住，
   走得到的地方變少就會紅。
+- [x] **貧民窟那條委任的完整迴圈通了**（2026-09-03）：真的打 25 場、
+  走回城區、進市政廳、走到職員面前拿到報酬。
+  `TestTwentyFiveRealSlumsWinsEarnTheCityHallReward` 逐場檢查
+  `DS:4ABBh` 一場加一、第 25 場精確變成 `FEh`，接著用原版的路走出貧民窟
+  （入口 0 在 `6DD5h` 非零時依朝向挑鄰居，面向東 → archive 3 → `NEWECL 0`）、
+  從 `(3,4)` 往東進市政廳（區塊換成 8）、走到 `(5,5)`，最後拿到
+  `Gold 250 / Platinum 50 / Jewelry 1`，`4AC1h` 由 0 變 1。
+  **金額有正對照**：ECL3/8 的四張獎賞表（`B5EDh`／`B604h`／`B61Bh`／`B632h`）
+  在槽 21 的原始位元組是 `FA`、`32`、`00`、`01` ＝ 250、50、0、1，由
+  `9F28h TREASURE` 的第 4..7 欄（金、白金、寶石、首飾）送出——四項逐一對上
+  顯示的字，所以那不是碰巧含有 Gold 的句子。
+  **負對照**`TestCityHallPaysNothingBeforeTheCommissionIsDone`：一場都不打
+  去交差，文字是空的、`4AC1h` 不動——沒有它，「拿到 Gold」證不了因果。
+  **`FEh → FFh` 那一步找到了**：交差當下 `4ABBh` 還是 `FEh` 不是壞掉，是
+  鏈還沒走完。ECL3/8 的通知走完之後是
+
+  ```
+  9ec2  查四張獎賞表（B5EDh／B604h／B61Bh／B632h）依槽索引取四個數
+  9eea  PRINT "HERE IS YOUR REWARD.'"
+  9efe  HORIZONTAL MENU          ← 玩家要選一個
+  9f28  TREASURE 0,0,0,四個數
+  9f3e  COMBAT                   ← 走戰後戰利品服務（spec 036）
+  9f5a  SAVE TABLE FF → 4AA6[槽]  ← 這裡才把槽清成 FFh
+  ```
+
+  測試目前停在 `9EEAh` 的獎賞顯示，把獎賞選單與戰利品服務走完才會到
+  `9F5Ah`。下一輪把那幾個按鍵接上去，順便驗獎賞真的進了隊伍的錢包。
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
   已有 `TestNormalKeysReachTheFirstDungeonStep`：只用按鍵從標題走到建角、
   加入隊伍、Begin、推完開場與 34 步導覽，在地圖上走出一步，F10 存檔後
