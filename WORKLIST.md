@@ -629,14 +629,24 @@
   野外後面的區域時出現四次）。`2Eh DAMAGE` 的旗標低五位被讀成豁免類別
   （`DamageFlagSaveCategoryMask = 0x1f`），但類別只有五個。要回頭讀原版的
   DAMAGE handler，弄清楚那五位到底是什麼。
-- [ ] **`ECL session target block 0xFF is unavailable`**（治具走到野外後面的
-  區域時出現十幾次，全部來自 ecl1/24）。查到的是：ecl1/24 的入口 0 是離開這
-  一區的處理（`992Eh` 讀 `DS:6DD5h`），依朝向查 `99B0h` 那張八格表決定要
-  `NEWECL` 到哪，而**那張表本身就有六格是 `FF`**
-  （`FF FF FF FF 0E 1A FF FF`），只有朝向 1 與 7 被前面的兩道 `COMPARE` 擋掉。
-  geo1/24 的邊界出口只有 `(15,4)E` 與 `(15,11)E` 兩個（都是朝向 1），
-  所以原版正常玩應該碰不到 `FF` 那幾格。**要確認的是**：remake 走到那裡時
-  朝向為什麼不是 1，以及 `NEWECL FF` 在原版到底會怎樣。
+- [ ] **`NEWECL FF` 要當成「不換區」**（治具走到 ecl1/24 那一帶時出現十幾次）。
+  ecl1/24 的入口 0 是離開這一區的處理（`992Eh` 讀 `DS:6DD5h`），依朝向查兩張
+  平行的八格表：`99A8h` 決定 `LOAD FILES` 要載哪一張 GEO、`99B0h` 決定要
+  `NEWECL` 到哪一個區塊。
+
+  ```
+  索引    0    1    2    3    4    5    6    7
+  GEO    FF   1F   FF   FF   0E   1A   FF   18
+  ECL    FF   FF   FF   FF   0E   1A   FF   FF
+  ```
+
+  索引 1（往東）載 GEO 31 但**留在同一個 ECL 區塊**，索引 7（往西）載回
+  GEO 24——block 24 一個腳本管兩張圖。`LOAD FILES` 的 `FF` 已經是「不載地圖」
+  （spec 043），同一張表配對的 `NEWECL FF` 只能是「不換區塊」。前面那兩道
+  `COMPARE @6E82 1／7` 之所以存在，正是因為那兩格要載圖但不換區塊。
+
+  **修的位置在共用 engine**（`eclvm.BlockSession.switchTo` 目前對不存在的區塊
+  直接報錯），而那是另一個 repo，要先取得使用者同意再動。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家
