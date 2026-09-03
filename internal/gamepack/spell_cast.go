@@ -194,6 +194,7 @@ const (
 	SpellIDSnakeCharm     = 27 // 18F9h
 	SpellIDReduce         = 13 // 135Eh
 	SpellIDGiantStrength  = 59 // 2E9Ah
+	SpellIDRayDamage      = 60 // 2F02h，原版沒有給它名字
 )
 
 
@@ -487,6 +488,14 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 與 AD&D 一版的「總生命值不超過牧師目前生命值」逐字相同。
 		effect.CreatureTypeFiltered, effect.CreatureType = true, CreatureTypeSnake
 		effect.HitPointBudgetFromCaster = true
+	case SpellIDRayDamage:
+		// `2F02h`（原版沒有名字）：先 `287Ch` 打中目標那一格
+		// ——傷害 `Roll(1, 6) + 20`、豁免類別 4、規則 2（減半）、
+		// 傷害種類 `DS:6777h = 0Ch`，走 overlay-24 entry 19 結算；
+		// 接著 `2919h(3, 20, 4, 0)` 設 `DS:677Eh = 1`，由施法者穿過目標
+		// 拉一條射線（長度因子 3 × 2），沿線逐格再打。
+		// 射線的幾何還沒逐條讀完，所以與閃電束同一個近似：先收整邊。
+		effect.Damage, effect.Area = roller.Roll(1, 6)+20, true
 	case SpellIDLightningBolt:
 		// 閃電束走的是 `287Ch` 那條（目標模式 8＝直線），預算還沒讀。
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
@@ -512,7 +521,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDEnlarge, SpellIDReadMagic,
 		SpellIDFireball, SpellIDLightningBolt,
 		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm,
-		SpellIDReduce, SpellIDGiantStrength:
+		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage:
 		return true
 	}
 	return false

@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 35 || generic != 25 || total != 60 {
+	if read != 36 || generic != 25 || total != 61 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 35／25／60，改了實作要一起改", read, generic, total)
+			"文件寫的是 36／25／61，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -718,5 +718,28 @@ func TestEnlargeEffectCodeMatchesTheParameterTable(t *testing.T) {
 	if giant.StrengthValue != GiantStrengthValue || giant.StrengthPercentile != 0 ||
 		giant.EffectCode != GiantStrengthEffectCode {
 		t.Errorf("編號 %d 算出 %+v", SpellIDGiantStrength, giant)
+	}
+}
+
+// 編號 60（原版沒有名字）的傷害是 `Roll(1, 6) + 20`，而且參數表的
+// 豁免規則與類別跟處理常式裡寫死的值一致——兩條獨立的路對得上。
+func TestRayDamageSpellMatchesTheParameterTable(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	effect, err := CastSpell(SpellIDRayDamage, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatalf("編號 %d：%v", SpellIDRayDamage, err)
+	}
+	if effect.Damage != 26 || !effect.Area {
+		t.Errorf("最大骰應該是 6 + 20 ＝ 26 的範圍傷害，算出 %+v", effect)
+	}
+	// `287Ch` 寫死 `push 2`（減半）與 `push 4`（類別），參數表 +8／+9 相同。
+	if got := parameters[SpellIDRayDamage].SaveRule(); got != 2 {
+		t.Errorf("豁免規則是 %d，處理常式寫死的是 2", got)
+	}
+	if got := parameters[SpellIDRayDamage].SaveCategory(); got != 4 {
+		t.Errorf("豁免類別是 %d，處理常式寫死的是 4", got)
 	}
 }
