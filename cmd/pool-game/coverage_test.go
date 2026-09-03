@@ -634,12 +634,28 @@ walk:
 					want = 0
 				}
 				// 同一條路上要走到亡魂那一段：登陸的遭遇要選「交涉」，
-				// 費蘭問話要選「說謊」——後者是目前對船票旗標最像的解釋
-				//（spec 102 的 `ABBDh SAVE 255 @4A01`）。
+				// 費蘭問話則**看船票在不在手上**：
+				//
+				//   - `4A01 == 1`（手上有票，港務長不再開口）→ 選「說謊」，
+				//     `ABBDh` 會把 `4A01` 寫成 255，票就清掉了。
+				//   - 否則 → 選「說實話」，費蘭才會給 SAMOSUD 並把
+				//     `4AA7` 寫成 254（`ADAAh`），碼頭的其他航線才開。
+				//
+				// 說謊那一支**不寫 `4A26`**，所以亡魂還會再出現；說實話那一支
+				// 才寫（`ADA4h`），寫完就不再出現。兩件事因此都做得到。
 				if flags != nil {
 					for index, option := range application.cellMenuOptions {
-						if strings.EqualFold(option, "LIE?") ||
-							strings.EqualFold(option, "Parlay") {
+						if strings.EqualFold(option, "Parlay") {
+							want = index
+						}
+						lie := strings.EqualFold(option, "LIE?")
+						truth := strings.EqualFold(option, "TELL THE TRUTH?")
+						if !lie && !truth {
+							continue
+						}
+						holdsTicket := application.eventMachine != nil &&
+							application.eventMachine.Memory[0x4A01] == 1
+						if lie == holdsTicket {
 							want = index
 						}
 					}
@@ -980,19 +996,31 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	var hardFailures []string
 	// 幾個種子輪流試：戰鬥的結果會改路線，單一種子太容易因為別處的修正而失準。
 	ok := false
-	for _, seed := range []int64{7, 11, 3, 29, 41} {
+	// 主線這一段要同時滿足兩件事才算推得動：`4AA7 = 254`（要塞清掉、
+	// 航線開了）與 `4A01 != 1`（船票狀態被清掉，港務長才會再開口，
+	// spec 102）。兩件事走的是要塞裡的不同路線，所以多試幾個種子。
+	best := map[uint16]uint16{}
+	for _, seed := range []int64{7, 11, 3, 29, 41, 53, 67, 71, 83, 97} {
 		// 每一個種子都從乾淨的狀態開始：avoid 與換圖點的使用次數留著的話，
 		// 第二輪一開始就被擋在碼頭外面。
 		avoid = map[[3]int]bool{}
 		transitionUses = map[[3]int]int{}
-		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 2, 600000,
+		// 重走上限拉高：要塞那一段有先後順序——先在裝備架拿到裝備、打贏
+		// 那一場（`4A21 = 255`），鬼魂才肯說出 SAMOSUD（`4AA7 = 254`）。
+		// 只走一遍的話，鬼魂那一格多半在拿到裝備之前就踩過了。
+		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 8, 600000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
 			visited, maps, blocks, flags, noBoatOverride, &hardFailures)
 		if !reachable {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
 		ok = true
-		if flags[0x4AA7] == 254 {
+		for address, value := range flags {
+			if value != 0 {
+				best[address] = value
+			}
+		}
+		if best[0x4AA7] == 254 && best[0x4A01] != 1 {
 			break
 		}
 	}
@@ -1007,6 +1035,8 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		"4A01=%d 4AC5=%d 4ABA=%d",
 		flags[0x4A21], flags[0x4AA7], flags[0x4AC4], flags[0x6E12],
 		flags[0x4A01], flags[0x4AC5], flags[0x4ABA])
+	t.Logf("跨種子推到的最好狀態：4AA7=%d 4A01=%d 4A21=%d 4AC4=%d",
+		best[0x4AA7], best[0x4A01], best[0x4A21], best[0x4AC4])
 	// **只釘住走得到的部分**：碼頭的船會把隊伍送到索寇要塞（ECL block 21）。
 	// 那一段的旗標（拿裝備 `4A21h`、開航線 `4AA7h`）**推不推得到跟路線有關**
 	// ——探索器是機器人，走到哪一格、答哪一個選項會隨著別處的修正而改變，
