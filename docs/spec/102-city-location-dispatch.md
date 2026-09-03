@@ -106,7 +106,36 @@
 | `9D29h` | `SAVE 1` | 選完航線、`GOSUB A1B4`（`WHO 'WHO WILL PAY?'`）付錢之後 |
 | `9DCEh` | `SAVE 1` | 「唯一的船是去索寇要塞」那一支，順便 `SAVE 0 → @4AC4` |
 
-所以 `4A01` 是**船票**：0 沒票、1 有票。第一次找港務長時 `DS:4AA7h` 還小於
+**這個位址不是碼頭專用的。** 同一張 GEO（block 0）上的市政廳職員腳本
+（ECL3 block 8）拿它當「介紹過了沒」：
+
+```
+9BA1  COMPARE @4A01, 0 ; IF > ; GOTO A7FD   ; 大於 0 就是已經介紹過
+9BAC  SAVE 1 -> @4A01
+9BB2  SAVE 1 -> @4A06
+9BB8  PRINTCLEAR 'AT YOUR ENTRY, THE COUNCIL CLERK BEGINS LOOKING THROUGH…'
+```
+
+職員**只在它等於 0 時才寫**，所以 255（說謊清掉的那個值）不會被他蓋掉。
+
+競技場那一支（ECL3 block 11，同一張 GEO）就不一樣了：
+
+```
+9BFA  COMPARE @4A01, 0 ; IF > ; GOTO 9CAC
+9C05  PRINTCLEAR 'THE ARENA MASTER ASKS IF YOU WISH TO DUEL…'
+9CAC  SAVE 1 -> @4A01                      ; 無條件
+9CBA  PRINTCLEAR "'DO YOU SEEK A PARTNER FOR YOUR ADVENTURING?'"
+```
+
+`9CACh` **無條件寫 1**，所以說謊之後走進競技場，票就又沒了——實測探索器
+就是這樣把 255 弄回 1 的（`4A01 255→1 於 GEO3/0 (7,2) ECL block 11`）。
+**說謊回城之後要先問港務長，再逛別的地方。**
+
+三支合起來看，`4A01` 比較像「手上有沒有一件在辦的事」而不是單指船票：
+先去市政廳領委託也會讓它變成 1，那時港務長不開口，但碼頭那一格只要求
+**不等於 0**，所以照樣上得了船去索寇要塞。
+
+所以 `4A01` 在碼頭這一支的意思是：0 沒票、1 有票。第一次找港務長時 `DS:4AA7h` 還小於
 254，走的是 `9D54h` 那一支——免費給一張去索寇要塞的票，並把 `4A01` 設成 1。
 
 **城區這一邊沒有人清票。** 全部 29 個 ECL 區塊裡寫 `4A01` 的，只有 ECL3/0
