@@ -61,7 +61,10 @@ class 0（`4A01h`、`4AA7h`、`4AC4h` 這些主線旗標）與 class 1
 ## 對 remake 的意思
 
 - class 0..3 用一張平坦的 map 模擬是等價的：位址不重疊，寬度差別只影響
-  取出來的值域。
+  取出來的值域。class 3 那一塊共用 engine 已經接對了——`eclvm.NewMachine`
+  在建機器時就把 payload 逐位元組寫進 `Memory[codeBase+index]`，
+  `SwitchBlock` 換區時先把舊 payload 的位址刪掉再寫新的，所以
+  `42h GETTABLE` 讀 `@B019` 讀到的確實是目前這個區塊的位元組。
 - class 4 的那幾格要當成**引擎暫存器**：`033Dh` 是朝向、`00FBh`／`00FCh`
   是引擎的兩個 word。remake 目前把它們放在同一張 map 裡，前端寫、ECL 讀，
   行為等價。
