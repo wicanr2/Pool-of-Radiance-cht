@@ -355,8 +355,13 @@ func planToCells(app *app, rotate int, wanted func(x, y int) bool) []exploreStep
 	return nil
 }
 
-// sokalKeepPassword 是鬼魂在索寇要塞說出來的通關密語（ecl4 block 21 `AD42h`）。
-const sokalKeepPassword = "SAMOSUD"
+// eclPasswords 是遊戲裡會被 `10h INPUT STRING` 比對的字，逐一試。
+//
+// 索寇要塞有三個（ecl4 block 21 的 `9E8Dh SAMOSUD`、`9E9Ah SHESTNI`、
+// `A388h`／`AA84h LUX`），野外那一區還有一個（ecl7 block 23 `A4CAh NOKNOK`）。
+// 玩家從手札與遊戲裡的對話知道這些字；探索器只認一個的話，
+// 「說 LUX 才會出現」的那個亡魂永遠碰不到。
+var eclPasswords = []string{"SAMOSUD", "LUX", "SHESTNI", "NOKNOK"}
 
 // exploreMaxTransitionHops 是「這一張走完了，回頭走另一個換圖點」最多做幾次。
 // 沒有上限的話，所有圖都走完之後兩張圖之間會一直來回。
@@ -583,7 +588,12 @@ walk:
 			// SPEAK THE WORD 'SAMOSUD'」。不打進去就出不了那張圖。
 			plan = nil
 			if application.eclInput.buffer == "" && !application.eclInput.numeric {
-				application.keys = scriptedChars(sokalKeepPassword)
+				key := [3]int{int(application.spawn.Map.Archive),
+					int(application.spawn.Map.BlockID),
+					int(application.spawn.Y)*100 + int(application.spawn.X)}
+				word := eclPasswords[menuTurn[key]%len(eclPasswords)]
+				menuTurn[key]++
+				application.keys = scriptedChars(word)
 				if err := application.Update(); err != nil {
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
 					break walk
