@@ -159,6 +159,18 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	drawText(screen, hint, 70, 370, accent)
 	drawText(screen, a.text(msgTacticalBack), 500, 322, foreground)
 	drawCastMenu(screen, a, foreground, accent)
+	drawCastTargeting(screen, a, accent)
+}
+
+// drawCastTargeting 標出選目標那一步停在誰身上。原版的選單列是
+// `Next Prev Manual`，格子游標（Manual）那一半還沒接。
+func drawCastTargeting(screen *ebiten.Image, a *app, accent color.Color) {
+	if !a.castTargeting || len(a.castTargets) == 0 {
+		return
+	}
+	target := a.castTargets[a.castTargetCursor]
+	drawText(screen, fmt.Sprintf(a.text(msgCastAiming), a.castPending.Label, target),
+		70, 306, accent)
 }
 
 // drawCastMenu 把施法清單畫在盤面右邊。只列得出已經讀過處理常式的法術，
@@ -1000,6 +1012,9 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
+	if a.castTargeting {
+		return a.castTargetingInput()
+	}
 	if a.castOpen {
 		return a.castInput()
 	}
@@ -1150,6 +1165,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	staged := a.combatActive
 	a.tacticalPreview, a.tactical = false, nil
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
+	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
 	if outcome != combat.CombatVictory {
 		a.statusLine = "Party defeated; the post-combat script does not run."
 		return nil

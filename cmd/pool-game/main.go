@@ -174,6 +174,11 @@ type app struct {
 	castOpen    bool
 	castOptions []castOption
 	castCursor  int
+	// 選目標那一步（原版 overlay-13 的 `Next Prev Manual`）。
+	castTargeting    bool
+	castTargets      []uint8
+	castTargetCursor int
+	castPending      castOption
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
 	// experienceTable 是昇級門檻（spec 071）。

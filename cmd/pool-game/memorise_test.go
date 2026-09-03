@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
@@ -200,6 +201,26 @@ func TestCastMagicMissileInCombat(t *testing.T) {
 		if err := press(application, ebiten.KeyEnter); err != nil {
 			t.Fatal(err)
 		}
+		// 魔法飛彈是「挑一個目標」那一組（參數表 +6 的低四位 ＝ 4），
+		// 所以選完法術會先進選目標那一步，再按一次 Enter 才施出去。
+		if !application.castTargeting {
+			t.Fatalf("挑一個目標的法術應該先進選目標那一步（狀態列 %q）",
+				application.statusLine)
+		}
+		if len(application.castTargets) == 0 {
+			t.Fatal("選目標那一步沒有任何候選")
+		}
+		// 停在繞得過去的最近敵人身上。
+		if application.castTargets[application.castTargetCursor] != target {
+			t.Errorf("預設應該停在 %d，停在 %d", target,
+				application.castTargets[application.castTargetCursor])
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+		if application.castTargeting {
+			t.Fatal("確定之後應該離開選目標那一步")
+		}
 		if application.state.Party[partyIndex].Memorised[0] != 0 {
 			t.Fatal("施完之後那一格記憶沒有被用掉")
 		}
@@ -284,5 +305,56 @@ func TestMemorisedSpellsNeedRestBeforeCasting(t *testing.T) {
 	}
 	if application.state.CharacterLibrary[0].CurrentHP != rested.MaxHP {
 		t.Error("角色庫沒有跟著更新")
+	}
+}
+
+// 選目標那一步可以換人：N 往後、P 往前，換完施出去打的是換到的那一個。
+func TestCastTargetingCyclesTargets(t *testing.T) {
+	state := &tacticalState{
+		Roster:     make([]combat.CombatantCell, 5),
+		Friendly:   []bool{false, true, false, false, false},
+		HitPoints:  []int{0, 20, 20, 20, 20},
+		PartySlot:  []int{-1, 0, -1, -1, -1},
+		States:     make([]uint8, 5),
+		Scores:     make([]uint8, 5),
+		Budgets:    make([]uint8, 5),
+		HitDice:    make([]uint8, 5),
+		SleepFlag:  make([]uint8, 5),
+		Asleep:     make([]bool, 5),
+		ArmorClass: make([]int, 5),
+		THAC0:      make([]uint8, 5),
+		Damage:     make([]combat.DamageDice, 5),
+		Mover:      1,
+	}
+	for index := 1; index < 5; index++ {
+		state.Roster[index] = combat.CombatantCell{X: uint8(index), Y: 1, FootprintClass: 1}
+	}
+	application := &app{tactical: state, tacticalPreview: true, mode: modeAdventure}
+	if !application.beginCastTargeting(castOption{ID: gamepack.SpellIDMagicMissile, Label: "魔法飛彈"}) {
+		t.Fatal("開不出選目標那一步")
+	}
+	if len(application.castTargets) != 4 {
+		t.Fatalf("四個站著的都該是候選，拿到 %d 個", len(application.castTargets))
+	}
+	start := application.castTargetCursor
+	press(application, ebiten.KeyN)
+	if application.castTargetCursor == start {
+		t.Error("按 N 沒有換人")
+	}
+	press(application, ebiten.KeyP)
+	if application.castTargetCursor != start {
+		t.Error("按 P 沒有換回去")
+	}
+	// 繞一圈回到原點。
+	for index := 0; index < len(application.castTargets); index++ {
+		press(application, ebiten.KeyN)
+	}
+	if application.castTargetCursor != start {
+		t.Errorf("繞一圈應該回到 %d，停在 %d", start, application.castTargetCursor)
+	}
+	// ESC 取消不該把記憶用掉，也不該結束回合。
+	press(application, ebiten.KeyEscape)
+	if application.castTargeting {
+		t.Error("ESC 應該離開選目標那一步")
 	}
 }

@@ -92,6 +92,57 @@ func (a *app) castInput() error {
 	return nil
 }
 
+// beginCastTargeting 對「挑一個目標」那幾種模式開出選目標的步驟。
+//
+// 原版是 overlay-13 `1E09h` 進到 `352Ch` 的互動介面，選單列寫著
+// `Next Prev Manual`（overlay-13 的字串），而且允許打自己人
+//（`Attack Ally:`）。這裡做的是同一件事的最小版本：N／P 或左右鍵換人、
+// Enter 確定，預設停在繞得過去的最近敵人身上。`352Ch` 那一支還沒讀，
+// 所以**格子游標（Manual）那一半沒有**。
+func (a *app) beginCastTargeting(option castOption) bool {
+	state := a.tactical
+	candidates := make([]uint8, 0, len(state.Roster))
+	for index := 1; index < len(state.Roster); index++ {
+		if state.Roster[index].FootprintClass == 0 {
+			continue
+		}
+		candidates = append(candidates, uint8(index))
+	}
+	if len(candidates) == 0 {
+		return false
+	}
+	cursor := 0
+	if target, found := state.nearestReachableOpposing(state.Mover); found {
+		for index, candidate := range candidates {
+			if candidate == target {
+				cursor = index
+				break
+			}
+		}
+	}
+	a.castTargets, a.castTargetCursor, a.castPending = candidates, cursor, option
+	a.castTargeting = true
+	return true
+}
+
+// castTargetingInput 處理選目標那一步的按鍵。
+func (a *app) castTargetingInput() error {
+	switch {
+	case a.justPressed(ebiten.KeyEscape):
+		a.castTargeting = false
+	case a.justPressed(ebiten.KeyP), a.justPressed(ebiten.KeyArrowLeft),
+		a.justPressed(ebiten.KeyArrowUp):
+		a.castTargetCursor = (a.castTargetCursor + len(a.castTargets) - 1) % len(a.castTargets)
+	case a.justPressed(ebiten.KeyN), a.justPressed(ebiten.KeyArrowRight),
+		a.justPressed(ebiten.KeyArrowDown):
+		a.castTargetCursor = (a.castTargetCursor + 1) % len(a.castTargets)
+	case a.justPressed(ebiten.KeyEnter), a.justPressed(ebiten.KeySpace):
+		a.castTargeting = false
+		return a.finishCast(a.castPending, a.castTargets[a.castTargetCursor], true)
+	}
+	return nil
+}
+
 // resolveCast 施出選中的那一條。
 func (a *app) resolveCast() error {
 	state := a.tactical
@@ -100,6 +151,26 @@ func (a *app) resolveCast() error {
 		return nil
 	}
 	option := a.castOptions[a.castCursor]
+	if _, ok := a.moverPartyIndex(state.Mover); !ok {
+		return nil
+	}
+	// 要挑目標的那幾種模式先進選目標那一步。
+	switch a.spellParameters[option.ID].TargetMode() {
+	case gamepack.SpellTargetSingle, gamepack.SpellTargetHold,
+		gamepack.SpellTargetHoldAlt, gamepack.SpellTargetPick:
+		if a.beginCastTargeting(option) {
+			return nil
+		}
+	}
+	return a.finishCast(option, 0, false)
+}
+
+// finishCast 真的把法術施出去。chosen 為真時 target 是玩家挑的那一個。
+func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
+	state := a.tactical
+	if state == nil {
+		return nil
+	}
 	index, ok := a.moverPartyIndex(state.Mover)
 	if !ok {
 		return nil
@@ -146,10 +217,14 @@ func (a *app) resolveCast() error {
 	case effect.SleepBudget > 0:
 		a.applySleep(state, member.Name, option.Label, effect.SleepBudget)
 	case effect.Heal > 0:
-		before := state.HitPoints[state.Mover]
-		state.HitPoints[state.Mover] += effect.Heal
+		healed := state.Mover
+		if chosen {
+			healed = target
+		}
+		before := state.HitPoints[healed]
+		state.HitPoints[healed] += effect.Heal
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
-			strings.TrimSpace(member.Name), option.Label, state.HitPoints[state.Mover]-before))
+			strings.TrimSpace(member.Name), option.Label, state.HitPoints[healed]-before))
 	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea():
 		// 範圍：對面每一個都吃一份。原版是以一格為中心算範圍
 		// （overlay-31 `0138h:003Eh`），那條還沒讀。
@@ -169,12 +244,15 @@ func (a *app) resolveCast() error {
 				option.Label, hit, effect.Damage))
 		}
 	case effect.Damage > 0:
-		target, found := state.nearestReachableOpposing(state.Mover)
+		picked, found := target, chosen
+		if !found {
+			picked, found = state.nearestReachableOpposing(state.Mover)
+		}
 		if !found {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
 			break
 		}
-		a.applySpellDamage(state, target, effect.Damage)
+		a.applySpellDamage(state, picked, effect.Damage)
 	case mode == gamepack.SpellTargetWholeSide:
 		// 模式 0Ah：整邊。原版走 0F35h，把效果掛給施法者那一邊的每個人。
 		affected := 0
