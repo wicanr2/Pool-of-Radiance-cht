@@ -377,6 +377,35 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			state.HeldRounds[picked] = rounds
 		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), picked, rounds))
+	case effect.StrengthValue > 0 || effect.StrengthFromTarget:
+		// 力量那一組（變大術、力量術、編號 59）走同一支
+		// overlay-24 entry 18：只往上調，調不動就什麼都不做。
+		slot := index
+		if chosen {
+			if party, ok := a.moverPartyIndex(target); ok {
+				slot = party
+			}
+		}
+		subject := &a.state.Party[slot]
+		current := uint8(subject.Abilities[gamepack.AbilityStrength])
+		currentPercentile := uint8(subject.ExceptionalStrength)
+		value, percentile := effect.StrengthValue, effect.StrengthPercentile
+		if effect.StrengthFromTarget {
+			value, percentile = gamepack.StrengthSpellResult(
+				memberClassLevels(*subject), current, currentPercentile, a.roller)
+		}
+		value, percentile, raised := gamepack.RaiseStrength(
+			current, currentPercentile, value, percentile)
+		if !raised {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
+				option.Label, target))
+			break
+		}
+		subject.Abilities[gamepack.AbilityStrength] = int(value)
+		subject.ExceptionalStrength = int(percentile)
+		syncTrainedLibraryCharacter(&a.state, *subject)
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastStronger),
+			strings.TrimSpace(subject.Name), value, percentile))
 	case effect.HitPointBudgetFromCaster:
 		// 迷蛇術：額度是施法者的目前生命值。
 		a.applyCharmByHitPoints(state, member.Name, effect,

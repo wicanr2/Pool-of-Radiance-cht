@@ -66,6 +66,9 @@ type CastEffect struct {
 	// StrengthPercentile。overlay-24 entry 18 只往上調，本來就更高就不動。
 	StrengthValue      uint8
 	StrengthPercentile uint8
+	// StrengthFromTarget 為真代表要設成多少得看目標（職業決定骰子、
+	// 目前力量決定結果），算法在 StrengthSpellResult。
+	StrengthFromTarget bool
 	// RequiresEffect 非零時：目標身上**沒有**這個效果就什麼都不做。
 	// 縮小術要求 `0Ch`（被變大過）。與 BlockedByEffect 方向相反。
 	RequiresEffect uint8
@@ -195,6 +198,7 @@ const (
 	SpellIDReduce         = 13 // 135Eh
 	SpellIDGiantStrength  = 59 // 2E9Ah
 	SpellIDRayDamage      = 60 // 2F02h，原版沒有給它名字
+	SpellIDStrength       = 35 // 1F16h
 )
 
 
@@ -395,6 +399,12 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.StrengthValue = EnlargeStrengthValue
 		effect.StrengthPercentile = enlargeMagnitude(casterLevel)
 		effect.EffectParameter = int(effect.StrengthPercentile)
+	case SpellIDStrength:
+		// `1F16h`：骰子與上限都看**目標**，所以算不出來的部分交給
+		// StrengthSpellResult，由呼叫端把目標的職業與目前力量傳進去。
+		// 效果碼與編號 3Bh 同樣是 `26h`。
+		effect.EffectCode = GiantStrengthEffectCode
+		effect.StrengthFromTarget = true
 	case SpellIDGiantStrength:
 		// `2E9Ah`：力量設成 21、沒有百分位，訊息是 `is stronger`，
 		// 效果碼 `26h`。與變大術同一支 overlay-24 entry 18。
@@ -521,7 +531,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDEnlarge, SpellIDReadMagic,
 		SpellIDFireball, SpellIDLightningBolt,
 		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm,
-		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage:
+		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage, SpellIDStrength:
 		return true
 	}
 	return false
@@ -566,12 +576,60 @@ var EnlargeMagnitudeByLevel = [7]uint8{0, 0, 1, 0x33, 0x4c, 0x5b, 0x64}
 // 百分位）比，**只往上調不往下調**，而且只有 `[bp+0Ch] == 12h` 時才比
 // 百分位——18 是唯一有百分位的力量值。編號 3Bh 那一支推的是 `15h` ＝ 21，
 // 訊息是 `is stronger`。
+// 記錄裡的力量與百分位是既有的 StrengthOffset／ExceptionalStrengthOffset。
 const (
-	EnlargeStrengthValue    = 18
-	GiantStrengthValue      = 21
-	StrengthRecordOffset    = 0x10
-	StrengthPercentileOffset = 0x16
+	EnlargeStrengthValue = 18
+	GiantStrengthValue   = 21
 )
+
+// RaiseStrength 是 overlay-24 entry 18（`1158h`）的判斷：把力量調到
+// (value, percentile)，但**只往上不往下**。
+//
+//	1172  新力量 <  目前力量                        → 不調
+//	117a  新力量 == 12h 而且 新百分位 < 目前百分位   → 不調
+//
+// 第二關只在新力量正好是 18 時比——18 是唯一有百分位的力量值。
+// 回傳調完的值與「有沒有真的調到」；沒調到的時候原版不印訊息。
+func RaiseStrength(current, currentPercentile, value, percentile uint8) (uint8, uint8, bool) {
+	if value < current {
+		return current, currentPercentile, false
+	}
+	if value == EnlargeStrengthValue && percentile < currentPercentile {
+		return current, currentPercentile, false
+	}
+	return value, percentile, true
+}
+
+// StrengthSpellResult 是力量術（overlay-22 `1F16h`）算出來要設成的力量。
+//
+// 骰子看**目標的職業**，後面的判斷會蓋掉前面的，所以多職業取最後一個成立的
+// （`1F2Fh` 法師 1d4、`1F48h` 牧師或賊 1d6、`1F6Ch` 戰士 1d8）。加到目標
+// 目前的力量上之後：
+//
+//	1f97  不超過 18 → 就是那個值，百分位不動
+//	1f9d  超過 18 而且是戰士 → 百分位 ＝ 目前百分位 ＋ (超出量 × 10)，
+//	      上限 100，力量夾回 18
+//	1fd5  超過 18 但不是戰士 → 力量 18、百分位 0
+func StrengthSpellResult(levels [ClassThac0ClassCount]uint8,
+	currentStrength, currentPercentile uint8, roller Roller) (uint8, uint8) {
+	count, sides := StrengthSpellDie(levels)
+	rolled := 0
+	if count > 0 && sides > 0 {
+		rolled = roller.Roll(count, sides)
+	}
+	value := int(currentStrength) + rolled
+	if value <= EnlargeStrengthValue {
+		return uint8(value), currentPercentile
+	}
+	if levels[ClassSlotFighter] == 0 {
+		return EnlargeStrengthValue, 0
+	}
+	percentile := int(currentPercentile) + (value-EnlargeStrengthValue)*10
+	if percentile > 100 {
+		percentile = 100
+	}
+	return EnlargeStrengthValue, uint8(percentile)
+}
 
 // EnlargeEffectCode 是變大術掛的效果碼：參數表 `+0Ah` 與 `1331h` 的
 // `mov al, 0Ch`（推給掛效果的 `0100h:0052h`）兩條路都指到 `0Ch`。

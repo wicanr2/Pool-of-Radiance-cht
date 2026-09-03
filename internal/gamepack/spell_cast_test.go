@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 36 || generic != 25 || total != 61 {
+	if read != 37 || generic != 25 || total != 62 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 36／25／61，改了實作要一起改", read, generic, total)
+			"文件寫的是 37／25／62，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -741,5 +741,53 @@ func TestRayDamageSpellMatchesTheParameterTable(t *testing.T) {
 	}
 	if got := parameters[SpellIDRayDamage].SaveCategory(); got != 4 {
 		t.Errorf("豁免類別是 %d，處理常式寫死的是 4", got)
+	}
+}
+
+// 力量往上調的兩道關卡（overlay-24 entry 18 `1158h`）。
+func TestRaiseStrengthOnlyGoesUp(t *testing.T) {
+	for _, want := range []struct {
+		name                       string
+		cur, curPct, val, pct      uint8
+		outVal, outPct             uint8
+		raised                     bool
+	}{
+		{"比目前低就不調", 18, 50, 16, 0, 18, 50, false},
+		{"同樣是 18 但百分位更低也不調", 18, 90, 18, 51, 18, 90, false},
+		{"同樣是 18 百分位更高就調", 18, 50, 18, 91, 18, 91, true},
+		{"比目前高就調", 12, 0, 18, 1, 18, 1, true},
+		{"21 不比百分位", 18, 100, 21, 0, 21, 0, true},
+	} {
+		gotVal, gotPct, gotRaised := RaiseStrength(want.cur, want.curPct, want.val, want.pct)
+		if gotVal != want.outVal || gotPct != want.outPct || gotRaised != want.raised {
+			t.Errorf("%s：算出 %d/%02d raised=%v，應該是 %d/%02d raised=%v",
+				want.name, gotVal, gotPct, gotRaised, want.outVal, want.outPct, want.raised)
+		}
+	}
+}
+
+// 力量術的骰子看目標的職業，超過 18 之後只有戰士拿得到百分位
+//（overlay-22 `1F16h`）。
+func TestStrengthSpellResultFollowsTheTargetClass(t *testing.T) {
+	fighter := [ClassThac0ClassCount]uint8{}
+	fighter[ClassSlotFighter] = 4
+	// 最大骰 1d8 ＝ 8，力量 16 → 24，超出 6 點 → 百分位 60。
+	value, percentile := StrengthSpellResult(fighter, 16, 0, maxRoller{})
+	if value != 18 || percentile != 60 {
+		t.Errorf("戰士應該是 18/60，算出 %d/%02d", value, percentile)
+	}
+	// 已經有百分位就疊上去，上限 100。
+	if _, percentile := StrengthSpellResult(fighter, 16, 50, maxRoller{}); percentile != 100 {
+		t.Errorf("疊到上限應該是 100，算出 %d", percentile)
+	}
+	magicUser := [ClassThac0ClassCount]uint8{}
+	magicUser[ClassSlotMagicUser] = 4
+	// 最大骰 1d4 ＝ 4，力量 16 → 20，超過 18 但不是戰士 → 18/00。
+	if value, percentile := StrengthSpellResult(magicUser, 16, 0, maxRoller{}); value != 18 || percentile != 0 {
+		t.Errorf("法師應該是 18/00，算出 %d/%02d", value, percentile)
+	}
+	// 沒超過 18 就照算，百分位不動。
+	if value, percentile := StrengthSpellResult(magicUser, 10, 7, maxRoller{}); value != 14 || percentile != 7 {
+		t.Errorf("沒超過 18 應該是 14/07，算出 %d/%02d", value, percentile)
 	}
 }

@@ -96,6 +96,7 @@ var messages = map[messageID][2]string{
 	msgCastNothingReady:     {"No memorised spell is ready to cast.", "沒有記著可以施展的法術。"},
 	msgCastNoTarget:         {"%s finds no reachable target.", "%s 找不到打得到的目標。"},
 	msgCastNotPerson:        {"%d is not a person; %s has no effect.", "%d 不算是人，%s 沒有作用。"},
+	msgCastStronger:         {"%s is stronger: %d/%02d.", "%s 變強了：%d/%02d。"},
 	msgCastCharmed:          {"%s charms %d foes.", "%s 迷住了 %d 個敵人。"},
 	msgCastCharmedNone:      {"%s charms nothing.", "%s 一個也沒迷住。"},
 	msgCastHeld:             {"%d is held for %d rounds.", "%d 被定住 %d 回合。"},
@@ -531,6 +532,7 @@ const (
 	msgCastNothingReady
 	msgCastNoTarget
 	msgCastNotPerson
+	msgCastStronger
 	msgCastCharmed
 	msgCastCharmedNone
 	msgCastHeld
