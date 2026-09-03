@@ -1113,6 +1113,16 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 	return strings.TrimSpace(application.eventText)
 }
 
+// hasMenuOption 說目前的選單裡有沒有這一項。
+func hasMenuOption(application *app, want string) bool {
+	for _, option := range application.cellMenuOptions {
+		if option == want {
+			return true
+		}
+	}
+	return false
+}
+
 // selectMenuOption 把游標移到指定的選項再按 Enter。找不到就回 false。
 func selectMenuOption(t *testing.T, application *app, want string) error {
 	t.Helper()
@@ -1401,5 +1411,140 @@ func TestEndingCutscenePagesAreTranslated(t *testing.T) {
 		if strings.ContainsAny(application.eventText, "abcdefghijklmnopqrstuvwxyz") {
 			t.Errorf("第 %d 頁還有英文小寫：%q", page+1, application.eventText)
 		}
+	}
+}
+
+// winCombatAt 從指定的 ECL 位址起跑、擺出遭遇、清光敵人、答 N 收尾。
+// 回傳 app 與 session，讓呼叫端檢查戰後腳本做了什麼。
+func winCombatAt(t *testing.T, archiveID uint8, blockID uint16, start uint16) (*app, *eclvm.BlockSession) {
+	t.Helper()
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(archiveID)
+	if !ok {
+		t.Fatalf("ECL%d archive is absent", archiveID)
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, blockID, start)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hero := poolsave.Character{
+		Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
+		AlignmentID: "lawful-good", MaxHP: 90, CurrentHP: 90,
+		PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+	}
+	application.mode, application.introDone = modeAdventure, true
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = archiveID
+	if err := application.configureEventSession(session); err != nil {
+		t.Fatal(err)
+	}
+	application.state.Party = []poolsave.Character{hero}
+	application.state.CharacterLibrary = []poolsave.Character{hero}
+	application.spawn = gamepack.Spawn{
+		Map: gamepack.MapKey{Archive: archiveID, BlockID: uint8(blockID)}, X: 3, Y: 4, Facing: 2,
+	}
+	result, err := session.RunUntilEvent(4096, nil, true)
+	if err != nil {
+		t.Fatalf("擺出遭遇：%v", err)
+	}
+	if err := application.consumeInitialSearch(result); err != nil {
+		t.Fatalf("擺出遭遇：%v", err)
+	}
+	// 有些遭遇前面會先跳原版的 `29h ENCOUNTER MENU`（COMBAT／WAIT／FLEE／
+	// PARLAY），選 COMBAT 才擺得出來。
+	for guard := 0; guard < 8 && !application.combatActive; guard++ {
+		if application.cellWaitingMenu && hasMenuOption(application, "COMBAT") {
+			if err := selectMenuOption(t, application, "COMBAT"); err != nil {
+				t.Fatalf("選 COMBAT：%v", err)
+			}
+			continue
+		}
+		if !application.cellEventPending && !application.cellWaitingMenu {
+			break
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !application.combatActive {
+		t.Fatalf("沒有擺出遭遇，事件文字是 %q 選單 %v",
+			application.eventText, application.cellMenuOptions)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	state := application.tactical
+	if state == nil {
+		t.Fatal("ENTER 沒有進戰術盤")
+	}
+	for index := 1; index < len(state.Roster); index++ {
+		if !state.Friendly[index] {
+			state.Roster[index].FootprintClass = 0
+			state.Scores[index] = 0
+			state.States[index] = combat.DyingState
+		}
+	}
+	state.Mover, state.Prompt = 0, false
+	state.endRound(application.rollDice)
+	if !state.Prompt {
+		t.Fatal("清光敵人沒有跳出續戰詢問")
+	}
+	if err := press(application, ebiten.KeyN); err != nil {
+		t.Fatal(err)
+	}
+	// 戰後腳本常常先印一段字才寫旗標，所以要把文字翻完——原版也是玩家
+	// 按過去才往下跑。
+	for guard := 0; guard < 24; guard++ {
+		if !application.cellEventPending && !application.cellWaitingMenu {
+			break
+		}
+		if application.treasureActive {
+			break
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			break
+		}
+	}
+	return application, session
+}
+
+// 「打贏一場架就結案」那一類委任（spec 041 的完成條件表）。每一條都從那一場
+// 架的 `LOAD MONSTER` 起跑，打贏之後看該槽有沒有變成 `FEh`。
+//
+// 起跑位址與槽的對應是掃描讀出來的（`FEh` 寫入點往前八條），不是猜的；
+// 從那裡起跑的理由與貧民窟那一條相同——要測的是「打贏之後戰後腳本會不會
+// 結案」，不是怎麼走到那張地圖。
+func TestWinningTheAreaBattlesCompletesTheirCommissions(t *testing.T) {
+	for _, want := range []struct {
+		name       string
+		archive    uint8
+		block      uint16
+		start      uint16
+		slot       uint16
+		monster    string
+	}{
+		// 這一場的隻數在 `9A0Ah` 依 `4A2Ah` 決定（20 或 10），所以要從那裡
+		// 起跑；直接從 `9B1Dh` 的 `LOAD MONSTER` 起跑會擺出零隻。
+		{"邪惡神殿旁", 1, 24, 0x9A0A, 0x4AA8, ""},
+		{"巴恩神殿", 1, 24, 0xABA0, 0x4ABD, ""},
+		{"瓦海登墳場", 4, 10, 0xB15A, 0x4AB1, ""},
+		{"救回孩子", 6, 1, 0xA743, 0x4AA9, ""},
+		{"結局", 5, 7, 0xA7DC, 0x4ABA, "TYRANITHRAXUS"},
+	} {
+		t.Run(want.name, func(t *testing.T) {
+			application, session := winCombatAt(t, want.archive, want.block, want.start)
+			if want.monster != "" {
+				if got := application.combatMonsters; len(got) != 0 {
+					t.Fatalf("打完之後遭遇還掛著：%+v", got)
+				}
+			}
+			if got := session.Machine().Memory[want.slot]; got != 0xFE {
+				t.Errorf("打贏之後 %04Xh=%d，應該是 FEh", want.slot, got)
+			}
+		})
 	}
 }
