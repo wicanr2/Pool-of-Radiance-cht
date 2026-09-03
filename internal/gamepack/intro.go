@@ -253,15 +253,24 @@ func CellEventPassthrough() map[byte]bool { return initialEventPassthrough() }
 //
 // 這**不是**正常遊玩：變數都從 0 開始，沒有走過主線，所以它只回答
 // 「每一格的入口跑不跑得動、停在哪一種邊界」，不回答「玩家走得到嗎」。
-func NewCellSweepSession(archive ECLArchive, blockID uint16) (*eclvm.BlockSession, error) {
+func NewCellSweepSession(archive ECLArchive, blockID uint16,
+	characters ...InitialCharacter) (*eclvm.BlockSession, error) {
 	if len(archive.Blocks) == 0 {
 		return nil, fmt.Errorf("Pool ECL archive %d has no blocks", archive.Number)
 	}
 	if _, ok := archive.Blocks[blockID]; !ok {
 		return nil, fmt.Errorf("Pool ECL archive %d has no block %d", archive.Number, blockID)
 	}
-	return eclvm.NewBlockSession(archive.Blocks, blockID, 0x9900, 0, 5,
+	session, err := eclvm.NewBlockSession(archive.Blocks, blockID, 0x9900, 0, 5,
 		initialEventPassthrough(), 1)
+	if err != nil {
+		return nil, err
+	}
+	// 沒有投影器的話 `1Ch LOAD CHARACTER` 會直接報錯，而正常遊玩那條路是有的
+	// （`NewInitialEventSession` 會接）。掃描要量的是腳本，不是缺投影器。
+	session.Machine().SetCharacterProjector(initialCharacterProjector(characters))
+	session.Machine().SetPartyStrengthResolver(initialPartyStrengthResolver(characters))
+	return session, nil
 }
 
 func initialEventPassthrough() map[byte]bool {

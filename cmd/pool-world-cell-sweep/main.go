@@ -152,7 +152,7 @@ func sweepBlock(archive gamepack.ECLArchive, blockID uint16, geoMap gamepack.Geo
 	row := blockReport{Archive: archive.Number, BlockID: int(blockID),
 		GEOArchive: geoMap.Key.Archive,
 		Boundaries: map[string]int{}, Opcodes: map[string]int{}}
-	base, err := gamepack.NewCellSweepSession(archive, blockID)
+	base, err := gamepack.NewCellSweepSession(archive, blockID, sweepParty()...)
 	if err != nil {
 		return row, err
 	}
@@ -176,6 +176,23 @@ func sweepBlock(archive gamepack.ECLArchive, blockID uint16, geoMap gamepack.Geo
 		}
 	}
 	return row, nil
+}
+
+// sweepParty 是掃描用的六個人。腳本問到隊伍時要有人可以答，否則
+// `1Ch LOAD CHARACTER` 與 `1Dh PARTYSTRENGTH` 會停在缺投影器上，
+// 而那是掃描的環境問題，不是腳本的問題。
+func sweepParty() []gamepack.InitialCharacter {
+	party := make([]gamepack.InitialCharacter, 0, 6)
+	for index := 0; index < 6; index++ {
+		party = append(party, gamepack.InitialCharacter{
+			Name:          string(rune('A' + index)),
+			ClassID:       "fighter",
+			Abilities:     [6]int{18, 10, 10, 16, 10, 10},
+			CurrentHP:     60,
+			ControlMorale: 128,
+		})
+	}
+	return party
 }
 
 func record(row *blockReport, run eclvm.Result, runErr error) {

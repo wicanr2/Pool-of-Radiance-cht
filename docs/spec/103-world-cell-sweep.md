@@ -21,10 +21,8 @@ tools/go.sh run ./cmd/pool-world-cell-sweep -text
 場景，沒有格子）。GEO 的 30、31、32 沒有自己的 ECL，由別的區塊 `LOAD FILES`
 帶進來（spec 101 的表）。
 
-**錯誤只有一種，67 次：`LOAD CHARACTER ... requires a title projector`**
-（ecl5/7 2 次、ecl7/22 44 次、ecl7/23 20 次、ecl8/13 1 次）。
-其餘 26557 次入口執行都停在正常邊界（exit／event／menu），沒有解碼失敗、
-沒有未知 opcode、沒有無窮迴圈。
+**26624 次入口執行，0 個錯誤。** 全部停在正常邊界（exit／event／menu），
+沒有解碼失敗、沒有未知 opcode、沒有無窮迴圈。
 
 四個區塊的每一格都停在 `2Dh CALL`：**ecl6/25、ecl7/26、ecl8/27、ecl8/29**。
 前三個正是 spec 101 認出來的樞紐。ecl1/18 則是每一格都停在選單。
@@ -33,11 +31,12 @@ tools/go.sh run ./cmd/pool-world-cell-sweep -text
 `0Eh PICTURE`、`2Dh CALL`、`3Ah`、`1Eh CHECKPARTY`、`22h PARTY SURPRISE`、
 `0Dh APPROACH`、`11h`、`21h LOAD FILES`。
 
-## 唯一的缺口：LOAD CHARACTER 的投影器
+## 掃描要帶一支隊伍
 
-`1Ch LOAD CHARACTER` 要有一個把角色記錄投影進 VM 的函式；目前只有開場那條路
-接了（`SetCharacterProjector`）。掃描用的乾淨 session 沒接，所以那 67 次會報
-錯。**這不是四個區域專有的問題**——是那四個區域的腳本會叫 NPC 加入。
+`1Ch LOAD CHARACTER` 與 `1Dh PARTYSTRENGTH` 要有投影器才答得出來，正常遊玩
+那條路（`NewInitialEventSession`）本來就會接。掃描用的乾淨 session 一開始沒
+接，量出 67 次「requires a title projector」——**那是掃描的環境問題，不是腳本
+的問題**。接上六個人之後歸零。
 
 ## OPEN
 
