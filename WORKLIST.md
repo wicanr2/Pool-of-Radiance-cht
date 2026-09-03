@@ -620,11 +620,15 @@
 - [x] `WALLDEF selector 3 is not present`：**archive 挑錯了**。`LOAD PIECES`
   是腳本要的資源，要用 ECL 的 archive，不是它載進來的 GEO 的——野外那幾張圖
   就不同號（ecl7/26 載的是 GEO5 的區塊，而 `WALLDEF5.DAX` 只有 1 與 24 兩塊）。
-- [ ] **`LOAD PIECES slot 1 selector 21 spans 2 records`**（治具走到索寇要塞
-  那一帶時出現）。`WALLDEF4.DAX` 的 selector 21 是兩筆連著的記錄，而
-  `ReadDOSPieceSlots` 目前只收一筆。`graphics.ParsePieceSet` 本來就處理得了
-  連續記錄（符號集用 `selector*10 + 序號 + 1`），要決定的是「一個 slot 收兩筆
-  之後，畫面那一層怎麼索引」。
+- [x] `LOAD PIECES` 的 selector 解法閉合：**selector 不是編號時，退到比它小的
+  最近一塊，取第 (selector − 編號) 筆記錄**。全遊戲 33 處 `LOAD PIECES` 只有
+  五處落在編號之外（ecl4/10 的 22、ecl5/3・5/4・5/6 的 25），每一處都正好落在
+  前一塊的記錄數之內——`WALLDEF4` 的 21 與 `WALLDEF5` 的 24 都是兩筆連著的
+  記錄。這是資料全面對得起來的證據，不是單點推測。
+- [ ] **`Pool DAMAGE saving throw category 10 is outside 0..4`**（治具走到
+  野外後面的區域時出現四次）。`2Eh DAMAGE` 的旗標低五位被讀成豁免類別
+  （`DamageFlagSaveCategoryMask = 0x1f`），但類別只有五個。要回頭讀原版的
+  DAMAGE handler，弄清楚那五位到底是什麼。
 - [ ] **`ECL session target block 0xFF is unavailable`**（治具走到野外後面的
   區域時出現五次）。`NEWECL` 的目標是變數，讀到還沒被主線設起來的 255。
   255 是全遊戲的「沒有」哨兵，但**原版對 `NEWECL 255` 的處置還沒讀**，

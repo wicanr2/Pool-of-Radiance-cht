@@ -66,3 +66,46 @@ func TestPieceSlotsCarryOverTheFFhSentinel(t *testing.T) {
 		t.Error("沒有上一份可以沿用時應該報錯")
 	}
 }
+
+// 全遊戲 33 處 `LOAD PIECES` 的每一個 selector 都要解得開。五處落在編號之外
+// （ecl4/10 的 22、ecl5/3・5/4・5/6 的 25），都是前一塊的第二筆記錄。
+func TestEveryLoadPiecesSelectorResolves(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	for _, testCase := range []struct {
+		archive  uint8
+		selector uint8
+		base     uint8
+		record   int
+	}{
+		{4, 21, 21, 0},
+		{4, 22, 21, 1}, // ecl4/10 `9A85h LOAD PIECES 21 22 20`
+		{4, 20, 20, 0},
+		{5, 24, 24, 0},
+		{5, 25, 24, 1}, // ecl5/3 `9C1Ch LOAD PIECES 24 25 1`
+		{5, 1, 1, 0},
+		{8, 17, 17, 0},
+	} {
+		present, err := readWallBlockIDs(zipPath, testCase.archive)
+		if err != nil {
+			t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+		}
+		base, record, err := resolveWallSelector(present, testCase.selector)
+		if err != nil {
+			t.Errorf("WALLDEF%d selector %d：%v", testCase.archive, testCase.selector, err)
+			continue
+		}
+		if base != testCase.base || record != testCase.record {
+			t.Errorf("WALLDEF%d selector %d 解成 %d 的第 %d 筆，預期 %d 的第 %d 筆",
+				testCase.archive, testCase.selector, base, record,
+				testCase.base, testCase.record)
+		}
+	}
+	// 比所有編號都小的 selector 解不開，應該報錯而不是硬解。
+	present, err := readWallBlockIDs(zipPath, 5)
+	if err != nil {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	if _, _, err := resolveWallSelector(present, 0); err == nil {
+		t.Error("selector 0 在 WALLDEF5 沒有可退的編號，應該報錯")
+	}
+}

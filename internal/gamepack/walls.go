@@ -1,10 +1,10 @@
 package gamepack
 
 import (
-	"reflect"
 	"archive/zip"
 	"fmt"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/wicanr2/golden-box-remake-engine/dax"
@@ -55,9 +55,15 @@ func ReadDOSPieceSet(zipPath string, archive, setID, selector uint8) (graphics.P
 // previous 沒有那一格時才報錯——那代表遊戲要求沿用一個從來沒載過的 slot。
 func ReadDOSPieceSlots(zipPath string, archive uint8, selectors [3]uint8,
 	previous graphics.PieceSet) (graphics.PieceSet, error) {
+	present, err := readWallBlockIDs(zipPath, archive)
+	if err != nil {
+		return graphics.PieceSet{}, err
+	}
 	result := graphics.PieceSet{SetID: 1, Symbols: map[uint8]graphics.Picture{}}
 	for index, selector := range selectors {
 		if selector == 0xFF {
+			// 沿用只認得「一格一筆」的舊資料；連續記錄的 slot 還沒有
+			// 需要沿用的案例出現。
 			if index >= len(previous.WallDefs) || index >= len(previous.SymbolSetIDs) ||
 				index >= len(previous.SymbolBlockIDs) {
 				return graphics.PieceSet{}, fmt.Errorf(
@@ -68,16 +74,23 @@ func ReadDOSPieceSlots(zipPath string, archive uint8, selectors [3]uint8,
 			result.SymbolBlockIDs = append(result.SymbolBlockIDs, previous.SymbolBlockIDs[index])
 			continue
 		}
-		piece, err := ReadDOSPieceSet(zipPath, archive, uint8(index+1), selector)
+		base, record, err := resolveWallSelector(present, selector)
 		if err != nil {
 			return graphics.PieceSet{}, err
 		}
-		if len(piece.WallDefs) != 1 || len(piece.SymbolSetIDs) != 1 || len(piece.SymbolBlockIDs) != 1 {
-			return graphics.PieceSet{}, fmt.Errorf("LOAD PIECES slot %d selector %d spans %d records", index+1, selector, len(piece.WallDefs))
+		piece, err := ReadDOSPieceSet(zipPath, archive, uint8(index+1), base)
+		if err != nil {
+			return graphics.PieceSet{}, err
 		}
-		result.WallDefs = append(result.WallDefs, piece.WallDefs[0])
-		result.SymbolSetIDs = append(result.SymbolSetIDs, piece.SymbolSetIDs[0])
-		result.SymbolBlockIDs = append(result.SymbolBlockIDs, piece.SymbolBlockIDs[0])
+		if record >= len(piece.WallDefs) || record >= len(piece.SymbolSetIDs) ||
+			record >= len(piece.SymbolBlockIDs) {
+			return graphics.PieceSet{}, fmt.Errorf(
+				"LOAD PIECES slot %d selector %d wants record %d of block %d, which has %d",
+				index+1, selector, record, base, len(piece.WallDefs))
+		}
+		result.WallDefs = append(result.WallDefs, piece.WallDefs[record])
+		result.SymbolSetIDs = append(result.SymbolSetIDs, piece.SymbolSetIDs[record])
+		result.SymbolBlockIDs = append(result.SymbolBlockIDs, piece.SymbolBlockIDs[record])
 		for id, picture := range piece.Symbols {
 			// 同一個編號出現兩次：內容一樣就留第一份（兩個 slot 指到同一塊
 			// 圖形），不一樣才是真的撞號。
@@ -96,6 +109,67 @@ func ReadDOSPieceSlots(zipPath string, archive uint8, selectors [3]uint8,
 		if _, exists := result.Symbols[id]; !exists {
 			result.Symbols[id] = picture
 		}
+	}
+	return result, nil
+}
+
+// resolveWallSelector 把 selector 換成「哪一塊 WALLDEF 的第幾筆記錄」。
+//
+// selector 本身就是編號時是第 0 筆。**編號不存在時退到比它小的最近一塊，
+// 取第 (selector − 編號) 筆**：`WALLDEF4.DAX` 的 21 是兩筆連著的記錄，
+// 而 ecl4/10 要的是 22；`WALLDEF5.DAX` 的 24 也是兩筆，ecl5/3、5/4、5/6
+// 要的是 25。全遊戲 33 處 `LOAD PIECES` 只有這五處落在編號之外，
+// 每一處都正好落在前一塊的記錄數之內。
+func resolveWallSelector(present map[uint8]int, selector uint8) (uint8, int, error) {
+	if count, ok := present[selector]; ok {
+		if count <= 0 {
+			return 0, 0, fmt.Errorf("WALLDEF selector %d has no records", selector)
+		}
+		return selector, 0, nil
+	}
+	best, found := uint8(0), false
+	for id := range present {
+		if id <= selector && (!found || id > best) {
+			best, found = id, true
+		}
+	}
+	if !found {
+		return 0, 0, fmt.Errorf("WALLDEF selector %d is not present", selector)
+	}
+	record := int(selector) - int(best)
+	if record >= present[best] {
+		return 0, 0, fmt.Errorf(
+			"WALLDEF selector %d falls past block %d, which has %d records",
+			selector, best, present[best])
+	}
+	return best, record, nil
+}
+
+// readWallBlockIDs 回報一個 WALLDEF 檔裡有哪些編號、各有幾筆記錄。
+func readWallBlockIDs(zipPath string, archive uint8) (map[uint8]int, error) {
+	if archive < 1 || archive > 8 {
+		return nil, fmt.Errorf("wall archive %d is outside 1..8", archive)
+	}
+	reader, err := zip.OpenReader(zipPath)
+	if err != nil {
+		return nil, fmt.Errorf("open DOS ZIP: %w", err)
+	}
+	defer reader.Close()
+	member, err := uniqueMember(reader.File, fmt.Sprintf("WALLDEF%d.DAX", archive))
+	if err != nil {
+		return nil, err
+	}
+	blocks, err := readDAXBlocks(member)
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[uint8]int, len(blocks))
+	for id, data := range blocks {
+		walls, err := graphics.ParseWallDefs(data)
+		if err != nil {
+			return nil, fmt.Errorf("WALLDEF%d block %d: %w", archive, id, err)
+		}
+		result[id] = len(walls)
 	}
 	return result, nil
 }

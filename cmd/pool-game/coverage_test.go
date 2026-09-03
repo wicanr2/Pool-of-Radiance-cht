@@ -1115,7 +1115,8 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	visited := map[[3]int]bool{}
 	var hardFailures []string
 	ok := false
-	for pass, destination := range []int{0, 1, 2, 3, 1, 2, 3, 1, 2, 3} {
+	for pass, destination := range []int{0, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3} {
 		seed := int64(13 + pass*7 + destination)
 		avoid := map[[3]int]bool{}
 		transitionUses := map[[3]int]int{}

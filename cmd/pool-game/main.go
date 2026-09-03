@@ -990,7 +990,8 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 		}
 		loaded, err := a.loadPieceSlots(archive, selectors)
 		if err != nil {
-			return false, err
+			return false, fmt.Errorf("Pool LOAD PIECES archive %d %v: %w",
+				archive, selectors, err)
 		}
 		a.initialWalls = &loaded
 		return true, nil
