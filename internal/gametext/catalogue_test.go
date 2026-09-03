@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
 func TestTraditionalChineseCatalogueLoads(t *testing.T) {
@@ -51,6 +53,9 @@ func TestParseRejectsBrokenCatalogues(t *testing.T) {
 
 // 每一條原文都必須真的出現在原版資料裡。抄錯一個字的症狀是「畫面上那句沒翻」，
 // 而漏翻與抄錯在畫面上分不出來，所以拿盤點檔逐條核對。
+//
+// 原版的字有兩個來源：ECL 的 6-bit packed 文字（盤點檔）與 **overlay 內嵌的
+// 短字串**。結局過場那十三行屬於後者（overlay-18，spec 108），所以兩邊都認。
 func TestEverySourceExistsInTheOriginalInventory(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "audit", "dos-ecl-text-inventory.json")
 	raw, err := os.ReadFile(path)
@@ -72,6 +77,12 @@ func TestEverySourceExistsInTheOriginalInventory(t *testing.T) {
 	catalogue, err := TraditionalChinese()
 	if err != nil {
 		t.Fatal(err)
+	}
+	if script, err := gamepack.ReadDOSEndingScript(
+		filepath.Join("..", "..", "Pool of Radiance (1988).zip")); err == nil {
+		for _, line := range script.Lines {
+			known[line.Text] = true
+		}
 	}
 	for _, source := range catalogue.Sources() {
 		if !known[source] {

@@ -8657,6 +8657,59 @@
       "source": "ZOMBIES.",
       "text": "殭屍。",
       "note": "瓦海登墳場的事件與敘述。"
+    },
+    {
+      "source": "Mortally wounded, the dragon roars!",
+      "text": "巨龍身受致命重創，發出怒吼！",
+      "note": "結局過場第一頁，overlay-18 `0111h`（spec 108）。"
+    },
+    {
+      "source": "The spirit of Tyranthraxus flares up",
+      "text": "泰倫斯拉克斯的靈魂騰然竄起，"
+    },
+    {
+      "source": "from the dragon's body.",
+      "text": "自巨龍的身軀之中。"
+    },
+    {
+      "source": "\"Fools, you have but slain the body",
+      "text": "「蠢貨，你們殺掉的不過是我"
+    },
+    {
+      "source": "I possessed.  I cannot be defeated!\"",
+      "text": "附身的軀殼。我是打不倒的！」"
+    },
+    {
+      "source": "With the power of the pool of radiance",
+      "text": "憑著我移到這座巢穴來的"
+    },
+    {
+      "source": "which I moved here, to my lair,",
+      "text": "輝光之池的力量，"
+    },
+    {
+      "source": "I will still rule, by possessing one",
+      "text": "我照樣統治這裡——就從"
+    },
+    {
+      "source": "of you!\"",
+      "text": "附身你們其中一個開始！」"
+    },
+    {
+      "source": "\"No Lord Bane!  I can still rule here!",
+      "text": "「不，貝恩大人！我還能統治這裡！"
+    },
+    {
+      "source": "I have not failed.  Do not call me back",
+      "text": "我沒有失敗。別把我召回"
+    },
+    {
+      "source": "through the pool!\"",
+      "text": "池子裡去！」"
+    },
+    {
+      "source": "Noooo...",
+      "text": "不———"
     }
   ]
 }

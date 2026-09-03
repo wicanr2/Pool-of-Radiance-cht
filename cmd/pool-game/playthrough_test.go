@@ -14,6 +14,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -1323,6 +1324,28 @@ func TestDefeatingTyranthraxusSetsTheVictoryFlag(t *testing.T) {
 	if got := machine.Memory[0x4ABA]; got != 0xFE {
 		t.Fatalf("打贏之後 4ABA=%d，應該是 FEh（`A815h`）", got)
 	}
+
+	// 結局過場（spec 108）：`A82Ah PROGRAM 08` 進來，三頁台詞，一頁一個 ENTER。
+	if !application.endingActive {
+		t.Fatalf("打贏之後沒有進結局過場（文字 %q）",
+			strings.TrimSpace(application.eventText))
+	}
+	if got := len(application.endingPages); got != 3 {
+		t.Fatalf("結局過場切成 %d 頁，原版是 3 頁", got)
+	}
+	if !strings.Contains(application.eventText, "dragon roars") {
+		t.Errorf("結局第一頁是 %q", application.eventText)
+	}
+	for page := 0; page < 3; page++ {
+		if application.endingActive {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatalf("結局第 %d 頁：%v", page+1, err)
+			}
+		}
+	}
+	if application.endingActive {
+		t.Error("翻完三頁之後結局過場還開著")
+	}
 	// 結局腳本：`A82Ah PROGRAM 08` 之後印出結局文字，再把座標設回
 	// `(0,4)` 朝向 1、`6E12 = 3`、`NEWECL 0`，也就是回到文明區的菲蘭。
 	ending := ""
@@ -1345,4 +1368,38 @@ func TestDefeatingTyranthraxusSetsTheVictoryFlag(t *testing.T) {
 	t.Logf("破關：4ABA=%d，結局把隊伍送回 ecl%d/%d，PC %04X，文字 %q",
 		machine.Memory[0x4ABA], application.eclArchive,
 		session.CurrentBlockID(), 0x9900+session.Machine().PC, ending)
+}
+
+// 結局過場走中文。這一條擋的是「翻了但沒接上」：十三行在對照表裡，
+// 但過場如果沒有走翻譯管線，畫面上還是英文。
+func TestEndingCutscenePagesAreTranslated(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	catalogue, err := gametext.TraditionalChinese()
+	if err != nil {
+		t.Fatal(err)
+	}
+	application.gameText = catalogue
+	if err := application.enterEnding(); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(application.eventText, "巨龍") {
+		t.Errorf("結局第一頁沒有走中文：%q", application.eventText)
+	}
+	// 最後一頁翻完會叫 ECL 往下跑，這一條沒有 session，所以只翻到最後一頁。
+	pages := len(application.endingPages)
+	if pages != 3 {
+		t.Fatalf("結局過場切成 %d 頁，原版是 3 頁", pages)
+	}
+	for page := 1; page < pages; page++ {
+		if err := application.advanceEnding(); err != nil {
+			t.Fatal(err)
+		}
+		if strings.ContainsAny(application.eventText, "abcdefghijklmnopqrstuvwxyz") {
+			t.Errorf("第 %d 頁還有英文小寫：%q", page+1, application.eventText)
+		}
+	}
 }

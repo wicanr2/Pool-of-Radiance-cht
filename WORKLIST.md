@@ -44,7 +44,8 @@
   整句為鍵、原版 block 不修改，顯示端已接上導覽、事件文字與選單標籤。
   驗收：`docs/screenshots/pool-remake-chinese-tour.png` 是羅夫導覽的中文畫面。
 - [x] 1,731 句、110,473 字元的遊戲內文字全部翻完（覆蓋率 100%），八個 ECL 封存檔
-  一句不漏。每一批都通過「原文存在於盤點檔」的測試，專名依 glossary，說明書沒收的
+  一句不漏。另加結局過場的 13 行（overlay-18 內嵌短字串，不在 ECL 盤點裡，
+  spec 108），對照表共 1,744 條。每一批都通過「原文存在於盤點檔」的測試，專名依 glossary，說明書沒收的
   記在「遊戲內文字新增譯名」表。覆蓋率由 `cmd/pool-text-inventory -coverage` 量出。
 
 ## P0：可重現研究基線
@@ -450,13 +451,18 @@
   一條都不會跑——結局就是卡在 `A82Ah PROGRAM 08`。改成走跟走進一格時
   同一條 `consumeInitialSearch` 之後，結局文字與回菲蘭的 `NEWECL 0` 都跑了。
 
-- [ ] **結局過場還沒畫**（spec 081）。`PROGRAM 8` 是 overlay-18 entry 1
-  （`02A1h`），字串內嵌在同一顆 overlay 的 `0111h..02A0h`：
-  「Mortally wounded, the dragon roars!」→「The spirit of Tyranthraxus
-  flares up from the dragon's body.」→ `FINAL` →「Fools, you have but slain
-  the body I possessed…」→「Noooo...」。remake 目前把值 8 當成什麼都不做，
-  直接跳到後面的文字。**先前 spec 081 寫「值 8 全遊戲沒有呼叫點」——那是
-  用走得到的碼掃出來的結論，而唯一的呼叫點就在掃不進去的那個區塊裡。**
+- [ ] **結局過場的圖還沒畫**（[spec 108](docs/spec/108-ending-cutscene.md)）。
+  `PROGRAM 8` 是 overlay-18 entry 1（`02A1h`）。**台詞與中譯都接上了**：
+  三頁（3／6／4 行，分頁由列號回到第一列算出來），一頁一個 ENTER，翻完讓
+  ECL 往下跑；十三行進了對照表，`TestEndingCutscenePagesAreTranslated` 擋
+  「翻了但沒接上」。
+  **缺的是圖**：`FINAL5.DAX` 的區塊 1／3／4／5／6 解得出 120×120、120×120、
+  56×32、16×48、16×48。兩支常式已由 [spec 109](docs/spec/109-overlay-stub-segments.md)
+  查出來——`018Eh` 是 overlay-36，載入 entry 5（`011Bh`）、繪製 entry 9
+  （`0D9Fh`）。呼叫端推給繪製的四個值全是 0，所以位置多半在 `DS:4980h`
+  那個目標緩衝結構裡；`[4937h]+67Ch` 決定後三張畫不畫。讀完再接，位置不猜。
+  **先前 spec 081 寫「值 8 全遊戲沒有呼叫點」——那是用走得到的碼掃出來的，
+  而唯一的呼叫點就在掃不進去的那個區塊裡。**
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
   已有 `TestNormalKeysReachTheFirstDungeonStep`：只用按鍵從標題走到建角、
   加入隊伍、Begin、推完開場與 34 步導覽，在地圖上走出一步，F10 存檔後
@@ -740,6 +746,16 @@
   指令迴圈（指令字串 `Move `／`View Aim `／`Use `／`Cast `／`Turn `／
   `Quick Done` 在 overlay-08 `05E1h` 起）。目前的目標選擇與繞路都是讓戰鬥
   能結束的權宜作法，要換成原版的選擇規則。
+
+- [x] **overlay 的 stub segment 對照表**（2026-09-03，
+  [spec 109](docs/spec/109-overlay-stub-segments.md)）。跨 overlay 呼叫寫成
+  `call <segment>:<offset>`，那個 segment 不是程式碼位址而是 stub 段；
+  少了對照表只能猜，而**IDA 以平坦 16-bit 載入單顆 overlay 時會把它解成
+  同一顆裡的 `sub_XXXX`**，看起來很像在呼叫自己。
+  推法是 `(executable_file_offset − stub_offset − 3B0h) ÷ 16`，同一顆的
+  每個進入點都算得出同一個值——那本身就是一道自洽檢查。
+  `ReadDOSOverlayStubSegments` 重生整張表，測試釘住六個已知的呼叫與
+  「三十八顆各不相同」。
 
 ## 發行
 

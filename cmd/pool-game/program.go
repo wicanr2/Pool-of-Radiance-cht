@@ -75,12 +75,13 @@ func (a *app) enterProgram(event eclvm.Event) error {
 	case gamepack.ProgramAskThenManage:
 		a.askProgramManagement()
 		return nil
+	case gamepack.ProgramEnding:
+		// 值 8 是結局過場（overlay-18 entry 1，spec 108）：打贏泰倫斯拉克斯
+		// 之後 `ECL5/7` 的 `A82Ah` 會推它。台詞接上了，中間那幾張
+		// `FINAL5.DAX` 的圖還沒接。
+		return a.enterEnding()
 	default:
-		// **值 8 是結局過場**（overlay-18 entry 1，spec 081）：打贏
-		// 泰倫斯拉克斯之後 `ECL5/7` 的 `A82Ah` 會推它，畫面上是那一段
-		// 「Mortally wounded, the dragon roars!」到「Noooo...」。
-		// remake 還沒接那個畫面，先讓腳本往下跑——**這是已知的缺口**，
-		// 不是原版行為。其餘的值原版才是真的什麼都不做。
+		// 其餘的值原版就是直接返回，什麼都不做（spec 081 的 `3167h`）。
 		return a.continueInitialSearch(nil)
 	}
 }

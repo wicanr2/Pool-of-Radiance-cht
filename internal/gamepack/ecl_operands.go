@@ -45,6 +45,9 @@ const (
 	// ProgramAskThenManage（值 9）先問一句，答應才開同一個畫面，然後結束
 	// 這個 block（overlay-03 `312Ah`）。
 	ProgramAskThenManage = 9
+	// ProgramEnding（值 8）是結局過場（overlay-18 entry 1，spec 108）。
+	// 唯一的呼叫點是 `ECL5/7` 的 `A82Ah`——打贏泰倫斯拉克斯之後。
+	ProgramEnding = 8
 
 	// AddNPCOpcode 是 `36h ADD NPC`（spec 091）。
 	AddNPCOpcode = 0x36

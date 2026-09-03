@@ -208,6 +208,11 @@ type app struct {
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
 	combatActive     bool
 	combatMonsters   []stagedMonster
+	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
+	endingScript gamepack.EndingScript
+	endingActive bool
+	endingPages  [][]gamepack.EndingLine
+	endingPage   int
 	treasureActive   bool
 	treasureStage    treasureStage
 	treasureItems    []gamepack.TreasureItemRecord
@@ -310,6 +315,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.spellCaster = spellCaster
+	endingScript, err := gamepack.ReadDOSEndingScript(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.endingScript = endingScript
 	spellParameters, err := gamepack.ReadDOSSpellParameters(zipPath)
 	if err != nil {
 		return nil, err
@@ -661,6 +671,12 @@ func (a *app) Update() error {
 		}
 		if a.introDone {
 			if a.cellEventPending {
+				if a.endingActive {
+					if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+						return a.advanceEnding()
+					}
+					return nil
+				}
 				if a.combatActive {
 					if a.justPressed(ebiten.KeyEnter) && !a.tacticalPreview {
 						if err := a.enterTacticalPreview(); err != nil {

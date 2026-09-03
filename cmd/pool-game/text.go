@@ -95,6 +95,7 @@ var messages = map[messageID][2]string{
 	msgCastNotACaster:       {"That combatant is not a party member.", "那一格不是隊員。"},
 	msgCastNothingReady:     {"No memorised spell is ready to cast.", "沒有記著可以施展的法術。"},
 	msgCastNoTarget:         {"%s finds no reachable target.", "%s 找不到打得到的目標。"},
+	msgEndingPrompt:          {"ENTER to continue", "按 ENTER 繼續"},
 	msgCastNotPerson:        {"%d is not a person; %s has no effect.", "%d 不算是人，%s 沒有作用。"},
 	msgCastStronger:         {"%s is stronger: %d/%02d.", "%s 變強了：%d/%02d。"},
 	msgCastCharmed:          {"%s charms %d foes.", "%s 迷住了 %d 個敵人。"},
@@ -531,6 +532,7 @@ const (
 	msgCastNotACaster
 	msgCastNothingReady
 	msgCastNoTarget
+	msgEndingPrompt
 	msgCastNotPerson
 	msgCastStronger
 	msgCastCharmed
