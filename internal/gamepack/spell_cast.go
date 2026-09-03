@@ -125,6 +125,9 @@ const (
 	SpellIDFriends        = 14 // 13C8h
 	SpellIDCureBlindness  = 37 // 21E8h
 	SpellIDRemoveCurse    = 43 // 2508h
+	SpellIDFireballAlt    = 64 // 262Eh，與火球術同一支
+	SpellIDMagicMissileAlt = 65 // 300Eh
+	SpellIDNoOperation    = 66 // 3049h，整支是空的
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -223,6 +226,9 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	15h Sleep          1513h  額度 Roll(4, 4) 生命骰，逐個目標依 HD 扣
 //	2Fh Fireball       262Eh  Roll(等級, 6)
 //	33h Lightning Bolt 2B75h  Roll(等級, 6)
+//	40h （無名）       262Eh  與火球術同一支
+//	41h （無名）       300Eh  Roll(2, 4) ＋ 2
+//	42h （無名）       3049h  整支是空的：原版什麼都不做
 //
 // **Magic Missile 的發數與說明書不一致**：碼是 `等級 ÷ 2`，說明書寫
 // 「每昇兩級多一發，第 3 或 4 級 2 發」＝ `(等級+1) ÷ 2`。這裡照碼接——
@@ -294,7 +300,13 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 額度是 4d4 生命骰（`151Eh` 的 Roll(4, 4)），效果碼 35h。
 		effect.Area, effect.SleepBudget = true, roller.Roll(4, 4)
 		effect.EffectCode = SleepEffectCode
-	case SpellIDFireball, SpellIDLightningBolt:
+	case SpellIDMagicMissileAlt:
+		// `3024h` 的 Roll(2, 4) 之後 `add $2`，第五個覆寫參數 8。
+		effect.Damage = roller.Roll(2, 4) + 2
+	case SpellIDNoOperation:
+		// `3049h` 整支只有 push bp / mov bp,sp / mov sp,bp / pop bp / retf——
+		// **原版就是什麼都不做**。接成 no-op 是照實接，不是還沒做。
+	case SpellIDFireball, SpellIDLightningBolt, SpellIDFireballAlt:
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
 	default:
 		return CastEffect{}, fmt.Errorf(
@@ -312,9 +324,45 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDBurningHands, SpellIDMagicMissile, SpellIDShockingGrasp,
 		SpellIDSleep, SpellIDMirrorImage, SpellIDCauseDisease, SpellIDCureDisease,
 		SpellIDPrayer, SpellIDSpiritHammer, SpellIDSlow, SpellIDFriends,
-		SpellIDCureBlindness, SpellIDRemoveCurse,
+		SpellIDCureBlindness, SpellIDRemoveCurse, SpellIDFireballAlt,
+		SpellIDMagicMissileAlt, SpellIDNoOperation,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}
 	return false
 }
+
+// 力量術（overlay-22 `1F16h`）加多少，看**目標**的職業：
+//
+//	1F2Fh  +9Bh（法師）> 0        → Roll(1, 4)
+//	1F48h  +96h（牧師）> 0 或
+//	1F53h  +9Ch（賊）  > 0        → Roll(1, 6)
+//	1F6Ch  +98h（戰士）> 0        → Roll(1, 8)
+//
+// 與 AD&D 逐項相同。後面的判斷會蓋掉前面的，所以多職業取最後一個成立的。
+//
+// **還沒接進施法**：`CastSpell` 目前只拿得到施法者的等級，而這一條看的是
+// 目標的職業。等施法的介面把目標傳進來再接。
+func StrengthSpellDie(levels [ClassThac0ClassCount]uint8) (count, sides int) {
+	count, sides = 0, 0
+	if levels[ClassSlotMagicUser] > 0 {
+		count, sides = 1, 4
+	}
+	if levels[ClassSlotCleric] > 0 || levels[ClassSlotThief] > 0 {
+		count, sides = 1, 6
+	}
+	if levels[ClassSlotFighter] > 0 {
+		count, sides = 1, 8
+	}
+	return count, sides
+}
+
+// EnlargeMagnitudeByLevel 是變大術（overlay-22 `128Dh`）依施法者等級寫進
+// `DS:47A7h` 的值。索引就是等級，0 那格走不到。
+//
+// 效果碼是 `12h`（`1293h` 寫進 `DS:47A6h`）。這些值看起來是百分比，
+// 但**用途還沒讀**——寫下來是因為它們是原版的位元組，不是推測。
+var EnlargeMagnitudeByLevel = [7]uint8{0, 0, 1, 0x33, 0x4c, 0x5b, 0x64}
+
+// EnlargeEffectCode 是變大術掛的效果碼。
+const EnlargeEffectCode = 0x12

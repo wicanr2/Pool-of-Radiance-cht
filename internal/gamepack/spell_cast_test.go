@@ -382,11 +382,71 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 19 || generic != 25 || total != 44 {
+	if read != 22 || generic != 25 || total != 47 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 19／25／44，改了實作要一起改", read, generic, total)
+			"文件寫的是 22／25／47，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
+	}
+}
+
+// 力量術加多少看目標的職業，與 AD&D 逐項相同。
+func TestStrengthSpellDieByClass(t *testing.T) {
+	var levels [ClassThac0ClassCount]uint8
+	levels[ClassSlotMagicUser] = 3
+	if count, sides := StrengthSpellDie(levels); count != 1 || sides != 4 {
+		t.Errorf("法師應該是 1d4，算出 %dd%d", count, sides)
+	}
+	levels = [ClassThac0ClassCount]uint8{}
+	levels[ClassSlotCleric] = 3
+	if _, sides := StrengthSpellDie(levels); sides != 6 {
+		t.Errorf("牧師應該是 1d6，算出 d%d", sides)
+	}
+	levels = [ClassThac0ClassCount]uint8{}
+	levels[ClassSlotThief] = 3
+	if _, sides := StrengthSpellDie(levels); sides != 6 {
+		t.Errorf("賊應該是 1d6，算出 d%d", sides)
+	}
+	levels = [ClassThac0ClassCount]uint8{}
+	levels[ClassSlotFighter] = 3
+	if _, sides := StrengthSpellDie(levels); sides != 8 {
+		t.Errorf("戰士應該是 1d8，算出 d%d", sides)
+	}
+	// 戰士／法師：後面的判斷蓋掉前面的，所以取戰士那一個。
+	levels[ClassSlotMagicUser] = 3
+	if _, sides := StrengthSpellDie(levels); sides != 8 {
+		t.Errorf("戰士／法師應該取 1d8，算出 d%d", sides)
+	}
+	// 沒有職業就沒有骰子。
+	if count, _ := StrengthSpellDie([ClassThac0ClassCount]uint8{}); count != 0 {
+		t.Error("沒有職業不該擲骰")
+	}
+}
+
+// 三支後補的：與火球共用的那支、Roll(2,4)+2 的那支、以及整支是空的那支。
+func TestTrailingSpellHandlers(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	alt, _ := CastSpell(SpellIDFireballAlt, parameters, 6, maxRoller{})
+	fire, _ := CastSpell(SpellIDFireball, parameters, 6, maxRoller{})
+	if alt.Damage != fire.Damage || !alt.Area {
+		t.Errorf("64 與火球共用同一支處理常式，算出 %+v vs %+v", alt, fire)
+	}
+	low, _ := CastSpell(SpellIDMagicMissileAlt, parameters, 6, minRoller{})
+	high, _ := CastSpell(SpellIDMagicMissileAlt, parameters, 6, maxRoller{})
+	if low.Damage != 4 || high.Damage != 10 {
+		t.Errorf("65 是 Roll(2,4)+2（4..10），算出 %d..%d", low.Damage, high.Damage)
+	}
+	// 66 整支是空的：原版什麼都不做，所以「沒有效果」才是對的答案。
+	none, err := CastSpell(SpellIDNoOperation, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if none.Damage != 0 || none.Heal != 0 || none.SleepBudget != 0 ||
+		none.WholeSide || none.Area || len(none.RemoveEffects) != 0 {
+		t.Errorf("66 應該什麼都不做，算出 %+v", none)
 	}
 }
