@@ -364,18 +364,19 @@ const exploreMaxTransitionHops = 60
 // 逐趟把已知的換圖點擋掉，下一趟就會先把這一張走完再換圖。
 func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
 	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
-	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool,
-	hardFailures *[]string) (int, bool) {
+	exitUses map[[4]int]int, visited map[[3]int]bool, maps map[string]bool,
+	blocks map[int]bool, hardFailures *[]string) (int, bool) {
 	return exploreWorldWithFlags(t, zipPath, seed, rotate, rewalkLimit, budget,
-		avoid, walked, transitionUses, menuTurn, visited, maps, blocks, nil, hardFailures)
+		avoid, walked, transitionUses, menuTurn, exitUses, visited, maps, blocks,
+		nil, hardFailures)
 }
 
 // exploreWorldWithFlags 與 exploreWorld 相同，另外在結束時把幾個 ECL 變數
 // 抄進 flags，讓呼叫端可以斷言主線推到哪裡。
 func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
 	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
-	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool,
-	flags map[uint16]uint16, hardFailures *[]string) (int, bool) {
+	exitUses map[[4]int]int, visited map[[3]int]bool, maps map[string]bool,
+	blocks map[int]bool, flags map[uint16]uint16, hardFailures *[]string) (int, bool) {
 	t.Helper()
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
@@ -407,8 +408,6 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	pilot := &tacticalPilot{}
 	stuck, hops, moved := 0, 0, 0
 	var exit *areaExit
-	// exitUses 記每一個「邊界格＋朝外的方向」用過幾次，這一趟之內有效。
-	exitUses := map[[4]int]int{}
 	var failures []string
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
 	// 的路），要重走找出口時傳一份自己的。
@@ -644,11 +643,15 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	visited := map[[3]int]bool{}
 	maps := map[string]bool{}
 	blocks := map[int]bool{}
+	// exitUses 跨趟保留：每一趟都從城區開始，不記著上一趟走過哪個城門的話，
+	// 每一趟都會挑同一個，八趟走的是同一條路。
+	exitUses := map[[4]int]int{}
 	var hardFailures []string
 	total := 0
 	for pass := 0; pass < 8; pass++ {
 		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 40000,
-			avoid, visited, transitionUses, menuTurn, visited, maps, blocks, &hardFailures)
+			avoid, visited, transitionUses, menuTurn, exitUses, visited, maps, blocks,
+			&hardFailures)
 		if !ok {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -732,8 +735,8 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		avoid = map[[3]int]bool{}
 		transitionUses = map[[3]int]int{}
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 20, 600000,
-			avoid, map[[3]int]bool{}, transitionUses, menuTurn, visited, maps, blocks,
-			flags, &hardFailures)
+			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
+			visited, maps, blocks, flags, &hardFailures)
 		if !reachable {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}

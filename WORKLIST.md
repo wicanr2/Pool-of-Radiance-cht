@@ -591,10 +591,16 @@
   要塞自己**（ecl4 block 21 `ADAAh`／`ADD0h` 的 `SAVE 254, DS:4AA7h`）。
   探索用的六個第 1 級戰士沒把要塞清掉，所以航線一直只有一條。
   所以下一步不是做新畫面，是讓要塞真的打得完。
+  **走路走不到別的地方，這件事量過了**（spec 101）：29 個 ECL 區塊之間
+  幾乎全靠 `NEWECL`，而走出地圖邊界只接得起城區與貧民窟這一對——城區 28 個
+  邊界出口裡，站在起點雙向走得到的只有 (0,4)W 一個。接得最廣的是 ecl7/26
+  （一個區塊接十一個），而它掛在碼頭選單的 EAST／WEST／BAY 後面。
+  圖與工具：`tools/go.sh run ./cmd/pool-world-graph -text`。
   順帶釘死一個容易讀反的東西：起點 (0,4) 的文字寫著
-  「YOU ARE BY THE GATEWAY TO THE UNSETTLED AREAS」，但**座標是繞回去的**
-  ——overlay-30 `0358h` 在查牆之前先把 X／Y 夾回 0..15，原版與 remake 一樣，
-  地圖沒有「走出邊界」這回事。
+  「YOU ARE BY THE GATEWAY TO THE UNSETTLED AREAS」，而**牆的查詢會把座標
+  夾回去**——overlay-30 `0358h` 在查牆之前先把 X／Y 夾回 0..15。走出邊界
+  這回事仍然存在，只是由 ECL 自己讀 `DS:6DD5h`、自己叫 `CALL C01Eh` 完成
+  （spec 100）。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家
