@@ -259,6 +259,25 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	if err != nil {
 		return err
 	}
+	// 有前提的那幾支：目標身上已經有那個效果就整支不做（原版先問
+	// `0100h:006Bh`，中了就直接返回）。記憶那一格照樣用掉。
+	if effect.BlockedByEffect != 0 && chosen && int(target) < len(state.Roster) {
+		if slot, ok := a.moverPartyIndex(target); ok {
+			for _, value := range a.state.Party[slot].Effects {
+				if value == effect.BlockedByEffect {
+					member.Memorised[option.Slot] = 0
+					syncTrainedLibraryCharacter(&a.state, *member)
+					a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
+						option.Label, target))
+					state.endTurn(a.rollDice, false)
+					if state.Finished {
+						return a.finishCombat(state.Outcome)
+					}
+					return nil
+				}
+			}
+		}
+	}
 	// 記憶的那一格用掉了，不論打不打得中——原版也是先耗掉才判定。
 	member.Memorised[option.Slot] = 0
 	syncTrainedLibraryCharacter(&a.state, *member)

@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 22 || generic != 25 || total != 47 {
+	if read != 25 || generic != 25 || total != 50 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 22／25／47，改了實作要一起改", read, generic, total)
+			"文件寫的是 25／25／50，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -448,5 +448,36 @@ func TestTrailingSpellHandlers(t *testing.T) {
 	if none.Damage != 0 || none.Heal != 0 || none.SleepBudget != 0 ||
 		none.WholeSide || none.Area || len(none.RemoveEffects) != 0 {
 		t.Errorf("66 應該什麼都不做，算出 %+v", none)
+	}
+}
+
+// 兩支治療與一支有前提的泛型。
+func TestHealAndGuardedHandlers(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	low, _ := CastSpell(SpellIDGreaterHeal, parameters, 6, minRoller{})
+	high, _ := CastSpell(SpellIDGreaterHeal, parameters, 6, maxRoller{})
+	if low.Heal != 9 || high.Heal != 12 {
+		t.Errorf("58 是 Roll(1,4)+8（9..12），算出 %d..%d", low.Heal, high.Heal)
+	}
+	// 它也走一次解病術那條鏈，外加 16h。
+	if len(high.RemoveEffects) != len(CureDiseaseEffectCodes)+1 ||
+		high.RemoveEffects[0] != 0x16 {
+		t.Errorf("58 應該先解 16h 再解病痛那組，算出 %v", high.RemoveEffects)
+	}
+	lowLesser, _ := CastSpell(SpellIDLesserHeal, parameters, 6, minRoller{})
+	highLesser, _ := CastSpell(SpellIDLesserHeal, parameters, 6, maxRoller{})
+	if lowLesser.Heal != 4 || highLesser.Heal != 10 {
+		t.Errorf("62 是 Roll(2,4)+2（4..10），算出 %d..%d",
+			lowLesser.Heal, highLesser.Heal)
+	}
+	guarded, _ := CastSpell(SpellIDGuardedGeneric, parameters, 6, maxRoller{})
+	if guarded.BlockedByEffect != 0x2a {
+		t.Errorf("57 的前提應該是效果碼 2Ah，算出 %#02x", guarded.BlockedByEffect)
+	}
+	if guarded.Damage != 0 || guarded.Heal != 0 {
+		t.Errorf("57 走的是泛型那條，不該有傷害或治療：%+v", guarded)
 	}
 }

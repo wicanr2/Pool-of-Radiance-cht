@@ -128,6 +128,9 @@ const (
 	SpellIDFireballAlt    = 64 // 262Eh，與火球術同一支
 	SpellIDMagicMissileAlt = 65 // 300Eh
 	SpellIDNoOperation    = 66 // 3049h，整支是空的
+	SpellIDGuardedGeneric = 57 // 2DB7h
+	SpellIDGreaterHeal    = 58 // 2E02h
+	SpellIDLesserHeal     = 62 // 2F85h
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -228,6 +231,9 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	33h Lightning Bolt 2B75h  Roll(等級, 6)
 //	40h （無名）       262Eh  與火球術同一支
 //	41h （無名）       300Eh  Roll(2, 4) ＋ 2
+//	39h （無名）       2DB7h  中了效果 2Ah 就不做，沒中才走泛型
+//	3Ah （無名）       2E02h  治療 Roll(1, 4) ＋ 8，並解掉 16h 與病痛那組
+//	3Eh （無名）       2F85h  治療 Roll(2, 4) ＋ 2
 //	42h （無名）       3049h  整支是空的：原版什麼都不做
 //
 // **Magic Missile 的發數與說明書不一致**：碼是 `等級 ÷ 2`，說明書寫
@@ -303,6 +309,18 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 	case SpellIDMagicMissileAlt:
 		// `3024h` 的 Roll(2, 4) 之後 `add $2`，第五個覆寫參數 8。
 		effect.Damage = roller.Roll(2, 4) + 2
+	case SpellIDGuardedGeneric:
+		// `2DC5h` 先問 `0100h:006Bh(目標, 2Ah)`；已經中了就整支返回，
+		// 沒中才走泛型那條（四個覆寫參數全是 0）。
+		effect.BlockedByEffect = 0x2a
+	case SpellIDGreaterHeal:
+		// `2E4Eh` 的 Roll(1, 4) ＋ 8 走治療常式 `0100h:0089h`。
+		// 前面還會解掉 16h，並走一次解病術那條鏈（`225Bh`）。
+		effect.Heal = roller.Roll(1, 4) + 8
+		effect.RemoveEffects = append([]uint8{0x16}, CureDiseaseEffectCodes[:]...)
+	case SpellIDLesserHeal:
+		// `2F93h` 的 Roll(2, 4) ＋ 2，同一支治療常式。
+		effect.Heal = roller.Roll(2, 4) + 2
 	case SpellIDNoOperation:
 		// `3049h` 整支只有 push bp / mov bp,sp / mov sp,bp / pop bp / retf——
 		// **原版就是什麼都不做**。接成 no-op 是照實接，不是還沒做。
@@ -325,7 +343,8 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDSleep, SpellIDMirrorImage, SpellIDCauseDisease, SpellIDCureDisease,
 		SpellIDPrayer, SpellIDSpiritHammer, SpellIDSlow, SpellIDFriends,
 		SpellIDCureBlindness, SpellIDRemoveCurse, SpellIDFireballAlt,
-		SpellIDMagicMissileAlt, SpellIDNoOperation,
+		SpellIDMagicMissileAlt, SpellIDNoOperation, SpellIDGuardedGeneric,
+		SpellIDGreaterHeal, SpellIDLesserHeal,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}
