@@ -60,6 +60,12 @@ type AbilityBonus struct {
 // 它會傳給 `0419h` 當上限，所以「在範圍內」＝ 那個預算內走得到。
 const FireballAreaBudget = 2
 
+// HasteEffectCode 是急速術掛上去的效果碼（`2858h` 推的 2Ah）。
+//
+// 它同時解釋了編號 57 那一支（`2DB7h`）在防什麼：那支的前提正是
+// 「目標身上有沒有 2Ah」——已經加速過就不再加。兩邊各自讀出來卻對上同一個碼。
+const HasteEffectCode = 0x2a
+
 // SlowEffectCode 是緩速術掛上去的效果碼（`2BCDh` 推的 27h）。
 // overlay-15 的名稱鏈沒有它，所以它沒有顯示名稱。
 const SlowEffectCode = 0x27
@@ -140,6 +146,7 @@ const (
 	SpellIDGuardedGeneric = 57 // 2DB7h
 	SpellIDGreaterHeal    = 58 // 2E02h
 	SpellIDLesserHeal     = 62 // 2F85h
+	SpellIDHaste          = 48 // 2852h
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -234,6 +241,7 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	27h Cure Disease   2300h  轉呼叫 225Bh：拿掉六個病痛類的效果碼
 //	2Ah Prayer         249Dh  `(哪一邊 << 4) + 等級` 推在等級覆寫那一格
 //	1Ch Spiritual H.   19A8h  四個覆寫參數 0／1／0／0（生出鎚子那段未讀）
+//	30h Haste          2852h  推效果碼 2Ah 走 2724h，整邊
 //	37h Slow           2BC7h  推效果碼 27h 走 2724h，範圍法術
 //	15h Sleep          1513h  額度 Roll(4, 4) 生命骰，逐個目標依 HD 扣
 //	2Fh Fireball       262Eh  Roll(等級, 6)
@@ -284,6 +292,10 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `19AEh` 的四個覆寫參數是 0／1／0／0。08BCh 之後還有一段
 		// （`19D1h` 起，推效果碼 17h）還沒讀，那是把鎚子生出來的部分。
 		effect.EffectParameter = 1
+	case SpellIDHaste:
+		// `2858h` 推效果碼 2Ah 與施法者的 `+10Eh`（哪一邊）給 `2724h`，
+		// 與緩速術同一支。訊息是 "is Speedy"。
+		effect.WholeSide, effect.EffectCode = true, HasteEffectCode
 	case SpellIDSlow:
 		// `2BCDh` 先推效果碼 27h 再走 `2724h`——那一支會設 `DS:677Eh = 1`，
 		// 是範圍法術。
@@ -358,7 +370,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDPrayer, SpellIDSpiritHammer, SpellIDSlow, SpellIDFriends,
 		SpellIDCureBlindness, SpellIDRemoveCurse, SpellIDFireballAlt,
 		SpellIDMagicMissileAlt, SpellIDNoOperation, SpellIDGuardedGeneric,
-		SpellIDGreaterHeal, SpellIDLesserHeal,
+		SpellIDGreaterHeal, SpellIDLesserHeal, SpellIDHaste,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}

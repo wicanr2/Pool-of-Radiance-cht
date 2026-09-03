@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 25 || generic != 25 || total != 50 {
+	if read != 26 || generic != 25 || total != 51 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 25／25／50，改了實作要一起改", read, generic, total)
+			"文件寫的是 26／25／51，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -479,5 +479,31 @@ func TestHealAndGuardedHandlers(t *testing.T) {
 	}
 	if guarded.Damage != 0 || guarded.Heal != 0 {
 		t.Errorf("57 走的是泛型那條，不該有傷害或治療：%+v", guarded)
+	}
+}
+
+// 急速術掛的效果碼，正好是編號 57 那一支在防的那個。
+// 兩邊各自從碼裡讀出來，對上同一個碼。
+func TestHasteAndItsGuardAgree(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	haste, err := CastSpell(SpellIDHaste, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !haste.WholeSide || haste.EffectCode != HasteEffectCode {
+		t.Errorf("急速術應該是整邊、效果碼 %#02x，算出 %+v", HasteEffectCode, haste)
+	}
+	guarded, _ := CastSpell(SpellIDGuardedGeneric, parameters, 6, maxRoller{})
+	if guarded.BlockedByEffect != haste.EffectCode {
+		t.Errorf("57 防的是 %#02x，急速術掛的是 %#02x——兩邊對不上",
+			guarded.BlockedByEffect, haste.EffectCode)
+	}
+	// 參數表也把急速與緩速歸在同一個目標模式（整邊）。
+	if !parameters[SpellIDHaste].AffectsWholeSide() ||
+		!parameters[SpellIDSlow].AffectsWholeSide() {
+		t.Error("急速與緩速在參數表裡都該是整邊模式")
 	}
 }
