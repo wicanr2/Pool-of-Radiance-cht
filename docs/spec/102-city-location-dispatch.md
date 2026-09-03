@@ -123,11 +123,12 @@
 ```
 9BFA  COMPARE @4A01, 0 ; IF > ; GOTO 9CAC
 9C05  PRINTCLEAR 'THE ARENA MASTER ASKS IF YOU WISH TO DUEL…'
-9CAC  SAVE 1 -> @4A01                      ; 無條件
+9CAC  SAVE 1 -> @4A01                      ; 進到這一支就一定會寫
 9CBA  PRINTCLEAR "'DO YOU SEEK A PARTNER FOR YOUR ADVENTURING?'"
 ```
 
-`9CACh` **無條件寫 1**，所以說謊之後走進競技場，票就又沒了——實測探索器
+`4A01` 大於 0 就跳到 `9CACh`，而那一行**沒有再檢查什麼就寫 1**——255 也大於 0，
+所以說謊之後走進競技場，票就又沒了——實測探索器
 就是這樣把 255 弄回 1 的（`4A01 255→1 於 GEO3/0 (7,2) ECL block 11`）。
 **說謊回城之後要先問港務長，再逛別的地方。**
 

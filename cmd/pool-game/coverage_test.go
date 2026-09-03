@@ -317,6 +317,49 @@ func (pilot *tacticalPilot) adjacentToFoe(state *tacticalState) bool {
 
 // planToCells 找到最近的一格目標並回傳走過去的朝向序列，走不到就回 nil。
 // wanted 收的是「這一格是不是要去的」。
+// planToCellsAvoiding 是 planToCells，但**路上**不踏進 skip 說要避開的格子。
+//
+// 主線那一段需要它：城區的地點格會觸發自己的腳本，而競技場（ECL3/11
+// `9CACh`）踩到就把 `4A01` 寫回 1（spec 102），去港務長的路上經過就前功盡棄。
+func planToCellsAvoiding(app *app, rotate int, wanted func(x, y int) bool,
+	skip func(x, y int) bool) []exploreStep {
+	type node struct{ x, y int }
+	start := node{int(app.spawn.X), int(app.spawn.Y)}
+	from := map[node]node{start: start}
+	via := map[node]uint8{}
+	queue := []node{start}
+	for len(queue) != 0 {
+		current := queue[0]
+		queue = queue[1:]
+		if current != start && wanted(current.x, current.y) {
+			steps := []exploreStep{}
+			for cursor := current; cursor != start; cursor = from[cursor] {
+				steps = append([]exploreStep{{facing: via[cursor]}}, steps...)
+			}
+			return steps
+		}
+		for step := 0; step < 4; step++ {
+			facing := (step + rotate) % 4
+			if !app.initialMap.Grid.CanMoveDungeonWrapped(current.x, current.y, facing*2) {
+				continue
+			}
+			next := node{
+				x: geometry.WrapCoordinate(current.x+exploreDeltas[facing][0], geometry.Width),
+				y: geometry.WrapCoordinate(current.y+exploreDeltas[facing][1], geometry.Height),
+			}
+			if _, seen := from[next]; seen {
+				continue
+			}
+			if skip != nil && !wanted(next.x, next.y) && skip(next.x, next.y) {
+				continue
+			}
+			from[next], via[next] = current, uint8(facing)
+			queue = append(queue, next)
+		}
+	}
+	return nil
+}
+
 func planToCells(app *app, rotate int, wanted func(x, y int) bool) []exploreStep {
 	type node struct{ x, y int }
 	start := node{int(app.spawn.X), int(app.spawn.Y)}
@@ -469,12 +512,24 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// 每一種選單只印一次，用來確認某一支腳本到底有沒有被觸發。
 	seenMenus := map[string]bool{}
 	heldHere := false
+	// harbourTried 讓「主線鎖住就先去港務長」每個鎖住期間只試一次。
+	harbourTried := false
 walk:
 	for step := 0; step < budget; step++ {
 		if application.eventMachine != nil {
 			now := [2]uint16{application.eventMachine.Memory[0x4AA7],
 				application.eventMachine.Memory[0x4A01]}
 			if now != quest {
+				if now[1] != quest[1] {
+					block := -1
+					if application.eventSession != nil {
+						block = int(application.eventSession.CurrentBlockID())
+					}
+					t.Logf("4A01 %d→%d 於 GEO%d/%d (%d,%d) ECL block %d",
+						quest[1], now[1], application.spawn.Map.Archive,
+						application.spawn.Map.BlockID, application.spawn.X,
+						application.spawn.Y, block)
+				}
 				quest = now
 				for key := range approached {
 					delete(approached, key)
@@ -820,6 +875,38 @@ walk:
 					delete(avoid, key)
 					delete(heldBack, key)
 				}
+			}
+			// 鎖住的時候，城區這一趟優先去問港務長。城區有好幾個地點會把
+			// `4A01` 寫回 1（市政廳職員 ECL3/8 `9BACh` 只在 0 時寫，
+			// 競技場 ECL3/11 `9CACh` 進到那一支就寫），先踩到就前功盡棄。
+			//
+			// **這還不夠**：這一段只在「沒有計畫」時才評估，而隊伍回到城區
+			// 時手上常常還有上一段的計畫，等它走完往往已經踩過競技場了。
+			// 實測探索器仍然到不了野外，主線那條路由專用測試釘住
+			//（`cmd/pool-game/harbour_walk_test.go`）。
+			if settling && application.spawn.Map.Archive == 3 &&
+				application.spawn.Map.BlockID == 0 && !harbourTried {
+				harbourTried = true
+				if int(application.spawn.X) == 11 && int(application.spawn.Y) == 2 {
+					plan = []exploreStep{{facing: 0}}
+				} else {
+					plan = planToCellsAvoiding(application, rotate,
+						func(x, y int) bool { return x == 11 && y == 2 },
+						func(x, y int) bool {
+							cell, ok := application.initialMap.Grid.Cell(x, y)
+							return ok && cell.Terrain&0x7F != 0
+						})
+					if len(plan) != 0 {
+						plan = append(plan, exploreStep{facing: 0})
+					}
+				}
+				if len(plan) != 0 {
+					spin["找港務長"]++
+					continue
+				}
+			}
+			if !settling {
+				harbourTried = false
 			}
 			leaving := hops < exploreMaxTransitionHops && !settling
 			var target [3]int
