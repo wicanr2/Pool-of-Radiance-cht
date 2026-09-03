@@ -109,7 +109,7 @@ func (a *app) damageOne(index int, request gamepack.DamageRequest, damage int) (
 		return "", nil
 	}
 	if request.AllowsSave() {
-		saved, err := a.savingThrowFor(member, request.SaveCategory(), request.SaveModifier)
+		saved, err := a.savingThrowFor(member, request.SaveCategory, request.SaveModifier())
 		if err != nil {
 			return "", err
 		}

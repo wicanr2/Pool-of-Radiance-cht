@@ -16,10 +16,15 @@ const (
 	DamageFlagWholeParty = 0x40
 	// DamageFlagNoSave（bit 5）是不給豁免。
 	DamageFlagNoSave = 0x20
-	// DamageFlagSaveCategoryMask（bit 0..4）是豁免類別（spec 075 的五格）。
-	DamageFlagSaveCategoryMask = 0x1f
-	// DamageSaveModifierMask 是運算元 5 真正用到的位元（`2B9Dh` 的 `and 7`）。
-	DamageSaveModifierMask = 0x07
+	// DamageFlagSaveModifierMask（bit 0..4）是**擲豁免時的修正**，不是類別。
+	// 呼叫端把 `旗標 & 1Fh` 與 `運算元5 & 7` 依序推進堆疊
+	//（overlay-03 `2BCEh..2BD6h`），而豁免常式（overlay-24 entry 7、
+	// code `0D61h`）第一個參數 `cbtw` 之後加進 d20，第二個才拿去索引
+	// `record[+6Dh + 類別]`（spec 075）。
+	DamageFlagSaveModifierMask = 0x1f
+	// DamageSaveCategoryMask 是運算元 5 真正用到的位元（`2B9Dh` 的 `and 7`），
+	// 也就是豁免類別。
+	DamageSaveCategoryMask = 0x07
 
 	// UnconsciousState 是打到剛好 0 點的狀態（`+10Ch` = 4）。
 	UnconsciousState = 4
@@ -89,8 +94,9 @@ type DamageRequest struct {
 	DiceCount int
 	DiceSides int
 	Bonus     int
-	// SaveModifier 是運算元 5 的低三位。
-	SaveModifier int
+	// SaveCategory 是運算元 5 的低三位——`record[+6Dh + 類別]` 的索引
+	// （spec 075 的五格）。
+	SaveCategory int
 }
 
 // Applies 回報這一條要不要做事。
@@ -102,8 +108,8 @@ func (r DamageRequest) WholeParty() bool { return r.Flags&DamageFlagWholeParty !
 // AllowsSave 回報要不要擲豁免。
 func (r DamageRequest) AllowsSave() bool { return r.Flags&DamageFlagNoSave == 0 }
 
-// SaveCategory 是豁免類別（spec 075 的五格之一）。
-func (r DamageRequest) SaveCategory() int { return int(r.Flags & DamageFlagSaveCategoryMask) }
+// SaveModifier 是擲豁免時加進 d20 的修正（旗標的低五位）。
+func (r DamageRequest) SaveModifier() int { return int(r.Flags & DamageFlagSaveModifierMask) }
 
 // NewDamageRequest 把五個運算元的值組成一次請求。
 func NewDamageRequest(operands [DamageOperands]uint16) DamageRequest {
@@ -112,6 +118,6 @@ func NewDamageRequest(operands [DamageOperands]uint16) DamageRequest {
 		DiceCount:    int(uint8(operands[1])),
 		DiceSides:    int(uint8(operands[2])),
 		Bonus:        int(uint8(operands[3])),
-		SaveModifier: int(uint8(operands[4]) & DamageSaveModifierMask),
+		SaveCategory: int(uint8(operands[4]) & DamageSaveCategoryMask),
 	}
 }

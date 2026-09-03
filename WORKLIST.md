@@ -641,10 +641,13 @@
   五處落在編號之外（ecl4/10 的 22、ecl5/3・5/4・5/6 的 25），每一處都正好落在
   前一塊的記錄數之內——`WALLDEF4` 的 21 與 `WALLDEF5` 的 24 都是兩筆連著的
   記錄。這是資料全面對得起來的證據，不是單點推測。
-- [ ] **`Pool DAMAGE saving throw category 10 is outside 0..4`**（治具走到
-  野外後面的區域時出現四次）。`2Eh DAMAGE` 的旗標低五位被讀成豁免類別
-  （`DamageFlagSaveCategoryMask = 0x1f`），但類別只有五個。要回頭讀原版的
-  DAMAGE handler，弄清楚那五位到底是什麼。
+- [x] **`Pool DAMAGE saving throw category 10 is outside 0..4`**：讀反了。
+  呼叫端（overlay-03 `2BCEh..2BD6h`）先推 `運算元5 & 7` 再推 `旗標 & 1Fh`，
+  而豁免常式（overlay-24 entry 7、`0D61h`）把第一個參數加進 d20、第二個拿去
+  索引 `record[+6Dh + 類別]`——所以**低五位是修正、運算元 5 才是類別**。
+  10 是 +10 的修正，不是第 10 個類別。spec 084 已更正，
+  `TestDamageRequestFlags` 用 `旗標 0Ah／運算元5 0Ch` 釘住這一組。
+
 - [ ] **`NEWECL FF` 要當成「不換區」**（治具走到 ecl1/24 那一帶時出現十幾次）。
   ecl1/24 的入口 0 是離開這一區的處理（`992Eh` 讀 `DS:6DD5h`），依朝向查兩張
   平行的八格表：`99A8h` 決定 `LOAD FILES` 要載哪一張 GEO、`99B0h` 決定要

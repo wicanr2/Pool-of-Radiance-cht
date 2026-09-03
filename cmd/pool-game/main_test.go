@@ -1070,17 +1070,24 @@ func TestDamageStateBoundaries(t *testing.T) {
 
 // 旗標的四個位元各自管什麼（spec 084）。bit 7 沒設整條不做事，
 // 少判這一個會讓不該扣血的地方扣血。
+//
+// 低五位是**豁免修正**、運算元 5 的低三位才是**類別**：呼叫端
+// （overlay-03 `2BCEh..2BD6h`）先推 `運算元5 & 7` 再推 `旗標 & 1Fh`，
+// 而豁免常式（overlay-24 entry 7、`0D61h`）把第一個參數加進 d20、
+// 第二個拿去索引 `record[+6Dh + 類別]`。
 func TestDamageRequestFlags(t *testing.T) {
 	quiet := gamepack.NewDamageRequest([gamepack.DamageOperands]uint16{0x00, 1, 6, 0, 0})
 	if quiet.Applies() {
 		t.Fatal("bit 7 沒設卻要動手")
 	}
-	party := gamepack.NewDamageRequest([gamepack.DamageOperands]uint16{0x80 | 0x40 | 0x03, 2, 8, 3, 0x0f})
+	// 低五位 0Ah＝修正 +10；運算元 5 的 0Ch & 7 ＝ 類別 4（法術）。
+	// 10 這個值先前被當成類別，於是治具走到野外後面的區域時會失敗即關閉。
+	party := gamepack.NewDamageRequest([gamepack.DamageOperands]uint16{0x80 | 0x40 | 0x0a, 2, 8, 3, 0x0c})
 	if !party.Applies() || !party.WholeParty() || !party.AllowsSave() {
 		t.Fatalf("%+v", party)
 	}
-	if party.SaveCategory() != 3 || party.SaveModifier != 7 {
-		t.Fatalf("category=%d modifier=%d", party.SaveCategory(), party.SaveModifier)
+	if party.SaveModifier() != 10 || party.SaveCategory != 4 {
+		t.Fatalf("modifier=%d category=%d", party.SaveModifier(), party.SaveCategory)
 	}
 	if party.DiceCount != 2 || party.DiceSides != 8 || party.Bonus != 3 {
 		t.Fatalf("%+v", party)
