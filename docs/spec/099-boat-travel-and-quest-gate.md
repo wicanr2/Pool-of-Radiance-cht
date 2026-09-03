@@ -89,5 +89,19 @@ OUT IS GOING TO SOKAL KEEP. YOU CAN CATCH IT AT THE END OF THE PIER.'」。
    `TestSokalKeepOpensTheOtherBoatRoutes` 已經證明這一段推得動：探索器拿到
    裝備、打贏那一場、`DS:4A21h` 變成 255，鬼魂說出 SAMOSUD，
    `DS:4AA7h` 變成 254。
-4. **還缺一步**：要回碼頭去用那些航線，得先離開要塞，而離開要塞與往貧民窟
-   都掛在 `DS:6DD5h` 上，remake 從來沒寫過它。詳見 spec 100。
+4. 要回碼頭去用那些航線，得先離開要塞；離開要塞與往貧民窟都掛在
+   `DS:6DD5h` 上，那一條已經接上（spec 100）。
+
+## 現況（2026-09-03）
+
+探索器實際跑出 `DS:4A21h = 255`、`DS:4AA7h = 254`——**要塞打得完，碼頭的
+其他航線開得起來**。擋在中間的是兩個輸入層的東西，不是劇情：
+
+- 戰術地圖上的 I 與 K 被地圖上的「裝備」與「法術書」快捷鍵吃掉，而那兩個
+  鍵是方向 1 與方向 6。角色往那兩個方向走會開錯畫面，回合結束不了，
+  一場架就把整趟探索的預算吃光（`a.tactical == nil` 補在 `Update` 的三個
+  分支上，測試 `TestCombatMovementKeysAreNotMapShortcuts`）。
+- 商店只有 Escape 出得去；探索器一律按 Enter，於是城區 (15,8) 的商店
+  一直被開回來。
+
+修掉這兩個之後，同一趟走的步數從 587 變成 60357。

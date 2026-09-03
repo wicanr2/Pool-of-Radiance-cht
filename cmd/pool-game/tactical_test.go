@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -461,5 +462,35 @@ func TestWalkingIntoAFoeStillAttacks(t *testing.T) {
 	}
 	if state.HitPoints[2] >= before {
 		t.Fatalf("a foe took no damage (%d then %d)", before, state.HitPoints[2])
+	}
+}
+
+// 戰術地圖上的 I 與 K 是移動鍵（方向 1 與方向 6，spec 053 的 H I M Q P O K G），
+// 不是地圖上的「裝備」與「法術書」。少了這一條，隊伍往東北或西南走會開錯畫面，
+// 那個角色的回合永遠結束不了——整場架就卡住。
+func TestCombatMovementKeysAreNotMapShortcuts(t *testing.T) {
+	for _, probe := range []struct {
+		name string
+		key  ebiten.Key
+		open func(*app) bool
+	}{
+		{"裝備", ebiten.KeyI, func(a *app) bool { return a.equipmentOpen }},
+		{"法術書", ebiten.KeyK, func(a *app) bool { return a.spellsOpen }},
+		{"手札", ebiten.KeyJ, func(a *app) bool { return a.journalOpen }},
+	} {
+		state := newAttackState()
+		state.Grid = combat.TacticalGrid{IgnoreTerrain: true, Terrain: make([]uint8, 1250)}
+		state.Roster[1].X, state.Roster[1].Y = 10, 10
+		state.Budgets[1] = 24
+		state.Mover = 1
+		application := &app{roller: fixedRoller{20}, tactical: state,
+			language: languageEnglish, mode: modeAdventure, tacticalPreview: true}
+		application.state.Party = []poolsave.Character{{Name: "HERO", ClassID: "fighter"}}
+		if err := press(application, probe.key); err != nil {
+			t.Fatalf("%s：%v", probe.name, err)
+		}
+		if probe.open(application) {
+			t.Errorf("戰鬥中按 %v 開了%s", probe.key, probe.name)
+		}
 	}
 }

@@ -178,9 +178,9 @@ type app struct {
 	// 選目標那一步（原版 overlay-13 的 `Next Prev Manual`）。
 	castTargeting       bool
 	castTargetingAttack bool
-	castTargets      []uint8
-	castTargetCursor int
-	castPending      castOption
+	castTargets         []uint8
+	castTargetCursor    int
+	castPending         castOption
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
 	// experienceTable 是昇級門檻（spec 071）。
@@ -437,17 +437,21 @@ func (a *app) Update() error {
 		a.openCamp()
 		return nil
 	}
-	if a.mode == modeAdventure && !a.help && a.justPressed(ebiten.KeyK) {
+	// 這三個地圖上的快捷鍵在戰術地圖上是**移動鍵**：K 是方向 6、I 是方向 1
+	// （spec 053 的 H I M Q P O K G）。少了 `a.tactical == nil`，隊伍往那兩個
+	// 方向走會變成開法術書或開裝備，那一場架就再也結束不了——實測索寇要塞的
+	// 遭遇會把整趟探索的預算吃光。E（紮營）本來就擋著，這裡照它接。
+	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.justPressed(ebiten.KeyK) {
 		if err := a.openSpells(); err != nil {
 			a.statusLine = err.Error()
 		}
 		return nil
 	}
-	if a.mode == modeAdventure && !a.help && a.justPressed(ebiten.KeyI) {
+	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.justPressed(ebiten.KeyI) {
 		a.openEquipment()
 		return nil
 	}
-	if a.mode == modeAdventure && !a.help && a.justPressed(ebiten.KeyJ) {
+	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.justPressed(ebiten.KeyJ) {
 		if err := a.openJournal(); err != nil {
 			a.statusLine = err.Error()
 		}

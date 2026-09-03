@@ -42,11 +42,14 @@ type geoExit struct {
 }
 
 type geoBlock struct {
-	Archive    int       `json:"archive"`
-	BlockID    int       `json:"block_id"`
-	Walkable   int       `json:"walkable_cells"`
-	Components int       `json:"components"`
-	Exits      []geoExit `json:"boundary_exits"`
+	Archive    int `json:"archive"`
+	BlockID    int `json:"block_id"`
+	Walkable   int `json:"walkable_cells"`
+	Components int `json:"components"`
+	// CellComponents 是 16 列 × 16 行的元件編號，[y][x]。要問「這兩格走
+	// 不走得到彼此」的時候查它。
+	CellComponents [][]int   `json:"cell_components"`
+	Exits          []geoExit `json:"boundary_exits"`
 }
 
 type report struct {
@@ -312,6 +315,13 @@ func readGEO(number int, block dax.Block) (geoBlock, error) {
 		}
 	}
 	row.Components = next
+	row.CellComponents = make([][]int, geometry.Height)
+	for y := 0; y < geometry.Height; y++ {
+		row.CellComponents[y] = make([]int, geometry.Width)
+		for x := 0; x < geometry.Width; x++ {
+			row.CellComponents[y][x] = component[[2]int{x, y}]
+		}
+	}
 	for y := 0; y < geometry.Height; y++ {
 		for x := 0; x < geometry.Width; x++ {
 			for facing := 0; facing < 4; facing++ {
@@ -325,7 +335,7 @@ func readGEO(number int, block dax.Block) (geoBlock, error) {
 					continue
 				}
 				row.Exits = append(row.Exits, geoExit{X: x, Y: y,
-					Facing: string(facingNames[facing]),
+					Facing:    string(facingNames[facing]),
 					Component: component[[2]int{x, y}]})
 			}
 		}

@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
@@ -288,6 +288,13 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 	return tacticalStepKeys[best]
 }
 
+func boolInt(value bool) int {
+	if value {
+		return 1
+	}
+	return 0
+}
+
 // adjacentToFoe 說目前這一格旁邊有沒有站著還在場的敵人。
 func (pilot *tacticalPilot) adjacentToFoe(state *tacticalState) bool {
 	here := state.Roster[state.Mover]
@@ -352,6 +359,10 @@ const sokalKeepPassword = "SAMOSUD"
 // 沒有上限的話，所有圖都走完之後兩張圖之間會一直來回。
 const exploreMaxTransitionHops = 60
 
+// exploreMaxCombatStall 是「同一個（回合、行動者、提示）連續幾個 tick 還沒
+// 動」的上限。一場架正常會一直換行動者，停住就是卡住了。
+const exploreMaxCombatStall = 4000
+
 // 有目的地走：把每一張圖上「走得到的格子」逐格踩過，換圖就換到新圖上繼續。
 //
 // 隨機走路量的是「不會炸掉」，這一條量的是**世界有多少走得到**——兩個不同的
@@ -407,13 +418,20 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	var plan []exploreStep
 	pilot := &tacticalPilot{}
 	stuck, hops, moved := 0, 0, 0
+	reason := "走完預算"
+	spin := map[string]int{}
+	// 一場架卡住的話，整趟的預算會全部花在戰術地圖上——實測 60 萬個 tick
+	// 裡有 59 萬 9 千個在那裡。停在同一個（回合、行動者）太久就當它卡住，
+	// 記成硬失敗，不要靜靜地把預算吃掉。
+	stallKey, stall := [3]int{-1, -1, -1}, 0
+	menuStall := 0
 	var exit *areaExit
 	var failures []string
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
 	// 的路），要重走找出口時傳一份自己的。
 	rewalks := map[[2]int]int{}
 	lastMap, lastCell := application.spawn.Map, [2]int{-1, -1}
-	walk:
+walk:
 	for step := 0; step < budget; step++ {
 		if application.spawn.Map != lastMap {
 			t.Logf("換圖 GEO%d/%d → GEO%d/%d 位置 (%d,%d) 朝向 %d",
@@ -444,6 +462,60 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 		if application.eventSession != nil {
 			blocks[int(application.eventSession.CurrentBlockID())] = true
 		}
+		switch {
+		case application.programManaging:
+			spin["隊伍管理"]++
+		case application.tactical != nil:
+			spin["戰術地圖"]++
+			key := [3]int{int(application.tactical.Round),
+				int(application.tactical.Mover), boolInt(application.tactical.Prompt)}
+			if key != stallKey {
+				stallKey, stall = key, 0
+			}
+			stall++
+			if stall > exploreMaxCombatStall {
+				counts := application.tactical.sideCounts()
+				failures = append(failures, fmt.Sprintf(
+					"戰術地圖卡住：GEO%d/%d 第 %d 回合行動者 %d（提示 %v，我方 %d 敵方 %d，"+
+						"名冊 %d，施法選單 %v/%v，狀態 %q，是我方 %v）",
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.tactical.Round, application.tactical.Mover,
+					application.tactical.Prompt, counts.Party, counts.Foes,
+					len(application.tactical.Roster), application.castOpen,
+					application.castTargeting, application.tactical.Status,
+					application.tactical.Friendly[application.tactical.Mover]))
+				reason = "戰術地圖卡住"
+				break walk
+			}
+		case application.treasureActive:
+			spin["寶物"]++
+		case application.eclInput != nil:
+			spin["輸入字串"]++
+		case application.cellWaitingMenu:
+			spin["格子選單"]++
+			menuStall++
+			if menuStall > exploreMaxCombatStall {
+				failures = append(failures, fmt.Sprintf(
+					"格子選單卡住：GEO%d/%d (%d,%d) 游標 %d／%v 標籤 %q 文字 %q",
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.spawn.X, application.spawn.Y,
+					application.cellMenuCursor, application.cellMenuOptions,
+					application.eventLabel, application.eventText))
+				reason = "格子選單卡住"
+				break walk
+			}
+		case application.encounter != nil:
+			spin["遭遇"]++
+		case application.combatActive:
+			spin["戰鬥"]++
+		case application.cellEventPending:
+			spin["格子事件"]++
+		case application.mode != modeAdventure:
+			spin[fmt.Sprintf("模式 %v", application.mode)]++
+		default:
+			spin["走路"]++
+			menuStall = 0
+		}
 		busy := application.encounter != nil || application.cellWaitingMenu ||
 			application.cellEventPending || application.combatActive ||
 			application.shopActive || application.treasureActive ||
@@ -472,6 +544,17 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 			}
 			continue
 		}
+		if application.shopActive {
+			// 商店只有 Escape 出得去（`shopInput`）：Enter 是購買，買不起就
+			// 原地不動，而那一格會一直把商店開回來。實測城區 (15,8) 的商店
+			// 把一整趟的預算吃掉五十萬個 tick。
+			plan = nil
+			if err := press(application, ebiten.KeyEscape); err != nil {
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
+			}
+			continue
+		}
 		if application.eclInput != nil {
 			// 索寇要塞的不死者會問通關密語（`INPUT STRING`，spec 087）。
 			// 密語是鬼魂在遊戲裡說的：「TO PASS MY GUARDS ON THE WAY OUT,
@@ -481,7 +564,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 				application.keys = scriptedChars(sokalKeepPassword)
 				if err := application.Update(); err != nil {
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
-				break walk
+					break walk
 				}
 				continue
 			}
@@ -496,7 +579,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 			if application.tactical != nil {
 				if err := press(application, pilot.key(application)); err != nil {
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
-				break walk
+					break walk
 				}
 				continue
 			}
@@ -515,7 +598,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 				if application.cellMenuCursor != want {
 					if err := press(application, ebiten.KeyArrowRight); err != nil {
 						failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
-				break walk
+						break walk
 					}
 					continue
 				}
@@ -585,6 +668,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 				}
 				stuck++
 				if stuck > 3 {
+					reason = "走不動：這一張沒有沒踩過的格子，也沒有走得到的出口"
 					break
 				}
 				continue
@@ -606,7 +690,8 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 		before := application.spawn
 		if err := press(application, ebiten.KeyArrowUp); err != nil {
 			failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
-				break walk
+			reason = "按鍵失敗"
+			break walk
 		}
 		if application.spawn.Map != before.Map ||
 			(application.spawn.X == before.X && application.spawn.Y == before.Y) {
@@ -616,6 +701,19 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 		moved++
 		plan = plan[1:]
 	}
+	t.Logf("這一趟結束於 GEO%d/%d (%d,%d)：%s（走了 %d 步）",
+		application.spawn.Map.Archive, application.spawn.Map.BlockID,
+		application.spawn.X, application.spawn.Y, reason, moved)
+	spinKeys := make([]string, 0, len(spin))
+	for key := range spin {
+		spinKeys = append(spinKeys, key)
+	}
+	sort.Slice(spinKeys, func(i, j int) bool { return spin[spinKeys[i]] > spin[spinKeys[j]] })
+	parts := make([]string, 0, len(spinKeys))
+	for _, key := range spinKeys {
+		parts = append(parts, fmt.Sprintf("%s %d", key, spin[key]))
+	}
+	t.Logf("  這一趟的迴圈花在：%s", strings.Join(parts, "、"))
 	if hardFailures != nil {
 		*hardFailures = append(*hardFailures, failures...)
 	}
@@ -747,6 +845,9 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	}
 	if !ok {
 		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	for _, failure := range hardFailures {
+		t.Logf("硬失敗：%s", failure)
 	}
 	t.Logf("走到的地圖：%d 張；ECL block：%d 個", len(maps), len(blocks))
 	t.Logf("旗標 4A21=%d（要塞的裝備與那一場架）4AA7=%d（碼頭航線）4AC4=%d 6E12=%d",
