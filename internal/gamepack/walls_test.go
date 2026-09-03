@@ -3,6 +3,8 @@ package gamepack
 import (
 	"path/filepath"
 	"testing"
+
+	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
 
 func TestDOSInitialPieceSetMatchesLoadPiecesEvidence(t *testing.T) {
@@ -26,7 +28,7 @@ func TestDOSInitialPieceSetMatchesLoadPiecesEvidence(t *testing.T) {
 
 func TestDOSSlumsThreePieceSlotsMatchECL2Block20(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
-	piece, err := ReadDOSPieceSlots(zipPath, 2, [3]uint8{2, 4, 1})
+	piece, err := ReadDOSPieceSlots(zipPath, 2, [3]uint8{2, 4, 1}, graphics.PieceSet{})
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
@@ -37,5 +39,30 @@ func TestDOSSlumsThreePieceSlotsMatchECL2Block20(t *testing.T) {
 		if piece.SymbolSetIDs[index] != want {
 			t.Fatalf("slot %d symbol set=%d, want %d", index+1, piece.SymbolSetIDs[index], want)
 		}
+	}
+}
+
+// FFh 的 slot 不換，沿用上一份的同一格（spec 043 的 handler 只對非 FFh 的
+// selector 呼叫 LoadWallSet）。沒有上一份可以沿用時才報錯。
+func TestPieceSlotsCarryOverTheFFhSentinel(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	base, err := ReadDOSPieceSlots(zipPath, 2, [3]uint8{2, 4, 1}, graphics.PieceSet{})
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	partial, err := ReadDOSPieceSlots(zipPath, 2, [3]uint8{2, 0xFF, 1}, base)
+	if err != nil {
+		t.Fatalf("FFh 那一格沒沿用成功：%v", err)
+	}
+	if len(partial.WallDefs) != 3 {
+		t.Fatalf("沿用之後只剩 %d 個 slot", len(partial.WallDefs))
+	}
+	if partial.SymbolBlockIDs[1] != base.SymbolBlockIDs[1] {
+		t.Errorf("第 2 格是 %d，預期沿用 %d",
+			partial.SymbolBlockIDs[1], base.SymbolBlockIDs[1])
+	}
+	if _, err := ReadDOSPieceSlots(zipPath, 2, [3]uint8{2, 0xFF, 1},
+		graphics.PieceSet{}); err == nil {
+		t.Error("沒有上一份可以沿用時應該報錯")
 	}
 }

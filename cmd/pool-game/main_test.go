@@ -402,10 +402,12 @@ func TestSlumsLoadPiecesResourceReplacesAllThreeWallSlots(t *testing.T) {
 	before := graphics.PieceSet{SetID: 1, Selector: 9}
 	want := graphics.PieceSet{SetID: 1, WallDefs: make([]graphics.WallDef, 3)}
 	application := &app{spawn: gamepack.Spawn{Map: gamepack.MapKey{Archive: 2, BlockID: 20}}, initialWalls: &before}
+	var seen [3]uint8
 	application.loadPieceSlots = func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
-		if archive != 2 || selectors != ([3]uint8{2, 4, 1}) {
-			t.Fatalf("LOAD PIECES archive/selectors=%d/%v", archive, selectors)
+		if archive != 2 {
+			t.Fatalf("LOAD PIECES archive=%d", archive)
 		}
+		seen = selectors
 		return want, nil
 	}
 	event := eclvm.Event{Opcode: 0x37, Arguments: []uint16{2, 4, 1}, ArgumentsValid: []bool{true, true, true}}
@@ -413,10 +415,17 @@ func TestSlumsLoadPiecesResourceReplacesAllThreeWallSlots(t *testing.T) {
 	if err != nil || !consumed || !reflect.DeepEqual(*application.initialWalls, want) {
 		t.Fatalf("consumed=%v err=%v walls=%+v", consumed, err, application.initialWalls)
 	}
-	stable := *application.initialWalls
+	if seen != ([3]uint8{2, 4, 1}) {
+		t.Fatalf("LOAD PIECES selectors=%v", seen)
+	}
+	// `FFh` 是「這一格不換」的哨兵（spec 043 的 handler 只對非 FFh 的 selector
+	// 呼叫 LoadWallSet），要原封不動交給 loader，由它沿用上一份的同一格。
 	event.Arguments[1] = 0xFF
-	if consumed, err := application.applyTransitionResource(event); err == nil || consumed || !reflect.DeepEqual(*application.initialWalls, stable) {
-		t.Fatalf("partial consumed=%v err=%v walls=%+v", consumed, err, application.initialWalls)
+	if consumed, err := application.applyTransitionResource(event); err != nil || !consumed {
+		t.Fatalf("partial consumed=%v err=%v", consumed, err)
+	}
+	if seen != ([3]uint8{2, 0xFF, 1}) {
+		t.Fatalf("FFh 沒有傳到 loader：%v", seen)
 	}
 }
 

@@ -641,6 +641,25 @@ walk:
 			}
 			continue
 		}
+		if application.inWilderness() {
+			// 野外的位置存在 `DS:49C3h`／`DS:49C4h`，不在 GEO 格子上
+			//（spec 105），所以規劃器沒得規劃。輪流轉向再往前走，
+			// 讓它把野外那幾張圖走開。
+			plan, exit = nil, nil
+			spin["野外"]++
+			key := ebiten.KeyArrowUp
+			switch step % 5 {
+			case 0:
+				key = ebiten.KeyArrowRight
+			case 3:
+				key = ebiten.KeyArrowLeft
+			}
+			if err := press(application, key); err != nil {
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
+			}
+			continue
+		}
 		// 這一張踩完之後才刻意走出去：站到邊界那一格、轉向外面、往前一步。
 		// 規劃器本身不跨邊界（見 explorePlan），所以換區一定經過這一段。
 		if exit != nil {

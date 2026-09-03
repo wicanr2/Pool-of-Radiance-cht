@@ -267,7 +267,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.initialWalls = &initialWalls
 	application.loadPieceSlots = func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
-		return gamepack.ReadDOSPieceSlots(zipPath, archive, selectors)
+		previous := graphics.PieceSet{}
+		if application.initialWalls != nil {
+			previous = *application.initialWalls
+		}
+		return gamepack.ReadDOSPieceSlots(zipPath, archive, selectors, previous)
 	}
 	itemTypes, err := gamepack.ReadDOSItemTypeTable(zipPath)
 	if err != nil {
@@ -967,8 +971,9 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 		}
 		selectors := [3]uint8{}
 		for index, value := range event.Arguments {
-			if value > 0xFF || value == 0xFF {
-				return false, fmt.Errorf("Pool partial LOAD PIECES %v is not READY", event.Arguments)
+			// `FFh` 是「這一格不換」的哨兵（spec 043），交給 loader 沿用。
+			if value > 0xFF {
+				return false, fmt.Errorf("Pool LOAD PIECES %v exceeds byte range", event.Arguments)
 			}
 			selectors[index] = uint8(value)
 		}

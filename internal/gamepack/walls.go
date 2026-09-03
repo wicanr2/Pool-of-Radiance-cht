@@ -1,6 +1,7 @@
 package gamepack
 
 import (
+	"reflect"
 	"archive/zip"
 	"fmt"
 	"path/filepath"
@@ -47,11 +48,25 @@ func ReadDOSPieceSet(zipPath string, archive, setID, selector uint8) (graphics.P
 
 // ReadDOSPieceSlots loads all three explicit LOAD PIECES selectors and builds
 // the flat three-band view consumed by the first-person renderer.
-func ReadDOSPieceSlots(zipPath string, archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
+// ReadDOSPieceSlots 載入 `37h LOAD PIECES` 的三個 slot。
+//
+// selector 是 `FFh` 的那一個 slot **不載**，沿用 previous 的同一格：原版的
+// handler 逐 slot 掃三欄，只對非 `FFh` 的呼叫 `LoadWallSet`（spec 043）。
+// previous 沒有那一格時才報錯——那代表遊戲要求沿用一個從來沒載過的 slot。
+func ReadDOSPieceSlots(zipPath string, archive uint8, selectors [3]uint8,
+	previous graphics.PieceSet) (graphics.PieceSet, error) {
 	result := graphics.PieceSet{SetID: 1, Symbols: map[uint8]graphics.Picture{}}
 	for index, selector := range selectors {
 		if selector == 0xFF {
-			return graphics.PieceSet{}, fmt.Errorf("partial LOAD PIECES slot %d is not supported", index+1)
+			if index >= len(previous.WallDefs) || index >= len(previous.SymbolSetIDs) ||
+				index >= len(previous.SymbolBlockIDs) {
+				return graphics.PieceSet{}, fmt.Errorf(
+					"LOAD PIECES slot %d is FFh but no earlier set has that slot", index+1)
+			}
+			result.WallDefs = append(result.WallDefs, previous.WallDefs[index])
+			result.SymbolSetIDs = append(result.SymbolSetIDs, previous.SymbolSetIDs[index])
+			result.SymbolBlockIDs = append(result.SymbolBlockIDs, previous.SymbolBlockIDs[index])
+			continue
 		}
 		piece, err := ReadDOSPieceSet(zipPath, archive, uint8(index+1), selector)
 		if err != nil {
@@ -64,9 +79,21 @@ func ReadDOSPieceSlots(zipPath string, archive uint8, selectors [3]uint8) (graph
 		result.SymbolSetIDs = append(result.SymbolSetIDs, piece.SymbolSetIDs[0])
 		result.SymbolBlockIDs = append(result.SymbolBlockIDs, piece.SymbolBlockIDs[0])
 		for id, picture := range piece.Symbols {
-			if _, exists := result.Symbols[id]; exists {
-				return graphics.PieceSet{}, fmt.Errorf("LOAD PIECES repeats symbol block %d", id)
+			// 同一個編號出現兩次：內容一樣就留第一份（兩個 slot 指到同一塊
+			// 圖形），不一樣才是真的撞號。
+			if existing, exists := result.Symbols[id]; exists {
+				if !reflect.DeepEqual(existing, picture) {
+					return graphics.PieceSet{}, fmt.Errorf(
+						"LOAD PIECES repeats symbol block %d with different pixels", id)
+				}
+				continue
 			}
+			result.Symbols[id] = picture
+		}
+	}
+	// FFh 沿用的那幾格的圖形也要帶過來，否則畫面上會少一塊。
+	for id, picture := range previous.Symbols {
+		if _, exists := result.Symbols[id]; !exists {
 			result.Symbols[id] = picture
 		}
 	}

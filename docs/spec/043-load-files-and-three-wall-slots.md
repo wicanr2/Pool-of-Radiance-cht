@@ -24,7 +24,9 @@ handler 先依序讀三個 byte operands 到 local。opcode `21h LOAD FILES` 時
   （spec 102）時要緊：`LOAD FILES` 不是答案。
 
 opcode `37h LOAD PIECES` 時，正常分支依 slot 1→3 掃三欄；非 `FFh` 的 selector 以
-`LoadWallSet(slot,selector)` 載入。`7Fh` 第一欄是另一條 sentinel：固定載入 slot 1、
+`LoadWallSet(slot,selector)` 載入，**`FFh` 的那一格不換**——remake 這邊沿用上一份
+的同一格（`ReadDOSPieceSlots` 的 `previous`）。先前是失敗即關閉，走到野外那幾張
+圖之後會擋住整條路徑（`LOAD PIECES [1 3 255]`）。`7Fh` 第一欄是另一條 sentinel：固定載入 slot 1、
 selector 0。這保留 Spec 009 的初始多-record wall set。
 
 ## Slums identity
