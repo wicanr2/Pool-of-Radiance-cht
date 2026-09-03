@@ -648,24 +648,20 @@
   10 是 +10 的修正，不是第 10 個類別。spec 084 已更正，
   `TestDamageRequestFlags` 用 `旗標 0Ah／運算元5 0Ch` 釘住這一組。
 
-- [ ] **`NEWECL FF` 要當成「不換區」**（治具走到 ecl1/24 那一帶時出現十幾次）。
-  ecl1/24 的入口 0 是離開這一區的處理（`992Eh` 讀 `DS:6DD5h`），依朝向查兩張
-  平行的八格表：`99A8h` 決定 `LOAD FILES` 要載哪一張 GEO、`99B0h` 決定要
-  `NEWECL` 到哪一個區塊。
+- [ ] **`NEWECL FF` 要當成「不換區」**——證據已閉合，見
+  [spec 107](docs/spec/107-newecl-ff-sentinel.md)，**只差動手**。
 
-  ```
-  索引    0    1    2    3    4    5    6    7
-  GEO    FF   1F   FF   FF   0E   1A   FF   18
-  ECL    FF   FF   FF   FF   0E   1A   FF   FF
-  ```
+  三件事釘住了語意：八個封存檔的區塊編號最大是 29，**沒有 255**；全遊戲五張
+  以變數當 `NEWECL` 目標的表裡**只有 `ecl1/24` 那張有 `FF`**，而且它跟同一列
+  的 `LOAD FILES` 欄成對（`FF` 在那一欄已證實是「不載地圖」，spec 043）；
+  拿原始 GEO 量兩張圖的邊界，走得到的五格裡有四格被腳本明文處理，剩下索引 6
+  （GEO31 往南）兩欄都是 `FF`，沒有守衛——所以 `FF` 自己就得是無害的。
 
-  索引 1（往東）載 GEO 31 但**留在同一個 ECL 區塊**，索引 7（往西）載回
-  GEO 24——block 24 一個腳本管兩張圖。`LOAD FILES` 的 `FF` 已經是「不載地圖」
-  （spec 043），同一張表配對的 `NEWECL FF` 只能是「不換區塊」。前面那兩道
-  `COMPARE @6E82 1／7` 之所以存在，正是因為那兩格要載圖但不換區塊。
-
-  **修的位置在共用 engine**（`eclvm.BlockSession.switchTo` 目前對不存在的區塊
-  直接報錯），而那是另一個 repo，要先取得使用者同意再動。
+  **這是世界巡迴治具目前唯一還在冒的硬失敗**（2026-09-03 量：22 趟裡 7 次，
+  全部來自 ecl1/24）。修的位置在共用 engine 的 `eclvm.BlockSession.switchTo`，
+  而那是另一個 repo，本專案的 push 授權不涵蓋它，**要先取得使用者同意再動**
+  （順帶：該 repo 的 `git config user.email` 是公司位址，動之前要先設 repo-local
+  的 `wicanr2@gmail.com`）。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家
