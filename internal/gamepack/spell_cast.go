@@ -152,6 +152,7 @@ const (
 	SpellIDHaste          = 48 // 2852h
 	SpellIDSlowPoison     = 26 // 1846h
 	SpellIDEnlarge        = 12 // 128Dh
+	SpellIDReadMagic      = 67 // 305Bh
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -299,6 +300,12 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `19AEh` 的四個覆寫參數是 0／1／0／0。08BCh 之後還有一段
 		// （`19D1h` 起，推效果碼 17h）還沒讀，那是把鎚子生出來的部分。
 		effect.EffectParameter = 1
+	case SpellIDReadMagic:
+		// `305Bh` 其實就是泛型版型，只是三個參數不是字面值：法術編號推的是
+		// `DS:6779h`（目前這一支），等級覆寫推 FFh，效果參數推 1。
+		// 版型比對是逐位元組的，所以它落在泛型之外——語意上沒有差別。
+		effect.CasterLevelOverride = 0xff
+		effect.EffectParameter = 1
 	case SpellIDEnlarge:
 		// `1293h` 把效果碼 12h 寫進 `DS:47A6h`，再依施法者等級把
 		// `DS:47A7h` 設成 EnlargeMagnitudeByLevel 那一格。
@@ -388,7 +395,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDCureBlindness, SpellIDRemoveCurse, SpellIDFireballAlt,
 		SpellIDMagicMissileAlt, SpellIDNoOperation, SpellIDGuardedGeneric,
 		SpellIDGreaterHeal, SpellIDLesserHeal, SpellIDHaste, SpellIDSlowPoison,
-		SpellIDEnlarge,
+		SpellIDEnlarge, SpellIDReadMagic,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}
