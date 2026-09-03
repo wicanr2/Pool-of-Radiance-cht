@@ -797,8 +797,15 @@ func (a *app) moveInitialDungeonForward() error {
 		a.statusLine = "Face a cardinal direction before moving forward."
 		return nil
 	}
-	if a.inWilderness() {
-		return a.moveWildernessForward()
+	// 野外的一步是**兩件事一起發生**：引擎照一般規則在載入的 GEO 上走一格，
+	// 而那一區的 ECL 入口 0 同時把野外座標 `49C3`／`49C4` 往前推一格
+	// （spec 105）。前端要做的只是「先把方向交給 ECL、事後把算出來的野外
+	// 座標收回去」，不是換一條移動路徑——野外那三個區塊都有自己的 GEO
+	// （進去時 `LOAD FILES 6, 6, 0`），也照樣用 `CALL @C018` 重畫牆。
+	wilderness := a.inWilderness() && a.eventMachine != nil
+	if wilderness {
+		a.eventMachine.Memory[wildernessFacing] = wildernessFacingIndex(a.spawn.Facing)
+		a.eventMachine.Memory[wildernessRefuse] = 0
 	}
 	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
 		a.statusLine = "A wall or locked door blocks the way."
@@ -818,6 +825,14 @@ func (a *app) moveInitialDungeonForward() error {
 		if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
 			return a.pauseInitialCellResult(result)
 		}
+		if wilderness {
+			if a.eventMachine.Memory[wildernessRefuse] == 255 {
+				a.statusLine = "The wilderness step was refused by the original script."
+				return a.beginInitialSearch()
+			}
+			a.eventMachine.Memory[wildernessX] = a.eventMachine.Memory[wildernessNextX]
+			a.eventMachine.Memory[wildernessY] = a.eventMachine.Memory[wildernessNextY]
+		}
 		// 腳本自己叫過 `CALL C01Eh` 就已經走過那一步了，不能再走一次。
 		if !a.cellMovedByScript {
 			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
@@ -829,40 +844,6 @@ func (a *app) moveInitialDungeonForward() error {
 	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
-}
-
-// moveWildernessForward 走野外的一步（spec 105）。
-//
-// 野外的移動是 ECL 自己做的：入口 0 把 `49C3`／`49C4` 抄進 `00FB`／`00FC`，
-// 再用八支 `ON GOSUB` 依 `DS:033Dh` 的方向 ±1；不給走的時候寫
-// `DS:6DC9h = 255`。所以前端只要給方向、事後把算出來的位置收回去。
-//
-// **畫面那一層還沒接**：野外用哪一張圖、怎麼投影成格子還沒讀（spec 105 的
-// OPEN），所以隊伍在 GEO 上的座標不動，只有野外座標在走。
-func (a *app) moveWildernessForward() error {
-	if a.eventMachine == nil {
-		return fmt.Errorf("Pool wilderness step needs the event machine")
-	}
-	a.eventMachine.Memory[wildernessFacing] = wildernessFacingIndex(a.spawn.Facing)
-	a.eventMachine.Memory[wildernessRefuse] = 0
-	result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
-	if err != nil {
-		return fmt.Errorf("dispatch Pool wilderness cell: %w", err)
-	}
-	result, err = a.consumeInitialTransitionResources(result)
-	if err != nil {
-		return err
-	}
-	if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
-		return a.pauseInitialCellResult(result)
-	}
-	if a.eventMachine.Memory[wildernessRefuse] == 255 {
-		a.statusLine = "The wilderness step was refused by the original script."
-		return a.beginInitialSearch()
-	}
-	a.eventMachine.Memory[wildernessX] = a.eventMachine.Memory[wildernessNextX]
-	a.eventMachine.Memory[wildernessY] = a.eventMachine.Memory[wildernessNextY]
-	return a.beginInitialSearch()
 }
 
 // wildernessFacingIndex 把四方位的朝向換成那張八支 `ON GOSUB` 的索引。

@@ -150,3 +150,74 @@ func TestBuyingTheEastRouteSailsIntoTheWilderness(t *testing.T) {
 		t.Errorf("野外 Y = %d，要 29", got)
 	}
 }
+
+// 野外的一步是兩件事一起發生：引擎在載入的 GEO 上走一格，那一區的 ECL 入口 0
+// 同時把野外座標 `49C3`／`49C4` 往前推一格（spec 105）。走一步之後兩個位置
+// 都要動；被牆擋住時兩個都不動。
+func TestAWildernessStepMovesBothPositions(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application := bootCityParty(t, zipPath)
+	if application.spawn.Map.BlockID != 0 {
+		t.Skipf("開場沒有停在城區，而是 GEO%d/%d",
+			application.spawn.Map.Archive, application.spawn.Map.BlockID)
+	}
+	application.eventMachine.Memory[0x4AA7] = 254
+	application.eventMachine.Memory[0x4A01] = 255
+	application.spawn.X, application.spawn.Y, application.spawn.Facing = 11, 2, 0
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 200 && !application.cellWaitingMenu; tick++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := press(application, ebiten.KeyArrowRight); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 400 && application.cellEventPending; tick++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+	}
+	application.spawn.X, application.spawn.Y, application.spawn.Facing = 14, 1, 1
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	for tick := 0; tick < 600 && application.spawn.Map.BlockID == 0; tick++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !application.inWilderness() {
+		t.Fatalf("沒有進到野外：ECL block %d", application.eventSession.CurrentBlockID())
+	}
+	for tick := 0; tick < 50 && application.cellEventPending; tick++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+	}
+	beforeCell := [2]uint8{application.spawn.X, application.spawn.Y}
+	beforeWild := [2]uint16{application.eventMachine.Memory[wildernessX],
+		application.eventMachine.Memory[wildernessY]}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	afterCell := [2]uint8{application.spawn.X, application.spawn.Y}
+	afterWild := [2]uint16{application.eventMachine.Memory[wildernessX],
+		application.eventMachine.Memory[wildernessY]}
+	if afterCell == beforeCell {
+		t.Fatalf("GEO 上的位置沒有動：%v（狀態 %q）", afterCell, application.statusLine)
+	}
+	if afterWild == beforeWild {
+		t.Fatalf("野外座標沒有動：%v（狀態 %q）", afterWild, application.statusLine)
+	}
+	// 往東走一步：GEO 的 X 加一（會繞回），野外的 X 也加一，Y 都不動。
+	if afterCell[1] != beforeCell[1] || afterWild[1] != beforeWild[1] {
+		t.Errorf("往東走卻改了 Y：GEO %v→%v 野外 %v→%v",
+			beforeCell, afterCell, beforeWild, afterWild)
+	}
+	if afterWild[0] != beforeWild[0]+1 {
+		t.Errorf("野外 X %d→%d，要加一", beforeWild[0], afterWild[0])
+	}
+}
