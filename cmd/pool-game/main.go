@@ -903,7 +903,8 @@ func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Resu
 		}
 		next, err := a.eventSession.RunUntilEvent(4096, nil, true)
 		if err != nil {
-			return result, fmt.Errorf("continue Pool transition resource 0x%02X: %w", event.Opcode, err)
+			return result, fmt.Errorf("continue Pool transition resource 0x%02X from ecl%d/%d: %w",
+				event.Opcode, a.eclArchive, a.eventSession.CurrentBlockID(), err)
 		}
 		result = next
 	}

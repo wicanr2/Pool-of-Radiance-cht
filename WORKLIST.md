@@ -630,9 +630,13 @@
   （`DamageFlagSaveCategoryMask = 0x1f`），但類別只有五個。要回頭讀原版的
   DAMAGE handler，弄清楚那五位到底是什麼。
 - [ ] **`ECL session target block 0xFF is unavailable`**（治具走到野外後面的
-  區域時出現五次）。`NEWECL` 的目標是變數，讀到還沒被主線設起來的 255。
-  255 是全遊戲的「沒有」哨兵，但**原版對 `NEWECL 255` 的處置還沒讀**，
-  不要先猜。
+  區域時出現十幾次，全部來自 ecl1/24）。查到的是：ecl1/24 的入口 0 是離開這
+  一區的處理（`992Eh` 讀 `DS:6DD5h`），依朝向查 `99B0h` 那張八格表決定要
+  `NEWECL` 到哪，而**那張表本身就有六格是 `FF`**
+  （`FF FF FF FF 0E 1A FF FF`），只有朝向 1 與 7 被前面的兩道 `COMPARE` 擋掉。
+  geo1/24 的邊界出口只有 `(15,4)E` 與 `(15,11)E` 兩個（都是朝向 1），
+  所以原版正常玩應該碰不到 `FF` 那幾格。**要確認的是**：remake 走到那裡時
+  朝向為什麼不是 1，以及 `NEWECL FF` 在原版到底會怎樣。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家

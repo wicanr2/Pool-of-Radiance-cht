@@ -146,9 +146,13 @@ func (a *app) savingThrowFor(member poolsave.Character, category, modifier int) 
 	if err != nil {
 		return false, err
 	}
-	if category >= gamepack.SavingThrowCategories {
-		return false, fmt.Errorf("Pool DAMAGE saving throw category %d is outside 0..%d",
-			category, gamepack.SavingThrowCategories-1)
+	// 類別是旗標的低五位（`2B95h` 的 `and 1Fh`），所以值可以超過五個類別。
+	// 原版不檢查，直接拿它去索引記錄的 `+6Dh + 類別`——全遊戲只有一處這樣：
+	// 旗標 `CAh`（全隊、要豁免、類別 10），會讀到 `+77h`。那一格是什麼還沒
+	// 讀，所以這裡取「最差的目標值」：只有自然 20 過得了。
+	target := int(gamepack.SavingThrowWorstTarget)
+	if category < gamepack.SavingThrowCategories {
+		target = int(targets[category])
 	}
 	roll := a.rollDice(1, gamepack.SavingThrowDie)
 	if roll == 1 {
@@ -157,5 +161,5 @@ func (a *app) savingThrowFor(member poolsave.Character, category, modifier int) 
 	if roll == gamepack.SavingThrowDie {
 		return true, nil
 	}
-	return int(targets[category]) <= roll+modifier, nil
+	return target <= roll+modifier, nil
 }
