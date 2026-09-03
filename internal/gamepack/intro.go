@@ -245,6 +245,25 @@ func ReadDOSInitialEvent(zipPath string) (InitialEvent, error) {
 // InitialEventPassthrough 讓盤點工具讀到同一份清單，不必自己再抄一次。
 func InitialEventPassthrough() map[byte]bool { return initialEventPassthrough() }
 
+// CellEventPassthrough 是格子事件那條路要讓前端看到的 opcode。
+// 掃描工具與前端共用同一份，兩邊看到的邊界才會一致。
+func CellEventPassthrough() map[byte]bool { return initialEventPassthrough() }
+
+// NewCellSweepSession 為任何一個 ECL 區塊建一個乾淨的 session，供整包掃描用。
+//
+// 這**不是**正常遊玩：變數都從 0 開始，沒有走過主線，所以它只回答
+// 「每一格的入口跑不跑得動、停在哪一種邊界」，不回答「玩家走得到嗎」。
+func NewCellSweepSession(archive ECLArchive, blockID uint16) (*eclvm.BlockSession, error) {
+	if len(archive.Blocks) == 0 {
+		return nil, fmt.Errorf("Pool ECL archive %d has no blocks", archive.Number)
+	}
+	if _, ok := archive.Blocks[blockID]; !ok {
+		return nil, fmt.Errorf("Pool ECL archive %d has no block %d", archive.Number, blockID)
+	}
+	return eclvm.NewBlockSession(archive.Blocks, blockID, 0x9900, 0, 5,
+		initialEventPassthrough(), 1)
+}
+
 func initialEventPassthrough() map[byte]bool {
 	return map[byte]bool{
 		0x0C: true, // SETUP MONSTER
