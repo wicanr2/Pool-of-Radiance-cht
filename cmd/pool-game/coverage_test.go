@@ -298,6 +298,46 @@ func (pilot *tacticalPilot) adjacentToFoe(state *tacticalState) bool {
 	return false
 }
 
+// planToCells 找到最近的一格目標並回傳走過去的朝向序列，走不到就回 nil。
+// wanted 收的是「這一格是不是要去的」。
+func planToCells(app *app, wanted func(x, y int) bool) []exploreStep {
+	type node struct{ x, y int }
+	start := node{int(app.spawn.X), int(app.spawn.Y)}
+	from := map[node]node{start: start}
+	via := map[node]uint8{}
+	queue := []node{start}
+	for len(queue) != 0 {
+		current := queue[0]
+		queue = queue[1:]
+		if current != start && wanted(current.x, current.y) {
+			steps := []exploreStep{}
+			for cursor := current; cursor != start; cursor = from[cursor] {
+				steps = append([]exploreStep{{facing: via[cursor]}}, steps...)
+			}
+			return steps
+		}
+		for facing := 0; facing < 4; facing++ {
+			if !app.initialMap.Grid.CanMoveDungeonWrapped(current.x, current.y, facing*2) {
+				continue
+			}
+			next := node{
+				x: geometry.WrapCoordinate(current.x+exploreDeltas[facing][0], geometry.Width),
+				y: geometry.WrapCoordinate(current.y+exploreDeltas[facing][1], geometry.Height),
+			}
+			if _, seen := from[next]; seen {
+				continue
+			}
+			from[next], via[next] = current, uint8(facing)
+			queue = append(queue, next)
+		}
+	}
+	return nil
+}
+
+// exploreMaxTransitionHops 是「這一張走完了，回頭走另一個換圖點」最多做幾次。
+// 沒有上限的話，所有圖都走完之後兩張圖之間會一直來回。
+const exploreMaxTransitionHops = 60
+
 // 有目的地走：把每一張圖上「走得到的格子」逐格踩過，換圖就換到新圖上繼續。
 //
 // 隨機走路量的是「不會炸掉」，這一條量的是**世界有多少走得到**——兩個不同的
@@ -335,9 +375,13 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	blocks := map[int]bool{}
 	var plan []exploreStep
 	pilot := &tacticalPilot{}
-	stuck := 0
+	stuck, hops := 0, 0
+	// transitionUses 記每一個換圖點被用過幾次，1-based 的鍵是 (archive, block, y*100+x)。
+	transitionUses := map[[3]int]int{}
+	// menuTurn 讓同一格的選單每次選不同的選項。
+	menuTurn := map[[3]int]int{}
 	moved, blocked, replans, busyTicks, turns, lastStep := 0, 0, 0, 0, 0, 0
-	for step := 0; step < 60000; step++ {
+	for step := 0; step < 300000; step++ {
 		if application.initialMap != nil {
 			maps[fmt.Sprintf("GEO%d/%d", application.spawn.Map.Archive,
 				application.spawn.Map.BlockID)] = true
@@ -386,6 +430,22 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 				}
 				continue
 			}
+			if application.cellWaitingMenu && len(application.cellMenuOptions) > 1 {
+				// 每一格的選單輪流選不同的選項。一律停在第 0 項的話，
+				// 「要不要離開這裡」這種問句永遠答同一個答案，另一條路
+				// 就永遠走不到——量出來的世界會比實際小。
+				key := [3]int{int(application.spawn.Map.Archive),
+					int(application.spawn.Map.BlockID),
+					int(application.spawn.Y)*100 + int(application.spawn.X)}
+				want := menuTurn[key] % len(application.cellMenuOptions)
+				if application.cellMenuCursor != want {
+					if err := press(application, ebiten.KeyArrowRight); err != nil {
+						t.Fatalf("第 %d 步硬失敗：%v", step, err)
+					}
+					continue
+				}
+				menuTurn[key]++
+			}
 			if err := press(application, ebiten.KeyEnter); err != nil {
 				t.Fatalf("第 %d 步硬失敗：%v", step, err)
 			}
@@ -395,6 +455,30 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 		if len(plan) == 0 {
 			replans++
 			plan = explorePlan(application, visited)
+			if len(plan) == 0 && hops < exploreMaxTransitionHops {
+				// 這一張踩完了：回頭走一個用得最少的換圖點。少了這一步，
+				// 走完第二張圖就停在那裡，第一張圖上另外三個換圖點永遠
+				// 沒被試過——量出來的世界會比實際小。
+				here := [2]int{int(application.spawn.Map.Archive),
+					int(application.spawn.Map.BlockID)}
+				fewest := -1
+				for key, count := range transitionUses {
+					if key[0] != here[0] || key[1] != here[1] {
+						continue
+					}
+					if fewest < 0 || count < fewest {
+						fewest = count
+					}
+				}
+				if fewest >= 0 {
+					plan = planToCells(application, func(x, y int) bool {
+						return transitionUses[[3]int{here[0], here[1], y*100 + x}] == fewest
+					})
+					if len(plan) != 0 {
+						hops++
+					}
+				}
+			}
 			if len(plan) == 0 {
 				stuck++
 				if stuck > 3 {
@@ -420,6 +504,11 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 		if err := press(application, ebiten.KeyArrowUp); err != nil {
 			t.Fatalf("第 %d 步硬失敗：%v", step, err)
 		}
+		if application.spawn.Map != before.Map {
+			// 這一格是換圖點。記下來，等這一張走完再回來走別的。
+			transitionUses[[3]int{int(before.Map.Archive), int(before.Map.BlockID),
+				int(before.Y)*100 + int(before.X)}]++
+		}
 		if application.spawn.Map != before.Map ||
 			(application.spawn.X == before.X && application.spawn.Y == before.Y) {
 			// 換圖了，或這一步被牆／事件擋住：重算，別照舊計畫硬走。
@@ -444,6 +533,13 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	t.Logf("有目的地走到的地圖 %d 張：%v", len(maps), mapNames)
 	t.Logf("有目的地走到的 ECL block %d 個：%v", len(blocks), blockIDs)
 	t.Logf("踩過的格子 %d 格", len(visited))
+	perMap := map[string]int{}
+	for key := range visited {
+		perMap[fmt.Sprintf("GEO%d/%d", key[0], key[1])]++
+	}
+	for name, count := range perMap {
+		t.Logf("  %s 踩過 %d 格", name, count)
+	}
 	t.Logf("走了 %d 步、轉向 %d 次、被擋 %d 次、重算 %d 次、忙碌 %d tick、最後一步在第 %d 圈",
 		moved, turns, blocked, replans, busyTicks, lastStep)
 	// 走得到的下限。這是**量到的數字**，不是目標：城區之間的移動還沒接上，
