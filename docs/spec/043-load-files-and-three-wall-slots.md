@@ -17,7 +17,11 @@ handler 先依序讀三個 byte operands 到 local。opcode `21h LOAD FILES` 時
 
 - 第一欄不是 `FFh／7Fh` 且隊伍狀態允許時，寫 party `+018Ah` 並呼叫 GEO loader；
 - 第二欄在此 handler 沒有 consumer；
-- 第三欄不是 `FFh` 且另一隊伍狀態成立時走額外 loader，該分支語意尚未閉合。
+- 第三欄不是 `FFh` 且另一隊伍狀態成立時走額外 loader：**那是背景圖庫**。
+  `0E0Fh` 起把 overlay-03 `0D79h` 的 Pascal 字串 `BACPAC` 抄進堆疊上的暫存，
+  再 `0E24h` 以 `(28h, 0)` 呼叫 overlay-33（段 `0147h`）的 `002Ah`。
+  **它不重載 ECL 的變數區**——這一點在追「港務長的船票旗標 `4A01` 是誰清的」
+  （spec 102）時要緊：`LOAD FILES` 不是答案。
 
 opcode `37h LOAD PIECES` 時，正常分支依 slot 1→3 掃三欄；非 `FFh` 的 selector 以
 `LoadWallSet(slot,selector)` 載入。`7Fh` 第一欄是另一條 sentinel：固定載入 slot 1、

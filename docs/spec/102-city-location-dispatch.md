@@ -116,6 +116,8 @@ A233 A2C6 A834 A8BB A942 A9D3 AAD5 AB97 AD7F AE6A
   - **也不是換區時被清掉的。** `NEWECL` 只換掉 `0x9900` 以上的程式碼段
     （`eclvm.Machine.SwitchBlock` 把舊 payload 的位址刪掉再寫新的），
     `0x4A00` 那一帶不動。
+  - **也不是 `LOAD FILES` 的第三欄。** 那一支載的是背景圖庫 `BACPAC`
+    （overlay-03 `0E0Fh`，見 spec 043），不碰 ECL 的變數區。
 
   剩下的可能是 **remake 太早跑到港務長那一支**（照著原版走的話第一次談完就
   該拿到票，之後才回不去），或是原版另有一條還沒讀到的清除路徑。
