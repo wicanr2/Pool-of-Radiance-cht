@@ -359,9 +359,10 @@ const exploreMaxTransitionHops = 60
 // 逐趟把已知的換圖點擋掉，下一趟就會先把這一張走完再換圖。
 func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
 	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
-	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool) (int, bool) {
+	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool,
+	hardFailures *[]string) (int, bool) {
 	return exploreWorldWithFlags(t, zipPath, seed, rotate, rewalkLimit, budget,
-		avoid, walked, transitionUses, menuTurn, visited, maps, blocks, nil)
+		avoid, walked, transitionUses, menuTurn, visited, maps, blocks, nil, hardFailures)
 }
 
 // exploreWorldWithFlags 與 exploreWorld 相同，另外在結束時把幾個 ECL 變數
@@ -369,7 +370,7 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit,
 func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
 	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
 	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool,
-	flags map[uint16]uint16) (int, bool) {
+	flags map[uint16]uint16, hardFailures *[]string) (int, bool) {
 	t.Helper()
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
@@ -400,10 +401,12 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	var plan []exploreStep
 	pilot := &tacticalPilot{}
 	stuck, hops, moved := 0, 0, 0
+	var failures []string
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
 	// 的路），要重走找出口時傳一份自己的。
 	rewalks := map[[2]int]int{}
 	lastMap, lastCell := application.spawn.Map, [2]int{-1, -1}
+	walk:
 	for step := 0; step < budget; step++ {
 		if application.spawn.Map != lastMap {
 			// 換圖不是在「按下前進」那一 tick 發生的：格子事件先跑，
@@ -440,7 +443,8 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 			// 地圖上的隊伍管理畫面吃掉方向鍵。原版按 B 回地圖。
 			plan = nil
 			if err := press(application, ebiten.KeyB); err != nil {
-				t.Fatalf("第 %d 步硬失敗：%v", step, err)
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 			}
 			continue
 		}
@@ -452,7 +456,8 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 				key = ebiten.KeyArrowRight
 			}
 			if err := press(application, key); err != nil {
-				t.Fatalf("第 %d 步硬失敗：%v", step, err)
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 			}
 			continue
 		}
@@ -464,12 +469,14 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 			if application.eclInput.buffer == "" && !application.eclInput.numeric {
 				application.keys = scriptedChars(sokalKeepPassword)
 				if err := application.Update(); err != nil {
-					t.Fatalf("第 %d 步硬失敗：%v", step, err)
+					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 				}
 				continue
 			}
 			if err := press(application, ebiten.KeyEnter); err != nil {
-				t.Fatalf("第 %d 步硬失敗：%v", step, err)
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 			}
 			continue
 		}
@@ -477,7 +484,8 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 			plan = nil
 			if application.tactical != nil {
 				if err := press(application, pilot.key(application)); err != nil {
-					t.Fatalf("第 %d 步硬失敗：%v", step, err)
+					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 				}
 				continue
 			}
@@ -490,14 +498,16 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 				want := menuTurn[key] % len(application.cellMenuOptions)
 				if application.cellMenuCursor != want {
 					if err := press(application, ebiten.KeyArrowRight); err != nil {
-						t.Fatalf("第 %d 步硬失敗：%v", step, err)
+						failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 					}
 					continue
 				}
 				menuTurn[key]++
 			}
 			if err := press(application, ebiten.KeyEnter); err != nil {
-				t.Fatalf("第 %d 步硬失敗：%v", step, err)
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 			}
 			continue
 		}
@@ -552,13 +562,15 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 				key = ebiten.KeyArrowLeft
 			}
 			if err := press(application, key); err != nil {
-				t.Fatalf("第 %d 步硬失敗：%v", step, err)
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 			}
 			continue
 		}
 		before := application.spawn
 		if err := press(application, ebiten.KeyArrowUp); err != nil {
-			t.Fatalf("第 %d 步硬失敗：%v", step, err)
+			failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
 		}
 		if application.spawn.Map != before.Map ||
 			(application.spawn.X == before.X && application.spawn.Y == before.Y) {
@@ -567,6 +579,9 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 		}
 		moved++
 		plan = plan[1:]
+	}
+	if hardFailures != nil {
+		*hardFailures = append(*hardFailures, failures...)
 	}
 	if flags != nil && application.eventMachine != nil {
 		for _, address := range []uint16{0x4A21, 0x4AA7, 0x4AC4, 0x6E12} {
@@ -592,10 +607,11 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	visited := map[[3]int]bool{}
 	maps := map[string]bool{}
 	blocks := map[int]bool{}
+	var hardFailures []string
 	total := 0
 	for pass := 0; pass < 24; pass++ {
 		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 300000,
-			avoid, visited, transitionUses, menuTurn, visited, maps, blocks)
+			avoid, visited, transitionUses, menuTurn, visited, maps, blocks, &hardFailures)
 		if !ok {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -619,16 +635,32 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	t.Logf("走到的地圖 %d 張：%v", len(maps), mapNames)
 	t.Logf("走到的 ECL block %d 個：%v", len(blockIDs), blockIDs)
 	t.Logf("踩過的格子 %d 格，走了 %d 步", len(visited), total)
+	seen := map[string]int{}
+	for _, failure := range hardFailures {
+		key := failure
+		if index := strings.Index(failure, "："); index >= 0 {
+			key = failure[index+len("："):]
+		}
+		seen[key]++
+	}
+	for failure, count := range seen {
+		t.Logf("硬失敗 ×%d：%s", count, failure)
+	}
 	for _, name := range mapNames {
 		t.Logf("  %s 踩過 %d 格", name, perMap[name])
 	}
 	// 走得到的下限。這是**量到的數字**，不是目標。少於這個數代表移動、
 	// 轉場或戰鬥退步了。
+	//
 	if len(visited) < 445 {
 		t.Errorf("只踩到 %d 格，先前量到 448 格（兩張圖都踩滿）", len(visited))
 	}
 	if len(blocks) < 4 {
 		t.Errorf("只走到 %d 個 ECL block", len(blocks))
+	}
+	// 硬失敗一個都不該有。收集起來一次列完，比走到第一個就 Fatal 好查。
+	if len(hardFailures) != 0 {
+		t.Errorf("出現 %d 次硬失敗", len(hardFailures))
 	}
 }
 
@@ -648,8 +680,10 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	flags := map[uint16]uint16{}
 	// 重走同一張圖是為了再踩到出口那一格：出口不會被記成「還沒踩過」，
 	// 所以踩完一遍之後規劃器就不會再挑它，隊伍會困在那一張圖上。
+	var hardFailures []string
 	_, ok := exploreWorldWithFlags(t, zipPath, 7, 0, 6, 600000,
-		avoid, map[[3]int]bool{}, transitionUses, menuTurn, visited, maps, blocks, flags)
+		avoid, map[[3]int]bool{}, transitionUses, menuTurn, visited, maps, blocks,
+		flags, &hardFailures)
 	if !ok {
 		t.Skip("original DOS ZIP is intentionally not tracked")
 	}
