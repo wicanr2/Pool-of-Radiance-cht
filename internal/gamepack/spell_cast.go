@@ -44,6 +44,9 @@ type CastEffect struct {
 	BlockedByEffect uint8
 	// AbilityBonus 是直接加在能力值上的法術（例如友誼術加魅力）。
 	AbilityBonus AbilityBonus
+	// MinimumHitPoints 大於零時：目標的目前生命值低於它就墊上去。
+	// 緩毒術把 0 墊成 1（`188Dh` 的 `cmpb $0, es:[di+11Bh]`）。
+	MinimumHitPoints int
 }
 
 // AbilityBonus 是「把某個能力值加上去，加到上限為止」。
@@ -147,6 +150,7 @@ const (
 	SpellIDGreaterHeal    = 58 // 2E02h
 	SpellIDLesserHeal     = 62 // 2F85h
 	SpellIDHaste          = 48 // 2852h
+	SpellIDSlowPoison     = 26 // 1846h
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
 )
@@ -241,6 +245,7 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	27h Cure Disease   2300h  轉呼叫 225Bh：拿掉六個病痛類的效果碼
 //	2Ah Prayer         249Dh  `(哪一邊 << 4) + 等級` 推在等級覆寫那一格
 //	1Ch Spiritual H.   19A8h  四個覆寫參數 0／1／0／0（生出鎚子那段未讀）
+//	1Ah Slow Poison    1846h  目前生命值是 0 就墊成 1，再走 08BCh
 //	30h Haste          2852h  推效果碼 2Ah 走 2724h，整邊
 //	37h Slow           2BC7h  推效果碼 27h 走 2724h，範圍法術
 //	15h Sleep          1513h  額度 Roll(4, 4) 生命骰，逐個目標依 HD 扣
@@ -292,6 +297,11 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `19AEh` 的四個覆寫參數是 0／1／0／0。08BCh 之後還有一段
 		// （`19D1h` 起，推效果碼 17h）還沒讀，那是把鎚子生出來的部分。
 		effect.EffectParameter = 1
+	case SpellIDSlowPoison:
+		// `1873h` 先問 `010Ah:00A7h(目標, 37h)`（中毒），接著若目前生命值
+		// 是 0 就墊成 1（`1892h`），最後走 `08BCh`，等級覆寫推的是 FFh。
+		effect.MinimumHitPoints = 1
+		effect.CasterLevelOverride = 0xff
 	case SpellIDHaste:
 		// `2858h` 推效果碼 2Ah 與施法者的 `+10Eh`（哪一邊）給 `2724h`，
 		// 與緩速術同一支。訊息是 "is Speedy"。
@@ -370,7 +380,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDPrayer, SpellIDSpiritHammer, SpellIDSlow, SpellIDFriends,
 		SpellIDCureBlindness, SpellIDRemoveCurse, SpellIDFireballAlt,
 		SpellIDMagicMissileAlt, SpellIDNoOperation, SpellIDGuardedGeneric,
-		SpellIDGreaterHeal, SpellIDLesserHeal, SpellIDHaste,
+		SpellIDGreaterHeal, SpellIDLesserHeal, SpellIDHaste, SpellIDSlowPoison,
 		SpellIDFireball, SpellIDLightningBolt:
 		return true
 	}

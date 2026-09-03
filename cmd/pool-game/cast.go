@@ -289,6 +289,17 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	// **模式 4 那三十支原版是讓玩家自己瞄**（overlay-13 `1E09h`），
 	// 那條還沒讀，所以這裡治療打自己、傷害打繞得過去的最近敵人。
 	mode := a.spellParameters[option.ID].TargetMode()
+	// 緩毒術那一類：把倒在 0 的人墊回 1。原版問的是選中的目標。
+	if effect.MinimumHitPoints > 0 {
+		revived := state.Mover
+		if chosen {
+			revived = target
+		}
+		if int(revived) < len(state.HitPoints) &&
+			state.HitPoints[revived] < effect.MinimumHitPoints {
+			state.HitPoints[revived] = effect.MinimumHitPoints
+		}
+	}
 	switch {
 	case len(effect.RemoveEffects) > 0:
 		// 解病術這一類：從施法者身上拿掉那幾個效果碼。原版問的是選中的目標，

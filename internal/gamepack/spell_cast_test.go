@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 26 || generic != 25 || total != 51 {
+	if read != 27 || generic != 25 || total != 52 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 26／25／51，改了實作要一起改", read, generic, total)
+			"文件寫的是 27／25／52，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -505,5 +505,27 @@ func TestHasteAndItsGuardAgree(t *testing.T) {
 	if !parameters[SpellIDHaste].AffectsWholeSide() ||
 		!parameters[SpellIDSlow].AffectsWholeSide() {
 		t.Error("急速與緩速在參數表裡都該是整邊模式")
+	}
+}
+
+// 緩毒術把倒在 0 的人墊回 1。
+func TestSlowPoisonRaisesZeroHitPoints(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	effect, err := CastSpell(SpellIDSlowPoison, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if effect.MinimumHitPoints != 1 {
+		t.Errorf("緩毒術應該把生命值墊到 1，算出 %d", effect.MinimumHitPoints)
+	}
+	if effect.Damage != 0 || effect.Heal != 0 {
+		t.Errorf("緩毒術不是傷害也不是治療：%+v", effect)
+	}
+	// 等級覆寫推的是 FFh，照實接。
+	if effect.CasterLevelOverride != 0xff {
+		t.Errorf("等級覆寫應該是 FFh，算出 %#02x", effect.CasterLevelOverride)
 	}
 }
