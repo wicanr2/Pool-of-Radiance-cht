@@ -103,6 +103,25 @@ remake 從來沒有寫過它，所以兩條路都是死的——這才是「其�
 **還沒證實的是寫入點。** 要閉合得找到誰寫它：從移動服務往下讀，
 看它在套用位移前後改了哪些 DS 變數。
 
+## `LOAD FILES` 的 handler 讀完了（overlay-03 `0D80h`）
+
+順著這條線把 `21h` 那一支逐條讀完，兩件事釘死了：
+
+```
+dc3  cmpb $0FFh, 第一欄 ; je → 跳過地圖載入
+dc9  cmpb $07Fh, 第一欄 ; je → 跳過
+dcf  cmpw $0, es:[di+1CCh] ; 隊伍狀態不允許也跳過
+de4  mov es:[di+18Ah], ax   ; party +18Ah ← 第一欄
+ded  lcall 0131h:0052h      ; ← GEO loader，**只收第一欄**
+dfd  cmpb $0FFh, 第三欄 ; je → 結束；不是 FFh 才走另一個 loader
+```
+
+- **第二欄整支沒有 consumer**（與 spec 043 一致）。
+- **GEO loader（overlay-30 `10EAh`）用 `DS:52D4h` 組檔名**，而 `NEWECL`
+  的 handler（overlay-03 `0CDDh`）組 ECL 檔名用的**也是 `DS:52D4h`**。
+  所以 ECL 與 GEO 共用同一個 archive 編號，remake 目前的模型（一個
+  `spawn.Map.Archive`）是對的。
+
 ## 接上去之前要先修的兩件事
 
 那次實驗也暴露了兩個目前擋著的問題：
@@ -116,6 +135,21 @@ remake 從來沒有寫過它，所以兩條路都是死的——這才是「其�
    GEO7 只有 block 17／22／23／26，沒有 5。那個 5 是拿舊地圖的地形算出來的。
 
 **先修 1 再接 `DS:6DD5h`**，否則接上去只是換一種壞法。
+
+### 已經試過、行不通的清法
+
+旗標只對「這一步」有效，所以要有地方把它清掉。試過三個位置，都不對：
+
+1. `RunInitialSessionCellEntry` 回來之後清 → **來不及**：`NEWECL` 的換區與
+   新區塊的入口 0 都在同一次呼叫裡跑完（`eclvm/session.go` 的 `switchTo`
+   之後是 `continue`，不會返回），新區塊的入口 0 還是看到 1。
+2. `applyTransitionResource` 進來時清 → 沒效果。
+3. 認 `2Dh CALL C01Eh` 來清 → **那個事件根本沒走到 `applyTransitionResource`**
+   （加了印字驗證，一次都沒印）。
+
+**`CALL C01Eh` 仍是最像的答案**：三個 `DS:6DD5h` 的分支後面都緊跟著它
+（城區 `994Bh`、貧民窟 `9945h`、要塞那一支也有）。要接得先弄清楚
+`2Dh` 的事件在 remake 這邊是被誰吃掉的。
 
 ## 這一條與 spec 099 的關係
 
