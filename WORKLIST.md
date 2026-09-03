@@ -747,12 +747,44 @@
   拿原始 GEO 量兩張圖的邊界，走得到的五格裡有四格被腳本明文處理，剩下索引 6
   （GEO31 往南）兩欄都是 `FF`，沒有守衛——所以 `FF` 自己就得是無害的。
 
-- [ ] **GEO1/31 一走得進去就冒出來的兩類卡住**（2026-09-03 發現，還沒查）。
-  巡覽治具目前只記 log 不擋測試：`戰術地圖卡住：GEO1/31 第 20／23 回合
-  行動者 7／10`（都是敵方、提示 false、狀態 `TURN ENDED`），以及
-  `GEO7/23 (1,1) 游標 0／[YES NO]` 的選單卡住。
-  **第一件要先分清楚**：是原本就存在、只是先前走不到那一區，
-  還是敵方回合改成原版規則之後新出現的。
+- [x] **GEO1/31 的戰術地圖卡住**（2026-09-03 修，spec 062 契約 7）。
+  根因是**離場的 combatant 每回合又拿到先攻**：死亡當場兩個入口都把體型與分數
+  歸零了，但 `startRound` 對名冊上每一格重擲，死者於是復活成行動者。接下來
+  整條連鎖都是無聲的——體型 0 的 mover 在目的格探測裡取不到佔格偏移，出界與
+  地形檢查那一整段被略過（那是原版行為，spec 058 契約 6），它走出盤面，
+  `RequiredFacing` 對出界座標九個候選全不成立而回錯誤，錯誤被 `Update` 收進
+  狀態列，每個影格重試一次。
+  修的是 `startRound`：離場者分數一律 0，骰子照擲、結果丟掉（`+3` 的每回合
+  來源還沒讀到，沒有證據前不動亂數流）。`RequiredFacing` 改成出界當場失敗，
+  順帶訂正它「DirectionAny 恆真，搜尋一定會停」那句——界限檢查對 `DirectionAny`
+  一樣生效，出界時九個候選一個都不成立。
+  **不是敵方 AI 改版引入的**：`state.Scores[index] = score` 只由 `20474cb`
+  （2026-09-02 的回合迴圈）引入，之後沒有任何 commit 改過，三個敵方 AI commit
+  也沒碰過 `startRound`／`selectActor`。要走得進這一區、而且架打到二十幾回合
+  有人死，才看得到。
+  驗收：`TestStartRoundKeepsTheFallenOutOfInitiative`（帶正對照，修正前紅、
+  修正後綠）、`TestRequiredFacingRejectsCellsOffTheBoard`，世界巡迴 22 趟的
+  硬失敗從 3 筆歸零，整包測試綠。
+
+- [ ] **GEO7/23 (1,1) 的格子選單卡住**（2026-09-03 定位，還沒修）。
+  重現：世界巡迴 `seed 106`、`destination 2`（102 趟掃描裡只有這一趟走到
+  GEO7/23，走到就卡）。那一格是密碼門，迴圈的形狀是：
+
+      告示牌「'DON'T FORGET THE PASSWORD'…135 136 132 135 136 132」
+        → [YES NO]（提示只有一個 `?`）
+        → 治具答 NO → **告示牌從頭再跑一次** → 無限循環
+
+  兩個疑點要分開查，別混成一個：
+  1. **答完之後事件為什麼從頭重跑**。`cellWaitingMenu` 在整段 4000 個 tick 裡
+     沒有一次變回 false，所以 `finishCellBlock` 沒被走到。要讀 ecl7/23 那一格
+     答 NO 之後的控制流，才知道原版是「離開這一格」還是「再問一次」。
+  2. **提示只剩 `?`**。前半句應該跟告示牌那則是同一段文字；懷疑是
+     `33h PRINT RETURN` 的文字累積把前半清掉了（`pauseAppliedCellResult`
+     已經因為套用兩次踩過一次同類的坑）。這個不會造成卡住，但會讓玩家看不懂
+     在問什麼。
+
+  這一格的密碼是 `NOKNOK`（ecl7/23 的唯一 `INPUT STRING`，`A4CAh`），
+  治具的 `eclPasswords` 已經帶著它——所以答 YES 那一支值得先確認走不走得通。
 
 - [ ] **平台驗收的 workflow 進不了共用 engine**（2026-09-03 實跑
   `gh workflow run platform-smoke.yml` 量到）。`build (macos-14)` 與
@@ -763,11 +795,9 @@
   兩條路二選一，都要使用者決定：加一個有 engine 讀取權的 PAT secret，
   或把 engine 改成 public。在那之前這個 workflow 驗不到任何東西。
 
-  **這是世界巡迴治具目前唯一還在冒的硬失敗**（2026-09-03 量：22 趟裡 7 次，
-  全部來自 ecl1/24）。修的位置在共用 engine 的 `eclvm.BlockSession.switchTo`，
-  而那是另一個 repo，本專案的 push 授權不涵蓋它，**要先取得使用者同意再動**
-  （順帶：該 repo 的 `git config user.email` 是公司位址，動之前要先設 repo-local
-  的 `wicanr2@gmail.com`）。
+  動共用 engine 之前要先取得使用者同意——那是另一個 repo，本專案的 push 授權
+  不涵蓋它。該 repo 的 repo-local `user.email` 已經是 `wicanr2@gmail.com`
+  （全域仍是公司位址，靠 repo-local 蓋掉），進去工作時照例再複查一次。
 - [x] **敵方回合換成原版的接近規則**（2026-09-03，spec 096）。overlay-09 整條
   讀完：**entry 5（`0B3Ch`）是接近迴圈**、**entry 13（`07E8h`）是走一步**。
   原版的順序是「先問武器搆得到誰（射程取自武器型別的 `+0Ch` 減一），搆得到
