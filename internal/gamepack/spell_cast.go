@@ -62,6 +62,16 @@ type CastEffect struct {
 	// SaveModifierByTargetCount 為真代表豁免修正看這一次選了幾個目標，
 	// 算法見 HoldPersonSaveModifier。
 	SaveModifierByTargetCount bool
+	// StrengthValue 非零時：把目標的力量設成它，百分位設成
+	// StrengthPercentile。overlay-24 entry 18 只往上調，本來就更高就不動。
+	StrengthValue      uint8
+	StrengthPercentile uint8
+	// RequiresEffect 非零時：目標身上**沒有**這個效果就什麼都不做。
+	// 縮小術要求 `0Ch`（被變大過）。與 BlockedByEffect 方向相反。
+	RequiresEffect uint8
+	// MessageOnly 為真代表這一支過了前面的關卡之後**只印一句話**，
+	// 不掛效果、不解效果、不算傷害。縮小術就是這樣。
+	MessageOnly bool
 }
 
 // AbilityBonus 是「把某個能力值加上去，加到上限為止」。
@@ -182,6 +192,8 @@ const (
 	SpellIDLightningBolt  = 51 // 2B75h
 	SpellIDCharmPerson    = 10 // 11C5h
 	SpellIDSnakeCharm     = 27 // 18F9h
+	SpellIDReduce         = 13 // 135Eh
+	SpellIDGiantStrength  = 59 // 2E9Ah
 )
 
 
@@ -375,10 +387,26 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.CasterLevelOverride = 0xff
 		effect.EffectParameter = 1
 	case SpellIDEnlarge:
-		// `1293h` 把效果碼 12h 寫進 `DS:47A6h`，再依施法者等級把
-		// `DS:47A7h` 設成 EnlargeMagnitudeByLevel 那一格。
+		// `128Dh`：力量設成 18、百分位依施法者等級查 EnlargeMagnitudeByLevel，
+		// 交給 overlay-24 entry 18；成功才印 `has been enlarged`，
+		// 最後一律用 `0100h:0052h` 掛效果碼 `0Ch`。
 		effect.EffectCode = EnlargeEffectCode
-		effect.EffectParameter = int(enlargeMagnitude(casterLevel))
+		effect.StrengthValue = EnlargeStrengthValue
+		effect.StrengthPercentile = enlargeMagnitude(casterLevel)
+		effect.EffectParameter = int(effect.StrengthPercentile)
+	case SpellIDGiantStrength:
+		// `2E9Ah`：力量設成 21、沒有百分位，訊息是 `is stronger`，
+		// 效果碼 `26h`。與變大術同一支 overlay-24 entry 18。
+		effect.EffectCode = GiantStrengthEffectCode
+		effect.StrengthValue = GiantStrengthValue
+	case SpellIDReduce:
+		// `135Eh`：三道關卡都過才印 `has been reduced`——沒有目標就返回、
+		// 豁免成功（`0100h:0043h(目標, 4, 0)` 回非零）就返回、目標身上
+		// 沒有效果 `0Ch`（沒被變大過）也返回。**過了之後整支只印一句話**：
+		// 不掛效果、不解掉 `0Ch`、不算傷害。照碼接，不補原版沒有的行為。
+		effect.RequiresEffect = EnlargeEffectCode
+		effect.MessageOnly = true
+		effect.EffectCode = 0
 	case SpellIDSlowPoison:
 		// `1873h` 先問 `010Ah:00A7h(目標, 37h)`（中毒），接著若目前生命值
 		// 是 0 就墊成 1（`1892h`），最後走 `08BCh`，等級覆寫推的是 FFh。
@@ -483,7 +511,8 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDGreaterHeal, SpellIDLesserHeal, SpellIDHaste, SpellIDSlowPoison,
 		SpellIDEnlarge, SpellIDReadMagic,
 		SpellIDFireball, SpellIDLightningBolt,
-		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm:
+		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm,
+		SpellIDReduce, SpellIDGiantStrength:
 		return true
 	}
 	return false
@@ -515,14 +544,35 @@ func StrengthSpellDie(levels [ClassThac0ClassCount]uint8) (count, sides int) {
 }
 
 // EnlargeMagnitudeByLevel 是變大術（overlay-22 `128Dh`）依施法者等級寫進
-// `DS:47A7h` 的值。索引就是等級，0 那格走不到。
-//
-// 效果碼是 `12h`（`1293h` 寫進 `DS:47A6h`）。這些值看起來是百分比，
-// 但**用途還沒讀**——寫下來是因為它們是原版的位元組，不是推測。
+// `DS:47A7h` 的值，也就是要設成的**特殊力量百分位**：0、1、51、76、91、100
+// 正是 AD&D 的 18/00、18/01、18/51、18/76、18/91 五段。索引就是等級，
+// 0 那格走不到。
 var EnlargeMagnitudeByLevel = [7]uint8{0, 0, 1, 0x33, 0x4c, 0x5b, 0x64}
 
-// EnlargeEffectCode 是變大術掛的效果碼。
-const EnlargeEffectCode = 0x12
+// StrengthSpellValue 是「把力量設成這個值」的法術要設成多少。
+//
+// `1293h` 寫進 `DS:47A6h` 的 `12h` **不是效果碼，是十進位的 18**：
+// 它與 `DS:47A7h` 一起交給 overlay-24 entry 18（`1158h`），那一支拿
+// `[bp+0Ch]` 跟記錄 `+10h`（力量）比、`[bp+0Ah]` 跟 `+16h`（特殊力量
+// 百分位）比，**只往上調不往下調**，而且只有 `[bp+0Ch] == 12h` 時才比
+// 百分位——18 是唯一有百分位的力量值。編號 3Bh 那一支推的是 `15h` ＝ 21，
+// 訊息是 `is stronger`。
+const (
+	EnlargeStrengthValue    = 18
+	GiantStrengthValue      = 21
+	StrengthRecordOffset    = 0x10
+	StrengthPercentileOffset = 0x16
+)
+
+// EnlargeEffectCode 是變大術掛的效果碼：參數表 `+0Ah` 與 `1331h` 的
+// `mov al, 0Ch`（推給掛效果的 `0100h:0052h`）兩條路都指到 `0Ch`。
+// 縮小術要求目標身上有它，overlay-24 entry 18 也拿 `0Ch` 與 `26h`
+// 去找既有的力量效果節點。
+const EnlargeEffectCode = 0x0c
+
+// GiantStrengthEffectCode 是編號 3Bh（`2E9Ah`）掛的效果碼，
+// 同樣兩條路對得上：參數表 `+0Ah` 是 `26h`，`1158h` 也認這個碼。
+const GiantStrengthEffectCode = 0x26
 
 // enlargeMagnitude 取變大術那張表的一格。等級超出範圍就取最後一格——
 // 原版的比較鏈只寫到 6，再上去不會改 `DS:47A7h`，而它上一輪留下的值

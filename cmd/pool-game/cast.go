@@ -280,6 +280,31 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			}
 		}
 	}
+	// 反過來的那一支：縮小術要求目標**身上有**效果 `0Ch`（被變大過），
+	// 沒有就整支不做（`1382h` 問 `0100h:006Bh(目標, 0Ch)`，為零就返回）。
+	if effect.RequiresEffect != 0 {
+		has := false
+		if chosen && int(target) < len(state.Roster) {
+			if slot, ok := a.moverPartyIndex(target); ok {
+				for _, value := range a.state.Party[slot].Effects {
+					if value == effect.RequiresEffect {
+						has = true
+					}
+				}
+			}
+		}
+		if !has {
+			member.Memorised[option.Slot] = 0
+			syncTrainedLibraryCharacter(&a.state, *member)
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
+				option.Label, target))
+			state.endTurn(a.rollDice, false)
+			if state.Finished {
+				return a.finishCombat(state.Outcome)
+			}
+			return nil
+		}
+	}
 	// 記憶的那一格用掉了，不論打不打得中——原版也是先耗掉才判定。
 	member.Memorised[option.Slot] = 0
 	syncTrainedLibraryCharacter(&a.state, *member)

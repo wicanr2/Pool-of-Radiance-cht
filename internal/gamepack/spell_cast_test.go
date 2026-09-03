@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 33 || generic != 25 || total != 58 {
+	if read != 35 || generic != 25 || total != 60 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 33／25／58，改了實作要一起改", read, generic, total)
+			"文件寫的是 35／25／60，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -548,6 +548,12 @@ func TestEnlargeMagnitude(t *testing.T) {
 		if effect.EffectCode != EnlargeEffectCode {
 			t.Errorf("效果碼應該是 %#02x，算出 %#02x", EnlargeEffectCode, effect.EffectCode)
 		}
+		// `12h` 是要設成的力量值 18，不是效果碼；效果碼是參數表的 `0Ch`。
+		if effect.StrengthValue != EnlargeStrengthValue ||
+			int(effect.StrengthPercentile) != want {
+			t.Errorf("第 %d 級應該把力量設成 18/%02d，算出 %d/%02d",
+				level, want, effect.StrengthValue, effect.StrengthPercentile)
+		}
 	}
 }
 
@@ -679,5 +685,38 @@ func TestMonsterCreatureTypeFromOriginalRecords(t *testing.T) {
 				want.name, record.CreatureType(), record.BodySize(),
 				want.creatureType, want.bodySize)
 		}
+	}
+}
+
+// 變大術的效果碼由兩條互相獨立的路對上：參數表 `+0Ah` 與處理常式
+// `1331h` 推給掛效果常式的字面值。縮小術要求的正是同一個碼。
+func TestEnlargeEffectCodeMatchesTheParameterTable(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	if got := parameters[SpellIDEnlarge].EffectCode(); got != EnlargeEffectCode {
+		t.Errorf("變大術參數表的效果碼是 %#02x，常數寫的是 %#02x",
+			got, EnlargeEffectCode)
+	}
+	if got := parameters[SpellIDGiantStrength].EffectCode(); got != GiantStrengthEffectCode {
+		t.Errorf("編號 %d 參數表的效果碼是 %#02x，常數寫的是 %#02x",
+			SpellIDGiantStrength, got, GiantStrengthEffectCode)
+	}
+	reduce, err := CastSpell(SpellIDReduce, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatalf("縮小術：%v", err)
+	}
+	if reduce.RequiresEffect != EnlargeEffectCode || !reduce.MessageOnly ||
+		reduce.EffectCode != 0 {
+		t.Errorf("縮小術算出 %+v", reduce)
+	}
+	giant, err := CastSpell(SpellIDGiantStrength, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatalf("編號 %d：%v", SpellIDGiantStrength, err)
+	}
+	if giant.StrengthValue != GiantStrengthValue || giant.StrengthPercentile != 0 ||
+		giant.EffectCode != GiantStrengthEffectCode {
+		t.Errorf("編號 %d 算出 %+v", SpellIDGiantStrength, giant)
 	}
 }
