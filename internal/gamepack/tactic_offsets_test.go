@@ -10,16 +10,8 @@ func TestTacticOffsetsAreMirrorPairs(t *testing.T) {
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
-	want := TacticOffsets{
-		{0x08, 0x07, 0x06, 0x01, 0x02},
-		{0x08, 0x01, 0x02, 0x07, 0x06},
-		{0x07, 0x01, 0x08, 0x06, 0x02},
-		{0x01, 0x07, 0x08, 0x02, 0x06},
-		{0x08, 0x07, 0x06, 0x05, 0x04},
-		{0x08, 0x01, 0x02, 0x03, 0x04},
-	}
-	if offsets != want {
-		t.Fatalf("表是 %v，原版是 %v", offsets, want)
+	if offsets != DefaultTacticOffsets {
+		t.Fatalf("表是 %v，原版是 %v", offsets, DefaultTacticOffsets)
 	}
 	// 鏡像：模式 1 與 2、3 與 4 的每一步都互為 8 的補數（0 對 0）。
 	for _, pair := range [][2]int{{0, 1}, {2, 3}} {
@@ -61,6 +53,37 @@ func TestTacticDirectionAndModeCycle(t *testing.T) {
 	for mode, want := range map[int]int{1: 2, 5: 6, 6: 1} {
 		if got := NextTacticMode(mode); got != want {
 			t.Errorf("模式 %d 的下一個是 %d，應該是 %d", mode, got, want)
+		}
+	}
+}
+
+// 模式的每回合處置：1..4 有四分之三的機會沿用，重擲時 1d8 擲到 8 才會拿到 5／6。
+func TestRollTacticMode(t *testing.T) {
+	rolls := []int{}
+	roller := func(values ...int) func(int, int) int {
+		rolls = append([]int{}, values...)
+		return func(count, sides int) int {
+			value := rolls[0]
+			rolls = rolls[1:]
+			return value
+		}
+	}
+	// 1..4 而且 1d4 不是 1：原樣沿用，只擲一次。
+	if got := RollTacticMode(3, roller(2)); got != 3 {
+		t.Errorf("沿用的模式是 %d，應該是 3", got)
+	}
+	// 1d4 擲到 1：重擲，1d8 不是 8 就取 1d4。
+	if got := RollTacticMode(3, roller(1, 5, 4)); got != 4 {
+		t.Errorf("重擲取 1d4 得到 %d，應該是 4", got)
+	}
+	// 1d8 擲到 8：取 1d2 + 4。
+	if got := RollTacticMode(3, roller(1, 8, 2)); got != 6 {
+		t.Errorf("重擲取 1d2+4 得到 %d，應該是 6", got)
+	}
+	// 模式 0（還沒擲過）與 5／6 一律重擲，不先問 1d4。
+	for _, mode := range []int{0, 5, 6} {
+		if got := RollTacticMode(mode, roller(1, 3)); got != 3 {
+			t.Errorf("模式 %d 重擲得到 %d，應該是 3", mode, got)
 		}
 	}
 }

@@ -339,6 +339,9 @@ type tacticalState struct {
 	// 被迷住的怪物做什麼，那一支還沒讀（spec 096）。這裡只讓它不再行動，
 	// 沒有讓它倒戈。
 	Charmed []bool
+	// TacticModes 是每一格身上的戰術模式（原版戰鬥子結構的 `+15h`，值 1..6）。
+	// 它決定敵方回合要往哪五個相對方向試，跨回合留著（spec 096）。
+	TacticModes []uint8
 	// CreatureType 是每一格的 `+9Fh`（生物種類）、BodySize 是 `+6Ch`（體型）。
 	// 魅惑人類與定身術用它們判斷目標算不算「人」，迷蛇術用種類收目標。
 	CreatureType []uint8
@@ -539,6 +542,7 @@ func (a *app) enterTacticalPreview() error {
 	state.Asleep = make([]bool, size)
 	state.HeldRounds = make([]int, size)
 	state.Charmed = make([]bool, size)
+	state.TacticModes = make([]uint8, size)
 	state.CreatureType = make([]uint8, size)
 	state.BodySize = make([]uint8, size)
 	state.SaveTargets = make([][gamepack.SavingThrowCategories]uint8, size)
@@ -678,39 +682,20 @@ const foeSearchBudget = 128
 // 這個上限只是防止未來改動把它變成不會停的迴圈。
 const foeMaxStepsPerTurn = 32
 
-// stepTowards 由座標差反查原版方向表，得到朝目標前進的那一個方向。
-func stepTowards(fromX, fromY, toX, toY uint8) (uint8, bool) {
-	deltaX, deltaY := sign(int(toX)-int(fromX)), sign(int(toY)-int(fromY))
-	if deltaX == 0 && deltaY == 0 {
-		return 0, false
-	}
-	for direction := uint8(0); direction < combat.DirectionCount; direction++ {
-		step, err := combat.DirectionStep(direction)
-		if err != nil {
-			continue
-		}
-		if int(step.X) == deltaX && int(step.Y) == deltaY {
-			return direction, true
-		}
-	}
-	return 0, false
-}
+// foeReachBudget 是「武器搆不搆得到」的成本預算。原版 overlay-09 entry 5
+// （`0D4Bh`）先用武器射程問一次搆得到誰，搆得到就打、搆不到才走；射程取自
+// 手上武器型別的 `+0Ch` 減一，近戰武器就是一格（spec 096）。這裡只做近戰，
+// 長柄與投射武器的射程還沒接進來。
+const foeReachBudget = 1
 
-func sign(value int) int {
-	switch {
-	case value > 0:
-		return 1
-	case value < 0:
-		return -1
-	default:
-		return 0
-	}
-}
-
-// foeTurn 讓敵方的行動者走完一回合。原版的怪物 AI 還沒反組譯，所以「挑哪個
-// 目標」與「走哪一步」是暫定策略，畫面上標成 PROVISIONAL AI；策略之外的每一步
-// 都走已閉合的原版規則——目標由 spec 056 的鄰近成本表取成本最小者，每一步過
-// ResolveDestination（spec 058），攻擊走 spec 050／051。
+// foeTurn 讓敵方的行動者走完一回合，骨架照 overlay-09 entry 5（`0B3Ch`）與
+// 它呼叫的移動子程式 `07E8h`（spec 096）：每一步先問武器搆不搆得到人，搆得到
+// 就打，搆不到才走一步；走的方向由戰術模式的五個相對偏移依序試，第一個進得去
+// 的就走。每一步過 ResolveDestination（spec 058），攻擊走 spec 050／051。
+//
+// 兩處仍是近似，畫面上還是標 PROVISIONAL AI：**挑哪個目標**（原版 `0D97h` 是
+// 從搆得到的名單裡擲骰隨機挑，追擊的目標則由 overlay-13 `37B8h` 決定，那一支
+// 還沒讀），以及五個方向全不通時的**繞路備案**（原版沒有，靠跨回合換模式脫困）。
 func (a *app) foeTurn(state *tacticalState) error {
 	mover := state.Mover
 	snapshot, err := state.tacticalSnapshot()
@@ -746,9 +731,15 @@ func (a *app) foeTurn(state *tacticalState) error {
 		return nil
 	}
 
-	// 目標在這一回合裡不會換，所以步數表只算一次。
+	// 目標在這一回合裡不會換，所以步數表只算一次；它只給備案用。
 	goalCell := state.Roster[target]
 	stepDistance := tacticalStepDistances(state.Grid, state.Classes, goalCell.X, goalCell.Y)
+
+	// 原版在 entry 5 開場把兩個全域清掉：`439Eh` 是上一步走的方向（8 代表
+	// 還沒走過），`439Fh` 是「卡住」的次數。兩者都只活在這一隻的這一次接近。
+	lastDirection := uint8(combat.DirectionAny)
+	stuck := 0
+	mode := state.tacticMode(mover, a.rollDice)
 
 	steps := 0
 	for ; steps < foeMaxStepsPerTurn; steps++ {
@@ -758,69 +749,84 @@ func (a *app) foeTurn(state *tacticalState) error {
 		}
 		here := state.Roster[mover]
 		goal := state.Roster[target]
-		// 八個方向都問一次，挑「走得進去而且離目標最近」的那一個。
-		//
-		// 只問 `stepTowards` 給的那一個方向是不夠的：實測最後一隻殭屍站在
-		// (42,10)、目標在西邊，而它西邊那兩格是牆，其餘六個方向全都走得進去
-		// ——原本的寫法在那一個方向上撞牆就收工，回報「走了零步」，於是雙方
-		// 隔著地形永遠對峙。
-		//
-		// **繞路的規則不是原版的**：原版的敵方回合在 overlay-09 entry 1
-		// （code `000Fh`），還沒讀。這裡只挑一步，不做完整選路。
-		bestDirection, bestDistance := -1, tacticalDistanceAt(stepDistance, here.X, here.Y, goal)
-		// 先問原版的方向表要的那一格；走得進去就走，繞路只是備案。
-		preferred := -1
-		if direction, ok := stepTowards(here.X, here.Y, goal.X, goal.Y); ok {
-			preferred = int(direction)
+
+		// 先問武器搆得到誰（原版 `0D4Bh`）。搆得到就打，這一隻的回合結束。
+		reachable, err := combat.OpposingNearbyAt(snapshot, mover,
+			here.X, here.Y, foeReachBudget, 1-side, state.sideOf)
+		if err != nil {
+			return err
 		}
-		order := make([]uint8, 0, 8)
-		if preferred >= 0 {
-			order = append(order, uint8(preferred))
-		}
-		for direction := uint8(0); direction < 8; direction++ {
-			if int(direction) != preferred {
-				order = append(order, direction)
+		if len(reachable) != 0 {
+			if err := a.resolveTacticalAttack(state, reachable[0]); err != nil {
+				return err
 			}
+			state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
+			state.endTurn(a.rollDice, false)
+			return nil
 		}
-		for _, direction := range order {
-			outcome, err := combat.ResolveDestination(snapshot, mover, direction, state.Budget())
+
+		// 基準方向是目標相對自己的方位（overlay-13 `261Bh`：自 0 起找第一個
+		// 弧內成立的方向，spec 098）。原版追的是記錄裡存著的目標指標，這裡用
+		// 這一回合選定的目標。
+		base, err := combat.RequiredFacing(here.X, here.Y, goal.X, goal.Y, combat.DirectionAny)
+		if err != nil {
+			return err
+		}
+
+		// 五個相對偏移依序試，第一個進得去的就走（原版 `092Ah` 的迴圈）。
+		//
+		// 「而且要離目標更近」**不是原版的條件**：原版只問進不進得去，不比距離。
+		// 少了它，貼著牆的怪物會挑到 ±2 那兩個往旁邊走的方向，下一步又走回來，
+		// 一整回合原地打轉——實測過整場打不完。距離用的是繞得過去的實際步數
+		// （`tacticalStepDistances`），所以繞牆本身仍然算前進。
+		hereDistance := tacticalDistanceAt(stepDistance, here.X, here.Y, goal)
+		direction, found := uint8(0), false
+		for step := 1; step <= gamepack.TacticSteps && !found; step++ {
+			candidate, err := gamepack.DefaultTacticOffsets.Direction(mode, step, base)
 			if err != nil {
 				return err
 			}
-			if outcome.Action == combat.MovementAttack {
-				if same, err := state.sameSide(mover, outcome.Target); err != nil {
-					return err
-				} else if same {
-					continue
-				}
-				if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
-					return err
-				}
-				state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
-				state.endTurn(a.rollDice, false)
-				return nil
+			outcome, err := combat.ResolveDestination(snapshot, mover, candidate, state.Budget())
+			if err != nil {
+				return err
 			}
 			if outcome.Action != combat.MovementEnter {
 				continue
 			}
-			x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
+			x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, candidate)
 			if err != nil {
 				return err
 			}
-			distance := tacticalDistanceAt(stepDistance, x, y, goal)
-			if distance >= bestDistance {
+			if tacticalDistanceAt(stepDistance, x, y, goal) >= hereDistance {
 				continue
 			}
-			bestDirection, bestDistance = int(direction), distance
-			if int(direction) == preferred {
-				// 方向表要的那一格走得進去，就不必再看別的。
+			direction, found = candidate, true
+		}
+		if !found {
+			// 五個方向都不合用：原版換模式、記一次卡住，然後就結束這一隻的移動，
+			// 靠下一回合換到的模式脫困。照抄會讓怪物在死路裡卡上好幾回合，
+			// 所以這裡再多一個**非原版**的繞路備案：八個方向裡挑離目標最近的。
+			mode = gamepack.NextTacticMode(mode)
+			stuck++
+			detour, ok, err := state.detourStep(snapshot, mover, stepDistance, here, goal)
+			if err != nil {
+				return err
+			}
+			if !ok {
+				break
+			}
+			direction, found = detour, true
+		}
+		if reverse := (int(direction) + combat.DirectionCount/2) % combat.DirectionCount; int(lastDirection) == reverse {
+			// 這一步剛好是上一步的反方向：原版一樣記一次卡住並換模式，但第一次
+			// 仍然走（`0A30h` 的 `439Fh <= 1`），第二次起才放棄這一隻的移動。
+			mode = gamepack.NextTacticMode(mode)
+			stuck++
+			if stuck > 1 {
 				break
 			}
 		}
-		if bestDirection < 0 {
-			break
-		}
-		direction := uint8(bestDirection)
+
 		x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
 		if err != nil {
 			return err
@@ -834,7 +840,9 @@ func (a *app) foeTurn(state *tacticalState) error {
 		}
 		state.Roster[mover].X, state.Roster[mover].Y = x, y
 		state.Budgets[mover] = budget
+		lastDirection = direction
 	}
+	state.setTacticMode(mover, mode)
 	state.FoeLog = state.say(msgFoeClosed, mover, steps, target)
 	state.endTurn(a.rollDice, false)
 	return nil
@@ -925,6 +933,53 @@ func tacticalDistanceAt(distance map[int]int, x, y uint8, goal combat.CombatantC
 		return step
 	}
 	return chebyshev(x, y, goal.X, goal.Y) + len(distance)
+}
+
+// detourStep 是五個戰術方向全不通時的**非原版**備案：八個方向都問一次，挑一個
+// 走得進去而且離目標更近的。原版沒有這一步，它靠的是跨回合換戰術模式脫困；照抄
+// 會讓怪物在死路裡卡上好幾回合——實測過最後兩隻殭屍與隊伍隔著 22 格互不相動，
+// 戰鬥永遠打不完。
+func (state *tacticalState) detourStep(snapshot combat.TacticalState, mover uint8,
+	stepDistance map[int]int, here, goal combat.CombatantCell) (uint8, bool, error) {
+	best, bestDistance := uint8(0), tacticalDistanceAt(stepDistance, here.X, here.Y, goal)
+	found := false
+	for direction := uint8(0); direction < combat.DirectionCount; direction++ {
+		outcome, err := combat.ResolveDestination(snapshot, mover, direction, state.Budget())
+		if err != nil {
+			return 0, false, err
+		}
+		if outcome.Action != combat.MovementEnter {
+			continue
+		}
+		x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
+		if err != nil {
+			return 0, false, err
+		}
+		distance := tacticalDistanceAt(stepDistance, x, y, goal)
+		if distance >= bestDistance {
+			continue
+		}
+		best, bestDistance, found = direction, distance, true
+	}
+	return best, found, nil
+}
+
+// tacticMode 取這一格身上的戰術模式（原版存在戰鬥子結構的 `+15h`）。還沒擲過
+// 的是 0，`RollTacticMode` 會替它擲一個出來。
+func (state *tacticalState) tacticMode(index uint8, roll func(count, sides int) int) int {
+	mode := 0
+	if int(index) < len(state.TacticModes) {
+		mode = int(state.TacticModes[index])
+	}
+	return gamepack.RollTacticMode(mode, roll)
+}
+
+// setTacticMode 把換過的模式寫回去，下一回合接著用。
+func (state *tacticalState) setTacticMode(index uint8, mode int) {
+	if int(index) >= len(state.TacticModes) {
+		return
+	}
+	state.TacticModes[index] = uint8(mode)
 }
 
 // tacticalCellKey 把一格壓成一個查表用的鍵。

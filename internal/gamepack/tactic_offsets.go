@@ -19,6 +19,19 @@ const (
 // TacticOffsets 是六個模式各自的五個方向偏移，索引 0 對應模式 1。
 type TacticOffsets [TacticModes][TacticSteps]uint8
 
+// DefaultTacticOffsets 逐位元組照抄 `START.EXE` 資料段 `02ACh` 的那張表，
+// 讓不開原版 ZIP 的呼叫端也拿得到；`ReadDOSTacticOffsets` 讀出來的值與它相符，
+// 由 tactic_offsets_test.go 釘住。六列兩兩成鏡像：1 與 2 先往左／先往右，
+// 3 與 4 是另一組，5 一路往左掃、6 一路往右掃。
+var DefaultTacticOffsets = TacticOffsets{
+	{0x08, 0x07, 0x06, 0x01, 0x02},
+	{0x08, 0x01, 0x02, 0x07, 0x06},
+	{0x07, 0x01, 0x08, 0x06, 0x02},
+	{0x01, 0x07, 0x08, 0x02, 0x06},
+	{0x08, 0x07, 0x06, 0x05, 0x04},
+	{0x08, 0x01, 0x02, 0x03, 0x04},
+}
+
 // ReadDOSTacticOffsets 從 `START.EXE` 的資料段取出那張表。
 func ReadDOSTacticOffsets(zipPath string) (TacticOffsets, error) {
 	executable, err := readStartExecutable(zipPath)
@@ -62,4 +75,18 @@ func NextTacticMode(mode int) int {
 		return 1
 	}
 	return mode%TacticModes + 1
+}
+
+// RollTacticMode 重現 overlay-09 entry 1 `0054h` 每回合對戰術模式的處置：
+// 模式落在 1..4 而且 1d4 不是 1 就沿用，其餘情況重擲——1d8 擲出 8 時取
+// 1d2 + 4（模式 5 或 6），否則取 1d4。所以四個「試探型」模式會黏著好幾回合，
+// 兩個「橫掃型」的只在八分之一的重擲裡出現。
+func RollTacticMode(mode int, roll func(count, sides int) int) int {
+	if mode >= 1 && mode <= 4 && roll(1, 4) != 1 {
+		return mode
+	}
+	if roll(1, TacticDirections) == TacticDirections {
+		return roll(1, 2) + 4
+	}
+	return roll(1, 4)
 }

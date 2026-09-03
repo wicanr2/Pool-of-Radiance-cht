@@ -282,28 +282,6 @@ func TestFinishCombatDoesNotRunThePostCombatScriptOnDefeat(t *testing.T) {
 	}
 }
 
-// stepTowards 反查的就是原版那張方向表：0 向上、順時針一圈。
-func TestStepTowardsUsesTheOriginalDirectionTable(t *testing.T) {
-	for _, test := range []struct {
-		name           string
-		toX, toY, want uint8
-	}{
-		{"east", 11, 10, 2},
-		{"north", 10, 9, 0},
-		{"south west", 9, 11, 5},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			got, ok := stepTowards(10, 10, test.toX, test.toY)
-			if !ok || got != test.want {
-				t.Fatalf("got %d (ok %v), want %d", got, ok, test.want)
-			}
-		})
-	}
-	if _, ok := stepTowards(10, 10, 10, 10); ok {
-		t.Fatal("a combatant standing on the target produced a direction")
-	}
-}
-
 func newFoeTurnState(foeX, foeY, partyX, partyY uint8, budget uint8) *tacticalState {
 	state := newRoundState(2)
 	cellCount := combat.TacticalRowStride * (combat.TacticalMaxY + 1)
