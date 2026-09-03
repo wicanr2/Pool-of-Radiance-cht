@@ -138,7 +138,7 @@ var exploreDeltas = [4][2]int{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
 //
 // 用的是原始 GEO 的 CanMoveDungeonWrapped，跟遊戲自己判斷能不能走同一支，
 // 所以這條路徑不會宣告出資料裡沒有的通路。
-func explorePlan(app *app, visited map[[3]int]bool) []exploreStep {
+func explorePlan(app *app, visited, avoid map[[3]int]bool) []exploreStep {
 	type node struct{ x, y int }
 	start := node{int(app.spawn.X), int(app.spawn.Y)}
 	from := map[node]node{start: start}
@@ -148,7 +148,7 @@ func explorePlan(app *app, visited map[[3]int]bool) []exploreStep {
 		current := queue[0]
 		queue = queue[1:]
 		key := [3]int{int(app.spawn.Map.Archive), int(app.spawn.Map.BlockID), current.y*100 + current.x}
-		if current != start && !visited[key] {
+		if current != start && !visited[key] && !avoid[key] {
 			steps := []exploreStep{}
 			for cursor := current; cursor != start; cursor = from[cursor] {
 				steps = append([]exploreStep{{facing: via[cursor]}}, steps...)
@@ -342,13 +342,21 @@ const exploreMaxTransitionHops = 60
 //
 // 隨機走路量的是「不會炸掉」，這一條量的是**世界有多少走得到**——兩個不同的
 // 問題。主線要能破關，第一件事是玩家真的走得到那些地方。
-func TestDirectedExplorationReachesMaps(t *testing.T) {
-	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+// exploreWorld 走一趟：從新的一局開始，把目前這一張圖上還沒踩過而且不在
+// avoid 裡的格子逐格踩完，踩完了才走一個換圖點，換圖之後在新圖上繼續。
+//
+// avoid 收的是**已知的換圖點**。少了它，第一趟會在起點附近就踩到碼頭上船，
+// 之後困在索寇要塞回不來——起始圖 226 格只走了 31 格就再也沒機會走完。
+// 逐趟把已知的換圖點擋掉，下一趟就會先把這一張走完再換圖。
+func exploreWorld(t *testing.T, zipPath string, seed int64,
+	avoid map[[3]int]bool, transitionUses map[[3]int]int,
+	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool) (int, bool) {
+	t.Helper()
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
-		t.Skipf("no zip: %v", err)
+		return 0, false
 	}
-	application.roller = diceRoller{random: rand.New(rand.NewSource(7))}
+	application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
 	party := make([]poolsave.Character, 0, 6)
 	for index := 0; index < 6; index++ {
 		party = append(party, poolsave.Character{Name: string(rune('A' + index)),
@@ -370,17 +378,10 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 		application.Update()
 	}
 
-	visited := map[[3]int]bool{}
-	maps := map[string]bool{}
-	blocks := map[int]bool{}
 	var plan []exploreStep
 	pilot := &tacticalPilot{}
-	stuck, hops := 0, 0
-	// transitionUses 記每一個換圖點被用過幾次，1-based 的鍵是 (archive, block, y*100+x)。
-	transitionUses := map[[3]int]int{}
-	// menuTurn 讓同一格的選單每次選不同的選項。
+	stuck, hops, moved := 0, 0, 0
 	menuTurn := map[[3]int]int{}
-	moved, blocked, replans, busyTicks, turns, lastStep := 0, 0, 0, 0, 0, 0
 	for step := 0; step < 300000; step++ {
 		if application.initialMap != nil {
 			maps[fmt.Sprintf("GEO%d/%d", application.spawn.Map.Archive,
@@ -401,7 +402,6 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 		if application.programManaging {
 			// 地圖上的隊伍管理畫面吃掉方向鍵。原版按 B 回地圖。
 			plan = nil
-			busyTicks++
 			if err := press(application, ebiten.KeyB); err != nil {
 				t.Fatalf("第 %d 步硬失敗：%v", step, err)
 			}
@@ -409,9 +409,7 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 		}
 		if application.treasureActive && len(application.cellMenuOptions) != 0 {
 			// 寶物選單停在 View 上，一直按 Enter 只會一直看，出不去。
-			// 走到最後一項（Exit）再確定。
 			plan = nil
-			busyTicks++
 			key := ebiten.KeyEnter
 			if want := treasureMenuChoice(application.cellMenuOptions); want != application.cellMenuCursor {
 				key = ebiten.KeyArrowRight
@@ -423,7 +421,6 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 		}
 		if busy {
 			plan = nil
-			busyTicks++
 			if application.tactical != nil {
 				if err := press(application, pilot.key(application)); err != nil {
 					t.Fatalf("第 %d 步硬失敗：%v", step, err)
@@ -432,8 +429,7 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 			}
 			if application.cellWaitingMenu && len(application.cellMenuOptions) > 1 {
 				// 每一格的選單輪流選不同的選項。一律停在第 0 項的話，
-				// 「要不要離開這裡」這種問句永遠答同一個答案，另一條路
-				// 就永遠走不到——量出來的世界會比實際小。
+				// 「要不要離開這裡」這種問句永遠答同一個答案。
 				key := [3]int{int(application.spawn.Map.Archive),
 					int(application.spawn.Map.BlockID),
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
@@ -451,14 +447,10 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 			}
 			continue
 		}
-		lastStep = step
 		if len(plan) == 0 {
-			replans++
-			plan = explorePlan(application, visited)
+			plan = explorePlan(application, visited, avoid)
 			if len(plan) == 0 && hops < exploreMaxTransitionHops {
-				// 這一張踩完了：回頭走一個用得最少的換圖點。少了這一步，
-				// 走完第二張圖就停在那裡，第一張圖上另外三個換圖點永遠
-				// 沒被試過——量出來的世界會比實際小。
+				// 這一張踩完了：走一個用得最少的換圖點。
 				here := [2]int{int(application.spawn.Map.Archive),
 					int(application.spawn.Map.BlockID)}
 				fewest := -1
@@ -494,7 +486,6 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 			if (int(want.facing)-int(application.spawn.Facing)+4)%4 == 3 {
 				key = ebiten.KeyArrowLeft
 			}
-			turns++
 			if err := press(application, key); err != nil {
 				t.Fatalf("第 %d 步硬失敗：%v", step, err)
 			}
@@ -505,19 +496,44 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 			t.Fatalf("第 %d 步硬失敗：%v", step, err)
 		}
 		if application.spawn.Map != before.Map {
-			// 這一格是換圖點。記下來，等這一張走完再回來走別的。
-			transitionUses[[3]int{int(before.Map.Archive), int(before.Map.BlockID),
-				int(before.Y)*100 + int(before.X)}]++
+			// 這一格是換圖點。記下來，下一趟先把這一張走完再走它。
+			key := [3]int{int(before.Map.Archive), int(before.Map.BlockID),
+				int(before.Y)*100 + int(before.X)}
+			transitionUses[key]++
+			avoid[key] = true
 		}
 		if application.spawn.Map != before.Map ||
 			(application.spawn.X == before.X && application.spawn.Y == before.Y) {
-			// 換圖了，或這一步被牆／事件擋住：重算，別照舊計畫硬走。
-			blocked++
 			plan = nil
 			continue
 		}
 		moved++
 		plan = plan[1:]
+	}
+	return moved, true
+}
+
+// 有目的地走完整個世界：逐格踩，換圖就換到新圖上繼續，走完再開新的一局
+// 把上一趟提早換掉的圖補完。
+//
+// 隨機走路量的是「不會炸掉」，走不到的地方它分不出來是「原作沒有」還是
+// 「remake 走不進去」。這一條量的是**世界有多少走得到**——主線要能破關，
+// 第一件事是玩家真的走得到那些地方。
+func TestDirectedExplorationReachesMaps(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	avoid := map[[3]int]bool{}
+	transitionUses := map[[3]int]int{}
+	visited := map[[3]int]bool{}
+	maps := map[string]bool{}
+	blocks := map[int]bool{}
+	total := 0
+	for pass := 0; pass < 8; pass++ {
+		moved, ok := exploreWorld(t, zipPath, 7, avoid, transitionUses,
+			visited, maps, blocks)
+		if !ok {
+			t.Skip("original DOS ZIP is intentionally not tracked")
+		}
+		total += moved
 	}
 
 	mapNames := make([]string, 0, len(maps))
@@ -530,27 +546,22 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 		blockIDs = append(blockIDs, id)
 	}
 	sort.Ints(blockIDs)
-	t.Logf("有目的地走到的地圖 %d 張：%v", len(maps), mapNames)
-	t.Logf("有目的地走到的 ECL block %d 個：%v", len(blocks), blockIDs)
-	t.Logf("踩過的格子 %d 格", len(visited))
 	perMap := map[string]int{}
 	for key := range visited {
 		perMap[fmt.Sprintf("GEO%d/%d", key[0], key[1])]++
 	}
-	for name, count := range perMap {
-		t.Logf("  %s 踩過 %d 格", name, count)
+	t.Logf("走到的地圖 %d 張：%v", len(maps), mapNames)
+	t.Logf("走到的 ECL block %d 個：%v", len(blockIDs), blockIDs)
+	t.Logf("踩過的格子 %d 格，走了 %d 步", len(visited), total)
+	for _, name := range mapNames {
+		t.Logf("  %s 踩過 %d 格", name, perMap[name])
 	}
-	t.Logf("走了 %d 步、轉向 %d 次、被擋 %d 次、重算 %d 次、忙碌 %d tick、最後一步在第 %d 圈",
-		moved, turns, blocked, replans, busyTicks, lastStep)
-	// 走得到的下限。這是**量到的數字**，不是目標：城區之間的移動還沒接上，
-	// 所以整個世界目前只到這兩張圖。少於這個數代表移動、轉場或戰鬥退步了。
-	if len(visited) < 250 {
-		t.Errorf("只踩到 %d 格，先前量到 253 格", len(visited))
+	// 走得到的下限。這是**量到的數字**，不是目標。少於這個數代表移動、
+	// 轉場或戰鬥退步了。
+	if len(visited) < 390 {
+		t.Errorf("只踩到 %d 格", len(visited))
 	}
-	if len(blocks) < 3 {
-		t.Errorf("只走到 %d 個 ECL block，先前量到 3 個", len(blocks))
-	}
-	if len(maps) < 2 {
-		t.Errorf("只走到 %d 張地圖", len(maps))
+	if len(blocks) < 4 {
+		t.Errorf("只走到 %d 個 ECL block", len(blocks))
 	}
 }
