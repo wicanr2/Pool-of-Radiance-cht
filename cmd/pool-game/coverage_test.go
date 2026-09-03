@@ -648,10 +648,10 @@ walk:
 			plan, exit = nil, nil
 			spin["野外"]++
 			key := ebiten.KeyArrowUp
-			switch step % 5 {
-			case 0:
+			switch application.roller.Roll(1, 6) {
+			case 1:
 				key = ebiten.KeyArrowRight
-			case 3:
+			case 2:
 				key = ebiten.KeyArrowLeft
 			}
 			if err := press(application, key); err != nil {
@@ -1115,11 +1115,12 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	visited := map[[3]int]bool{}
 	var hardFailures []string
 	ok := false
-	for _, destination := range []int{0, 1, 2, 3} {
+	for pass, destination := range []int{0, 1, 2, 3, 1, 2, 3, 1, 2, 3} {
+		seed := int64(13 + pass*7 + destination)
 		avoid := map[[3]int]bool{}
 		transitionUses := map[[3]int]int{}
 		menuTurn := map[[3]int]int{}
-		_, reachable := exploreWorldWithFlags(t, zipPath, int64(13+destination), 0, 1, 200000,
+		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 1, 200000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
 			visited, maps, blocks, nil, destination, &hardFailures)
 		if !reachable {
@@ -1153,8 +1154,8 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	for failure, count := range seen {
 		t.Logf("硬失敗 ×%d：%s", count, failure)
 	}
-	// 量到的下限。四條航線至少要把索寇要塞與兩個樞紐帶進來。
-	if len(blocks) < 5 {
+	// 量到的下限，不是目標。少於這個數代表航線、野外移動或資源載入退步了。
+	if len(blocks) < 11 {
 		t.Errorf("只走到 %d 個 ECL block：%v", len(blocks), blockIDs)
 	}
 }

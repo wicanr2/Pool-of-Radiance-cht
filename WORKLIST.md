@@ -617,9 +617,18 @@
   `SAVE 29 → 49C4`），數值超過 15，所以它們**不是格子座標**，是野外地圖上的
   位置或區域編號。要接的是：那兩個變數的定義域、野外地圖怎麼投影成格子、
   以及 `9989h`／`99B8h` 兩張 `ON GOTO` 的分支條件。
-- [ ] **`WALLDEF selector 3 is not present`**（治具走到樞紐時出現一次）。
-  spec 025 定過「其他 wall selector 仍失敗即關閉」，所以這裡不吞錯——
-  要先弄清楚那個 selector 該從哪一個 `WALLDEF*.DAX` 找。
+- [x] `WALLDEF selector 3 is not present`：**archive 挑錯了**。`LOAD PIECES`
+  是腳本要的資源，要用 ECL 的 archive，不是它載進來的 GEO 的——野外那幾張圖
+  就不同號（ecl7/26 載的是 GEO5 的區塊，而 `WALLDEF5.DAX` 只有 1 與 24 兩塊）。
+- [ ] **`LOAD PIECES slot 1 selector 21 spans 2 records`**（治具走到索寇要塞
+  那一帶時出現）。`WALLDEF4.DAX` 的 selector 21 是兩筆連著的記錄，而
+  `ReadDOSPieceSlots` 目前只收一筆。`graphics.ParsePieceSet` 本來就處理得了
+  連續記錄（符號集用 `selector*10 + 序號 + 1`），要決定的是「一個 slot 收兩筆
+  之後，畫面那一層怎麼索引」。
+- [ ] **`ECL session target block 0xFF is unavailable`**（治具走到野外後面的
+  區域時出現五次）。`NEWECL` 的目標是變數，讀到還沒被主線設起來的 255。
+  255 是全遊戲的「沒有」哨兵，但**原版對 `NEWECL 255` 的處置還沒讀**，
+  不要先猜。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家

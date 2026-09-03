@@ -980,7 +980,15 @@ func (a *app) applyTransitionResource(event eclvm.Event) (bool, error) {
 		if a.loadPieceSlots == nil {
 			return false, fmt.Errorf("Pool LOAD PIECES loader is not configured")
 		}
-		loaded, err := a.loadPieceSlots(a.spawn.Map.Archive, selectors)
+		// 用 ECL 的 archive，不是 GEO 的。`LOAD PIECES` 是腳本要的資源，
+		// 而腳本所在的 archive 與它載進來的地圖不一定同號——野外那幾張圖
+		// 就是（ecl7/26 載的是 GEO5 的區塊）。`WALLDEF5.DAX` 只有 1 與 24
+		// 兩塊，拿 GEO 的號去找 selector 3 一定落空。
+		archive := a.eclArchive
+		if archive == 0 {
+			archive = a.spawn.Map.Archive
+		}
+		loaded, err := a.loadPieceSlots(archive, selectors)
 		if err != nil {
 			return false, err
 		}
