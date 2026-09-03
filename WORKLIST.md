@@ -608,6 +608,18 @@
   夾回去**——overlay-30 `0358h` 在查牆之前先把 X／Y 夾回 0..15。走出邊界
   這回事仍然存在，只是由 ECL 自己讀 `DS:6DD5h`、自己叫 `CALL C01Eh` 完成
   （spec 100）。
+- [ ] **野外／樞紐地圖（ECL block 25、26、27）還沒讀**。這是走到其餘區域的
+  真正入口：spec 101 量到 ecl7/26 一個區塊接十一個，而 spec 104 把
+  「每一格都停在 `2Dh CALL`」修掉之後，隊伍已經走得進去（治具
+  `TestWorldTourReachesTheAreasBehindTheHarbour` 走到 block 26 與 27）。
+  但**進去之後第一步就被送回城區**：ecl7/26 的入口 0 依 `DS:49C3h`／
+  `DS:49C4h` 分派，那兩個值是碼頭那一段設的（`9C04h SAVE 7 → 49C3`、
+  `SAVE 29 → 49C4`），數值超過 15，所以它們**不是格子座標**，是野外地圖上的
+  位置或區域編號。要接的是：那兩個變數的定義域、野外地圖怎麼投影成格子、
+  以及 `9989h`／`99B8h` 兩張 `ON GOTO` 的分支條件。
+- [ ] **`WALLDEF selector 3 is not present`**（治具走到樞紐時出現一次）。
+  spec 025 定過「其他 wall selector 仍失敗即關閉」，所以這裡不吞錯——
+  要先弄清楚那個 selector 該從哪一個 `WALLDEF*.DAX` 找。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家
