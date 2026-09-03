@@ -1311,8 +1311,11 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	if err != nil {
 		return fmt.Errorf("continue after Pool combat: %w", err)
 	}
-	a.applyCellECLResult(result)
-	return nil
+	// 戰後腳本走的是跟走進一格時同一條邊界分派。只套文字的話，戰鬥後面接的
+	// `PROGRAM`、`TREASURE`、換區塊那些邊界都會停在原地——結局那一段就是
+	// 這樣卡住的：打贏泰倫斯拉克斯之後 `A82Ah PROGRAM 08` 沒有人接，
+	// 後面的結局文字與回到菲蘭的 `NEWECL 0` 一條都不會跑。
+	return a.consumeInitialSearch(result)
 }
 
 // sideCounts 數出兩邊還站著的人，對應原版的 DS:6772h 與 DS:6773h。

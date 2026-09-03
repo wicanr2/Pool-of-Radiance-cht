@@ -8,7 +8,7 @@ import (
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 )
 
-// `38h PROGRAM`（spec 081）。全遊戲只有三個呼叫點，運算元只有 0 與 9 兩個值。
+// `38h PROGRAM`（spec 081）。四個呼叫點，三個值：0、8、9。
 //
 // 值 0 直接開城裡的隊伍管理畫面（overlay-16 entry 1 加 overlay-25 entry 37），
 // 開完 ECL 從原地繼續——這一支讀得完整，所以接上。
@@ -76,7 +76,11 @@ func (a *app) enterProgram(event eclvm.Event) error {
 		a.askProgramManagement()
 		return nil
 	default:
-		// 原版對其餘的值直接返回，什麼都不做。
+		// **值 8 是結局過場**（overlay-18 entry 1，spec 081）：打贏
+		// 泰倫斯拉克斯之後 `ECL5/7` 的 `A82Ah` 會推它，畫面上是那一段
+		// 「Mortally wounded, the dragon roars!」到「Noooo...」。
+		// remake 還沒接那個畫面，先讓腳本往下跑——**這是已知的缺口**，
+		// 不是原版行為。其餘的值原版才是真的什麼都不做。
 		return a.continueInitialSearch(nil)
 	}
 }

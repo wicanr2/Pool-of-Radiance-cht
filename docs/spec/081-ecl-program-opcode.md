@@ -10,19 +10,32 @@
 `opcode 0x38 at 1865 has no core handler or adapter passthrough`。
 那一格是 ECL3／block 11 的 `PROGRAM 0`。
 
-## 全遊戲只有三個呼叫點
+## 四個呼叫點，三個值
 
-掃過八個 ECL 封存檔的每一個 block（`ecl.TraceGraphAtBase`，起始位址
-`0x9900`）只有三條 `38h`，運算元都是位元組字面值：
+以 `ecl.TraceGraphAtBase`（只走得到的碼）掃八個封存檔會得到三條 `38h`；
+再用**線性指令掃描**（`ecl.ScanKnownInstructions`）掃一次會多出第四條，
+在 `ECL5`／block 7。差別的原因很單純：那個 block 是三個靜態展開解不開的
+之一，走得到的碼掃不進去。
 
-| 位置 | 運算元 |
-|---|---|
-| `ECL3`／block 0 offset `08ADh` | 9 |
-| `ECL3`／block 11 offset `0749h` | 0 |
-| `ECL7`／block 17 offset `0CEFh` | 9 |
+| 位置 | 運算元 | 在做什麼 |
+|---|---:|---|
+| `ECL3`／block 0 `A1ADh` | 9 | 城裡問一句再開隊伍管理 |
+| `ECL3`／block 11 `A049h` | 0 | 直接開隊伍管理 |
+| `ECL7`／block 17 `A5EFh` | 9 | 同 block 0 |
+| `ECL5`／block 7 `A82Ah` | **8** | **打贏泰倫斯拉克斯之後的結局過場** |
 
-兩個值都落在原版真的有處理的分支上，所以這條 opcode 不需要通用實作，
-只要這兩支。
+第四條的上下文逐條讀得出來（線性掃描）：
+
+```
+a802  COMBAT                       ; 最後一戰，LOAD MONSTER 42h ＝ mon5/66
+a80e  COMPARE @4ABA, FFh ; IF <>
+a815  SAVE FEh → @4ABA             ; 破關旗標（市政廳槽 20）
+a81b  OR @4A6D, 10h → @4A72
+a824  SAVE 01 → @4AE0
+a82a  PROGRAM 08                   ; ← 結局過場
+a82d  PRINTCLEAR "KNOWING THAT TYRANTHRAXUS HAS FINALLY BEEN DEFEATED, ..."
+a8e5  座標設回 (0,4) 朝向 1、6E12 = 3、NEWECL 0
+```
 
 ## 派發（overlay-03 `3167h`）
 
@@ -53,6 +66,32 @@
 315Eh  [54DBh] = 0
 ```
 
+## 值 8：結局過場（overlay-18 entry 1，`02A1h`）
+
+`02A1h` 用 `DS:52D4h` 組出檔名放進 `DS:4675h`、把 `DS:4954h` 存起來再設成 7、
+清掉 `4670h`／`4672h`，接著用 `0198h:0066h`／`0198h:002Fh` 一段段畫框與文字。
+它畫的是**結局**——字串就內嵌在同一顆 overlay 的 `0111h..02A0h`：
+
+```
+0111  "Mortally wounded, the dragon roars!"
+0135  "The spirit of Tyranthraxus flares up"
+015A  "from the dragon's body."
+0172  "FINAL"
+0178  "\"Fools, you have but slain the body"
+019C  "I possessed.  I cannot be defeated!\""
+01C1  "With the power of the pool of radiance"
+01E8  "which I moved here, to my lair,"
+0208  "I will still rule, by possessing one"
+022D  "of you!\""
+0236  "\"No Lord Bane!  I can still rule here!"
+025D  "I have not failed.  Do not call me back"
+0285  "through the pool!\""
+0298  "Noooo..."
+```
+
+**remake 目前把值 8 當成什麼都不做**，所以打贏之後直接跳到 `A82Dh` 的
+文字。那是已知的缺口，不是原版行為。
+
 ## 值 0：直接開隊伍管理
 
 overlay-16 entry 1（`014Eh`）把 `52D4h` 設為 3（spec 006 認得這個值：
@@ -67,7 +106,7 @@ overlay-16 是建角那個 overlay（spec 003／006／072 都引用它），所�
 
 - `35DBh`（overlay-03 內）拿 `4948h`／`494Ah` 當參數做什麼。
 - overlay-16 entry 1 與 overlay-25 entry 37 的選單項目與各自的行為。
-- 值 8 的 overlay-18 entry 1（全遊戲沒有呼叫點，先不讀）。
+- overlay-18 entry 1 的畫面流程（誰按什麼往下翻、`FINAL` 那張圖從哪裡來）。
 - `4393h`／`4394h` 那個 far pointer 由誰寫。
 
 ## remake 現況

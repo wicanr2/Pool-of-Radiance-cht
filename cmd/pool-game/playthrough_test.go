@@ -1237,3 +1237,112 @@ func TestCityHallPaysNothingBeforeTheCommissionIsDone(t *testing.T) {
 	}
 	t.Logf("沒做完的時候看到 %q（4AC1=%d）", text, machine.Memory[0x4AC1])
 }
+
+// 破關那一場。ECL5/7 的 `A7DCh` 起是最後一戰：
+//
+//	a7fa  CLEARMONSTERS
+//	a7fb  LOAD MONSTER 42h, 1, 42h      ; mon5/66 TYRANITHRAXUS，HP 80 AC 0
+//	a802  COMBAT
+//	a803  COMPARE @6DC7, 81h ; IF = ; GOTO A5EA   ; 沒打贏那一支
+//	a80e  COMPARE @4ABA, FFh ; IF <>
+//	a815  SAVE FEh → @4ABA               ; ← 破關旗標（市政廳槽 20）
+//	a82a  PROGRAM 08
+//	a82d  PRINTCLEAR "KNOWING THAT TYRANTHRAXUS HAS FINALLY BEEN DEFEATED..."
+//	a8e5  座標設回 (0,4) 朝向 1、`6E12 = 3`、`NEWECL 0`   ; 回文明區的菲蘭
+//
+// 這一條從 `A7DCh` 起跑，理由與貧民窟那一條相同：要測的是「打贏之後旗標與
+// 結局腳本會不會跑」，不是怎麼走到瓦傑渥城堡的頂樓。ECL5/7 是三個靜態展開
+// 解不開的區塊之一，所以位址是用線性掃描讀出來的。
+func TestDefeatingTyranthraxusSetsTheVictoryFlag(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(5)
+	if !ok {
+		t.Fatal("ECL5 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 7, 0xA7DC)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hero := poolsave.Character{
+		Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
+		AlignmentID: "lawful-good", MaxHP: 90, CurrentHP: 90,
+		PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+	}
+	application.mode, application.introDone = modeAdventure, true
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 5
+	if err := application.configureEventSession(session); err != nil {
+		t.Fatal(err)
+	}
+	application.state.Party = []poolsave.Character{hero}
+	application.state.CharacterLibrary = []poolsave.Character{hero}
+	application.spawn = gamepack.Spawn{
+		Map: gamepack.MapKey{Archive: 5, BlockID: 7}, X: 3, Y: 4, Facing: 2,
+	}
+	result, err := session.RunUntilEvent(4096, nil, true)
+	if err != nil {
+		t.Fatalf("擺出最後一戰：%v", err)
+	}
+	if err := application.consumeInitialSearch(result); err != nil {
+		t.Fatalf("擺出最後一戰：%v", err)
+	}
+	if !application.combatActive || len(application.combatMonsters) != 1 {
+		t.Fatalf("沒有擺出最後一戰：active=%v 怪物 %+v 文字 %q",
+			application.combatActive, application.combatMonsters, application.eventText)
+	}
+	if name := application.combatMonsters[0].Record.Name; name != "TYRANITHRAXUS" {
+		t.Fatalf("最後一戰擺出來的是 %q，原版是 TYRANITHRAXUS", name)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	state := application.tactical
+	if state == nil {
+		t.Fatal("ENTER 沒有進戰術盤")
+	}
+	for index := 1; index < len(state.Roster); index++ {
+		if !state.Friendly[index] {
+			state.Roster[index].FootprintClass = 0
+			state.Scores[index] = 0
+			state.States[index] = combat.DyingState
+		}
+	}
+	state.Mover, state.Prompt = 0, false
+	state.endRound(application.rollDice)
+	if !state.Prompt {
+		t.Fatal("打倒之後沒有跳出續戰詢問")
+	}
+	if err := press(application, ebiten.KeyN); err != nil {
+		t.Fatal(err)
+	}
+	machine := session.Machine()
+	if got := machine.Memory[0x4ABA]; got != 0xFE {
+		t.Fatalf("打贏之後 4ABA=%d，應該是 FEh（`A815h`）", got)
+	}
+	// 結局腳本：`A82Ah PROGRAM 08` 之後印出結局文字，再把座標設回
+	// `(0,4)` 朝向 1、`6E12 = 3`、`NEWECL 0`，也就是回到文明區的菲蘭。
+	ending := ""
+	for step := 0; step < 40; step++ {
+		if text := strings.TrimSpace(application.eventText); text != "" {
+			ending = text
+		}
+		if !application.cellEventPending && !application.cellWaitingMenu {
+			break
+		}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatalf("結局第 %d 步：%v", step, err)
+		}
+	}
+	// 結局腳本最後把隊伍送回文明區的菲蘭：`6E12 = 3` ＋ `NEWECL 0`。
+	if application.eclArchive != 3 || session.CurrentBlockID() != 0 {
+		t.Errorf("結局之後停在 ecl%d/%d，應該回到 ecl3/0",
+			application.eclArchive, session.CurrentBlockID())
+	}
+	t.Logf("破關：4ABA=%d，結局把隊伍送回 ecl%d/%d，PC %04X，文字 %q",
+		machine.Memory[0x4ABA], application.eclArchive,
+		session.CurrentBlockID(), 0x9900+session.Machine().PC, ending)
+}

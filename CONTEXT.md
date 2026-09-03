@@ -2,6 +2,22 @@
 
 更新日期：2026-09-03。
 
+## 2026-09-03 破關那一場
+
+`ECL5/7` 的 `A7DCh` 起是最後一戰：`LOAD MONSTER 42h` ＝ `mon5/66
+TYRANITHRAXUS`（HP 80、AC 0、體型 `84h` 佔 2×2）。打贏之後 `A815h` 把
+`4ABAh` 設成 `FEh`，那正是市政廳槽 20 的
+`CONGRATULATIONS! YOUR QUEST IS OVER!`；結局腳本再把隊伍送回 `ecl3/0`。
+
+擋在結局前面的缺口也修了：`finishCombat` 以前只把戰後腳本的文字套上去，
+不分派邊界，所以戰鬥後面接的 `PROGRAM`／`TREASURE`／換區塊一條都不會跑。
+改成走 `consumeInitialSearch` 之後，結局文字與回菲蘭的 `NEWECL 0` 都跑了。
+
+還沒畫的是**結局過場**：`PROGRAM 8` 是 overlay-18 entry 1，字串在同一顆
+overlay 的 `0111h..02A0h`（「Mortally wounded, the dragon roars!」到
+「Noooo...」）。spec 081 先前寫「值 8 全遊戲沒有呼叫點」，那是用走得到的碼
+掃出來的，而唯一的呼叫點就在掃不進去的那個區塊裡。
+
 ## 2026-09-03 第一條委任跑完了
 
 貧民窟那條委任的完整迴圈通了：真的打 25 場（每一場都進戰術盤、清光敵人、

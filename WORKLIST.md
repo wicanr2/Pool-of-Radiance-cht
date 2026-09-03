@@ -436,6 +436,27 @@
   測試在獎賞服務開起來時先驗待分的錢是 `[0 0 0 250 50 0 1]`（四張表的原值），
   再挑 Share 把錢分給隊伍、挑 Exit 讓腳本往下跑：`4ABBh` 變成 `FFh`、
   角色錢包收到金 250 白金 50 首飾 1。**這條委任從接到交差完整走得完。**
+- [x] **破關那一場打得贏，旗標也立得起來**（2026-09-03）。`ECL5/7` 的
+  `A7DCh` 起是最後一戰：`LOAD MONSTER 42h` ＝ `mon5/66 TYRANITHRAXUS`
+  （HP 80、AC 0、THAC0 10、體型 `84h` 佔 2×2），打贏之後 `A815h` 把
+  `4ABAh` 設成 `FEh`——那正是市政廳槽 20 的
+  `CONGRATULATIONS! YOUR QUEST IS OVER!`。
+  `TestDefeatingTyranthraxusSetsTheVictoryFlag` 釘住這一條，並驗結局腳本
+  把隊伍送回 `ecl3/0`（`6E12 = 3` ＋ `NEWECL 0`）。
+  ECL5/7 是三個靜態展開解不開的區塊之一，位址是用線性掃描讀出來的。
+
+  **順帶修掉一個擋在結局前面的缺口**：`finishCombat` 以前只把戰後腳本的
+  文字套上去，不分派邊界，所以戰鬥後面接的 `PROGRAM`、`TREASURE`、換區塊
+  一條都不會跑——結局就是卡在 `A82Ah PROGRAM 08`。改成走跟走進一格時
+  同一條 `consumeInitialSearch` 之後，結局文字與回菲蘭的 `NEWECL 0` 都跑了。
+
+- [ ] **結局過場還沒畫**（spec 081）。`PROGRAM 8` 是 overlay-18 entry 1
+  （`02A1h`），字串內嵌在同一顆 overlay 的 `0111h..02A0h`：
+  「Mortally wounded, the dragon roars!」→「The spirit of Tyranthraxus
+  flares up from the dragon's body.」→ `FINAL` →「Fools, you have but slain
+  the body I possessed…」→「Noooo...」。remake 目前把值 8 當成什麼都不做，
+  直接跳到後面的文字。**先前 spec 081 寫「值 8 全遊戲沒有呼叫點」——那是
+  用走得到的碼掃出來的結論，而唯一的呼叫點就在掃不進去的那個區塊裡。**
 - [ ] 從標題以正常按鍵完成建隊、進圖、事件、戰鬥、存檔與讀檔抽樣。
   已有 `TestNormalKeysReachTheFirstDungeonStep`：只用按鍵從標題走到建角、
   加入隊伍、Begin、推完開場與 34 步導覽，在地圖上走出一步，F10 存檔後
