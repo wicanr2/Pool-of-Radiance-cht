@@ -17,7 +17,7 @@
 還沒讀到，沒有證據前不動亂數流。`RequiredFacing` 改成出界當場失敗，順帶訂正
 它「DirectionAny 恆真，搜尋一定會停」那句：界限檢查對 `DirectionAny` 一樣生效。
 契約寫進 spec 062 第 7 條與 spec 058 第 6 條，未閉合的是原版清 `+3` 的位置。
-**不是敵方 AI 改版引入的**——那一行只由 `20474cb`（09-02 的回合迴圈）引入，
+**不是敵方 AI 改版引入的**——那一行只由 `e6fe452`（09-02 的回合迴圈）引入，
 三個敵方 AI commit 都沒碰過它。世界巡迴 22 趟的硬失敗從 3 筆歸零。
 
 **這次真正花時間的不是修，是讓錯誤說得出話。** 治具印的是
@@ -236,7 +236,7 @@ overlay 的 `0111h..02A0h`（「Mortally wounded, the dragon roars!」到
   手寫 `TourStep` 僅保留給無原始 script 的合成 UI fixture，不是正式遊戲路徑。
   engine 後續已加入同一 VM 的 entry 切換與 `RunUntilEvent`：後者逐 instruction 在
   第一個 observable event／menu／EXIT 邊界停下，避免先跨過 COMBAT 再事後標記。
-  Pool `3b17d57` 已將此契約接到初始 map cell lifecycle；未處理的事件會設為 pending
+  Pool `04ae5b4` 已將此契約接到初始 map cell lifecycle；未處理的事件會設為 pending
   並停止移動。pending 只代表失敗即關閉，尚不代表該事件已可遊玩。
   未提交或只用於稽核的 VM clone／全圖 sweep 不列為現行完成度，必須待 deterministic
   報表、測試與正常玩家可達性分開驗收後再更新本節。

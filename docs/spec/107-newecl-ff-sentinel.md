@@ -138,7 +138,7 @@ GEO1/31 一走得進去，那一區的戰鬥就進了巡覽範圍，於是有兩
   mover 在目的格探測裡不受出界檢查，於是走出盤面。契約與未閉合項見
   [spec 062](062-combat-round-loop.md) 契約 7 與
   [spec 058](058-destination-probe-and-tactical-layout.md) 契約 6。
-  那段碼自 `20474cb`（2026-09-02 的回合迴圈）就在，三個敵方 AI commit
+  那段碼自 `e6fe452`（2026-09-02 的回合迴圈）就在，三個敵方 AI commit
   都沒有碰過它——回合數要到二十幾才會有人死，所以要走得進這一區才看得到。
 - **格子選單卡住**（`GEO7/23 (1,1)`）：**還在**，重現是 seed 106、destination 2。
   形狀與下一步見 `WORKLIST.md`。

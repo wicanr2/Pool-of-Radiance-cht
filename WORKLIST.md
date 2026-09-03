@@ -758,7 +758,7 @@
   來源還沒讀到，沒有證據前不動亂數流）。`RequiredFacing` 改成出界當場失敗，
   順帶訂正它「DirectionAny 恆真，搜尋一定會停」那句——界限檢查對 `DirectionAny`
   一樣生效，出界時九個候選一個都不成立。
-  **不是敵方 AI 改版引入的**：`state.Scores[index] = score` 只由 `20474cb`
+  **不是敵方 AI 改版引入的**：`state.Scores[index] = score` 只由 `e6fe452`
   （2026-09-02 的回合迴圈）引入，之後沒有任何 commit 改過，三個敵方 AI commit
   也沒碰過 `startRound`／`selectActor`。要走得進這一區、而且架打到二十幾回合
   有人死，才看得到。
