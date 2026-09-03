@@ -161,10 +161,15 @@ func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) []explore
 			if !app.initialMap.Grid.CanMoveDungeonWrapped(current.x, current.y, facing*2) {
 				continue
 			}
-			next := node{
-				x: geometry.WrapCoordinate(current.x+exploreDeltas[facing][0], geometry.Width),
-				y: geometry.WrapCoordinate(current.y+exploreDeltas[facing][1], geometry.Height),
+			x := current.x + exploreDeltas[facing][0]
+			y := current.y + exploreDeltas[facing][1]
+			if x < 0 || x >= geometry.Width || y < 0 || y >= geometry.Height {
+				// 跨出邊界那一步是**換區**（spec 100），不是探索這一張圖。
+				// 讓規劃器自由跨出去的話，隊伍會在兩區之間來回彈——實測
+				// 城區與貧民窟之間彈了兩萬次，別的地方一格都沒走到。
+				continue
 			}
+			next := node{x: x, y: y}
 			if _, seen := from[next]; seen {
 				continue
 			}
@@ -401,6 +406,9 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	var plan []exploreStep
 	pilot := &tacticalPilot{}
 	stuck, hops, moved := 0, 0, 0
+	var exit *areaExit
+	// exitUses 記每一個「邊界格＋朝外的方向」用過幾次，這一趟之內有效。
+	exitUses := map[[4]int]int{}
 	var failures []string
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
 	// 的路），要重走找出口時傳一份自己的。
@@ -409,6 +417,10 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	walk:
 	for step := 0; step < budget; step++ {
 		if application.spawn.Map != lastMap {
+			t.Logf("換圖 GEO%d/%d → GEO%d/%d 位置 (%d,%d) 朝向 %d",
+				lastMap.Archive, lastMap.BlockID,
+				application.spawn.Map.Archive, application.spawn.Map.BlockID,
+				application.spawn.X, application.spawn.Y, application.spawn.Facing)
 			// 換圖不是在「按下前進」那一 tick 發生的：格子事件先跑，
 			// LOAD FILES 是在事件那一段做掉的。所以要跨 tick 比對，
 			// 記下**換圖前站的那一格**。少了這個，avoid 永遠是空的，
@@ -516,28 +528,48 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 			}
 			continue
 		}
-		if len(plan) == 0 {
+		// 這一張踩完之後才刻意走出去：站到邊界那一格、轉向外面、往前一步。
+		// 規劃器本身不跨邊界（見 explorePlan），所以換區一定經過這一段。
+		if exit != nil {
+			at := [2]int{int(application.spawn.X), int(application.spawn.Y)}
+			switch {
+			case at == exit.cell && application.spawn.Facing == exit.facing:
+				if err := press(application, ebiten.KeyArrowUp); err != nil {
+					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+					break walk
+				}
+				exit, plan = nil, nil
+				continue
+			case at == exit.cell:
+				key := ebiten.KeyArrowRight
+				if (int(exit.facing)-int(application.spawn.Facing)+4)%4 == 3 {
+					key = ebiten.KeyArrowLeft
+				}
+				if err := press(application, key); err != nil {
+					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+					break walk
+				}
+				continue
+			}
+			if len(plan) == 0 {
+				target := *exit
+				plan = planToCells(application, rotate, func(x, y int) bool {
+					return x == target.cell[0] && y == target.cell[1]
+				})
+				if len(plan) == 0 {
+					exit = nil
+				}
+			}
+		}
+		if len(plan) == 0 && exit == nil {
 			plan = explorePlan(application, walked, avoid, rotate)
 			if len(plan) == 0 && hops < exploreMaxTransitionHops {
-				// 這一張踩完了：走一個用得最少的換圖點。
-				here := [2]int{int(application.spawn.Map.Archive),
-					int(application.spawn.Map.BlockID)}
-				fewest := -1
-				for key, count := range transitionUses {
-					if key[0] != here[0] || key[1] != here[1] {
-						continue
-					}
-					if fewest < 0 || count < fewest {
-						fewest = count
-					}
-				}
-				if fewest >= 0 {
-					plan = planToCells(application, rotate, func(x, y int) bool {
-						return transitionUses[[3]int{here[0], here[1], y*100 + x}] == fewest
-					})
-					if len(plan) != 0 {
-						hops++
-					}
+				if next, ok := chooseAreaExit(application, exitUses); ok {
+					// 選中就記一次。走不到那一格的出口不記的話，
+					// 下一輪會挑到同一個，隊伍就卡在原地重選到 hop 用完。
+					exitUses[exitKey(application, next)]++
+					exit, hops = &next, hops+1
+					continue
 				}
 			}
 			if len(plan) == 0 {
@@ -724,4 +756,49 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	if !blocks[21] {
 		t.Errorf("沒走到索寇要塞（ECL block 21），走到的是 %v", blocks)
 	}
+}
+
+// areaExit 是「站在這一格、面向這個方向往前一步就離開這一區」。
+type areaExit struct {
+	cell   [2]int
+	facing uint8
+}
+
+// exitKey 把一個出口壓成 exitUses 的鍵。
+func exitKey(application *app, exit areaExit) [4]int {
+	return [4]int{int(application.spawn.Map.Archive), int(application.spawn.Map.BlockID),
+		exit.cell[1]*100 + exit.cell[0], int(exit.facing)}
+}
+
+// chooseAreaExit 從這一張圖的邊界上挑一個用得最少的出口。
+//
+// 「出口」是資料算出來的，不是抄來的：邊界上那一格朝外的方向沒有牆，
+// 走出去就是換區（spec 100）。用得最少的優先，這樣八個方向都會輪到。
+func chooseAreaExit(application *app, exitUses map[[4]int]int) (areaExit, bool) {
+	if application.initialMap == nil {
+		return areaExit{}, false
+	}
+	best, bestUses, found := areaExit{}, 0, false
+	for y := 0; y < geometry.Height; y++ {
+		for x := 0; x < geometry.Width; x++ {
+			for facing := 0; facing < 4; facing++ {
+				nextX := x + exploreDeltas[facing][0]
+				nextY := y + exploreDeltas[facing][1]
+				inside := nextX >= 0 && nextX < geometry.Width &&
+					nextY >= 0 && nextY < geometry.Height
+				if inside {
+					continue
+				}
+				if !application.initialMap.Grid.CanMoveDungeonWrapped(x, y, facing*2) {
+					continue
+				}
+				candidate := areaExit{cell: [2]int{x, y}, facing: uint8(facing)}
+				uses := exitUses[exitKey(application, candidate)]
+				if !found || uses < bestUses {
+					best, bestUses, found = candidate, uses, true
+				}
+			}
+		}
+	}
+	return best, found
 }
