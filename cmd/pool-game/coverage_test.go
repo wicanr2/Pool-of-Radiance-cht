@@ -355,7 +355,7 @@ const exploreMaxTransitionHops = 60
 // 之後困在索寇要塞回不來——起始圖 226 格只走了 31 格就再也沒機會走完。
 // 逐趟把已知的換圖點擋掉，下一趟就會先把這一張走完再換圖。
 func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
-	avoid map[[3]int]bool, transitionUses map[[3]int]int,
+	avoid map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
 	visited map[[3]int]bool, maps map[string]bool, blocks map[int]bool) (int, bool) {
 	t.Helper()
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
@@ -387,7 +387,6 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate int,
 	var plan []exploreStep
 	pilot := &tacticalPilot{}
 	stuck, hops, moved := 0, 0, 0
-	menuTurn := map[[3]int]int{}
 	lastMap, lastCell := application.spawn.Map, [2]int{-1, -1}
 	for step := 0; step < 300000; step++ {
 		if application.spawn.Map != lastMap {
@@ -537,13 +536,16 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	avoid := map[[3]int]bool{}
 	transitionUses := map[[3]int]int{}
+	// menuTurn 跨趟保留：每一格的選單逐趟換一個答案。留在單趟裡的話每趟都
+	// 從第 0 項開始，「要不要接任務」這種問句永遠是同一個答案。
+	menuTurn := map[[3]int]int{}
 	visited := map[[3]int]bool{}
 	maps := map[string]bool{}
 	blocks := map[int]bool{}
 	total := 0
 	for pass := 0; pass < 24; pass++ {
 		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, avoid,
-			transitionUses, visited, maps, blocks)
+			transitionUses, menuTurn, visited, maps, blocks)
 		if !ok {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}

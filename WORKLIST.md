@@ -509,8 +509,17 @@
      不是遊戲的：探索器原本一律選最後一項，最後一項是 No，於是選單原地重開。
   **還沒補的**：戰鬥的生命值不會寫回隊伍，所以打完架隊伍永遠是滿血。
   原版打完之後的生命值處理還沒讀。
-- [ ] **城區之間的移動**：目前唯一擋住「走得到其餘 26 個 block」的東西。
-  起始圖的四格換圖點只通到一個目的地，其餘要靠原版的城區旅行畫面。
+- [ ] **走出地圖邊界**：目前唯一擋住「走得到其餘 25 個 block」的東西，
+  而且**位置已經找到了**。把兩張圖上每一格的事件文字全部收下來之後：
+  - 起點 **(0,4) 就是那道門**：「YOU ARE BY THE GATEWAY TO THE UNSETTLED
+    AREAS. THE CITY WATCH EYES YOU SUSPICIOUSLY.」
+  - 市政廳的書記在 (5,5) 發任務，其中一條就是「THE SLUMS IMMEDIATELY TO
+    OUR WEST NEED TO BE CLEARED OF MONSTERS.」——貧民窟在**西邊**。
+  - 那一格沒有選單，也沒有 `LOAD FILES`。所以離開這一區靠的不是格子事件，
+    是**走出地圖邊界**這件事本身。
+  remake 目前把座標繞回去（`geometry.WrapCoordinate`），從 (0,4) 往西會走到
+  (15,4)，所以永遠出不去。要讀的是原版 overlay-03（MOVEMENT）套上位移之後
+  那一段：它怎麼判斷「走出去了」，以及走出去之後把畫面交給誰。
 - [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家
