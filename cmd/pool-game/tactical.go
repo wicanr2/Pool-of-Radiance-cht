@@ -339,6 +339,9 @@ type tacticalState struct {
 	// 被迷住的怪物做什麼，那一支還沒讀（spec 096）。這裡只讓它不再行動，
 	// 沒有讓它倒戈。
 	Charmed []bool
+	// FoeTargets 是每一格上一回合追的目標（原版戰鬥子結構 `+0Ah` 的目標
+	// 遠指標）。目標還有效就沿用，不是每回合重挑（spec 096）。
+	FoeTargets []uint8
 	// TacticModes 是每一格身上的戰術模式（原版戰鬥子結構的 `+15h`，值 1..6）。
 	// 它決定敵方回合要往哪五個相對方向試，跨回合留著（spec 096）。
 	TacticModes []uint8
@@ -543,6 +546,7 @@ func (a *app) enterTacticalPreview() error {
 	state.HeldRounds = make([]int, size)
 	state.Charmed = make([]bool, size)
 	state.TacticModes = make([]uint8, size)
+	state.FoeTargets = make([]uint8, size)
 	state.CreatureType = make([]uint8, size)
 	state.BodySize = make([]uint8, size)
 	state.SaveTargets = make([][gamepack.SavingThrowCategories]uint8, size)
@@ -706,24 +710,32 @@ func (a *app) foeTurn(state *tacticalState) error {
 	if !ok {
 		return fmt.Errorf("Pool mover %d has no side", mover)
 	}
-	targets, err := combat.OpposingNearbyAt(snapshot, mover,
-		state.Roster[mover].X, state.Roster[mover].Y, foeSearchBudget, 1-side, state.sideOf)
-	if err != nil {
-		return err
-	}
-	target := uint8(0)
-	if len(targets) != 0 {
-		target = targets[0]
-	} else if nearest, ok := state.nearestReachableOpposing(mover); ok {
-		// 反應距離內沒人時，改追盤面上最近的敵人。
-		//
-		// **這不是原版的演算法**：原版的敵方回合在 overlay-09 entry 1
-		// （code `000Fh`），還沒讀出來。`OpposingNearbyAt` 重現的是
-		// overlay-25 entry 32 的「鄰接反應」搜尋（spec 059），拿它當目標選擇
-		// 本來就是借用。少了這個退路，站得遠的怪物會回報找不到目標然後原地
-		// 結束回合——實測索寇要塞那一場，最後兩隻殭屍與隊伍隔著 22 格互相
-		// 不動，戰鬥永遠打不完。
-		target = nearest
+	// 原版 overlay-13 `37B8h`：**還有效的目標就沿用**，換人才重挑。有效的
+	// 條件是「不是自己這一邊」、「還在場上（`+10Dh`）」，再過一次 `1087h`
+	// 的可打判定（那一支還沒讀）。追不到人時才換一個。
+	target, ok := state.foeTarget(mover)
+	if !ok {
+		targets, err := combat.OpposingNearbyAt(snapshot, mover,
+			state.Roster[mover].X, state.Roster[mover].Y, foeSearchBudget, 1-side, state.sideOf)
+		if err != nil {
+			return err
+		}
+		if len(targets) != 0 {
+			// 原版是從候選名單裡擲骰隨機挑（`38A6h` 的 `骰(1, n)`），挑到
+			// 不能打的就把那一格劃掉重擲，最多二十次。
+			target = targets[a.rollDice(1, len(targets))-1]
+		} else if nearest, ok := state.nearestReachableOpposing(mover); ok {
+			// 反應距離內沒人時，改追盤面上最近的敵人。
+			//
+			// **這不是原版的名單**：原版的候選由 overlay-25 `010Ah:00C0h`
+			// 填進 `DS:6CD7h`，那一支還沒讀。`OpposingNearbyAt` 重現的是
+			// overlay-25 entry 32 的「鄰接反應」搜尋（spec 059），拿它當
+			// 名單本來就是借用。少了這個退路，站得遠的怪物會回報找不到目標
+			// 然後原地結束回合——實測索寇要塞那一場，最後兩隻殭屍與隊伍隔著
+			// 22 格互相不動，戰鬥永遠打不完。
+			target = nearest
+		}
+		state.setFoeTarget(mover, target)
 	}
 	if target == 0 {
 		state.FoeLog = state.say(msgFoeNoTarget, mover)
@@ -823,6 +835,9 @@ func (a *app) foeTurn(state *tacticalState) error {
 			mode = gamepack.NextTacticMode(mode)
 			stuck++
 			if stuck > 1 {
+				// 原版 `0A37h`：卡住第二次就把記錄裡存著的目標清掉，
+				// 下一回合重挑一個。
+				state.setFoeTarget(mover, 0)
 				break
 			}
 		}
@@ -962,6 +977,38 @@ func (state *tacticalState) detourStep(snapshot combat.TacticalState, mover uint
 		best, bestDistance, found = direction, distance, true
 	}
 	return best, found, nil
+}
+
+// foeTarget 取這一格上一回合追的目標，順便驗它還有沒有效（原版 `37B8h`
+// 開頭那三道：不是自己這一邊、還在場上、過得了可打判定）。
+func (state *tacticalState) foeTarget(mover uint8) (uint8, bool) {
+	if int(mover) >= len(state.FoeTargets) {
+		return 0, false
+	}
+	target := state.FoeTargets[mover]
+	if target == 0 || int(target) >= len(state.Roster) {
+		return 0, false
+	}
+	if state.Roster[target].FootprintClass == 0 {
+		return 0, false
+	}
+	moverSide, ok := state.sideOf(mover)
+	if !ok {
+		return 0, false
+	}
+	targetSide, ok := state.sideOf(target)
+	if !ok || targetSide == moverSide {
+		return 0, false
+	}
+	return target, true
+}
+
+// setFoeTarget 記下這一隻在追誰；0 代表忘掉。
+func (state *tacticalState) setFoeTarget(mover, target uint8) {
+	if int(mover) >= len(state.FoeTargets) {
+		return
+	}
+	state.FoeTargets[mover] = target
 }
 
 // tacticMode 取這一格身上的戰術模式（原版存在戰鬥子結構的 `+15h`）。還沒擲過
