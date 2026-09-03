@@ -740,7 +740,14 @@
   而那是另一個 repo，本專案的 push 授權不涵蓋它，**要先取得使用者同意再動**
   （順帶：該 repo 的 `git config user.email` 是公司位址，動之前要先設 repo-local
   的 `wicanr2@gmail.com`）。
-- [ ] **原版的敵方回合還沒讀**：入口是 overlay-08 entry 3（`01E4h`）依角色
+- [ ] **原版的敵方回合讀到一半**（spec 096）。已經讀出來的：每回合的行為鏈、
+  戰術模式（記錄 `+15h`，1..6，多數回合沿用、四分之一重擲）、接近用的候選
+  搜尋（`0912h`，早就在 spec 056 閉合並實作成 `NearbyCells`）、
+  **entry 7 是玩家打斷**（按 `2` 切「電腦幫我放法術」`DS:6D23h`，字串
+  `Magic On`／`Magic Off`；按空白把 `+10Fh` 清成 0，控制權交回玩家）、
+  **entry 8 是士氣**（`+10h` 非零就 `is forced to flee`，另有 `Surrenders`）。
+  還缺 entry 3 與 entry 2（施法）的內容，以及戰術模式 1..6 對到哪一支。
+  入口是 overlay-08 entry 3（`01E4h`）依角色
   記錄的 `+10Fh` 分派——非零走 `0058h:0025h`（overlay-09 entry 1，code
   `000Fh`，整個 overlay-09 就是敵方 AI），零則走 overlay-08 `0307h` 的玩家
   指令迴圈（指令字串 `Move `／`View Aim `／`Use `／`Cast `／`Turn `／
