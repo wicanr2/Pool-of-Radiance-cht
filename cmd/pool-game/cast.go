@@ -128,9 +128,9 @@ func (a *app) beginCastTargeting(option castOption) bool {
 // beginAimedAttack 是 A 鍵：拿現在裝備的武器瞄一個目標打。
 //
 // 原版把它掛在 `View Aim` 指令上（overlay-08 `05E1h` 起的指令字串），
-// 射程來自物品型別表的 `+0Ch`（spec 065）。**距離怎麼算還沒讀**——
-// 原版的挑目標介面會顯示 `Range = `，那一段在 overlay-13 `352Ch`。
-// 這裡用戰場座標的切比雪夫距離，是 remake 自己的選擇。
+// 射程來自物品型別表的 `+0Ch`（spec 065），距離則是
+// **TraceMovement 的成本除以二**（spec 098，overlay-25 `2591h`）。
+// 地形擋住走不到就打不到，與原版一樣。
 func (a *app) beginAimedAttack() bool {
 	state := a.tactical
 	if state == nil || state.Mover == 0 {
@@ -166,9 +166,11 @@ func (a *app) moverAttackRange() int {
 // resolveAimedAttack 對挑中的目標打一次。超出射程就不打，也不消耗回合。
 func (a *app) resolveAimedAttack(target uint8) error {
 	state := a.tactical
-	from := state.Roster[state.Mover]
-	to := state.Roster[target]
-	distance := chebyshev(from.X, from.Y, to.X, to.Y)
+	distance, reachable := state.tacticalRange(state.Mover, target)
+	if !reachable {
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimBlocked), target))
+		return nil
+	}
 	if reach := a.moverAttackRange(); distance > reach {
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimOutOfRange), target, distance, reach))
 		return nil

@@ -1215,7 +1215,10 @@ func (state *tacticalState) nearestReachableOpposing(mover uint8) (uint8, bool) 
 		if err != nil || !trace.Complete {
 			continue
 		}
-		distance := chebyshev(from.X, from.Y, to.X, to.Y)
+		// 距離用原版的算法：TraceMovement 的成本除以二（spec 098）。
+		// 成本本來就以半格為單位（`limit := budget*2 + 1`），所以斜走與
+		// 直走不同價；切比雪夫距離在斜投影的盤面上會低估。
+		distance := int(trace.Cost) / 2
 		if best == 0 || distance < bestDistance {
 			best, bestDistance = uint8(index), distance
 		}
@@ -1322,4 +1325,25 @@ func (a *app) awardCombatExperience() {
 		}
 		member.Experience += gamepack.ExperienceShare(share, code, member.Abilities)
 	}
+}
+
+
+// tacticalRange 是原版算兩個參戰者之間距離的方式（spec 098）：
+// overlay-25 `2591h` 用 overlay-31 entry 6 建的清單找到目標那一格，
+// 取**路徑成本除以二**。成本由 `0419h`（TraceMovement，spec 057）算，
+// 本來就以半格為單位。
+//
+// 走不到（地形擋住或超出預算）回 false，呼叫端要當成「打不到」。
+func (state *tacticalState) tacticalRange(from, to uint8) (int, bool) {
+	if int(from) >= len(state.Roster) || int(to) >= len(state.Roster) {
+		return 0, false
+	}
+	source, target := state.Roster[from], state.Roster[to]
+	// 預算給滿：算距離不受這一回合剩多少步影響。
+	trace, err := combat.TraceMovement(state.Grid, state.Classes,
+		int(source.X), int(source.Y), int(target.X), int(target.Y), 0xFF)
+	if err != nil || !trace.Complete {
+		return 0, false
+	}
+	return int(trace.Cost) / 2, true
 }

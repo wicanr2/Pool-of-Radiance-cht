@@ -377,8 +377,14 @@ func TestAimedAttackRespectsWeaponRange(t *testing.T) {
 		Damage:     []combat.DamageDice{{}, {Count: 1, Sides: 8}, {Count: 1, Sides: 8}},
 		Mover:      1,
 	}
+	// 距離用 TraceMovement 算（spec 098），所以要有盤面。這裡不測地形，
+	// 給一整片可通行的格子並讓它跳過地形判定。
+	state.Grid = combat.TacticalGrid{
+		IgnoreTerrain: true,
+		Terrain:       make([]uint8, combat.TacticalRowStride*(combat.TacticalMaxY+1)),
+	}
 	state.Roster[1] = combat.CombatantCell{X: 1, Y: 1, FootprintClass: 1}
-	state.Roster[2] = combat.CombatantCell{X: 9, Y: 1, FootprintClass: 1} // 八格外
+	state.Roster[2] = combat.CombatantCell{X: 17, Y: 1, FootprintClass: 1} // 遠處
 	application := &app{tactical: state, tacticalPreview: true, mode: modeAdventure,
 		roller: diceRoller{random: rand.New(rand.NewSource(1))}}
 	application.state = poolsave.State{Party: []poolsave.Character{{Name: "A", ClassID: "fighter"}}}
