@@ -47,6 +47,21 @@ type CastEffect struct {
 	// MinimumHitPoints 大於零時：目標的目前生命值低於它就墊上去。
 	// 緩毒術把 0 墊成 1（`188Dh` 的 `cmpb $0, es:[di+11Bh]`）。
 	MinimumHitPoints int
+	// PersonOnly 為真代表這一支只對「人」有效：目標記錄的 `+9Fh` 大於 1
+	// 或 `+6Ch` 大於 1 就完全不受影響（`11DAh`／`174Bh` 那兩道比較）。
+	PersonOnly bool
+	// CreatureTypeFiltered 為真時，只有 `+9Fh` 等於 CreatureType 的目標
+	// 會被收進來。迷蛇術是 `0Eh`。用旗標而不是「非零」是因為 `0`（人類）
+	// 本身也是合法的種類。
+	CreatureTypeFiltered bool
+	CreatureType         uint8
+	// HitPointBudgetFromCaster 為真代表額度是施法者的目前生命值
+	// （迷蛇術的 `DS:47A6h` 由 `+11Bh` 填），逐個目標扣掉它的目前生命值，
+	// 扣得動的才被迷住。
+	HitPointBudgetFromCaster bool
+	// SaveModifierByTargetCount 為真代表豁免修正看這一次選了幾個目標，
+	// 算法見 HoldPersonSaveModifier。
+	SaveModifierByTargetCount bool
 }
 
 // AbilityBonus 是「把某個能力值加上去，加到上限為止」。
@@ -165,7 +180,50 @@ const (
 	SpellIDReadMagic      = 67 // 305Bh
 	SpellIDFireball       = 47 // 262Eh
 	SpellIDLightningBolt  = 51 // 2B75h
+	SpellIDCharmPerson    = 10 // 11C5h
+	SpellIDSnakeCharm     = 27 // 18F9h
 )
+
+
+// CreatureTypeSnake 是迷蛇術收的那一族（`1927h` 的 `cmpb $0Eh`）。
+// 原版資料裡是巨蛇與兩種蠍子。
+const CreatureTypeSnake = 0x0E
+
+// SpellAffectsPerson 是「魅惑人類／定身術這一目標算不算人」。
+//
+// 原版兩支的判斷逐位元組相同（`11DAh` 與 `174Bh`）：
+//
+//	cmp es:[di+9Fh], 1 ; ja  不受影響
+//	cmp es:[di+6Ch], 1 ; jbe 受影響
+//
+// 所以種類要小於等於 1（人類或類人），而且 `+6Ch` 整個 byte 要小於等於 1。
+// 熊地精的 `+6Ch` 是 `81h`，所以雖然種類是 1 仍然免疫。
+func SpellAffectsPerson(creatureType, bodySize uint8) bool {
+	return creatureType <= 1 && bodySize <= 1
+}
+
+// HoldPersonSaveModifier 是定身術依「這一次選了幾個目標」給的豁免修正
+//（`1656h..168Ch`）。目標愈少愈難擋。
+//
+//	1 個：定身術（編號 17h）−2，定身怪物（31h）−3
+//	2 個：−1
+//	3 或 4 個：0
+//
+// 原版對 5 個以上沒有賦值，那一格是未初始化的區域變數；選單挑不到那麼多，
+// 這裡回 0 而不是模擬垃圾值。
+func HoldPersonSaveModifier(id uint8, targets int) int {
+	switch targets {
+	case 1:
+		if id == SpellIDHoldPerson {
+			return -2
+		}
+		return -3
+	case 2:
+		return -1
+	default:
+		return 0
+	}
+}
 
 // SpellCaster 把讀出來的處理常式與那一批純泛型的收在一起。
 //
@@ -383,6 +441,24 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `2675h` 推給 `0138h:003Eh` 的預算是 2，方向 FFh（不限方向）。
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
 		effect.AreaBudget = FireballAreaBudget
+	case SpellIDCharmPerson:
+		// `11C5h` 先擋不是人的目標，過得了才走泛型那條——四個覆寫參數是
+		// `(施法者 +10Eh << 7) + 施法者等級`、1、0、0。高位那一段是
+		// 「誰迷的」，隊伍這一邊的 `+10Eh` 是 0。
+		effect.PersonOnly = true
+		effect.CasterLevelOverride = casterLevel
+		effect.EffectParameter = 1
+	case SpellIDHoldPerson, SpellIDHoldPersonAlt:
+		// `1650h` 兩支共用：先依目標數算豁免修正，再逐個目標擲豁免；
+		// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
+		effect.PersonOnly = true
+		effect.SaveModifierByTargetCount = true
+	case SpellIDSnakeCharm:
+		// `18F9h`：額度是施法者的目前生命值（`+11Bh` → `DS:47A6h`），
+		// 沿著目標串列走，`+9Fh` 是 `0Eh` 而且目前生命值扣得動的就收進來。
+		// 與 AD&D 一版的「總生命值不超過牧師目前生命值」逐字相同。
+		effect.CreatureTypeFiltered, effect.CreatureType = true, CreatureTypeSnake
+		effect.HitPointBudgetFromCaster = true
 	case SpellIDLightningBolt:
 		// 閃電束走的是 `287Ch` 那條（目標模式 8＝直線），預算還沒讀。
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
@@ -406,7 +482,8 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDMagicMissileAlt, SpellIDNoOperation, SpellIDGuardedGeneric,
 		SpellIDGreaterHeal, SpellIDLesserHeal, SpellIDHaste, SpellIDSlowPoison,
 		SpellIDEnlarge, SpellIDReadMagic,
-		SpellIDFireball, SpellIDLightningBolt:
+		SpellIDFireball, SpellIDLightningBolt,
+		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm:
 		return true
 	}
 	return false

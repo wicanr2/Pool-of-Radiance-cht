@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 29 || generic != 25 || total != 54 {
+	if read != 33 || generic != 25 || total != 58 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 29／25／54，改了實作要一起改", read, generic, total)
+			"文件寫的是 33／25／58，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
@@ -573,5 +573,111 @@ func TestRestoreRepaysOneLevel(t *testing.T) {
 	// 沒有欠帳就什麼都不做。
 	if Restore(0, 0).Restored {
 		t.Error("沒有被吸取過就不該還")
+	}
+}
+
+// 魅惑人類與定身術只對「人」有效：種類 `+9Fh` 不大於 1、體型 `+6Ch` 不大於 1
+//（overlay-22 `11DAh`／`174Bh`）。原版資料裡的四個代表值都對過。
+func TestSpellAffectsPersonMatchesTheOriginalGate(t *testing.T) {
+	for _, want := range []struct {
+		name                  string
+		creatureType, bodySize uint8
+		person                bool
+	}{
+		{"4TH LVL FIGHTER", 0x00, 0x01, true},
+		{"ORC", 0x01, 0x01, true},
+		{"BUGBEAR", 0x01, 0x81, false},
+		{"HILL GIANT", 0x02, 0x82, false},
+		{"SKELETON", 0x04, 0x01, false},
+	} {
+		if got := SpellAffectsPerson(want.creatureType, want.bodySize); got != want.person {
+			t.Errorf("%s（種類 %#02x 體型 %#02x）算不算人：算出 %v，應該是 %v",
+				want.name, want.creatureType, want.bodySize, got, want.person)
+		}
+	}
+}
+
+// 定身術的豁免修正看目標數，而且一個目標時兩個編號給的值不同
+//（overlay-22 `1656h..168Ch`）。
+func TestHoldPersonSaveModifierByTargetCount(t *testing.T) {
+	for _, want := range []struct {
+		id       uint8
+		targets  int
+		modifier int
+	}{
+		{SpellIDHoldPerson, 1, -2},
+		{SpellIDHoldPersonAlt, 1, -3},
+		{SpellIDHoldPerson, 2, -1},
+		{SpellIDHoldPersonAlt, 2, -1},
+		{SpellIDHoldPerson, 3, 0},
+		{SpellIDHoldPerson, 4, 0},
+	} {
+		if got := HoldPersonSaveModifier(want.id, want.targets); got != want.modifier {
+			t.Errorf("法術 %d 選 %d 個目標的修正是 %d，應該是 %d",
+				want.id, want.targets, got, want.modifier)
+		}
+	}
+}
+
+// 四支新接的法術各自要帶出來的東西。
+func TestCharmAndHoldCastEffects(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	charm, err := CastSpell(SpellIDCharmPerson, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatalf("魅惑人類：%v", err)
+	}
+	if !charm.PersonOnly || charm.EffectCode != 0x0b || charm.CasterLevelOverride != 6 {
+		t.Errorf("魅惑人類算出 %+v", charm)
+	}
+	for _, id := range []uint8{SpellIDHoldPerson, SpellIDHoldPersonAlt} {
+		hold, err := CastSpell(id, parameters, 6, maxRoller{})
+		if err != nil {
+			t.Fatalf("定身術 %d：%v", id, err)
+		}
+		if !hold.PersonOnly || !hold.SaveModifierByTargetCount ||
+			hold.EffectCode != HoldPersonEffectCode {
+			t.Errorf("定身術 %d 算出 %+v", id, hold)
+		}
+	}
+	snake, err := CastSpell(SpellIDSnakeCharm, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatalf("迷蛇術：%v", err)
+	}
+	if !snake.CreatureTypeFiltered || snake.CreatureType != CreatureTypeSnake ||
+		!snake.HitPointBudgetFromCaster || snake.PersonOnly {
+		t.Errorf("迷蛇術算出 %+v", snake)
+	}
+}
+
+// 種類欄位的四個獨立使用點各自指同一件事，這裡拿原版記錄當正對照：
+// 死靈術只認 0（人類）、迷蛇術只認 0Eh，而不死一律是 4。
+func TestMonsterCreatureTypeFromOriginalRecords(t *testing.T) {
+	for _, want := range []struct {
+		archive, block uint8
+		name           string
+		creatureType   uint8
+		bodySize       uint8
+	}{
+		{1, 4, "ORC", 0x01, 0x01},
+		{1, 8, "OGRE", 0x01, 0x82},
+		{4, 34, "SKELETON", 0x04, 0x01},
+		{5, 60, "GIANT SNAKE", 0x0e, 0x83},
+		{1, 41, "4TH LVL FIGHTER", 0x00, 0x01},
+	} {
+		record, err := ReadDOSMonsterRecord(poolZipPath(), want.archive, want.block)
+		if err != nil {
+			t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+		}
+		if record.Name != want.name {
+			t.Fatalf("mon%d/%d 是 %q，不是 %q", want.archive, want.block, record.Name, want.name)
+		}
+		if record.CreatureType() != want.creatureType || record.BodySize() != want.bodySize {
+			t.Errorf("%s 的種類／體型是 %#02x／%#02x，應該是 %#02x／%#02x",
+				want.name, record.CreatureType(), record.BodySize(),
+				want.creatureType, want.bodySize)
+		}
 	}
 }

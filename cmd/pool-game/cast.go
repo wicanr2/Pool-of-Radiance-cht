@@ -332,7 +332,19 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		if rounds < 1 {
 			rounds = 1
 		}
-		if a.savedAgainstSpell(state, picked, option.ID) {
+		// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
+		if effect.PersonOnly && !state.affectsPerson(picked) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNotPerson),
+				picked, option.Label))
+			break
+		}
+		// 豁免修正看這一次選了幾個目標。remake 一次只瞄一個，所以是 1 個
+		// 那一格：定身術 −2、定身怪物 −3（overlay-22 `1656h`）。
+		modifier := 0
+		if effect.SaveModifierByTargetCount {
+			modifier = gamepack.HoldPersonSaveModifier(option.ID, 1)
+		}
+		if a.savedAgainstSpellWithModifier(state, picked, option.ID, modifier) {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
 			break
 		}
@@ -340,6 +352,34 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			state.HeldRounds[picked] = rounds
 		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), picked, rounds))
+	case effect.HitPointBudgetFromCaster:
+		// 迷蛇術：額度是施法者的目前生命值。
+		a.applyCharmByHitPoints(state, member.Name, effect,
+			state.HitPoints[state.Mover])
+	case effect.PersonOnly:
+		// 魅惑人類：只對「人」有效，中了就不再行動。
+		picked, found := target, chosen
+		if !found {
+			picked, found = state.nearestReachableOpposing(state.Mover)
+		}
+		if !found {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
+		}
+		if !state.affectsPerson(picked) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNotPerson),
+				picked, option.Label))
+			break
+		}
+		if a.savedAgainstSpell(state, picked, option.ID) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
+			break
+		}
+		if int(picked) < len(state.Charmed) {
+			state.Charmed[picked] = true
+		}
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCharmed),
+			strings.TrimSpace(member.Name), 1))
 	case effect.SleepBudget > 0:
 		a.applySleep(state, member.Name, option.Label, effect.SleepBudget)
 	case effect.Heal > 0:
@@ -425,6 +465,14 @@ func (a *app) damageAfterSave(state *tacticalState, target, spell uint8, damage 
 // savedAgainstSpell 讓目標對這一支法術擲一次豁免。不用擲（規則 0）或資料
 // 不齊時回 false，讓呼叫端照「沒豁免成功」處理。
 func (a *app) savedAgainstSpell(state *tacticalState, target, spell uint8) bool {
+	return a.savedAgainstSpellWithModifier(state, target, spell, 0)
+}
+
+// savedAgainstSpellWithModifier 是同一件事外加一個豁免修正。原版把修正
+// 交給 overlay-24 entry 7（`0100h:0043h` 的第三個引數），常式把它加進
+// d20；這裡與既有的 `+101h` 修正同一側處理。
+func (a *app) savedAgainstSpellWithModifier(state *tacticalState,
+	target, spell uint8, modifier int) bool {
 	if state == nil || int(target) >= len(state.SaveTargets) {
 		return false
 	}
@@ -446,7 +494,8 @@ func (a *app) savedAgainstSpell(state *tacticalState, target, spell uint8) bool 
 	case roll == gamepack.SavingThrowDie:
 		return true
 	default:
-		return int(state.SaveTargets[target][category]) <= roll+state.SaveBonus[target]
+		return int(state.SaveTargets[target][category]) <=
+			roll+state.SaveBonus[target]+modifier
 	}
 }
 
@@ -472,6 +521,51 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 func (a *app) tacticalStatus(state *tacticalState, line string) {
 	state.Status = line
 	a.statusLine = line
+}
+
+// affectsPerson 回答「這一格算不算人」：種類 `+9Fh` 不大於 1、
+// 體型 `+6Ch` 不大於 1（overlay-22 `11DAh`／`174Bh`）。
+func (state *tacticalState) affectsPerson(index uint8) bool {
+	if int(index) >= len(state.CreatureType) || int(index) >= len(state.BodySize) {
+		return false
+	}
+	return gamepack.SpellAffectsPerson(state.CreatureType[index], state.BodySize[index])
+}
+
+// applyCharmByHitPoints 是迷蛇術：沿著對面走，種類對得上而且目前生命值
+// 扣得動的就迷住（overlay-22 `18F9h`）。
+//
+// 原版走的是這一次挑出來的目標清單（`DS:6B85h`），這裡沒有瞄準那一層，
+// 所以走整個敵方，順序就是位置順序——與催眠術同一個近似。
+func (a *app) applyCharmByHitPoints(state *tacticalState, caster string,
+	effect gamepack.CastEffect, budget int) {
+	charmed := 0
+	for index := 1; index < len(state.Roster); index++ {
+		if index >= len(state.Charmed) || index >= len(state.CreatureType) {
+			break
+		}
+		if state.Roster[index].FootprintClass == 0 ||
+			state.Friendly[index] == state.Friendly[state.Mover] || state.Charmed[index] {
+			continue
+		}
+		if effect.CreatureTypeFiltered && state.CreatureType[index] != effect.CreatureType {
+			continue
+		}
+		cost := state.HitPoints[index]
+		if cost > budget {
+			continue
+		}
+		budget -= cost
+		state.Charmed[index] = true
+		charmed++
+	}
+	if charmed == 0 {
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCharmedNone),
+			strings.TrimSpace(caster)))
+		return
+	}
+	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCharmed),
+		strings.TrimSpace(caster), charmed))
 }
 
 // applySleep 依額度逐個放倒對面的人（spec 098）。

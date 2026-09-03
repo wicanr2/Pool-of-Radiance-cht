@@ -334,6 +334,15 @@ type tacticalState struct {
 	// HeldRounds 是被定身的剩餘回合數（定身術，效果碼 `34h`）。
 	// 大於零的那一格輪到就直接結束回合，回合開始時各減一。
 	HeldRounds []int
+	// Charmed 是被迷住的格子（魅惑人類 `0Bh`、迷蛇術 `33h`）。
+	// **這是近似**：原版把效果碼掛上去，之後由敵方 AI（overlay-09）決定
+	// 被迷住的怪物做什麼，那一支還沒讀（spec 096）。這裡只讓它不再行動，
+	// 沒有讓它倒戈。
+	Charmed []bool
+	// CreatureType 是每一格的 `+9Fh`（生物種類）、BodySize 是 `+6Ch`（體型）。
+	// 魅惑人類與定身術用它們判斷目標算不算「人」，迷蛇術用種類收目標。
+	CreatureType []uint8
+	BodySize     []uint8
 	// SaveTargets 是每一格的五個豁免目標值（記錄 `+6Dh` 起，spec 075），
 	// SaveBonus 是記錄 `+101h` 的修正。隊員的目標值由職業等級查表算出來。
 	SaveTargets [][gamepack.SavingThrowCategories]uint8
@@ -529,6 +538,9 @@ func (a *app) enterTacticalPreview() error {
 	state.SleepFlag = make([]uint8, size)
 	state.Asleep = make([]bool, size)
 	state.HeldRounds = make([]int, size)
+	state.Charmed = make([]bool, size)
+	state.CreatureType = make([]uint8, size)
+	state.BodySize = make([]uint8, size)
 	state.SaveTargets = make([][gamepack.SavingThrowCategories]uint8, size)
 	state.SaveBonus = make([]int, size)
 	for index := range state.SaveTargets {
@@ -537,6 +549,9 @@ func (a *app) enterTacticalPreview() error {
 		}
 	}
 	for index := 1; index < size; index++ {
+		// 隊員沒有 285-byte 記錄可讀，用原版「人」那一組值：種類 0、體型 1。
+		// 原版資料裡的人形記錄（MACE、4TH LVL FIGHTER…）全部是這一組。
+		state.CreatureType[index], state.BodySize[index] = 0, 1
 		state.BaseMovement[index] = base
 		state.Dexterity[index] = placeholderDexterity
 		state.HitPoints[index] = placeholderHitPoints
@@ -600,6 +615,8 @@ func (a *app) enterTacticalPreview() error {
 			state.BaseMovement[index] = record.Movement()
 			state.HitDice[index] = record.Raw[0x73]
 			state.SleepFlag[index] = record.Raw[0x2e]
+			state.CreatureType[index] = record.CreatureType()
+			state.BodySize[index] = record.BodySize()
 			// 怪物記錄與角色記錄同一份 285-byte 版面，豁免那五格在 `+6Dh`。
 			targets, err := gamepack.SavingThrowTargets(record.Raw[:])
 			if err != nil {
@@ -1080,10 +1097,21 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
-	// 睡著的一輪到就直接結束回合（spec 098 的催眠術）。原版是把效果碼掛上去
-	// 之後由行動判定擋下來；這裡先用一個旗標，效果串列還沒接進戰鬥。
-	if state.Mover != 0 && int(state.Mover) < len(state.Asleep) && state.Asleep[state.Mover] {
-		state.Status = state.say(msgStatusAsleep, state.Mover)
+	// 睡著或被迷住的一輪到就直接結束回合（spec 098 的催眠術與迷惑類）。
+	// 原版是把效果碼掛上去之後由行動判定擋下來；這裡先用兩個旗標，
+	// 效果串列還沒接進戰鬥。
+	//
+	// 兩個陣列各自量長度：治具會手工組 `tacticalState`，只填它要用的欄位。
+	charmed := state.Mover != 0 && int(state.Mover) < len(state.Charmed) &&
+		state.Charmed[state.Mover]
+	asleep := state.Mover != 0 && int(state.Mover) < len(state.Asleep) &&
+		state.Asleep[state.Mover]
+	if asleep || charmed {
+		message := msgStatusAsleep
+		if charmed {
+			message = msgStatusCharmed
+		}
+		state.Status = state.say(message, state.Mover)
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
 			return a.finishCombat(state.Outcome)

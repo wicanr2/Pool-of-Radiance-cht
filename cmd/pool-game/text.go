@@ -95,6 +95,9 @@ var messages = map[messageID][2]string{
 	msgCastNotACaster:       {"That combatant is not a party member.", "那一格不是隊員。"},
 	msgCastNothingReady:     {"No memorised spell is ready to cast.", "沒有記著可以施展的法術。"},
 	msgCastNoTarget:         {"%s finds no reachable target.", "%s 找不到打得到的目標。"},
+	msgCastNotPerson:        {"%d is not a person; %s has no effect.", "%d 不算是人，%s 沒有作用。"},
+	msgCastCharmed:          {"%s charms %d foes.", "%s 迷住了 %d 個敵人。"},
+	msgCastCharmedNone:      {"%s charms nothing.", "%s 一個也沒迷住。"},
 	msgCastHeld:             {"%d is held for %d rounds.", "%d 被定住 %d 回合。"},
 	msgCastResisted:         {"%d resists %s.", "%d 擋下了 %s。"},
 	msgCastHealed:           {"%s casts %s and recovers %d hit points.", "%s 施展 %s，回復 %d 點生命值。"},
@@ -527,6 +530,9 @@ const (
 	msgCastNotACaster
 	msgCastNothingReady
 	msgCastNoTarget
+	msgCastNotPerson
+	msgCastCharmed
+	msgCastCharmedNone
 	msgCastHeld
 	msgCastResisted
 	msgCastHealed
@@ -627,6 +633,7 @@ const (
 	msgStatusHit
 	msgStatusDown
 	msgStatusAsleep
+	msgStatusCharmed
 	msgStatusHeld
 	msgFoeNoTarget
 	msgFoeAttacked
@@ -651,6 +658,7 @@ func init() {
 		msgStatusHit:            {"HIT %d FOR %d (HP %d)", "打中 %d 造成 %d（剩 %d 生命力）"},
 		msgStatusDown:           {"%d IS DOWN", "%d 倒下了"},
 		msgStatusAsleep:         {"%d IS ASLEEP", "%d 睡著了"},
+	msgStatusCharmed:        {"%d IS CHARMED", "%d 被迷住了"},
 		msgStatusHeld:           {"%d IS HELD", "%d 被定住了"},
 		msgFoeNoTarget:          {"FOE %d FOUND NO TARGET", "敵方 %d 找不到目標"},
 		msgFoeAttacked:          {"FOE %d AFTER %d STEPS: %s", "敵方 %d 走了 %d 步：%s"},

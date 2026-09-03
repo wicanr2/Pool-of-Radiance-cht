@@ -9,6 +9,12 @@ const monsterRecordSize = 285
 
 // MonsterRecord preserves one Pool MON*CHA block without assigning semantics
 // to fields whose original consumers have not yet been closed.
+// 285-byte 記錄裡兩個決定「這一隻是不是人」的欄位。
+const (
+	MonsterBodySizeOffset     = 0x6C
+	MonsterCreatureTypeOffset = 0x9F
+)
+
 type MonsterRecord struct {
 	ID   uint8
 	Name string
@@ -23,6 +29,20 @@ type MonsterAttackDamage struct {
 
 // The accessors below expose only fields closed from Pool's own character
 // sheet consumers. Keep Raw as the authority for every field not yet proven.
+// CreatureType 是記錄 `+9Fh`：這一隻算哪一族。四個互相獨立的使用點把語意
+// 釘住——死靈術（overlay-22 `2090h`）只對 `0`、迷蛇術（`1927h`）只對 `0Eh`、
+// overlay-12 `015Dh` 對 `4` 另外設旗標、魅惑人類與定身術（`11DAh`／`174Bh`）
+// 要求不大於 `1`。原版資料裡量得到的值：`0` 人類、`1` 類人（哥布林、獸人、
+// 狗頭人、熊地精）、`2` 巨人、`4` 不死、`7`、`0Ah` 巨魔、`0Bh`、`0Ch`、
+// `0Eh` 蛇與蠍、`11h`。
+func (record MonsterRecord) CreatureType() uint8 { return record.Raw[MonsterCreatureTypeOffset] }
+
+// BodySize 是記錄 `+6Ch`：低位是體型（`1` 與人同大、`2` 大型、`3` 巨大），
+// 位元 7 另外標著一批大塊頭（熊地精、食人魔、巨魔、巨人、牛頭人、巨蛇、
+// 巨蜥）。魅惑人類與定身術要求整個 byte 不大於 1，所以只有「正好是 1」的
+// 才算得上「人」。
+func (record MonsterRecord) BodySize() uint8 { return record.Raw[MonsterBodySizeOffset] }
+
 func (record MonsterRecord) MaxHitPoints() uint8     { return record.Raw[0x32] }
 func (record MonsterRecord) CurrentHitPoints() uint8 { return record.Raw[0x11B] }
 func (record MonsterRecord) ArmorClass() int         { return 60 - int(record.Raw[0x111]) }
