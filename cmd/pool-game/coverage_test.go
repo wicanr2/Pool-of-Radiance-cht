@@ -432,6 +432,8 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	stallKey, stall := [3]int{-1, -1, -1}, 0
 	menuStall := 0
 	tries := map[[3]int]int{}
+	// approached 記「這一格從這個方向走進去過了」。見 spec 102。
+	approached := map[[4]int]bool{}
 	var exit *areaExit
 	var failures []string
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
@@ -674,6 +676,32 @@ walk:
 					continue
 				}
 			}
+			// 地點還沒走遍：城區的地點腳本有些會比朝向（spec 102 的港務長要
+			// 面向北），而入口 1 看到的朝向就是走進那一格的方向。所以「踩過
+			// 這一格」不等於「試過這個地點」——terrain 索引非 0 的格子，
+			// 四個方向都要走進去一次。
+			if len(plan) == 0 {
+				if cell, facing, ok := chooseApproach(application, approached, rotate); ok {
+					approached[approachKey(application, cell, facing)] = true
+					step := exploreStep{facing: facing}
+					from := [2]int{cell[0] - exploreDeltas[facing][0],
+						cell[1] - exploreDeltas[facing][1]}
+					if from == [2]int{int(application.spawn.X), int(application.spawn.Y)} {
+						plan = []exploreStep{step}
+					} else {
+						plan = planToCells(application, rotate, func(x, y int) bool {
+							return x == from[0] && y == from[1]
+						})
+						if len(plan) != 0 {
+							plan = append(plan, step)
+						}
+					}
+					if len(plan) != 0 {
+						spin["走進地點"]++
+						continue
+					}
+				}
+			}
 			// 這一張踩完了，先回頭踩已知的換圖點。碼頭就是這樣再用一次的：
 			// 第一趟船去索寇要塞，回來之後要塞的旗標已經開了其他航線，
 			// 但那一格早就進了 avoid，規劃器不會再挑它。
@@ -784,7 +812,7 @@ walk:
 		*hardFailures = append(*hardFailures, failures...)
 	}
 	if flags != nil && application.eventMachine != nil {
-		for _, address := range []uint16{0x4A21, 0x4AA7, 0x4AC4, 0x6E12} {
+		for _, address := range []uint16{0x4A21, 0x4AA7, 0x4AC4, 0x6E12, 0x4A01, 0x4AC5, 0x4ABA} {
 			flags[address] = application.eventMachine.Memory[address]
 		}
 	}
@@ -916,8 +944,10 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		t.Logf("硬失敗：%s", failure)
 	}
 	t.Logf("走到的地圖：%d 張；ECL block：%d 個", len(maps), len(blocks))
-	t.Logf("旗標 4A21=%d（要塞的裝備與那一場架）4AA7=%d（碼頭航線）4AC4=%d 6E12=%d",
-		flags[0x4A21], flags[0x4AA7], flags[0x4AC4], flags[0x6E12])
+	t.Logf("旗標 4A21=%d（要塞的裝備與那一場架）4AA7=%d（碼頭航線）4AC4=%d 6E12=%d "+
+		"4A01=%d 4AC5=%d 4ABA=%d",
+		flags[0x4A21], flags[0x4AA7], flags[0x4AC4], flags[0x6E12],
+		flags[0x4A01], flags[0x4AC5], flags[0x4ABA])
 	// **只釘住走得到的部分**：碼頭的船會把隊伍送到索寇要塞（ECL block 21）。
 	// 那一段的旗標（拿裝備 `4A21h`、開航線 `4AA7h`）**推不推得到跟路線有關**
 	// ——探索器是機器人，走到哪一格、答哪一個選項會隨著別處的修正而改變，
@@ -926,6 +956,48 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	if !blocks[21] {
 		t.Errorf("沒走到索寇要塞（ECL block 21），走到的是 %v", blocks)
 	}
+}
+
+// approachKey 把「這一格＋走進去的方向」壓成 approached 的鍵。
+func approachKey(application *app, cell [2]int, facing uint8) [4]int {
+	return [4]int{int(application.spawn.Map.Archive), int(application.spawn.Map.BlockID),
+		cell[1]*100 + cell[0], int(facing)}
+}
+
+// chooseApproach 挑一個「還沒從這個方向走進去過」的地點格。
+//
+// 地點格＝`terrain & 0x7F` 非 0 的格子（spec 102）。方向要從地圖資料算：
+// 走進來的那一格得在圖內，而且那一步不能被牆擋著。
+func chooseApproach(application *app, approached map[[4]int]bool, rotate int) ([2]int, uint8, bool) {
+	if application.initialMap == nil {
+		return [2]int{}, 0, false
+	}
+	for y := 0; y < geometry.Height; y++ {
+		for x := 0; x < geometry.Width; x++ {
+			cell, ok := application.initialMap.Grid.Cell(x, y)
+			if !ok || cell.Terrain&0x7F == 0 {
+				continue
+			}
+			for step := 0; step < 4; step++ {
+				facing := uint8((step + rotate) % 4)
+				fromX := x - exploreDeltas[facing][0]
+				fromY := y - exploreDeltas[facing][1]
+				if fromX < 0 || fromX >= geometry.Width ||
+					fromY < 0 || fromY >= geometry.Height {
+					continue
+				}
+				if !application.initialMap.Grid.CanMoveDungeonWrapped(
+					fromX, fromY, int(facing)*2) {
+					continue
+				}
+				if approached[approachKey(application, [2]int{x, y}, facing)] {
+					continue
+				}
+				return [2]int{x, y}, facing, true
+			}
+		}
+	}
+	return [2]int{}, 0, false
 }
 
 // chooseTransitionCell 從這一張圖上已知的換圖點裡挑一個用得最少的。
