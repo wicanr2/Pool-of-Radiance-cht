@@ -546,7 +546,7 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit,
 	blocks map[int]bool, hardFailures *[]string) (int, bool) {
 	return exploreWorldWithFlags(t, zipPath, seed, rotate, rewalkLimit, budget,
 		avoid, walked, transitionUses, menuTurn, exitUses, visited, maps, blocks,
-		nil, noBoatOverride, hardFailures)
+		nil, noBoatOverride, hardFailures, nil)
 }
 
 // noBoatOverride 關掉航線覆寫（見 exploreWorldWithFlags 的 boat 參數）。
@@ -558,7 +558,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
 	exitUses map[[4]int]int, visited map[[3]int]bool, maps map[string]bool,
 	blocks map[int]bool, flags map[uint16]uint16, boat int,
-	hardFailures *[]string) (int, bool) {
+	hardFailures *[]string, overrides map[uint16]uint16) (int, bool) {
 	t.Helper()
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
@@ -675,6 +675,13 @@ walk:
 			application.eventMachine.Memory[0x4AA7] = 254
 			application.eventMachine.Memory[0x4A01] = 1
 			application.eventMachine.Memory[0x4AC4] = uint16(boat)
+		}
+		// overrides 是同一種治具：把主線旗標直接寫進去，看那些區域自己
+		// 走不走得動。與 boat 一樣，**這不是玩得到**。
+		if application.eventMachine != nil {
+			for address, value := range overrides {
+				application.eventMachine.Memory[address] = value
+			}
 		}
 		lastCell = [2]int{int(application.spawn.X), int(application.spawn.Y)}
 		if application.initialMap != nil {
@@ -1385,7 +1392,7 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		// 只走一遍的話，鬼魂那一格多半在拿到裝備之前就踩過了。
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 8, 600000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
-			visited, maps, blocks, flags, noBoatOverride, &hardFailures)
+			visited, maps, blocks, flags, noBoatOverride, &hardFailures, nil)
 		if !reachable {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -1613,6 +1620,28 @@ func chooseAreaExit(application *app, exitUses map[[4]int]int) (areaExit, bool) 
 // 這一條把碼頭的目的地直接寫進 `DS:4AC4h`，讓探索器把四條航線各走一遍，
 // 量「走到了哪些區塊、撞到哪些硬失敗」。它證明的是**那些區域的腳本在
 // 完整的前端底下跑不跑得動**，不是玩家走不走得到。
+// tourOverrides 是巡迴用的主線治具：委任進度直接寫成 9（`DS:4AC1h`，
+// spec 024 的 `ON GOSUB` 認 1..9），讓城內那幾區的閘門先開起來。
+// 與 `4AC4h` 的航線覆寫同一個性質——**這不是玩得到**。
+// tourWorldStates 是巡迴要走過的三種主線狀態。每一種開的區域不一樣，
+// **量的是三者的聯集**——單獨一種都不夠：
+//
+//   - 什麼都不設：一開始的城區，走得到 12 個區塊。
+//   - 委任進度 9（`DS:4AC1h`，spec 024 的 `ON GOSUB` 認 1..9）：
+//     多開 16 與 17。
+//   - 26 個完成槽（`4AA6h..4ABFh`，spec 041）全設 `FEh`：多開 22 與 23，
+//     但已完成的區域反而不再給內容，所以它單獨量出來只有 10 個。
+//
+// 這些都是**治具**，與 `4AC4h` 的航線覆寫同一個性質：證明的是「那些區域的
+// 腳本在完整的前端底下跑得動」，不是玩家走得到。
+func tourWorldStates() []map[uint16]uint16 {
+	completed := map[uint16]uint16{}
+	for address := uint16(0x4AA6); address <= 0x4ABF; address++ {
+		completed[address] = 0xFE
+	}
+	return []map[uint16]uint16{nil, {0x4AC1: 9}, completed}
+}
+
 func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	maps := map[string]bool{}
@@ -1631,9 +1660,11 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 		avoid := map[[3]int]bool{}
 		transitionUses := map[[3]int]int{}
 		menuTurn := map[[3]int]int{}
+		states := tourWorldStates()
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 1, 200000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
-			visited, maps, blocks, nil, destination, &hardFailures)
+			visited, maps, blocks, nil, destination, &hardFailures,
+			states[pass%len(states)])
 		if !reachable {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -1666,9 +1697,10 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 		t.Logf("硬失敗 ×%d：%s", count, failure)
 	}
 	// 量到的下限，不是目標。少於這個數代表航線、野外移動或資源載入退步了。
-	// **門檻不跟著實測值走**：現在量得到 12 個，門檻留在 11——把門檻頂到實測值
-	// 等於再做一次單一亂數對齊的快照，下一個會改變抽籤次數的修改又會紅。
-	if len(blocks) < 11 {
+	// **門檻不跟著實測值走**：三種主線狀態的聯集現在量得到 16 個，門檻留在 14
+	// ——把門檻頂到實測值等於再做一次單一亂數對齊的快照，下一個會改變抽籤
+	// 次數的修改又會紅。
+	if len(blocks) < 14 {
 		t.Errorf("只走到 %d 個 ECL block：%v", len(blocks), blockIDs)
 	}
 }

@@ -19,7 +19,7 @@ func TestCellMenuDoesNotStallAtTheGEO7PasswordDoor(t *testing.T) {
 	_, reachable := exploreWorldWithFlags(t, zipPath, 106, 0, 1, 200000,
 		map[[3]int]bool{}, map[[3]int]bool{}, map[[3]int]int{}, map[[3]int]int{},
 		map[[4]int]int{}, visited, map[string]bool{}, map[int]bool{}, nil, 2,
-		&hardFailures)
+		&hardFailures, nil)
 	if !reachable {
 		t.Skip("original DOS ZIP is intentionally not tracked")
 	}
