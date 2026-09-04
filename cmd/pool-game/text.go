@@ -542,4 +542,6 @@ const (
 	msgMenuModifyItems
 	msgMenuSaved
 	msgMenuNeedsMember
+	// 解除魔法（spec 098 的 `2356h`）：拿掉了幾個效果。
+	msgCastDispelled
 )

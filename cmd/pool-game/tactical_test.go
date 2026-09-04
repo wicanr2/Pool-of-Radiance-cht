@@ -78,6 +78,7 @@ func newRoundState(members int) *tacticalState {
 		Damage:        make([]combat.DamageDice, size),
 		AttackForms:   make([][gamepack.MonsterAttackSlots]combat.DamageDice, size),
 		AttackRates:   make([][gamepack.MonsterAttackSlots]uint8, size),
+		Effects:       make([]gamepack.EffectList, size),
 	}
 	for index := 1; index < size; index++ {
 		state.Dexterity[index] = 12

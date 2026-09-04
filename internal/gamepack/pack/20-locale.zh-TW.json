@@ -26,6 +26,7 @@
       "ui.castCharmed": "%s 迷住了 %d 個敵人。",
       "ui.castCharmedNone": "%s 一個也沒迷住。",
       "ui.castCured": "%s 解掉了 %d 個病痛。",
+      "ui.castDispelled": "目標 %d 身上 %d 個魔法效果被解除。",
       "ui.castDown": "法術放倒了 %d。",
       "ui.castHealed": "%s 施展 %s，回復 %d 點生命值。",
       "ui.castHeld": "%d 被定住 %d 回合。",

@@ -167,3 +167,109 @@ func mustParse(t *testing.T, raw []byte) []gamepack.EffectNode {
 	}
 	return nodes
 }
+
+// 節點 `+3` 打包了四件事（spec 112）：低四位是下效果者的等級、
+// 位元 5 已套用、位元 6 原本的陣營、位元 7 施法者的陣營。
+func TestEffectNodePacksFourThingsIntoOneByte(t *testing.T) {
+	node := gamepack.NewEffectNode(0x0B, 300, 6, true)
+	if node.Duration() != 300 {
+		t.Fatalf("持續是 %d", node.Duration())
+	}
+	if node.CasterLevel() != 6 {
+		t.Fatalf("等級是 %d", node.CasterLevel())
+	}
+	if !node.NeedsTeardown() {
+		t.Fatal("收尾旗標沒立起來")
+	}
+	if node.Applied() {
+		t.Fatal("剛掛上不該是已套用")
+	}
+	// 套用：立位元 5，同時把目前的陣營記進位元 6。
+	if !node.MarkApplied(1) {
+		t.Fatal("第一次套用應該成立")
+	}
+	if !node.Applied() || node.OriginalSide() != 1 {
+		t.Fatalf("套用之後 %+v", node)
+	}
+	if node.MarkApplied(0) {
+		t.Fatal("套過的不該重複套")
+	}
+	// 等級仍讀得出來——四件事共用一個 byte，互相不能踩到。
+	if node.CasterLevel() != 6 {
+		t.Fatalf("套用之後等級變成 %d", node.CasterLevel())
+	}
+	node.SetDuration(1)
+	if node.Duration() != 1 {
+		t.Fatalf("改持續之後是 %d", node.Duration())
+	}
+}
+
+// `+3` 整個是 `0FFh` 代表解除魔法解不掉。那與「等級 15」不同——
+// 只看低四位會把它讀成 15 級，然後解得掉。
+func TestUndispellableIsTheWholeByteNotTheLowNibble(t *testing.T) {
+	node := gamepack.NewEffectNode(0x3D, 0, gamepack.EffectUndispellable, false)
+	if !node.Undispellable() {
+		t.Fatal("0FFh 應該是解不掉")
+	}
+	if node.CasterLevel() != 0 {
+		t.Fatalf("解不掉的節點不該回等級 %d", node.CasterLevel())
+	}
+	level15 := gamepack.NewEffectNode(0x3D, 0, 15, false)
+	if level15.Undispellable() {
+		t.Fatal("等級 15 不是解不掉")
+	}
+}
+
+// 新的接在尾端，線性搜尋找到的是最早掛上的那一個。
+func TestEffectListAppendsAtTheTail(t *testing.T) {
+	var list gamepack.EffectList
+	list = list.Append(gamepack.NewEffectNode(0x34, 10, 3, false))
+	list = list.Append(gamepack.NewEffectNode(0x35, 20, 5, false))
+	list = list.Append(gamepack.NewEffectNode(0x34, 30, 7, false))
+	if len(list) != 3 || list[2].Duration() != 30 {
+		t.Fatalf("串列是 %+v", list)
+	}
+	index, ok := list.IndexOf(0x34)
+	if !ok || index != 0 || list[index].CasterLevel() != 3 {
+		t.Fatalf("找到的是第 %d 個（%v）", index, ok)
+	}
+	list = list.Remove(0x34)
+	if len(list) != 2 || list[0].Code != 0x35 {
+		t.Fatalf("拿掉之後是 %+v", list)
+	}
+	if !list.Has(0x34) {
+		t.Fatal("第二個 34h 應該還在——Remove 只拿掉一個")
+	}
+}
+
+// 解除魔法的成功率不對稱：高一級加 5、低一級只扣 2。
+func TestDispelChanceIsAsymmetric(t *testing.T) {
+	for _, item := range [3][3]int{{6, 6, 50}, {8, 6, 60}, {6, 8, 46}} {
+		if got := gamepack.DispelChance(item[0], item[1]); got != item[2] {
+			t.Fatalf("施法者 %d 對效果 %d 是 %d，預期 %d", item[0], item[1], got, item[2])
+		}
+	}
+}
+
+// 每一個節點各擲一次；`0FFh` 的跳過不擲。
+func TestDispelRollsOncePerNode(t *testing.T) {
+	list := gamepack.EffectList{
+		gamepack.NewEffectNode(0x34, 10, 3, false),
+		gamepack.NewEffectNode(0x3D, 10, gamepack.EffectUndispellable, false),
+		gamepack.NewEffectNode(0x35, 10, 3, false),
+	}
+	rolls := 0
+	// 必成：骰 1 一定小於等於任何成功率。
+	after, removed := list.Dispel(6, func() int { rolls++; return 1 })
+	if rolls != 2 {
+		t.Fatalf("擲了 %d 次，預期 2 次（解不掉的那個不擲）", rolls)
+	}
+	if removed != 2 || len(after) != 1 || after[0].Code != 0x3D {
+		t.Fatalf("剩下 %+v，拿掉 %d 個", after, removed)
+	}
+	// 必敗：骰 100 大於施法者 6 對效果 3 的 65。
+	_, removed = list.Dispel(6, func() int { return 100 })
+	if removed != 0 {
+		t.Fatalf("必敗卻拿掉了 %d 個", removed)
+	}
+}

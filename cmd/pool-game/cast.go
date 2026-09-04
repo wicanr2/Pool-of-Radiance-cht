@@ -373,9 +373,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
 			break
 		}
-		if int(picked) < len(state.HeldRounds) {
-			state.HeldRounds[picked] = rounds
-		}
+		state.addEffect(int(picked), gamepack.HoldPersonEffectCode, rounds, casterLevel)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), picked, rounds))
 	case effect.StrengthValue > 0 || effect.StrengthFromTarget:
 		// 力量那一組（變大術、力量術、編號 59）走同一支
@@ -409,7 +407,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	case effect.HitPointBudgetFromCaster:
 		// 迷蛇術：額度是施法者的目前生命值。
 		a.applyCharmByHitPoints(state, member.Name, effect,
-			state.HitPoints[state.Mover])
+			state.HitPoints[state.Mover], casterLevel)
 	case effect.PersonOnly:
 		// 魅惑人類：只對「人」有效，中了就不再行動。
 		picked, found := target, chosen
@@ -429,13 +427,11 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
 			break
 		}
-		if int(picked) < len(state.Charmed) {
-			state.Charmed[picked] = true
-		}
+		state.addEffect(int(picked), gamepack.CharmPersonEffectCode, 0, casterLevel)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCharmed),
 			strings.TrimSpace(member.Name), 1))
 	case effect.SleepBudget > 0:
-		a.applySleep(state, member.Name, option.Label, effect.SleepBudget)
+		a.applySleep(state, member.Name, option.Label, effect.SleepBudget, casterLevel)
 	case effect.Heal > 0:
 		healed := state.Mover
 		if chosen {
@@ -445,6 +441,25 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		state.HitPoints[healed] += effect.Heal
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
 			strings.TrimSpace(member.Name), option.Label, state.HitPoints[healed]-before))
+	case effect.Dispel:
+		// 解除魔法（overlay-22 `2356h`）：沿著目標身上的效果節點串列走，
+		// 每一個各擲一次。`+3` 是 `0FFh` 的解不掉。
+		//
+		// 原版的外層是 `for i := 1 to DS:6B88h`，但**每一輪都從 DS:6B89h 取
+		// 同一個遠指標**（絕對定址，沒有索引暫存器），所以實際上只作用在
+		// 一個目標身上。這裡照那個行為接：挑一個目標，不是整個範圍。
+		picked, found := target, chosen
+		if !found {
+			picked, found = state.nearestReachableOpposing(state.Mover)
+		}
+		if !found {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
+		}
+		removed := state.dispelEffects(int(picked), casterLevel, func() int {
+			return a.roller.Roll(1, 100)
+		})
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDispelled), picked, removed))
 	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea():
 		// 範圍：對面每一個都吃一份。原版是以一格為中心算範圍
 		// （overlay-31 `0138h:003Eh`），那條還沒讀。
@@ -592,14 +607,15 @@ func (state *tacticalState) affectsPerson(index uint8) bool {
 // 原版走的是這一次挑出來的目標清單（`DS:6B85h`），這裡沒有瞄準那一層，
 // 所以走整個敵方，順序就是位置順序——與催眠術同一個近似。
 func (a *app) applyCharmByHitPoints(state *tacticalState, caster string,
-	effect gamepack.CastEffect, budget int) {
+	effect gamepack.CastEffect, budget, casterLevel int) {
 	charmed := 0
 	for index := 1; index < len(state.Roster); index++ {
-		if index >= len(state.Charmed) || index >= len(state.CreatureType) {
+		if index >= len(state.Effects) || index >= len(state.CreatureType) {
 			break
 		}
 		if state.Roster[index].FootprintClass == 0 ||
-			state.Friendly[index] == state.Friendly[state.Mover] || state.Charmed[index] {
+			state.Friendly[index] == state.Friendly[state.Mover] ||
+			state.hasEffect(index, gamepack.CharmPersonEffectCode) {
 			continue
 		}
 		if effect.CreatureTypeFiltered && state.CreatureType[index] != effect.CreatureType {
@@ -610,7 +626,7 @@ func (a *app) applyCharmByHitPoints(state *tacticalState, caster string,
 			continue
 		}
 		budget -= cost
-		state.Charmed[index] = true
+		state.addEffect(index, gamepack.CharmPersonEffectCode, 0, casterLevel)
 		charmed++
 	}
 	if charmed == 0 {
@@ -626,11 +642,12 @@ func (a *app) applyCharmByHitPoints(state *tacticalState, caster string,
 //
 // 原版走的是這一次施法挑出來的目標清單（`DS:6B85h`），這裡沒有瞄準那一層，
 // 所以走整個敵方，順序就是位置順序。花費照 `SleepHitDiceCost`。
-func (a *app) applySleep(state *tacticalState, caster, label string, budget int) {
+func (a *app) applySleep(state *tacticalState, caster, label string, budget, casterLevel int) {
 	slept := 0
 	for index := 1; index < len(state.Roster); index++ {
 		if state.Roster[index].FootprintClass == 0 ||
-			state.Friendly[index] == state.Friendly[state.Mover] || state.Asleep[index] {
+			state.Friendly[index] == state.Friendly[state.Mover] ||
+			state.hasEffect(index, gamepack.SleepEffectCode) {
 			continue
 		}
 		cost := gamepack.SleepHitDiceCost(int(state.HitDice[index]), state.SleepFlag[index])
@@ -638,7 +655,7 @@ func (a *app) applySleep(state *tacticalState, caster, label string, budget int)
 			continue
 		}
 		budget -= cost
-		state.Asleep[index] = true
+		state.addEffect(index, gamepack.SleepEffectCode, 0, casterLevel)
 		slept++
 	}
 	if slept == 0 {

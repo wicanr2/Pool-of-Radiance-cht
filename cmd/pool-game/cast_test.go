@@ -61,7 +61,7 @@ func TestHoldPersonHoldsATargetThatFailsItsSave(t *testing.T) {
 	state := &tacticalState{
 		SaveTargets: make([][gamepack.SavingThrowCategories]uint8, 2),
 		SaveBonus:   make([]int, 2),
-		HeldRounds:  make([]int, 2),
+		Effects:     make([]gamepack.EffectList, 2),
 	}
 	for category := range state.SaveTargets[1] {
 		state.SaveTargets[1][category] = gamepack.SavingThrowWorstTarget
@@ -84,8 +84,7 @@ func TestHoldPersonHoldsATargetThatFailsItsSave(t *testing.T) {
 // 少了遞減，一次定身術等於定到打完。
 func TestHeldCombatantsLoseTheirTurnAndTheHoldWearsOff(t *testing.T) {
 	state := newAttackState()
-	state.HeldRounds = make([]int, len(state.Roster))
-	state.HeldRounds[1] = 2
+	state.addEffect(1, gamepack.HoldPersonEffectCode, 2, 6)
 	state.Mover = 1
 	application := &app{roller: fixedRoller{20}, tactical: state, language: languageEnglish}
 	if err := application.tacticalInput(); err != nil {
@@ -94,9 +93,64 @@ func TestHeldCombatantsLoseTheirTurnAndTheHoldWearsOff(t *testing.T) {
 	if state.Mover == 1 {
 		t.Error("被定住的那一格還在行動")
 	}
-	before := state.HeldRounds[1]
+	before := state.effectRounds(1, gamepack.HoldPersonEffectCode)
 	state.startRound(application.rollDice)
-	if state.HeldRounds[1] != before-1 {
-		t.Errorf("回合開始之後剩 %d 回合，預期 %d", state.HeldRounds[1], before-1)
+	if got := state.effectRounds(1, gamepack.HoldPersonEffectCode); got != before-1 {
+		t.Errorf("回合開始之後剩 %d 回合，預期 %d", got, before-1)
+	}
+	// 減到 0 就整個摘掉，不是留一個持續 0 的節點賴著。
+	state.startRound(application.rollDice)
+	if state.hasEffect(1, gamepack.HoldPersonEffectCode) {
+		t.Error("定身到期之後節點還掛著")
+	}
+}
+
+// 解除魔法走的是目標身上的效果節點串列（spec 098 的 `2356h`）：
+// 每一個各擲一次，`+3` 是 `0FFh` 的解不掉。
+//
+// 這一條同時擋住「兩份真相」：睡眠、定身與魅惑必須真的存在那條串列上，
+// 不是另外幾個旗標——存成旗標的話解除魔法解到的會是空的。
+func TestDispelMagicWalksTheEffectList(t *testing.T) {
+	state := newAttackState()
+	state.addEffect(2, gamepack.SleepEffectCode, 0, 3)
+	state.addEffect(2, gamepack.HoldPersonEffectCode, 5, 3)
+	state.Effects[2] = state.Effects[2].Append(
+		gamepack.NewEffectNode(0x3D, 0, gamepack.EffectUndispellable, false))
+
+	// 必成：骰 1。解不掉的那一個要留著。
+	removed := state.dispelEffects(2, 6, func() int { return 1 })
+	if removed != 2 {
+		t.Fatalf("拿掉了 %d 個，預期 2 個", removed)
+	}
+	if state.hasEffect(2, gamepack.SleepEffectCode) ||
+		state.hasEffect(2, gamepack.HoldPersonEffectCode) {
+		t.Fatal("睡眠或定身沒有被解掉")
+	}
+	if !state.hasEffect(2, 0x3D) {
+		t.Fatal("`+3` 是 0FFh 的效果不該被解掉")
+	}
+	// 必敗：骰 100 大於施法者 6 對效果 3 的 65。
+	state.addEffect(2, gamepack.SleepEffectCode, 0, 3)
+	if got := state.dispelEffects(2, 6, func() int { return 100 }); got != 0 {
+		t.Fatalf("必敗卻拿掉了 %d 個", got)
+	}
+}
+
+// 睡眠與魅惑掛在同一條串列上，而且行動判定讀的就是它。
+func TestSleepAndCharmLiveOnTheEffectList(t *testing.T) {
+	state := newAttackState()
+	state.addEffect(1, gamepack.SleepEffectCode, 0, 6)
+	state.Mover = 1
+	application := &app{roller: fixedRoller{20}, tactical: state, language: languageEnglish}
+	if err := application.tacticalInput(); err != nil {
+		t.Fatal(err)
+	}
+	if state.Mover == 1 {
+		t.Error("睡著的那一格還在行動")
+	}
+	// 持續 0 代表沒有回合計時：回合邊界不該把它摘掉。
+	state.startRound(application.rollDice)
+	if !state.hasEffect(1, gamepack.SleepEffectCode) {
+		t.Error("持續 0 的睡眠被回合邊界摘掉了")
 	}
 }

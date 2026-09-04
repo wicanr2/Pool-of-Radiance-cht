@@ -382,9 +382,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 37 || generic != 25 || total != 62 {
+	if read != 39 || generic != 25 || total != 64 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 37／25／62，改了實作要一起改", read, generic, total)
+			"文件寫的是 39／25／64，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)

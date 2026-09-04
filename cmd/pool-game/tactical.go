@@ -325,16 +325,16 @@ type tacticalState struct {
 	HitDice []uint8
 	// SleepFlag 是每一格的 `+2Eh`，催眠術第 5 段要看它。
 	SleepFlag []uint8
-	// Asleep 是被催眠的格子。睡著的一輪到就直接結束回合。
-	Asleep []bool
-	// HeldRounds 是被定身的剩餘回合數（定身術，效果碼 `34h`）。
-	// 大於零的那一格輪到就直接結束回合，回合開始時各減一。
-	HeldRounds []int
-	// Charmed 是被迷住的格子（魅惑人類 `0Bh`、迷蛇術 `33h`）。
-	// **這是近似**：原版把效果碼掛上去，之後由敵方 AI（overlay-09）決定
-	// 被迷住的怪物做什麼，那一支還沒讀（spec 096）。這裡只讓它不再行動，
-	// 沒有讓它倒戈。
-	Charmed []bool
+	// Effects 是每一格身上的效果串列，對應原版角色記錄 `+7Fh` 的那條
+	// 單向串列（spec 059／112）。新的接在尾端，順序就是掛上去的順序。
+	//
+	// 催眠（`35h`）、定身（`34h`）與魅惑（`0Bh`）都存在這裡，不再各留一個
+	// 旗標——**解除魔法要走的就是這條串列**，兩份真相會讓它解不到東西。
+	// 定身的剩餘回合數是節點的持續（`+1..+2`）。
+	//
+	// 被迷住之後仍**只讓它不再行動**：原版會讓它倒戈（spec 112 的
+	// overlay-12 entry 14），那要等敵方 AI 那一側接上來。
+	Effects []gamepack.EffectList
 	// FoeTargets 是每一格上一回合追的目標（原版戰鬥子結構 `+0Ah` 的目標
 	// 遠指標）。目標還有效就沿用，不是每回合重挑（spec 096）。
 	FoeTargets []uint8
@@ -409,10 +409,9 @@ func (state *tacticalState) startRound(roll func(count, sides int) int) {
 	if state.Round > 1 {
 		state.AttackPhase = combat.AdvanceAttackPhase(state.AttackPhase)
 	}
-	for index := 1; index < len(state.HeldRounds); index++ {
-		if state.HeldRounds[index] > 0 {
-			state.HeldRounds[index]--
-		}
+	// 有計時的效果每個回合邊界減一，歸零就摘掉。
+	for index := 1; index < len(state.Effects); index++ {
+		state.tickEffects(index)
 	}
 	for index := 1; index < len(state.Roster); index++ {
 		state.Budgets[index] = combat.InitialMovementBudgetBeforeEffects(state.BaseMovement[index], false, 0)
@@ -565,9 +564,7 @@ func (a *app) enterTacticalPreview() error {
 	state.AttackRates = make([][gamepack.MonsterAttackSlots]uint8, size)
 	state.HitDice = make([]uint8, size)
 	state.SleepFlag = make([]uint8, size)
-	state.Asleep = make([]bool, size)
-	state.HeldRounds = make([]int, size)
-	state.Charmed = make([]bool, size)
+	state.Effects = make([]gamepack.EffectList, size)
 	state.TacticModes = make([]uint8, size)
 	state.FoeTargets = make([]uint8, size)
 	state.CreatureType = make([]uint8, size)
@@ -1249,8 +1246,7 @@ func (a *app) tacticalInput() error {
 		return nil
 	}
 	// 被定身的一輪到也直接結束回合（定身術，效果碼 `34h`）。
-	if state.Mover != 0 && int(state.Mover) < len(state.HeldRounds) &&
-		state.HeldRounds[state.Mover] > 0 {
+	if state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.HoldPersonEffectCode) {
 		state.Status = state.say(msgStatusHeld, state.Mover)
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
@@ -1263,10 +1259,8 @@ func (a *app) tacticalInput() error {
 	// 效果串列還沒接進戰鬥。
 	//
 	// 兩個陣列各自量長度：治具會手工組 `tacticalState`，只填它要用的欄位。
-	charmed := state.Mover != 0 && int(state.Mover) < len(state.Charmed) &&
-		state.Charmed[state.Mover]
-	asleep := state.Mover != 0 && int(state.Mover) < len(state.Asleep) &&
-		state.Asleep[state.Mover]
+	charmed := state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.CharmPersonEffectCode)
+	asleep := state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.SleepEffectCode)
 	if asleep || charmed {
 		message := msgStatusAsleep
 		if charmed {
@@ -1695,4 +1689,89 @@ func (state *tacticalState) withinArea(from, to uint8, budget uint16) bool {
 	trace, err := combat.TraceMovement(state.Grid, state.Classes,
 		int(source.X), int(source.Y), int(target.X), int(target.Y), budget)
 	return err == nil && trace.Complete
+}
+
+// 效果串列的操作。原版把串列掛在角色記錄的 `+7Fh`，新的接在尾端
+//（overlay-24 entry 10），線性搜尋找到的是最早掛上的那一個（spec 059／112）。
+
+// addEffect 掛一個效果。duration 是回合數；0 代表沒有計時，要靠別的東西摘掉。
+func (state *tacticalState) addEffect(index int, code uint8, duration int, casterLevel int) {
+	if index < 0 || index >= len(state.Effects) {
+		return
+	}
+	if duration < 0 {
+		duration = 0
+	}
+	if casterLevel < 0 {
+		casterLevel = 0
+	}
+	if casterLevel > gamepack.EffectLevelMask {
+		// `+3` 的低四位只放得下 15；原版也是這個寬度。
+		casterLevel = gamepack.EffectLevelMask
+	}
+	state.Effects[index] = state.Effects[index].Append(
+		gamepack.NewEffectNode(code, uint16(duration), uint8(casterLevel), false))
+}
+
+// hasEffect 回答那一格身上有沒有這個代碼。
+func (state *tacticalState) hasEffect(index int, code uint8) bool {
+	if index < 0 || index >= len(state.Effects) {
+		return false
+	}
+	return state.Effects[index].Has(code)
+}
+
+// effectRounds 回傳某個代碼剩幾回合；沒有那個效果回 0。
+func (state *tacticalState) effectRounds(index int, code uint8) int {
+	if index < 0 || index >= len(state.Effects) {
+		return 0
+	}
+	at, ok := state.Effects[index].IndexOf(code)
+	if !ok {
+		return 0
+	}
+	return int(state.Effects[index][at].Duration())
+}
+
+// removeEffect 摘掉最早掛上的那一個指定代碼。
+func (state *tacticalState) removeEffect(index int, code uint8) {
+	if index < 0 || index >= len(state.Effects) {
+		return
+	}
+	state.Effects[index] = state.Effects[index].Remove(code)
+}
+
+// tickEffects 把有計時的效果各減一，歸零的摘掉。持續為 0 的不動——
+// 那代表「沒有回合計時」，例如催眠與魅惑。
+func (state *tacticalState) tickEffects(index int) {
+	if index < 0 || index >= len(state.Effects) {
+		return
+	}
+	list := state.Effects[index]
+	kept := make(gamepack.EffectList, 0, len(list))
+	for _, node := range list {
+		duration := node.Duration()
+		if duration == 0 {
+			kept = append(kept, node)
+			continue
+		}
+		duration--
+		if duration == 0 {
+			continue
+		}
+		node.SetDuration(duration)
+		kept = append(kept, node)
+	}
+	state.Effects[index] = kept
+}
+
+// dispelEffects 對一格身上的效果串列逐個擲解除（overlay-22 `2356h`）。
+// 回傳拿掉了幾個。
+func (state *tacticalState) dispelEffects(index, casterLevel int, roll func() int) int {
+	if index < 0 || index >= len(state.Effects) {
+		return 0
+	}
+	after, removed := state.Effects[index].Dispel(casterLevel, roll)
+	state.Effects[index] = after
+	return removed
 }

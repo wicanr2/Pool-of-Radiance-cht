@@ -26,6 +26,7 @@
       "ui.castCharmed": "%s charms %d foes.",
       "ui.castCharmedNone": "%s charms nothing.",
       "ui.castCured": "%s is cured of %d afflictions.",
+      "ui.castDispelled": "Target %d loses %d magical effects.",
       "ui.castDown": "Spell drops %d.",
       "ui.castHealed": "%s casts %s and recovers %d hit points.",
       "ui.castHeld": "%d is held for %d rounds.",

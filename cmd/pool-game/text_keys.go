@@ -184,4 +184,5 @@ var messageKeys = map[messageID]string{
 	msgMenuModifyItems: "ui.menuModifyItems",
 	msgMenuSaved: "ui.menuSaved",
 	msgMenuNeedsMember: "ui.menuNeedsMember",
+	msgCastDispelled: "ui.castDispelled",
 }

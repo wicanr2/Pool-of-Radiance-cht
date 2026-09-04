@@ -17,6 +17,9 @@ type CastEffect struct {
 	Heal int
 	// EffectCode 是要掛進效果串列的代碼（參數表 `+0Ah`，spec 069）。
 	EffectCode uint8
+	// Dispel 為真時走解除魔法那條：對範圍內每個人的效果串列逐個擲
+	//（overlay-22 `2356h`，spec 098）。
+	Dispel bool
 	// WholeSide 為真代表效果作用在整邊，不是單一目標（例如祝福術）。
 	WholeSide bool
 	// Area 為真代表這是範圍法術（處理常式先寫 `DS:677Eh = 1`）。
@@ -115,6 +118,12 @@ const (
 	SpellIDHoldPersonAlt = 49
 )
 
+// CharmPersonEffectCode 是魅惑掛上去的效果碼。overlay-12 entry 14
+// （`040Ah`）就是它的處理常式：把記錄 `+10Eh` 改成施法者那一邊（倒戈）、
+// `+10Fh` 設 1 交給 AI 分派，解除時再從節點 `+3` 的位元 6 還原（spec 112）。
+// 魅惑人類（10）與迷蛇術（27）共用這個碼。
+const CharmPersonEffectCode = 0x0b
+
 // SleepEffectCode 是催眠術掛上去的效果碼（`15DEh` 推的 35h）。
 // overlay-15 的名稱鏈把它叫 "Funky--"（spec 069）。
 const SleepEffectCode = 0x35
@@ -199,6 +208,9 @@ const (
 	SpellIDGiantStrength  = 59 // 2E9Ah
 	SpellIDRayDamage      = 60 // 2F02h，原版沒有給它名字
 	SpellIDStrength       = 35 // 1F16h
+	// 解除魔法有兩個編號，共用 `2356h` 那一支。
+	SpellIDDispelMagic    = 41 // 2356h
+	SpellIDDispelMagicAlt = 46 // 2356h
 )
 
 
@@ -492,6 +504,10 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
 		effect.PersonOnly = true
 		effect.SaveModifierByTargetCount = true
+	case SpellIDDispelMagic, SpellIDDispelMagicAlt:
+		// `2356h`：進場先把 `DS:677Eh` 設成 1（範圍法術），沿著每一個目標
+		// 身上的效果節點串列逐個擲。成功率由 DispelChance 決定。
+		effect.Area, effect.Dispel = true, true
 	case SpellIDSnakeCharm:
 		// `18F9h`：額度是施法者的目前生命值（`+11Bh` → `DS:47A6h`），
 		// 沿著目標串列走，`+9Fh` 是 `0Eh` 而且目前生命值扣得動的就收進來。
@@ -531,7 +547,8 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDEnlarge, SpellIDReadMagic,
 		SpellIDFireball, SpellIDLightningBolt,
 		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm,
-		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage, SpellIDStrength:
+		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage, SpellIDStrength,
+		SpellIDDispelMagic, SpellIDDispelMagicAlt:
 		return true
 	}
 	return false
