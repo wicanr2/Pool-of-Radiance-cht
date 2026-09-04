@@ -1653,13 +1653,17 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	// 而任何會改變抽籤次數的修改（例如攻擊改成一次行動揮好幾下）都會讓同一個
 	// 種子走去別的地方。趟數少的時候「走到幾個區塊」就變成單一亂數對齊的快照，
 	// 一改就紅。多跑幾組種子才量得到真正的下限。
+	// menuTurn **跨趟共用**：探索器對同一格的選單是「第幾次來就選第幾項」，
+	// 每一趟重新歸零的話，每一趟都只選得到第 0 項。樞紐圖的地點是選單選的
+	// （`geo6/25` 只有 62 格卻分成 42 個互不相連的區塊），不換選項就永遠
+	// 只進得去同一個地點。
+	menuTurn := map[[3]int]int{}
 	for pass, destination := range []int{0, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3} {
 		seed := int64(13 + pass*7 + destination)
 		avoid := map[[3]int]bool{}
 		transitionUses := map[[3]int]int{}
-		menuTurn := map[[3]int]int{}
 		states := tourWorldStates()
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 1, 200000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
@@ -1697,10 +1701,10 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 		t.Logf("硬失敗 ×%d：%s", count, failure)
 	}
 	// 量到的下限，不是目標。少於這個數代表航線、野外移動或資源載入退步了。
-	// **門檻不跟著實測值走**：三種主線狀態的聯集現在量得到 16 個，門檻留在 14
+	// **門檻不跟著實測值走**：三種主線狀態的聯集現在量得到 17 個，門檻留在 15
 	// ——把門檻頂到實測值等於再做一次單一亂數對齊的快照，下一個會改變抽籤
 	// 次數的修改又會紅。
-	if len(blocks) < 14 {
+	if len(blocks) < 15 {
 		t.Errorf("只走到 %d 個 ECL block：%v", len(blocks), blockIDs)
 	}
 }
