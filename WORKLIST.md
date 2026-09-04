@@ -97,12 +97,22 @@
   `docs/audit/dos-geo-inventory.json`、Spec 009。Pool typed catalog 已依
   `(archive, block ID)` 接妥並通過真檔／fail-closed 測試；地名、正常入口與移動變體
   不在此完成項。
-- [ ] 完成 `START.EXE`／`GAME.OVR` 的 compiler、linker 與 overlay 邊界。
-  MZ／`TPOV!` 與 family 強推論已記於 `docs/re/dos-toolchain-baseline.md`；仍須以
-  startup code、RTL helper bytes、overlay directory 與 IDA 位址空間交叉驗證。
-  TPOV 結構層已可重生解出 38 overlays／774 entries；角色 overlay 的 IDA 9.4
-  窄切片已完成。清冊現由共用 engine `tpov` 與 `cmd/pool-ovr-manifest` 直接從 ZIP
-  重生，overlay ID 固定零起算 0..37；compiler／RTL fingerprint 仍未閉合。
+- [x] **compiler、linker 與 overlay 邊界都閉合了**（2026-09-04，
+  `docs/re/dos-toolchain-baseline.md`，`TestDOSToolchainFingerprint` 逐條重生）。
+  - **進入點就是證據**：`0000:0006` 起是 **49 個連續遠呼叫**，其中 **38 個的
+    位移正好是 `0020h`**（overlay stub 的 entry 0 ＝ 單元初始化），而
+    `GAME.OVR` 正好 **38 顆 overlay**。那是 Turbo Pascal 產生的單元初始化鏈。
+  - **RTL 指紋**：`"Runtime error \0" " at \0" ".\r\n\0"` 三個連著的 ASCIIZ
+    （沒有逐項訊息，錯誤碼用數字印），前面接著用 DOS 功能 `06h` 印 nibble 的
+    輔助函式；常駐 RTL 的 segment 是 `05BBh`。
+  - **版本是 5.x 家族（強推論）**：TP 4.0 沒有 overlay 支援，overlay 單元是
+    5.0（1988）加回來的，而本作是 1988 年的；3.x 是另一套機制。
+    **不宣稱小版本**——這幾條位元組分不出 5.0 與 5.5。
+  - overlay 邊界：38 顆／774 個進入點由 `cmd/pool-ovr-manifest` 從 ZIP 重生，
+    stub segment 對照表在 spec 109。
+  **還沒做**（另立）：逐顆 overlay 命名與全模組函式清冊。青色枷的 PC-98 符號表
+  可以當對照，但**不是全域對應**——Pool 的 ECL 直譯器在 `overlay-03`，
+  青色枷的 `INTERPET` 在 `overlay-02`，要一顆一顆用本作自己的證據認。
 - [x] 建立 DOSBox 正常啟動 oracle 與未縮放標題／主選單截圖。
   驗收：Docker/Xvfb 有界重播，輸入序列、畫面與 metadata 齊全。
 - [x] 完成 `TITLE.DAX` typed consumer 與 PNG／總覽圖匯出；block 1 放大 2× 後
