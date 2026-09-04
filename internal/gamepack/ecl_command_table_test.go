@@ -85,8 +85,8 @@ func TestEveryECLBlockTracesEndToEnd(t *testing.T) {
 	if blocks != 29 {
 		t.Fatalf("掃到 %d 個區塊，原版是 29 個", blocks)
 	}
-	if instructions < 15000 {
-		t.Errorf("只走到 %d 條可達指令，先前量到 16031 條", instructions)
+	if instructions != 16034 {
+		t.Errorf("只走到 %d 條可達指令，先前量到 16034 條", instructions)
 	}
 	t.Logf("%d 個區塊全部走得完，共 %d 條可達指令", blocks, instructions)
 }
