@@ -1,7 +1,7 @@
 # Spec 008：建角完成、角色庫與 Party Creation Menu
 
-狀態：READY（原版畫面順序與 remake 自有保存契約）；DOS `.CHA/.SPC` exporter 仍為 DRAFT
-日期：2026-08-31
+狀態：READY（原版畫面順序、remake 自有保存契約、DOS 三檔匯出）
+日期：2026-09-05
 
 ## 原版證據
 
@@ -37,9 +37,42 @@
 - F10 在可保存狀態先保存再離開。`LOAD SAVED GAME` 只接受現行或明訂可遷移的 schema；它不是 DOS
   `.CHA/.SPC` importer，也不得標示成原版相容存檔。
 
-## DOS exporter 停止線
+## DOS 三檔匯出
 
-目前只能安全寫回已證實欄位；AC、THAC0、damage、class-level slots、唯一識別與三條
-鏈檔尚未完整閉合。禁止以 Dwarf/Fighter 的 `BASE.CHA` 作所有種族職業模板，也禁止
-建立固定 9-byte `.SPC` 冒充完成。待這些 consumer／producer 皆 READY 後，再新增明確
-標示的 DOS export 功能；不阻塞 remake 自有角色庫與正常玩家路徑。
+原版在 icon 確認 `YES` 之後寫出角色檔，再回到 Party Creation Menu
+（spec 003 第 11 步）。remake 在同一個時機做同一件事，實作是
+`internal/character/export.go` 加 `cmd/pool-game/dos_export.go`。
+
+三個檔與原版預設人物的形狀相同：285 bytes 的角色記錄、63 的倍數的物品鏈、
+9 的倍數的效果串列（spec 069）。副檔名 `.CHA` 與 `.SPC` 有 spec 003 的原版證據；
+`.ITM` 是由預設人物三個一組的檔名（`chrdatd4.sav`／`.itm`／`.spc`）推的，
+屬**強推論**。
+
+### 契約
+
+1. **只寫有出處的欄位。** 匯出是「疊在一份 base 上」，不是「從零組一份」；
+   remake 沒解出來的位元組原封不動留著。NPC 疊在自己的 285-byte `Record` 上，
+   remake 自己建的角色疊在 spec 063 的建角基礎值上
+   （`character.NewDOSRecordBase`）。
+2. **疊完一定要重算。** remake 的角色模型只存輸入（能力值、等級、背包），
+   THAC0、AC、負重與移動力是現算現用的。不跑 `gamepack.RecomputeCombatFields`
+   （overlay-25 `0E36h`，spec 063）就會寫出一份戰鬥數值全是 0 的記錄——
+   那份檔案載得進原版，但那個人打不到東西。
+3. **物品照抄。** remake 重建不出那 63 bytes，`Raw` 長度不對就失敗，不補零。
+4. **效果節點只寫 `+0` 的代碼。** `+1`..`+4` 在 spec 069 仍是 DRAFT，
+   remake 的存檔模型也沒有存它們；`+5..+8` 的遠指標是上次執行的位址，
+   重新載入沒有意義，走訪照檔案順序。
+5. **匯出失敗不影響角色。** remake 的真相是自己的 JSON 存檔，三個檔是匯出。
+
+### 驗收
+
+`TestExportDOSRecordReproducesThePremades` 把七名原版預設人物讀進 remake 的
+角色模型再寫回去，285 bytes 一個位元組都不差；接著只改現在生命，差異必須
+正好落在 `+11Bh` 一格——否則「輸出等於輸入」可能只是因為根本沒寫。
+
+### 仍未閉合
+
+- `+6Dh..+71h` 的豁免表與 `+73h` 的生命骰：remake 只從記錄讀，沒有從職業與
+  等級算的產生端，所以匯出時保留 base 的值。從零建的角色那五格是 0。
+- `+0ABh` 是 `random(100h)`，語意未閉合，不假造定值。
+- `+76h` 驅散不死欄：七名預設人物都是 0（含一名 6 級牧師），寫入端還沒找到。

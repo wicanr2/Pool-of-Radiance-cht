@@ -136,3 +136,24 @@ func ClassDOSCode(classID string) (uint8, bool) {
 	}
 	return 0, false
 }
+
+// RaceDOSCode 回傳原版角色記錄 `+2Eh` 那個位元組。碼不連續（人類是 7
+// 不是 6），所以一定要查表，不能拿 Races 的索引充當。
+func RaceDOSCode(raceID string) (uint8, bool) {
+	for _, race := range Races {
+		if race.ID == raceID {
+			return race.DOSCode, true
+		}
+	}
+	return 0, false
+}
+
+// GenderDOSCode 回傳原版角色記錄 `+9Eh` 那個位元組。
+func GenderDOSCode(genderID string) (uint8, bool) {
+	for _, gender := range Genders {
+		if gender.ID == genderID {
+			return gender.DOSCode, true
+		}
+	}
+	return 0, false
+}

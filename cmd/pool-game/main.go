@@ -134,6 +134,9 @@ type app struct {
 	state            poolsave.State
 	saveState        func(poolsave.State) error
 	loadState        func() (poolsave.State, error)
+	// exportDOSCharacter 在建角完成時寫出原版格式的三個檔（spec 003 第 11 步）。
+	// 測試把它換掉就不用碰檔案系統。
+	exportDOSCharacter func(poolsave.Character) error
 	initialMap       *gamepack.GeometryMap
 	geometryCatalog  gamepack.GeometryCatalog
 	eclCatalog       gamepack.ECLCatalog
@@ -345,6 +348,13 @@ func newApp(zipPath, statePath string) (*app, error) {
 	application.restDuration = gamepack.NewRestDuration(timeRadix)
 	application.restField = gamepack.RestFieldMinutes
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
+	application.exportDOSCharacter = func(member poolsave.Character) error {
+		files, err := application.buildDOSCharacterFiles(member)
+		if err != nil {
+			return err
+		}
+		return writeDOSCharacterFiles(filepath.Join(filepath.Dir(statePath), dosExportDir), member.Name, files)
+	}
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
 	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
 		return gamepack.ReadDOSTreasureItemBlock(zipPath, archive, block)
@@ -2393,6 +2403,13 @@ func (a *app) finishCharacter() error {
 	a.mode, a.flow, a.cursor, a.rolled = modeMenu, creation.NewFlow(), 0, nil
 	a.portrait, a.iconReady, a.iconAction = nil, nil, nil
 	a.statusLine = character.Name + " saved to the character library."
+	// 原版在同一個時機寫出 `<NAME>.CHA`／`.SPC`（spec 003 第 11 步）。
+	// remake 的真相是自己的 JSON，所以匯出失敗只回報，不把角色收回去。
+	if a.exportDOSCharacter != nil {
+		if err := a.exportDOSCharacter(character); err != nil {
+			a.statusLine = err.Error()
+		}
+	}
 	return nil
 }
 
