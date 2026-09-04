@@ -27,6 +27,11 @@ type shopState struct {
 	cursor  int
 	buyer   int
 	message string
+	// 估價中的那一件（spec 116）。原版是先把計數減一才擲骰，所以這裡
+	// 一旦有值就代表那一顆已經從身上拿出來了，只剩賣或留。
+	appraising    bool
+	appraiseKind  appraiseKind
+	appraiseValue int
 }
 
 // isShopBoundary 判斷這個服務邊界是不是商店。
@@ -150,8 +155,79 @@ func (a *app) shopInput() error {
 		state.cursor = (state.cursor - 1 + len(state.items)) % len(state.items)
 	case a.justPressed(ebiten.KeyEnter):
 		a.buy()
+	case state.appraising && a.justPressed(ebiten.KeyS):
+		a.resolveShopAppraise(false)
+	case state.appraising && a.justPressed(ebiten.KeyK):
+		a.resolveShopAppraise(true)
+	case a.justPressed(ebiten.KeyG):
+		return a.offerShopAppraise(appraiseGem)
+	case a.justPressed(ebiten.KeyJ):
+		return a.offerShopAppraise(appraiseJewel)
 	}
 	return nil
+}
+
+// offerShopAppraise 是商店那一側的 A）ppraise 入口。規則與神殿同一份
+//（spec 116）：估好價之後只剩 S）ell 與 K）eep，背包滿了就沒有 K。
+func (a *app) offerShopAppraise(kind appraiseKind) error {
+	state := a.shop
+	if state == nil || state.buyer >= len(a.state.Party) {
+		return nil
+	}
+	character := &a.state.Party[state.buyer]
+	slot := pooltreasure.Gems
+	noun := a.text(msgShopAppraiseGem)
+	if kind == appraiseJewel {
+		slot, noun = pooltreasure.Jewelry, a.text(msgShopAppraiseJewel)
+	}
+	if character.Money[slot] == 0 {
+		state.appraising = false
+		state.message = a.text(msgShopAppraiseNone)
+		return nil
+	}
+	character.Money[slot]--
+
+	roll := a.rollDice(1, 100)
+	var value int
+	var err error
+	if kind == appraiseGem {
+		value, err = pooltreasure.GemValue(roll)
+	} else {
+		value, err = pooltreasure.JewelryValue(roll, func(limit int) int {
+			return a.rollDice(1, limit) - 1
+		})
+	}
+	if err != nil {
+		return err
+	}
+	state.appraising, state.appraiseKind, state.appraiseValue = true, kind, value
+	format := msgShopAppraiseValue
+	if len(character.Inventory) >= pooltreasure.KeepNeedsRoom {
+		format = msgShopAppraiseFull
+	}
+	state.message = fmt.Sprintf(a.text(format), noun, value, pooltreasure.SellPrice(value))
+	return nil
+}
+
+// resolveShopAppraise 收下 S）ell 或 K）eep。背包滿了時 K 不生效——
+// 原版連那一項都不印。
+func (a *app) resolveShopAppraise(keep bool) {
+	state := a.shop
+	character := &a.state.Party[state.buyer]
+	if keep && len(character.Inventory) >= pooltreasure.KeepNeedsRoom {
+		return
+	}
+	if keep {
+		character.Inventory = append(character.Inventory,
+			keptTreasureItem(state.appraiseKind, state.appraiseValue))
+		state.message = a.text(msgShopAppraiseKept)
+	} else {
+		paid := pooltreasure.SellPrice(state.appraiseValue)
+		character.Money[pooltreasure.Gold] += uint16(paid)
+		state.message = fmt.Sprintf(a.text(msgShopAppraiseSold), paid)
+	}
+	state.appraising = false
+	syncTrainedLibraryCharacter(&a.state, *character)
 }
 
 // leaveShop 讓 ECL 從 COMBAT 邊界之後續行，與神殿離開走同一條路。

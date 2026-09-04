@@ -300,7 +300,7 @@
   依序顯示三項預設委託與列舉結尾，再由 `AF7Ch EXIT` 回到移動。下一個窄切片是真正
   `4AC1h` 進度 producer 與正常墓園 reward 路徑，不是重做已完成的七貨幣服務、
   City Hall 入口，或把預設分支冒充完整 reward／commission 服務。
-- [ ] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
+- [x] 將 CoAB 已驗證但仍夾有作品常數的 ECL runtime 分批泛化到共用 engine；目前已抽
   operand 求值、控制流、算術、SAVE／GETTABLE、選單 continuation與 Pool 前端的真實
   Rolf VM boundary consumer（Spec 013 已 CONFORMED）；跨 block session、deterministic
   RANDOM、VM Clone、同-session entry 切換、作品中立 `CLEARMONSTERS` 訊號，以及
@@ -352,7 +352,13 @@
   停在 fail-closed），選單名稱直接從 `temple.Services` 取所以兩份表不會漂開；
   A）ppraise 進兩層——挑寶石或珠寶、再對估好價的那一件選 S）ell／K）eep，
   留著時建出來的 63 bytes 記錄直接放進 `poolsave.Item.Raw`。
-  剩下的：商店那一側的 A）ppraise 入口（規則同一份）。
+  **商店那一側也接了**：`G`／`J` 估價、`S` 賣、`K` 留，共用 `internal/treasure`
+  那一份規則。
+
+  **這一項的三個服務規則（紮營的時間與被打斷、賣東西、神殿的其餘服務）到此
+  都結清了。** 各規格自己還留著的開放項不屬於這一項的驗收：spec 114 的
+  「休息打斷那兩個逐區欄位的非零來源」、spec 115 的 `+11Bh`、
+  spec 116 的「留下來那件物品的其餘欄位」。
 - [x] 商店服務：四家店與墓園戰利品共用 `CLEARMONSTERS → TREASURE → SAVE → COMBAT`
   邊界，判別靠 `6E6Ch=1`／`6EF6h=1`／`6E6Dh=16` 三個旗標（不是 item block 編號）。
   存貨是 `ITEM3.DAX` 的 block `34h`..`37h`，價格在記錄 `+3Ah`。購買扣金幣並沿用

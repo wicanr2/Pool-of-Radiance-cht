@@ -235,3 +235,39 @@ func TestTempleAppraiseKeepsAJewelAsAnItem(t *testing.T) {
 		t.Errorf("留著卻拿到 %d 金幣", got)
 	}
 }
+
+// 商店那一側的估價：規則同一份（spec 116），賣掉一樣只拿五分之一。
+func TestShopAppraiseSharesTheTempleRules(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 12}
+	character.Money[pooltreasure.Gems] = 1
+	application := &app{
+		roller: fixedTempleRoller(100), // 寶石值 5000
+		state: poolsave.State{Schema: poolsave.Schema,
+			CharacterLibrary: []poolsave.Character{character},
+			Party:            []poolsave.Character{character}},
+		shop: &shopState{},
+	}
+	if err := application.offerShopAppraise(appraiseGem); err != nil {
+		t.Fatalf("估價：%v", err)
+	}
+	if !application.shop.appraising || application.shop.appraiseValue != 5000 {
+		t.Fatalf("估價狀態 %+v", application.shop)
+	}
+	if got := application.state.Party[0].Money[pooltreasure.Gems]; got != 0 {
+		t.Errorf("估完之後還有 %d 顆", got)
+	}
+	application.resolveShopAppraise(false)
+	if got := application.state.Party[0].Money[pooltreasure.Gold]; got != 1000 {
+		t.Errorf("賣得 %d 金幣，五千的五分之一是 1000", got)
+	}
+	// 負對照：沒有存貨時不擲骰也不改任何東西。
+	if err := application.offerShopAppraise(appraiseGem); err != nil {
+		t.Fatalf("空手估價：%v", err)
+	}
+	if application.shop.appraising {
+		t.Error("沒有寶石卻進了估價狀態")
+	}
+	if got := application.state.Party[0].Money[pooltreasure.Gold]; got != 1000 {
+		t.Errorf("空手估價之後金幣變成 %d", got)
+	}
+}

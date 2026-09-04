@@ -389,6 +389,14 @@ const (
 	msgShopBuyer
 	msgShopCount
 	msgShopFooter
+	// 估價（spec 116）：商店與神殿共用同一支。
+	msgShopAppraiseNone
+	msgShopAppraiseValue
+	msgShopAppraiseFull
+	msgShopAppraiseSold
+	msgShopAppraiseKept
+	msgShopAppraiseGem
+	msgShopAppraiseJewel
 	msgShopBought
 	msgShopNoGold
 	msgShopOverloaded
