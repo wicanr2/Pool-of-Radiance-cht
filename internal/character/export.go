@@ -244,9 +244,9 @@ func NewDOSRecordBase() []byte {
 	record[BaseMovementOffset] = BaseMovementValue
 	record[PresenceOffset] = 1
 	record[unnamed6C] = 1
-	// `+0AAh`：七名預設人物全部是 1，沒有反例，但 spec 063 的建角欄位表
-	// 沒有列到它，所以這是**強推論**不是已證實。寫 0 的話力量修正整個消失，
-	// 那與七份樣本直接牴觸。
+	// `+0AAh` = 1 是**建角自己寫的**（overlay-16 `1C02h` 是全遊戲唯一一處
+	// 寫它的指令，spec 065）。怪物那一側是資料帶的，172 筆記錄裡 123 筆是 0，
+	// 所以它不是常數——但玩家角色一律是 1。
 	record[AbilityBonusFlagOffset] = 1
 	return record
 }
