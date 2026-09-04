@@ -96,6 +96,9 @@ const (
 	// ParlayResultOperand 是「結果寫進哪個 ECL 變數」那個運算元的序號。
 	ParlayResultOperand = 6
 
+	// SaveOpcode 是 `09h SAVE`：把運算元 1 的值寫進運算元 2 指的位址。
+	// 索寇要塞的密碼先用它把字面存進字串變數，再拿變數去比對。
+	SaveOpcode = 0x09
 	// CompareOpcode 是 `03h COMPARE`：把兩個運算元比一比，結果供 `16h IF =`
 	// 之類使用。輸入密碼那一段用它拿玩家打的字對原版寫死的字面。
 	CompareOpcode = 0x03

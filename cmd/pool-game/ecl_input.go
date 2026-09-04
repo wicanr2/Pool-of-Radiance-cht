@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -66,27 +67,59 @@ func (a *app) enterECLInput(event eclvm.Event) error {
 	return nil
 }
 
-// eclInputAnswer 找出這次輸入之後拿來比對的字面。
+// eclInputAnswer 找出這次輸入之後拿來比對的字面。原版有兩種寫法：
 //
-// 原版把答案寫死在 `03h COMPARE` 的第二個運算元（`code 0x80` 的內嵌文字），
-// 而第一個運算元就是剛才寫進去的那個位址。ecl7/23 的密碼門是
-// `A4A1 INPUT STRING #6 6E79h` 之後的 `A4CA COMPARE 6E79h "NOKNOK"`。
+//	ecl7/23  A4A1 INPUT STRING #6 6E79h
+//	         A4CA COMPARE 6E79h "NOKNOK"        ← 直接比字面
 //
-// 只往後掃固定步數，掃到分支或掃完就放棄——找不到就不顯示，不猜。
+//	ecl4/21  9E80 INPUT STRING #7 982Ch
+//	         9E8D SAVE "SAMOSUD" 9890h          ← 先存進字串變數
+//	         9E9A SAVE "SHESTNI" 9890h          ← 依 4A26h 二選一
+//	         9EA6 COMPARE 982Ch 9890h           ← 比的是變數
+//
+// 所以掃的時候順便記下 `09h SAVE <字面> → <位址>`，遇到比對變數的
+// `COMPARE` 就把該位址收到的字面全部拿出來。同一個位址被寫過兩次時兩個
+// 都列——玩家當下需要哪一個，靜態分不出來，不猜。
+//
+// 只往後掃固定步數，找不到就不顯示。
 func (a *app) eclInputAnswer(pc int, address uint16) string {
 	const scanLimit = 64
+	saved := map[uint16][]string{}
 	for offset, scanned := pc, 0; scanned < scanLimit; scanned++ {
 		instruction, err := a.eclInstruction(offset)
 		if err != nil {
 			return ""
 		}
-		if instruction.Command.Opcode == gamepack.CompareOpcode && len(instruction.Operands) == 2 {
-			compared, err := ecl.WordAddress(instruction.Operands[0])
-			if err == nil && compared == address && ecl.IsText(instruction.Operands[1]) {
-				if answer, err := ecl.TextValue(instruction.Operands[1], nil); err == nil {
+		operands := instruction.Operands
+		switch {
+		case instruction.Command.Opcode == gamepack.SaveOpcode && len(operands) == 2 &&
+			ecl.IsText(operands[0]):
+			destination, err := ecl.WordAddress(operands[1])
+			if err != nil {
+				break
+			}
+			value, err := ecl.TextValue(operands[0], nil)
+			if err != nil {
+				break
+			}
+			if value = strings.TrimSpace(value); value != "" && !slices.Contains(saved[destination], value) {
+				saved[destination] = append(saved[destination], value)
+			}
+		case instruction.Command.Opcode == gamepack.CompareOpcode && len(operands) == 2:
+			compared, err := ecl.WordAddress(operands[0])
+			if err != nil || compared != address {
+				break
+			}
+			if ecl.IsText(operands[1]) && operands[1].Code == 0x80 {
+				if answer, err := ecl.TextValue(operands[1], nil); err == nil {
 					if answer = strings.TrimSpace(answer); answer != "" {
 						return answer
 					}
+				}
+			}
+			if source, err := ecl.WordAddress(operands[1]); err == nil {
+				if answers := saved[source]; len(answers) != 0 {
+					return strings.Join(answers, "／")
 				}
 			}
 		}
