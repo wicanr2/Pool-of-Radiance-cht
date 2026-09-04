@@ -409,7 +409,11 @@ func (a *app) Update() error {
 		if a.saveState != nil {
 			state, err := a.stateForSave()
 			if err != nil {
-				return err
+				// 存不了就說為什麼，不要把視窗收掉：`Update` 回傳非
+				// Termination 的 error 時 ebiten 會直接結束，玩家在對話
+				// 中按一下 F10 遊戲就沒了。
+				a.statusLine = err.Error()
+				return nil
 			}
 			if err := a.saveState(state); err != nil {
 				return err
@@ -1579,6 +1583,17 @@ func (a *app) stateForSave() (poolsave.State, error) {
 	}
 	if a.eventSession == nil {
 		return poolsave.State{}, fmt.Errorf("cannot save Pool campaign without an ECL session")
+	}
+	// 戰鬥中存不了檔。原版的 SAVE 在營地，戰鬥畫面根本沒有那個入口；而這裡
+	// 的 Campaign 只存 ECL session 與座標，`tactical` 與 `combatMonsters`
+	// 都不在裡面——存了讀回來怪物會整批消失，等於免費脫離戰鬥，而且 ECL
+	// session 停在「戰鬥進行中」那一點，兩邊對不起來。
+	//
+	// 這一條要排在對話那一條前面：戰術地圖開著的時候 `cellEventPending`
+	// 仍然是 true（戰鬥掛在格子事件底下），排後面的話玩家會看到「先把對話
+	// 讀完」，而畫面上根本沒有對話。
+	if a.combatActive || a.tactical != nil {
+		return poolsave.State{}, fmt.Errorf("finish the current Pool battle before saving")
 	}
 	if a.introWaiting || a.tourActive || a.cellEventPending || a.cellWaitingMenu || a.templeActive || a.treasureActive {
 		return poolsave.State{}, fmt.Errorf("finish the current Pool dialogue or service before saving")

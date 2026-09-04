@@ -297,12 +297,18 @@ func TestWinningTheRealSlumsCombatResumesTheECLScript(t *testing.T) {
 	}
 }
 
+// 對話或服務進行中按 F10：不寫檔，把理由寫進狀態列，而且**不能結束程式**。
+// `Update` 回傳非 Termination 的 error 時 ebiten 會直接收掉視窗——玩家在
+// 對話中按一下 F10 遊戲就沒了。
 func TestF10RejectsTransientCampaignWithoutWriting(t *testing.T) {
 	application := &app{mode: modeAdventure, cellEventPending: true}
 	called := false
 	application.saveState = func(poolsave.State) error { called = true; return nil }
-	if err := press(application, ebiten.KeyF10); err == nil || called {
+	if err := press(application, ebiten.KeyF10); err != nil || called {
 		t.Fatalf("transient F10 err=%v called=%v", err, called)
+	}
+	if application.statusLine == "" {
+		t.Fatal("transient F10 refused to save without saying why")
 	}
 }
 
