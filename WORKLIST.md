@@ -39,9 +39,26 @@
   四條依序套用的原則加 14 組決定（Phlan＝菲蘭、Valjevo＝瓦傑渥、Thentia＝珊提亞、
   Magic-User＝魔法師等），並分開 Yarash（亞拉斯）與 Yulash（尤拉斯）、固定
   ROUND／TURN 的定義。轉錄正文維持原書用字不動，本表只約束 game pack 與 UI。
-- [ ] 怪物一覽表 42 種的中文譯名：說明書只給英文。遊戲內文字翻完之後，凡是在
-  遊戲文字裡出現過的都已定名，並依 glossary 的「與《青色枷的詛咒》對齊怪物名稱」
-  逐條決定；沒在遊戲文字或 `MON*CHA` 記錄裡出現過的仍待證，不發明。
+- [x] **怪物名全部定名並接上畫面**（2026-09-04）。先前只處理說明書那 43 種的
+  「定名」，而**沒有翻譯管線**——`MONnCHA` 的名字直接印在遭遇與戰鬥畫面上，
+  中文畫面會冒出 `SPECTRE ×2`。掃完八個 archive 得到 **103 種**名字（說明書那
+  43 種之外還有職業等級變體、NPC 與專名），逐條定名後放進
+  `internal/gametext/monsters.zh-TW.json`，由 `gametext.MonsterCatalogue` 載入，
+  遭遇標籤與 NPC 入隊都改走它。
+
+  來源分四類，逐條標 `basis`／`note`：說明書怪物一覽表（glossary 的最終譯名，
+  含對齊 CoAB 那九條）、遊戲內文字已用過的譯法（30 條，例如 `SKULLCRUSHER`＝
+  碎顱者、`TYRANITHRAXUS`＝泰倫斯拉克斯）、等級＋職業的規則（`4TH LVL FIGHTER`
+  ＝四級戰士）、由已定名成分組出的複合詞（`ORC LEADER`＝半獸人首領）。
+  **exact 46 條、strong inference 57 條，未定 0 條。**
+
+  三個舊的待證項也解掉了：`MONnCHA` 證實 Spectre（`mon2/17`、`mon4/17`）、
+  Wight（`mon4/20`）、Wraith（`mon4/21`）都是可遭遇的怪物，戰鬥畫面會顯示
+  名字，不能停在待證。Spectre ＝幽魂由遊戲內文字證實；Wight ＝屍妖、
+  Wraith ＝幽鬼採 AD&D 繁中通行譯名並標 `strong inference`。glossary 已同步。
+
+  三則測試把關：每個原版名字都有譯名、表裡沒有對不到原版的多餘條目、每一條
+  都寫得出來源。
 - [x] 用原版資料反查定案譯名：`cmd/pool-name-audit` 掃全部 1,245 個 DAX block 的
   明碼與 6-bit packed 字串，結果在 `docs/audit/dos-original-name-strings.json`。
   九個專名由遊戲文字證實（Phlan、Bishop Braccio、Valjevo Castle、Lord Urslingen、

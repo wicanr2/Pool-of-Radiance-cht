@@ -1,0 +1,625 @@
+{
+ "schema": "pool-monster-names/1",
+ "locale": "zh-TW",
+ "note": "MON*CHA 記錄的怪物名，戰鬥與遭遇畫面會顯示。來源與證據等級逐條標在 basis／note；說明書怪物一覽表的譯名見 docs/reference/manual/glossary.md。",
+ "entries": [
+  {
+   "source": "1ST LVL CLERIC",
+   "text": "一級牧師",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "1ST LVL THIEF",
+   "text": "一級小偷",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "2ND LVL CLERIC",
+   "text": "二級牧師",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "3RD LVL FIGHTER",
+   "text": "三級戰士",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "4TH LVL FIGHTER",
+   "text": "四級戰士",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "5TH LVL FIGHTER",
+   "text": "五級戰士",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "5TH LVL MU",
+   "text": "五級魔法師",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "6TH LVL FIGHTER",
+   "text": "六級戰士",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "6TH LVL THIEF",
+   "text": "六級小偷",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "7TH LVL CLERIC",
+   "text": "七級牧師",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "7TH LVL DW FIGH",
+   "text": "七級矮人戰士",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "7TH LVL FIGHTER",
+   "text": "七級戰士",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "7TH LVL THIEF",
+   "text": "七級小偷",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "8TH LVL FIGHTER",
+   "text": "八級戰士",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "ACOLYTE",
+   "text": "見習僧侶",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "AHNKHEG",
+   "text": "掘地蟲",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "AIDES",
+   "text": "副官",
+   "basis": "strong inference",
+   "note": "一般詞"
+  },
+  {
+   "source": "AL-HYAM DAZID",
+   "text": "阿爾-海姆·達齊德",
+   "basis": "exact",
+   "note": "glossary 專名表（原版寫 DAZID，說明書寫 Dhazid）"
+  },
+  {
+   "source": "BANDIT",
+   "text": "盜匪",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "BASILISK",
+   "text": "八腳蜥蜴",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "BUCCANEER",
+   "text": "海盜",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "BUGBEAR",
+   "text": "熊地精",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "CAPTAIN",
+   "text": "隊長",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "CENTAUR",
+   "text": "半人馬",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "COMMANDANT",
+   "text": "指揮官",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "CORPORAL",
+   "text": "下士",
+   "basis": "strong inference",
+   "note": "一般詞"
+  },
+  {
+   "source": "CURATE",
+   "text": "教士",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "DIANE",
+   "text": "黛安",
+   "basis": "strong inference",
+   "note": "一般詞"
+  },
+  {
+   "source": "DIRTEN",
+   "text": "迪爾騰",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "DISPLACER BEAST",
+   "text": "移位獸",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "DRIDER",
+   "text": "蜘蛛精靈",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "DRYTHH",
+   "text": "德萊特",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "DWARVEN FIGHTER",
+   "text": "矮人戰士",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "EFREETI",
+   "text": "伊弗利特",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "ENVOY",
+   "text": "使節",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "ETTIN",
+   "text": "雙頭巨魔",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "EVOKER",
+   "text": "咒法師",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "FERRAN MARTINEZ",
+   "text": "費瑞·馬提茲",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "FIRE GIANT",
+   "text": "火巨人",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "GENHEERIS",
+   "text": "根赫里斯",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "GHOUL",
+   "text": "餓鬼",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "GIANT LIZARD",
+   "text": "巨型蜥蜴",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "GIANT MANTIS",
+   "text": "巨型螳螂",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "GIANT SKELETON",
+   "text": "巨大骷髏",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "GIANT SNAKE",
+   "text": "巨蛇",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "GNOLL",
+   "text": "土狼人",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "GOBLIN GUARD",
+   "text": "惡鬼守衛",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "GOBLIN LEADER",
+   "text": "惡鬼首領",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "GRISHNAK",
+   "text": "格里希納克",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "GUARD",
+   "text": "守衛",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "HASSAD",
+   "text": "哈薩德",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "HERO",
+   "text": "英雄",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "HILL GIANT",
+   "text": "山丘巨人",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "HIPPOGRIFF",
+   "text": "鷹馬",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "HOBGOBLIN",
+   "text": "大惡鬼",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "HOBGOBLIN LDR",
+   "text": "大惡鬼首領",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "HUGE SCORPION",
+   "text": "巨大蠍子",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "JUJU ZOMBIE",
+   "text": "巫毒僵屍",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "KOBOLD",
+   "text": "小妖魔",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "KOBOLD LEADER",
+   "text": "小妖魔首領",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "LARGE SCORPION",
+   "text": "大蠍子",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "LEVEL 3 MU",
+   "text": "三級魔法師",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "LEVEL 5 CLERIC",
+   "text": "五級牧師",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "LEVEL 6 MU",
+   "text": "六級魔法師",
+   "basis": "strong inference",
+   "note": "等級＋職業，職業名依 glossary 定案"
+  },
+  {
+   "source": "LIZARDMAN",
+   "text": "蜥蜴人",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "MACE",
+   "text": "梅斯",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "MAD MAN",
+   "text": "瘋子",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "MEDUSA",
+   "text": "梅杜莎",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "MERCHANT",
+   "text": "商人",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "MINOTAUR",
+   "text": "牛頭人",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "MUMMY",
+   "text": "木乃伊",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "MUTANT LIZ-MAN",
+   "text": "變種蜥蜴人",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "NOMAD",
+   "text": "遊牧民",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "NORRIS THE GRAY",
+   "text": "挪里斯",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "OGRE",
+   "text": "食人鬼",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "OGRE LEADER",
+   "text": "食人鬼首領",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "ORC",
+   "text": "半獸人",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "ORC LEADER",
+   "text": "半獸人首領",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "PHASE SPIDER",
+   "text": "相位蜘蛛",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "POISONOUS FROG",
+   "text": "毒青蛙",
+   "basis": "strong inference",
+   "note": "由已定名的成分組出"
+  },
+  {
+   "source": "PRINCESS FATIMA",
+   "text": "法蒂瑪公主",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "QUICKLINGS",
+   "text": "迅捷妖",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "ROBBER",
+   "text": "強盜",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "SHAMAN",
+   "text": "薩滿",
+   "basis": "strong inference",
+   "note": "一般詞"
+  },
+  {
+   "source": "SKELETON",
+   "text": "骷髏",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "SKULLCRUSHER",
+   "text": "碎顱者",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "SPECTRE",
+   "text": "幽魂",
+   "basis": "exact",
+   "note": "遊戲內文字：舊繩索公會圖書室與瓦海登墳場兩處都譯「幽魂」"
+  },
+  {
+   "source": "STIRGE",
+   "text": "吸血鳥",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "SWORDSMAN",
+   "text": "劍士",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "THEURGIST",
+   "text": "術士",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "THRI-KREEN",
+   "text": "昆蟲人",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "TIGER",
+   "text": "老虎",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "TROLL",
+   "text": "巨魔",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "TYRANITHRAXUS",
+   "text": "泰倫斯拉克斯",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "VAMPIRE",
+   "text": "吸血鬼",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  },
+  {
+   "source": "WARRIOR",
+   "text": "戰士",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "WIGHT",
+   "text": "屍妖",
+   "basis": "strong inference",
+   "note": "AD&D 繁中通行譯名；Pool 說明書與 CoAB 都沒給，原版資料只證實牠會出現"
+  },
+  {
+   "source": "WILD BOAR",
+   "text": "野猪",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（回推）"
+  },
+  {
+   "source": "WOLF",
+   "text": "狼",
+   "basis": "strong inference",
+   "note": "一般詞"
+  },
+  {
+   "source": "WRAITH",
+   "text": "幽鬼",
+   "basis": "strong inference",
+   "note": "AD&D 繁中通行譯名；Pool 說明書與 CoAB 都沒給，原版資料只證實牠會出現"
+  },
+  {
+   "source": "WYVERN",
+   "text": "雙足飛龍",
+   "basis": "strong inference",
+   "note": "說明書怪物一覽表（對齊 CoAB）"
+  },
+  {
+   "source": "YARASH",
+   "text": "亞拉斯",
+   "basis": "exact",
+   "note": "遊戲內文字已用過這個譯法"
+  },
+  {
+   "source": "ZOMBIE",
+   "text": "僵屍",
+   "basis": "exact",
+   "note": "說明書怪物一覽表（原書）"
+  }
+ ]
+}

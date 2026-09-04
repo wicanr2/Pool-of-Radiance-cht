@@ -104,6 +104,9 @@ type app struct {
 	tacticalPreview  bool
 	language         language
 	gameText         *gametext.Catalogue
+	// monsterText 是 `MONnCHA` 名字的譯名表。戰鬥與遭遇畫面顯示的是
+	// 玩家看得到的字，沒有這一份就會在中文畫面上冒出 `SPECTRE ×2`。
+	monsterText *gametext.MonsterCatalogue
 	tactical         *tacticalState
 	journal          *journalState
 	itemTypes        *gamepack.ItemTypeTable
@@ -1202,7 +1205,7 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 			return fmt.Errorf("load Pool monster archive %d block %d: %w", archive, spawn.MonsterID, err)
 		}
 		staged = append(staged, stagedMonster{Spawn: spawn, Record: record})
-		labels = append(labels, fmt.Sprintf("%s ×%d", record.Name, spawn.Count))
+		labels = append(labels, fmt.Sprintf("%s ×%d", a.monsterText.Translate(record.Name), spawn.Count))
 	}
 	if len(staged) == 0 {
 		// 一隻都沒放成，就不要開戰鬥；開了會是一場沒有敵人的架。
@@ -2761,11 +2764,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	monsters, err := monsterTextFor(uiLanguage)
+	if err != nil {
+		log.Fatal(err)
+	}
 	game, err := newApp(*zipPath, *savePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	game.language, game.gameText = uiLanguage, catalogue
+	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters
 	ebiten.SetWindowSize(960, 600)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("Pool of Radiance Remake")

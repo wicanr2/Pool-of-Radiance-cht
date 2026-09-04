@@ -351,6 +351,15 @@ func gameTextFor(lang language) (*gametext.Catalogue, error) {
 	return gametext.TraditionalChinese()
 }
 
+// monsterTextFor 是怪物名表。與 `gameTextFor` 分開，因為兩者的來源不同：
+// 敘述文字來自 ECL 的 6-bit packed 字串，怪物名來自 `MONnCHA` 記錄。
+func monsterTextFor(lang language) (*gametext.MonsterCatalogue, error) {
+	if lang != languageTraditionalChinese {
+		return nil, nil
+	}
+	return gametext.TraditionalChineseMonsters()
+}
+
 // runeWidth 回傳一個字元佔的半形格數。倚天字型的漢字是 16 像素寬、ASCII 是 8，
 // 所以換行是以半形格為單位算的。
 func runeWidth(r rune) int {

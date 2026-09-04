@@ -56,7 +56,7 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 		return fmt.Errorf("load Pool NPC archive %d block %d: %w", archive, id, err)
 	}
 	member := poolsave.Character{
-		Name:      record.Name,
+		Name:      a.monsterText.Translate(record.Name),
 		NPC:       true,
 		Side:      gamepack.AddNPCSide(uint8(id)),
 		Record:    append([]byte(nil), record.Raw[:]...),
