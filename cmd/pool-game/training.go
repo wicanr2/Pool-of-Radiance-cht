@@ -52,6 +52,7 @@ func (a *app) trainMember(index int) (string, error) {
 		return "", fmt.Errorf("Pool training cannot resolve the class of %q", member.Name)
 	}
 	levels := memberClassLevels(*member)
+	before := levels
 	outcome := a.levelUpTables.Train(levels, member.Experience, a.experienceTable,
 		member.Abilities[gamepack.AbilityConstitution], code, 0, a.roller)
 	name := strings.TrimSpace(member.Name)
@@ -63,6 +64,7 @@ func (a *app) trainMember(index int) (string, error) {
 	member.MaxHP, member.CurrentHP = gamepack.ApplyLevelUpHitPoints(
 		member.MaxHP, member.CurrentHP, outcome.HitPointGain)
 	member.RawHP += outcome.PlainHitPointGain
+	a.refreshSpellbookAfterTraining(member, before)
 	syncTrainedLibraryCharacter(&a.state, *member)
 	return fmt.Sprintf("%s%s%+d", name, a.text(msgTrainGained), outcome.HitPointGain), nil
 }

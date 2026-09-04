@@ -2305,6 +2305,10 @@ func (a *app) finishCharacter() error {
 		PortraitHead: a.flow.PortraitHead, PortraitBody: a.flow.PortraitBody,
 		IconHead: a.flow.IconHead, IconWeapon: a.flow.IconWeapon, IconSize: a.flow.IconSize, IconColors: a.flow.IconColors,
 	}
+	// 法術書照原版的建角規則填（spec 109）：牧師會第 1 級的全部神術，
+	// 法師會寫死的四條。少了這一步，一級法師記得起火球術。
+	character.Spellbook = gamepack.NewCharacterSpellbook(memberClassLevels(character),
+		character.Abilities[gamepack.AbilityWisdom], a.spellSlotTables, a.spellParameters)
 	a.state.CharacterLibrary = append(a.state.CharacterLibrary, character)
 	if a.saveState != nil {
 		if err := a.saveState(a.state); err != nil {

@@ -273,7 +273,10 @@ func TestMemorisedSpellsNeedRestBeforeCasting(t *testing.T) {
 		ClassID: "magic-user", AlignmentID: "lawful-good",
 		Abilities: [6]int{10, 18, 10, 10, 10, 10}, MaxHP: 30, CurrentHP: 12,
 		PortraitHead: 1, PortraitBody: 1, IconSize: 1,
-		ClassLevels: append([]uint8(nil), levels...)}
+		ClassLevels: append([]uint8(nil), levels...),
+		// 書上要有魔法飛彈才記得起來（spec 110）。這一則驗的是「選好要休息
+		// 過才施得出來」，不是法術書那一道閘門，所以直接把它放進書裡。
+		Spellbook: []uint8{gamepack.SpellIDMagicMissile}}
 	application.state = poolsave.State{Schema: poolsave.Schema,
 		CharacterLibrary: []poolsave.Character{member}, Party: []poolsave.Character{member}}
 	if err := application.openSpells(); err != nil {

@@ -90,7 +90,12 @@ var messages = map[messageID][2]string{
 	msgSpellsForgot:         {" forgets ", " 忘掉了 "},
 	msgSpellsNotMemorised:   {" has not memorised ", " 沒有記著 "},
 	msgSpellsNoSlot:         {" has no free slot for that spell.", " 沒有空格可以記那個法術。"},
-	msgSpellsMemoriseHint:   {"1-6 pick  M memorise  F forget", "1-6 挑人　M 記憶　F 忘掉"},
+	msgSpellsMemoriseHint:   {"1-6 pick  M memorise  F forget  L learn", "1-6 挑人　M 記憶　F 忘掉　L 學會"},
+	msgSpellsNotInBook:      {" does not have that spell in the spellbook: ", " 的法術書上沒有這一條："},
+	msgSpellsNoCredit:       {" has no new spell to learn.", " 現在沒有可以學的新法術。"},
+	msgSpellsCannotLearn:    {" cannot learn that spell yet: ", " 現在學不了這一條："},
+	msgSpellsAlreadyKnown:   {" already knows ", " 早就會了："},
+	msgSpellsLearned:        {" learns ", " 學會了："},
 	msgSpellsSlotLine:       {"%s (%d): memorised %d of %d, %d free", "%s（%d）：已記 %d／%d，還能記 %d"},
 	msgCastNotACaster:       {"That combatant is not a party member.", "那一格不是隊員。"},
 	msgCastNothingReady:     {"No memorised spell is ready to cast.", "沒有記著可以施展的法術。"},
@@ -537,6 +542,11 @@ const (
 	msgSpellsNotMemorised
 	msgSpellsNoSlot
 	msgSpellsMemoriseHint
+	msgSpellsNotInBook
+	msgSpellsNoCredit
+	msgSpellsCannotLearn
+	msgSpellsAlreadyKnown
+	msgSpellsLearned
 	msgSpellsSlotLine
 	msgCastNotACaster
 	msgCastNothingReady

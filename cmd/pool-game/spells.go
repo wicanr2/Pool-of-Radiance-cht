@@ -77,6 +77,8 @@ func (a *app) spellsInput() {
 		a.memoriseHighlightedSpell()
 	case a.justPressed(ebiten.KeyF):
 		a.forgetHighlightedSpell()
+	case a.justPressed(ebiten.KeyL):
+		a.learnHighlightedSpell()
 	default:
 		for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2,
 			ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
@@ -239,6 +241,59 @@ func (a *app) spellMemberSlots(index int) (maxima, used gamepack.SpellSlotCounts
 	return maxima, used, true
 }
 
+// learnHighlightedSpell 用掉一次「可以學新法術」的額度，把游標上那一條
+// 寫進法術書。
+//
+// 原版在法師等級上升時自己叫一支選單常式（`00C9:005Ch`）挑一條寫進
+// `記錄 + 32h + 編號`；那一支還沒讀出來，所以這裡把「挑」交給玩家，
+// 規則本身（升一級學一條、只學得起施得出來的等級）照原版。
+func (a *app) learnHighlightedSpell() {
+	state := a.spells
+	group := state.current()
+	if len(group) == 0 || state.cursor >= len(group) {
+		return
+	}
+	if len(a.state.Party) == 0 {
+		a.statusLine = a.text(msgSpellsNeedsMember)
+		return
+	}
+	if a.spellMember >= len(a.state.Party) {
+		a.spellMember = 0
+	}
+	a.ensureSpellbook(a.spellMember)
+	member := &a.state.Party[a.spellMember]
+	name := strings.TrimSpace(member.Name)
+	if member.SpellsToLearn <= 0 {
+		a.statusLine = fmt.Sprintf("%s%s", name, a.text(msgSpellsNoCredit))
+		return
+	}
+	id := uint8(group[state.cursor].Index + 1)
+	if int(id) >= len(a.spellParameters) {
+		return
+	}
+	entry := a.spellParameters[id]
+	// 額度只給法師，也只學得起現在施得出來的等級。
+	maxima, _, ok := a.spellMemberSlots(a.spellMember)
+	if !ok {
+		return
+	}
+	level := entry.Level()
+	if int(entry.Source()) != gamepack.SpellSlotGroupMagicUser ||
+		level < 1 || level > gamepack.SpellSlotLevels ||
+		maxima[gamepack.SpellSlotGroupMagicUser][level-1] <= 0 {
+		a.statusLine = fmt.Sprintf("%s%s%s", name, a.text(msgSpellsCannotLearn), group[state.cursor].Text)
+		return
+	}
+	if gamepack.SpellbookKnows(member.Spellbook, id) {
+		a.statusLine = fmt.Sprintf("%s%s%s", name, a.text(msgSpellsAlreadyKnown), group[state.cursor].Text)
+		return
+	}
+	member.Spellbook = gamepack.AddToSpellbook(member.Spellbook, id)
+	member.SpellsToLearn--
+	syncTrainedLibraryCharacter(&a.state, *member)
+	a.statusLine = fmt.Sprintf("%s%s%s", name, a.text(msgSpellsLearned), group[state.cursor].Text)
+}
+
 // memoriseHighlightedSpell 把游標上那一條記給被選中的成員。
 func (a *app) memoriseHighlightedSpell() {
 	state := a.spells
@@ -253,6 +308,7 @@ func (a *app) memoriseHighlightedSpell() {
 	if a.spellMember >= len(a.state.Party) {
 		a.spellMember = 0
 	}
+	a.ensureSpellbook(a.spellMember)
 	member := &a.state.Party[a.spellMember]
 	if len(member.Memorised) < gamepack.MemorisedSpellSlots {
 		grown := make([]uint8, gamepack.MemorisedSpellSlots)
@@ -264,6 +320,13 @@ func (a *app) memoriseHighlightedSpell() {
 		return
 	}
 	id := uint8(group[state.cursor].Index + 1)
+	// 書上沒有就記不起來（spec 110）。原版的記憶畫面在 overlay-15 `0C33h`
+	// 逐條檢查 `記錄 + 32h + 編號`，沒有的那一條連列都不列。
+	if known, _ := a.memberSpellbook(*member); len(known) != 0 && !gamepack.SpellbookKnows(known, id) {
+		a.statusLine = fmt.Sprintf("%s%s%s", strings.TrimSpace(member.Name),
+			a.text(msgSpellsNotInBook), group[state.cursor].Text)
+		return
+	}
 	if err := gamepack.Memorise(member.Memorised, id, a.spellParameters, maxima); err != nil {
 		a.statusLine = fmt.Sprintf("%s%s", strings.TrimSpace(member.Name), a.text(msgSpellsNoSlot))
 		return
