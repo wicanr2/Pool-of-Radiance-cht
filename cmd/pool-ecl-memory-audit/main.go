@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/wicanr2/golden-box-remake-engine/dax"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
 )
 
@@ -140,7 +141,7 @@ func audit(zipPath string, targets map[uint16]bool) (report, error) {
 			for index, point := range points {
 				starts[index] = int(point) - codeBase
 			}
-			graph, graphErr := ecl.TraceGraphAtBase(block.Data, starts, codeBase, len(block.Data)*8)
+			graph, graphErr := ecl.TraceGraphAtBaseWithCommands(block.Data, starts, codeBase, len(block.Data)*8, gamepack.PoolCommandTable())
 			if graphErr != nil {
 				result.Failures = append(result.Failures, failure{Archive: name, BlockID: block.Entry.ID, Error: graphErr.Error()})
 			}

@@ -16,7 +16,9 @@ func TestPoolCodeAddressBaseAgainstRealCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if correct.Blocks != 29 || correct.DecodedBlocks != 26 || correct.FailedBlocks != 3 || correct.Instructions != 14724 {
+	// 29／29 全部走得完（2026-09-04）：`20h NEWECL` 之後不再往下讀，
+	// 而 `34h ECL CLOCK` 改吃 Pool 自己量出來的一個運算元（spec 093）。
+	if correct.Blocks != 29 || correct.DecodedBlocks != 29 || correct.FailedBlocks != 0 || correct.Instructions != 16031 {
 		t.Fatalf("0x9900 report=%+v", correct)
 	}
 

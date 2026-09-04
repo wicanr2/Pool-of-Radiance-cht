@@ -107,10 +107,23 @@
   驗收：Docker/Xvfb 有界重播，輸入序列、畫面與 metadata 齊全。
 - [x] 完成 `TITLE.DAX` typed consumer 與 PNG／總覽圖匯出；block 1 放大 2× 後
   與原版標題逐像素 AE=`0`，規格見 `docs/spec/001-dos-title-picture.md`。
-- [ ] 閉合 Pool ECL record format：Spec 002 已訂正 payload mapping base
-  `9914h → 9900h`，既有 decoder 現可完整走過 26／29 blocks、14,724 條 reachable
-  instructions。只剩 ECL5/block 7、ECL7/block 17、ECL7/block 22 三筆；須逐筆判斷
-  variable record、控制流 fallthrough 或真 opcode 缺口，不得以 byte 猜命令。
+- [x] **Pool ECL record format 閉合了**（2026-09-04）：**29／29 個 block 全部
+  靜態走得完**，16,031 條可達指令（先前 26／29、14,724 條）。三筆卡住的是
+  兩種原因，都不是「真的缺 opcode」：
+  1. **控制流 fallthrough**（`ECL5/7`、`ECL7/22`）：走訪器走到 `20h NEWECL`
+     之後**繼續往下讀**，而 NEWECL 換掉整個程式碼段（`Machine.SwitchBlock`），
+     後面放的是資料。把 NEWECL 當成終止點就解決了；被 `IF` 守衛的那一條
+     仍然走得到，因為 `guarded` 早就把 `Next` 排進佇列。
+  2. **運算元個數**（`ECL7/17`）：`34h ECL CLOCK` 的序言取**一個**運算元，
+     共用 engine 那張二手表寫兩個。差一個運算元，`9D37h` 之後的
+     `GOSUB 9DA7h` 就被吃掉，PC 停在指令中間（spec 093 已訂正）。
+     **CoAB 的 `34h` 確實是兩個**，所以這是各作品直譯器 build 的性質——
+     解法是讓作品傳自己的指令表（engine 的
+     `TraceGraphAtBaseWithCommands`／`Machine.SetCommands`），
+     Pool 這一側是 `gamepack.PoolCommandTable()`，只覆蓋 `34h` 這一條。
+  `TestEveryECLBlockTracesEndToEnd` 與
+  `TestPoolCommandTableMatchesTheMeasuredChain` 釘住這兩件事。
+  ⚠ engine 那兩個改動還沒 push（見「平台驗收的 workflow」那一項的授權說明）。
 
 ## P1：第一條玩家垂直鏈
 

@@ -105,7 +105,7 @@ func scan(zipPath string) (report, error) {
 			for _, point := range points {
 				starts = append(starts, int(point)-poolCodeAddressBase)
 			}
-			graph, _ := ecl.TraceGraphAtBase(block.Data, starts, poolCodeAddressBase, len(block.Data)*8)
+			graph, _ := ecl.TraceGraphAtBaseWithCommands(block.Data, starts, poolCodeAddressBase, len(block.Data)*8, gamepack.PoolCommandTable())
 			for _, instruction := range graph.Instructions {
 				code := instruction.Command.Opcode
 				if handled[code] {

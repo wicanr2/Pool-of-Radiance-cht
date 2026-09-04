@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/wicanr2/golden-box-remake-engine/dax"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
@@ -201,7 +202,7 @@ func readECL(number int, block dax.Block) (eclBlock, error) {
 	for _, point := range points {
 		starts = append(starts, int(point)-codeBase)
 	}
-	graph, err := ecl.TraceGraphAtBase(block.Data, starts, codeBase, len(block.Data)*8)
+	graph, err := ecl.TraceGraphAtBaseWithCommands(block.Data, starts, codeBase, len(block.Data)*8, gamepack.PoolCommandTable())
 	if err != nil {
 		return row, nil
 	}

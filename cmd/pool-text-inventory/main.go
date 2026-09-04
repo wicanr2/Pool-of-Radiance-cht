@@ -22,6 +22,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	"github.com/wicanr2/golden-box-remake-engine/dax"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
 )
 
@@ -169,7 +170,7 @@ func inventory(zipPath string) (report, error) {
 			for _, point := range points {
 				starts = append(starts, int(point)-poolCodeAddressBase)
 			}
-			graph, graphErr := ecl.TraceGraphAtBase(block.Data, starts, poolCodeAddressBase, len(block.Data)*8)
+			graph, graphErr := ecl.TraceGraphAtBaseWithCommands(block.Data, starts, poolCodeAddressBase, len(block.Data)*8, gamepack.PoolCommandTable())
 			if graphErr != nil {
 				// 追蹤中斷仍保留已走到的指令：少一段比整個 block 掛零好，
 				// 而且掛零會被誤讀成「這個 block 沒有文字」。

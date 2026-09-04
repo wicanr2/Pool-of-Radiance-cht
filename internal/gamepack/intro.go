@@ -377,6 +377,8 @@ func NewCellSweepSession(archive ECLArchive, blockID uint16,
 	if err != nil {
 		return nil, err
 	}
+	// 解碼用 Pool 自己量出來的指令表，不是共用 engine 那張二手的（spec 093）。
+	session.Machine().SetCommands(PoolCommandTable())
 	// 沒有投影器的話 `1Ch LOAD CHARACTER` 會直接報錯，而正常遊玩那條路是有的
 	// （`NewInitialEventSession` 會接）。掃描要量的是腳本，不是缺投影器。
 	session.Machine().SetCharacterProjector(initialCharacterProjector(characters))
@@ -433,6 +435,7 @@ func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) 
 	if err := session.SetTransitionEntries(0, 4); err != nil {
 		return nil, err
 	}
+	session.Machine().SetCommands(PoolCommandTable())
 	session.Machine().SetCharacterProjector(initialCharacterProjector(characters))
 	session.Machine().SetPartyStrengthResolver(initialPartyStrengthResolver(characters))
 	return session, nil

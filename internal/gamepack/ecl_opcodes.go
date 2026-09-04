@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/wicanr2/golden-box-remake-engine/ecl"
 	"github.com/wicanr2/golden-box-remake-engine/tpov"
 )
 
@@ -166,4 +167,78 @@ func ReadDOSECLOpcodeTable(zipPath string) ([]ECLOpcode, error) {
 		return nil, fmt.Errorf("GAME.OVR has %d overlays, want more than %d", len(overlays), ECLDispatchOverlay)
 	}
 	return ParseECLOpcodeTable(overlays[ECLDispatchOverlay])
+}
+
+// poolCommandOverrides 是 Pool 的 overlay-03 量出來、與共用 engine 那張二手表
+// 不一致的運算元個數。**目前只有一條**，而它是必要的：`34h ECL CLOCK` 的
+// 序言（`2E1Ah`）取一個運算元，二手表寫兩個，差這一個 PC 就會停在指令中間，
+// `ECL7/block 17` 的 `9D37h` 之後整段解碼都是錯的（spec 093）。
+//
+// 寫成常數而不是每次量，是因為要在沒有 ZIP 的地方也用得到（VM 的建構點）。
+// `TestPoolCommandTableMatchesTheMeasuredChain` 拿真檔量一次比對，
+// 量出新的不一致就會紅。
+var poolCommandOverrides = map[byte]int{0x34: 1}
+
+// PoolCommandTable 是 Pool 解碼 ECL 要用的指令表。
+func PoolCommandTable() map[byte]ecl.Command {
+	table := make(map[byte]ecl.Command, len(ecl.KnownCommands))
+	for opcode, command := range ecl.KnownCommands {
+		table[opcode] = command
+	}
+	for opcode, arity := range poolCommandOverrides {
+		command, ok := table[opcode]
+		if !ok {
+			continue
+		}
+		command.Arity = arity
+		table[opcode] = command
+	}
+	return table
+}
+
+// ECLCommandTable 把量出來的派發鏈換成靜態走訪要用的指令表。
+//
+// 底稿是共用 engine 的 `ecl.KnownCommands`（二手：公開的 ECL dump 表加上
+// CoAB 的重製），**只有量得到序言、而且與底稿不一致的那幾條**才覆蓋。
+// 兩邊的 0 都不覆蓋：**量到 0** 的那 11 條（`EXIT`、`RETURN`、六個 `IF`、
+// `CLEAR BOX`、`DELAY`…）沒有取運算元的序言可量；**底稿寫 0** 的那幾條
+// （`15h`／`2Bh` 選單、`25h`／`26h` 的 `ON GOTO`／`ON GOSUB`）是長度要另外
+// 算的，序言取幾個運算元不等於整條指令有多長。
+//
+// 目前只有一條不一致：`34h ECL CLOCK`，overlay-03 `2E1Ah` 的序言取**一個**
+// 運算元，底稿寫兩個。差這一個運算元，`ECL7/block 17` 的靜態走訪就會從
+// `9D37h` 之後整段錯位（spec 093）。
+func ECLCommandTable(opcodes []ECLOpcode) map[byte]ecl.Command {
+	table := make(map[byte]ecl.Command, len(ecl.KnownCommands))
+	for opcode, command := range ecl.KnownCommands {
+		table[opcode] = command
+	}
+	for _, measured := range opcodes {
+		if measured.Operands <= 0 {
+			continue
+		}
+		command, ok := table[measured.Opcode]
+		if !ok {
+			continue
+		}
+		// 底稿寫 0 的是**長度要另外算**的那幾條（`15h`／`2Bh` 選單、
+		// `25h`／`26h` 的 `ON GOTO`／`ON GOSUB`）：選項字串與跳躍表接在
+		// 運算元後面，走訪器自己量。序言取幾個運算元不等於整條指令的長度，
+		// 拿它去覆蓋會把後面那一段當成程式碼。
+		if command.Arity == 0 || command.Arity == measured.Operands {
+			continue
+		}
+		command.Arity = measured.Operands
+		table[measured.Opcode] = command
+	}
+	return table
+}
+
+// ReadDOSECLCommandTable 是 ECLCommandTable 的方便入口：直接從 ZIP 量。
+func ReadDOSECLCommandTable(zipPath string) (map[byte]ecl.Command, error) {
+	opcodes, err := ReadDOSECLOpcodeTable(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	return ECLCommandTable(opcodes), nil
 }
