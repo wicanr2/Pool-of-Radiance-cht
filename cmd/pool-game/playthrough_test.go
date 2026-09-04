@@ -1551,3 +1551,41 @@ func TestWinningTheAreaBattlesCompletesTheirCommissions(t *testing.T) {
 		})
 	}
 }
+
+// 結局過場的圖跟著隊伍人數變（`[4937h] + 67Ch`，spec 108）。
+// 沒有隊伍時只有兩張底圖，滿隊時三張小圖都疊上去。
+func TestEndingCutsceneSceneFollowsPartySize(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	requested := -1
+	application.loadEndingScene = func(partySize int) (*ebiten.Image, error) {
+		requested = partySize
+		return ebiten.NewImage(120, 120), nil
+	}
+	application.state.Party = []poolsave.Character{{Name: "A"}, {Name: "B"}, {Name: "C"}}
+	if err := application.enterEnding(); err != nil {
+		t.Fatal(err)
+	}
+	if requested != 3 {
+		t.Fatalf("結局畫面用的人數是 %d，預期 3", requested)
+	}
+	if application.endingScene == nil {
+		t.Fatal("結局畫面沒有載進來")
+	}
+	// 圖載不出來時台詞照跑——結局不能因為少一張圖就整段吞掉。
+	application.loadEndingScene = func(int) (*ebiten.Image, error) {
+		return nil, errors.New("FINAL5.DAX 壞了")
+	}
+	if err := application.enterEnding(); err != nil {
+		t.Fatal(err)
+	}
+	if application.endingScene != nil {
+		t.Fatal("載入失敗卻留著舊的圖")
+	}
+	if application.eventText == "" {
+		t.Fatal("圖載不出來時台詞也不見了")
+	}
+}

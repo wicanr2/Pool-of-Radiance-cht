@@ -8,9 +8,9 @@ import (
 // 結局過場（spec 108）。`38h PROGRAM` 的值 8 是 overlay-18 entry 1，
 // 唯一的呼叫點是 `ECL5/7` 的 `A82Ah`——打贏泰倫斯拉克斯之後。
 //
-// **只接了文字**：原版在兩頁台詞之間還會依序畫 `FINAL5.DAX` 的區塊
-// 1／3／4／5／6，那幾張圖的位置還沒讀出來（`018Eh:004Dh` 的引數），
-// 所以這裡先不畫。缺的是圖不是字，spec 108 寫明了。
+// 台詞與圖都接上了。原版在第一頁台詞之後把 `FINAL5.DAX` 的區塊
+// 1／3／4／5／6 依序疊進圖片緩衝，後三張畫不畫看隊伍人數
+//（`[4937h] + 67Ch`），所以人愈多結局畫面上的人也愈多。
 func (a *app) enterEnding() error {
 	pages := a.endingScript.Pages()
 	if len(pages) == 0 {
@@ -18,6 +18,16 @@ func (a *app) enterEnding() error {
 	}
 	a.endingActive, a.endingPages, a.endingPage = true, pages, 0
 	a.cellEventPending, a.cellWaitingMenu = true, false
+	a.endingScene = nil
+	if a.loadEndingScene != nil {
+		scene, err := a.loadEndingScene(len(a.state.Party))
+		if err != nil {
+			// 圖載不出來不該把結局吞掉——台詞照跑，畫面上少一張圖。
+			a.statusLine = err.Error()
+		} else {
+			a.endingScene = scene
+		}
+	}
 	a.showEndingPage()
 	return nil
 }
@@ -43,6 +53,7 @@ func (a *app) advanceEnding() error {
 		return nil
 	}
 	a.endingActive, a.endingPages, a.endingPage = false, nil, 0
+	a.endingScene = nil
 	a.eventText, a.eventLabel = "", ""
 	a.cellEventPending = false
 	return a.continueInitialSearch(nil)

@@ -236,6 +236,10 @@ type app struct {
 	endingActive     bool
 	endingPages      [][]gamepack.EndingLine
 	endingPage       int
+	// endingScene 是疊好的結局畫面（spec 108）；隊伍人數決定疊幾層。
+	endingScene *ebiten.Image
+	// loadEndingScene 由 newApp 注入，測試不必碰檔案系統。
+	loadEndingScene func(partySize int) (*ebiten.Image, error)
 	treasureActive   bool
 	treasureStage    treasureStage
 	treasureItems    []gamepack.TreasureItemRecord
@@ -385,6 +389,21 @@ func newApp(zipPath, statePath string) (*app, error) {
 			return nil, err
 		}
 		rendered, err := picture.RGBA(0, application.artPalette())
+		if err != nil {
+			return nil, err
+		}
+		return ebiten.NewImageFromImage(rendered), nil
+	}
+	application.loadEndingScene = func(partySize int) (*ebiten.Image, error) {
+		pictures, err := assets.ReadEndingPictures(zipPath, gamepack.EndingLayerBlocks())
+		if err != nil {
+			return nil, err
+		}
+		scene, err := assets.ComposeEndingScene(pictures, gamepack.VisibleEndingLayers(partySize))
+		if err != nil {
+			return nil, err
+		}
+		rendered, err := scene.RGBA(0, application.artPalette())
 		if err != nil {
 			return nil, err
 		}
@@ -2513,6 +2532,15 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		return
 	}
 	viewLeft, viewTop := 48, 86
+	// 結局過場時那一格畫的是結局的圖，不是第一人稱視野（spec 108）。
+	if a.endingActive && a.endingScene != nil {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(2, 2)
+		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
+		screen.DrawImage(a.endingScene, op)
+		drawDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
+		return
+	}
 	stageFill, err := poolFirstPersonStageFill()
 	if err != nil {
 		drawText(screen, "FIRST-PERSON STAGE ERROR", 72, 180, accent)
