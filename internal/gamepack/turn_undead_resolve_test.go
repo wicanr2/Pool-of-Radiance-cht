@@ -34,12 +34,12 @@ func turnTable(t *testing.T) gamepack.TurnUndeadTable {
 
 func TestSelectTurnUndeadTargetTakesTheSmallestColumn(t *testing.T) {
 	candidates := []gamepack.TurnUndeadCandidate{
-		{Column: 0},                  // 不是不死生物
-		{Column: 8},                  // 木乃伊
-		{Column: 1, Turned: true},    // 已經被轉變過
-		{Column: 3},                  // 餓鬼：最小的合格者
-		{Column: 2, Removed: true},   // 已經摧毀離場
-		{Column: 3},                  // 同分，不換人
+		{Column: 0},                // 不是不死生物
+		{Column: 8},                // 木乃伊
+		{Column: 1, Turned: true},  // 已經被轉變過
+		{Column: 3},                // 餓鬼：最小的合格者
+		{Column: 2, Removed: true}, // 已經摧毀離場
+		{Column: 3},                // 同分，不換人
 	}
 	index, ok := gamepack.SelectTurnUndeadTarget(candidates)
 	if !ok || index != 3 {

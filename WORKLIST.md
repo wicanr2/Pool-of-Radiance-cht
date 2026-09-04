@@ -1054,8 +1054,18 @@
   解不開的位元組就丟例外，而 headless 的例外看起來就是「沒有輸出檔」；
   寬鬆版把那些 byte 記成 data 再往下走。`02E2h` 整段 931 條指令裡只有
   `0AB9h` 一個 byte 解不開，用嚴格版卻是整段拿不到。
-  **還缺**：`DS:6786h` 那張表怎麼填（entry 25／35／66 對應哪三個代碼）、
-  runtime `+3` 與記錄 `+2Fh` 的語意、`DS:43A0h` 用在哪。
+  **記錄 `+2Fh` 其實早就有答案**：它是複合職業碼，跟玩家角色同一個欄位
+  （`gamepack.ClassCodeOffset`、spec 085、spec 097）。條目一直掛在「還沒讀」
+  是因為沒去 grep 自己的 docs。5 是純法師，所以 `07E8h` `087a` 那一條是
+  「不逃跑的純法師不走路，交給 entry 6」。怪物用的是同一套編碼：172 筆記錄
+  只出現七個值，全部是建角目錄挑得到的合法碼
+  （`TestMonsterClassCodeIsTheCharacterClassCode`）。
+  **`DS:43A0h` 沒有讀取端**：36 顆 overlay 加 `START.EXE` 掃過絕對定址與所有
+  disp16 的 modrm 形狀，只有 overlay-09 `0B4Ch` 那一次清零。旁邊的 `439Eh`
+  （上一步的方向）與 `439Fh`（卡住次數）都讀得到，所以那是三個純量旗標而不是
+  陣列——`43A0h` 在這一版就是清掉之後沒人用的格子。
+  **還缺**：`DS:6786h` 那張表怎麼填（overlay-12 的 entry 25／35／66 對應哪三個
+  代碼）、runtime `+3` 的語意。
   入口仍是 overlay-08 entry 3（`01E4h`）依 `+10Fh` 分派——非零走
   `0058h:0025h`（overlay-09 entry 1），零則走 overlay-08 `0307h` 的玩家
   指令迴圈（指令字串 `Move `／`View Aim `／`Use `／`Cast `／`Turn `／
