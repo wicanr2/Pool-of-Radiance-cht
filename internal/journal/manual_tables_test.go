@@ -460,3 +460,85 @@ func TestArmourAppendixMatchesTheGameRecords(t *testing.T) {
 	}
 	t.Logf("附錄 3：%d 列，除了記錄在案的 %d 格之外都與原版一致", len(rows), len(armourBookAgainstGame))
 }
+
+// 附錄 5「牧師對抗不死怪物」對得上 `START.EXE` 裡的轉變表。
+//
+// 這一則把兩份互不相干的來源綁在一起：書上印的是「這種不死怪物至少要幾級的
+// 牧師才影響得了」，執行檔裡是一張 10×10 的門檻矩陣（`DS:45Bh`，spec 111）。
+// 從矩陣算「第一個門檻不是 99 的列」，應該就是書上那個等級。
+//
+// 兩邊都對得上，代表**欄位的順序讀對了**——欄位讀錯一格，矩陣自己仍然自洽
+// （右下角照樣比左上角好），只有拿書上的獨立列表去比才分得出來。
+var undeadTurnColumns = []struct {
+	name   string
+	column int
+	level  int
+}{
+	{"骷髏", 1, 1},
+	{"僵屍", 2, 1},
+	{"餓鬼", 3, 1},
+	{"人類", 4, 1},
+	{"幽靈", 7, 3},
+	{"木乃伊", 8, 4},
+	{"妖怪", 9, 5},
+	{"吸血鬼", 10, 6},
+}
+
+var chineseLevels = map[string]int{"第一級": 1, "第二級": 2, "第三級": 3, "第四級": 4,
+	"第五級": 5, "第六級": 6, "第七級": 7, "第八級": 8}
+
+var undeadRow = regexp.MustCompile(`(?m)^\| ([^|]+?) \| (第[一二三四五六七八]級) \|$`)
+
+func TestUndeadAppendixMatchesTheTurnTable(t *testing.T) {
+	table, err := gamepack.ReadDOSTurnUndeadTable(filepath.Join("..", "..", "Pool of Radiance (1988).zip"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	raw, err := os.ReadFile(manualBookPath("journal-vol1.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(raw)
+	start := strings.Index(text, "#### 5. 牧師對抗不死怪物")
+	if start < 0 {
+		t.Fatal("找不到附錄 5")
+	}
+	end := strings.Index(text[start:], "#### 6. ")
+	if end < 0 {
+		t.Fatal("找不到附錄 6，附錄 5 的範圍切不出來")
+	}
+	printed := map[string]int{}
+	for _, row := range undeadRow.FindAllStringSubmatch(text[start:start+end], -1) {
+		level, ok := chineseLevels[row[2]]
+		if !ok {
+			t.Fatalf("讀不懂等級 %q", row[2])
+		}
+		printed[strings.TrimSpace(row[1])] = level
+	}
+	if len(printed) != len(undeadTurnColumns) {
+		t.Fatalf("附錄 5 抓到 %d 列，名字表有 %d 列", len(printed), len(undeadTurnColumns))
+	}
+	for _, entry := range undeadTurnColumns {
+		bookLevel, listed := printed[entry.name]
+		if !listed {
+			t.Errorf("附錄 5 裡沒有「%s」", entry.name)
+			continue
+		}
+		if bookLevel != entry.level {
+			t.Errorf("附錄 5 說「%s」要第 %d 級，名字表登的是第 %d 級",
+				entry.name, bookLevel, entry.level)
+		}
+		lowest := 0
+		for level := 1; level <= gamepack.TurnUndeadRows; level++ {
+			if table.Threshold(level, entry.column) <= gamepack.TurnUndeadDie {
+				lowest = level
+				break
+			}
+		}
+		if lowest != bookLevel {
+			t.Errorf("%s（欄 %d）：書上要第 %d 級，轉變表算出來是第 %d 級",
+				entry.name, entry.column, bookLevel, lowest)
+		}
+	}
+	t.Logf("附錄 5 的 %d 種不死怪物，最低牧師等級全部與轉變表一致", len(undeadTurnColumns))
+}

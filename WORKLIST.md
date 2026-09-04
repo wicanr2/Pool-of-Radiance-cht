@@ -1011,8 +1011,23 @@
   所以是「我在哪、走得動多遠、不限方向、我多大」，最後推戰術地圖的遠指標。
   中繼表就是 spec 056 的鄰近查詢結果表（`+0` 索引、`+1` 成本、`+2` 朝向），
   壓實時三個 byte 一起搬，只是 `37B8h` 只用得到索引。
-  **還缺**：entry 2（`0203h`）的施法內容、overlay-24 entry 3（`02E2h`，
-  2051 bytes）判什麼、runtime `+3` 與記錄 `+2Fh` 的語意、`DS:43A0h` 用在哪。
+  **2026-09-05 再讀掉一支**：entry 2（`0203h`）**不是施法，是轉變不死生物**
+  （[spec 111](docs/spec/111-turn-undead.md)）。三條互相獨立的證據：程式段裡
+  的字串 `turns undead...`／`is turned`／`Is destroyed`、牧師等級 1..8 各自
+  一列而 9..13 併一列、14 以上再併一列的折疊法，以及 `DS:45Bh` 那張
+  10 欄 × 10 列的有號位元組矩陣本身（正數＝ 1d20 門檻，0 或負數＝自動摧毀，
+  99 ＝ 無法轉變）。目標由 overlay-13 entry 13（`1352h`）在 `+76h` 小於 13
+  的不死生物裡挑最小的一隻，overlay-13 entry 12（`116Ah`）擲骰執行。
+  矩陣已重生成 `gamepack.ReadDOSTurnUndeadTable`，100 格全釘住，並與手冊
+  附錄五的八個怪物欄位對上（`TestUndeadAppendixMatchesTheTurnTable`）。
+  **玩家側走的是同一支**：overlay-08 的戰術指令迴圈在 `0427h` 比到 `T`
+  之後直接 `call 0096h:005Ch`（＝ entry 12），再交給 overlay-25 entry 34
+  收掉一個行動；沒有另一條玩家專用的實作。全 36 顆 overlay 掃過
+  `9A xx xx 96 00` 這個形狀，指向 entry 12 的只有 overlay-08 `0431h` 與
+  overlay-09 `0241h` 兩處，指向 entry 13 的只有 overlay-09 `022Eh` 一處。
+  **還缺**：overlay-24 entry 3（`02E2h`，2051 bytes）判什麼、runtime `+3`
+  與記錄 `+2Fh` 的語意、`DS:43A0h` 用在哪；spec 111 自己也留著兩個開放項
+  （`[bp-3]=6` 的配額、1d12 對 AD&D 的 2d6）。
   入口仍是 overlay-08 entry 3（`01E4h`）依 `+10Fh` 分派——非零走
   `0058h:0025h`（overlay-09 entry 1），零則走 overlay-08 `0307h` 的玩家
   指令迴圈（指令字串 `Move `／`View Aim `／`Use `／`Cast `／`Turn `／
