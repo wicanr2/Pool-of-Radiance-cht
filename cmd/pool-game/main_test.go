@@ -1012,11 +1012,16 @@ func TestPoolFirstPersonUsesSharedStageInsetFill(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantPostWall := []viewport.BackgroundRect{{X: 24, Y: 24, Width: 88, Height: 16, PaletteIndex: 1}}
+	// 兩個色索引是量原版量出來的（spec 047 的來源節、
+	// `docs/reference/original-dos/adventure/02-first-person-14-1-west.png`）：
+	// 天空 EGA 11 青、地面 EGA 6 棕。
+	wantPostWall := []viewport.BackgroundRect{{X: 24, Y: 24, Width: 88, Height: 16, PaletteIndex: poolSkyPaletteIndex}}
 	if len(fill.Backdrop) != 3 || !reflect.DeepEqual(fill.PostWall, wantPostWall) {
 		t.Fatalf("Pool stage fill=%+v, want three bands and post-wall=%+v", fill, wantPostWall)
 	}
-	if fill.Backdrop[0].PaletteIndex != 1 || fill.Backdrop[2].PaletteIndex != 8 || fill.Backdrop[2].Y+fill.Backdrop[2].Height != 112 {
+	if fill.Backdrop[0].PaletteIndex != poolSkyPaletteIndex ||
+		fill.Backdrop[2].PaletteIndex != poolGroundPaletteIndex ||
+		fill.Backdrop[2].Y+fill.Backdrop[2].Height != 112 {
 		t.Fatalf("Pool stage palettes/bounds changed: %+v", fill.Backdrop)
 	}
 }

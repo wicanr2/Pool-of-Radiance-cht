@@ -181,14 +181,21 @@
   仍是跨作品 strong inference；自由移動交接、地名、bounded／wrapped／door
   policy 仍待證明。
   **同狀態 DOS 畫面已經對拍了**（2026-09-05）：`tools/capture-dos-adventure.sh`
-  把原版一路開到第一人稱畫面，四張基準圖與逐項差異寫在
+  把原版一路開到第一人稱畫面，五張基準圖與逐項差異寫在
   `docs/reference/original-dos/adventure/README.md`。**Rolf 初次 APPROACH
   的圖像也在那裡**（不再是待證明）。
-  對拍結果是**不一致**，最大的一項是視野的尺度：remake 的牆片畫在
-  `viewLeft + 欄 × 16` 再放大兩倍，背景卻填 `StageInset{88×88}`，兩者對不上，
-  所以牆片縮在框底一條，上面四分之三是純色；原版那一框的透視是滿的。
-  其次是配色（原版天空青色、地面棕色棧道；remake 全藍加灰）與棧道上的人形。
-  朝向與文字對得上：remake 顯示 `FACING 3`、原版顯示 `W`，Rolf 第一頁逐字相同。
+  對拍結果是**部分一致**。對上的是事件鏈與兩個背景色索引：
+  Rolf 事件在 `15, 1 W`、導覽第二段在 `11, 2 S`，remake 的 `FACING 3`／`FACING 2`
+  換算後與原版狀態列逐項相同，台詞逐字相同；內框幾何量出來就是
+  `StageInset{24,24,88,88}`，本來就對；天空 EGA 11 青、地面 EGA 6 棕已照原版改
+  （先前的 EGA 1 藍／EGA 8 深灰是接手時帶進來的佔位值，spec 047 已訂正）。
+  沒對上的還有四項：視野的透視尺度（remake 的牆片畫在 `viewLeft + 欄 × 16` 再
+  放大兩倍，背景卻填 `StageInset{88×88}`，所以牆片縮在框底一條，原版那一框的
+  透視是滿的）、對話時原版會用 NPC 半身像蓋掉視野而 remake 仍畫第一人稱、
+  兩側水面與柱子的配色、以及右半版面（原版是隊伍面板加狀態列，remake 是除錯文字）。
+  **副產品**：那一輪對拍抓到隊伍非空的選單只有九項，沒有 `LOAD SAVED GAME`
+  也沒有 `TRAIN CHARACTER`；`L)OAD` 的可見規則已照原版改成「只在空隊伍出現」，
+  `T)RAIN` 因為旗標來源還沒讀，留成已知偏差（spec 008）。
   Spec 047 已將第一人稱內容填滿內框的三層繪製契約抽到共用 engine
   `viewport.FillBackgroundToStageInset`；Pool 與 CoAB 都只宣告各自的 viewport 幾何，
   共用 engine 負責背景外擴與牆片之後的上緣補層。兩作的整合測試已通過；Pool 的

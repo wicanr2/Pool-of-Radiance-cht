@@ -39,10 +39,30 @@ func TestEmptyPartyShowsOnlyTheFourOriginalEntries(t *testing.T) {
 			t.Fatalf("第 %d 項是 %v，預期 %v", index, keys[index], want[index])
 		}
 	}
-	// 有人之後十一項全出現。
+	// 有人之後換一組。原版隊伍非空的截圖上是九項：
+	// CREATE／DROP／MODIFY／VIEW／ADD／REMOVE／SAVE／BEGIN／EXIT
+	// ——**沒有 LOAD，也沒有 TRAIN**。remake 多一項 T）RAIN，那是已知的偏差
+	// （原版由 `DS:06D4h` 控制，那個旗標的來源還沒讀）。
 	a = menuApp(rookie("HERO"))
-	if got := len(a.visiblePartyMenuEntries()); got != 11 {
-		t.Fatalf("有隊伍時列出 %d 項，預期 11 項", got)
+	keys = nil
+	for _, entry := range a.visiblePartyMenuEntries() {
+		keys = append(keys, entry.key)
+	}
+	want = []ebiten.Key{ebiten.KeyC, ebiten.KeyD, ebiten.KeyM, ebiten.KeyT,
+		ebiten.KeyV, ebiten.KeyA, ebiten.KeyR, ebiten.KeyS, ebiten.KeyB, ebiten.KeyE}
+	if len(keys) != len(want) {
+		t.Fatalf("有隊伍時列出 %d 項，預期 %d 項", len(keys), len(want))
+	}
+	for index := range want {
+		if keys[index] != want[index] {
+			t.Fatalf("有隊伍時第 %d 項是 %v，預期 %v", index, keys[index], want[index])
+		}
+	}
+	// L）OAD 只在空隊伍出現。
+	for _, entry := range a.visiblePartyMenuEntries() {
+		if entry.key == ebiten.KeyL {
+			t.Fatal("隊伍有人時不該列出 L）OAD SAVED GAME")
+		}
 	}
 }
 

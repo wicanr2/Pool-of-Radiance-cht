@@ -113,9 +113,16 @@ for key in ${POOL_KEYS:-c Return Return Return Return Return Return y type:HERO 
       DISPLAY=:99 xdotool keyup --window "$window" "$key"
       ;;
   esac
+  # 兩張都拍：`raw` 是按下去之後**馬上**拍的，`settle` 是等畫面不動了才拍。
+  # 有些畫面（例如 BEGIN 之後的第一人稱視野）只閃一下就被事件蓋掉，
+  # 只拍 settle 會抓到下一幕，而檔名還寫著上一幕——那種錯看起來像「畫面
+  # 不一樣」，其實是拍錯時間點。
+  label="$(printf %s "$key" | tr -c "A-Za-z0-9" _)"
+  sleep 0.15
+  shot "$(printf "%02d-%s-raw" "$index" "$label")"
   sleep 1
   settle
-  shot "$(printf "%02d-%s" "$index" "$(printf %s "$key" | tr -c "A-Za-z0-9" _)")"
+  shot "$(printf "%02d-%s" "$index" "$label")"
   index=$((index + 1))
 done
 kill "$dosbox_pid" 2>/dev/null || true

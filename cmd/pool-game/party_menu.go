@@ -24,22 +24,31 @@ type partyMenuEntry struct {
 	message messageID
 	// needsParty 為真時，隊伍空的就不顯示也不接受按鍵。
 	needsParty bool
+	// emptyOnly 為真時反過來：**隊伍有人就不顯示**。
+	// `L)OAD SAVED GAME` 是唯一一個——原版隊伍非空的截圖上沒有它。
+	emptyOnly bool
 }
 
 // partyMenuEntries 依說明書 p.8..p.10 的敘述順序列出十一項。
 func partyMenuEntries() []partyMenuEntry {
 	return []partyMenuEntry{
-		{ebiten.KeyC, msgMenuCreate, false},
-		{ebiten.KeyD, msgMenuDrop, true},
-		{ebiten.KeyM, msgMenuModify, true},
-		{ebiten.KeyT, msgMenuTrain, true},
-		{ebiten.KeyV, msgMenuView, true},
-		{ebiten.KeyA, msgMenuAdd, false},
-		{ebiten.KeyR, msgMenuRemove, true},
-		{ebiten.KeyL, msgMenuLoad, false},
-		{ebiten.KeyS, msgMenuSave, true},
-		{ebiten.KeyB, msgMenuBegin, true},
-		{ebiten.KeyE, msgMenuExit, false},
+		{ebiten.KeyC, msgMenuCreate, false, false},
+		{ebiten.KeyD, msgMenuDrop, true, false},
+		{ebiten.KeyM, msgMenuModify, true, false},
+		// T)RAIN **原版在這個畫面上不顯示**（兩張原版截圖都沒有它）。
+		// 它由 `DS:06D4h` 那個旗標控制，而那個旗標從哪裡設還沒讀出來，
+		// 所以 remake 先一律顯示——藏起來玩家就昇不了級。這是**已知的
+		// 偏差**，不是照原版接的。
+		{ebiten.KeyT, msgMenuTrain, true, false},
+		{ebiten.KeyV, msgMenuView, true, false},
+		{ebiten.KeyA, msgMenuAdd, false, false},
+		{ebiten.KeyR, msgMenuRemove, true, false},
+		// L)OAD 只在隊伍是空的時候出現：原版隊伍非空的截圖上沒有它，
+		// 空隊伍那一張有。
+		{ebiten.KeyL, msgMenuLoad, false, true},
+		{ebiten.KeyS, msgMenuSave, true, false},
+		{ebiten.KeyB, msgMenuBegin, true, false},
+		{ebiten.KeyE, msgMenuExit, false, false},
 	}
 }
 
@@ -49,6 +58,9 @@ func (a *app) visiblePartyMenuEntries() []partyMenuEntry {
 	visible := make([]partyMenuEntry, 0, len(partyMenuEntries()))
 	for _, entry := range partyMenuEntries() {
 		if entry.needsParty && !hasParty {
+			continue
+		}
+		if entry.emptyOnly && hasParty {
 			continue
 		}
 		visible = append(visible, entry)

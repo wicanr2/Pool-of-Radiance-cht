@@ -1,14 +1,23 @@
 # 原版走到第一人稱畫面的對拍基準
 
 由 `tools/capture-dos-adventure.sh` 在一次性 Docker 裡重生（DOSBox ＋ Xvfb）。
-鍵序寫在腳本的預設 `POOL_KEYS` 裡，重跑就會得到同一批畫面。
+鍵序寫在腳本的預設 `POOL_KEYS` 裡，重跑就會得到同一批畫面。腳本每一步拍兩張，
+`-raw` 是按鍵後立刻拍、另一張是等畫面靜止才拍；下表的「來源」指的是
+`workplace/oracle/screens/` 裡的原始檔名。
 
-| 檔案 | 走到哪 | SHA-256 |
-|---|---|---|
-| `00-party-menu-empty.png` | 密碼過後的人物管理選擇項，**隊伍是空的** | `375804341398328372b497b8322fe39c87d0c5e53fcde9a84ad01ccf75d8f3c5` |
-| `01-add-character.png` | `A)DD CHARACTER TO PARTY` 的名單頁 | `84f907b8324b32bf4b658e51f89180bb0d8d1142188ade312bef6c38aca61cec` |
-| `02-first-person-start.png` | `B)EGIN ADVENTURING` 之後的第一人稱畫面 | `48b8a8e8c89011dd4ac2e85f4dbdb30930a5f681f3b320974d34196a89e2efc5` |
-| `03-rolf-approach.png` | Rolf 初次 APPROACH 的圖像與第一頁台詞 | `a95eb80b15997bc9df5f8bbc27dc9ad8727c58ef1178379f559cc9f3e7265c00` |
+| 檔案 | 來源 | 走到哪 | SHA-256 |
+|---|---|---|---|
+| `00-party-menu-empty.png` | `01-party-menu` | 密碼過後的人物管理選擇項，**隊伍是空的** | `375804341398328372b497b8322fe39c87d0c5e53fcde9a84ad01ccf75d8f3c5` |
+| `01-add-character.png` | `15-a` | `A)DD CHARACTER TO PARTY` 的名單頁 | `84f907b8324b32bf4b658e51f89180bb0d8d1142188ade312bef6c38aca61cec` |
+| `04-party-menu-with-party.png` | `18-b-raw` | 同一張選單，但**隊伍裡有人** | `4230ad4f0d7f29c1bc766472b6d05cb0a5832f986ac3f1d098930dc5189e9f17` |
+| `03-rolf-approach.png` | `18-b` | `B)EGIN ADVENTURING` 之後立刻觸發的 Rolf 事件，位置 `15, 1 W` | `a95eb80b15997bc9df5f8bbc27dc9ad8727c58ef1178379f559cc9f3e7265c00` |
+| `02-first-person-14-1-west.png` | `19-Return-raw` | 台詞關掉後的第一人稱視野，位置 `14, 1 W` | `958f76ab5db7b45ca6c82dddd6cd5679d85130136dc0797f7690e1ec1750c32c` |
+
+**「按下 `B` 之後的第一人稱畫面」拍不到乾淨的那一張**：`B` 一按下去，Rolf 的
+事件就蓋上來了，所以靜止後拍到的是 Rolf（`18-b`），而按鍵當下拍到的還是上一幕
+的選單（`18-b-raw`）。乾淨的視野要等台詞關掉才出現，而那時隊伍已經被導覽帶著
+往西走了一格。這就是 `02` 的位置是 `14, 1` 不是 `15, 1` 的原因——不是原版的
+起點不同。
 
 ## 逐張讀到的東西
 
@@ -20,36 +29,50 @@
 **`01`**：底部是 `ADD A CHARACTER: ADD EXIT`。名單上只有剛建好的 HERO——
 出貨的 `chrdat*` 檔**不在名單上**，因為 `CHARLIST.TXT` 是空的。
 
-**`02`**：狀態列是 `15, 1 W 00:00`——位置 (15,1)、朝向 **W**、時鐘 00:00。
+**`04`**：隊伍非空的選單是**九項**：`CREATE NEW CHARACTER`、`DROP CHARACTER`、
+`MODIFY CHARACTER`、`VIEW CHARACTER`、`ADD CHARACTER TO PARTY`、
+`REMOVE CHARACTER FROM PARTY`、`SAVE CURRENT GAME`、`BEGIN ADVENTURING`、
+`EXIT TO DOS`。**沒有 `LOAD SAVED GAME`，也沒有 `TRAIN CHARACTER`**。
+上方是隊伍面板（`NAME / AC / HP`，`HERO 10 6`）。與 `00` 一正一反，
+`L)OAD` 的可見規則因此是「只在空隊伍出現」（spec 008 已據此修正 remake）。
+`T)RAIN` 在兩張裡都沒有，但缺席的理由還沒讀出來，所以不能直接抄。
+
+**`03`**：Rolf 的半身像**畫在第一人稱那一框裡**，台詞在下框，底部
+`PRESS <ENTER>/<RETURN> TO CONTINUE`，狀態列 `15, 1 W 00:00`。
+
+**`02`**：狀態列是 `14, 1 W 00:00`——位置 (14,1)、朝向 **W**、時鐘 00:00。
 朝向與 spec 010 的「facing 6」在共用 engine 的 0/2/4/6 制下換算相符
-（6 ÷ 2 = 3 ＝ 西，spec 076）。右邊是隊伍面板 `NAME / AC / HP`。
-畫面內容：上半青色天空、下半藍色水面、棕色木棧道往遠處收窄、兩側棕色柱子，
-棧道中央站著一個人形。
+（6 ÷ 2 = 3 ＝ 西，spec 076）。畫面內容：上半青色天空、下半藍色水面、
+棕色木棧道往遠處收窄、兩側棕色柱子，正前方是一道拱門。
 
-**`03`**：Rolf 的半身像在左框，台詞在下框，底部 `PRESS <ENTER>/<RETURN> TO
-CONTINUE`。
+## 與 remake 現況的差距（2026-09-05）
 
-## 與 remake 現況的差距（2026-09-05 第一次對拍）
+同一支 `tools/capture-remake-creation.sh` 重生的 remake 畫面對照：
 
-`02` 與 `docs/screenshots/pool-remake-initial-rolf-event.png`（同一支
-`tools/capture-remake-creation.sh` 重生的）**不一致**：
-
-| | 原版 | remake |
+| 狀態 | 原版 | remake |
 |---|---|---|
-| 視野框佔的面積 | 幾乎填滿左半的框 | 上四分之三是純色，牆片只佔底部一條 |
-| 天空 | 上半青色 | 全藍 |
-| 地面 | 棕色棧道，往遠處收窄 | 灰色，幾乎看不到 |
-| 兩側 | 藍色水面加棕色柱子 | 藍色格子加紅／粉紅柱子 |
-| 棧道上的人形 | 有 | 沒有 |
-| 右半版面 | 隊伍面板（`NAME / AC / HP`）與狀態列 `15, 1 W 00:00` | 除錯文字（`GEO3 BLOCK 0`、`X 15 Y 1 FACING 3`…）|
+| `B` 之後的第一個事件 | `03`（`15, 1 W`）| `pool-remake-initial-rolf-event.png`（`X 15 Y 1 FACING 3`）|
+| 導覽第二段 | `19-Return`（`11, 2 S`，提爾神殿）| `pool-remake-rolf-tour-tyr.png`（`X 11 Y 2 FACING 2`）|
 
-**最大的一項是視野的尺度**：remake 的牆片畫在 `viewLeft + 欄 × 16` 再放大
+**位置、朝向與台詞逐字相同**——`FACING 3`／`FACING 2` 換算成 W／S，與原版狀態列
+一致（spec 076 的 0 北 1 東 2 南 3 西）。事件鏈這一段對得上。
+
+差的是那一框裡畫的東西：
+
+| | 原版 | remake | 狀態 |
+|---|---|---|---|
+| 天空色 | EGA 11 青 | EGA 11 青 | **已對上**（2026-09-05 改的；先前是 EGA 1 藍）|
+| 地面色 | EGA 6 棕 | EGA 6 棕 | **已對上**（先前是 EGA 8 深灰）|
+| 內框幾何 | 320×200 座標 `(24,24)` 起 88×88 | 同 | **已對上**（本來就對）|
+| 視野的透視尺度 | 透視填滿整框 | 牆片縮在底部一條 | 未對上 |
+| 對話時框裡畫什麼 | NPC 半身像蓋掉視野 | 仍畫第一人稱視野 | 未對上 |
+| 兩側 | 藍色水面加棕色柱子 | 藍色格子加紅／粉紅柱子 | 未對上 |
+| 右半版面 | 隊伍面板 `NAME / AC / HP` ＋狀態列 `14, 1 W 00:00` | 除錯文字（`GEO3 BLOCK 0`、`X 15 Y 1 FACING 3`…）| 未對上 |
+| 外框美術 | 紅色繩索花紋 | 黃色細線 | 未對上 |
+
+**視野的尺度是剩下最大的一項**：remake 的牆片畫在 `viewLeft + 欄 × 16` 再放大
 兩倍，而背景填的是 `StageInset{88×88}`——兩者對不上，所以牆片縮在底部。
-原版那一框裡的透視是滿的。這一項要先量原版那一框的實際像素範圍才動得了，
-不是調一個常數就好。
+原版那一框裡的透視是滿的。這一項不是調一個常數就好。
 
-朝向對得上：remake 顯示 `FACING 3`，原版顯示 `W`（spec 076 的 0 北 1 東
-2 南 3 西）。文字也對得上——Rolf 的第一頁逐字相同。
-
-所以「背景與同狀態 DOS 畫面」這一項現在的狀態是**已經對拍、不一致**，
-不是「還沒對拍」。差異清單就是接下來要逐條收掉的東西。
+所以「背景與同狀態 DOS 畫面」這一項現在的狀態是**已經對拍、部分一致**。
+上表就是接下來要逐條收掉的東西。

@@ -10,6 +10,14 @@
   畫面依序列出 `CREATE NEW CHARACTER`、`ADD CHARACTER TO PARTY`、
   `LOAD SAVED GAME`、`EXIT TO DOS`，底部提示 `CHOOSE A FUNCTION`。
   那是**空隊伍**的畫面，不是完整清單——見下一節。
+- **隊伍非空的同一張選單**（2026-09-05 由 `tools/capture-dos-adventure.sh`
+  在 DOSBox 內走到，`docs/reference/original-dos/adventure/04-party-menu-with-party.png`，
+  SHA-256 `4230ad4f0d7f29c1bc766472b6d05cb0a5832f986ac3f1d098930dc5189e9f17`）
+  **只有九項**，順序是 `CREATE NEW CHARACTER`、`DROP CHARACTER`、
+  `MODIFY CHARACTER`、`VIEW CHARACTER`、`ADD CHARACTER TO PARTY`、
+  `REMOVE CHARACTER FROM PARTY`、`SAVE CURRENT GAME`、`BEGIN ADVENTURING`、
+  `EXIT TO DOS`。**沒有 `LOAD SAVED GAME`，也沒有 `TRAIN CHARACTER`。**
+  那張圖的狀態是「剛用 `C)REATE` 建好一名 1 級角色、`A)DD` 進隊伍，還沒存過檔」。
 - 原版 Rule Book 的「Creating A Party Of Characters」明寫最多 6 名 player characters，
   遊戲內總共可控制 8 名，另兩格保留給途中加入的 NPC：
   <https://www.mocagh.org/ssi/pool-manual.pdf>。目前 remake `party` 只保存玩家角色，
@@ -45,6 +53,16 @@
 四項」、p.9「若你未將任何人物加入隊伍，則大部份的人物處理選擇項都將不會
 出現」）：隊伍是空的時候只留 C、A、L、E ——正好就是上一節那張截圖上的四項，
 兩份證據互相印證。
+
+**隊伍有人的時候是另一組**，而它不是「十一項全開」：原版截圖上是
+C、D、M、V、A、R、S、B、E 九項。L 與 T 兩項只在這一組裡消失。
+
+- **L)OAD 的規則已經照原版接上**：`emptyOnly`，隊伍有人就不顯示也不接受按鍵。
+  兩張截圖一正一反（空隊伍有、非空沒有），這一條是**已證實**。
+- **T)RAIN 是已知的偏差**：原版兩張截圖都沒有它。原版每個指令各有一個啟用旗標
+  （`T` 的在 `DS:06D4h`，spec 097），那個旗標從哪裡設還沒讀出來，所以分不出
+  「一律不顯示」與「有條件才顯示」（例如經驗值足夠才亮）。remake 目前一律顯示
+  ——藏起來玩家就昇不了級。讀出旗標來源之前不要當成照原版接的。
 
 D、M、T、V、R 五項要先指定對象；remake 以 1..6 選人，選中的那一位在右欄
 標上 `>`。看不見的指令連按鍵都不接受：畫面上沒有那一列卻按得動，等於多開了

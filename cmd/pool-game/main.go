@@ -2629,11 +2629,29 @@ func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	drawText(screen, a.campPendingLine(), 100, 248, foreground)
 }
 
+// poolFirstPersonStageFill 是第一人稱視野的三段背景。
+//
+// **幾何量過了**（2026-09-05，`docs/reference/original-dos/adventure/`）：
+// 原版那一框的內部在 320×200 座標是 `(24,24)` 起的 88×88，與這裡的
+// `StageInset` 逐格相同。
+//
+// **顏色也量過了**：碼頭那一張的天空是 EGA 11（`85,255,255` 青），
+// 地面是 EGA 6（`170,85,0` 棕）。spec 047 原本寫的「保留既有 EGA blue／
+// dark-gray」是接手時帶過來的佔位值，不是從原版讀的——對拍一看就差很多。
+//
+// **這兩個索引的來源仍未讀**：原版一定是逐區決定的（地城不會有青色天空），
+// 而那份資料在哪還沒找到。所以這裡是「對著唯一畫得出來的那一張圖量出來的」，
+// 不是「從原版資料讀出來的」；接第二張圖之前不要把它當通用值。
+const (
+	poolSkyPaletteIndex    = 11
+	poolGroundPaletteIndex = 6
+)
+
 func poolFirstPersonStageFill() (viewport.StageInsetFill, error) {
-	background := viewport.Background{SkyPalette: 1, Rects: []viewport.BackgroundRect{
-		{X: 24, Y: 24, Width: 88, Height: 44, PaletteIndex: 1},
+	background := viewport.Background{SkyPalette: poolSkyPaletteIndex, Rects: []viewport.BackgroundRect{
+		{X: 24, Y: 24, Width: 88, Height: 44, PaletteIndex: poolSkyPaletteIndex},
 		{X: 24, Y: 68, Width: 88, Height: 0, PaletteIndex: 0},
-		{X: 24, Y: 68, Width: 88, Height: 44, PaletteIndex: 8},
+		{X: 24, Y: 68, Width: 88, Height: 44, PaletteIndex: poolGroundPaletteIndex},
 	}}
 	return viewport.FillBackgroundToStageInset(background, viewport.StageInset{X: 24, Y: 24, Width: 88, Height: 88, WallTop: 40})
 }
