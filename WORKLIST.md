@@ -156,22 +156,21 @@
 
 ## P1：第一條玩家垂直鏈
 
-- [ ] 反組譯並寫 READY 建角／建隊 spec，包含戰鬥 sprite、調色與角色檔。
-  已用正確的 `C:\POOLRAD\` 掛載走通 portrait、READY／ACTION combat icon、Parts、
-  雙色六部位、Size 與完成建角；285-byte CHA icon 欄位已有單變因差分，Spec 003
-  對這一範圍已 READY。六種族職業清單、引導文字與 Race→Gender→Class→Alignment
-  狀態機已實作；Spec 004 已 READY，閉合年齡、能力限制、exceptional STR、Gold、
-  hit dice／CON／多職平均公式，並已有注入式 dice roller 與純資料生成器。剩餘驗收是
-  `cmd/pool-game` 已由標題以正常按鍵走到完整公式資料頁，R 可重擲，F1／F2／ESC／F10
-  已有接縫測試與 Xvfb 截圖。YES 後的 1..15-byte 姓名與 HEAD／BODY／KEEP portrait
-  editor 已接正常玩家路徑；Spec 006 已閉合 `+BBh/+BCh`、1..14／1..12 wrap、
-  HEAD3／BODY3 稀疏 block descriptor 與 88×88 零間隙不透明合成。Spec 007 又閉合
-  CHEAD／CBODY 184 blocks、Head 0..13、Weapon 0..31、READY／ACTION × 大小 family
-  與六部位雙色；remake 已接真實素材雙預覽及 Head／Weapon／Size／顏色熱鍵。剩餘驗收是
-  原版 nested icon menu 細節仍待 polish；Spec 008 已接版本化 remake 角色庫、原子保存、
-  icon 確認後回到 Party Creation Menu、Add／Load 與六名玩家角色上限，正常按鍵抓圖已
-  走到 Party 1/6。剩餘驗收是 DOS 285-byte CHA＋多條鏈 export、完整 Party Creation Menu
-  功能，以及 theme 下 sprite／tileset 同步切換。
+- [x] 反組譯並寫 READY 建角／建隊 spec，包含戰鬥 sprite、調色與角色檔。
+  Spec 003（建角流程）、004（擲值欄位）、006（肖像）、007（戰鬥圖示）、
+  008（角色庫與人物管理選擇項）全部 READY，`cmd/pool-game` 由標題以正常按鍵
+  走得到每一步。最後三項殘留在 2026-09-05 收掉：
+  - **DOS 285-byte CHA＋多條鏈 export**：`internal/character/export.go` 疊在一份
+    base 上只寫有出處的欄位，`internal/gamepack/record_recompute.go` 補上
+    overlay-25 `0E36h` 的整份重算，建角完成時寫出 `<NAME>.CHA`／`.ITM`／`.SPC`。
+    七名原版預設人物讀進 remake 的角色模型再寫回去，285 bytes 一個位元組都不差。
+  - **完整 Party Creation Menu 功能**：說明書 p.8..p.10 的十一個指令全部接上，
+    並照「隊伍是空的時候只有四項」的可見規則收；那四項正好是 spec 008 那張
+    原版截圖上的四項。
+  - **theme 下 sprite／tileset 同步切換**：F2 換的是 `graphics.Picture.RGBA` 的
+    色盤，肖像、戰鬥圖示、標題圖、牆面圖章與第一人稱背景一起換。
+  - **原版 nested icon menu**：PARTS／COLOR-1／COLOR-2／SIZE／EXIT 的巢狀選單
+    照 spec 003 第 7..10 步實作，取代原本的扁平熱鍵。
 - [ ] 解出第一張地圖的移動遮罩、第一人稱背景／視錐與第一個玩家事件。正常 Begin
   的 ECL3/block 0 → `LOAD FILES 0,0,0` 已閉合 `GEO3/block 0, (15,1), facing 6`，
   初始 `LOAD PIECES` 又閉合 `WALLDEF3 block 0` 與 `8X8D3 blocks 101/102/103`，
