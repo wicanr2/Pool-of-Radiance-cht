@@ -680,11 +680,18 @@ func TestBeginAdventureRequiresPartyAndRunsSpec010FirstEvent(t *testing.T) {
 		initialWalls: &walls,
 		initialEvent: &event,
 	}
+	// 隊伍是空的時候 B）EGIN 根本不在選單上（說明書 p.9），所以按下去
+	// 沒有反應——這不是缺一句提示，是原版就沒有那一列。
+	for _, entry := range application.visiblePartyMenuEntries() {
+		if entry.key == ebiten.KeyB {
+			t.Fatal("空隊伍不該列出 B）EGIN ADVENTURING")
+		}
+	}
 	if err := press(application, ebiten.KeyB); err != nil {
 		t.Fatal(err)
 	}
-	if application.mode != modeMenu || application.statusLine == "" {
-		t.Fatalf("empty-party Begin mode=%d status=%q", application.mode, application.statusLine)
+	if application.mode != modeMenu {
+		t.Fatalf("empty-party Begin mode=%d", application.mode)
 	}
 	application.state.Party = []poolsave.Character{{Name: "HERO"}}
 	if err := press(application, ebiten.KeyB); err != nil {

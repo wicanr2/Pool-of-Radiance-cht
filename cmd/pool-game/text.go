@@ -43,7 +43,6 @@ const (
 	msgFooter
 )
 
-
 // text 取出目前語言的字串。缺譯時退回英文而不是留白——留白在畫面上看不出是
 // 缺譯還是繪製壞了。
 // 介面字串放在 game pack 的 locale 檔（`internal/gamepack/pack/20-locale.*.json`），
@@ -51,7 +50,7 @@ const (
 // 這一側只留 `messageID` 與它的出處註解，字串本身用 `messageKeys` 的 key 去查。
 //
 // 繁中一律取自軟體世界代理當年的官方中文說明書
-//（`docs/reference/manual/manual-vol2.md` p.8–p.10 的「人物管理選擇項」一節），
+// （`docs/reference/manual/manual-vol2.md` p.8–p.10 的「人物管理選擇項」一節），
 // 不是重新翻譯。說明書沒有對應字串的（畫面提示、功能鍵列）才自行擬定，
 // 用詞依 `docs/reference/manual/glossary.md` 的定案譯名。
 func (a *app) text(id messageID) string {
@@ -526,5 +525,21 @@ const (
 	msgFoeClosed
 	msgBudgetPlaceholder
 	msgBudgetStagedMonster
+	// 說明書 p.8..p.10 的人物管理選擇項；括號裡的字母就是原版的按鍵。
+	msgMenuDrop
+	msgMenuModify
+	msgMenuTrain
+	msgMenuView
+	msgMenuRemove
+	msgMenuSave
+	msgMenuExit
+	msgMenuSelectHint
+	msgMenuDropPrompt
+	msgMenuDropped
+	msgMenuRemoved
+	msgMenuModified
+	msgMenuModifyExperience
+	msgMenuModifyItems
+	msgMenuSaved
+	msgMenuNeedsMember
 )
-

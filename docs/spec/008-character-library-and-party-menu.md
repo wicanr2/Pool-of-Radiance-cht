@@ -9,6 +9,7 @@
   `22bcb0126e52be62b397a18b64f06542ddfc346aa229d1efefc1503bf4932c71`。
   畫面依序列出 `CREATE NEW CHARACTER`、`ADD CHARACTER TO PARTY`、
   `LOAD SAVED GAME`、`EXIT TO DOS`，底部提示 `CHOOSE A FUNCTION`。
+  那是**空隊伍**的畫面，不是完整清單——見下一節。
 - 原版 Rule Book 的「Creating A Party Of Characters」明寫最多 6 名 player characters，
   遊戲內總共可控制 8 名，另兩格保留給途中加入的 NPC：
   <https://www.mocagh.org/ssi/pool-manual.pdf>。目前 remake `party` 只保存玩家角色，
@@ -20,6 +21,51 @@
 - 33 份原版 UI 角色檔全部是 285 bytes。`.SPC` 不是每角色固定 blob：本機 corpus
   有 9／18／36 bytes，且每 9 bytes 是一個鏈節點；同一 DOS session 的多個角色可
   共享相同首節點。不能把 `BASE.SPC` 複製給新角色。
+
+## 十一個指令與它們的可見規則
+
+中文說明書 p.8..p.10（`docs/reference/manual/manual-vol2.md`）逐項介紹了
+人物管理選擇項，按敘述順序是：
+
+| 鍵 | 指令 | 說明書怎麼寫 |
+|---|---|---|
+| C | CREATE NEW CHARACTER | 創造一名人物，存放到「人物名單」內 |
+| D | DROP CHARACTER | 從人物名單中**永遠**除掉，一切資料都消失；會再確認一次 |
+| M | MODIFY CHARACTER | 重新調整屬性與生命力；經驗點數必須為 0、身上不能有金錢以外的物品 |
+| T | TRAIN CHARACTER | 花 1000 金幣昇級 |
+| V | VIEW CHARACTER | 檢視資料，以及交換錢幣或裝備 |
+| A | ADD CHARACTER | 從人物名單加入隊伍，最多 6 人 |
+| R | REMOVE CHARACTER FROM PARTY | 移回人物名單，人還在 |
+| L | LOAD SAVED GAME | 叫出存下的進度（原版 A..J 十個位置）|
+| S | SAVE CURRENT GAME | 存下目前進度（同上十個位置）|
+| B | BEGIN ADVENTURING | 離開選擇項，開始冒險 |
+| E | EXIT TO DOS | 跳回 DOS |
+
+**可見規則**（p.8「由於第一次進入遊戲的你沒有任何人物，因此只會有其中的
+四項」、p.9「若你未將任何人物加入隊伍，則大部份的人物處理選擇項都將不會
+出現」）：隊伍是空的時候只留 C、A、L、E ——正好就是上一節那張截圖上的四項，
+兩份證據互相印證。
+
+D、M、T、V、R 五項要先指定對象；remake 以 1..6 選人，選中的那一位在右欄
+標上 `>`。看不見的指令連按鍵都不接受：畫面上沒有那一列卻按得動，等於多開了
+一個原版沒有的入口。
+
+**D 與 R 的差別是這一節最容易做錯的地方**：D 是「從人物名單中永遠除掉」，
+隊伍與名單兩邊都要不見；R 只是「移回人物名單」。兩個都從隊伍拿掉一個人，
+畫面上看起來一樣。
+
+`TestEmptyPartyShowsOnlyTheFourOriginalEntries`、
+`TestHiddenPartyMenuEntriesIgnoreTheirKey`、
+`TestDropAsksFirstThenClearsBothLists`、
+`TestRemoveKeepsTheCharacterInTheRoster` 與
+`TestModifyRefusesExperiencedOrLoadedCharacters` 釘住這幾條。
+
+### 與原版的差異
+
+- 原版的 L 與 S 有 A..J 十個存檔位；remake 只有一份 JSON，所以 S 就是把它
+  寫出去、L 就是讀回來。十個位置要等 remake 的存檔管理有介面再談。
+- V 開的是 remake 的裝備畫面（`cmd/pool-game/equipment.go`）。原版的
+  VIEW CHARACTER 版面還沒反組譯，所以那個畫面不宣稱與原版一致。
 
 ## Remake 保存契約
 

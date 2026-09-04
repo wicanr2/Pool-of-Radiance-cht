@@ -97,69 +97,69 @@ func (ebitenKeys) JustPressed(key ebiten.Key) bool { return inpututil.IsKeyJustP
 func (ebitenKeys) Chars() []rune                   { return ebiten.AppendInputChars(nil) }
 
 type app struct {
-	mode             screenMode
-	title            *ebiten.Image
-	flow             creation.Flow
-	cursor           int
-	rolled           *creation.RolledCharacter
-	roller           creation.Roller
-	help             bool
-	tacticalPreview  bool
-	language         language
-	gameText         *gametext.Catalogue
+	mode            screenMode
+	title           *ebiten.Image
+	flow            creation.Flow
+	cursor          int
+	rolled          *creation.RolledCharacter
+	roller          creation.Roller
+	help            bool
+	tacticalPreview bool
+	language        language
+	gameText        *gametext.Catalogue
 	// monsterText 是 `MONnCHA` 名字的譯名表。戰鬥與遭遇畫面顯示的是
 	// 玩家看得到的字，沒有這一份就會在中文畫面上冒出 `SPECTRE ×2`。
-	monsterText *gametext.MonsterCatalogue
-	tactical         *tacticalState
-	journal          *journalState
-	itemTypes        *gamepack.ItemTypeTable
-	spellParameters  []gamepack.SpellParameters
-	encounter        *encounterState
-	spells           *spellState
-	spellsOpen       bool
-	shop             *shopState
-	shopActive       bool
-	equipment        *equipmentState
-	equipmentOpen    bool
-	journalOpen      bool
-	modern           bool
-	statusLine       string
-	keys             keySource
-	nameInput        string
-	portrait         *ebiten.Image
-	iconReady        *ebiten.Image
-	iconAction       *ebiten.Image
-	loadPortrait     func(head, body uint8) (*ebiten.Image, error)
-	loadIcon         func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
-	state            poolsave.State
-	saveState        func(poolsave.State) error
-	loadState        func() (poolsave.State, error)
+	monsterText     *gametext.MonsterCatalogue
+	tactical        *tacticalState
+	journal         *journalState
+	itemTypes       *gamepack.ItemTypeTable
+	spellParameters []gamepack.SpellParameters
+	encounter       *encounterState
+	spells          *spellState
+	spellsOpen      bool
+	shop            *shopState
+	shopActive      bool
+	equipment       *equipmentState
+	equipmentOpen   bool
+	journalOpen     bool
+	modern          bool
+	statusLine      string
+	keys            keySource
+	nameInput       string
+	portrait        *ebiten.Image
+	iconReady       *ebiten.Image
+	iconAction      *ebiten.Image
+	loadPortrait    func(head, body uint8) (*ebiten.Image, error)
+	loadIcon        func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
+	state           poolsave.State
+	saveState       func(poolsave.State) error
+	loadState       func() (poolsave.State, error)
 	// exportDOSCharacter 在建角完成時寫出原版格式的三個檔（spec 003 第 11 步）。
 	// 測試把它換掉就不用碰檔案系統。
 	exportDOSCharacter func(poolsave.Character) error
-	initialMap       *gamepack.GeometryMap
-	geometryCatalog  gamepack.GeometryCatalog
-	eclCatalog       gamepack.ECLCatalog
-	eclArchive       uint8
-	initialWalls     *graphics.PieceSet
-	loadPieceSlots   func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error)
-	initialEvent     *gamepack.InitialEvent
-	spawn            gamepack.Spawn
-	introWaiting     bool
-	introDone        bool
-	tourActive       bool
-	tourStep         int
-	tourPage         int
-	tourDelay        int
-	eventMachine     *eclvm.Machine
-	eventSession     *eclvm.BlockSession
-	eventText        string
-	eventLabel       string
-	cellEventPending bool
-	cellWaitingMenu  bool
+	initialMap         *gamepack.GeometryMap
+	geometryCatalog    gamepack.GeometryCatalog
+	eclCatalog         gamepack.ECLCatalog
+	eclArchive         uint8
+	initialWalls       *graphics.PieceSet
+	loadPieceSlots     func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error)
+	initialEvent       *gamepack.InitialEvent
+	spawn              gamepack.Spawn
+	introWaiting       bool
+	introDone          bool
+	tourActive         bool
+	tourStep           int
+	tourPage           int
+	tourDelay          int
+	eventMachine       *eclvm.Machine
+	eventSession       *eclvm.BlockSession
+	eventText          string
+	eventLabel         string
+	cellEventPending   bool
+	cellWaitingMenu    bool
 	// cellMovedByScript 記「這一步是腳本自己用 `CALL C01Eh` 走掉的」。
 	cellMovedByScript bool
-	cellMenuOptions  []string
+	cellMenuOptions   []string
 	// characterBinding 是 ECL 的 active-character 視窗與隊伍之間的來回。
 	characterBinding *gamepack.CharacterBinding
 	cellMenuCursor   int
@@ -180,8 +180,11 @@ type app struct {
 	programExitsBlock bool
 	// savingThrows 是 DS:41E6h 那張表（spec 075），2Eh DAMAGE 擲豁免要用。
 	savingThrows *gamepack.SavingThrowTable
-	// trainParty 是隊伍管理畫面上選中的成員，訓練指令對他生效。
-	trainParty int
+	// menuMember 是人物管理選擇項上選中的成員；D、M、T、V、R 五個指令
+	// 都對他生效。1..6 選人（說明書 p.8 起的那幾項都要先指定對象）。
+	menuMember int
+	// menuDropPending 是 D）ROP 的再確認畫面。
+	menuDropPending bool
 	// spellMember 是法術畫面上選中的成員，記憶指令對他生效。
 	spellMember int
 	// 紮營選單（原版 overlay-20）。
@@ -225,10 +228,10 @@ type app struct {
 	combatActive     bool
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
-	endingScript gamepack.EndingScript
-	endingActive bool
-	endingPages  [][]gamepack.EndingLine
-	endingPage   int
+	endingScript     gamepack.EndingScript
+	endingActive     bool
+	endingPages      [][]gamepack.EndingLine
+	endingPage       int
 	treasureActive   bool
 	treasureStage    treasureStage
 	treasureItems    []gamepack.TreasureItemRecord
@@ -544,7 +547,7 @@ func (a *app) Update() error {
 			for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2,
 				ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
 				if index < len(a.state.Party) && a.justPressed(key) {
-					a.trainParty = index
+					a.menuMember = index
 					a.statusLine = strings.TrimSpace(a.state.Party[index].Name)
 					return nil
 				}
@@ -554,10 +557,10 @@ func (a *app) Update() error {
 					a.statusLine = a.text(msgTrainNeedsMember)
 					return nil
 				}
-				if a.trainParty >= len(a.state.Party) {
-					a.trainParty = 0
+				if a.menuMember >= len(a.state.Party) {
+					a.menuMember = 0
 				}
-				line, err := a.trainMember(a.trainParty)
+				line, err := a.trainMember(a.menuMember)
 				if err != nil {
 					return err
 				}
@@ -574,79 +577,30 @@ func (a *app) Update() error {
 				return a.closePartyManagement()
 			}
 		}
-		if a.justPressed(ebiten.KeyB) {
-			if len(a.state.Party) == 0 {
-				a.statusLine = "Add at least one character before beginning adventure."
+		if a.menuDropPending {
+			return a.partyMenuDropConfirm()
+		}
+		// 1..6 指定 D、M、T、V、R 要對誰生效。
+		for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2,
+			ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
+			if index < len(a.state.Party) && a.justPressed(key) {
+				a.menuMember = index
+				a.statusLine = strings.TrimSpace(a.state.Party[index].Name)
 				return nil
 			}
-			if a.initialMap == nil || a.initialWalls == nil || a.initialEvent == nil {
-				return fmt.Errorf("Pool initial adventure data is not configured")
-			}
-			a.spawn = a.initialEvent.Position
-			a.introWaiting, a.introDone = true, false
-			a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
-			a.eventMachine, a.eventSession, a.eventText, a.eventLabel = nil, nil, "", ""
-			a.templeActive, a.combatActive = false, false
-			a.combatMonsters = nil
-			if len(a.initialEvent.ScriptBlock) != 0 {
-				characters := make([]gamepack.InitialCharacter, len(a.state.Party))
-				for index, character := range a.state.Party {
-					characters[index] = gamepack.InitialCharacter{
-						Name: character.Name, ClassID: character.ClassID, Abilities: character.Abilities,
-						ExceptionalStrength: character.ExceptionalStrength, CurrentHP: character.CurrentHP,
-					}
-				}
-				session, err := gamepack.NewInitialEventSession(*a.initialEvent, characters...)
-				if err != nil {
-					return err
-				}
-				if err := a.configureEventSession(session); err != nil {
-					return err
-				}
-				machine := session.Machine()
-				a.eventSession = session
-				a.eventMachine = machine
-				result, runErr := machine.Run(2000, nil, true)
-				if runErr != nil {
-					return fmt.Errorf("start Pool initial ECL: %w", runErr)
-				}
-				a.applyECLResult(result)
-				if !a.introWaiting {
-					return fmt.Errorf("Pool initial ECL did not reach its Return menu")
-				}
-			}
-			a.mode = modeAdventure
-			a.statusLine = "Original first Rolf event loaded; movement remains disabled."
-			return nil
 		}
-		if a.justPressed(ebiten.KeyC) || a.justPressed(ebiten.KeyEnter) {
-			a.flow, a.cursor, a.rolled = creation.NewFlow(), 0, nil
-			a.mode = modeCreation
-			return nil
-		}
-		if a.justPressed(ebiten.KeyA) {
-			return a.addFirstLibraryCharacter()
-		}
-		if a.justPressed(ebiten.KeyL) {
-			if a.loadState == nil {
-				a.statusLine = "No save loader is configured."
-				return nil
-			}
-			loaded, err := a.loadState()
-			if err != nil {
-				a.statusLine = err.Error()
-				return nil
-			}
-			if loaded.Campaign != nil {
-				if err := a.restoreCampaign(loaded); err != nil {
-					a.statusLine = err.Error()
+		if a.programManaging {
+			// `38h PROGRAM` 開的隊伍管理：B 或 ESC 回地圖，ECL 從原地繼續。
+			// 這裡不能走「開始冒險」——那會把開場整個重跑一次。
+			if a.justPressed(ebiten.KeyB) || a.justPressed(ebiten.KeyEscape) {
+				if len(a.state.Party) == 0 {
+					a.statusLine = a.text(msgProgramNeedsParty)
 					return nil
 				}
-				return nil
+				return a.closePartyManagement()
 			}
-			a.state = loaded
-			a.statusLine = fmt.Sprintf("Loaded %d library / %d party characters; no campaign was saved.", len(loaded.CharacterLibrary), len(loaded.Party))
 		}
+		return a.partyMenuCommand()
 	case modeCreation:
 		return a.updateCreation()
 	case modeAdventure:
@@ -2364,6 +2318,77 @@ func (a *app) updateCreation() error {
 	return nil
 }
 
+// beginAdventuring 是 B）EGIN ADVENTURING：「離開人物管理選擇項，開始冒險」
+//（說明書 p.10）。
+func (a *app) beginAdventuring() error {
+	if len(a.state.Party) == 0 {
+		a.statusLine = "Add at least one character before beginning adventure."
+		return nil
+	}
+	if a.initialMap == nil || a.initialWalls == nil || a.initialEvent == nil {
+		return fmt.Errorf("Pool initial adventure data is not configured")
+	}
+	a.spawn = a.initialEvent.Position
+	a.introWaiting, a.introDone = true, false
+	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
+	a.eventMachine, a.eventSession, a.eventText, a.eventLabel = nil, nil, "", ""
+	a.templeActive, a.combatActive = false, false
+	a.combatMonsters = nil
+	if len(a.initialEvent.ScriptBlock) != 0 {
+		characters := make([]gamepack.InitialCharacter, len(a.state.Party))
+		for index, character := range a.state.Party {
+			characters[index] = gamepack.InitialCharacter{
+				Name: character.Name, ClassID: character.ClassID, Abilities: character.Abilities,
+				ExceptionalStrength: character.ExceptionalStrength, CurrentHP: character.CurrentHP,
+			}
+		}
+		session, err := gamepack.NewInitialEventSession(*a.initialEvent, characters...)
+		if err != nil {
+			return err
+		}
+		if err := a.configureEventSession(session); err != nil {
+			return err
+		}
+		machine := session.Machine()
+		a.eventSession = session
+		a.eventMachine = machine
+		result, runErr := machine.Run(2000, nil, true)
+		if runErr != nil {
+			return fmt.Errorf("start Pool initial ECL: %w", runErr)
+		}
+		a.applyECLResult(result)
+		if !a.introWaiting {
+			return fmt.Errorf("Pool initial ECL did not reach its Return menu")
+		}
+	}
+	a.mode = modeAdventure
+	a.statusLine = "Original first Rolf event loaded; movement remains disabled."
+	return nil
+}
+
+// loadSavedGame 是 L）OAD SAVED GAME：「叫出以前存下的遊戲進度」（說明書 p.9）。
+func (a *app) loadSavedGame() error {
+	if a.loadState == nil {
+		a.statusLine = "No save loader is configured."
+		return nil
+	}
+	loaded, err := a.loadState()
+	if err != nil {
+		a.statusLine = err.Error()
+		return nil
+	}
+	if loaded.Campaign != nil {
+		if err := a.restoreCampaign(loaded); err != nil {
+			a.statusLine = err.Error()
+			return nil
+		}
+		return nil
+	}
+	a.state = loaded
+	a.statusLine = fmt.Sprintf("Loaded %d library / %d party characters; no campaign was saved.", len(loaded.CharacterLibrary), len(loaded.Party))
+	return nil
+}
+
 func (a *app) finishCharacter() error {
 	if a.rolled == nil {
 		return fmt.Errorf("Pool character confirmation has no rolled character")
@@ -2458,26 +2483,27 @@ func (a *app) Draw(screen *ebiten.Image) {
 	} else if a.mode == modeMenu {
 		drawFrame(screen, foreground, accent)
 		drawText(screen, a.text(msgMenuTitle), 224, 54, accent)
-		drawText(screen, a.text(msgMenuCreate), 176, 112, foreground)
-		drawText(screen, a.text(msgMenuAdd), 176, 140, foreground)
-		drawText(screen, a.text(msgMenuLoad), 176, 168, foreground)
-		begin := a.text(msgMenuBegin)
-		if a.programManaging {
-			begin = a.text(msgProgramReturn)
+		// 左欄是指令，右欄是隊伍。十一項一路排下來會撞到狀態列，
+		// 而原版的畫面本來就是指令在左、名單在右。
+		for index, entry := range a.visiblePartyMenuEntries() {
+			label := a.text(entry.message)
+			if entry.key == ebiten.KeyB && a.programManaging {
+				label = a.text(msgProgramReturn)
+			}
+			drawText(screen, label, 112, partyMenuFirstLine+index*partyMenuLineHeight, foreground)
 		}
-		drawText(screen, begin, 176, 196, foreground)
-		if a.programManaging {
-			drawText(screen, a.text(msgTrainCommand), 176, 214, foreground)
-		}
-		drawText(screen, fmt.Sprintf(a.text(msgMenuCounts), len(a.state.CharacterLibrary), len(a.state.Party)), 176, 230, accent)
+		drawText(screen, fmt.Sprintf(a.text(msgMenuCounts), len(a.state.CharacterLibrary), len(a.state.Party)), 112, 320, accent)
 		for index, member := range a.state.Party {
-			// 隊伍管理時標出訓練指令要作用在誰身上。
+			// 標出 D、M、T、V、R 會作用在誰身上。
 			marker := " "
-			if a.programManaging && index == a.trainParty {
+			if index == a.menuMember {
 				marker = ">"
 			}
 			drawText(screen, fmt.Sprintf("%s%d  %s", marker, index+1, member.Name),
-				176, 254+index*18, foreground)
+				396, partyMenuFirstLine+index*partyMenuLineHeight, foreground)
+		}
+		if len(a.state.Party) > 1 {
+			drawText(screen, a.text(msgMenuSelectHint), 396, 320, accent)
 		}
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 72, 350, foreground)
