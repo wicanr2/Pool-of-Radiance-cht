@@ -501,7 +501,7 @@ HP 9    DAMAGE 1D2+1  MOVEMENT 12
 STATUS OKAY
 KEEP THIS CHARACTER? YES NO
 ```
-〔THAC0 與 HP 兩處數字在掃描上偏糊，判讀為 19 與 9，待第二輪覆核〕
+〔THAC0 19、HP 9 已回對掃描原頁確認（`Pic0043.jpg` 左半）〕
 
 至此，創造人物的工作大致完成，剩下來的就是為他設計戰鬥時的造形。假如你覺得麻煩不想
 做或是想留到以後有空時再做，按下 E)xit 即可；冒險時，只要紮營再使用 I)con 選擇項，
@@ -711,7 +711,7 @@ ARMOR   SILVER PLATE MAIL
 STATUS  OKAY
 VIEW: ITEMS SPELLS DROP EXIT
 ```
-〔THAC0 一處數字偏糊，判讀為 16，待第二輪覆核〕
+〔THAC0 16 已回對掃描原頁確認（`Pic0046.jpg` 左半）〕
 
 右上角的圖是該人物的肖像，左上角則顯示人物的姓名、種族、年齡（Age）、陣營和職業。
 再往下是各項屬性值，第二章已有詳細解釋，不再贅述。
