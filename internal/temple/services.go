@@ -158,22 +158,23 @@ func Serve(state *poolsave.State, partyIndex int, id string, roller Roller) (Res
 	character.Effects = withoutEffects(character.Effects, service.RemovesEffects)
 	switch service.ID {
 	case "raise-dead":
-		// `05F3h`／`05FDh`：狀態回到正常並且在場。`0607h` 再把體質減一——
-		// 起死回生要付一點體質，這是原版的做法不是本規格加的。
+		// `05E9h`／`05F3h`／`05FDh`：**生命力回到 1**、狀態正常、在場。
+		// `+11Bh` 是目前生命值——overlay-09 的士氣拿 `+11Bh × 100 ÷ +32h`
+		// 當「還剩幾成血」，所以復活是「活過來但只剩一點」。
+		// `0607h` 再把體質減一：起死回生要付一點體質。
 		character.Status = StatusNormal
-		if character.Abilities[4] > 0 {
-			character.Abilities[4]--
+		character.CurrentHP = 1
+		if character.Abilities[constitutionAbilityIndex] > 0 {
+			character.Abilities[constitutionAbilityIndex]--
 		}
 		character.MaxHP -= raiseDeadHitPointLoss(*character)
 		if character.MaxHP < 1 {
 			character.MaxHP = 1
 		}
-		if character.CurrentHP > character.MaxHP {
-			character.CurrentHP = character.MaxHP
-		}
 	case "stone-to-flesh":
-		// `0976h`／`0980h`：狀態回到正常並且在場。
+		// `0976h`／`0980h`／`098Ah`：狀態正常、在場，生命力同樣回到 1。
 		character.Status = StatusNormal
+		character.CurrentHP = 1
 	}
 	syncLibraryCharacter(state, *character)
 	return result, nil

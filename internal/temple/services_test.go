@@ -124,6 +124,10 @@ func TestRaiseDeadCostsAPointOfConstitution(t *testing.T) {
 	if revived.Abilities[4] != 15 {
 		t.Errorf("體質是 %d，起死回生要付一點", revived.Abilities[4])
 	}
+	// `05E9h` 把 `+11Bh`（目前生命值）寫成 1：活過來但只剩一點。
+	if revived.CurrentHP != 1 {
+		t.Errorf("復活之後是 %d 點生命力，原版寫的是 1", revived.CurrentHP)
+	}
 	// 體質 15 的戰士每級加成是 15 − 14 = 1，六級共 6；目前的加成總量是
 	// 30 − 24 = 6，所以每級 1 點，扣掉一個骰的份。
 	if revived.MaxHP != 29 {
@@ -151,6 +155,10 @@ func TestStoneToFleshLooksAtTheStatus(t *testing.T) {
 	}
 	if state.Party[0].Status != temple.StatusNormal {
 		t.Errorf("狀態是 %d", state.Party[0].Status)
+	}
+	// `098Ah` 一樣把目前生命值寫成 1。
+	if state.Party[0].CurrentHP != 1 {
+		t.Errorf("解石化之後是 %d 點生命力，原版寫的是 1", state.Party[0].CurrentHP)
 	}
 	if state.Party[0].Money[3] != 1000 {
 		t.Errorf("剩 %d 金幣，應該收 2000", state.Party[0].Money[3])
