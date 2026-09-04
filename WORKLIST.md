@@ -266,8 +266,11 @@
   request，ITEM payload 與戰利品 UI 則由 Pool game pack／adapter 依 Spec 033～036
   接線，不污染共用 engine。現行 engine `d59f339`（含 `91801a5` 的 TREASURE 契約與
   Spec 037 session snapshot）的 Pool 全套與 CoAB
-  核心相容回歸均已通過。下一步依玩家路徑
-  閉合 City Hall reward／commission 迴圈與其後尚未接妥的服務規則。
+  核心相容回歸均已通過。
+  **City Hall 那條迴圈已經閉合**（見下面「貧民窟那條委任的完整迴圈通了」：
+  真的打 25 場、走回城區、拿到報酬並收下戰利品）。剩下的服務規則裡，
+  旅店（城區索引 9、`A140h`）收一枚白金之後走 `PROGRAM 9`，remake 目前把它
+  當成「開隊伍管理」（spec 081），沒有原版的過夜——那一段還沒讀。
 - [x] 商店服務：四家店與墓園戰利品共用 `CLEARMONSTERS → TREASURE → SAVE → COMBAT`
   邊界，判別靠 `6E6Ch=1`／`6EF6h=1`／`6E6Dh=16` 三個旗標（不是 item block 編號）。
   存貨是 `ITEM3.DAX` 的 block `34h`..`37h`，價格在記錄 `+3Ah`。購買扣金幣並沿用
@@ -462,9 +465,14 @@
   所以走得到的是其中四個。
   **這不是實作進度，是量測**：隨機走路走不到主線——主線要有目的地才走得到。
   它證明的是「引擎不會走著走著炸掉」，證不了「其餘 25 個區塊會動」。
-  要往下推得靠**有目的地的走法**（照攻略的路線走），那是下一步。
-  `TestRandomWalkReachesKnownContentWithoutFailing` 把這個下限釘住，
+  要往下推得靠**有目的地的走法**，那已經做了：
+  `TestWorldTourReachesTheAreasBehindTheHarbour` 把碼頭的目的地直接寫進
+  `DS:4AC4h`，34 趟不同種子量到 **12 張地圖、12 個 ECL 區塊**
+  （2026-09-04）。它證明的是「那些區域的腳本在完整的前端底下跑得動」，
+  仍然不是「玩家走得到」。
+  `TestRandomWalkReachesKnownContentWithoutFailing` 把隨機走路那個下限釘住，
   走得到的地方變少就會紅。
+  **還缺**：29 個有文字的區塊裡還有 17 個沒被任何一種走法碰過。
 - [x] **貧民窟那條委任的完整迴圈通了**（2026-09-03）：真的打 25 場、
   走回城區、進市政廳、走到職員面前拿到報酬。
   `TestTwentyFiveRealSlumsWinsEarnTheCityHallReward` 逐場檢查

@@ -405,7 +405,7 @@ func initialEventPassthrough() map[byte]bool {
 		0x2E: true, // DAMAGE（spec 084；前端要接，接不到會靜靜不扣血）
 		0x32: true, // FIND ITEM（spec 085）
 		0x33: true, // PRINT RETURN（spec 082；文字框換行）
-		0x38: true, // PROGRAM（spec 081；前端要接，值 9 仍硬失敗）
+		0x38: true, // PROGRAM（spec 081；前端要接，值 0 與值 9 都接上了）
 		0x34: true, // ECL CLOCK（spec 093；推進遊戲時鐘）
 		0x36: true, // ADD NPC（spec 091；把 NPC 加進隊伍）
 		0x39: true, // WHO（spec 090；挑一個隊伍成員當「目前角色」）
