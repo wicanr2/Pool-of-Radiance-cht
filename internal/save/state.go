@@ -86,6 +86,12 @@ type Character struct {
 	// Experience 是累積經驗值（spec 097，記錄 `+0ACh`／`+0AEh` 的 32 bit）。
 	// 舊存檔沒有這個欄位，讀回來是 0，與「還沒打過任何一場」同義。
 	Experience uint32 `json:"experience,omitempty"`
+	// DrainedLevels 與 DrainedHitPoints 是能量吸取的欠帳（記錄 `+74h`／
+	// `+75h`，spec 097）。恢復術一次還一級，還回來的 HP 是欠的 HP 除以
+	// 欠的等級。remake 還沒有吸取的來源，所以目前一律是 0——**空的是正確
+	// 答案，不是佔位**。
+	DrainedLevels    int `json:"drained_levels,omitempty"`
+	DrainedHitPoints int `json:"drained_hit_points,omitempty"`
 	// Effects 是掛在身上的效果碼（spec 069 的串列，記錄 `+7Fh` 起）。
 	// `1Eh CHECKPARTY` 的效果模式與神殿的失明／疾病／中毒／詛咒
 	//（spec 115）問的都是這一串。法術還沒接上來，所以目前一律是空的

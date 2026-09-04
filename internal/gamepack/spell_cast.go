@@ -17,6 +17,9 @@ type CastEffect struct {
 	Heal int
 	// EffectCode 是要掛進效果串列的代碼（參數表 `+0Ah`，spec 069）。
 	EffectCode uint8
+	// Restore 為真時走恢復術那條：把能量吸取的欠帳還一級
+	//（overlay-22 `2C01h`，spec 097）。
+	Restore bool
 	// AnimateDead 為真時走死靈術那條：把死掉的人類屍體叫起來
 	//（overlay-22 `2043h`，spec 098）。
 	AnimateDead bool
@@ -221,6 +224,8 @@ const (
 	SpellIDGiantStrength  = 59 // 2E9Ah
 	SpellIDRayDamage      = 60 // 2F02h，原版沒有給它名字
 	SpellIDStrength       = 35 // 1F16h
+	// SpellIDRestoration 是恢復術（`2C01h`）。
+	SpellIDRestoration = 56
 	// SpellIDAnimateDead 是死靈術（`2043h`）。
 	SpellIDAnimateDead = 36
 	// 解除魔法有兩個編號，共用 `2356h` 那一支。
@@ -519,6 +524,10 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
 		effect.PersonOnly = true
 		effect.SaveModifierByTargetCount = true
+	case SpellIDRestoration:
+		// `2C01h`：把能量吸取的欠帳還一級。沒欠就整支直接返回
+		//（`2C16h` 的 `cmp byte ptr es:[di+74h], 0`）。
+		effect.Restore = true
 	case SpellIDAnimateDead:
 		// `2043h`：把死掉的人類屍體叫起來，額度是施法者等級。
 		effect.AnimateDead = true
@@ -566,7 +575,8 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDFireball, SpellIDLightningBolt,
 		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm,
 		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage, SpellIDStrength,
-		SpellIDDispelMagic, SpellIDDispelMagicAlt, SpellIDAnimateDead:
+		SpellIDDispelMagic, SpellIDDispelMagicAlt, SpellIDAnimateDead,
+		SpellIDRestoration:
 		return true
 	}
 	return false

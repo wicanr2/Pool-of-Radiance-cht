@@ -546,4 +546,7 @@ const (
 	msgCastDispelled
 	// 死靈術（spec 098 的 `2043h`）：叫起來幾具屍體。
 	msgCastAnimated
+	// 恢復術（spec 097 的 `2C01h`）：還了一級，或身上沒有欠帳。
+	msgCastRestored
+	msgCastNothingToRestore
 )

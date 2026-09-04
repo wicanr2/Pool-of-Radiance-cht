@@ -250,3 +250,29 @@ func TestAnimateDeadRaisesHumanCorpsesOnly(t *testing.T) {
 		t.Fatalf("剩下的都不合格，卻叫起來 %d 具", got)
 	}
 }
+
+// 恢復術把能量吸取的欠帳還一級（spec 097 的 `2C01h`）：
+// 還回來的 HP 是欠的 HP 除以欠的等級，沒欠就什麼都不做。
+func TestRestorationPaysBackOneDrainedLevel(t *testing.T) {
+	outcome := gamepack.Restore(0, 0)
+	if outcome.Restored {
+		t.Fatal("沒有欠帳卻還了")
+	}
+	// 欠 3 級 9 點：一次還 3 點。
+	levels, points := 3, 9
+	total := 0
+	for round := 0; round < 3; round++ {
+		outcome = gamepack.Restore(levels, points)
+		if !outcome.Restored {
+			t.Fatalf("第 %d 次應該還得動", round+1)
+		}
+		total += outcome.HitPoints
+		levels, points = outcome.DrainedLevels, outcome.DrainedHitPoints
+	}
+	if levels != 0 || points != 0 {
+		t.Fatalf("還完之後還欠 %d 級 %d 點", levels, points)
+	}
+	if total != 9 {
+		t.Fatalf("還回來 %d 點，原本欠 9 點", total)
+	}
+}

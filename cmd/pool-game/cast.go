@@ -441,6 +441,40 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		state.HitPoints[healed] += effect.Heal
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
 			strings.TrimSpace(member.Name), option.Label, state.HitPoints[healed]-before))
+	case effect.Restore:
+		// 恢復術（overlay-22 `2C01h`）：把能量吸取的欠帳還一級。
+		// 沒欠就整支直接返回——原版的 `2C16h` 就是這樣。
+		slot := index
+		if chosen {
+			if party, ok := a.moverPartyIndex(target); ok {
+				slot = party
+			}
+		}
+		subject := &a.state.Party[slot]
+		outcome := gamepack.Restore(subject.DrainedLevels, subject.DrainedHitPoints)
+		if !outcome.Restored {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNothingToRestore),
+				strings.TrimSpace(subject.Name)))
+			break
+		}
+		subject.DrainedLevels, subject.DrainedHitPoints =
+			outcome.DrainedLevels, outcome.DrainedHitPoints
+		subject.MaxHP += outcome.HitPoints
+		subject.CurrentHP += outcome.HitPoints
+		subject.RawHP += outcome.HitPoints
+		syncTrainedLibraryCharacter(&a.state, *subject)
+		if slot < len(state.PartySlot) {
+			for cell := 1; cell < len(state.PartySlot); cell++ {
+				if state.PartySlot[cell] == slot && cell < len(state.HitPoints) {
+					state.HitPoints[cell] += outcome.HitPoints
+					if cell < len(state.MaxHitPoints) {
+						state.MaxHitPoints[cell] += outcome.HitPoints
+					}
+				}
+			}
+		}
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastRestored),
+			strings.TrimSpace(subject.Name), outcome.HitPoints))
 	case effect.AnimateDead:
 		// 死靈術：把死掉的人類屍體叫起來，換到施法者那一邊（spec 098）。
 		raised := state.animateDead(casterLevel)
