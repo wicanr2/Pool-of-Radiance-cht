@@ -427,7 +427,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
 			break
 		}
-		state.addEffect(int(picked), gamepack.CharmPersonEffectCode, 0, casterLevel)
+		state.applyCharm(int(picked), casterLevel)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCharmed),
 			strings.TrimSpace(member.Name), 1))
 	case effect.SleepBudget > 0:
@@ -626,7 +626,7 @@ func (a *app) applyCharmByHitPoints(state *tacticalState, caster string,
 			continue
 		}
 		budget -= cost
-		state.addEffect(index, gamepack.CharmPersonEffectCode, 0, casterLevel)
+		state.applyCharm(index, casterLevel)
 		charmed++
 	}
 	if charmed == 0 {

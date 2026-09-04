@@ -317,6 +317,11 @@ type tacticalState struct {
 	Classes       combat.CellClasses
 	Roster        []combat.CombatantCell
 	Friendly      []bool
+	// AIDriven 對應原版記錄的 `+10Fh`：非零就由敵方 AI 分派這一格的行動。
+	// 隊員是 0，怪物是 1；**被魅惑的隊員也會變成 1**（spec 112 的
+	// overlay-12 entry 14 `048Fh`），所以「誰由 AI 走」不能拿陣營來判——
+	// 倒戈之後陣營變了，控制權沒有跟著回到玩家手上。
+	AIDriven []bool
 	// PartySlot 把戰場上的位置換回隊伍索引，−1 代表那一格不是隊員。
 	// 施法要用它才找得到「這個位置是誰」的記憶陣列。
 	PartySlot []int
@@ -552,6 +557,7 @@ func (a *app) enterTacticalPreview() error {
 		BaseMovement: make([]uint8, size),
 		BudgetSource: source,
 		PartySlot:    partySlot,
+		AIDriven:     aiDriven(partySlot),
 		Text:         a.text,
 	}
 	state.States = make([]uint8, size)
@@ -1254,26 +1260,20 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
-	// 睡著或被迷住的一輪到就直接結束回合（spec 098 的催眠術與迷惑類）。
-	// 原版是把效果碼掛上去之後由行動判定擋下來；這裡先用兩個旗標，
-	// 效果串列還沒接進戰鬥。
+	// 睡著的一輪到就直接結束回合（spec 098 的催眠術）。
 	//
-	// 兩個陣列各自量長度：治具會手工組 `tacticalState`，只填它要用的欄位。
-	charmed := state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.CharmPersonEffectCode)
+	// **被迷住的不在這裡**：原版讓它倒戈之後照樣行動，只是換一邊打
+	//（spec 112）。倒戈在 applyCharm 那一支做，這裡不必再擋。
 	asleep := state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.SleepEffectCode)
-	if asleep || charmed {
-		message := msgStatusAsleep
-		if charmed {
-			message = msgStatusCharmed
-		}
-		state.Status = state.say(message, state.Mover)
+	if asleep {
+		state.Status = state.say(msgStatusAsleep, state.Mover)
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
 			return a.finishCombat(state.Outcome)
 		}
 		return nil
 	}
-	if state.Mover != 0 && int(state.Mover) < len(state.Friendly) && !state.Friendly[state.Mover] {
+	if state.Mover != 0 && state.aiDrives(int(state.Mover)) {
 		if err := a.foeTurn(state); err != nil {
 			return err
 		}
@@ -1771,7 +1771,101 @@ func (state *tacticalState) dispelEffects(index, casterLevel int, roll func() in
 	if index < 0 || index >= len(state.Effects) {
 		return 0
 	}
+	before := state.hasEffect(index, gamepack.CharmPersonEffectCode)
 	after, removed := state.Effects[index].Dispel(casterLevel, roll)
-	state.Effects[index] = after
+	// 摘掉魅惑要跑收尾（還原陣營與控制權）。先把節點放回去再走 releaseCharm，
+	// 收尾讀的正是那個節點的位元 6——直接丟掉會把「原本是哪一邊」一起丟掉。
+	if before && !after.Has(gamepack.CharmPersonEffectCode) {
+		kept := state.Effects[index]
+		state.Effects[index] = after
+		state.releaseCharmFrom(index, kept)
+	} else {
+		state.Effects[index] = after
+	}
 	return removed
+}
+
+// releaseCharmFrom 用摘掉之前的串列跑魅惑的收尾。
+func (state *tacticalState) releaseCharmFrom(index int, previous gamepack.EffectList) {
+	at, ok := previous.IndexOf(gamepack.CharmPersonEffectCode)
+	if !ok {
+		return
+	}
+	if index < len(state.Friendly) {
+		state.Friendly[index] = previous[at].OriginalSide() == 1
+	}
+	if index < len(state.AIDriven) && index < len(state.PartySlot) {
+		state.AIDriven[index] = state.PartySlot[index] < 0
+	}
+}
+
+// aiDriven 依隊伍索引造出「誰由 AI 走」：隊員是 false，其餘是 true。
+// 對應原版記錄的 `+10Fh`。
+func aiDriven(partySlot []int) []bool {
+	driven := make([]bool, len(partySlot))
+	for index, slot := range partySlot {
+		driven[index] = slot < 0
+	}
+	return driven
+}
+
+// aiDrives 回答那一格是不是由 AI 走。治具會手工組 tacticalState，
+// 沒填 AIDriven 時退回「不是我方就由 AI 走」的舊判準。
+func (state *tacticalState) aiDrives(index int) bool {
+	if index < 0 {
+		return false
+	}
+	if index < len(state.AIDriven) {
+		return state.AIDriven[index]
+	}
+	return index < len(state.Friendly) && !state.Friendly[index]
+}
+
+// applyCharm 重現 overlay-12 entry 14（`040Ah`，spec 112）：掛上效果碼 `0Bh`
+// 之後把目標**倒戈**到施法者那一邊，並改由 AI 分派它的行動。
+//
+// 原本的陣營記在節點 `+3` 的位元 6，解除時還原——所以「原本是哪一邊」
+// 不必另外存一份，串列自己帶著。
+func (state *tacticalState) applyCharm(index, casterLevel int) {
+	if index < 0 || index >= len(state.Effects) || index >= len(state.Friendly) {
+		return
+	}
+	state.addEffect(index, gamepack.CharmPersonEffectCode, 0, casterLevel)
+	at, ok := state.Effects[index].IndexOf(gamepack.CharmPersonEffectCode)
+	if !ok {
+		return
+	}
+	side := uint8(0)
+	if state.Friendly[index] {
+		side = 1
+	}
+	if !state.Effects[index][at].MarkApplied(side) {
+		return
+	}
+	if int(state.Mover) < len(state.Friendly) {
+		state.Friendly[index] = state.Friendly[state.Mover]
+	}
+	if index < len(state.AIDriven) {
+		state.AIDriven[index] = true
+	}
+}
+
+// releaseCharm 是摘掉 `0Bh` 時的收尾（`0416h`）：從節點 `+3` 的位元 6
+// 還原原本的陣營，控制權也跟著回去。
+func (state *tacticalState) releaseCharm(index int) {
+	if index < 0 || index >= len(state.Effects) {
+		return
+	}
+	at, ok := state.Effects[index].IndexOf(gamepack.CharmPersonEffectCode)
+	if !ok {
+		return
+	}
+	original := state.Effects[index][at].OriginalSide()
+	state.Effects[index] = state.Effects[index].RemoveAt(at)
+	if index < len(state.Friendly) {
+		state.Friendly[index] = original == 1
+	}
+	if index < len(state.AIDriven) && index < len(state.PartySlot) {
+		state.AIDriven[index] = state.PartySlot[index] < 0
+	}
 }

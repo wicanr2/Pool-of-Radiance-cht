@@ -333,7 +333,11 @@ Charm／Hold 比的是**整個 byte**，不是遮罩過的低位，所以熊地�
 remake 這一側：`SpellAffectsPerson` 與 `HoldPersonSaveModifier` 是純規則，
 `MonsterRecord.CreatureType()`／`BodySize()` 讀那兩個欄位。**迷住之後的行為
 是近似**：原版把效果碼掛上去，之後由敵方 AI（overlay-09，spec 096 還沒讀完）
-決定被迷住的怪物做什麼；remake 只讓它不再行動，沒有讓它倒戈。
+決定被迷住的怪物做什麼。**remake 已經接上倒戈**（2026-09-05）：陣營改成
+施法者那一邊、控制權交給 AI（記錄 `+10Fh`，remake 的 `AIDriven`），
+原本的陣營記在節點 `+3` 的位元 6，解除時還原。倒戈之後它照樣行動、
+只是換一邊打——**不是「不再行動」**。它做什麼仍由 remake 這一側的
+敵方 AI 決定，overlay-09 那一支還沒逐條讀完（spec 096）。
 
 ## 力量那一組：`0100h:007Ah` 是「把力量往上調」
 

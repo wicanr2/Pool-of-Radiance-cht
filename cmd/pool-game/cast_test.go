@@ -154,3 +154,47 @@ func TestSleepAndCharmLiveOnTheEffectList(t *testing.T) {
 		t.Error("持續 0 的睡眠被回合邊界摘掉了")
 	}
 }
+
+// 被迷住的會**倒戈**（spec 112 的 overlay-12 entry 14）：陣營變成施法者
+// 那一邊、改由 AI 分派行動，原本的陣營記在節點 `+3` 的位元 6。
+// 解掉之後兩者都還原。
+func TestCharmSwitchesSidesAndDispelRestoresThem(t *testing.T) {
+	state := newAttackState()
+	state.PartySlot = []int{-1, 0, -1}
+	state.AIDriven = []bool{false, false, true}
+	state.Mover = 1 // 我方施法
+	if state.Friendly[2] {
+		t.Fatal("目標一開始就該是敵方")
+	}
+	state.applyCharm(2, 6)
+	if !state.Friendly[2] {
+		t.Fatal("被迷住之後沒有倒戈到施法者那一邊")
+	}
+	if !state.aiDrives(2) {
+		t.Fatal("倒戈之後應該仍由 AI 分派，不是交給玩家")
+	}
+	// 節點記著原本的陣營。
+	at, ok := state.Effects[2].IndexOf(gamepack.CharmPersonEffectCode)
+	if !ok {
+		t.Fatal("魅惑的節點沒有掛上")
+	}
+	if state.Effects[2][at].OriginalSide() != 0 {
+		t.Fatalf("原陣營記成 %d，預期 0", state.Effects[2][at].OriginalSide())
+	}
+	// 套過的不重複套：再迷一次不該把「原陣營」覆寫成現在這一邊。
+	state.applyCharm(2, 6)
+	at, _ = state.Effects[2].IndexOf(gamepack.CharmPersonEffectCode)
+	if state.Effects[2][at].OriginalSide() != 0 {
+		t.Fatal("重複施放把原陣營覆寫掉了")
+	}
+	// 解掉之後還原。
+	if removed := state.dispelEffects(2, 6, func() int { return 1 }); removed == 0 {
+		t.Fatal("必成的解除魔法什麼都沒解掉")
+	}
+	if state.Friendly[2] {
+		t.Fatal("解掉魅惑之後陣營沒有還原")
+	}
+	if !state.aiDrives(2) {
+		t.Fatal("怪物還原之後仍該由 AI 走")
+	}
+}
