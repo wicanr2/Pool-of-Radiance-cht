@@ -87,9 +87,19 @@ func TestTheInnChargesAPlatinumAndOpensCamp(t *testing.T) {
 		t.Errorf("白金 %d → %d，住一晚要扣一枚", before, after)
 	}
 
-	// 休息：整隊回滿，而且畫面收掉之後這個 block 結束、隊伍回到地圖。
-	application.campCursor = 0
-	if err := press(application, ebiten.KeyEnter); err != nil {
+	// 休息：說明書 p.31 對旅店的保證是「絕對安全而且不會有人中途打擾」與
+	// 「你高興休息到什麼時候就待到什麼時候」——**不是自動回滿**。回血一樣是
+	// 每二十四小時一點（spec 114），所以要挑夠長的時間。
+	missing := application.state.Party[0].MaxHP - application.state.Party[0].CurrentHP
+	for day := 0; day < missing; day++ {
+		if err := press(application, ebiten.KeyY); err != nil {
+			t.Fatalf("選天數那一欄：%v", err)
+		}
+		if err := press(application, ebiten.KeyI); err != nil {
+			t.Fatalf("加一天：%v", err)
+		}
+	}
+	if err := press(application, ebiten.KeyR); err != nil {
 		t.Fatalf("休息：%v", err)
 	}
 	if got := application.state.Party[0].CurrentHP; got != application.state.Party[0].MaxHP {

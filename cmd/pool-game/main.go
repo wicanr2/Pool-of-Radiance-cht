@@ -179,6 +179,10 @@ type app struct {
 	// 紮營選單（原版 overlay-20）。
 	campOpen   bool
 	campCursor int
+	// 紮營要玩家挑的休息時間（spec 114）。原版的欄位是天／時／分，
+	// 分鐘一次五分；`restField` 是目前選中的那一欄。
+	restDuration gamepack.RestDuration
+	restField    gamepack.RestField
 	// 戰鬥中的施法清單（spec 098）。
 	castOpen    bool
 	castOptions []castOption
@@ -329,6 +333,12 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.spellParameters = spellParameters
+	timeRadix, err := gamepack.ReadDOSTimeRadix(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.restDuration = gamepack.NewRestDuration(timeRadix)
+	application.restField = gamepack.RestFieldMinutes
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.loadState = func() (poolsave.State, error) { return poolsave.Read(statePath) }
 	application.loadTreasure = func(archive, block uint8) ([]gamepack.TreasureItemRecord, error) {
@@ -2506,8 +2516,9 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	drawCamp(screen, a, foreground, accent)
 }
 
-// drawCamp 畫紮營選單。原版的選單列是 `Rest daYs Hours Mins Inc Dec Exit`，
-// 挑時間那一段還沒接，所以這裡只有三項。
+// drawCamp 畫紮營選單。原版的選單列是 `Rest daYs Hours Mins Inc Dec Exit`
+//（overlay-20 `069Fh`），時間那一列則是 `Rest Time:`（`05A0h`）。
+// 選中的那一欄在原版是換色（`05D8h` 把顏色從 0Ah 改成 0Fh），這裡也用強調色。
 func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	if !a.campOpen {
 		return
@@ -2520,7 +2531,9 @@ func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 		}
 		drawText(screen, cursor+label, 244, 150+index*18, ink)
 	}
-	drawText(screen, a.campPendingLine(), 100, 230, foreground)
+	drawText(screen, a.campRestTimeLine(), 100, 212, accent)
+	drawText(screen, a.text(msgCampRestKeys), 100, 230, foreground)
+	drawText(screen, a.campPendingLine(), 100, 248, foreground)
 }
 
 func poolFirstPersonStageFill() (viewport.StageInsetFill, error) {

@@ -17,9 +17,13 @@ import (
 // 休息做兩件事：把選好但還沒記完的法術記完（`0945h` 的 `subb $80h`），
 // 以及治好整隊。
 //
-// **時間還沒接**：原版讓玩家挑天／時／分，而且會被打斷（`Stop Resting?`）。
-// 這裡先做「休息到記完為止」，需要多久算得出來（各法術等級的總和），
-// 但不模擬時間流逝，也沒有遭遇打斷。原版挑時間那一段的界面還沒讀。
+// 挑時間那一段照原版接了（spec 114）：天／時／分三欄，Y／H／M 選欄、
+// I／D 增減，分鐘一次五分；進位與夾限由 `gamepack.RestDuration` 處理。
+// 休息的效果也照原版與說明書 p.29：**每二十四小時每人回一點生命力**，
+// 而法術要記完得休息夠久（各法術等級的總和，單位是小時）。
+//
+// **還沒接**：休息被怪物打斷（`Stop Resting?  The Party is rudely interrupted!`，
+// overlay-20 entry 3）。那一段要先有「這一格安不安全」的判定。
 
 // openCamp 開紮營選單。
 func (a *app) openCamp() {
@@ -36,11 +40,32 @@ func (a *app) campOptionLabels() []string {
 }
 
 // campInput 處理紮營選單的按鍵。
+//
+// 原版的選單列是 `Rest daYs Hours Mins Inc Dec Exit`（overlay-20 `069Fh`），
+// 而 `06E0h` 的迴圈把方向鍵也對應過去：上＝I、下＝D、左右換欄。這裡照它接，
+// 另外保留 remake 自己的上下選單游標——原版的「記憶法術」是紮營選單的另一項，
+// 不是這一列的按鍵。
 func (a *app) campInput() error {
 	options := a.campOptionLabels()
 	switch {
-	case a.justPressed(ebiten.KeyEscape):
+	case a.justPressed(ebiten.KeyEscape), a.justPressed(ebiten.KeyE):
 		a.campOpen = false
+	case a.justPressed(ebiten.KeyY):
+		a.restField = gamepack.RestFieldDays
+	case a.justPressed(ebiten.KeyH):
+		a.restField = gamepack.RestFieldHours
+	case a.justPressed(ebiten.KeyM):
+		a.restField = gamepack.RestFieldMinutes
+	case a.justPressed(ebiten.KeyI):
+		a.restDuration = a.restDuration.Increase(a.restField)
+	case a.justPressed(ebiten.KeyD):
+		a.restDuration = a.restDuration.Decrease(a.restField)
+	case a.justPressed(ebiten.KeyArrowLeft):
+		a.restField = a.restField.PreviousField()
+	case a.justPressed(ebiten.KeyArrowRight):
+		a.restField = a.restField.NextField()
+	case a.justPressed(ebiten.KeyR):
+		a.restParty()
 	case a.justPressed(ebiten.KeyArrowUp):
 		a.campCursor = (a.campCursor + len(options) - 1) % len(options)
 	case a.justPressed(ebiten.KeyArrowDown):
@@ -59,24 +84,54 @@ func (a *app) campInput() error {
 	return nil
 }
 
-// restParty 休息：把待記的法術記完，並治好整隊。
+// campRestTimeLine 是畫面上那一列休息時間。
+func (a *app) campRestTimeLine() string {
+	return fmt.Sprintf(a.text(msgCampRestTime),
+		a.restDuration.Days(), a.restDuration.Hours(), a.restDuration.Minutes())
+}
+
+// restParty 休息選好的那段時間。
+//
+// 兩件事都跟時間長短有關，不是按一下就全好：
+//   - **法術**：每個人身上還沒記完的要花「各法術等級的總和」小時
+//     （overlay-20 entry 15 每小時把記錄 `+2Ch` 減一，歸零才算記完）。
+//   - **生命力**：每滿二十四小時每人回一點（`0830h` 的 288 刻，
+//     說明書 p.29 也是這樣寫）。原版的 `The Whole Party Is Healed`
+//     就印在那一刻。
 func (a *app) restParty() {
-	hours := 0
-	memorised := 0
+	ticks := a.restDuration.TotalTicks()
+	restedHours := ticks / gamepack.RestTicksPerHour
+	healed := gamepack.RestHealing(ticks)
+
+	memorised, needed := 0, 0
 	for index := range a.state.Party {
 		member := &a.state.Party[index]
-		hours += gamepack.PendingMemorisationTime(member.Memorised, a.spellParameters)
-		memorised += gamepack.CompletePendingMemorisation(member.Memorised)
-		// 「The Whole Party Is Healed」：休息完整隊回滿。
-		member.CurrentHP = member.MaxHP
+		pending := gamepack.PendingMemorisationTime(member.Memorised, a.spellParameters)
+		if pending > needed {
+			needed = pending
+		}
+		if pending > 0 && restedHours >= pending {
+			memorised += gamepack.CompletePendingMemorisation(member.Memorised)
+		}
+		if healed > 0 {
+			member.CurrentHP += healed
+			if member.CurrentHP > member.MaxHP {
+				member.CurrentHP = member.MaxHP
+			}
+		}
 		syncTrainedLibraryCharacter(&a.state, *member)
 	}
 	a.campOpen = false
-	if memorised == 0 {
+	switch {
+	case memorised > 0:
+		a.statusLine = fmt.Sprintf(a.text(msgCampRested), memorised, restedHours)
+	case needed > 0:
+		a.statusLine = a.text(msgCampRestTooShort)
+	case healed > 0:
+		a.statusLine = fmt.Sprintf(a.text(msgCampHealedBy), healed)
+	default:
 		a.statusLine = a.text(msgCampHealedOnly)
-		return
 	}
-	a.statusLine = fmt.Sprintf(a.text(msgCampRested), memorised, hours)
 }
 
 // campPendingLine 是給玩家看的一行：誰還有幾條沒記完。

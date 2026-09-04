@@ -305,14 +305,21 @@ func TestMemorisedSpellsNeedRestBeforeCasting(t *testing.T) {
 	if gamepack.MemorisedSpellIsReady(stored[0]) {
 		t.Fatal("剛選好就變成可施展了，應該要先休息")
 	}
-	// 紮營休息：記完，而且整隊回滿。
+	// 紮營休息：要挑夠長的時間才記得完、才回得了血（spec 114）。
+	// 記憶要花「各法術等級的總和」小時，生命力是每二十四小時一點，
+	// 所以這裡挑到足夠把第一個人補滿為止。
 	application.spellsOpen = false
 	application.mode = modeAdventure
 	press(application, ebiten.KeyE)
 	if !application.campOpen {
 		t.Fatalf("按 E 沒有開出紮營選單（狀態列 %q）", application.statusLine)
 	}
-	press(application, ebiten.KeyEnter) // 游標在「休息」上
+	missing := application.state.Party[0].MaxHP - application.state.Party[0].CurrentHP
+	for day := 0; day < missing; day++ {
+		press(application, ebiten.KeyY) // 選「天」那一欄
+		press(application, ebiten.KeyI) // 加一天
+	}
+	press(application, ebiten.KeyR) // R）EST
 	if application.campOpen {
 		t.Fatal("休息完應該關掉紮營選單")
 	}
