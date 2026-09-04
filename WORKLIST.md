@@ -1025,9 +1025,18 @@
   收掉一個行動；沒有另一條玩家專用的實作。全 36 顆 overlay 掃過
   `9A xx xx 96 00` 這個形狀，指向 entry 12 的只有 overlay-08 `0431h` 與
   overlay-09 `0241h` 兩處，指向 entry 13 的只有 overlay-09 `022Eh` 一處。
+  **配額那一段也想通了**：`12EBh` 的配額與 `12F4h` 的隻數各減各的，所以
+  `[bp-3] = 6` 是一個**下限**——1d12 擲小時，只要接下來每一隻的門檻都是負數，
+  額度就一直被補回來，直到配額用完。自動摧毀的情況下至少處理六隻。
+  兩處的分界差一格：`1280h` 用 `jle`（門檻 0 算摧毀），`1303h` 用 `jge`
+  （門檻 0 補不回額度），只有負數兩邊都成立。
+  整條迴圈已實作成 `gamepack.ResolveTurnUndead` 與 `SelectTurnUndeadTarget`，
+  七則測試釘住共用一擲、失敗即收工、自動摧毀、配額下限與不重複挑同一隻。
+  另有一則負對照 `TestUndeadTurnColumnStaysInsideTheTable`：八個怪物檔 172 筆
+  記錄裡 16 隻不死生物，最大欄位剛好是 10——entry 13 的上界 13 讀得到表外，
+  但原版沒有那種目標，所以那條路走不到。**spec 111 已無開放項**。
   **還缺**：overlay-24 entry 3（`02E2h`，2051 bytes）判什麼、runtime `+3`
-  與記錄 `+2Fh` 的語意、`DS:43A0h` 用在哪；spec 111 自己也留著兩個開放項
-  （`[bp-3]=6` 的配額、1d12 對 AD&D 的 2d6）。
+  與記錄 `+2Fh` 的語意、`DS:43A0h` 用在哪。
   入口仍是 overlay-08 entry 3（`01E4h`）依 `+10Fh` 分派——非零走
   `0058h:0025h`（overlay-09 entry 1），零則走 overlay-08 `0307h` 的玩家
   指令迴圈（指令字串 `Move `／`View Aim `／`Use `／`Cast `／`Turn `／
