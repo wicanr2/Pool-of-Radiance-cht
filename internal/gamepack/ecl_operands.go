@@ -96,6 +96,9 @@ const (
 	// ParlayResultOperand 是「結果寫進哪個 ECL 變數」那個運算元的序號。
 	ParlayResultOperand = 6
 
+	// CompareOpcode 是 `03h COMPARE`：把兩個運算元比一比，結果供 `16h IF =`
+	// 之類使用。輸入密碼那一段用它拿玩家打的字對原版寫死的字面。
+	CompareOpcode = 0x03
 	// PrintOpcode 是 `11h PRINT`（spec 082）：**接著印**，不清框。
 	// 原版靠它把一句話拼起來，例如 ecl7/23 的密碼確認框是
 	// `12h "DO YOU REALLY MEAN"` ＋ `11h <玩家打的字>` ＋ `11h "?"`。

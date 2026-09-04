@@ -722,6 +722,9 @@ walk:
 				}
 				menuTurn[key]++
 				confirmInput[key] = true
+				t.Logf("密碼輸入 GEO%d/%d (%d,%d)：問句 %q，送出 %q",
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.spawn.X, application.spawn.Y, application.eventText, word)
 				application.keys = scriptedChars(word)
 				if err := application.Update(); err != nil {
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))

@@ -54,9 +54,48 @@ func (a *app) enterECLInput(event eclvm.Event) error {
 	a.eclInput = &eclInputState{numeric: event.Opcode == gamepack.InputNumberOpcode, address: address}
 	a.cellEventPending, a.cellWaitingMenu = true, false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
+	// 原版要玩家翻說明書才知道要打什麼字（索寇要塞的亡魂、野外的密碼門）。
+	// 那些字是遊戲內 NPC 說過的，但隔了很多格，忘了就過不去。答案本來就寫在
+	// 原版資料的 `03h COMPARE` 裡，直接附在問句後面。
+	// **這是 remake 的擴充，不是原版行為**（原版沒有這個括號）。
+	if answer := a.eclInputAnswer(instruction.Next, address); answer != "" {
+		a.eventText = strings.TrimRight(a.eventText, " ") + "（" + answer + "）"
+	}
 	a.eventLabel = a.eclInputLabel()
 	a.statusLine = a.text(msgEclInputPrompt)
 	return nil
+}
+
+// eclInputAnswer 找出這次輸入之後拿來比對的字面。
+//
+// 原版把答案寫死在 `03h COMPARE` 的第二個運算元（`code 0x80` 的內嵌文字），
+// 而第一個運算元就是剛才寫進去的那個位址。ecl7/23 的密碼門是
+// `A4A1 INPUT STRING #6 6E79h` 之後的 `A4CA COMPARE 6E79h "NOKNOK"`。
+//
+// 只往後掃固定步數，掃到分支或掃完就放棄——找不到就不顯示，不猜。
+func (a *app) eclInputAnswer(pc int, address uint16) string {
+	const scanLimit = 64
+	for offset, scanned := pc, 0; scanned < scanLimit; scanned++ {
+		instruction, err := a.eclInstruction(offset)
+		if err != nil {
+			return ""
+		}
+		if instruction.Command.Opcode == gamepack.CompareOpcode && len(instruction.Operands) == 2 {
+			compared, err := ecl.WordAddress(instruction.Operands[0])
+			if err == nil && compared == address && ecl.IsText(instruction.Operands[1]) {
+				if answer, err := ecl.TextValue(instruction.Operands[1], nil); err == nil {
+					if answer = strings.TrimSpace(answer); answer != "" {
+						return answer
+					}
+				}
+			}
+		}
+		if instruction.Next <= offset {
+			return ""
+		}
+		offset = instruction.Next
+	}
+	return ""
 }
 
 // eclInputLabel 是輸入列本身。
