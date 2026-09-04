@@ -60,12 +60,13 @@ func TestJewelryValueSpansEachBand(t *testing.T) {
 	}
 }
 
-// 賣價只有估價的五分之一（`1F0Dh` 的 `div 5`），而且是整數除。
-func TestSellPriceIsAFifth(t *testing.T) {
+// 估價是金幣，賣得的是白金：1 白金 ＝ 5 金，所以除以 5 是幣別換算不是折價。
+// `1F0Dh` 的 `div 5` 是整數除。
+func TestSellPriceConvertsGoldToPlatinum(t *testing.T) {
 	for value, want := range map[int]int{10: 2, 50: 10, 100: 20, 500: 100,
 		1000: 200, 5000: 1000, 999: 199, 4: 0} {
 		if got := treasure.SellPrice(value); got != want {
-			t.Errorf("估價 %d 賣得 %d，應該是 %d", value, got, want)
+			t.Errorf("估價 %d 金幣賣得 %d 白金，應該是 %d", value, got, want)
 		}
 	}
 }

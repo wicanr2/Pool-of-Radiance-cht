@@ -160,8 +160,8 @@ func TestTempleRefusesWhenThereIsNothingToCure(t *testing.T) {
 	}
 }
 
-// 估價走完一次：挑寶石、看到價、賣掉拿五分之一，計數減一。
-func TestTempleAppraiseSellsAGemForAFifth(t *testing.T) {
+// 估價走完一次：挑寶石、看到價、賣掉換成白金，計數減一。
+func TestTempleAppraiseSellsAGemForPlatinum(t *testing.T) {
 	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 12}
 	character.Money[pooltreasure.Gems] = 2
 	application := &app{
@@ -190,8 +190,8 @@ func TestTempleAppraiseSellsAGemForAFifth(t *testing.T) {
 	if err := application.selectSuneTempleOption(); err != nil {
 		t.Fatalf("賣掉：%v", err)
 	}
-	if got := application.state.Party[0].Money[pooltreasure.Gold]; got != 1000 {
-		t.Errorf("賣得 %d 金幣，五千的五分之一是 1000", got)
+	if got := application.state.Party[0].Money[pooltreasure.Platinum]; got != 1000 {
+		t.Errorf("賣得 %d 白金，五千金幣換算是 1000 白金", got)
 	}
 }
 
@@ -231,12 +231,12 @@ func TestTempleAppraiseKeepsAJewelAsAnItem(t *testing.T) {
 	if value := int(raw[0x3A]) | int(raw[0x3B])<<8; value != 100 {
 		t.Errorf("價值寫成 %d，應該是 100", value)
 	}
-	if got := application.state.Party[0].Money[pooltreasure.Gold]; got != 0 {
-		t.Errorf("留著卻拿到 %d 金幣", got)
+	if got := application.state.Party[0].Money[pooltreasure.Platinum]; got != 0 {
+		t.Errorf("留著卻拿到 %d 白金", got)
 	}
 }
 
-// 商店那一側的估價：規則同一份（spec 116），賣掉一樣只拿五分之一。
+// 商店那一側的估價：規則同一份（spec 116），賣掉一樣換成白金。
 func TestShopAppraiseSharesTheTempleRules(t *testing.T) {
 	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 12}
 	character.Money[pooltreasure.Gems] = 1
@@ -257,8 +257,8 @@ func TestShopAppraiseSharesTheTempleRules(t *testing.T) {
 		t.Errorf("估完之後還有 %d 顆", got)
 	}
 	application.resolveShopAppraise(false)
-	if got := application.state.Party[0].Money[pooltreasure.Gold]; got != 1000 {
-		t.Errorf("賣得 %d 金幣，五千的五分之一是 1000", got)
+	if got := application.state.Party[0].Money[pooltreasure.Platinum]; got != 1000 {
+		t.Errorf("賣得 %d 白金，五千金幣換算是 1000 白金", got)
 	}
 	// 負對照：沒有存貨時不擲骰也不改任何東西。
 	if err := application.offerShopAppraise(appraiseGem); err != nil {
@@ -267,7 +267,7 @@ func TestShopAppraiseSharesTheTempleRules(t *testing.T) {
 	if application.shop.appraising {
 		t.Error("沒有寶石卻進了估價狀態")
 	}
-	if got := application.state.Party[0].Money[pooltreasure.Gold]; got != 1000 {
-		t.Errorf("空手估價之後金幣變成 %d", got)
+	if got := application.state.Party[0].Money[pooltreasure.Platinum]; got != 1000 {
+		t.Errorf("空手估價之後白金變成 %d", got)
 	}
 }

@@ -36,9 +36,14 @@ var JewelryValueBands = []struct {
 	{91, 100, 10000, 2000},
 }
 
-// SellDivisor 是賣價與估價的比。原版在 `1F0Dh` 直接 `div 5`——
-// **賣掉只拿得到估價的五分之一**，說明書沒有寫這一條。
-const SellDivisor = 5
+// GoldPerPlatinum 是原版在 `1F0Dh` 除的那個 5。估價是**金幣**，而賣得的錢
+// 進的是角色記錄 `+90h`——依 spec 040 的七欄版面（`+88h + 2 × 索引`）那是
+// **白金**那一欄。AD&D 一版 1 白金 ＝ 5 金，所以那個除以 5 是**幣別換算**，
+// 不是折價：賣掉拿的是估價的全額，只是換成白金付。
+//
+// 同一支常式減的 `+92h`／`+94h` 也落在那張版面上（索引 5 寶石、6 珠寶），
+// 三個欄位一起自洽。
+const GoldPerPlatinum = 5
 
 // GemValue 依 1d100 的點數查出一顆寶石值多少金幣。
 func GemValue(roll int) (int, error) {
@@ -71,8 +76,8 @@ func JewelryValue(roll int, random func(limit int) int) (int, error) {
 	return 0, fmt.Errorf("Pool jewelry roll %d is outside 1..100", roll)
 }
 
-// SellPrice 是賣掉一件估好價的東西實際拿到的金幣（`1F07h` 的 `div 5`）。
-func SellPrice(value int) int { return value / SellDivisor }
+// SellPrice 是賣掉一件估好價的東西實際拿到的**白金**（`1F07h` 的 `div 5`）。
+func SellPrice(goldValue int) int { return goldValue / GoldPerPlatinum }
 
 // KeptItemType 與 KeptItemSubtype 是「留著」時原版建出來的物品記錄欄位
 //（`1E80h` 的 `+2Eh = 46h`、`1E65h` 的 `+31h = 65h`），估好的價值寫在 `+3Ah`。

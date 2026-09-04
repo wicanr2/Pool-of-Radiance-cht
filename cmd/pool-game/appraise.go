@@ -110,8 +110,10 @@ func (a *app) resolveAppraise(keep bool) {
 		character.Inventory = append(character.Inventory, keptTreasureItem(a.appraiseKind, a.appraiseValue))
 		a.statusLine = "Kept."
 	} else {
+		// 賣得的錢進的是白金那一欄（記錄 `+90h`，spec 040 的版面）——
+		// 估價是金幣，1 白金 ＝ 5 金，spec 116。
 		paid := pooltreasure.SellPrice(a.appraiseValue)
-		character.Money[pooltreasure.Gold] += uint16(paid)
+		character.Money[pooltreasure.Platinum] += uint16(paid)
 		a.statusLine = fmt.Sprintf("Sold for %d gp.", paid)
 	}
 	syncTrainedLibraryCharacter(&a.state, *character)

@@ -222,8 +222,9 @@ func (a *app) resolveShopAppraise(keep bool) {
 			keptTreasureItem(state.appraiseKind, state.appraiseValue))
 		state.message = a.text(msgShopAppraiseKept)
 	} else {
+		// 白金那一欄，同 spec 116。
 		paid := pooltreasure.SellPrice(state.appraiseValue)
-		character.Money[pooltreasure.Gold] += uint16(paid)
+		character.Money[pooltreasure.Platinum] += uint16(paid)
 		state.message = fmt.Sprintf(a.text(msgShopAppraiseSold), paid)
 	}
 	state.appraising = false
