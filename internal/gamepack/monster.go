@@ -47,33 +47,60 @@ func (record MonsterRecord) MaxHitPoints() uint8     { return record.Raw[0x32] }
 func (record MonsterRecord) CurrentHitPoints() uint8 { return record.Raw[0x11B] }
 func (record MonsterRecord) ArmorClass() int         { return 60 - int(record.Raw[0x111]) }
 func (record MonsterRecord) THAC0() int              { return 60 - int(record.Raw[0x110]) }
-// 傷害骰有**兩格**：`+115h`／`+117h` 是第一格，`+116h`／`+118h` 是第二格。
-// 兩格都存在是量出來的——overlay-13 有兩處寫入，`3AE5h` 寫第一格的顆數 3、
-// `3AEEh` 寫第一格的面數 4，`39E3h`／`39ECh` 寫的是第二格的 2 與 4。
+// 傷害骰有**兩種攻擊形態**，每一種各有顆數、面數與加值（spec 051）：
 //
-// 168 份記錄裡有 162 份填第一格。**剩下六份只填第二格**，而且都是帶特殊攻擊
-// 的那幾隻：POISONOUS FROG、MEDUSA、GIANT SNAKE（兩份）、DRIDER、
-// PHASE SPIDER。只讀第一格的話牠們每一擊都是 0 點——實測索寇要塞那一場
-// 四隻毒蛙對完全不還手的隊伍打了 10792 次、一次都沒扣到血，那一場永遠打不完。
+//	顆數 `+0A2h + n`   面數 `+0A4h + n`   加值 `+0A6h + n`   （n = 1 或 2）
 //
-// **第一格空的就退到第二格。** 填了第一格的那 162 份第二格都是 0，所以這個
-// 退路不會動到牠們。**原版依什麼挑格還沒讀出來**（`0119h` 的加值只在第一格
-// 有意義，而角色表的顯示常式 overlay-19 `06F0h` 讀的是第一格），
-// 所以這是推論，不是原版規則的重現。
-func (record MonsterRecord) DamageDiceCount() uint8 {
-	if record.Raw[0x115] == 0 && record.Raw[0x117] == 0 {
-		return record.Raw[0x116]
+// 攻擊次數在 `+0A0h + n`，編碼是「每回合次數 × 2」，所以 2 是一次、
+// 3 是每兩回合三次、4 是兩次。巨魔的 `04 02` 與 `1d4+4`／`2d6` 正是
+// AD&D 一版的爪／爪／咬。
+//
+// **不要讀 `+114h..+11Ah`。** 那一段是原版**執行期**的副本：overlay-25
+// `0DF4h` 在排怪時把上面三組欄位抄過去，武器與效果的覆寫也寫在那裡。
+// `MONnCHA.DAX` 的樣板記錄裡那一段沒有初始化，殘留的是別的東西——
+// 172 筆裡有 53 筆與來源欄位不符，而且殘留值看得出是文字：QUICKLINGS 是
+// `41 00 44 00 43 00`（`'A' 'D' 'C'`），讀成骰子就是 65d68+67。
+//
+// 正負對照擺在一起就分得出來：**用來源欄位算，172 筆沒有一筆的骰子不合理；
+// 用執行期那一段算，48 處不合理**（顆數大於 8、面數不是 D&D 的骰面、
+// 或加值離譜）。`TestMonsterDamageDiceAreAllPlausible` 釘住這一條。
+//
+// 第一種形態沒有骰子的有六隻（POISONOUS FROG、MEDUSA、GIANT SNAKE 兩份、
+// DRIDER、PHASE SPIDER），牠們的傷害在第二種形態上——第一種是特殊攻擊。
+// 只讀第一種的話牠們每一擊都是 0 點：實測索寇要塞那一場四隻毒蛙對完全不
+// 還手的隊伍打了 10792 次、一次都沒扣到血，那一場永遠打不完。
+const (
+	// MonsterAttackRateBase 是攻擊次數的基底，索引 `base + n`。
+	MonsterAttackRateBase = 0xA0
+	// MonsterDamageCountBase／SidesBase／BonusBase 是三組傷害欄位的基底。
+	MonsterDamageCountBase = 0xA2
+	MonsterDamageSidesBase = 0xA4
+	MonsterDamageBonusBase = 0xA6
+	// MonsterAttackSlots 是形態數。
+	MonsterAttackSlots = 2
+)
+
+// primaryAttackSlot 是「畫面上要顯示哪一種形態」：第一種有骰子就用它，
+// 沒有就用第二種。前端還沒把兩種形態都打出來時要用這個（spec 051 的 OPEN）。
+func (record MonsterRecord) primaryAttackSlot() uint8 {
+	if record.Raw[MonsterDamageCountBase+1] == 0 && record.Raw[MonsterDamageSidesBase+1] == 0 {
+		return 2
 	}
-	return record.Raw[0x115]
+	return 1
+}
+
+func (record MonsterRecord) DamageDiceCount() uint8 {
+	return record.Raw[MonsterDamageCountBase+int(record.primaryAttackSlot())]
 }
 
 func (record MonsterRecord) DamageDieSides() uint8 {
-	if record.Raw[0x115] == 0 && record.Raw[0x117] == 0 {
-		return record.Raw[0x118]
-	}
-	return record.Raw[0x117]
+	return record.Raw[MonsterDamageSidesBase+int(record.primaryAttackSlot())]
 }
-func (record MonsterRecord) DamageBonus() int8       { return int8(record.Raw[0x119]) }
+
+func (record MonsterRecord) DamageBonus() int8 {
+	return int8(record.Raw[MonsterDamageBonusBase+int(record.primaryAttackSlot())])
+}
+
 func (record MonsterRecord) Movement() uint8         { return record.Raw[0x11C] }
 
 // 經驗值（spec 097）。overlay-05 entry 2 的 `00C0h..00F4h` 算的是
@@ -98,21 +125,24 @@ func (record MonsterRecord) ExperienceValue(hitPoints int) uint32 {
 }
 
 func (record MonsterRecord) BaseAttackRate(slot uint8) (uint8, error) {
-	if slot < 1 || slot > 2 {
-		return 0, fmt.Errorf("Pool monster attack slot %d is outside 1..2", slot)
+	if slot < 1 || slot > MonsterAttackSlots {
+		return 0, fmt.Errorf("Pool monster attack slot %d is outside 1..%d", slot, MonsterAttackSlots)
 	}
-	return record.Raw[0xA0+slot], nil
+	return record.Raw[MonsterAttackRateBase+slot], nil
 }
 
+// AttackDamage 取一種攻擊形態的骰子。讀的是**來源欄位**，不是執行期副本；
+// 理由見上面 `DamageDiceCount` 的說明。
 func (record MonsterRecord) AttackDamage(slot uint8) (MonsterAttackDamage, error) {
-	if slot < 1 || slot > 2 {
-		return MonsterAttackDamage{}, fmt.Errorf("Pool monster attack slot %d is outside 1..2", slot)
+	if slot < 1 || slot > MonsterAttackSlots {
+		return MonsterAttackDamage{}, fmt.Errorf("Pool monster attack slot %d is outside 1..%d",
+			slot, MonsterAttackSlots)
 	}
 	index := int(slot)
 	return MonsterAttackDamage{
-		Count: record.Raw[0x114+index],
-		Sides: record.Raw[0x116+index],
-		Bonus: int8(record.Raw[0x118+index]),
+		Count: record.Raw[MonsterDamageCountBase+index],
+		Sides: record.Raw[MonsterDamageSidesBase+index],
+		Bonus: int8(record.Raw[MonsterDamageBonusBase+index]),
 	}, nil
 }
 

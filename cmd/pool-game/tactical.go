@@ -363,7 +363,15 @@ type tacticalState struct {
 	THAC0         []uint8
 	ArmorClass    []int
 	Damage        []combat.DamageDice
-	Round         int
+	// AttackForms 是兩種攻擊形態的骰子，AttackRates 是各自的攻擊次數編碼
+	//（每回合次數 × 2，spec 051）。`Damage` 留著給法術與其他不分形態的
+	// 呼叫端用，等於第一種有骰子的那一形態。
+	AttackForms [][gamepack.MonsterAttackSlots]combat.DamageDice
+	AttackRates [][gamepack.MonsterAttackSlots]uint8
+	// AttackPhase 是半回合相位（spec 051）：戰鬥開始是 0，每個回合邊界加一，
+	// `AttacksThisPhase` 只看它的最低位。編碼 3（每兩回合三次）就靠它交替。
+	AttackPhase uint8
+	Round       int
 	Mover         uint8
 	Finished      bool
 	Prompt        bool
@@ -400,6 +408,11 @@ func (state *tacticalState) Budget() uint8 {
 // 原版每回合都重擲，不是整場排一次。
 func (state *tacticalState) startRound(roll func(count, sides int) int) {
 	state.Round++
+	// 相位在戰鬥開始是 0（overlay-10 的 setup 清成 0），每個回合邊界加一
+	// （overlay-08 `0879h`）。第一回合還沒過邊界，所以只有第二回合起才推進。
+	if state.Round > 1 {
+		state.AttackPhase = combat.AdvanceAttackPhase(state.AttackPhase)
+	}
 	for index := 1; index < len(state.HeldRounds); index++ {
 		if state.HeldRounds[index] > 0 {
 			state.HeldRounds[index]--
@@ -555,6 +568,8 @@ func (a *app) enterTacticalPreview() error {
 	state.THAC0 = make([]uint8, size)
 	state.ArmorClass = make([]int, size)
 	state.Damage = make([]combat.DamageDice, size)
+	state.AttackForms = make([][gamepack.MonsterAttackSlots]combat.DamageDice, size)
+	state.AttackRates = make([][gamepack.MonsterAttackSlots]uint8, size)
 	state.HitDice = make([]uint8, size)
 	state.SleepFlag = make([]uint8, size)
 	state.Asleep = make([]bool, size)
@@ -580,7 +595,8 @@ func (a *app) enterTacticalPreview() error {
 		state.HitPoints[index] = placeholderHitPoints
 		state.THAC0[index] = placeholderInternalTHAC0
 		state.ArmorClass[index] = placeholderInternalArmorClass
-		state.Damage[index] = combat.DamageDice{Count: 1, Sides: 8}
+		// 隊員的攻擊次數還沒讀出來（原版由職業等級表給），先用「一回合一次」。
+		state.setSingleAttackForm(index, combat.DamageDice{Count: 1, Sides: 8})
 		if party := partySlot[index]; party >= 0 && party < len(a.state.Party) {
 			member := a.state.Party[party]
 			// NPC 沒有走過建角，戰鬥數值直接讀它帶著的原版記錄。
@@ -628,9 +644,9 @@ func (a *app) enterTacticalPreview() error {
 					return err
 				}
 				state.THAC0[index] = stats.Thac0Internal
-				state.Damage[index] = combat.DamageDice{
+				state.setSingleAttackForm(index, combat.DamageDice{
 					Count: stats.DamageCount, Sides: stats.DamageSides, Bonus: stats.DamageBonus,
-				}
+				})
 			}
 			continue
 		}
@@ -657,6 +673,9 @@ func (a *app) enterTacticalPreview() error {
 				Count: record.DamageDiceCount(),
 				Sides: record.DamageDieSides(),
 				Bonus: record.DamageBonus(),
+			}
+			if err := applyMonsterAttackForms(state, index, record); err != nil {
+				return err
 			}
 		}
 	}
@@ -953,6 +972,37 @@ func applyNPCCombatStats(state *tacticalState, index int, member poolsave.Charac
 		Count: record.DamageDiceCount(),
 		Sides: record.DamageDieSides(),
 		Bonus: record.DamageBonus(),
+	}
+	return applyMonsterAttackForms(state, index, record)
+}
+
+// setSingleAttackForm 設定「一回合一次、只有一種形態」的攻擊，並把
+// `Damage` 一起同步。玩家角色與武器覆寫走這一條——兩個欄位分開設會分岔，
+// 而分岔的症狀是「畫面寫著長劍、打出來卻是拳頭」。
+func (state *tacticalState) setSingleAttackForm(index int, dice combat.DamageDice) {
+	state.Damage[index] = dice
+	state.AttackForms[index] = [gamepack.MonsterAttackSlots]combat.DamageDice{dice}
+	state.AttackRates[index] = [gamepack.MonsterAttackSlots]uint8{2, 0}
+}
+
+// applyMonsterAttackForms 把兩種攻擊形態與各自的攻擊次數搬進戰術狀態。
+//
+// 巨魔是這一條的樣本：`04 02` 加 `1d4+4`／`2d6`，也就是 AD&D 一版的
+// 爪／爪／咬。只讀一種形態的話牠一回合只揮一次爪。
+func applyMonsterAttackForms(state *tacticalState, index int, record gamepack.MonsterRecord) error {
+	for slot := uint8(1); slot <= gamepack.MonsterAttackSlots; slot++ {
+		rate, err := record.BaseAttackRate(slot)
+		if err != nil {
+			return err
+		}
+		damage, err := record.AttackDamage(slot)
+		if err != nil {
+			return err
+		}
+		state.AttackRates[index][slot-1] = rate
+		state.AttackForms[index][slot-1] = combat.DamageDice{
+			Count: damage.Count, Sides: damage.Sides, Bonus: damage.Bonus,
+		}
 	}
 	return nil
 }
@@ -1365,25 +1415,49 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	if int(target) >= len(state.HitPoints) {
 		return fmt.Errorf("Pool attack target %d is outside the roster", target)
 	}
-	roll := uint8(a.rollDice(1, 20))
-	hit, err := combat.ResolveHit(roll, state.THAC0[state.Mover], state.ArmorClass[target], 0)
+	// 原版一次行動把這一相位的兩種形態都打完：攻擊區段（overlay-13
+	// `1678h..176Ah`）由第二形態倒數到第一，每一形態剩幾次由
+	// `AttacksThisPhase` 給（spec 051）。巨魔的爪／爪／咬就是這樣來的。
+	swings, err := a.attackSwingsThisPhase(state, state.Mover)
 	if err != nil {
 		return err
 	}
-	if !hit {
-		state.Status = state.say(msgStatusMissed, target, roll)
+	if len(swings) == 0 {
+		// 這一相位揮不出任何一下（編碼 3 的「每兩回合三次」在單數相位）。
+		state.Status = state.say(msgStatusMissed, target, uint8(a.rollDice(1, 20)))
 		return nil
 	}
-	dice := state.Damage[state.Mover]
-	rolls := make([]uint8, dice.Count)
-	for index := range rolls {
-		rolls[index] = uint8(a.rollDice(1, int(dice.Sides)))
+	total, landed := 0, 0
+	var lastRoll uint8
+	for _, dice := range swings {
+		lastRoll = uint8(a.rollDice(1, 20))
+		hit, err := combat.ResolveHit(lastRoll, state.THAC0[state.Mover], state.ArmorClass[target], 0)
+		if err != nil {
+			return err
+		}
+		if !hit {
+			continue
+		}
+		rolls := make([]uint8, dice.Count)
+		for index := range rolls {
+			rolls[index] = uint8(a.rollDice(1, int(dice.Sides)))
+		}
+		damage, err := combat.ResolveDamage(dice, rolls, 1)
+		if err != nil {
+			return err
+		}
+		landed++
+		total += damage
+		state.HitPoints[target] -= damage
+		if state.HitPoints[target] <= 0 {
+			break
+		}
 	}
-	damage, err := combat.ResolveDamage(dice, rolls, 1)
-	if err != nil {
-		return err
+	if landed == 0 {
+		state.Status = state.say(msgStatusMissed, target, lastRoll)
+		return nil
 	}
-	state.HitPoints[target] -= damage
+	damage := total
 	if state.HitPoints[target] > 0 {
 		state.Status = state.say(msgStatusHit, target, damage, state.HitPoints[target])
 		return nil
@@ -1394,6 +1468,31 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	state.States[target] = combat.DyingState
 	state.Status = state.say(msgStatusDown, target)
 	return nil
+}
+
+// attackSwingsThisPhase 列出這一次行動要揮幾下、每一下用哪一組骰子。
+//
+// 形態的順序照原版的攻擊區段：由第二形態倒數到第一。沒有骰子的形態不揮
+//（第一形態空的那六隻怪物就是這樣，牠們的第一形態是特殊攻擊）。
+func (a *app) attackSwingsThisPhase(state *tacticalState, mover uint8) ([]combat.DamageDice, error) {
+	if int(mover) >= len(state.AttackRates) {
+		return nil, fmt.Errorf("Pool attacker %d is outside the roster", mover)
+	}
+	var swings []combat.DamageDice
+	for slot := gamepack.MonsterAttackSlots; slot >= 1; slot-- {
+		dice := state.AttackForms[mover][slot-1]
+		if dice.Count == 0 || dice.Sides == 0 {
+			continue
+		}
+		count, err := combat.AttacksThisPhase(state.AttackRates[mover][slot-1], state.AttackPhase&1)
+		if err != nil {
+			return nil, err
+		}
+		for swing := uint8(0); swing < count; swing++ {
+			swings = append(swings, dice)
+		}
+	}
+	return swings, nil
 }
 
 // finishCombat 依 spec 046 契約 5 處理戰後：只有勝利才從 COMBAT 邊界停下的 PC

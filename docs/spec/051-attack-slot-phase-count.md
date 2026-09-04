@@ -1,8 +1,9 @@
 # Spec 051：Pool 雙攻擊槽與半回合攻擊次數
 
-狀態：CONFORMED（兩槽 base source、phase counter 初始化／遞增、phase rounding primitive）；
-DRAFT（裝備覆寫、effect code 12、攻擊槽選擇與完整 initiative）。
-日期：2026-09-01。
+狀態：CONFORMED（兩槽 base source、phase counter 初始化／遞增、phase rounding
+primitive、傷害骰的來源欄位、remake 的攻擊區段）；
+DRAFT（裝備覆寫、effect code 12、玩家角色的攻擊次數來源與完整 initiative）。
+日期：2026-09-04（原 2026-09-01）。
 
 ## 證據
 
@@ -41,7 +42,46 @@ DRAFT（裝備覆寫、effect code 12、攻擊槽選擇與完整 initiative）�
    `+113h/+114h` 是本 phase 兩槽的剩餘 attack count。
 6. damage slot 是交錯陣列：slot `n` 使用 count `+114h+n`、sides `+116h+n`、
    signed bonus `+118h+n`；slot 1 即 `+115h/+117h/+119h`，slot 2 即
-   `+116h/+118h/+11Ah`。
+   `+116h/+118h/+11Ah`。**那是執行期的位置**，見下一節。
+
+## 傷害骰的來源欄位是 `+0A2h/+0A4h/+0A6h`（2026-09-04）
+
+`+114h..+11Ah` 是**執行期**的副本。overlay-25 `0DF4h` 在排怪時抄過去：
+
+```
+for i = 1; ; i++ {
+    es:[record + 114h + i] = es:[record + 0A2h + i]   ; 顆數
+    es:[record + 116h + i] = es:[record + 0A4h + i]   ; 面數
+    es:[record + 118h + i] = es:[record + 0A6h + i]   ; 加值
+    if i == 2 break
+}
+```
+
+所以 `MONnCHA.DAX` 的**樣板記錄**要讀 `+0A2h/+0A4h/+0A6h`，不是 `+114h..`。
+樣板裡那一段沒有初始化，殘留的是別的東西：172 筆有 **53 筆**與來源欄位不符，
+而且殘留值看得出是文字——
+
+| 記錄 | 來源欄位 | 執行期那一段 |
+|---|---|---|
+| `mon6/10` QUICKLINGS | 1d4 | `41 00 44 00 43 00` ＝ `'A' 'D' 'C'` → 65d68+67 |
+| `mon6/118` THRI-KREEN | 1d4／1d4+1 | 加值 `66h` ＝ `'f'` → 1d4+102 |
+| `mon2/13` ORC | 1d8 | 2d4−1 |
+| `mon5/92` TYRANITHRAXUS | 1d6／4d6 | 2d4／`26h` |
+
+**正負對照**：用來源欄位算，172 筆沒有一筆的骰子不合理（顆數 ≤ 8、面數是
+D&D 的骰面、加值在 −4..+12）；用執行期那一段算，**48 處不合理**。
+`TestMonsterDamageDiceAreAllPlausible` 同時量兩邊，負對照歸零就會紅——
+那表示這一則不再證明任何事。
+
+來源欄位與 AD&D 一版逐項相符，這是第二個獨立的核對：
+
+| 怪物 | 次數編碼 | 形態 1 | 形態 2 | AD&D 一版 |
+|---|---|---|---|---|
+| ORC | 2／0 | 1d8 | — | 1 擊 1d8 |
+| TROLL | 4／2 | 1d4+4 | 2d6 | 爪／爪／咬 |
+| QUICKLINGS | 6／0 | 1d4 | — | 3 擊 1d4 |
+| TYRANITHRAXUS | 4／2 | 1d6 | 4d6 | 兩爪一口 |
+| POISONOUS FROG | 0／2 | — | 1d1 | 特殊攻擊在形態 1 |
 
 ## Phase counter 生命週期（exact）
 
@@ -71,6 +111,16 @@ combat setup 的初值固定為 0；只有戰術 runtime 抵達上述回合邊�
 
 本規格只授權 rate rounding 與資料形狀。前端仍不得因算出 ORC slot 1 為一次攻擊，
 就跳過 deployment、initiative、玩家輸入、AI、status 或勝敗 continuation。
+
+## remake 的攻擊區段（2026-09-04）
+
+`resolveTacticalAttack` 一次行動把這一相位的兩種形態都打完，順序由形態 2
+倒數到形態 1（原版的攻擊區段 `1678h..176Ah` 就是這樣走的）：沒有骰子的形態
+不揮，每一形態揮幾下由 `AttacksThisPhase(編碼, 相位 & 1)` 給。相位存在
+`tacticalState.AttackPhase`，戰鬥開始是 0，`startRound` 從第二回合起每回合加一。
+
+**玩家角色的攻擊次數還沒讀**（原版由職業等級表給），先用編碼 2＝一回合一次，
+所以玩家這一側的行為與先前相同。
 
 ## 驗收
 

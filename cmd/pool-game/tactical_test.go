@@ -75,6 +75,9 @@ func newRoundState(members int) *tacticalState {
 		BaseMovement:  make([]uint8, size),
 		States:        make([]uint8, size),
 		DyingCounters: make([]uint8, size),
+		Damage:        make([]combat.DamageDice, size),
+		AttackForms:   make([][gamepack.MonsterAttackSlots]combat.DamageDice, size),
+		AttackRates:   make([][gamepack.MonsterAttackSlots]uint8, size),
 	}
 	for index := 1; index < size; index++ {
 		state.Dexterity[index] = 12
@@ -197,7 +200,8 @@ func newAttackState() *tacticalState {
 	state.HitPoints = []int{0, 10, 6}
 	state.THAC0 = []uint8{0, 40, 40}
 	state.ArmorClass = []int{0, 50, 50}
-	state.Damage = []combat.DamageDice{{}, {Count: 1, Sides: 8}, {Count: 1, Sides: 8}}
+	state.setSingleAttackForm(1, combat.DamageDice{Count: 1, Sides: 8})
+	state.setSingleAttackForm(2, combat.DamageDice{Count: 1, Sides: 8})
 	state.Roster[1].FootprintClass = 1
 	state.Roster[2].FootprintClass = 1
 	state.Mover = 1
@@ -330,7 +334,8 @@ func newFoeTurnState(foeX, foeY, partyX, partyY uint8, budget uint8) *tacticalSt
 	state.HitPoints = []int{0, 10, 10}
 	state.THAC0 = []uint8{0, 40, 40}
 	state.ArmorClass = []int{0, 50, 50}
-	state.Damage = []combat.DamageDice{{}, {Count: 1, Sides: 8}, {Count: 1, Sides: 8}}
+	state.setSingleAttackForm(1, combat.DamageDice{Count: 1, Sides: 8})
+	state.setSingleAttackForm(2, combat.DamageDice{Count: 1, Sides: 8})
 	state.Scores[1], state.Scores[2] = 5, 5
 	state.Budgets[1], state.Budgets[2] = budget, budget
 	state.Mover = 2

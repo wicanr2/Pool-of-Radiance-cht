@@ -27,15 +27,17 @@ func TestMonsterCombatAccessorsUsePoolRecordEncoding(t *testing.T) {
 	payload[0x11B] = 5
 	payload[0x111] = 54
 	payload[0x110] = 41
-	payload[0x115] = 2
-	payload[0x117] = 4
-	payload[0x119] = 0xFF
 	payload[0x11C] = 9
+	// 傷害骰讀的是**來源欄位**，不是 `+114h..` 那一段執行期副本（spec 051）：
+	// 形態 1 是 2d4-1、形態 2 是 3d6+2，攻擊次數編碼 2 與 1。
 	payload[0xA1] = 2
 	payload[0xA2] = 1
-	payload[0x116] = 3
-	payload[0x118] = 6
-	payload[0x11A] = 2
+	payload[0xA3] = 2
+	payload[0xA5] = 4
+	payload[0xA7] = 0xFF
+	payload[0xA4] = 3
+	payload[0xA6] = 6
+	payload[0xA8] = 2
 	record, err := parseMonsterRecord(13, payload)
 	if err != nil {
 		t.Fatal(err)
@@ -97,8 +99,11 @@ func TestRealMON2CHASlumsOrcs(t *testing.T) {
 			t.Fatalf("MON2CHA block %d combat fields: HP=%d/%d AC=%d movement=%d", id, record.CurrentHitPoints(), record.MaxHitPoints(), record.ArmorClass(), record.Movement())
 		}
 	}
+	// 兩筆 ORC 的傷害骰都是 1d8。block 13 的**執行期區段**寫著 2d4−1，那是
+	// 樣板檔裡沒有初始化的殘留（spec 051）；來源欄位 `+0A3h/+0A5h/+0A7h`
+	// 兩筆一致，與 AD&D 一版的獸人相同。
 	named, _ := ReadDOSMonsterRecord(zipPath, 2, 13)
-	if named.THAC0() != 20 || named.DamageDiceCount() != 2 || named.DamageDieSides() != 4 || named.DamageBonus() != -1 {
+	if named.THAC0() != 20 || named.DamageDiceCount() != 1 || named.DamageDieSides() != 8 || named.DamageBonus() != 0 {
 		t.Fatalf("MON2CHA block 13: THAC0=%d damage=%dd%d%+d", named.THAC0(), named.DamageDiceCount(), named.DamageDieSides(), named.DamageBonus())
 	}
 	normal, _ := ReadDOSMonsterRecord(zipPath, 2, 4)

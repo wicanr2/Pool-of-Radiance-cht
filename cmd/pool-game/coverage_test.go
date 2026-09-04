@@ -1457,7 +1457,12 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	visited := map[[3]int]bool{}
 	var hardFailures []string
 	ok := false
+	// 趟數是**覆蓋面**，不是耐心：野外那幾段每一趟只走 36 步，落點由亂數決定，
+	// 而任何會改變抽籤次數的修改（例如攻擊改成一次行動揮好幾下）都會讓同一個
+	// 種子走去別的地方。趟數少的時候「走到幾個區塊」就變成單一亂數對齊的快照，
+	// 一改就紅。多跑幾組種子才量得到真正的下限。
 	for pass, destination := range []int{0, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3} {
 		seed := int64(13 + pass*7 + destination)
 		avoid := map[[3]int]bool{}
@@ -1498,6 +1503,8 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 		t.Logf("硬失敗 ×%d：%s", count, failure)
 	}
 	// 量到的下限，不是目標。少於這個數代表航線、野外移動或資源載入退步了。
+	// **門檻不跟著實測值走**：現在量得到 12 個，門檻留在 11——把門檻頂到實測值
+	// 等於再做一次單一亂數對齊的快照，下一個會改變抽籤次數的修改又會紅。
 	if len(blocks) < 11 {
 		t.Errorf("只走到 %d 個 ECL block：%v", len(blocks), blockIDs)
 	}

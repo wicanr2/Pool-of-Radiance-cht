@@ -395,9 +395,13 @@ func TestAimedAttackRespectsWeaponRange(t *testing.T) {
 		Asleep:     make([]bool, 3),
 		ArmorClass: []int{0, 50, 50},
 		THAC0:      []uint8{0, 40, 40},
-		Damage:     []combat.DamageDice{{}, {Count: 1, Sides: 8}, {Count: 1, Sides: 8}},
-		Mover:      1,
+		Damage:      make([]combat.DamageDice, 3),
+		AttackForms: make([][gamepack.MonsterAttackSlots]combat.DamageDice, 3),
+		AttackRates: make([][gamepack.MonsterAttackSlots]uint8, 3),
+		Mover:       1,
 	}
+	state.setSingleAttackForm(1, combat.DamageDice{Count: 1, Sides: 8})
+	state.setSingleAttackForm(2, combat.DamageDice{Count: 1, Sides: 8})
 	// 距離用 TraceMovement 算（spec 098），所以要有盤面。這裡不測地形，
 	// 給一整片可通行的格子並讓它跳過地形判定。
 	state.Grid = combat.TacticalGrid{

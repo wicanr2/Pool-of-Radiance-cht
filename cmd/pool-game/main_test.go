@@ -1251,15 +1251,19 @@ func TestNPCCombatStatsComeFromItsOwnRecord(t *testing.T) {
 		THAC0:        make([]uint8, 2),
 		ArmorClass:   make([]int, 2),
 		Damage:       make([]combat.DamageDice, 2),
+		AttackForms:  make([][gamepack.MonsterAttackSlots]combat.DamageDice, 2),
+		AttackRates:  make([][gamepack.MonsterAttackSlots]uint8, 2),
 	}
 	record := make([]byte, poolsave.NPCRecordSize)
 	record[0x11C] = 9  // 移動力
 	record[0x11B] = 33 // 目前生命值
 	record[0x110] = 60 - 14
 	record[0x111] = 60 - 3
-	record[0x115] = 2
-	record[0x117] = 6
-	record[0x119] = 1
+	// 傷害骰讀的是來源欄位 `+0A2h/+0A4h/+0A6h`（spec 051）：形態 1 是 2d6+1。
+	record[0xA1] = 2
+	record[0xA3] = 2
+	record[0xA5] = 6
+	record[0xA7] = 1
 	member := poolsave.Character{Name: "NPC", NPC: true, Record: record}
 	if err := applyNPCCombatStats(state, 1, member); err != nil {
 		t.Fatal(err)
@@ -1272,6 +1276,10 @@ func TestNPCCombatStatsComeFromItsOwnRecord(t *testing.T) {
 	}
 	if state.Damage[1] != (combat.DamageDice{Count: 2, Sides: 6, Bonus: 1}) {
 		t.Fatalf("damage=%+v", state.Damage[1])
+	}
+	if state.AttackForms[1][0] != (combat.DamageDice{Count: 2, Sides: 6, Bonus: 1}) ||
+		state.AttackRates[1][0] != 2 {
+		t.Fatalf("形態 1 是 %+v 次數 %d", state.AttackForms[1][0], state.AttackRates[1][0])
 	}
 	// 記錄長度不對就要失敗，不能靜靜用零值打。
 	if err := applyNPCCombatStats(state, 1, poolsave.Character{Name: "X", NPC: true}); err == nil {
