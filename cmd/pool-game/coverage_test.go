@@ -406,10 +406,27 @@ func planToCells(app *app, rotate int, wanted func(x, y int) bool) []exploreStep
 // 「說 LUX 才會出現」的那個亡魂永遠碰不到。
 var eclPasswords = []string{"SAMOSUD", "LUX", "SHESTNI", "NOKNOK"}
 
-// knownECLPasswords 是「這一格只有一次機會」的那些門，直接說對的字。
-// 鍵是 (ECL archive, block)。
+// knownECLPasswords 是 `answerHints` 解不出來時的退路。鍵是 (ECL archive, block)。
 var knownECLPasswords = map[[2]int]string{
 	{7, 23}: "NOKNOK",
+}
+
+// answerHints 把問句尾巴那個括號拆成候選字。`enterECLInput` 會在問句後面
+// 附上原版資料裡的答案，例如「…SAY...?（SAMOSUD／SHESTNI）」。
+func answerHints(prompt string) []string {
+	open := strings.LastIndex(prompt, "（")
+	if open < 0 || !strings.HasSuffix(strings.TrimRight(prompt, "\n "), "）") {
+		return nil
+	}
+	inner := prompt[open+len("（"):]
+	inner = strings.TrimRight(strings.TrimRight(inner, "\n "), "）")
+	var hints []string
+	for _, candidate := range strings.Split(inner, "／") {
+		if candidate = strings.TrimSpace(candidate); candidate != "" {
+			hints = append(hints, candidate)
+		}
+	}
+	return hints
 }
 
 // exploreMaxTransitionHops 是「這一張走完了，回頭走另一個換圖點」最多做幾次。
@@ -705,20 +722,26 @@ walk:
 					int(application.spawn.Map.BlockID),
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
 				word := eclPasswords[menuTurn[key]%len(eclPasswords)]
-				// 已知哪一格要哪個字就直接說。ecl7/23 的密碼門答錯一次會
-				// 扣血、`A564 OR 4A51h #64` 設旗標然後 EXIT，而入口
-				// `A3E4` 檢查同一個 bit 就 EXIT——**這一格只有一次機會**，
-				// 輪流試等於把它用掉。
-				if known, ok := knownECLPasswords[[2]int{
-					int(application.spawn.Map.Archive),
-					int(application.spawn.Map.BlockID)}]; ok {
-					word = known
-				}
-				// 推主線那一條走有目的的路：索寇要塞登陸那一格的亡魂只問
-				// 一次（問完 `SAVE 255 @4A13`），答錯就再也不出現，所以
-				// 輪流試沒有用——直接說它要的字。
-				if flags != nil && application.spawn.Map.BlockID == 21 {
+				// 答案就寫在問句的括號裡（`eclInputAnswer` 從原版資料解出來，
+				// 玩家看得到），治具照著打——這也是玩家實際會做的事，比自己
+				// 猜準。多個候選（同一個變數被 `SAVE` 兩次）就輪流試。
+				//
+				// 這一步很重要：ecl7/23 的密碼門答錯一次會扣血、
+				// `A564 OR 4A51h #64` 設旗標然後 EXIT，入口 `A3E4` 檢查同一個
+				// bit 就 EXIT——**那一格只有一次機會**，輪流猜等於把它用掉。
+				switch hints := answerHints(application.eventText); {
+				case len(hints) != 0:
+					word = hints[menuTurn[key]%len(hints)]
+				case flags != nil && application.spawn.Map.BlockID == 21:
+					// 提示解不出來時的退路。索寇要塞登陸那一格的亡魂只問一次
+					// （問完 `SAVE 255 @4A13`），答錯就再也不出現。
 					word = "LUX"
+				default:
+					if known, ok := knownECLPasswords[[2]int{
+						int(application.spawn.Map.Archive),
+						int(application.spawn.Map.BlockID)}]; ok {
+						word = known
+					}
 				}
 				menuTurn[key]++
 				confirmInput[key] = true

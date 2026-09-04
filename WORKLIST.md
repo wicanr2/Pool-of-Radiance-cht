@@ -29,10 +29,12 @@
   顯示 `（SAMOSUD／SHESTNI）`，(8,10)／(7,10) 顯示 `（LUX）`。
   **這是 remake 的擴充，原版沒有這個括號。**
 
-- [ ] 治具在索寇要塞硬送 `LUX`，但上面那幾格要的是 `SAMOSUD`／`SHESTNI`
-  （2026-09-04 由密碼提示曝出來）。主線仍推得動——那幾格答錯只是拿不到那一段
-  的獎勵——所以先不動；要修的話得連帶重驗
-  `TestSokalKeepOpensTheOtherBoatRoutes` 的兩個旗標條件。
+- [x] 治具改成照著畫面上的提示打（2026-09-04）。先前它在索寇要塞硬送 `LUX`，
+  而那四格要的是 `SAMOSUD`／`SHESTNI`——密碼提示上線後才看得出來。現在
+  `answerHints` 從問句尾巴那個括號解出候選（那是 `eclInputAnswer` 由原版資料
+  算的，玩家也看得到），治具照著打，多個候選就輪流試；解不出來才退回舊的
+  `knownECLPasswords`。實測：那四格送 `SAMOSUD`／`SHESTNI`，(8,10)／(7,10)
+  送 `LUX`，`TestSokalKeepOpensTheOtherBoatRoutes` 的兩個旗標條件仍成立。
 - [x] 跨冊譯名取捨已定案，見 `docs/reference/manual/glossary.md` 的「定案譯名」：
   四條依序套用的原則加 14 組決定（Phlan＝菲蘭、Valjevo＝瓦傑渥、Thentia＝珊提亞、
   Magic-User＝魔法師等），並分開 Yarash（亞拉斯）與 Yulash（尤拉斯）、固定
@@ -827,8 +829,11 @@
   `actions/checkout` 去抓 `wicanr2/golden-box-remake-engine`，而
   **兩個 repo 都是 private、這個 repo 一個 secret 都沒有**，預設的
   `GITHUB_TOKEN` 只有本 repo 的權限，跨 repo 抓 private 一定失敗。
-  兩條路二選一，都要使用者決定：加一個有 engine 讀取權的 PAT secret，
-  或把 engine 改成 public。在那之前這個 workflow 驗不到任何東西。
+  2026-09-04 使用者定案 **engine 維持 private**，所以只剩加 PAT 這條路。
+  解除條件：在本 repo 建一個有 engine 讀取權的 PAT secret，並把 workflow 的
+  `actions/checkout` 換成用它。在那之前這個 workflow 驗不到任何東西——
+  Linux 與 Wine 的驗收改走本地 Docker（`tools/linux-release-smoke.sh`、
+  `tools/windows-release-smoke.sh`），已經在做，不受影響。
 
   動共用 engine 之前要先取得使用者同意——那是另一個 repo，本專案的 push 授權
   不涵蓋它。該 repo 的 repo-local `user.email` 已經是 `wicanr2@gmail.com`
@@ -898,6 +903,9 @@
   `.github/workflows/platform-smoke.yml` 已寫好（只手動觸發），在 runner 上驗
   原生建置與測試——那兩件事交叉編譯給不了。**啟動仍驗不了**：實測 Ebitengine
   的 GLFW 在套件 init 就初始化，無頭環境連 `-h` 都 panic（見 spec 066）。
-  要啟用該 workflow 得先定 repository visibility。
-- [ ] repository visibility 與原版素材 deny-list（等待使用者）。
-  現階段 GitHub repository 採 private。
+  解除條件：一台實體 Windows 與一台 Mac，各啟動一次並截圖。
+- [x] repository visibility 與原版素材 deny-list（2026-09-04 使用者定案）。
+  CoAB、Pool 與共用 engine 三個 repo 都維持 **private**。原版素材的 deny-list
+  已經落地：`NOTICE.md` 列出不隨發行包散布的東西（原版資料、軟體世界說明書
+  譯文、倚天字型），`tools/package-release.sh` 的 patch 封包排除原版 ZIP 與
+  字型，公開 Release 只掛 patch。
