@@ -87,8 +87,9 @@ type Character struct {
 	// 舊存檔沒有這個欄位，讀回來是 0，與「還沒打過任何一場」同義。
 	Experience uint32 `json:"experience,omitempty"`
 	// Effects 是掛在身上的效果碼（spec 069 的串列，記錄 `+7Fh` 起）。
-	// `1Eh CHECKPARTY` 的效果模式問的就是這個。法術還沒接上來，
-	// 所以目前一律是空的——空的是正確答案，不是佔位。
+	// `1Eh CHECKPARTY` 的效果模式與神殿的失明／疾病／中毒／詛咒
+	//（spec 115）問的都是這一串。法術還沒接上來，所以目前一律是空的
+	// ——空的是正確答案，不是佔位。
 	Effects []uint8 `json:"effects,omitempty"`
 }
 
