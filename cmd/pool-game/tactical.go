@@ -317,6 +317,13 @@ type tacticalState struct {
 	Classes       combat.CellClasses
 	Roster        []combat.CombatantCell
 	Friendly      []bool
+	// Footprint 是每一格原本的佔格類別。倒下時 `Roster` 的那一欄會歸零
+	// （原版是 `+10Dh`），死靈術把屍體叫起來時要拿回來——不記著就只能猜
+	// 一個值。
+	Footprint []uint8
+	// MaxHitPoints 是每一格的生命上限（原版記錄 `+32h`）。死靈術把屍體
+	// 補到滿，補到哪裡由它決定。
+	MaxHitPoints []int
 	// AIDriven 對應原版記錄的 `+10Fh`：非零就由敵方 AI 分派這一格的行動。
 	// 隊員是 0，怪物是 1；**被魅惑的隊員也會變成 1**（spec 112 的
 	// overlay-12 entry 14 `048Fh`），所以「誰由 AI 走」不能拿陣營來判——
@@ -571,6 +578,11 @@ func (a *app) enterTacticalPreview() error {
 	state.HitDice = make([]uint8, size)
 	state.SleepFlag = make([]uint8, size)
 	state.Effects = make([]gamepack.EffectList, size)
+	state.Footprint = make([]uint8, size)
+	state.MaxHitPoints = make([]int, size)
+	for index := range roster {
+		state.Footprint[index] = roster[index].FootprintClass
+	}
 	state.TacticModes = make([]uint8, size)
 	state.FoeTargets = make([]uint8, size)
 	state.CreatureType = make([]uint8, size)
@@ -589,6 +601,7 @@ func (a *app) enterTacticalPreview() error {
 		state.BaseMovement[index] = base
 		state.Dexterity[index] = placeholderDexterity
 		state.HitPoints[index] = placeholderHitPoints
+		state.MaxHitPoints[index] = placeholderHitPoints
 		state.THAC0[index] = placeholderInternalTHAC0
 		state.ArmorClass[index] = placeholderInternalArmorClass
 		// 隊員的攻擊次數還沒讀出來（原版由職業等級表給），先用「一回合一次」。
@@ -605,6 +618,9 @@ func (a *app) enterTacticalPreview() error {
 			state.Dexterity[index] = uint8(member.Abilities[dexterityAbilityIndex])
 			if member.CurrentHP > 0 {
 				state.HitPoints[index] = member.CurrentHP
+			}
+			if member.MaxHP > 0 {
+				state.MaxHitPoints[index] = member.MaxHP
 			}
 			thac0, armor, movement, err := partyCombatStats(member)
 			if err != nil {
@@ -663,6 +679,7 @@ func (a *app) enterTacticalPreview() error {
 			}
 			state.SaveTargets[index], state.SaveBonus[index] = targets, bonus
 			state.HitPoints[index] = int(record.CurrentHitPoints())
+			state.MaxHitPoints[index] = int(record.MaxHitPoints())
 			state.THAC0[index] = uint8(60 - record.THAC0())
 			state.ArmorClass[index] = 60 - record.ArmorClass()
 			state.Damage[index] = combat.DamageDice{
@@ -962,6 +979,9 @@ func applyNPCCombatStats(state *tacticalState, index int, member poolsave.Charac
 	record.Name = member.Name
 	state.BaseMovement[index] = record.Movement()
 	state.HitPoints[index] = int(record.CurrentHitPoints())
+	if index < len(state.MaxHitPoints) {
+		state.MaxHitPoints[index] = int(record.MaxHitPoints())
+	}
 	state.THAC0[index] = uint8(60 - record.THAC0())
 	state.ArmorClass[index] = 60 - record.ArmorClass()
 	state.Damage[index] = combat.DamageDice{
@@ -1450,6 +1470,7 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 		return nil
 	}
 	state.HitPoints[target] = 0
+	state.rememberFootprint(int(target))
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
 	state.States[target] = combat.DyingState
@@ -1868,4 +1889,78 @@ func (state *tacticalState) releaseCharm(index int) {
 	if index < len(state.AIDriven) && index < len(state.PartySlot) {
 		state.AIDriven[index] = state.PartySlot[index] < 0
 	}
+}
+
+// rememberFootprint 在倒下之前把佔格類別存起來，死靈術要拿回來。
+// 已經是 0 的不覆寫——重複倒下不該把記住的那一個抹掉。
+func (state *tacticalState) rememberFootprint(index int) {
+	if index < 0 || index >= len(state.Roster) || index >= len(state.Footprint) {
+		return
+	}
+	if state.Roster[index].FootprintClass != 0 {
+		state.Footprint[index] = state.Roster[index].FootprintClass
+	}
+}
+
+// animateDead 重現 overlay-22 `2043h`（spec 098）。
+//
+// 它**不是**在盤面上生一個新的戰鬥員——是把已經死掉的人類屍體叫起來，
+// 換到施法者那一邊、改成不死生物。額度是施法者等級，一次叫一個。
+//
+// 逐條照碼：
+//
+//	2082  只對狀態 6（死亡）——瀕死（5）不算
+//	2090  只對 `+9Fh == 0`（人類）
+//	20E8  `+10Eh` 改成施法者那一邊、`+10Fh` 設 1 交給 AI
+//	2105  `+76h = 2`（驅散不死欄）、`+6Bh = 0`、`+72h = 6`（基礎移動）
+//	211A  清空記憶法術陣列 `+17h + 0..14h`
+//	2138  士氣：原本 > 7Fh 就設 0B2h，否則 0B3h
+//	215A  `+9Fh = 4`（不死）
+//	217C  生命值補到 `+32h`；掛效果碼 20h，參數是 (原陣營 << 4) + 施法者等級
+//	21C0  狀態 `+10Ch = 1`
+func (state *tacticalState) animateDead(casterLevel int) int {
+	budget := casterLevel
+	raised := 0
+	for index := 1; index < len(state.Roster) && budget > 0; index++ {
+		if index >= len(state.States) || state.States[index] != combat.DeadState {
+			continue
+		}
+		if index >= len(state.CreatureType) || state.CreatureType[index] != 0 {
+			continue
+		}
+		originalSide := uint8(0)
+		if index < len(state.Friendly) && state.Friendly[index] {
+			originalSide = 1
+		}
+		if int(state.Mover) < len(state.Friendly) && index < len(state.Friendly) {
+			state.Friendly[index] = state.Friendly[state.Mover]
+		}
+		if index < len(state.AIDriven) {
+			state.AIDriven[index] = true
+		}
+		if index < len(state.BaseMovement) {
+			state.BaseMovement[index] = gamepack.AnimatedDeadMovementRate
+		}
+		if index < len(state.CreatureType) {
+			state.CreatureType[index] = gamepack.CreatureTypeUndead
+		}
+		if index < len(state.Footprint) {
+			state.Roster[index].FootprintClass = state.Footprint[index]
+		}
+		if index < len(state.MaxHitPoints) && state.MaxHitPoints[index] > 0 {
+			state.HitPoints[index] = state.MaxHitPoints[index]
+		}
+		state.States[index] = gamepack.AnimatedState
+		if index < len(state.DyingCounters) {
+			state.DyingCounters[index] = 0
+		}
+		// 效果碼 20h 的參數把原陣營與施法者等級打包在一起（`20C8h`）。
+		state.addEffect(index, gamepack.AnimateDeadEffectCode, 0, casterLevel)
+		if at, ok := state.Effects[index].IndexOf(gamepack.AnimateDeadEffectCode); ok {
+			state.Effects[index][at].MarkApplied(originalSide)
+		}
+		budget--
+		raised++
+	}
+	return raised
 }

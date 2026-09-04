@@ -17,6 +17,9 @@ type CastEffect struct {
 	Heal int
 	// EffectCode 是要掛進效果串列的代碼（參數表 `+0Ah`，spec 069）。
 	EffectCode uint8
+	// AnimateDead 為真時走死靈術那條：把死掉的人類屍體叫起來
+	//（overlay-22 `2043h`，spec 098）。
+	AnimateDead bool
 	// Dispel 為真時走解除魔法那條：對範圍內每個人的效果串列逐個擲
 	//（overlay-22 `2356h`，spec 098）。
 	Dispel bool
@@ -124,6 +127,16 @@ const (
 // 魅惑人類（10）與迷蛇術（27）共用這個碼。
 const CharmPersonEffectCode = 0x0b
 
+// AnimateDeadEffectCode 是死靈術掛在屍體上的效果碼（`2199h` 推的 20h）。
+const AnimateDeadEffectCode = 0x20
+
+// CreatureTypeUndead 是不死生物（記錄 `+9Fh`）。死靈術把屍體改成這一種
+// （`215Ah`），驅散不死看的也是它。
+const CreatureTypeUndead = 4
+
+// AnimatedState 是死靈術之後的狀態（記錄 `+10Ch`，`21C0h` 寫 1）。
+const AnimatedState = 1
+
 // SleepEffectCode 是催眠術掛上去的效果碼（`15DEh` 推的 35h）。
 // overlay-15 的名稱鏈把它叫 "Funky--"（spec 069）。
 const SleepEffectCode = 0x35
@@ -208,6 +221,8 @@ const (
 	SpellIDGiantStrength  = 59 // 2E9Ah
 	SpellIDRayDamage      = 60 // 2F02h，原版沒有給它名字
 	SpellIDStrength       = 35 // 1F16h
+	// SpellIDAnimateDead 是死靈術（`2043h`）。
+	SpellIDAnimateDead = 36
 	// 解除魔法有兩個編號，共用 `2356h` 那一支。
 	SpellIDDispelMagic    = 41 // 2356h
 	SpellIDDispelMagicAlt = 46 // 2356h
@@ -504,6 +519,9 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
 		effect.PersonOnly = true
 		effect.SaveModifierByTargetCount = true
+	case SpellIDAnimateDead:
+		// `2043h`：把死掉的人類屍體叫起來，額度是施法者等級。
+		effect.AnimateDead = true
 	case SpellIDDispelMagic, SpellIDDispelMagicAlt:
 		// `2356h`：進場先把 `DS:677Eh` 設成 1（範圍法術），沿著每一個目標
 		// 身上的效果節點串列逐個擲。成功率由 DispelChance 決定。
@@ -548,7 +566,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDFireball, SpellIDLightningBolt,
 		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm,
 		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage, SpellIDStrength,
-		SpellIDDispelMagic, SpellIDDispelMagicAlt:
+		SpellIDDispelMagic, SpellIDDispelMagicAlt, SpellIDAnimateDead:
 		return true
 	}
 	return false

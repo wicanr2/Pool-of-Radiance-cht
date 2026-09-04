@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
@@ -196,5 +197,56 @@ func TestCharmSwitchesSidesAndDispelRestoresThem(t *testing.T) {
 	}
 	if !state.aiDrives(2) {
 		t.Fatal("怪物還原之後仍該由 AI 走")
+	}
+}
+
+// 死靈術**不是**在盤面上生一個新的戰鬥員，是把已經死掉的人類屍體叫起來
+// （spec 098 的 `2043h`）：換到施法者那一邊、改成不死、生命補滿、狀態變 1。
+// 額度是施法者等級。
+func TestAnimateDeadRaisesHumanCorpsesOnly(t *testing.T) {
+	state := newRoundState(4)
+	state.PartySlot = []int{-1, 0, -1, -1, -1}
+	state.AIDriven = []bool{false, false, true, true, true}
+	state.Friendly[1] = true
+	state.HitPoints = []int{0, 10, 0, 0, 0}
+	state.MaxHitPoints = []int{0, 10, 8, 8, 8}
+	state.CreatureType = []uint8{0, 0, 0, 4, 0}
+	state.States = []uint8{0, 0, combat.DeadState, combat.DeadState, combat.DyingState}
+	state.Footprint = []uint8{0, 1, 1, 1, 1}
+	for index := 2; index <= 4; index++ {
+		state.Roster[index].FootprintClass = 0
+	}
+	state.Mover = 1
+
+	raised := state.animateDead(1) // 施法者 1 級：額度 1
+	if raised != 1 {
+		t.Fatalf("叫起來 %d 具，額度 1 應該只叫得起 1 具", raised)
+	}
+	// 第 2 格是人類屍體，先被叫起來。
+	if !state.Friendly[2] || !state.aiDrives(2) {
+		t.Fatalf("第 2 格沒有換到施法者那一邊（%v / %v）", state.Friendly[2], state.aiDrives(2))
+	}
+	if state.CreatureType[2] != gamepack.CreatureTypeUndead {
+		t.Fatalf("生物種類是 %d，預期 %d", state.CreatureType[2], gamepack.CreatureTypeUndead)
+	}
+	if state.HitPoints[2] != 8 || state.States[2] != gamepack.AnimatedState {
+		t.Fatalf("生命 %d 狀態 %d", state.HitPoints[2], state.States[2])
+	}
+	if state.Roster[2].FootprintClass != 1 {
+		t.Fatal("叫起來之後沒有站回盤面")
+	}
+	if state.BaseMovement[2] != gamepack.AnimatedDeadMovementRate {
+		t.Fatalf("基礎移動是 %d，預期 %d", state.BaseMovement[2], gamepack.AnimatedDeadMovementRate)
+	}
+	if !state.hasEffect(2, gamepack.AnimateDeadEffectCode) {
+		t.Fatal("效果碼 20h 沒有掛上")
+	}
+	// 第 3 格已經是不死（`+9Fh != 0`）、第 4 格只是瀕死（狀態 5），兩個都不動。
+	if state.Friendly[3] || state.Friendly[4] {
+		t.Fatal("不是人類屍體的也被叫起來了")
+	}
+	// 額度用完就停：再叫一次才輪到別人。
+	if got := state.animateDead(5); got != 0 {
+		t.Fatalf("剩下的都不合格，卻叫起來 %d 具", got)
 	}
 }

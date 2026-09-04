@@ -441,6 +441,14 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		state.HitPoints[healed] += effect.Heal
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
 			strings.TrimSpace(member.Name), option.Label, state.HitPoints[healed]-before))
+	case effect.AnimateDead:
+		// 死靈術：把死掉的人類屍體叫起來，換到施法者那一邊（spec 098）。
+		raised := state.animateDead(casterLevel)
+		if raised == 0 {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
+		}
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAnimated), raised))
 	case effect.Dispel:
 		// 解除魔法（overlay-22 `2356h`）：沿著目標身上的效果節點串列走，
 		// 每一個各擲一次。`+3` 是 `0FFh` 的解不掉。
@@ -580,6 +588,7 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 		return
 	}
 	state.HitPoints[target] = 0
+	state.rememberFootprint(int(target))
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
 	state.States[target] = combat.DyingState
