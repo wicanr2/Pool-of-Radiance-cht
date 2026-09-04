@@ -132,6 +132,8 @@ type app struct {
 	loadPortrait    func(head, body uint8) (*ebiten.Image, error)
 	loadIcon        func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
 	state           poolsave.State
+	// iconMenu 是 combat icon editor 的巢狀選單狀態（spec 003 第 7..10 步）。
+	iconMenu        iconMenuState
 	// reloadTitle 換主題時把標題圖用新色盤重畫。
 	reloadTitle     func() error
 	saveState       func(poolsave.State) error
@@ -2255,54 +2257,13 @@ func (a *app) updateCreation() error {
 				return err
 			}
 			a.statusLine = "Portrait accepted."
+			a.resetIconMenu()
 			return a.reloadIcons()
 		}
 		return nil
 	}
 	if a.flow.Stage == creation.StageIcon {
-		changed := false
-		if a.justPressed(ebiten.KeyH) {
-			if err := a.flow.NextIconHead(); err != nil {
-				return err
-			}
-			changed = true
-		}
-		if a.justPressed(ebiten.KeyW) {
-			if err := a.flow.NextIconWeapon(); err != nil {
-				return err
-			}
-			changed = true
-		}
-		if a.justPressed(ebiten.KeyP) {
-			if err := a.flow.SelectNextIconPart(); err != nil {
-				return err
-			}
-		}
-		if a.justPressed(ebiten.KeyDigit1) {
-			if err := a.flow.NextIconColor(0); err != nil {
-				return err
-			}
-			changed = true
-		}
-		if a.justPressed(ebiten.KeyDigit2) {
-			if err := a.flow.NextIconColor(1); err != nil {
-				return err
-			}
-			changed = true
-		}
-		if a.justPressed(ebiten.KeyS) {
-			if err := a.flow.ToggleIconSize(); err != nil {
-				return err
-			}
-			changed = true
-		}
-		if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeyE) {
-			return a.flow.RequestIconConfirmation()
-		}
-		if changed {
-			return a.reloadIcons()
-		}
-		return nil
+		return a.iconMenuInput()
 	}
 	if a.flow.Stage == creation.StageIconConfirm {
 		if a.justPressed(ebiten.KeyN) {
@@ -2784,27 +2745,32 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		return
 	}
 	if a.flow.Stage == creation.StageIcon {
-		drawText(screen, "COMBAT ICON EDITOR", 216, 72, accent)
-		parts := []string{"BODY", "ARM", "LEG", "HAIR/FACE", "SHIELD", "WEAPON"}
-		drawText(screen, fmt.Sprintf("H HEAD %02d/13   W WEAPON %02d/31", a.flow.IconHead, a.flow.IconWeapon), 48, 116, foreground)
-		drawText(screen, fmt.Sprintf("P PART %-9s  1 COLOR-1 %X  2 COLOR-2 %X", parts[a.flow.IconPart], a.flow.IconColors[a.flow.IconPart][0], a.flow.IconColors[a.flow.IconPart][1]), 48, 146, foreground)
-		size := "LARGE"
-		if a.flow.IconSize == 1 {
-			size = "SMALL"
+		drawText(screen, "COMBAT ICON EDITOR", 216, 52, accent)
+		drawText(screen, a.iconMenuPath(), 48, 84, accent)
+		for index, option := range a.iconMenuOptions() {
+			prefix, ink := "  ", foreground
+			if index == a.iconMenu.cursor {
+				prefix, ink = "> ", accent
+			}
+			drawText(screen, prefix+option.label, 48, 116+index*22, ink)
 		}
-		drawText(screen, "S SIZE "+size, 48, 176, foreground)
-		drawText(screen, "READY", 356, 118, accent)
-		drawText(screen, "ACTION", 472, 118, accent)
+		drawText(screen, "READY", 356, 88, accent)
+		drawText(screen, "ACTION", 472, 88, accent)
 		for index, icon := range []*ebiten.Image{a.iconReady, a.iconAction} {
 			if icon == nil {
 				continue
 			}
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Scale(4, 4)
-			op.GeoM.Translate(float64(340+index*116), 142)
+			op.GeoM.Translate(float64(340+index*116), 112)
 			screen.DrawImage(icon, op)
 		}
-		drawText(screen, "ALL DOS OPTIONS ARE KEPT; DIRECT KEYS GUIDE THIS FIRST SLICE.", 48, 298, foreground)
+		size := "LARGE"
+		if a.flow.IconSize == 1 {
+			size = "SMALL"
+		}
+		drawText(screen, fmt.Sprintf("HEAD %02d  WEAPON %02d  SIZE %s",
+			a.flow.IconHead, a.flow.IconWeapon, size), 340, 268, foreground)
 		drawText(screen, a.hint("icon"), 48, 332, foreground)
 		return
 	}

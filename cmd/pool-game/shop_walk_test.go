@@ -143,7 +143,7 @@ func TestNormalKeysBuyAndEquipFromTheWeaponShop(t *testing.T) {
 	step("接受骰值", ebiten.KeyEnter)
 	step("輸入姓名", ebiten.KeyEnter, 'H', 'E', 'R', 'O')
 	step("保留肖像", ebiten.KeyK)
-	step("確認造形", ebiten.KeyEnter)
+	step("造形選單 EXIT", ebiten.KeyE)
 	step("造形 OK", ebiten.KeyY)
 	step("加入隊伍", ebiten.KeyA)
 	step("開始冒險", ebiten.KeyB)

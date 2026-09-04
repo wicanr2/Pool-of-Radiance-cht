@@ -603,18 +603,46 @@ func TestKeysContinueThroughNameAndOriginalPortraitEditor(t *testing.T) {
 	if application.iconReady == nil || application.iconAction == nil {
 		t.Fatal("combat icon previews were not loaded")
 	}
-	if err := press(application, ebiten.KeyH); err != nil || application.flow.IconHead != 1 {
-		t.Fatalf("icon HEAD: %d err=%v", application.flow.IconHead, err)
+	// combat icon editor 是巢狀選單（spec 003 第 7..10 步）：
+	// PARTS → HEAD → NEXT 一次，KEEP 收下，EXIT 回頂層。
+	for _, item := range []struct {
+		key  ebiten.Key
+		what string
+	}{{ebiten.KeyP, "PARTS"}, {ebiten.KeyH, "HEAD"}, {ebiten.KeyN, "NEXT"}} {
+		if err := press(application, item.key); err != nil {
+			t.Fatalf("icon %s: %v", item.what, err)
+		}
 	}
-	if err := press(application, ebiten.KeyW); err != nil || application.flow.IconWeapon != 1 {
-		t.Fatalf("icon WEAPON: %d err=%v", application.flow.IconWeapon, err)
+	if application.flow.IconHead != 1 {
+		t.Fatalf("icon HEAD: %d", application.flow.IconHead)
 	}
-	if err := press(application, ebiten.KeyP); err != nil || application.flow.IconPart != 1 {
-		t.Fatalf("icon PART: %d err=%v", application.flow.IconPart, err)
+	// EXIT 退回進來時的值，KEEP 才算數——兩個出口的差別就在這裡。
+	if err := press(application, ebiten.KeyE); err != nil || application.flow.IconHead != 0 {
+		t.Fatalf("icon HEAD EXIT: %d err=%v", application.flow.IconHead, err)
 	}
-	before := application.flow.IconColors[1][0]
-	if err := press(application, ebiten.KeyDigit1); err != nil || application.flow.IconColors[1][0] != (before+1)&0x0F {
-		t.Fatalf("icon COLOR-1: %d err=%v", application.flow.IconColors[1][0], err)
+	for _, item := range []struct {
+		key  ebiten.Key
+		what string
+	}{{ebiten.KeyH, "HEAD"}, {ebiten.KeyN, "NEXT"}, {ebiten.KeyK, "KEEP"}, {ebiten.KeyE, "PARTS EXIT"}} {
+		if err := press(application, item.key); err != nil {
+			t.Fatalf("icon %s: %v", item.what, err)
+		}
+	}
+	if application.flow.IconHead != 1 {
+		t.Fatalf("icon HEAD KEEP: %d", application.flow.IconHead)
+	}
+	// COLOR-1 的 BODY：畫面上第二列，記錄裡是第 0 格。
+	before := application.flow.IconColors[0][0]
+	for _, item := range []struct {
+		key  ebiten.Key
+		what string
+	}{{ebiten.KeyDigit1, "COLOR-1"}, {ebiten.KeyB, "BODY"}, {ebiten.KeyN, "NEXT"}, {ebiten.KeyK, "KEEP"}} {
+		if err := press(application, item.key); err != nil {
+			t.Fatalf("icon %s: %v", item.what, err)
+		}
+	}
+	if application.flow.IconColors[0][0] != (before+1)&0x0F {
+		t.Fatalf("icon COLOR-1: %d", application.flow.IconColors[0][0])
 	}
 }
 

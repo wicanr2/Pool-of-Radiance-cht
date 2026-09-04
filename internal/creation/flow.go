@@ -169,7 +169,7 @@ func (flow *Flow) KeepPortrait() error {
 	}
 	flow.IconHead, flow.IconWeapon, flow.IconPart = 0, 0, 0
 	flow.IconSize = 2
-	if flow.SelectedRace().ID == "dwarf" || flow.SelectedRace().ID == "gnome" || flow.SelectedRace().ID == "halfling" {
+	if flow.UsesIconSizeMenu() {
 		flow.IconSize = 1
 	}
 	flow.IconColors = [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}
@@ -252,4 +252,74 @@ func (flow Flow) Roll(roller Roller) (RolledCharacter, error) {
 		return RolledCharacter{}, fmt.Errorf("creation stage %d is not ready to roll", flow.Stage)
 	}
 	return RollCharacter(roller, flow.SelectedRace(), flow.SelectedGender(), flow.SelectedClass()), nil
+}
+
+// 巢狀 icon menu 需要的反向與直接設定。原版的 `NEXT / PREV / KEEP / EXIT`
+// 迴圈兩個方向都走得動（spec 003 第 8 步），而 COLOR-1／COLOR-2 的部位是
+// 直接點名的，不是一路循環過去。
+
+// PreviousIconHead 是 HEAD 的 PREV。
+func (flow *Flow) PreviousIconHead() error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	flow.IconHead = (flow.IconHead + 13) % 14
+	return nil
+}
+
+// PreviousIconWeapon 是 WEAPON 的 PREV。
+func (flow *Flow) PreviousIconWeapon() error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	flow.IconWeapon = (flow.IconWeapon + 31) % 32
+	return nil
+}
+
+// SelectIconPart 直接指定要改顏色的部位。
+func (flow *Flow) SelectIconPart(index int) error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	if index < 0 || index >= len(flow.IconColors) {
+		return fmt.Errorf("icon part %d is outside 0..%d", index, len(flow.IconColors)-1)
+	}
+	flow.IconPart = uint8(index)
+	return nil
+}
+
+// PreviousIconColor 是顏色的 PREV。四位元循環，與 NextIconColor 同一組。
+func (flow *Flow) PreviousIconColor(component int) error {
+	if flow.Stage != StageIcon || component < 0 || component > 1 {
+		return fmt.Errorf("invalid icon color edit")
+	}
+	flow.IconColors[flow.IconPart][component] = (flow.IconColors[flow.IconPart][component] + 0x0F) & 0x0F
+	return nil
+}
+
+// SetIconSize 直接設定大小。1 是小、2 是正常；SIZE 子選單的 LARGE 選的是 2。
+func (flow *Flow) SetIconSize(size uint8) error {
+	if flow.Stage != StageIcon {
+		return fmt.Errorf("creation stage %d does not edit an icon", flow.Stage)
+	}
+	if size != 1 && size != 2 {
+		return fmt.Errorf("icon size %d, want 1 or 2", size)
+	}
+	flow.IconSize = size
+	return nil
+}
+
+// SmallRaceIDs 是建角時圖示預設為小號的種族（KeepPortrait 設 IconSize = 1
+// 的那三個）。SIZE 子選單只對他們有意義——別的種族本來就是正常大小。
+func SmallRaceIDs() []string { return []string{"dwarf", "gnome", "halfling"} }
+
+// UsesIconSizeMenu 回答這個角色的 icon editor 要不要顯示 SIZE。
+func (flow Flow) UsesIconSizeMenu() bool {
+	id := flow.SelectedRace().ID
+	for _, small := range SmallRaceIDs() {
+		if id == small {
+			return true
+		}
+	}
+	return false
 }

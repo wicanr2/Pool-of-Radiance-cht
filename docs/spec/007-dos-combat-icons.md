@@ -39,8 +39,44 @@ overlay-16 `37F2h..3F00h`：
 low nibble 是 Color-1，high nibble 是 Color-2。`+BFh` 在 `3851h..3873h` 暫時改成
 `0Ch` 後恢復，語意仍未知；remake codec 必須原值保存，不得命名或覆寫。
 
+## 巢狀選單
+
+原版的 editor 是巢狀的（spec 003 第 7..10 步），remake 照著做：
+
+```
+PARTS / COLOR-1 / COLOR-2 / SIZE / EXIT
+  PARTS   → HEAD / WEAPON / EXIT      → NEXT / PREV / KEEP / EXIT
+  COLOR-1 → WEAPON / BODY / HAIR / SHIELD / ARM / LEG / EXIT
+                                       → NEXT / PREV / KEEP / EXIT
+  COLOR-2 → 同上，HAIR 換成 FACE
+  SIZE    → LARGE / KEEP / EXIT
+  EXIT    → IS THIS ICON OK? YES NO
+```
+
+三件容易做錯的事：
+
+1. **畫面順序與記錄順序不同。** COLOR 子選單上武器排第一，記錄裡它是最後
+   一格（`+0C6h`）；六格的對應是 WEAPON→5、BODY→0、HAIR/FACE→3、SHIELD→4、
+   ARM→1、LEG→2。挑錯就改到別的部位，而畫面上兩者都會變色，看不出來。
+2. **HAIR 與 FACE 是同一格。** `+0C4h` 的 low nibble 是 COLOR-1、high nibble 是
+   COLOR-2，所以 COLOR-2 那一層把它叫 FACE 只是換名字，不是另一個部位。
+3. **SIZE 只對預設小號的種族有意義。** 建角把矮人、侏儒、半身人的 `+0C0h`
+   設成 1，其餘設 2；SIZE 子選單因此只顯示給前三者。
+
+`NEXT / PREV / KEEP / EXIT` 那一層裡 **KEEP 收下候選、EXIT 退回進來時的值**。
+原版同時給這兩個出口，其中一個不做事的話就是多餘的——但 spec 003 只記到
+「以 `NEXT / PREV / KEEP / EXIT` 循環並接受候選」，所以這一條是**強推論**。
+`3E27h..3E5Ah` 只在最終確認後才提交那八個 byte，與「編輯過程動的是暫存值」
+一致。
+
+實作在 `cmd/pool-game/icon_menu.go`；`TestIconMenuLevelsMatchTheOriginalScreens`、
+`TestIconColourMenuMapsToTheRecordSlots`、`TestIconCycleKeepAcceptsAndExitReverts`
+與 `TestIconSizeMenu` 釘住上面四點。
+
 ## 實作閘門
 
 adapter 必須拒絕 selector 或 size 越界，四種極值 block 都要在真實 ZIP 解碼並合成。
-UI 可提供清楚的現代引導與 ESC 返回，但不能省略原版的 Head、Weapon、六部位雙色、
-Size，以及 READY／ACTION 同時預覽。原版素材不提交 Git，只在本機 DOS ZIP 執行期解碼。
+UI 必須走原版的巢狀選單，不得用扁平熱鍵取代；Head、Weapon、六部位雙色、Size 與
+READY／ACTION 同時預覽一項都不能少。方向鍵是 remake 補的第二條路，首字母那一條
+不能拿掉——原版是「以第一個字選擇之」。原版素材不提交 Git，只在本機 DOS ZIP
+執行期解碼。

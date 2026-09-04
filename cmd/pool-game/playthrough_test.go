@@ -60,7 +60,7 @@ func TestNormalKeysReachTheFirstDungeonStep(t *testing.T) {
 	step("接受骰值", ebiten.KeyEnter)
 	step("輸入姓名", ebiten.KeyEnter, 'H', 'E', 'R', 'O')
 	step("保留肖像", ebiten.KeyK)
-	step("確認造形", ebiten.KeyEnter)
+	step("造形選單 EXIT", ebiten.KeyE)
 	step("造形 OK", ebiten.KeyY)
 	if len(application.state.CharacterLibrary) != 1 {
 		t.Fatalf("character library holds %d after creation", len(application.state.CharacterLibrary))
