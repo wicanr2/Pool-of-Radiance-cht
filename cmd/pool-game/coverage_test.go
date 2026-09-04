@@ -406,6 +406,12 @@ func planToCells(app *app, rotate int, wanted func(x, y int) bool) []exploreStep
 // 「說 LUX 才會出現」的那個亡魂永遠碰不到。
 var eclPasswords = []string{"SAMOSUD", "LUX", "SHESTNI", "NOKNOK"}
 
+// knownECLPasswords 是「這一格只有一次機會」的那些門，直接說對的字。
+// 鍵是 (ECL archive, block)。
+var knownECLPasswords = map[[2]int]string{
+	{7, 23}: "NOKNOK",
+}
+
 // exploreMaxTransitionHops 是「這一張走完了，回頭走另一個換圖點」最多做幾次。
 // 沒有上限的話，所有圖都走完之後兩張圖之間會一直來回。
 const exploreMaxTransitionHops = 60
@@ -511,6 +517,10 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	quest := [2]uint16{}
 	// 每一種選單只印一次，用來確認某一支腳本到底有沒有被觸發。
 	seenMenus := map[string]bool{}
+	// 剛送出密碼的格子。原版是「輸入 → 印出你打的字 → [YES NO] 確認」，
+	// 答 NO 就跳回去重新輸入（ecl7/23 的 `A4C6 GOTO A3FAh`）。治具若在這裡
+	// 輪流答，永遠有一半機會回頭，就走不完這一格。
+	confirmInput := map[[3]int]bool{}
 	heldHere := false
 	// harbourTried 讓「主線鎖住就先去港務長」每個鎖住期間只試一次。
 	harbourTried := false
@@ -695,6 +705,15 @@ walk:
 					int(application.spawn.Map.BlockID),
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
 				word := eclPasswords[menuTurn[key]%len(eclPasswords)]
+				// 已知哪一格要哪個字就直接說。ecl7/23 的密碼門答錯一次會
+				// 扣血、`A564 OR 4A51h #64` 設旗標然後 EXIT，而入口
+				// `A3E4` 檢查同一個 bit 就 EXIT——**這一格只有一次機會**，
+				// 輪流試等於把它用掉。
+				if known, ok := knownECLPasswords[[2]int{
+					int(application.spawn.Map.Archive),
+					int(application.spawn.Map.BlockID)}]; ok {
+					word = known
+				}
 				// 推主線那一條走有目的的路：索寇要塞登陸那一格的亡魂只問
 				// 一次（問完 `SAVE 255 @4A13`），答錯就再也不出現，所以
 				// 輪流試沒有用——直接說它要的字。
@@ -702,6 +721,7 @@ walk:
 					word = "LUX"
 				}
 				menuTurn[key]++
+				confirmInput[key] = true
 				application.keys = scriptedChars(word)
 				if err := application.Update(); err != nil {
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
@@ -738,6 +758,10 @@ walk:
 						application.spawn.Facing, application.cellMenuOptions)
 				}
 				want := menuTurn[key] % len(application.cellMenuOptions)
+				// 剛打完密碼的那一次是確認框，答 NO 只會跳回去重打。
+				if confirmInput[key] {
+					want = 0
+				}
 				// flags 非 nil 那一條要推主線，所以 YES／NO 一律答 YES
 				//（「要不要拿走裝備」答 NO 就推不動要塞那一段）。
 				if flags != nil && strings.EqualFold(application.cellMenuOptions[0], "YES") {
@@ -801,6 +825,7 @@ walk:
 					continue
 				}
 				menuTurn[key]++
+				delete(confirmInput, key)
 			}
 			if err := press(application, ebiten.KeyEnter); err != nil {
 				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))

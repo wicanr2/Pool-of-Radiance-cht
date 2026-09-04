@@ -766,25 +766,39 @@
   修正後綠）、`TestRequiredFacingRejectsCellsOffTheBoard`，世界巡迴 22 趟的
   硬失敗從 3 筆歸零，整包測試綠。
 
-- [ ] **GEO7/23 (1,1) 的格子選單卡住**（2026-09-03 定位，還沒修）。
-  重現：世界巡迴 `seed 106`、`destination 2`（102 趟掃描裡只有這一趟走到
-  GEO7/23，走到就卡）。那一格是密碼門，迴圈的形狀是：
+- [x] **GEO7/23 (1,1) 的格子選單卡住**（2026-09-04 查完並修好）。
+  **不是遊戲的缺陷，是治具永遠答 NO。** ecl7/23 的密碼門控制流讀完了：
 
-      告示牌「'DON'T FORGET THE PASSWORD'…135 136 132 135 136 132」
-        → [YES NO]（提示只有一個 `?`）
-        → 治具答 NO → **告示牌從頭再跑一次** → 無限循環
+      A4A1 INPUT STRING #6 → 6E79h   輸入六個字
+      A4B9 PRINT 6E79h               把玩家打的字印出來
+      A4C1 GOSUB 9982h               [YES NO] 確認框
+      A4C5 IF <> → A4C6 GOTO A3FAh   答 NO：跳回去重新輸入
+      A4CA COMPARE 6E79h #5
+      A4D5 IF = → A4D6 GOTO 9BE3h    答對：SPRITE OFF、CALL 2C90h、門開
+      A4DA…A559 DAMAGE #224 #1 #1 #200 #0
+      A564 OR 4A51h #64 4A51h        答錯：扣血、設旗標
+      A56D EXIT
 
-  兩個疑點要分開查，別混成一個：
-  1. **答完之後事件為什麼從頭重跑**。`cellWaitingMenu` 在整段 4000 個 tick 裡
-     沒有一次變回 false，所以 `finishCellBlock` 沒被走到。要讀 ecl7/23 那一格
-     答 NO 之後的控制流，才知道原版是「離開這一格」還是「再問一次」。
-  2. **提示只剩 `?`**。前半句應該跟告示牌那則是同一段文字；懷疑是
-     `33h PRINT RETURN` 的文字累積把前半清掉了（`pauseAppliedCellResult`
-     已經因為套用兩次踩過一次同類的坑）。這個不會造成卡住，但會讓玩家看不懂
-     在問什麼。
+  入口 `A3E4 AND 4A51h #64` 檢查同一個 bit，設了就 `A3F9 EXIT`。所以原版
+  **三條路都會結束**：答對開門、答錯把這一格永久關掉、答 NO 才回頭重打。
+  無限迴圈只有一種走法會發生——**每一次都答 NO**，而那正是治具的行為。
 
-  這一格的密碼是 `NOKNOK`（ecl7/23 的唯一 `INPUT STRING`，`A4CAh`），
-  治具的 `eclPasswords` 已經帶著它——所以答 YES 那一支值得先確認走不走得通。
+  根因在治具：密碼輸入與選單**共用同一個 `menuTurn[key]`**，兩者交替各
+  `++` 一次，於是選單永遠落在奇數（`% 2 == 1` ＝ NO）、密碼永遠落在偶數
+  （`% 4` 只取得到 `SAMOSUD` 與 `SHESTNI`），`NOKNOK` 這個正解永遠輪不到。
+  兩個週期咬死，看起來就像遊戲卡住。
+
+  修了兩件事：剛送出密碼的格子下一個選單一律選第 0 項（確認框答 NO 只會
+  跳回去重打）；已知密碼的門直接說對的字（`knownECLPasswords`），因為
+  原版只給一次機會，輪流試等於把它用掉。修完那一趟的迴圈分布從
+  「輸入字串 2668、格子選單 4045」變成「輸入字串 2、格子選單 49」，
+  並走到門後的 `[MOVE QUICKLY AWAY DESTROY THE EQUIPMENT]`。
+  回歸測試 `TestCellMenuDoesNotStallAtTheGEO7PasswordDoor` 單獨跑那一趟；
+  世界巡迴 22 趟仍是零硬失敗。
+
+  **提示只剩 `?` 的那一項還在**（`33h PRINT RETURN` 的文字累積把前半清掉，
+  懷疑同 `pauseAppliedCellResult` 那類重複套用）。它不造成卡住，但玩家看不懂
+  在問什麼，留給下一步。
 
 - [ ] **平台驗收的 workflow 進不了共用 engine**（2026-09-03 實跑
   `gh workflow run platform-smoke.yml` 量到）。`build (macos-14)` 與
