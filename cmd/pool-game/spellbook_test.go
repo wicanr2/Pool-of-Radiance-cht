@@ -145,3 +145,62 @@ func TestTheSpellScreenBindsLToLearning(t *testing.T) {
 		t.Fatalf("按 L 沒有學會：%q", application.statusLine)
 	}
 }
+
+// 挑得到哪幾條照原版 "Learn" 清單的規則（overlay-22 entry 2 模式 4，
+// spec 110）：那一級有格子而且法術書上還沒有。**不看職業組**——組別已經
+// 藏在「有沒有格子」裡。
+func TestLearnFollowsTheOriginalCandidateRule(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	// 牧師 1 級：第 1 級神術有格子，巫術一格都沒有。
+	// 法術書先手動放一條，避免建角規則把第 1 級神術整批補滿——那樣就沒有
+	// 「有格子但還沒會」的正面案例了。
+	member := poolsave.Character{Name: "ALFRED", ClassID: "cleric",
+		Abilities: [6]int{10, 10, 18, 10, 10, 10}, MaxHP: 8, CurrentHP: 8,
+		Spellbook: []uint8{1}, SpellsToLearn: 2}
+	application.state = poolsave.State{Schema: poolsave.Schema, Party: []poolsave.Character{member}}
+	application.saveState = func(poolsave.State) error { return nil }
+	if err := application.openSpells(); err != nil {
+		t.Fatal(err)
+	}
+	application.spellMember = 0
+	application.ensureSpellbook(0)
+
+	maxima, _, ok := application.spellMemberSlots(0)
+	if !ok {
+		t.Fatal("這名角色算不出可記憶數")
+	}
+	var cleric, wizard uint8
+	for id := 1; id < len(application.spellParameters); id++ {
+		entry := application.spellParameters[id]
+		source, level := int(entry.Source()), entry.Level()
+		if level < 1 || level > gamepack.SpellSlotLevels || source >= len(maxima) {
+			continue
+		}
+		if gamepack.SpellbookKnows(application.state.Party[0].Spellbook, uint8(id)) {
+			continue
+		}
+		if maxima[source][level-1] > 0 && cleric == 0 {
+			cleric = uint8(id) // 有格子：學得起
+		}
+		if maxima[source][level-1] <= 0 && wizard == 0 {
+			wizard = uint8(id) // 沒格子：學不起
+		}
+	}
+	if cleric == 0 || wizard == 0 {
+		t.Fatalf("湊不出正負對照：有格子的 %d、沒格子的 %d", cleric, wizard)
+	}
+	before := len(application.state.Party[0].Spellbook)
+	learnByID(t, application, cleric)
+	if len(application.state.Party[0].Spellbook) != before+1 {
+		t.Fatalf("有格子的編號 %d 學不起來：%q", cleric, application.statusLine)
+	}
+	before = len(application.state.Party[0].Spellbook)
+	learnByID(t, application, wizard)
+	if len(application.state.Party[0].Spellbook) != before {
+		t.Fatalf("沒格子的編號 %d 不該學得起來", wizard)
+	}
+}

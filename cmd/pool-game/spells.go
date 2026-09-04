@@ -272,15 +272,17 @@ func (a *app) learnHighlightedSpell() {
 		return
 	}
 	entry := a.spellParameters[id]
-	// 額度只給法師，也只學得起現在施得出來的等級。
+	// 挑得到哪幾條照原版的 "Learn" 清單（overlay-22 entry 2 的模式 4，
+	// spec 110）：**那一級有格子而且法術書上還沒有**。原版不另外看職業組
+	// ——組別已經藏在「有沒有格子」裡，牧師的格子在牧師那一欄。
 	maxima, _, ok := a.spellMemberSlots(a.spellMember)
 	if !ok {
 		return
 	}
-	level := entry.Level()
-	if int(entry.Source()) != gamepack.SpellSlotGroupMagicUser ||
+	source, level := int(entry.Source()), entry.Level()
+	if source < 0 || source >= len(maxima) ||
 		level < 1 || level > gamepack.SpellSlotLevels ||
-		maxima[gamepack.SpellSlotGroupMagicUser][level-1] <= 0 {
+		maxima[source][level-1] <= 0 {
 		a.statusLine = fmt.Sprintf("%s%s%s", name, a.text(msgSpellsCannotLearn), group[state.cursor].Text)
 		return
 	}
