@@ -1106,10 +1106,21 @@
   **兩個 repo 都是 private、這個 repo 一個 secret 都沒有**，預設的
   `GITHUB_TOKEN` 只有本 repo 的權限，跨 repo 抓 private 一定失敗。
   2026-09-04 使用者定案 **engine 維持 private**，所以只剩加 PAT 這條路。
-  解除條件：在本 repo 建一個有 engine 讀取權的 PAT secret，並把 workflow 的
-  `actions/checkout` 換成用它。在那之前這個 workflow 驗不到任何東西——
-  Linux 與 Wine 的驗收改走本地 Docker（`tools/linux-release-smoke.sh`、
-  `tools/windows-release-smoke.sh`），已經在做，不受影響。
+  解除條件有**兩條路，要使用者選一條**（2026-09-05 補上第二條）：
+
+  1. **PAT secret**：在本 repo 建一個有 engine 讀取權的 PAT secret，
+     workflow 的 `actions/checkout` 改成用它。維持「共用 engine 只有一份
+     來源」不變，代價是要管一個長期憑證。
+  2. **`go mod vendor`**：把 engine 的原始碼 vendor 進本 repo，CI 就完全
+     不必抓另一個 repo，一個 secret 都不用。代價是 repo 裡多一份 engine 的
+     複本，而且 engine 每次更新都要重新 vendor——`vendor/` 是建置產物不是
+     第二份真相，但它會讓「engine 改了、Pool 沒重新 vendor」變成一種
+     新的不同步。
+
+  兩條都動到 CI，依 `30-lcy-agent-boundaries` 要先得到使用者同意才做。
+  在那之前這個 workflow 驗不到任何東西——Linux 與 Wine 的驗收改走本地 Docker
+  （`tools/linux-release-smoke.sh`、`tools/windows-release-smoke.sh`），
+  已經在做，不受影響。
 
   動共用 engine 之前要先取得使用者同意——那是另一個 repo，本專案的 push 授權
   不涵蓋它。該 repo 的 repo-local `user.email` 已經是 `wicanr2@gmail.com`
