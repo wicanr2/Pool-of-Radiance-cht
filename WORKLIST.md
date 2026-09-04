@@ -178,8 +178,17 @@
   exact；Spec 010 已閉合首次旗標、Rolf 第一頁、事件位置／朝向、monster 12 與 Return
   閘門。Spec 011 又閉合並實作四張 34-byte table、34-step scripted movement、六個停靠
   selector／七頁文字與最終 ECL `EXIT`；正常按鍵已走到 Tyr 停靠畫面。wrapped traversal
-  仍是跨作品 strong inference；Rolf 初次 APPROACH 圖像、自由移動交接、地名、
-  bounded／wrapped／door policy、背景與同狀態 DOS 畫面仍待證明。
+  仍是跨作品 strong inference；自由移動交接、地名、bounded／wrapped／door
+  policy 仍待證明。
+  **同狀態 DOS 畫面已經對拍了**（2026-09-05）：`tools/capture-dos-adventure.sh`
+  把原版一路開到第一人稱畫面，四張基準圖與逐項差異寫在
+  `docs/reference/original-dos/adventure/README.md`。**Rolf 初次 APPROACH
+  的圖像也在那裡**（不再是待證明）。
+  對拍結果是**不一致**，最大的一項是視野的尺度：remake 的牆片畫在
+  `viewLeft + 欄 × 16` 再放大兩倍，背景卻填 `StageInset{88×88}`，兩者對不上，
+  所以牆片縮在框底一條，上面四分之三是純色；原版那一框的透視是滿的。
+  其次是配色（原版天空青色、地面棕色棧道；remake 全藍加灰）與棧道上的人形。
+  朝向與文字對得上：remake 顯示 `FACING 3`、原版顯示 `W`，Rolf 第一頁逐字相同。
   Spec 047 已將第一人稱內容填滿內框的三層繪製契約抽到共用 engine
   `viewport.FillBackgroundToStageInset`；Pool 與 CoAB 都只宣告各自的 viewport 幾何，
   共用 engine 負責背景外擴與牆片之後的上緣補層。兩作的整合測試已通過；Pool 的

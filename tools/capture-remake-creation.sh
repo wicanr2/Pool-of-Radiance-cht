@@ -64,13 +64,16 @@ ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-portrait-editor.png
 pulse k
 sleep 0.8
-for key in h w p 1 2 s; do
+# combat icon editor 是巢狀選單（spec 003 第 7..10 步）：
+# PARTS → HEAD → NEXT → KEEP → EXIT，再回頂層。抓的是頂層那一張。
+for key in p h n k e; do
   pulse "$key"
 done
 sleep 0.5
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-combat-icon-editor.png
-pulse Return
+# 頂層 EXIT 才進確認頁（原本按 Return，那是扁平版的行為）。
+pulse e
 sleep 0.5
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-icon-confirm.png
