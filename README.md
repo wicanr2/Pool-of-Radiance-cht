@@ -218,9 +218,10 @@ Rolf 導覽、Sune／City Hall 早期事件與 Slums 戰鬥前 staging 已接通
 ## 授權、致謝與聲明
 
 本專案中由權利人擁有的程式碼、繁體中文翻譯、文件、反組譯規格與工具採
-[PolyForm Noncommercial License 1.0.0](LICENSE)：非商業用途免費，包含修改與再
-散布；商業用途請另行洽談。這是 **source-available**，不是開源——非商業限制不
-符合 OSI 的開源定義。
+[RRSAL-1.0](LICENSE)（復古重製 source-available 授權條款 1.0）：非商業用途免費，
+包含修改與再散布；遊戲實況、錄影、直播與其平台分潤由條款第 4 條明示允許；商業
+用途請另行洽談。這是 **source-available**，不是開源——非商業限制不符合 OSI 的
+開源定義。
 
 授權**不涵蓋**原版素材：SSI／Strategic Simulations, Inc. 的《Pool of Radiance》
 遊戲、商標、圖像、音樂與資料檔；軟體世界代理當年的官方繁中說明書譯文；

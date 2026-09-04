@@ -85,6 +85,8 @@ run_helper "set -eu
     cp packaging/README-發行包.md \"\$target/README.md\"
   done
   cp LICENSE NOTICE.md \"\$BASE/linux/AppDir/usr/share/doc/\"
+  # 發行根目錄自己也要一份：從 dist-all/ 直接取檔的人看不到儲存庫。
+  cp LICENSE NOTICE.md '$OUT/'
 
   cp \"\$B/pool-game-linux-amd64\" \"\$BASE/linux/AppDir/usr/bin/pool-game\"
   cp packaging/linux/AppRun \"\$BASE/linux/AppDir/AppRun\"

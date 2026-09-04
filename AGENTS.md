@@ -213,8 +213,9 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
 - 公開 patch／engine 包與含合法自備原版資料的 `full-local` 完全分離；
   原版 ZIP／資料檔、轉檔 PNG／OGG、手冊、字型與第三方依賴各自建立
   可公開／僅本機／權利未明拒絕清單。
-- 本專案不自動繼承 CoAB 的 PolyForm Noncommercial 決定。公開發行前必須
-  由使用者確認程式碼授權、商業與衍生使用邊界；標準授權文必須保持原文。
+- 授權採 RRSAL-1.0（復古重製 source-available 授權條款 1.0），與 CoAB 及共用
+  engine 一致，由使用者於 2026-09-04 指定。標準授權文必須保持原文；`LICENSE`
+  與 `NOTICE.md` 要同時存在於 repo 根目錄與每一個發行包。
 - 推廣片由目前封包重新擷取，至少包含 DOS／remake 明確標示的流程對照、
   實際遊玩、建角／建隊、地圖、戰鬥、語言與設定。對照圖必須標出
   same-state／nearby／layout-only，不用不同存檔冒充 exact。

@@ -851,8 +851,8 @@
 
 ## 發行
 
-- [x] 授權已定案並落地：PolyForm Noncommercial License 1.0.0（非商業免費含修改
-  再散布，商業另談），`LICENSE` 與 `NOTICE.md` 在 repo 根目錄，也複製進每一個
+- [x] 授權已定案並落地：RRSAL-1.0（非商業免費含修改再散布，實況與平台分潤
+  明示允許，商業另談），`LICENSE` 與 `NOTICE.md` 在 repo 根目錄，也複製進每一個
   發行包。`NOTICE.md` 明列不因此被重新授權的東西：SSI 原版資產、軟體世界的
   說明書譯文、倚天字型、共用 engine 與第三方套件。
 - [x] 三平台發行包可重生：`tools/package-release.sh <版本>` 產出 Linux AppImage、
