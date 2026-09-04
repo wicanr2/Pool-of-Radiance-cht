@@ -2,6 +2,36 @@
 
 更新日期：2026-09-04。
 
+## 2026-09-04 `11h PRINT` 是接續，不是取代
+
+密碼確認框只顯示一個 `?` 的成因查到了，與原本懷疑的 `33h PRINT RETURN`
+無關：**`11h PRINT` 被當成取代**。共用 VM 對 `11h`／`12h` 走同一支 handler
+（`case 0x11, 0x12`），只把文字包成事件；分頁語意在消費端，而消費端先前用
+「上一則以換行收尾才接上去」這個啟發式，對兩者一視同仁。
+
+原版兩者不同。`12h PRINTCLEAR` 是新的一頁，`11h PRINT` 接在目前這一頁後面
+——原版靠它把一句話拼起來，而且中間沒有任何等待玩家的指令：
+
+    ecl7/23  A4A7 PRINTCLEAR "DO YOU REALLY MEAN"
+             A4B9 PRINT      6E79h      ← 玩家剛打進去的字
+             A4BD PRINT      "?"
+             A4C1 GOSUB      9982h      ← [YES NO]
+
+    ecl3/0   AC22 PRINTCLEAR "…IN YOUR JOURNAL YOU NOTE"
+             AC5C GOTO       AC9Bh
+             AC9B PRINT      "PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX."
+
+市政廳那一句先前被拆成兩頁，第一頁以 `YOU NOTE` 結尾——**那個分頁是 remake
+的 `RunUntilEvent` 一遇事件就返回造成的，不是原版行為**，而測試把它固化成
+期望值。已改成一句並更新測試。
+
+四段文字的原始 bytes 前後都不帶空白，所以分隔一定由繪製端補。`joinPrintedText`
+補一個空格、標點開頭不補；**原版實際是空格還是換行沒有畫面證據**，標為
+`layout-reconstructed`，寫在 spec 082 的「還沒讀」。
+
+順帶關掉 spec 082 自己列的一個未讀項：兩頁之間是誰清的框——`11h` 已排除，
+它是接續。
+
 ## 2026-09-04 密碼門那個「卡住」是量測工具自己造成的
 
 GEO7/23 (1,1) 的選單卡住查完了：**遊戲沒有缺陷，是探索治具永遠答 NO。**

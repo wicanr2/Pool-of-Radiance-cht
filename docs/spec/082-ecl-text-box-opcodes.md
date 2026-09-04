@@ -1,7 +1,7 @@
-# Spec 082：文字框的兩條 opcode（`33h PRINT RETURN`、`3Dh CLEAR BOX`）
+# Spec 082：文字框的四條 opcode（`11h`、`12h`、`33h`、`3Dh`）
 
-狀態：READY（兩條 handler 讀完並接上；跨頁清框的機制仍未讀，見「還沒讀」）。
-日期：2026-09-03。
+狀態：READY（四條都接上；分頁的分隔字元仍未讀，見「還沒讀」）。
+日期：2026-09-04（原 2026-09-03，本輪加入 `11h`／`12h` 的區分）。
 
 ## `33h PRINT RETURN`（overlay-03 `2E44h`，0 個運算元）
 
@@ -31,6 +31,36 @@
 兩組都是「左、上、右、下」的框，所以那支是**把一塊矩形清掉**。
 `82A4h` 是「框已經清過」的旗標。
 
+## `11h PRINT` 與 `12h PRINTCLEAR` 是兩件事
+
+共用 VM 對這兩條走同一支 handler（`eclvm/machine.go` 的 `case 0x11, 0x12`），
+只把文字包成事件送出去；**分頁的語意在消費端**，而且兩者不同：
+
+- `12h PRINTCLEAR`：新的一頁。
+- `11h PRINT`：**接在目前這一頁後面**，原版靠它把一句話拼起來。
+
+證據是兩處指令序列，中間都沒有任何等待玩家的指令：
+
+```
+ecl7/23  A4A7 PRINTCLEAR "DO YOU REALLY MEAN"
+         A4B9 PRINT      6E79h            ; 玩家剛打進去的字
+         A4BD PRINT      "?"
+         A4C1 GOSUB      9982h            ; [YES NO]
+
+ecl3/0   AC22 PRINTCLEAR "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE"
+         AC55 COMPARE    4AC1h #0
+         AC5C GOTO       AC9Bh
+         AC9B PRINT      "PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX."
+```
+
+兩段都要拼起來才成句。把 `11h` 也當成取代的話，密碼確認框只會剩下一個
+`?`，市政廳的布告則只剩後半句。
+
+**兩段之間原版沒有空白**：四段文字的原始 bytes 解出來，`…YOU NOTE` 以 `E`
+結尾、`PROCLAMATIONS LXIV…` 以 `P` 開頭，`DO YOU REALLY MEAN` 以 `N` 結尾、
+`?` 就是問號本身，前後都不帶空格。直接串接會得到 `YOU NOTEPROCLAMATIONS`，
+所以分隔由呈現層補：`joinPrintedText` 補一個空格，新片段以標點開頭時不補。
+
 ## remake 怎麼接
 
 兩條都走 passthrough 讓前端拿到事件。共用 VM 的 `RunUntilEvent`
@@ -39,13 +69,12 @@
 
 - `3Dh CLEAR BOX` 清掉整個框。
 - `33h PRINT RETURN` 在框尾加一個換行。
-- 有文字的事件：**上一則以換行收尾就接上去，否則這是新的一頁**。
+- `11h PRINT` 接在目前這一頁後面（`joinPrintedText`）。
+- `12h PRINTCLEAR` 是新的一頁；上一則以換行收尾時才續行。
 
-最後那條是刻意的。原版靠什麼在兩頁之間清框還沒讀出來——市政廳那幾個
-block（ECL3）根本沒有 `3Dh`，而逐頁取代的行為先前已經對過原版
-（spec 015／016 的市政廳流程，測試逐頁比對文字）。一律改成累積會讓那條路
-的每一頁疊在前一頁上面，那是拿驗過的行為去換沒驗過的；而「換行之後才接」
-讓有 `33h` 的地方真的接得起來，沒有 `33h` 的地方維持原樣。
+`12h` 那條的「換行才續行」是刻意的。原版靠什麼在兩頁之間清框還沒讀出來
+——市政廳那幾個 block（ECL3）根本沒有 `3Dh`——而逐頁取代已經對過原版
+（spec 015／016）。有 `33h` 的地方接得起來，沒有 `33h` 的地方維持原樣。
 
 同一個 result **只能套用一次**：`33h` 之後框的內容會隨套用次數改變。
 `consumeInitialSearch` 套過的 result 交給 `pauseAppliedCellResult`，
@@ -53,8 +82,11 @@ block（ECL3）根本沒有 `3Dh`，而逐頁取代的行為先前已經對過�
 
 ## 還沒讀
 
-- 兩頁之間是誰清的框。候選是共用 VM 已經處理的 `11h`／`1Ah` 那一族，
-  或選單常式自己清。
+- **`11h` 兩段之間原版怎麼分隔**。原始文字前後都不帶空白，所以分隔一定由
+  繪製端補；remake 目前補一個空格（標點開頭不補），但原版也可能是換行。
+  要定案需要那兩格的原版畫面，`layout-reconstructed`。
+- 兩頁之間是誰清的框。`11h` 已經排除——它是接續，不是清框。剩下的候選是
+  `1Ah` 那一族或選單常式自己清。
 - `5D82h`／`5D83h`／`82A4h`／`82A5h` 的讀取端：換行計數器被誰用來決定
   「印滿一框要不要停下來等按鍵」。
 - `0198h:0066h` 的實際繪製行為（remake 的文字框沒有畫素級對拍）。

@@ -96,6 +96,10 @@ const (
 	// ParlayResultOperand 是「結果寫進哪個 ECL 變數」那個運算元的序號。
 	ParlayResultOperand = 6
 
+	// PrintOpcode 是 `11h PRINT`（spec 082）：**接著印**，不清框。
+	// 原版靠它把一句話拼起來，例如 ecl7/23 的密碼確認框是
+	// `12h "DO YOU REALLY MEAN"` ＋ `11h <玩家打的字>` ＋ `11h "?"`。
+	PrintOpcode = 0x11
 	// PrintReturnOpcode 是 `33h PRINT RETURN`（spec 082）：文字框換行。
 	PrintReturnOpcode = 0x33
 	// ClearBoxOpcode 是 `3Dh CLEAR BOX`（spec 082）：清掉文字框。

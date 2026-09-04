@@ -796,9 +796,13 @@
   回歸測試 `TestCellMenuDoesNotStallAtTheGEO7PasswordDoor` 單獨跑那一趟；
   世界巡迴 22 趟仍是零硬失敗。
 
-  **提示只剩 `?` 的那一項還在**（`33h PRINT RETURN` 的文字累積把前半清掉，
-  懷疑同 `pauseAppliedCellResult` 那類重複套用）。它不造成卡住，但玩家看不懂
-  在問什麼，留給下一步。
+  提示只剩 `?` 的那一項也查完了，成因與 `33h` 無關：**`11h PRINT` 被當成
+  取代**。原版的確認框是 `A4A7 PRINTCLEAR "DO YOU REALLY MEAN"` ＋
+  `A4B9 PRINT <玩家打的字>` ＋ `A4BD PRINT "?"`，三段拼成一句，中間沒有
+  等待玩家的指令；把 `11h` 也當成取代就只剩最後那個問號。市政廳
+  `AC22 PRINTCLEAR …YOU NOTE` 接 `AC9B PRINT PROCLAMATIONS LXIV…` 是同一個
+  模式，先前被拆成兩頁，第一頁以 `YOU NOTE` 結尾。兩處都改由
+  `joinPrintedText` 接起來，契約寫進 spec 082。
 
 - [ ] **平台驗收的 workflow 進不了共用 engine**（2026-09-03 實跑
   `gh workflow run platform-smoke.yml` 量到）。`build (macos-14)` 與

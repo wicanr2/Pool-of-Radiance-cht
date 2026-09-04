@@ -860,7 +860,11 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE" {
 		t.Fatalf("City Hall proclamation intro waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
 	}
-	if err := press(application, ebiten.KeyEnter); err != nil || application.eventText != "PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX." {
+	// 布告清單是 `AC9B PRINT`（`11h`），接在 `AC22 PRINTCLEAR` 那一句後面——
+	// 兩者之間沒有任何等待玩家的指令，所以原版是一句話，不是兩頁。
+	// remake 先前把 `11h` 也當成取代，第二段就把第一段蓋掉了（spec 082）。
+	if err := press(application, ebiten.KeyEnter); err != nil ||
+		application.eventText != "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX." {
 		t.Fatalf("City Hall proclamation list text=%q err=%v", application.eventText, err)
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu {

@@ -1994,6 +1994,25 @@ func (a *app) scriptCallSelector(event eclvm.Event) (uint16, bool) {
 	return selector, true
 }
 
+// joinPrintedText 把 `11h PRINT` 接在目前這一頁後面。
+//
+// 原版的兩段之間**沒有空白**：量過 ecl3/0 的 `AC22`（`…IN YOUR JOURNAL YOU
+// NOTE`，末字元 `E`）接 `AC9B`（`PROCLAMATIONS LXIV…`，首字元 `P`），以及
+// ecl7/23 的 `A4A7`（`DO YOU REALLY MEAN`）接 `A4BD`（`?`），四段前後都不帶
+// 空格。直接串接會得到 `YOU NOTEPROCLAMATIONS`，所以分隔要由呈現層補。
+//
+// 補的規則是「一個空格，新片段以標點開頭時不補」。**原版實際怎麼排版還沒有
+// 畫面證據**——它也可能是換行——所以這是 `layout-reconstructed`，見 spec 082。
+func joinPrintedText(page, line string) string {
+	if page == "" || strings.HasSuffix(page, "\n") || strings.HasSuffix(page, " ") {
+		return page + line
+	}
+	if runes := []rune(line); len(runes) > 0 && strings.ContainsRune("?!.,;:)］」』、。！？，：；", runes[0]) {
+		return page + line
+	}
+	return page + " " + line
+}
+
 func (a *app) applyCellECLResult(result eclvm.Result) {
 	a.applyMapExitCommit(result)
 	for _, write := range result.Writes {
@@ -2011,7 +2030,8 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 	//
 	//   - `3Dh CLEAR BOX` 清掉整個框。
 	//   - `33h PRINT RETURN` 換行。
-	//   - 有文字的事件：**上一則以換行收尾就接上去，否則這是新的一頁**。
+	//   - `11h PRINT` **接著印**，不清框——原版靠它把一句話拼起來。
+	//   - `12h PRINTCLEAR` 是新的一頁；上一則以換行收尾時才續行。
 	//
 	// 最後那條是刻意的：原版靠什麼在兩頁之間清框還沒讀出來（市政廳那幾個
 	// block 根本沒有 `3Dh`），而逐頁取代已經對過原版（spec 015／016 的市政廳
@@ -2023,6 +2043,11 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 			a.eventText = ""
 		case gamepack.PrintReturnOpcode:
 			a.eventText += "\n"
+		case gamepack.PrintOpcode:
+			if event.Text == "" {
+				continue
+			}
+			a.eventText = joinPrintedText(a.eventText, a.gameText.Translate(event.Text))
 		default:
 			if event.Text == "" {
 				continue

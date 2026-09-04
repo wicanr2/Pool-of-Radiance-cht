@@ -752,10 +752,13 @@ walk:
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
 				if signature := strings.Join(application.cellMenuOptions, "|"); !seenMenus[signature] {
 					seenMenus[signature] = true
-					t.Logf("選單 GEO%d/%d (%d,%d) 朝向 %d：%v",
+					// 一併印文字框：問句是選單自己的 Prompt 還是前面幾條
+					// `11h PRINT` 拼出來的，看得到才分得出來。
+					t.Logf("選單 GEO%d/%d (%d,%d) 朝向 %d：%v／文字 %q",
 						application.spawn.Map.Archive, application.spawn.Map.BlockID,
 						application.spawn.X, application.spawn.Y,
-						application.spawn.Facing, application.cellMenuOptions)
+						application.spawn.Facing, application.cellMenuOptions,
+						application.eventText)
 				}
 				want := menuTurn[key] % len(application.cellMenuOptions)
 				// 剛打完密碼的那一次是確認框，答 NO 只會跳回去重打。
