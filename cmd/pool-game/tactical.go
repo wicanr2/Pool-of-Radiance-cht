@@ -893,8 +893,9 @@ const firstCharacterLevel = 1
 // partyCombatStats 依 spec 063 由職業算出隊伍成員的基礎戰鬥數值：THAC0 逐個
 // component 查 DS:3C16h 的表取最好的一個，AC 與移動用建角寫下的基礎值。
 //
-// 裝備尚未接進戰鬥，所以這裡回的是「沒有裝備」的角色——原版穿上裝備之後還會
-// 重算 AC，那條鏈（overlay-25 的 sub_281／sub_39F）還沒閉合。
+// 這裡回的是「脫光了」的角色。裝備由 `enterCombatStaging` 在這之後套上：
+// AC 與腳程走 `memberDefenceStats`（spec 079／080），武器走 `readiedWeapon`
+// 與 `weaponCombatStats`（spec 065）。
 func partyCombatStats(member poolsave.Character) (thac0Internal uint8, armorInternal int, movement uint8, err error) {
 	levels, err := partyClassLevels(member)
 	if err != nil {

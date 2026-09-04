@@ -62,12 +62,23 @@ DRAFT（賣出、金幣以外六種貨幣的換算、原版商店選單的版面
 
 離開（`ESC`）讓 ECL 從 `COMBAT` 邊界之後續行，與神殿離開（spec 017）走同一條路。
 
+## 店在哪一格
+
+四家店都由城區的地形索引分派（spec 102）：地形碼低七位是 `9B4Ch` 那張
+`ON GOTO` 的索引，武具店是索引 22（`A8BBh`「THE SHOP SPECIALIZES IN ARMS
+AND ARMOR」，`A919h` 就在它的 YES 分支底下）。geo3/0 裡索引 22 的格子有五格：
+(13,8)、(8,11)、(11,12)、(8,13)、(9,13)。
+
 ## 驗收
 
 - `TestRealArmouryBytesEnterTheShopService`：拿真的 ECL bytes 從 `A919h` 跑到
   服務邊界，確認判別認出商店而不是戰利品，且 `ITEM3.DAX/35h` 的存貨載進來。
 - `TestArmouryStockCarriesTheOriginalPrices`：六件商品的價格與原書相同。
 - 購買、金幣不足、買來未裝備、旗標判別各有一條測試。
+- `TestNormalKeysBuyAndEquipFromTheWeaponShop`：**只用按鍵**走完整條鏈——
+  建角拿到金幣 → 從開場結束的 (0,4) 走到 (8,11) 的武具店 → 買盾 →
+  按 I 裝上 → AC 由 10 變 9。前面那幾條都是從服務邊界起算的，這一條補上
+  「玩家自己走得到店裡」。
 
 ## 不做
 
