@@ -40,8 +40,15 @@ DRAFT（狀態／法術／距離 modifier、initiative、武器選擇、攻擊�
    dice core 對每顆骰呼叫 resident RNG，取得 `0..sides-1` 後加一，以 byte accumulator
    累加 count 次。caller 再加 signed bonus，負值 clamp 為 0。
 6. `0191h:01DEh..020Dh` 若 backstab predicate 成立，才把已 clamp 的傷害乘以
-   `attacker level byte / 4 + 2`。predicate 與 level 選擇尚未閉合，本規格只允許 caller
-   明確傳入 multiplier；一般攻擊固定為 1，不在 primitive 裡自行猜 backstab。
+   `attacker level byte / 4 + 2`。**level byte 是 `+9Ch`，也就是賊等級**
+   （`01F5h` 直接讀它；spec 095 的 TINA 賊等級 9 就是這一格）——所以倍數是
+   AD&D 的背刺級距：1–4 級 ×2、5–8 級 ×3、9–12 級 ×4。predicate 仍未閉合
+   （overlay-13 的近呼叫 `2558h`），本規格只允許 caller 明確傳入 multiplier；
+   一般攻擊固定為 1，不在 primitive 裡自行猜 backstab。
+7. `01CFh` 把骰出來的傷害寫進 `DS:6776h`，倍數乘完之後 `021Eh` 呼叫
+   **效果群組 4**（`1Dh 03h 06h`）讓效果再調整一次
+   （[spec 112](112-effect-code-dispatch.md)）。`0210h` 先把傷害訊息旗標
+   `DS:6777h` 清成 0。
 
 ### 2026-09-01 勘誤
 
