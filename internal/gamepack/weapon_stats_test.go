@@ -145,3 +145,51 @@ func TestWeaponCombatStatsNeedsATable(t *testing.T) {
 		t.Fatal("a missing item type table was accepted")
 	}
 }
+
+// `record[+2Eh] == 2` 是精靈（spec 003 的種族碼表），加值的四個武器型別是
+// 長劍 `24h`、短劍 `25h` 與 `29h..2Ch` 那一族弓（`2Ch` 是 Short Bow）。
+// 這正是 AD&D 精靈的武器加值。
+//
+// 只影響命中不影響傷害：那個 +1 在 `modifier` 已經加進傷害之後才加。
+func TestElfWeaponBonusHitsOnlyTheListedTypes(t *testing.T) {
+	table, err := gamepack.ReadDOSItemTypeTable(dosZIP)
+	if err != nil {
+		t.Skipf("DOS ZIP unavailable: %v", err)
+	}
+	for _, item := range []struct {
+		itemType uint8
+		what     string
+		bonus    bool
+	}{
+		{0x24, "Long Sword", true},
+		{0x25, "Short Sword", true},
+		{0x29, "弓那一族的第一件", true},
+		{0x2c, "Short Bow", true},
+		{0x2d, "弓那一族之外的下一個型別", false},
+		{0x17, "Mace", false},
+		{0x26, "Two-Handed Sword", false},
+	} {
+		bearer := gamepack.WeaponBearer{BaseThac0Internal: 0x28, Strength: 12, Dexterity: 12}
+		plain, err := gamepack.WeaponCombatStats(table, item.itemType, 0, bearer)
+		if err != nil {
+			t.Fatalf("%s: %v", item.what, err)
+		}
+		bearer.ClassBonusApplies = true // 記錄 +2Eh 是 2，也就是精靈
+		elf, err := gamepack.WeaponCombatStats(table, item.itemType, 0, bearer)
+		if err != nil {
+			t.Fatalf("%s: %v", item.what, err)
+		}
+		want := 0
+		if item.bonus {
+			want = 1
+		}
+		if got := int(elf.Thac0Internal) - int(plain.Thac0Internal); got != want {
+			t.Fatalf("%s（型別 %02Xh）的精靈命中加值是 %d，預期 %d",
+				item.what, item.itemType, got, want)
+		}
+		if elf.DamageBonus != plain.DamageBonus {
+			t.Fatalf("%s 的精靈加值不該影響傷害：%d 對 %d",
+				item.what, elf.DamageBonus, plain.DamageBonus)
+		}
+	}
+}
