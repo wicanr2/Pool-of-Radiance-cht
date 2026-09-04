@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/wicanr2/golden-box-remake-engine/main/schema/game-pack.schema.json",
+  "schema_version": 1,
+  "id": "pool-of-radiance.phlan",
+  "default_locale": "en",
+  "presentation": {
+    "native_width": 320,
+    "native_height": 200,
+    "native_scale": 2
+  },
+  "events": []
+}

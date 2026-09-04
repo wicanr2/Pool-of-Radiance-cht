@@ -386,7 +386,7 @@ type tacticalState struct {
 
 // say 取出一則狀態訊息的目前語言版本。
 func (state *tacticalState) say(id messageID, args ...any) string {
-	format := messages[id][0]
+	format := packMessage(id, "en")
 	if state != nil && state.Text != nil {
 		format = state.Text(id)
 	}

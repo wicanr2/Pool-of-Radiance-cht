@@ -494,7 +494,23 @@
   索寇要塞第一場實測：12 隻怪物，六人隊每人 64 點。
   還缺：原版「有資格分」的判準（`+10Dh` 為 0 與狀態 1）沒讀完，
   目前全隊都分。
-- [ ] 建立最小 game pack 與 adapter；不複製 CoAB 的地名、位址或劇情資料。
+- [x] **最小 game pack 與 adapter 建好了**（2026-09-05，
+  [spec 113](docs/spec/113-game-pack.md)）。pack 拆成三個分檔放在
+  `internal/gamepack/pack/`，依檔名排序合併：`00-core.json` 是 header
+  （`id = pool-of-radiance.phlan`）、`presentation`（原生 320×200 放大兩倍，
+  與前端的 `logicalWidth`／`logicalHeight` 一致）與 `events`；
+  `20-locale.en.json`／`20-locale.zh-TW.json` 是兩個語言各 152 條的字串表。
+  載入走共用 engine 的 `LoadPackPartsFS`，Pool 這一側只加
+  `gamepack.Pack()`／`LocaleTable()` 與前端的 `packMessage`——
+  **介面字串已經真的從 pack 讀**，不是擺著好看的鏡像。
+  `messageID` 與它的出處註解（說明書頁碼、原版字串的位址）留在 Go 那一側，
+  因為 JSON 沒有註解，搬進去會掉。
+  **不抄 CoAB 有機械檢查**：`TestGamePackCarriesNoAzureBondsContent` 掃整份
+  序列化後的 pack，出現 CoAB 專有識別字就紅，並配一條正對照確認掃描面沒有洞。
+  **刻意不放進 pack 的**：建角規則（從原版 `START.EXE` 資料段重生的，搬進
+  JSON 會把「逐位元組對得上原版」降級成「有人抄了一份數字」）、事件與地圖
+  （直接跑原版 ECL／GEO，抄進 pack 會變成第二份真相，而抄錯一格的症狀是
+  「測試綠、玩家走不到」）、`search`（分鐘數還沒從原版讀出來，沒有證據不宣告）。
 - [x] 隊伍朝向的座標系：原版是 0 北、1 東、2 南、3 西，不是共用 engine 的
   0/2/4/6。導覽 34 步裡有位移的 20 步逐次與「上一步的朝向」相符、零例外，
   35 個原版位置也從沒出現 4..7。混用造成三個症狀：開場結束後隊伍**完全走不

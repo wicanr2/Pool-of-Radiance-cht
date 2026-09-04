@@ -8,6 +8,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/etenfont"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
@@ -24,157 +25,59 @@ const (
 type messageID int
 
 const (
+	// 標題畫面的按鍵提示，說明書沒有，鍵名保持原文。
 	msgTitleHint messageID = iota
+	// 說明書 p.8：「螢幕上便會出現人物管理選擇項」。
 	msgMenuTitle
+	// 說明書 p.8 C）REATE NEW CHARACTER：「創造一名人物…並將之存放到『人物名單』內」。
 	msgMenuCreate
+	// 說明書 p.9 A）DD CHARACTER：「將人物加入隊伍」。
 	msgMenuAdd
+	// 說明書 p.9 L）OAD SAVED GAME：「叫出以前存下的遊戲進度」。
 	msgMenuLoad
+	// 說明書 p.10 B）EGIN ADVENTURING：「離開人物管理選擇項，開始冒險」。
 	msgMenuBegin
+	// 「人物名單」是說明書對 character library 的固定用詞。
 	msgMenuCounts
+	// 功能鍵列是 remake 自己的東西，說明書沒有；鍵名保持原文。
 	msgFooter
 )
 
-// messages 的繁中一律取自軟體世界代理當年的官方中文說明書
-// （`docs/reference/manual/manual-vol2.md` p.8–p.10 的「人物管理選擇項」一節），
-// 不是重新翻譯。說明書沒有對應字串的（畫面提示、功能鍵列）才自行擬定，
-// 用詞依 `docs/reference/manual/glossary.md` 的定案譯名。
-var messages = map[messageID][2]string{
-	msgSpellsTitle:     {"SPELLS", "法術一覽"},
-	msgSpellsGroup:     {"%s  level %d", "%s　第 %d 級"},
-	msgSpellsCleric:    {"Cleric", "神術"},
-	msgSpellsMagicUser: {"Magic User", "巫術"},
-	msgSpellsCount:     {"%d spells in this group", "本級共 %d 種"},
-	msgSpellsFooter:    {"TAB next group  UP/DOWN choose  K/ESC close", "TAB 換級別　上下移動　K／ESC 關閉"},
-	msgSpellsNoEffect:  {"The manual's spell chapter does not describe this one.", "說明書的法術章沒有收這一條。"},
-	msgSpellsRangeFixed:          {"range %d", "射程 %d 格"},
-	msgSpellsRangePerLevel:       {"range %d +%d/level", "射程 %d 格（每級 +%d）"},
-	msgSpellsDurationFixed:       {"%d rounds", "持續 %d 回合"},
-	msgSpellsDurationPerLevel:    {"%d rounds/level", "每級 %d 回合"},
-	msgSpellsDurationBoth:        {"%d rounds +%d/level", "持續 %d 回合（每級 +%d）"},
-	msgSpellsDurationUntilBroken: {"until dispelled", "持續到解除"},
-	msgSpellsSaveNone:            {"no save", "不可豁免"},
-	msgSpellsSaveSpell:           {"save vs. spell", "可豁免（法術）"},
-	msgSpellsSavePoison:          {"save vs. poison", "可豁免（毒）"},
-	msgSpellsTouch:               {"must hit", "須擲中"},
-	msgEncounterDistance:         {"The monsters are %d squares away.", "怪物在 %d 格之外。"},
-	msgEncounterPrompt:           {"Choose how to meet them.", "選擇要怎麼應對。"},
-	msgShopTitle:      {"SHOP", "商店"},
-	msgShopStatus:     {"Original Pool shop service: %d item(s) in stock.", "原版商店服務：架上 %d 件。"},
-	msgShopBuyer:      {"Buyer %d/%d  %s  gold %d", "買家 %d/%d　%s　金幣 %d"},
-	msgShopCount:      {"item %d of %d", "第 %d 件，共 %d 件"},
-	msgShopFooter:     {"TAB switch buyer  UP/DOWN choose  ENTER buy  ESC leave", "TAB 換買家　上下選貨　ENTER 購買　ESC 離開"},
-	msgShopBought:     {"%s bought %s for %d gold.", "%s 買下 %s，花了 %d 金幣。"},
-	msgShopNoGold:     {"%s has %d gold but this costs %d.", "%s 只有 %d 金幣，這件要 %d。"},
-	msgShopOverloaded: {"%s cannot carry any more.", "%s 拿不動了。"},
-	msgShopNoParty:    {"The party is empty.", "隊伍裡沒有人。"},
-	msgEquipmentTitle:       {"PARTY EQUIPMENT", "隊伍裝備"},
-	msgEquipmentEmptyParty:  {"The party is empty.", "隊伍裡沒有人。"},
-	msgEquipmentNoItems:     {"This character carries nothing.", "這名角色身上沒有東西。"},
-	msgEquipmentReadyMark:   {"* ", "＊"},
-	msgEquipmentUnreadyable: {"That item cannot be readied.", "這件東西不能裝備。"},
-	msgEquipmentUnarmed:     {"Unarmed: the original leaves the damage dice alone.", "徒手：原版此時不動傷害骰。"},
-	msgEquipmentStats:       {"Readied: THAC0 %d, damage %dd%d%+d", "已裝備：THAC0 %d，傷害 %dd%d%+d"},
-	msgEquipmentDefence:     {"; armour class %d, movement %d", "；護甲 %d，移動 %d"},
-	msgProgramManaging:      {"Party management; B or ESC returns to the map.", "隊伍管理；B 或 ESC 回到地圖。"},
-	msgProgramReturn:        {"B  RETURN TO THE MAP", "B　回到地圖"},
-	msgProgramNeedsParty:    {"The party cannot be empty on the map.", "地圖上的隊伍不能是空的。"},
-	msgTrainCommand:         {"T  TRAIN CHARACTER", "T　訓練角色"},
-	msgTrainNotYet:          {" does not have enough experience to train.", " 的經驗值還不夠訓練。"},
-	msgTrainGained:          {" advances a level; hit points ", " 升了一級，生命值 "},
-	msgTrainNeedsMember:     {"Choose a character with 1-6 before training.", "先用 1-6 選一個角色再訓練。"},
-	msgSpellsNeedsMember:    {"Choose a character with 1-6 first.", "先用 1-6 選一個角色。"},
-	msgSpellsMemorised:      {" memorises ", " 記下了 "},
-	msgSpellsForgot:         {" forgets ", " 忘掉了 "},
-	msgSpellsNotMemorised:   {" has not memorised ", " 沒有記著 "},
-	msgSpellsNoSlot:         {" has no free slot for that spell.", " 沒有空格可以記那個法術。"},
-	msgSpellsMemoriseHint:   {"1-6 pick  M memorise  F forget  L learn", "1-6 挑人　M 記憶　F 忘掉　L 學會"},
-	msgSpellsNotInBook:      {" does not have that spell in the spellbook: ", " 的法術書上沒有這一條："},
-	msgSpellsNoCredit:       {" has no new spell to learn.", " 現在沒有可以學的新法術。"},
-	msgSpellsCannotLearn:    {" cannot learn that spell yet: ", " 現在學不了這一條："},
-	msgSpellsAlreadyKnown:   {" already knows ", " 早就會了："},
-	msgSpellsLearned:        {" learns ", " 學會了："},
-	msgSpellsSlotLine:       {"%s (%d): memorised %d of %d, %d free", "%s（%d）：已記 %d／%d，還能記 %d"},
-	msgCastNotACaster:       {"That combatant is not a party member.", "那一格不是隊員。"},
-	msgCastNothingReady:     {"No memorised spell is ready to cast.", "沒有記著可以施展的法術。"},
-	msgCastNoTarget:         {"%s finds no reachable target.", "%s 找不到打得到的目標。"},
-	msgEndingPrompt:          {"ENTER to continue", "按 ENTER 繼續"},
-	msgCastNotPerson:        {"%d is not a person; %s has no effect.", "%d 不算是人，%s 沒有作用。"},
-	msgCastStronger:         {"%s is stronger: %d/%02d.", "%s 變強了：%d/%02d。"},
-	msgCastCharmed:          {"%s charms %d foes.", "%s 迷住了 %d 個敵人。"},
-	msgCastCharmedNone:      {"%s charms nothing.", "%s 一個也沒迷住。"},
-	msgCastHeld:             {"%d is held for %d rounds.", "%d 被定住 %d 回合。"},
-	msgCastResisted:         {"%d resists %s.", "%d 擋下了 %s。"},
-	msgCastHealed:           {"%s casts %s and recovers %d hit points.", "%s 施展 %s，回復 %d 點生命值。"},
-	msgCastHit:              {"Spell hits %d for %d; %d hit points left.", "法術命中 %d 造成 %d 點；剩 %d 點。"},
-	msgCastDown:             {"Spell drops %d.", "法術放倒了 %d。"},
-	msgCastTookEffect:       {"%s casts %s.", "%s 施展了 %s。"},
-	msgCastHint:             {"C cast", "C 施法"},
-	msgCastSlept:            {"%s puts %d foes to sleep.", "%s 催眠了 %d 個敵人。"},
-	msgCastSleptNone:        {"%s puts nobody to sleep.", "%s 沒有催眠到任何人。"},
-	msgCastNoEffect:         {"%s has no effect on %d.", "%s 對 %d 沒有作用。"},
-	msgCastCured:            {"%s is cured of %d afflictions.", "%s 解掉了 %d 個病痛。"},
-	msgCastArea:             {"%s hits %d foes for %d each.", "%s 打中 %d 個敵人，各 %d 點。"},
-	msgCastWholeSide:        {"%s casts %s over %d allies.", "%s 施展 %s，作用在 %d 名同伴身上。"},
-	msgAimAttack:            {"ATTACK", "攻擊"},
-	msgAimBlocked:           {"Nothing reaches target %d from here.", "從這裡打不到目標 %d。"},
-	msgAimOutOfRange:        {"Target %d is %d away; this weapon reaches %d.", "目標 %d 在 %d 格外，這件武器只打得到 %d 格。"},
-	msgCastAiming:           {"%s -> target %d   N next  P prev  ENTER cast", "%s　目標 %d　N 下一個　P 上一個　ENTER 施展"},
-	msgCampNeedsParty:       {"Make camp with a party first.", "先有隊伍才紮得了營。"},
-	msgCampRest:             {"REST", "休息"},
-	msgCampMemorise:         {"MEMORIZE SPELLS", "記憶法術"},
-	msgCampExit:             {"EXIT", "離開"},
-	msgCampTitle:            {"CAMP", "紮營"},
-	msgCampHint:             {"E camp", "E 紮營"},
-	msgCampRested:           {"%d spells memorised; the rest took %d hours.", "記完 %d 條法術，休息了 %d 小時。"},
-	msgCampHealedOnly:       {"The whole party is healed.", "整隊都治好了。"},
-	msgCampPending:          {"Still memorising: %s", "還在記：%s"},
-	msgCampNothingPending:   {"Nothing is waiting to be memorised.", "沒有等著記完的法術。"},
-	msgDamageHit:            {"%s is hit for %d points of damage.", "%s 受到 %d 點傷害。"},
-	msgDamageDies:           {"%s dies.", "%s 死了。"},
-	msgDamageSaved:          {"%s avoids the worst of it.", "%s 閃過了大部分。"},
-	msgParlayPrompt:         {"Choose the tone of the parlay.", "選擇交涉的語氣。"},
-	msgEclInputPrompt:       {"Type your answer, then ENTER.", "打完之後按 ENTER。"},
-	msgRobbed:               {"The party has been robbed.", "隊伍被洗劫了。"},
-	msgWhoPrompt:            {"Who?", "誰？"},
-	msgNPCJoined:            {"%s joins the party.", "%s 加入了隊伍。"},
-	msgParlayHaughty:        {"HAUGHTY", "傲慢"},
-	msgParlaySly:            {"SLY", "狡猾"},
-	msgParlayNice:           {"NICE", "友善"},
-	msgParlayMeek:           {"MEEK", "謙卑"},
-	msgParlayAbusive:        {"ABUSIVE", "辱罵"},
-	msgEquipmentFooter:      {"TAB switch character  UP/DOWN choose  ENTER ready  I/ESC close", "TAB 換人　上下選物品　ENTER 裝備／卸下　I／ESC 關閉"},
-	// 標題畫面的按鍵提示，說明書沒有，鍵名保持原文。
-	msgTitleHint: {"ENTER / SPACE", "ENTER／空白鍵"},
-	// 說明書 p.8：「螢幕上便會出現人物管理選擇項」。
-	msgMenuTitle: {"PARTY CREATION MENU", "人物管理選擇項"},
-	// 說明書 p.8 C）REATE NEW CHARACTER：「創造一名人物…並將之存放到『人物名單』內」。
-	msgMenuCreate: {"C  CREATE NEW CHARACTER", "C　創造新人物"},
-	// 說明書 p.9 A）DD CHARACTER：「將人物加入隊伍」。
-	msgMenuAdd: {"A  ADD CHARACTER TO PARTY", "A　將人物加入隊伍"},
-	// 說明書 p.9 L）OAD SAVED GAME：「叫出以前存下的遊戲進度」。
-	msgMenuLoad: {"L  LOAD SAVED GAME", "L　叫出存下的進度"},
-	// 說明書 p.10 B）EGIN ADVENTURING：「離開人物管理選擇項，開始冒險」。
-	msgMenuBegin: {"B  BEGIN ADVENTURING", "B　開始冒險"},
-	// 「人物名單」是說明書對 character library 的固定用詞。
-	msgMenuCounts: {"LIBRARY %d   PARTY %d/6", "人物名單 %d　隊伍 %d/6"},
-	// 功能鍵列是 remake 自己的東西，說明書沒有；鍵名保持原文。
-	msgFooter: {
-		"F1 Help  F2 Theme  F5 Tactical  ESC Back  F10 Quit",
-		"F1 說明　F2 配色　F5 戰術圖　ESC 返回　F10 離開",
-	},
-}
 
 // text 取出目前語言的字串。缺譯時退回英文而不是留白——留白在畫面上看不出是
 // 缺譯還是繪製壞了。
+// 介面字串放在 game pack 的 locale 檔（`internal/gamepack/pack/20-locale.*.json`），
+// 不放在這裡：共用 engine 是作品中立的，作品的內容一律由 pack 提供。
+// 這一側只留 `messageID` 與它的出處註解，字串本身用 `messageKeys` 的 key 去查。
+//
+// 繁中一律取自軟體世界代理當年的官方中文說明書
+//（`docs/reference/manual/manual-vol2.md` p.8–p.10 的「人物管理選擇項」一節），
+// 不是重新翻譯。說明書沒有對應字串的（畫面提示、功能鍵列）才自行擬定，
+// 用詞依 `docs/reference/manual/glossary.md` 的定案譯名。
 func (a *app) text(id messageID) string {
-	entry, ok := messages[id]
+	if a.language == languageTraditionalChinese {
+		if value := packMessage(id, "zh-TW"); value != "" {
+			return value
+		}
+	}
+	return packMessage(id, "en")
+}
+
+// packMessage 查一則訊息。查不到就回空字串——呼叫端本來就把空字串當「這一則
+// 沒有文字」處理（原本的 `messages` 表也是這樣）。
+//
+// pack 載不進來時回 key 本身，讓失敗看得見：整片空字串看起來像排版壞掉，
+// 而畫面上出現 `ui.menuTitle` 一眼就知道是資料沒載到。
+func packMessage(id messageID, locale string) string {
+	key, ok := messageKeys[id]
 	if !ok {
 		return ""
 	}
-	if a.language == languageTraditionalChinese && entry[1] != "" {
-		return entry[1]
+	table, err := gamepack.LocaleTable(locale)
+	if err != nil {
+		return key
 	}
-	return entry[0]
+	return table[key]
 }
 
 // uiFace 是 drawText 實際使用的字型。Ebiten 的 Draw 是單執行緒的，啟動時設定
@@ -286,27 +189,6 @@ const (
 	msgCharacterName
 	msgNameRule
 )
-
-func init() {
-	for id, entry := range map[messageID][2]string{
-		msgStageRace:      {"PICK RACE", "選擇種族"},
-		msgStageGender:    {"PICK GENDER", "選擇性別"},
-		msgStageClass:     {"PICK CLASS", "選擇職業"},
-		msgStageAlignment: {"PICK ALIGNMENT", "選擇陣營"},
-		msgCharacterSheet: {"CHARACTER SHEET", "人物資料"},
-		msgRolling:        {"Rolling...", "重擲中…"},
-		msgAge:            {"AGE %d", "年齡 %d"},
-		msgGoldAndHP:      {"GOLD %d     HP %d/%d", "金幣 %d　　生命力 %d/%d"},
-		msgKeepCharacter: {
-			"KEEP THIS CHARACTER?  ENTER/Y = YES   R = REROLL",
-			"保留這個人物？　ENTER／Y 保留　R 重擲",
-		},
-		msgCharacterName: {"CHARACTER NAME:", "人物姓名："},
-		msgNameRule:      {"1-15 CHARACTERS; ENTER ACCEPTS", "1～15 個字元，ENTER 確定"},
-	} {
-		messages[id] = entry
-	}
-}
 
 // hintNames 是建角各階段的提示。繁中依說明書的對應段落改寫成一行：
 // 種族限制職業見 p.10「種族能影響職別的種類」，兼職分經驗見 p.13 第 (2) 點，
@@ -599,46 +481,19 @@ const (
 	msgTacticalNoState
 	msgTacticalBoard
 	msgTacticalRound
+	// 這一項標的是三塊還沒有原版依據的東西，中英文都要看得出來是暫定的。
 	msgTacticalProvisional
 	msgTacticalKeys
 	msgTacticalPrompt
 	msgTacticalBack
 )
 
-func init() {
-	for id, entry := range map[messageID][2]string{
-		msgTacticalTitle:   {"TACTICAL MAP PREVIEW", "戰術戰場"},
-		msgTacticalNoMap:   {"DUNGEON MAP IS NOT LOADED", "地城地圖尚未載入"},
-		msgTacticalNoState: {"TACTICAL STATE IS NOT BUILT", "戰場尚未建立"},
-		msgTacticalBoard: {
-			"DUNGEON %d,%d  CELLS %d  BLOCKING %d  PARTY %d  FOES %d",
-			"地城 %d,%d　格 %d　阻擋 %d　隊伍 %d　敵方 %d",
-		},
-		msgTacticalRound: {
-			"ROUND %d  MOVER %d  SCORE %d  BUDGET %d (%s)  %s",
-			"回合 %d　行動者 %d　先攻 %d　步數 %d（%s）　%s",
-		},
-		// 這一行標的是三塊還沒有原版依據的東西，中英文都要看得出來是暫定的。
-		msgTacticalProvisional: {
-			"PROVISIONAL: AI, DEPLOYMENT, PARTY DAMAGE",
-			"暫定：敵方 AI、部署位置、隊伍傷害骰",
-		},
-		msgTacticalKeys: {
-			"H I M Q P O K G: STEP   ENTER: END TURN   D: DELAY",
-			"H I M Q P O K G 移動　ENTER 結束回合　D 延後",
-		},
-		msgTacticalPrompt: {"Y: FIGHT ON   N: END THE BATTLE", "Y 繼續戰鬥　N 結束戰鬥"},
-		msgTacticalBack:   {"F5: BACK", "F5 返回"},
-	} {
-		messages[id] = entry
-	}
-}
-
 // 戰術狀態列的字串。這些是 remake 自己產生的訊息，不是原版文字，
 // 但玩家看得到，所以一樣要有中文。
 const (
 	msgStatusDelayed messageID = iota + 300
 	msgStatusTurnEnded
+	// 原文是 overlay-08 `0857h` 的 `Continue Battle:`。
 	msgStatusContinuePrompt
 	msgStatusDefeat
 	msgStatusVictory
@@ -659,30 +514,3 @@ const (
 	msgBudgetStagedMonster
 )
 
-func init() {
-	for id, entry := range map[messageID][2]string{
-		msgStatusDelayed:        {"DELAYED", "延後"},
-		msgStatusTurnEnded:      {"TURN ENDED", "回合結束"},
-		// 原文是 overlay-08 `0857h` 的 `Continue Battle:`。
-		msgStatusContinuePrompt: {"CONTINUE BATTLE: Y/N", "要繼續戰鬥嗎？ Y／N"},
-		msgStatusDefeat:         {"DEFEAT", "全滅"},
-		msgStatusVictory:        {"VICTORY", "獲勝"},
-		msgStatusRound:          {"ROUND %d", "第 %d 回合"},
-		msgStatusOffBoard:       {"OFF BOARD: LEAVE COMBAT PROMPT", "走出盤面：詢問是否離開戰鬥"},
-		msgStatusBlocked:        {"BLOCKED", "走不過去"},
-		msgStatusMoved:          {"MOVED %d", "往 %d 移動"},
-		msgStatusMissed:         {"ATTACK %d MISSED (D20 %d)", "攻擊 %d 落空（D20 %d）"},
-		msgStatusHit:            {"HIT %d FOR %d (HP %d)", "打中 %d 造成 %d（剩 %d 生命力）"},
-		msgStatusDown:           {"%d IS DOWN", "%d 倒下了"},
-		msgStatusAsleep:         {"%d IS ASLEEP", "%d 睡著了"},
-	msgStatusCharmed:        {"%d IS CHARMED", "%d 被迷住了"},
-		msgStatusHeld:           {"%d IS HELD", "%d 被定住了"},
-		msgFoeNoTarget:          {"FOE %d FOUND NO TARGET", "敵方 %d 找不到目標"},
-		msgFoeAttacked:          {"FOE %d AFTER %d STEPS: %s", "敵方 %d 走了 %d 步：%s"},
-		msgFoeClosed:            {"FOE %d CLOSED %d STEPS ON %d", "敵方 %d 朝 %d 走近 %d 步"},
-		msgBudgetPlaceholder:    {"PLACEHOLDER", "暫定值"},
-		msgBudgetStagedMonster:  {"STAGED MONSTER", "怪物記錄"},
-	} {
-		messages[id] = entry
-	}
-}

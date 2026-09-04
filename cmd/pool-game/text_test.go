@@ -6,17 +6,56 @@ import (
 	"testing"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
 // 每一則訊息都要有繁中，缺一則就會在畫面上默默退回英文。
+// 字串現在住在 game pack 裡，所以這一則同時是「pack 有沒有這一則」的檢查。
 func TestEveryMessageHasATraditionalChineseString(t *testing.T) {
-	for id, entry := range messages {
-		if strings.TrimSpace(entry[0]) == "" {
-			t.Fatalf("message %d has no English string", id)
+	for id := range messageKeys {
+		if strings.TrimSpace(packMessage(id, "en")) == "" {
+			t.Fatalf("message %d (%s) has no English string", id, messageKeys[id])
 		}
-		if strings.TrimSpace(entry[1]) == "" {
-			t.Fatalf("message %d has no Traditional Chinese string", id)
+		if strings.TrimSpace(packMessage(id, "zh-TW")) == "" {
+			t.Fatalf("message %d (%s) has no Traditional Chinese string", id, messageKeys[id])
 		}
+	}
+}
+
+// messageKeys 與 pack 的 locale 表要一一對應。少一邊的症狀不一樣但都難查：
+// key 沒有字串會在畫面上留白，字串沒有 key 則是永遠印不出來的死資料。
+func TestMessageKeysAndThePackAgree(t *testing.T) {
+	if len(messageKeys) == 0 {
+		t.Fatal("messageKeys 是空的")
+	}
+	byKey := map[string]messageID{}
+	for id, key := range messageKeys {
+		if previous, clash := byKey[key]; clash {
+			t.Fatalf("key %q 同時對到 %d 與 %d", key, previous, id)
+		}
+		byKey[key] = id
+	}
+	for _, locale := range []string{"en", "zh-TW"} {
+		table, err := gamepack.LocaleTable(locale)
+		if err != nil {
+			t.Fatalf("載入 %s 的字串表：%v", locale, err)
+		}
+		if len(table) != len(messageKeys) {
+			t.Errorf("%s 有 %d 條字串，messageKeys 有 %d 個", locale, len(table), len(messageKeys))
+		}
+		for key := range table {
+			if _, ok := byKey[key]; !ok {
+				t.Errorf("%s 的 %q 沒有任何 messageID 用得到", locale, key)
+			}
+		}
+	}
+}
+
+// pack 載不進來時要看得見：畫面上出現 key 一眼就知道是資料沒載到，
+// 整片空字串則會被誤認成排版壞掉。
+func TestUnknownMessageReturnsNothing(t *testing.T) {
+	if got := packMessage(messageID(9999), "en"); got != "" {
+		t.Fatalf("未知的訊息回了 %q", got)
 	}
 }
 
@@ -192,16 +231,17 @@ func TestDisplayTextReplacesGlyphsTheFontLacks(t *testing.T) {
 // （兩邊都是合法的字串），但畫面上會印出 %!d(string=…) 這種東西。
 func TestTranslatedFormatStringsTakeTheSameArguments(t *testing.T) {
 	verbs := regexp.MustCompile(`%[-+ #0]*[0-9*]*(?:\.[0-9*]+)?[a-zA-Z]`)
-	for id, pair := range messages {
-		english, chinese := verbs.FindAllString(pair[0], -1), verbs.FindAllString(pair[1], -1)
+	for id := range messageKeys {
+		first, second := packMessage(id, "en"), packMessage(id, "zh-TW")
+		english, chinese := verbs.FindAllString(first, -1), verbs.FindAllString(second, -1)
 		if len(english) != len(chinese) {
 			t.Fatalf("message %d has %d verbs in English and %d in Chinese: %q / %q",
-				id, len(english), len(chinese), pair[0], pair[1])
+				id, len(english), len(chinese), first, second)
 		}
 		for index := range english {
 			if english[index][len(english[index])-1] != chinese[index][len(chinese[index])-1] {
 				t.Fatalf("message %d verb %d is %s in English and %s in Chinese: %q / %q",
-					id, index, english[index], chinese[index], pair[0], pair[1])
+					id, index, english[index], chinese[index], first, second)
 			}
 		}
 	}
