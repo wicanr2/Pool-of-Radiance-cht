@@ -164,8 +164,9 @@ type app struct {
 	// programManaging 為真時，隊伍管理畫面是 `38h PROGRAM` 從地圖上開的，
 	// 離開時要回地圖並讓 ECL 繼續，不是重新開始冒險。
 	programManaging bool
-	// programAsking 為真時選單正在問「要不要開隊伍管理」（`38h` 的值 9）。
-	programAsking bool
+	// campFromProgram 為真時，紮營畫面是 `38h PROGRAM` 的值 9 從旅店開的
+	// （spec 081）：收掉畫面之後這個 ECL block 就結束。
+	campFromProgram bool
 	// programExitsBlock 為真時，關掉隊伍管理之後這個 ECL block 就結束，
 	// 不是從原地繼續——值 9 的結尾是呼叫 EXIT 的 handler。
 	programExitsBlock bool
@@ -456,7 +457,20 @@ func (a *app) Update() error {
 		return nil
 	}
 	if a.campOpen {
-		return a.campInput()
+		if err := a.campInput(); err != nil {
+			return err
+		}
+		// 旅店開的那一次收掉畫面就結束 block。「記憶法術」會把紮營關掉再開
+		// 法術一覽，那還在同一段裡，所以要等法術一覽也關掉。
+		if a.campFromProgram && !a.campOpen && !a.spellsOpen {
+			a.campFromProgram = false
+			return a.closeProgramCamp()
+		}
+		return nil
+	}
+	if a.campFromProgram && !a.campOpen && !a.spellsOpen {
+		a.campFromProgram = false
+		return a.closeProgramCamp()
 	}
 	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.justPressed(ebiten.KeyE) {
 		a.openCamp()
@@ -767,9 +781,6 @@ func (a *app) Update() error {
 					}
 					if a.whoPending {
 						return a.selectWhoOption()
-					}
-					if a.programAsking {
-						return a.selectProgramOption()
 					}
 					var selection *uint16
 					if a.cellWaitingMenu {

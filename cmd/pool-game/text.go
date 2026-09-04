@@ -78,9 +78,6 @@ var messages = map[messageID][2]string{
 	msgProgramManaging:      {"Party management; B or ESC returns to the map.", "隊伍管理；B 或 ESC 回到地圖。"},
 	msgProgramReturn:        {"B  RETURN TO THE MAP", "B　回到地圖"},
 	msgProgramNeedsParty:    {"The party cannot be empty on the map.", "地圖上的隊伍不能是空的。"},
-	msgProgramAsk:           {"Do you want to change the party?", "要調整隊伍嗎？"},
-	msgProgramYes:           {"YES", "要"},
-	msgProgramNo:            {"NO", "不要"},
 	msgTrainCommand:         {"T  TRAIN CHARACTER", "T　訓練角色"},
 	msgTrainNotYet:          {" does not have enough experience to train.", " 的經驗值還不夠訓練。"},
 	msgTrainGained:          {" advances a level; hit points ", " 升了一級，生命值 "},
@@ -529,9 +526,6 @@ const (
 	msgProgramManaging
 	msgProgramReturn
 	msgProgramNeedsParty
-	msgProgramAsk
-	msgProgramYes
-	msgProgramNo
 	msgTrainCommand
 	msgTrainNotYet
 	msgTrainGained

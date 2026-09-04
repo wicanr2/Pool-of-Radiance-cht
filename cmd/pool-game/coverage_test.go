@@ -677,12 +677,21 @@ walk:
 			application.cellEventPending || application.combatActive ||
 			application.shopActive || application.treasureActive ||
 			application.templeActive || application.tactical != nil ||
-			application.programAsking || application.parlay != nil ||
+			application.campOpen || application.parlay != nil ||
 			application.whoPending || application.mode != modeAdventure
 		if application.programManaging {
 			// 地圖上的隊伍管理畫面吃掉方向鍵。原版按 B 回地圖。
 			plan = nil
 			if err := press(application, ebiten.KeyB); err != nil {
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
+			}
+			continue
+		}
+		if application.campOpen {
+			// 旅店的過夜（`38h PROGRAM` 值 9）開的是紮營畫面，ESC 收掉。
+			plan = nil
+			if err := press(application, ebiten.KeyEscape); err != nil {
 				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
 				break walk
 			}

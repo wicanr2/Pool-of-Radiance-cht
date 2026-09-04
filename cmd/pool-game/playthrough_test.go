@@ -887,6 +887,9 @@ func escapeKeyForWalk(application *app) (ebiten.Key, bool) {
 		return ebiten.KeyB, true
 	case application.shopActive:
 		return ebiten.KeyEscape, true
+	case application.campOpen:
+		// 旅店的過夜會開紮營畫面（`38h PROGRAM` 值 9，spec 081）。
+		return ebiten.KeyEscape, true
 	case application.tactical != nil:
 		if application.tactical.Prompt {
 			if application.tactical.sideCounts().Foes == 0 {

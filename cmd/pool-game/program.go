@@ -72,8 +72,19 @@ func (a *app) enterProgram(event eclvm.Event) error {
 	case gamepack.ProgramPartyManagement:
 		a.openPartyManagement()
 		return nil
-	case gamepack.ProgramAskThenManage:
-		a.askProgramManagement()
+	case gamepack.ProgramCamp:
+		// 旅店的過夜（spec 081）：ECL 自己問過「要不要花一枚白金住下」也
+		// 收過錢了，這裡直接開紮營畫面——選法術與休息就是原版那條鏈
+		//（overlay-15 entry 1 → overlay-25 entry 37）在做的事。
+		// 收掉畫面之後這個 block 結束，與原版那一支結尾呼叫 EXIT 一樣。
+		a.campFromProgram = true
+		a.programExitsBlock = true
+		a.openCamp()
+		if !a.campOpen {
+			// 隊伍是空的，開不起來；照原版的收尾直接結束 block。
+			a.campFromProgram, a.programExitsBlock = false, false
+			a.finishCellBlock()
+		}
 		return nil
 	case gamepack.ProgramEnding:
 		// 值 8 是結局過場（overlay-18 entry 1，spec 108）：打贏泰倫斯拉克斯
@@ -86,31 +97,15 @@ func (a *app) enterProgram(event eclvm.Event) error {
 	}
 }
 
-// askProgramManagement 是值 9 多出來的那一句問話。原版的問句字串在
-// `DS:6E8Eh`——BSS，執行時才填，靜態讀不到——所以這裡用 remake 自己的
-// 一句，spec 081 標明那不是原文。答完之後這個 block 就結束。
-func (a *app) askProgramManagement() {
-	a.programAsking = true
-	a.programExitsBlock = true
-	a.cellEventPending, a.cellWaitingMenu = true, true
-	a.cellMenuOptions = append(a.cellMenuOptions[:0], a.text(msgProgramYes), a.text(msgProgramNo))
-	a.cellMenuCursor = 0
-	a.eventText = a.text(msgProgramAsk)
-	a.eventLabel = a.cellMenuLabel()
-	a.statusLine = a.text(msgProgramAsk)
-}
-
-// selectProgramOption 處理那一句問話的回答。
-func (a *app) selectProgramOption() error {
-	a.programAsking = false
-	if a.cellMenuCursor == 0 {
-		a.openPartyManagement()
+// closeProgramCamp 是旅店那一次紮營收掉之後的收尾：原版那一支的結尾呼叫的
+// 正是 `00h EXIT` 的 handler，所以走同一條路。
+func (a *app) closeProgramCamp() error {
+	if a.programExitsBlock {
+		a.programExitsBlock = false
+		a.finishCellBlock()
 		return nil
 	}
-	// 不開的話直接結束這個 block，與原版走到 `31D0h` 的 EXIT 一樣。
-	a.programExitsBlock = false
-	a.finishCellBlock()
-	return nil
+	return a.continueInitialSearch(nil)
 }
 
 // openPartyManagement 把畫面切到隊伍管理，並記住這是從地圖上進來的。

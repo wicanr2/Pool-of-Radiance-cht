@@ -42,9 +42,12 @@ const (
 	ProgramPartyManagement = 0
 	// ProgramUnusedEight（值 8）走 overlay-18 entry 1；全遊戲沒有呼叫點。
 	ProgramUnusedEight = 8
-	// ProgramAskThenManage（值 9）先問一句，答應才開同一個畫面，然後結束
-	// 這個 block（overlay-03 `312Ah`）。
-	ProgramAskThenManage = 9
+	// ProgramCamp（值 9）是**旅店的過夜**。全遊戲只有一處推它：
+	// `ecl3/0` 的 `A1ADh`，就在旅店收掉一枚白金之後（`A1B4h WHO
+	// 'WHO WILL PAY?'`）。派發鏈的第一支是 overlay-15 entry 1——
+	// overlay-15 整支都在動記憶法術陣列（spec 070）——回傳非 0 才接
+	// overlay-25 entry 37。所以值 9 是「選法術＋休息」，不是隊伍管理。
+	ProgramCamp = 9
 	// ProgramEnding（值 8）是結局過場（overlay-18 entry 1，spec 108）。
 	// 唯一的呼叫點是 `ECL5/7` 的 `A82Ah`——打贏泰倫斯拉克斯之後。
 	ProgramEnding = 8
