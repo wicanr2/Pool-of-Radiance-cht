@@ -99,7 +99,11 @@ func (a *app) campRestTimeLine() string {
 //     說明書 p.29 也是這樣寫）。原版的 `The Whole Party Is Healed`
 //     就印在那一刻。
 func (a *app) restParty() {
-	ticks := a.restDuration.TotalTicks()
+	// 打斷的兩個參數目前是 0／0——原版在 overlay-07 `0244h` 把它們清成 0，
+	// 而全 36 顆 overlay 裡沒有第二處寫它們，所以非零值一定是某個整塊複製
+	// 帶進來的（spec 114 的 OPEN）。找到來源之後只要改這一行。
+	outcome := gamepack.SimulateRest(a.restDuration, gamepack.RestInterruption{}, a.rollDice)
+	ticks := outcome.Ticks
 	restedHours := ticks / gamepack.RestTicksPerHour
 	healed := gamepack.RestHealing(ticks)
 

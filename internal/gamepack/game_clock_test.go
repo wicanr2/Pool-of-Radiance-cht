@@ -141,3 +141,50 @@ func TestRestHealingMatchesTheManual(t *testing.T) {
 		t.Fatalf("休息三天回 %d 點", got)
 	}
 }
+
+// 週期為 0 是「這一區不會被打擾」——原版的初值就是 0（overlay-07 `0244h`）。
+func TestRestIsNeverInterruptedWithoutAPeriod(t *testing.T) {
+	duration := gamepack.NewRestDuration(timeRadix(t))
+	for step := 0; step < 24; step++ {
+		duration = duration.Increase(gamepack.RestFieldHours)
+	}
+	rolled := 0
+	outcome := gamepack.SimulateRest(duration, gamepack.RestInterruption{},
+		func(count, sides int) int { rolled++; return 1 })
+	if outcome.Interrupted {
+		t.Error("週期為 0 卻被打斷了")
+	}
+	if outcome.Ticks != duration.TotalTicks() {
+		t.Errorf("睡到 %d 刻，挑的是 %d 刻", outcome.Ticks, duration.TotalTicks())
+	}
+	// 連骰都不該擲：週期為 0 時原版整段不進檢查。
+	if rolled != 0 {
+		t.Errorf("擲了 %d 次骰", rolled)
+	}
+}
+
+// 有週期時每到期就擲一次，擲到門檻以內就停在那一刻。
+func TestRestStopsAtTheFirstInterruption(t *testing.T) {
+	duration := gamepack.NewRestDuration(timeRadix(t))
+	for step := 0; step < 24; step++ {
+		duration = duration.Increase(gamepack.RestFieldHours)
+	}
+	interruption := gamepack.RestInterruption{Period: 12, Threshold: 10}
+	// 第三次檢查才擲中：12 刻一次，所以停在第 36 刻。
+	attempt := 0
+	outcome := gamepack.SimulateRest(duration, interruption, func(count, sides int) int {
+		attempt++
+		if attempt == 3 {
+			return 10
+		}
+		return 11
+	})
+	if !outcome.Interrupted || outcome.Ticks != 36 {
+		t.Fatalf("停在第 %d 刻（被打斷 %v），應該是第 36 刻", outcome.Ticks, outcome.Interrupted)
+	}
+	// 負對照：門檻擲不到就一路睡完。差一點（11 對 10）就是零。
+	full := gamepack.SimulateRest(duration, interruption, func(count, sides int) int { return 11 })
+	if full.Interrupted || full.Ticks != duration.TotalTicks() {
+		t.Errorf("擲不到門檻卻停在第 %d 刻（被打斷 %v）", full.Ticks, full.Interrupted)
+	}
+}

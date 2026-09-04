@@ -227,3 +227,49 @@ func (d RestDuration) TotalTicks() int {
 // RestHealing 回報這段時間每個人回多少生命力：每 288 刻（二十四小時）一點
 //（`0830h`，說明書 p.29）。
 func RestHealing(ticks int) int { return ticks / RestTicksPerHeal }
+
+// RestInterruption 是「休息會不會被打斷」的兩個參數，來源是 `DS:4937h` 指到的
+// 那個結構（spec 078 分出來的三個記憶體區之一）：
+//
+//	+5A4h  每幾刻檢查一次；**0 代表這一區不會被打擾**
+//	+5A6h  1d100 擲到多少（含）以下就遇上
+//
+// 說明書 p.29 的說法對得上：旅店與已清除的地區安全，野外與未清除的地區
+// 「怪物很可能會發現並打斷你的休息」。
+type RestInterruption struct {
+	Period    int
+	Threshold int
+}
+
+// RestOutcome 是一段休息實際發生了什麼。
+type RestOutcome struct {
+	// Ticks 是真的睡到的刻數；被打斷時會少於原本挑的。
+	Ticks int
+	// Interrupted 為真時原版印 `The Party is rudely interrupted!` 並回傳 1，
+	// 由呼叫端開一場遭遇。
+	Interrupted bool
+}
+
+// SimulateRest 逐刻推進一段休息，重現 overlay-20 entry 3（`0C45h`）的迴圈：
+// 每一刻把剩餘時間減五分鐘，然後在 `Period` 到期時擲 1d100，擲到門檻以內
+// 就被打斷。`Period` 為 0 時整段不檢查——那是這兩個欄位的初值（overlay-07
+// `0244h` 把它們清成 0），也就是「這一區不會被打擾」。
+func SimulateRest(duration RestDuration, interruption RestInterruption,
+	roll func(count, sides int) int) RestOutcome {
+	total := duration.TotalTicks()
+	if interruption.Period <= 0 {
+		return RestOutcome{Ticks: total}
+	}
+	counter := 0
+	for tick := 1; tick <= total; tick++ {
+		counter++
+		if counter < interruption.Period {
+			continue
+		}
+		counter = 0
+		if roll(1, 100) <= interruption.Threshold {
+			return RestOutcome{Ticks: tick, Interrupted: true}
+		}
+	}
+	return RestOutcome{Ticks: total}
+}
