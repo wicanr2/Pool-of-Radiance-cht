@@ -132,6 +132,8 @@ type app struct {
 	loadPortrait    func(head, body uint8) (*ebiten.Image, error)
 	loadIcon        func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
 	state           poolsave.State
+	// reloadTitle 換主題時把標題圖用新色盤重畫。
+	reloadTitle     func() error
 	saveState       func(poolsave.State) error
 	loadState       func() (poolsave.State, error)
 	// exportDOSCharacter 在建角完成時寫出原版格式的三個檔（spec 003 第 11 步）。
@@ -258,13 +260,8 @@ func newApp(zipPath, statePath string) (*app, error) {
 	if err != nil {
 		return nil, err
 	}
-	rendered, err := pictures[1].RGBA(0, graphics.EGA16)
-	if err != nil {
-		return nil, err
-	}
 	application := &app{
 		mode:   modeTitle,
-		title:  ebiten.NewImageFromImage(rendered),
 		flow:   creation.NewFlow(),
 		roller: diceRoller{random: rand.New(rand.NewSource(time.Now().UnixNano()))},
 		keys:   ebitenKeys{},
@@ -374,7 +371,7 @@ func newApp(zipPath, statePath string) (*app, error) {
 		if err != nil {
 			return nil, err
 		}
-		rendered, err := composed.RGBA(0, graphics.EGA16)
+		rendered, err := composed.RGBA(0, application.artPalette())
 		if err != nil {
 			return nil, err
 		}
@@ -385,11 +382,23 @@ func newApp(zipPath, statePath string) (*app, error) {
 		if err != nil {
 			return nil, err
 		}
-		rendered, err := picture.RGBA(0, graphics.EGA16)
+		rendered, err := picture.RGBA(0, application.artPalette())
 		if err != nil {
 			return nil, err
 		}
 		return ebiten.NewImageFromImage(rendered), nil
+	}
+	application.reloadTitle = func() error {
+		rendered, err := pictures[1].RGBA(0, application.artPalette())
+		if err != nil {
+			return err
+		}
+		application.title = ebiten.NewImageFromImage(rendered)
+		return nil
+	}
+	// 標題圖走與換主題同一條路，開場與 F2 之後才不會是兩套算法。
+	if err := application.reloadTitle(); err != nil {
+		return nil, err
 	}
 	return application, nil
 }
@@ -455,7 +464,9 @@ func (a *app) Update() error {
 		a.help = !a.help
 	}
 	if a.justPressed(ebiten.KeyF2) {
-		a.modern = !a.modern
+		if err := a.switchTheme(); err != nil {
+			a.statusLine = err.Error()
+		}
 	}
 	if a.justPressed(ebiten.KeyF5) && a.mode == modeAdventure {
 		a.tacticalPreview = !a.tacticalPreview
@@ -2470,10 +2481,8 @@ func (a *app) addFirstLibraryCharacter() error {
 }
 
 func (a *app) Draw(screen *ebiten.Image) {
-	background, foreground, accent := color.RGBA{0, 0, 0, 255}, color.RGBA{170, 255, 255, 255}, color.RGBA{255, 255, 85, 255}
-	if a.modern {
-		background, foreground, accent = color.RGBA{16, 20, 30, 255}, color.RGBA{238, 232, 207, 255}, color.RGBA{255, 202, 72, 255}
-	}
+	skin := a.currentTheme()
+	background, foreground, accent := skin.background, skin.foreground, skin.accent
 	screen.Fill(background)
 	if a.mode == modeTitle {
 		op := &ebiten.DrawImageOptions{}
@@ -2548,13 +2557,13 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		drawText(screen, "FIRST-PERSON STAGE ERROR", 72, 180, accent)
 		return
 	}
-	drawPoolStageRects(screen, stageFill.Backdrop, viewLeft, viewTop)
+	drawPoolStageRects(screen, stageFill.Backdrop, viewLeft, viewTop, a.artPalette())
 	stamps, err := initialWallStamps(a.initialMap.Grid, *a.initialWalls, a.spawn)
 	if err != nil {
 		drawText(screen, "WALL VIEW ERROR", 72, 180, accent)
 	} else {
 		for _, stamp := range stamps {
-			rgba, renderErr := stamp.Picture.RGBA(stamp.Item, graphics.EGA16)
+			rgba, renderErr := stamp.Picture.RGBA(stamp.Item, a.artPalette())
 			if renderErr != nil {
 				continue
 			}
@@ -2564,7 +2573,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 			screen.DrawImage(ebiten.NewImageFromImage(rgba), op)
 		}
 	}
-	drawPoolStageRects(screen, stageFill.PostWall, viewLeft, viewTop)
+	drawPoolStageRects(screen, stageFill.PostWall, viewLeft, viewTop, a.artPalette())
 	drawText(screen, fmt.Sprintf("GEO%d BLOCK %d", a.spawn.Map.Archive, a.spawn.Map.BlockID), 310, 106, foreground)
 	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
 	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 184, accent)
@@ -2640,9 +2649,9 @@ func poolFirstPersonStageFill() (viewport.StageInsetFill, error) {
 	return viewport.FillBackgroundToStageInset(background, viewport.StageInset{X: 24, Y: 24, Width: 88, Height: 88, WallTop: 40})
 }
 
-func drawPoolStageRects(screen *ebiten.Image, rectangles []viewport.BackgroundRect, viewLeft, viewTop int) {
+func drawPoolStageRects(screen *ebiten.Image, rectangles []viewport.BackgroundRect, viewLeft, viewTop int, palette [16]color.RGBA) {
 	for _, rectangle := range rectangles {
-		shade := graphics.EGA16[rectangle.PaletteIndex]
+		shade := palette[rectangle.PaletteIndex]
 		target := poolStageScreenRect(rectangle, viewLeft, viewTop)
 		for y := target.Min.Y; y < target.Max.Y; y++ {
 			for x := target.Min.X; x < target.Max.X; x++ {

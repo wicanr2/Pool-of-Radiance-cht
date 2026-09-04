@@ -89,12 +89,8 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 	grid := a.tactical.Grid
 	classes := a.tactical.Classes
-	floor := color.RGBA{40, 72, 72, 255}
-	wall := color.RGBA{170, 255, 255, 255}
-	if a.modern {
-		floor = color.RGBA{46, 54, 66, 255}
-		wall = color.RGBA{238, 232, 207, 255}
-	}
+	skin := a.currentTheme()
+	floor, wall := skin.tacticalFloor, skin.tacticalWall
 
 	painted := 0
 	blocking := 0
