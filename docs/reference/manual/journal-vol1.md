@@ -4,8 +4,14 @@
 美工編輯 賴姿瑾。原書英文名 Adventurers Journal。
 
 轉錄方式與狀態見 [spec 054](../../spec/054-softworld-manual-journal-corpus.md)。
-文字逐頁對掃描原圖校讀，保留當年譯名與用字（含異體字與當年的標點習慣）；
-只把原書為了排版而插入的括號內空白正常化。段落會跨頁延續，頁界不另加符號。
+文字逐頁對掃描原圖校讀，保留當年譯名與用字（含異體字、原書的印刷錯誤與當年的
+標點習慣）；需要判讀時在〔〕內註記，不在正文改字。只把原書為了排版而插入的括號內
+空白正常化。段落會跨頁延續，頁界不另加符號。
+
+第二輪逐頁回對已完成（2026-09-04）：兩冊 111 頁全部對過掃描原圖。機械檢查在
+`internal/journal/manual_pages_test.go` 與 `manual_tables_test.go`——頁碼連續、
+每個掃描半頁都有歸屬、印刷目錄的章節起始頁、四組編號的完整性，以及附錄 3／4／7
+的數字對原版執行檔與資料檔。
 
 ## p.1 · 第一章 關於「探險者手冊」（Pic0005-right）
 
@@ -1116,6 +1122,7 @@ Unseen）這些神祇如今都已經沒落，而淪為邪惡神祇（Bane）的�
 | ZHENTIL KEEP | 漢提耳吉普 |
 | PHLAN | 菲蘭 |
 | MELVAUNT | 梅爾瓦安特 |
+| IRONFANG KEEP | （圖上未標中文；字首被圖框壓住，僅能辨出 …ONFANG KEEP） |
 | THENTIA | 珊提亞 |
 | YULASH | 尤拉斯 |
 | MULMASTER | 馬爾馬斯特 |
@@ -1132,6 +1139,7 @@ Unseen）這些神祇如今都已經沒落，而淪為邪惡神祇（Bane）的�
 
 | 英文 | 圖上中文 |
 |---|---|
+| DRAGONSPINE MTNS. | 龍脊山脈 |
 | LAKE KUTO | 古托湖 |
 | STOJANOW RIVER | 史塔傑諾河 |
 | QUIVERING FOREST | 戰慄森林 |
@@ -1250,7 +1258,7 @@ TIMBERS 木柵、DAYS TO DIG 挖掘的天數（刻度 0、10、20、30、40）�
 
 在一個商人的屍體旁邊發現了一封信：
 
-「阿拉曼（Aleram），
+「阿拉旻（Aleram），
 
 嗨，我的好朋友，我希望你和你的小孩一切順利安好。我非常疲倦，對於再穿越不可言喻的
 沼澤和無法攀爬的山脈去將我的商品賣給討厭的客人感到厭倦。
@@ -1456,7 +1464,8 @@ TIMBERS 木柵、DAYS TO DIG 挖掘的天數（刻度 0、10、20、30、40）�
 
 一張破爛的紙張記載著：
 
-「據城裏的密探報告指出，有一隊人馬入侵索卡爾（Sokal）城堡準備拯救
+「據城裏的密探報告指出，有一隊人馬入侵索卡爾（So Kal）城堡準備拯救
+〔原書此處印作 So Kal（大寫 K、中間有空格）；p.36 的地圖作 SOKOL KEEP〕
 
 ## p.45 · 第六章 酒店傳言（Pic0027-right）
 
@@ -1703,7 +1712,9 @@ TIMBERS 木柵、DAYS TO DIG 挖掘的天數（刻度 0、10、20、30、40）�
 | 牧師（Cleric） | 任何裝備皆可 | 任何盾皆可 | Club, flail, hammer, mace, staff |
 | 戰士（Fighter） | 任何裝備皆可 | 任何盾皆可 | 任何武器皆可 |
 | 魔術師（Magic-User） | 無 | 無 | dagger, dart, staff |
-| 小偷（Thief） | leather | 無 | club, dagger, dart, sling, one hand swords |
+| 小偷（Thief） | leather | 無 | club, dagger, dart, sling, one han'd swords |
+
+〔原書小偷那格印作 `one han'd swords`，撇號是原書的誤植〕
 
 ## p.54 · 附錄 7 武器一覽表（Pic0032-left）
 

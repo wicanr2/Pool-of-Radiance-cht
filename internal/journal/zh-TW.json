@@ -260,7 +260,7 @@
       "id": "37",
       "page": "36",
       "pic": "Pic0023-left",
-      "text": "由偉大的數學家湯姆斯（Tomarus）繪製的地圖。\n〔圖〕三幅地圖：月之海全域圖、菲蘭城附近區、菲蘭城市區鳥瞰圖。圖上標注的中英地名對照如下。\n**THE MOONSEA 月之海（全域圖）**\n| 英文 | 圖上中文 ||---|---|| THE MOONSEA | 月之海 || THE RIDE（NOMAD STEPPES） | 半獸人（諾曼） || GLISTER | 葛利斯特 || VAASA | 瓦薩 || THE GREAT GREY LAND OF THAR | 薩爾大灰地 || DRAGONSPINE MTNS. | 龍脊山脈 || THE RIVER TESH | 泰斯河 || STOJANOW RIVER | 史塔傑諾 || ZHENTIL KEEP | 漢提耳吉普 || PHLAN | 菲蘭 || MELVAUNT | 梅爾瓦安特 || THENTIA | 珊提亞 || YULASH | 尤拉斯 || MULMASTER | 馬爾馬斯特 || ELVEN COURT | 精靈王國 || HILLSFAR | 海爾斯法 || ELMWOOD | 艾思伍德 || RIVER DUATHAMPER | 達斯安普河 || RIVER LIS | 利斯河 || THE WYRMFLOW | 瓦爾溫佛羅河 || TO CORMYR | 克米爾 || TO SEMBIA | 桑比亞 |\n**AREA NEAR PHLAN 菲蘭城附近區**\n| 英文 | 圖上中文 ||---|---|| LAKE KUTO | 古托湖 || STOJANOW RIVER | 史塔傑諾河 || QUIVERING FOREST | 戰慄森林 || THE TWILIGHT RIVER | 黃昏之界河 || TWILIGHT MARSH | （圖上未標中文） || STORMY BAY | 暴風彎 || PHLAN | 菲蘭城 || MOONSEA | 月之海 |\n**PHLAN 菲蘭城（市區鳥瞰，圓圈編號）**\n| 編號 | 圖上中文 | 圖上英文 ||---:|---|---|| 1 | 瓦傑諾城堡 | VALJEVO CASTLE || 2 | 史塔傑諾河 | STOJANOW RIVER || 3 | 史塔傑諾城門 | STOJANOW GATE || 4 | 瓦海登墳場 | VALHINGEN GRAVEYARD || 5 | 柯威大樓 | KOVEL MANSION || 6 | 邪惡神廟 | TEMPLE OF BANE || 7 | 古托井 | KUTO'S WELL || 8 | 荊棘島 | THORN ISLAND || 9 | 索卡爾城 | SOKOL KEEP || 10 | 菲蘭彎 | BAY OF PHLAN || 11 | 威爾西 | WEALTHY |\n圖上另標有未編號的地點：PODOL PLAZA、SLUMS、CIVILIZED、CADORNA TEXTILE HOUSE、MENDOR LIBRARY。"
+      "text": "由偉大的數學家湯姆斯（Tomarus）繪製的地圖。\n〔圖〕三幅地圖：月之海全域圖、菲蘭城附近區、菲蘭城市區鳥瞰圖。圖上標注的中英地名對照如下。\n**THE MOONSEA 月之海（全域圖）**\n| 英文 | 圖上中文 ||---|---|| THE MOONSEA | 月之海 || THE RIDE（NOMAD STEPPES） | 半獸人（諾曼） || GLISTER | 葛利斯特 || VAASA | 瓦薩 || THE GREAT GREY LAND OF THAR | 薩爾大灰地 || DRAGONSPINE MTNS. | 龍脊山脈 || THE RIVER TESH | 泰斯河 || STOJANOW RIVER | 史塔傑諾 || ZHENTIL KEEP | 漢提耳吉普 || PHLAN | 菲蘭 || MELVAUNT | 梅爾瓦安特 || IRONFANG KEEP | （圖上未標中文；字首被圖框壓住，僅能辨出 …ONFANG KEEP） || THENTIA | 珊提亞 || YULASH | 尤拉斯 || MULMASTER | 馬爾馬斯特 || ELVEN COURT | 精靈王國 || HILLSFAR | 海爾斯法 || ELMWOOD | 艾思伍德 || RIVER DUATHAMPER | 達斯安普河 || RIVER LIS | 利斯河 || THE WYRMFLOW | 瓦爾溫佛羅河 || TO CORMYR | 克米爾 || TO SEMBIA | 桑比亞 |\n**AREA NEAR PHLAN 菲蘭城附近區**\n| 英文 | 圖上中文 ||---|---|| DRAGONSPINE MTNS. | 龍脊山脈 || LAKE KUTO | 古托湖 || STOJANOW RIVER | 史塔傑諾河 || QUIVERING FOREST | 戰慄森林 || THE TWILIGHT RIVER | 黃昏之界河 || TWILIGHT MARSH | （圖上未標中文） || STORMY BAY | 暴風彎 || PHLAN | 菲蘭城 || MOONSEA | 月之海 |\n**PHLAN 菲蘭城（市區鳥瞰，圓圈編號）**\n| 編號 | 圖上中文 | 圖上英文 ||---:|---|---|| 1 | 瓦傑諾城堡 | VALJEVO CASTLE || 2 | 史塔傑諾河 | STOJANOW RIVER || 3 | 史塔傑諾城門 | STOJANOW GATE || 4 | 瓦海登墳場 | VALHINGEN GRAVEYARD || 5 | 柯威大樓 | KOVEL MANSION || 6 | 邪惡神廟 | TEMPLE OF BANE || 7 | 古托井 | KUTO'S WELL || 8 | 荊棘島 | THORN ISLAND || 9 | 索卡爾城 | SOKOL KEEP || 10 | 菲蘭彎 | BAY OF PHLAN || 11 | 威爾西 | WEALTHY |\n圖上另標有未編號的地點：PODOL PLAZA、SLUMS、CIVILIZED、CADORNA TEXTILE HOUSE、MENDOR LIBRARY。"
     },
     {
       "kind": "clue",
@@ -309,7 +309,7 @@
       "id": "44",
       "page": "39",
       "pic": "Pic0024-right",
-      "text": "在一個商人的屍體旁邊發現了一封信：\n「阿拉曼（Aleram），\n嗨，我的好朋友，我希望你和你的小孩一切順利安好。我非常疲倦，對於再穿越不可言喻的沼澤和無法攀爬的山脈去將我的商品賣給討厭的客人感到厭倦。\n僅有一次的事件改變了整年的收入，我意外地發現了一個城堡，裏面的人民都非常快樂，均是非常好的顧客。他們喜歡購買物品，並且渴望得知從外地來的任何消息，這個城堡位於一個小樹林的中央，而小樹林則位於一個沼澤的中央地帶。\n那些居民似乎對於最近的消息完全不知道，他們仍然以為菲蘭城還是從前的全盛時期，而使用的金幣則是舊的菲蘭金幣，舊金幣的價值是新金幣的兩倍！\n雖然他們毫不知外界的情況，但是生活卻非常繁榮，過著桃花源般的生活。我看見許多寶石在太陽光之下閃閃發亮，還有金光閃閃的武器，我甚至以為它們是魔法變成的，假如你想躲開不死怪物，我將把此城堡加入你的旅遊線中，替你的馬加速、增加你的力量並且讓你的買賣技巧更高超。\n你的朋友布拉（Burach）」"
+      "text": "在一個商人的屍體旁邊發現了一封信：\n「阿拉旻（Aleram），\n嗨，我的好朋友，我希望你和你的小孩一切順利安好。我非常疲倦，對於再穿越不可言喻的沼澤和無法攀爬的山脈去將我的商品賣給討厭的客人感到厭倦。\n僅有一次的事件改變了整年的收入，我意外地發現了一個城堡，裏面的人民都非常快樂，均是非常好的顧客。他們喜歡購買物品，並且渴望得知從外地來的任何消息，這個城堡位於一個小樹林的中央，而小樹林則位於一個沼澤的中央地帶。\n那些居民似乎對於最近的消息完全不知道，他們仍然以為菲蘭城還是從前的全盛時期，而使用的金幣則是舊的菲蘭金幣，舊金幣的價值是新金幣的兩倍！\n雖然他們毫不知外界的情況，但是生活卻非常繁榮，過著桃花源般的生活。我看見許多寶石在太陽光之下閃閃發亮，還有金光閃閃的武器，我甚至以為它們是魔法變成的，假如你想躲開不死怪物，我將把此城堡加入你的旅遊線中，替你的馬加速、增加你的力量並且讓你的買賣技巧更高超。\n你的朋友布拉（Burach）」"
     },
     {
       "kind": "clue",
@@ -400,7 +400,7 @@
       "id": "57",
       "page": "44",
       "pic": "Pic0027-left",
-      "text": "一張破爛的紙張記載著：\n「據城裏的密探報告指出，有一隊人馬入侵索卡爾（Sokal）城堡準備拯救它，你必須召集三隊以上的人員來對付入侵者，然後從西部的小碼頭乘船到荊棘島（Thorn），祕密地進入索卡爾城堡。在敵人能回到市議會商討對付我們之前就將他們幹掉，然後砍下敵人的首級帶回來證明你已完成任務，若你能順利完成此任務，將能獲得食物、寶藏和許多奴隸。」\n指揮官簽署"
+      "text": "一張破爛的紙張記載著：\n「據城裏的密探報告指出，有一隊人馬入侵索卡爾（So Kal）城堡準備拯救它，你必須召集三隊以上的人員來對付入侵者，然後從西部的小碼頭乘船到荊棘島（Thorn），祕密地進入索卡爾城堡。在敵人能回到市議會商討對付我們之前就將他們幹掉，然後砍下敵人的首級帶回來證明你已完成任務，若你能順利完成此任務，將能獲得食物、寶藏和許多奴隸。」\n指揮官簽署"
     },
     {
       "kind": "clue",

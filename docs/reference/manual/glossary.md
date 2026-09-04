@@ -74,7 +74,7 @@
 | Drythh | 德萊特 | p.34 | |
 | Bersheera | 貝爾敍拉 | p.35 | 線索 34 的蛇 |
 | Sorrasar | 索拉沙 | p.37 | |
-| Aleram | 阿拉曼 | p.39 | |
+| Aleram | 阿拉旻 | p.39 | |
 | Burach | 布拉 | p.39 | |
 | Dirg | 狄格 | p.40 | 野蠻民族英雄 |
 | Jezma | 傑士馬 | p.41 | 狄格的寵物 |
