@@ -345,6 +345,9 @@ remake 把 1 與 2 接上去了（目標存在 `tacticalState.FoeTargets`，重�
 
 ## entry 13（`07E8h`）是「走一步」
 
+`0868h` 那個 `runtime +3` 是**先攻分數**，每回合由 overlay-13 entry 1 重擲
+（spec 052、spec 062）。分數在這一輪被扣光的怪物不走路，交給 entry 6 收工。
+
 `087a` 那個 `記錄 +2Fh == 5` 不是未知旗標：`+2Fh` 是**複合職業碼**，跟玩家
 角色記錄同一個欄位（`gamepack.ClassCodeOffset`、`internal/character` 的
 `offsetClass`、spec 085、spec 097），5 是**純法師**。所以那一條是
@@ -360,7 +363,7 @@ remake 把 1 與 2 接上去了（目標存在 `tacticalState.FoeTargets`，重�
 07e8  f(記錄)                                    ; retf 4，一個遠指標
 083c  entry 7（0FC8h）回非零 → 返回              ; 玩家打斷
 084d  runtime +6 ÷ 2 <= 0 → 交給 entry 6         ; 沒有腳程了
-0868  runtime +3 <= 0 → 交給 entry 6
+0868  runtime +3 <= 0 → 交給 entry 6            ; +3 是先攻分數（spec 062）
 087a  runtime +14h == 0 而且記錄 +2Fh == 5 → 交給 entry 6  ; 不逃跑的純法師
 0896  runtime +14h != 0（正在逃）→ 08C5h
 08a5  否則 基準方向 = 0096h:0093h(記錄, 目標記錄)  ; overlay-13 261Bh
@@ -459,7 +462,6 @@ remake 把 1 與 2 接上去了（目標存在 `tacticalState.FoeTargets`，重�
   entry 25／35／66 各自對應哪個代碼——`DS:677Ch` 的語意卡在這裡（spec 112）。
 - `DS:6674h` 所指的戰術地圖結構，`+6` 除了當 `37B8h` 的「放寬」旗標與
   spec 058 的「跳過地形判定」旗標之外還有沒有別的用途。
-- runtime `+3` 的語意（entry 5 兩段迴圈的閘門，也是 `07E8h` `0868h` 的閘門）。
 - entry 3 裡的 `00E2h:003Eh`、物品 `+34h`／`+3Dh`／`+3Eh` 的欄位語意，
   以及 `[4933h]+1CAh` 是什麼。
 - `0100h:0066h`（overlay-24）在士氣判定裡算什麼；`+84h` 的位元 7 與

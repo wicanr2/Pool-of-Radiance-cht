@@ -1395,7 +1395,13 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 				best[address] = value
 			}
 		}
-		if best[0x4AA7] == 254 && best[0x4A01] != 1 {
+		// 這一則要斷言的東西**全部**湊齊了才提早收工。只看旗標就 break 的話，
+		// 「走得到幾張圖」會變成「第幾個種子先湊齊旗標」的函數——2026-09-05
+		// 修掉 startRound 的一處亂數流之後，第一個種子就湊齊了旗標，於是
+		// union 只剩那一趟的五張圖，看起來像覆蓋率退步，其實是提早收工。
+		if best[0x4AA7] == 254 && best[0x4A01] != 1 &&
+			len(maps) >= 7 && len(blocks) >= 7 &&
+			(blocks[25] || blocks[26] || blocks[27]) {
 			break
 		}
 	}
