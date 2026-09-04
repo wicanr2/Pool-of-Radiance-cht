@@ -619,8 +619,18 @@ YOU HAVE ENTERED THE MONSTER-CRAWLING SLUMS OF PHLAN. SMALL, UGLY THINGS
 SCURRY FROM BENEATH YOUR FEET. IN THE DISTANCE, AN ALARM SOUNDS.
 ```
 
-畫面上的隊伍名單為 DR. TURTLE、QUESTER、"DRAGON"、"OGRE"、"WITCH"、LORD JEAN、
-HERO〔名字後的職業縮寫與部分數值在掃描上偏糊，待第二輪覆核〕。
+畫面上的隊伍名單（名字後面那幾個字母是編輯自己取的縮寫，屬於名字的一部分，
+不是職業代碼）：
+
+| NAME | AC | HP |
+|---|---:|---:|
+| DR. TURTLE | -1 | 35 |
+| QUESTER Y.M.J | -1 | 35 |
+| "DRAGON" L.Y.C | -2 | 39 |
+| "OGRE" G.R.X | -2 | 32 |
+| "WITCH" L.J. | -2 | 24 |
+| LORD JEAN | -2 | 26 |
+| HERO | -1 | 35 |
 
 ## p.20 · 基本行動指令（Pic0045-left）
 
