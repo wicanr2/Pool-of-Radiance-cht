@@ -348,7 +348,11 @@
   **賣掉只拿得到估價的五分之一**（`1F0Dh` 的 `div 5`），說明書沒有寫這一條。
   按 K）eep 則變成一件物品（`+2Eh = 46h`、`+31h = 65h`、價值寫在 `+3Ah`），
   但背包滿 16 件時「留著」那一項根本不會出現。規則實作在 `internal/treasure`。
-  剩下的：神殿那六項與 Appraise 的**界面入口**（規則都備齊了，只差 UI）。
+  **界面也接上了**：神殿的 H）EAL 九項全部可用（先前只有三種傷藥，其餘六項
+  停在 fail-closed），選單名稱直接從 `temple.Services` 取所以兩份表不會漂開；
+  A）ppraise 進兩層——挑寶石或珠寶、再對估好價的那一件選 S）ell／K）eep，
+  留著時建出來的 63 bytes 記錄直接放進 `poolsave.Item.Raw`。
+  剩下的：商店那一側的 A）ppraise 入口（規則同一份）。
 - [x] 商店服務：四家店與墓園戰利品共用 `CLEARMONSTERS → TREASURE → SAVE → COMBAT`
   邊界，判別靠 `6E6Ch=1`／`6EF6h=1`／`6E6Dh=16` 三個旗標（不是 item block 編號）。
   存貨是 `ITEM3.DAX` 的 block `34h`..`37h`，價格在記錄 `+3Ah`。購買扣金幣並沿用

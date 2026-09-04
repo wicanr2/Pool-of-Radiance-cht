@@ -1,7 +1,8 @@
 # Spec 116：估價與販賣寶石珠寶（overlay-21 entry 19）
 
 狀態：READY（兩張價值表、賣價的比例、留著時建出來的物品欄位、
-「留著」出不出得來的門檻都已讀出並實作）；OPEN（界面入口）。
+「留著」出不出得來的門檻都已讀出、實作並接上神殿的界面）；
+OPEN（商店那一側的入口）。
 日期：2026-09-05。
 
 ## 一支給兩個地方用
@@ -68,8 +69,12 @@ p.34 只說「螢幕上會出現店主人對第一顆寶石（珠寶）開的價
 `GemValue`／`JewelryValue` 查價，`SellPrice` 是那個五分之一。
 計數存在存檔的 `Money[Gems]`／`Money[Jewelry]`，金幣是 `Money[Gold]`。
 
+界面在 `cmd/pool-game/appraise.go`：神殿主選單的 A）ppraise 進兩層——先挑
+寶石或珠寶，再對估好價的那一件選 S）ell／K）eep。留著時建出來的 63 bytes
+記錄直接放進 `poolsave.Item.Raw`。
+
 ## OPEN
 
-- 界面入口：`cmd/pool-game` 的商店與神殿都還沒有 A）ppraise 這一項。
-- 留下來的那件物品要怎麼進背包（`internal/save` 的 `Item` 版面對不對得上
-  原版那 63 bytes）還沒對。
+- 商店那一側的 A）ppraise 還沒接（規則同一份，只差入口）。
+- 留下來的那件物品的其餘欄位（63 bytes 裡除了 `+2Eh`／`+31h`／`+37h`／`+3Ah`
+  以外的）還沒對，所以那件東西目前只帶得動價值。

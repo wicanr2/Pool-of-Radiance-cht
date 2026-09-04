@@ -1,7 +1,7 @@
 # Spec 115：神殿的九項服務（overlay-04）
 
-狀態：READY（九項的名稱、價錢、前提、付款方式與各自拿掉哪些效果都已讀出並
-實作；起死回生的體質與生命力重算也接了）；OPEN（Appraise 那一項、`+11Bh`）。
+狀態：READY（九項的名稱、價錢、前提、付款方式與各自拿掉哪些效果都已讀出、
+實作並接上界面；起死回生的體質與生命力重算也接了）；OPEN（`+11Bh`）。
 日期：2026-09-05。
 
 ## 選單
@@ -70,11 +70,12 @@
 （spec 069 的串列），狀態存在 `Character.Status`（`+10Ch`）。
 起死回生的重算是 `raiseDeadHitPointLoss`。
 
+選單那九項由 `templeHealServiceIDs` 排序、名稱從 `temple.Services` 取，
+所以兩份表不會漂開（`TestTempleMenuCoversEveryService` 釘住）。
+A）ppraise 見 [spec 116](116-appraise-and-sell.md)。
+
 ## OPEN
 
-- **Appraise**：說明書 p.34 說賣寶石與珠寶是逐顆開價，`SELL` 接受。那一支還
-  沒讀，也還沒實作。
 - `+11Bh` 是什麼還沒對——起死回生與石化解除都寫它 1，而起死回生的重算又從
   它減掉每級的份。
 - `DS:677Dh` 那個在移除效果前後立起又放下的旗標。
-- 神殿的界面（`cmd/pool-game`）目前只接得到三種傷藥；其餘六項有規則沒有入口。

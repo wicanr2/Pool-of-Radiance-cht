@@ -75,6 +75,9 @@ const (
 	templeMain templeStage = iota
 	templeHeal
 	templeConfirm
+	// A）ppraise 的兩層：先挑寶石或珠寶，再對估好價的那一件選 Sell／Keep。
+	templeAppraise
+	templeAppraiseOffer
 )
 
 type diceRoller struct{ random *rand.Rand }
@@ -159,6 +162,8 @@ type app struct {
 	cellMenuCursor   int
 	templeActive     bool
 	templeStage      templeStage
+	appraiseKind     appraiseKind
+	appraiseValue    int
 	templeParty      int
 	templeService    int
 	// programManaging 為真時，隊伍管理畫面是 `38h PROGRAM` 從地圖上開的，
@@ -1710,10 +1715,26 @@ func (a *app) enterSuneTemple() error {
 	return nil
 }
 
-var templeHealOptions = []string{
-	"Cure Blindness", "Cure Disease", "Cure Light Wounds", "Cure Serious Wounds",
-	"Cure Critical Wounds", "Neutralize Poison", "Raise Dead", "Remove Curse",
-	"Stone to Flesh", "Exit",
+// templeHealServiceIDs 是 H）EAL 底下九項的順序，照原版選單。名稱不在這裡
+// 寫死——由 `temple.Services` 取，兩份表就不會漂開（spec 115）。
+var templeHealServiceIDs = []string{
+	"cure-blindness", "cure-disease", "cure-light-wounds", "cure-serious-wounds",
+	"cure-critical-wounds", "neutralize-poison", "raise-dead", "remove-curse",
+	"stone-to-flesh",
+}
+
+var templeHealOptions = buildTempleHealOptions()
+
+func buildTempleHealOptions() []string {
+	options := make([]string, 0, len(templeHealServiceIDs)+1)
+	for _, id := range templeHealServiceIDs {
+		service, ok := temple.ServiceByID(id)
+		if !ok {
+			panic("Pool temple service " + id + " is missing from temple.Services")
+		}
+		options = append(options, service.Name)
+	}
+	return append(options, "Exit")
 }
 
 func (a *app) selectTempleParty(index int) {
@@ -1752,27 +1773,49 @@ func (a *app) selectSuneTempleOption() error {
 			return nil
 		case len(a.cellMenuOptions) - 1:
 			return a.leaveSuneTemple()
+		case 3:
+			a.enterTempleAppraise()
+			return nil
 		default:
 			a.statusLine = "This temple service remains fail-closed until its DOS rules are READY."
 			return nil
 		}
+	case templeAppraise:
+		switch a.cellMenuCursor {
+		case 0:
+			return a.offerAppraise(appraiseGem)
+		case 1:
+			return a.offerAppraise(appraiseJewel)
+		default:
+			a.enterTempleMain()
+			return nil
+		}
+	case templeAppraiseOffer:
+		a.resolveAppraise(a.cellMenuCursor == 1)
+		return nil
 	case templeHeal:
 		if a.cellMenuCursor == len(templeHealOptions)-1 {
 			a.enterTempleMain()
 			return nil
 		}
-		if a.cellMenuCursor < 2 || a.cellMenuCursor > 4 {
-			a.statusLine = "This status cure remains fail-closed until its DOS rules are READY."
+		if a.cellMenuCursor < 0 || a.cellMenuCursor >= len(templeHealServiceIDs) {
+			a.statusLine = "This temple service is not on the original menu."
 			return nil
 		}
-		a.templeService = a.cellMenuCursor - 2
-		service := temple.WoundServices[a.templeService]
+		a.templeService = a.cellMenuCursor
+		service, _ := temple.ServiceByID(templeHealServiceIDs[a.templeService])
+		// 沒有那個毛病時原版先印 `is not …` 再問要不要照做，錢照收。
+		// 這裡把那一句放進事件文字，選 YES 才會付錢。
+		if !service.Applies(a.state.Party[a.templeParty]) && service.Refusal != "" {
+			a.statusLine = a.state.Party[a.templeParty].Name + " " + service.Refusal
+		} else {
+			a.statusLine = "Confirm the original temple service price."
+		}
 		a.templeStage = templeConfirm
 		a.cellMenuOptions = []string{"YES", "NO"}
 		a.cellMenuCursor = 0
 		a.eventText = fmt.Sprintf("%d gold pieces.\npay for cure", service.Cost)
 		a.eventLabel = a.cellMenuLabel()
-		a.statusLine = "Confirm the original temple cure price."
 		return nil
 	case templeConfirm:
 		if a.cellMenuCursor != 0 {
@@ -1782,7 +1825,8 @@ func (a *app) selectSuneTempleOption() error {
 		before := a.state
 		before.Party = append([]poolsave.Character(nil), a.state.Party...)
 		before.CharacterLibrary = append([]poolsave.Character(nil), a.state.CharacterLibrary...)
-		result, err := temple.CureWounds(&a.state, a.templeParty, a.templeService, a.roller)
+		id := templeHealServiceIDs[a.templeService]
+		result, err := temple.Serve(&a.state, a.templeParty, id, a.roller)
 		if err != nil {
 			a.enterTempleHeal()
 			if errors.Is(err, temple.ErrNotEnoughMoney) {
@@ -1790,7 +1834,10 @@ func (a *app) selectSuneTempleOption() error {
 				a.statusLine = "The cure was not purchased; no money or HP changed."
 				return nil
 			}
-			return err
+			// 沒有那個毛病：原版不收錢也不做事，只留那一句。
+			a.eventText = err.Error()
+			a.statusLine = "Nothing was purchased; no money changed."
+			return nil
 		}
 		if a.saveState != nil {
 			if err := a.saveState(a.state); err != nil {
@@ -1801,7 +1848,12 @@ func (a *app) selectSuneTempleOption() error {
 		name := a.state.Party[a.templeParty].Name
 		a.enterTempleHeal()
 		a.eventText = name + " is cured."
-		a.statusLine = fmt.Sprintf("Paid %d GP from %s; restored %d HP.", result.Cost, result.PaidFrom, result.Healed)
+		if result.Healed > 0 {
+			a.statusLine = fmt.Sprintf("Paid %d GP from %s; restored %d HP.",
+				result.Cost, result.PaidFrom, result.Healed)
+		} else {
+			a.statusLine = fmt.Sprintf("Paid %d GP from %s.", result.Cost, result.PaidFrom)
+		}
 		return nil
 	default:
 		return fmt.Errorf("unknown Pool temple stage %d", a.templeStage)

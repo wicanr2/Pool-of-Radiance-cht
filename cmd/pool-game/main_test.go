@@ -337,9 +337,11 @@ func TestSuneTempleCureUsesCurrentCharacterAndPersists(t *testing.T) {
 	}
 }
 
+// templeService 是 H）EAL 選單上的位置（spec 115 的九項），不是
+// WoundServices 的索引——第 2 項才是治療輕傷。
 func TestSuneTempleFailedSaveRollsBackCure(t *testing.T) {
 	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good", MaxHP: 12, CurrentHP: 2, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
-	application := &app{roller: fixedTempleRoller(6), state: poolsave.State{Schema: poolsave.Schema, PooledMoney: [7]uint32{3: 100}, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}, templeActive: true, templeStage: templeConfirm, templeService: 0, cellMenuOptions: []string{"YES", "NO"}}
+	application := &app{roller: fixedTempleRoller(6), state: poolsave.State{Schema: poolsave.Schema, PooledMoney: [7]uint32{3: 100}, CharacterLibrary: []poolsave.Character{character}, Party: []poolsave.Character{character}}, templeActive: true, templeStage: templeConfirm, templeService: 2, cellMenuOptions: []string{"YES", "NO"}}
 	application.saveState = func(poolsave.State) error { return errors.New("disk full") }
 	if err := application.selectSuneTempleOption(); err == nil {
 		t.Fatal("save failure was swallowed")
