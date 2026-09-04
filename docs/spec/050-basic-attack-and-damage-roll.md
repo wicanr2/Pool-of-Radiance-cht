@@ -82,7 +82,11 @@ primitive 接受 internal encoding，避免先轉成畫面 THAC0／AC 再失去�
 ## 明確排除
 
 - `1B15h` 的 effective AC modifier 細目；
-- overlay-24 `02E2h` 的 effect codes `0Ah／10h` 與 `DS:4937h +6E0h/+6E2h` 來源；
+- `DS:4937h +6E0h/+6E2h` 的來源。（`02E2h` 的 effect codes `0Ah` 與 `10h`
+  已經解出來了：`0Ah` 是**攻擊者**身上的命中修正
+  `01h 02h 21h 24h 31h 03h 06h 12h 1Ah`，`10h` 是**目標**身上的
+  `19h 47h 25h 2Fh 30h 59h`；擲出來的 d20 放在 `DS:6780h`，自然 1 直接失手、
+  自然 20 改寫成 100，然後才讓效果調整。見 [spec 112](112-effect-code-dispatch.md)。）
 - attack slot `+112h` 次數如何生成、武器如何覆寫 `+115h..+119h`；
 - initiative、移動、目標選擇、AI、特殊攻擊、status transition、勝敗與 ECL continuation。
 

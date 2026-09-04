@@ -1,0 +1,2418 @@
+{
+ "schema": "pool-effect-handler-census/2",
+ "note": "表在 DS:678Ah（偏移基底 6786h），由 overlay-12 entry 1 `31B2h` 填 138 格，代碼 58h 由 overlay-22 `3760h` 填。",
+ "handlers": [
+  {
+   "entry": 5,
+   "codes": [
+    "01h"
+   ],
+   "span": "010Fh..0121h",
+   "bytes": 18,
+   "insn": 7,
+   "globals_written": [
+    "6780",
+    "6783"
+   ],
+   "globals_touched": [
+    "6780",
+    "6783"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 6,
+   "codes": [
+    "02h"
+   ],
+   "span": "0121h..0141h",
+   "bytes": 32,
+   "insn": 11,
+   "globals_written": [
+    "6780",
+    "6783"
+   ],
+   "globals_touched": [
+    "6780",
+    "6783"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 7,
+   "codes": [
+    "03h"
+   ],
+   "span": "0141h..0185h",
+   "bytes": 68,
+   "insn": 24,
+   "globals_written": [
+    "6776",
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6776",
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108",
+    "9F"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 8,
+   "codes": [
+    "04h"
+   ],
+   "span": "0185h..01C9h",
+   "bytes": 68,
+   "insn": 29,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:10",
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 9,
+   "codes": [
+    "06h"
+   ],
+   "span": "01C9h..023Dh",
+   "bytes": 116,
+   "insn": 39,
+   "globals_written": [
+    "6776",
+    "6777",
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6776",
+    "6777",
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108",
+    "9F"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 10,
+   "codes": [
+    "07h"
+   ],
+   "span": "023Dh..0377h",
+   "bytes": 314,
+   "insn": 116,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "0B1",
+    "11B",
+    "14",
+    "32",
+    "96",
+    "98"
+   ],
+   "calls": [
+    "0100h:10",
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 11,
+   "codes": [
+    "08h",
+    "2Dh"
+   ],
+   "span": "0377h..03AEh",
+   "bytes": 55,
+   "insn": 16,
+   "globals_written": [
+    "6774",
+    "6780"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "6774",
+    "6780"
+   ],
+   "fields": [
+    "0A0"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 12,
+   "codes": [
+    "09h",
+    "2Eh"
+   ],
+   "span": "03AEh..03E5h",
+   "bytes": 55,
+   "insn": 16,
+   "globals_written": [
+    "6774",
+    "6780"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "6774",
+    "6780"
+   ],
+   "fields": [
+    "0A0"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 13,
+   "codes": [
+    "0Ah"
+   ],
+   "span": "03E5h..040Ah",
+   "bytes": 37,
+   "insn": 16,
+   "globals_written": [
+    "6774",
+    "6776"
+   ],
+   "globals_touched": [
+    "6774",
+    "6776",
+    "6777"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 14,
+   "codes": [
+    "0Bh"
+   ],
+   "span": "040Ah..04CBh",
+   "bytes": 193,
+   "insn": 62,
+   "globals_written": [
+    "6783"
+   ],
+   "globals_touched": [
+    "6783"
+   ],
+   "fields": [
+    "0A",
+    "0C",
+    "108",
+    "10E",
+    "10F",
+    "3",
+    "84"
+   ],
+   "calls": [
+    "010Ah:31"
+   ]
+  },
+  {
+   "entry": 15,
+   "codes": [
+    "0Ch",
+    "26h"
+   ],
+   "span": "04CBh..05E0h",
+   "bytes": 277,
+   "insn": 99,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "10",
+    "16",
+    "3",
+    "5",
+    "7F"
+   ],
+   "calls": [
+    "0100h:16",
+    "0100h:17"
+   ]
+  },
+  {
+   "entry": 16,
+   "codes": [
+    "0Eh"
+   ],
+   "span": "05E0h..05F7h",
+   "bytes": 23,
+   "insn": 9,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "15",
+    "3"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 17,
+   "codes": [
+    "0Fh"
+   ],
+   "span": "05F7h..0655h",
+   "bytes": 94,
+   "insn": 36,
+   "globals_written": [
+    "6777"
+   ],
+   "globals_touched": [
+    "4954",
+    "5CF0",
+    "5CF2",
+    "6777"
+   ],
+   "fields": [
+    "11B",
+    "3"
+   ],
+   "calls": [
+    "0100h:19",
+    "010Ah:2"
+   ]
+  },
+  {
+   "entry": 18,
+   "codes": [
+    "10h"
+   ],
+   "span": "0655h..065Eh",
+   "bytes": 9,
+   "insn": 5,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 19,
+   "codes": [
+    "11h"
+   ],
+   "span": "065Eh..068Bh",
+   "bytes": 45,
+   "insn": 14,
+   "globals_written": [
+    "6774",
+    "6776"
+   ],
+   "globals_touched": [
+    "6774",
+    "6776",
+    "6779"
+   ],
+   "fields": [
+    "111"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 20,
+   "codes": [
+    "12h"
+   ],
+   "span": "068Bh..06F4h",
+   "bytes": 105,
+   "insn": 37,
+   "globals_written": [
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108",
+    "6C",
+    "9F"
+   ],
+   "calls": [
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 21,
+   "codes": [
+    "14h"
+   ],
+   "span": "06F4h..0725h",
+   "bytes": 49,
+   "insn": 21,
+   "globals_written": [
+    "6774",
+    "6776"
+   ],
+   "globals_touched": [
+    "6774",
+    "6776",
+    "6777"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 22,
+   "codes": [
+    "15h"
+   ],
+   "span": "0725h..078Bh",
+   "bytes": 102,
+   "insn": 36,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "1",
+    "108",
+    "2"
+   ],
+   "calls": [
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 23,
+   "codes": [
+    "16h"
+   ],
+   "span": "078Bh..07F6h",
+   "bytes": 107,
+   "insn": 44,
+   "globals_written": [
+    "677D"
+   ],
+   "globals_touched": [
+    "677D"
+   ],
+   "fields": [],
+   "calls": [
+    "0100h:2",
+    "010Ah:27",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 24,
+   "codes": [
+    "17h"
+   ],
+   "span": "07F6h..0927h",
+   "bytes": 305,
+   "insn": 105,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "0C7",
+    "0C8",
+    "2A",
+    "2E",
+    "30",
+    "31",
+    "32",
+    "3D",
+    "3E"
+   ],
+   "calls": [
+    "010Ah:17",
+    "010Ah:18",
+    "010Ah:20",
+    "010Ah:7",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 25,
+   "codes": [
+    "19h"
+   ],
+   "span": "0927h..0956h",
+   "bytes": 47,
+   "insn": 18,
+   "globals_written": [
+    "677C",
+    "6780"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "5CF2",
+    "677C",
+    "6780"
+   ],
+   "fields": [],
+   "calls": [
+    "010Ah:27"
+   ]
+  },
+  {
+   "entry": 26,
+   "codes": [
+    "1Ah"
+   ],
+   "span": "0956h..09CDh",
+   "bytes": 119,
+   "insn": 43,
+   "globals_written": [
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108",
+    "6C",
+    "9F"
+   ],
+   "calls": [
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 27,
+   "codes": [
+    "1Ch"
+   ],
+   "span": "09CDh..0A4Ah",
+   "bytes": 125,
+   "insn": 51,
+   "globals_written": [],
+   "globals_touched": [
+    "6779",
+    "677E"
+   ],
+   "fields": [
+    "3"
+   ],
+   "calls": [
+    "0100h:2",
+    "0100h:8",
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 28,
+   "codes": [
+    "1Dh"
+   ],
+   "span": "0A4Ah..0A76h",
+   "bytes": 44,
+   "insn": 20,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "6776"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 29,
+   "codes": [
+    "1Eh"
+   ],
+   "span": "0A76h..0B2Bh",
+   "bytes": 181,
+   "insn": 59,
+   "globals_written": [],
+   "globals_touched": [
+    "5CF0",
+    "5CF2"
+   ],
+   "fields": [
+    "1",
+    "108",
+    "111",
+    "112",
+    "2"
+   ],
+   "calls": [
+    "010Ah:20",
+    "010Ah:5",
+    "010Ah:7",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 30,
+   "codes": [
+    "20h"
+   ],
+   "span": "0B2Bh..0BBEh",
+   "bytes": 147,
+   "insn": 47,
+   "globals_written": [],
+   "globals_touched": [
+    "677D"
+   ],
+   "fields": [
+    "10E",
+    "10F",
+    "3",
+    "4",
+    "6B",
+    "72",
+    "76",
+    "84",
+    "98",
+    "9F"
+   ],
+   "calls": [
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 31,
+   "codes": [
+    "21h"
+   ],
+   "span": "0BBEh..0BE3h",
+   "bytes": 37,
+   "insn": 11,
+   "globals_written": [
+    "6774",
+    "6780"
+   ],
+   "globals_touched": [
+    "6774",
+    "6780"
+   ],
+   "fields": [
+    "111",
+    "112"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 32,
+   "codes": [
+    "22h"
+   ],
+   "span": "0BE3h..0C1Ch",
+   "bytes": 57,
+   "insn": 23,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:1"
+   ]
+  },
+  {
+   "entry": 33,
+   "codes": [
+    "23h"
+   ],
+   "span": "0C1Ch..0C2Dh",
+   "bytes": 17,
+   "insn": 7,
+   "globals_written": [
+    "6774",
+    "6780"
+   ],
+   "globals_touched": [
+    "6774",
+    "6780"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 34,
+   "codes": [
+    "24h"
+   ],
+   "span": "0C2Dh..0C40h",
+   "bytes": 19,
+   "insn": 7,
+   "globals_written": [
+    "6774",
+    "6780"
+   ],
+   "globals_touched": [
+    "6774",
+    "6780"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 35,
+   "codes": [
+    "25h"
+   ],
+   "span": "0C40h..0C67h",
+   "bytes": 39,
+   "insn": 13,
+   "globals_written": [
+    "677C",
+    "6780"
+   ],
+   "globals_touched": [
+    "677C",
+    "6780"
+   ],
+   "fields": [
+    "108",
+    "3"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 36,
+   "codes": [
+    "27h"
+   ],
+   "span": "0C67h..0CDFh",
+   "bytes": 120,
+   "insn": 46,
+   "globals_written": [
+    "6778"
+   ],
+   "globals_touched": [
+    "6778"
+   ],
+   "fields": [
+    "3",
+    "30"
+   ],
+   "calls": [
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 37,
+   "codes": [
+    "28h"
+   ],
+   "span": "0CDFh..0FB7h",
+   "bytes": 728,
+   "insn": 270,
+   "globals_written": [
+    "6CAF",
+    "6CB1"
+   ],
+   "globals_touched": [
+    "6673",
+    "6674",
+    "6CAF",
+    "6CB1"
+   ],
+   "fields": [
+    "0B",
+    "10",
+    "11",
+    "12",
+    "3",
+    "4",
+    "6",
+    "7"
+   ],
+   "calls": [
+    "010Ah:19",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 40,
+   "codes": [
+    "29h"
+   ],
+   "span": "108Dh..10CAh",
+   "bytes": 61,
+   "insn": 25,
+   "globals_written": [],
+   "globals_touched": [
+    "5CF0",
+    "5CF2"
+   ],
+   "fields": [
+    "32"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 41,
+   "codes": [
+    "2Ah"
+   ],
+   "span": "10CAh..10EDh",
+   "bytes": 35,
+   "insn": 16,
+   "globals_written": [
+    "6778"
+   ],
+   "globals_touched": [
+    "6778"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 42,
+   "codes": [
+    "2Bh"
+   ],
+   "span": "10EDh..1177h",
+   "bytes": 138,
+   "insn": 59,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "10",
+    "3"
+   ],
+   "calls": [
+    "0100h:10",
+    "010Ah:20",
+    "010Ah:27",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 43,
+   "codes": [
+    "2Ch"
+   ],
+   "span": "1177h..1208h",
+   "bytes": 145,
+   "insn": 59,
+   "globals_written": [
+    "6777"
+   ],
+   "globals_touched": [
+    "4954",
+    "5CF0",
+    "5CF2",
+    "6777"
+   ],
+   "fields": [
+    "11B",
+    "3"
+   ],
+   "calls": [
+    "0100h:10",
+    "0100h:19",
+    "010Ah:2",
+    "010Ah:27"
+   ]
+  },
+  {
+   "entry": 44,
+   "codes": [
+    "2Fh"
+   ],
+   "span": "1208h..1283h",
+   "bytes": 123,
+   "insn": 51,
+   "globals_written": [
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "6780",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108",
+    "6C",
+    "9F"
+   ],
+   "calls": [
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 45,
+   "codes": [
+    "30h"
+   ],
+   "span": "1283h..12C1h",
+   "bytes": 62,
+   "insn": 25,
+   "globals_written": [
+    "6780"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "6780"
+   ],
+   "fields": [
+    "9F"
+   ],
+   "calls": [
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 46,
+   "codes": [
+    "31h"
+   ],
+   "span": "12C1h..130Ch",
+   "bytes": 75,
+   "insn": 29,
+   "globals_written": [
+    "6774",
+    "6780"
+   ],
+   "globals_touched": [
+    "6774",
+    "6780"
+   ],
+   "fields": [
+    "10E",
+    "3"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 47,
+   "codes": [
+    "32h"
+   ],
+   "span": "130Ch..1352h",
+   "bytes": 70,
+   "insn": 30,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "3"
+   ],
+   "calls": [
+    "0100h:21",
+    "010Ah:29"
+   ]
+  },
+  {
+   "entry": 48,
+   "codes": [
+    "1Fh",
+    "33h",
+    "34h",
+    "35h"
+   ],
+   "span": "1352h..136Ah",
+   "bytes": 24,
+   "insn": 10,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "010Ah:34"
+   ]
+  },
+  {
+   "entry": 49,
+   "codes": [
+    "36h"
+   ],
+   "span": "136Ah..1373h",
+   "bytes": 9,
+   "insn": 5,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 50,
+   "codes": [
+    "37h"
+   ],
+   "span": "1373h..137Ch",
+   "bytes": 9,
+   "insn": 5,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 51,
+   "codes": [
+    "38h"
+   ],
+   "span": "137Ch..13B3h",
+   "bytes": 55,
+   "insn": 26,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:10"
+   ]
+  },
+  {
+   "entry": 52,
+   "codes": [
+    "39h"
+   ],
+   "span": "13B3h..145Ah",
+   "bytes": 167,
+   "insn": 66,
+   "globals_written": [],
+   "globals_touched": [
+    "677D"
+   ],
+   "fields": [
+    "15",
+    "3"
+   ],
+   "calls": [
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 53,
+   "codes": [
+    "3Ah"
+   ],
+   "span": "145Ah..147Ch",
+   "bytes": 34,
+   "insn": 11,
+   "globals_written": [
+    "6778"
+   ],
+   "globals_touched": [
+    "6778",
+    "677B"
+   ],
+   "fields": [
+    "108",
+    "6"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 54,
+   "codes": [
+    "3Bh"
+   ],
+   "span": "147Ch..149Ch",
+   "bytes": 32,
+   "insn": 16,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:10"
+   ]
+  },
+  {
+   "entry": 55,
+   "codes": [
+    "3Dh"
+   ],
+   "span": "149Ch..14F7h",
+   "bytes": 91,
+   "insn": 36,
+   "globals_written": [
+    "6774",
+    "6776"
+   ],
+   "globals_touched": [
+    "6774",
+    "6776",
+    "6777",
+    "677A"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 56,
+   "codes": [
+    "3Eh"
+   ],
+   "span": "14F7h..1553h",
+   "bytes": 92,
+   "insn": 38,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "3"
+   ],
+   "calls": [
+    "0100h:21",
+    "010Ah:29"
+   ]
+  },
+  {
+   "entry": 59,
+   "codes": [
+    "40h"
+   ],
+   "span": "1667h..167Dh",
+   "bytes": 22,
+   "insn": 11,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 60,
+   "codes": [
+    "41h"
+   ],
+   "span": "167Dh..1693h",
+   "bytes": 22,
+   "insn": 11,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 61,
+   "codes": [
+    "42h"
+   ],
+   "span": "1693h..16A9h",
+   "bytes": 22,
+   "insn": 11,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 62,
+   "codes": [
+    "43h"
+   ],
+   "span": "16A9h..16CDh",
+   "bytes": 36,
+   "insn": 18,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:8"
+   ]
+  },
+  {
+   "entry": 63,
+   "codes": [
+    "44h"
+   ],
+   "span": "16CDh..16FAh",
+   "bytes": 45,
+   "insn": 18,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "0A",
+    "108",
+    "2E"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 64,
+   "codes": [
+    "45h"
+   ],
+   "span": "16FAh..1721h",
+   "bytes": 39,
+   "insn": 19,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:8"
+   ]
+  },
+  {
+   "entry": 65,
+   "codes": [
+    "46h"
+   ],
+   "span": "1721h..1737h",
+   "bytes": 22,
+   "insn": 11,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 66,
+   "codes": [
+    "47h"
+   ],
+   "span": "1737h..174Ah",
+   "bytes": 19,
+   "insn": 7,
+   "globals_written": [
+    "677C",
+    "6780"
+   ],
+   "globals_touched": [
+    "677C",
+    "6780"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 67,
+   "codes": [
+    "48h"
+   ],
+   "span": "174Ah..178Bh",
+   "bytes": 65,
+   "insn": 31,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:10",
+    "0100h:8"
+   ]
+  },
+  {
+   "entry": 68,
+   "codes": [
+    "4Bh"
+   ],
+   "span": "178Bh..18D3h",
+   "bytes": 328,
+   "insn": 114,
+   "globals_written": [
+    "6777",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6777",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "1",
+    "10",
+    "108",
+    "10D",
+    "3",
+    "4"
+   ],
+   "calls": [
+    "0100h:19",
+    "0100h:2",
+    "0100h:9",
+    "010Ah:20",
+    "010Ah:34",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 69,
+   "codes": [
+    "4Ch"
+   ],
+   "span": "18D3h..1953h",
+   "bytes": 128,
+   "insn": 51,
+   "globals_written": [
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108"
+   ],
+   "calls": [
+    "0100h:1",
+    "0100h:10",
+    "013Dh:18"
+   ]
+  },
+  {
+   "entry": 70,
+   "codes": [
+    "4Dh"
+   ],
+   "span": "1953h..19F5h",
+   "bytes": 162,
+   "insn": 64,
+   "globals_written": [
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "10",
+    "108"
+   ],
+   "calls": [
+    "0100h:1",
+    "0100h:10",
+    "010Ah:20",
+    "013Dh:18",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 71,
+   "codes": [
+    "4Eh"
+   ],
+   "span": "19F5h..1A35h",
+   "bytes": 64,
+   "insn": 26,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "11B",
+    "3"
+   ],
+   "calls": [
+    "0100h:22"
+   ]
+  },
+  {
+   "entry": 72,
+   "codes": [
+    "4Fh"
+   ],
+   "span": "1A35h..1A6Ah",
+   "bytes": 53,
+   "insn": 21,
+   "globals_written": [
+    "6777"
+   ],
+   "globals_touched": [
+    "6777"
+   ],
+   "fields": [
+    "0A",
+    "0C",
+    "108"
+   ],
+   "calls": [
+    "0100h:19",
+    "0100h:9"
+   ]
+  },
+  {
+   "entry": 73,
+   "codes": [
+    "50h"
+   ],
+   "span": "1A6Ah..1ACAh",
+   "bytes": 96,
+   "insn": 38,
+   "globals_written": [
+    "6777"
+   ],
+   "globals_touched": [
+    "6777"
+   ],
+   "fields": [
+    "0A",
+    "0C",
+    "108"
+   ],
+   "calls": [
+    "0100h:19",
+    "0100h:9"
+   ]
+  },
+  {
+   "entry": 74,
+   "codes": [
+    "51h"
+   ],
+   "span": "1ACAh..1BC4h",
+   "bytes": 250,
+   "insn": 103,
+   "globals_written": [],
+   "globals_touched": [
+    "5CF4"
+   ],
+   "fields": [
+    "104",
+    "10D",
+    "10E",
+    "73"
+   ],
+   "calls": [
+    "0100h:20",
+    "0100h:7",
+    "010Ah:30",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 75,
+   "codes": [
+    "52h"
+   ],
+   "span": "1BC4h..1CC5h",
+   "bytes": 257,
+   "insn": 97,
+   "globals_written": [],
+   "globals_touched": [
+    "5CF4"
+   ],
+   "fields": [
+    "104",
+    "10D",
+    "10E",
+    "2E"
+   ],
+   "calls": [
+    "0100h:2",
+    "0100h:20",
+    "0100h:7",
+    "0100h:8",
+    "010Ah:30",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 76,
+   "codes": [
+    "53h"
+   ],
+   "span": "1CC5h..1E87h",
+   "bytes": 450,
+   "insn": 162,
+   "globals_written": [
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "0C8",
+    "108",
+    "2A",
+    "2F",
+    "30",
+    "31",
+    "34"
+   ],
+   "calls": [
+    "0100h:7",
+    "010Ah:20",
+    "010Ah:24",
+    "010Ah:25",
+    "010Ah:27",
+    "013Dh:15",
+    "013Dh:16",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 77,
+   "codes": [
+    "54h"
+   ],
+   "span": "1E87h..2011h",
+   "bytes": 394,
+   "insn": 143,
+   "globals_written": [
+    "6779",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6674",
+    "6676",
+    "6779",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "0C",
+    "108",
+    "10E"
+   ],
+   "calls": [
+    "0096h:11",
+    "0100h:1",
+    "0100h:20",
+    "0100h:7",
+    "010Ah:20",
+    "010Ah:24",
+    "010Ah:25",
+    "010Ah:27",
+    "0138h:5",
+    "013Dh:15",
+    "013Dh:16",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 80,
+   "codes": [
+    "55h"
+   ],
+   "span": "2372h..2392h",
+   "bytes": 32,
+   "insn": 13,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "0A",
+    "0C",
+    "108"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 81,
+   "codes": [
+    "56h"
+   ],
+   "span": "2392h..23BEh",
+   "bytes": 44,
+   "insn": 19,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "0A",
+    "0C",
+    "108"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 82,
+   "codes": [
+    "57h"
+   ],
+   "span": "23BEh..2461h",
+   "bytes": 163,
+   "insn": 65,
+   "globals_written": [
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108"
+   ],
+   "calls": [
+    "0100h:10",
+    "0100h:8",
+    "010Ah:20",
+    "010Ah:27",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 83,
+   "codes": [
+    "59h"
+   ],
+   "span": "2461h..24ACh",
+   "bytes": 75,
+   "insn": 26,
+   "globals_written": [
+    "6780"
+   ],
+   "globals_touched": [
+    "6780",
+    "6CD7"
+   ],
+   "fields": [
+    "3"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 84,
+   "codes": [
+    "5Ah"
+   ],
+   "span": "24ACh..2535h",
+   "bytes": 137,
+   "insn": 52,
+   "globals_written": [
+    "6774"
+   ],
+   "globals_touched": [
+    "6774",
+    "6788"
+   ],
+   "fields": [
+    "14"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 85,
+   "codes": [
+    "5Bh"
+   ],
+   "span": "2535h..2581h",
+   "bytes": 76,
+   "insn": 34,
+   "globals_written": [],
+   "globals_touched": [
+    "6777",
+    "6779"
+   ],
+   "fields": [],
+   "calls": [
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 86,
+   "codes": [
+    "5Dh"
+   ],
+   "span": "2581h..25A1h",
+   "bytes": 32,
+   "insn": 15,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "6776",
+    "6777"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 87,
+   "codes": [
+    "5Eh"
+   ],
+   "span": "25A1h..25F9h",
+   "bytes": 88,
+   "insn": 37,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "5CF2",
+    "6776"
+   ],
+   "fields": [
+    "2E"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 88,
+   "codes": [
+    "5Fh"
+   ],
+   "span": "25F9h..2634h",
+   "bytes": 59,
+   "insn": 23,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "10D",
+    "4"
+   ],
+   "calls": [
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 89,
+   "codes": [
+    "60h"
+   ],
+   "span": "2634h..2673h",
+   "bytes": 63,
+   "insn": 22,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "5CF2",
+    "6776"
+   ],
+   "fields": [
+    "31",
+    "32"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 90,
+   "codes": [
+    "61h"
+   ],
+   "span": "2673h..26F5h",
+   "bytes": 130,
+   "insn": 49,
+   "globals_written": [
+    "6774"
+   ],
+   "globals_touched": [
+    "6774",
+    "6788"
+   ],
+   "fields": [
+    "14"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 91,
+   "codes": [
+    "62h"
+   ],
+   "span": "26F5h..2727h",
+   "bytes": 50,
+   "insn": 16,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "11B",
+    "32"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 92,
+   "codes": [
+    "63h"
+   ],
+   "span": "2727h..27D0h",
+   "bytes": 169,
+   "insn": 61,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "0E",
+    "108",
+    "10C",
+    "4"
+   ],
+   "calls": [
+    "0100h:10",
+    "0100h:2",
+    "0100h:22",
+    "0100h:8"
+   ]
+  },
+  {
+   "entry": 93,
+   "codes": [
+    "64h"
+   ],
+   "span": "27D0h..280Dh",
+   "bytes": 61,
+   "insn": 29,
+   "globals_written": [],
+   "globals_touched": [
+    "6777"
+   ],
+   "fields": [],
+   "calls": [
+    "0100h:10",
+    "0100h:8"
+   ]
+  },
+  {
+   "entry": 94,
+   "codes": [
+    "65h"
+   ],
+   "span": "280Dh..285Fh",
+   "bytes": 82,
+   "insn": 37,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:10",
+    "010Ah:27"
+   ]
+  },
+  {
+   "entry": 95,
+   "codes": [
+    "66h"
+   ],
+   "span": "285Fh..28B8h",
+   "bytes": 89,
+   "insn": 37,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "3",
+    "32"
+   ],
+   "calls": [
+    "0100h:22"
+   ]
+  },
+  {
+   "entry": 96,
+   "codes": [
+    "67h"
+   ],
+   "span": "28B8h..28FAh",
+   "bytes": 66,
+   "insn": 26,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "4"
+   ],
+   "calls": [
+    "0100h:11",
+    "013Dh:22",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 97,
+   "codes": [
+    "68h"
+   ],
+   "span": "28FAh..2910h",
+   "bytes": 22,
+   "insn": 11,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 99,
+   "codes": [
+    "69h"
+   ],
+   "span": "296Eh..297Eh",
+   "bytes": 16,
+   "insn": 9,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 100,
+   "codes": [
+    "6Ah"
+   ],
+   "span": "297Eh..298Eh",
+   "bytes": 16,
+   "insn": 9,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 101,
+   "codes": [
+    "6Bh"
+   ],
+   "span": "298Eh..29B4h",
+   "bytes": 38,
+   "insn": 20,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:8"
+   ]
+  },
+  {
+   "entry": 102,
+   "codes": [
+    "6Ch"
+   ],
+   "span": "29B4h..29CBh",
+   "bytes": 23,
+   "insn": 13,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 103,
+   "codes": [
+    "6Dh"
+   ],
+   "span": "29CBh..29DBh",
+   "bytes": 16,
+   "insn": 9,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 104,
+   "codes": [
+    "6Eh"
+   ],
+   "span": "29DBh..29F4h",
+   "bytes": 25,
+   "insn": 13,
+   "globals_written": [],
+   "globals_touched": [
+    "6777"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 105,
+   "codes": [
+    "6Fh"
+   ],
+   "span": "29F4h..2A17h",
+   "bytes": 35,
+   "insn": 16,
+   "globals_written": [
+    "6774"
+   ],
+   "globals_touched": [
+    "6774",
+    "6788"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 106,
+   "codes": [
+    "70h"
+   ],
+   "span": "2A17h..2A30h",
+   "bytes": 25,
+   "insn": 13,
+   "globals_written": [],
+   "globals_touched": [
+    "6777"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 107,
+   "codes": [
+    "71h"
+   ],
+   "span": "2A30h..2A75h",
+   "bytes": 69,
+   "insn": 27,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "6776",
+    "6777",
+    "677A"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 108,
+   "codes": [
+    "72h"
+   ],
+   "span": "2A75h..2A95h",
+   "bytes": 32,
+   "insn": 15,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "6776",
+    "6777"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 109,
+   "codes": [
+    "73h"
+   ],
+   "span": "2A95h..2AF8h",
+   "bytes": 99,
+   "insn": 39,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "5CF2",
+    "6776"
+   ],
+   "fields": [
+    "2E"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 110,
+   "codes": [
+    "74h"
+   ],
+   "span": "2AF8h..2B36h",
+   "bytes": 62,
+   "insn": 24,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "5CF2",
+    "6776"
+   ],
+   "fields": [
+    "32"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 111,
+   "codes": [
+    "75h"
+   ],
+   "span": "2B36h..2B76h",
+   "bytes": 64,
+   "insn": 25,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "6776"
+   ],
+   "fields": [
+    "0CC",
+    "2E"
+   ],
+   "calls": [
+    "0100h:9"
+   ]
+  },
+  {
+   "entry": 112,
+   "codes": [
+    "76h"
+   ],
+   "span": "2B76h..2B96h",
+   "bytes": 32,
+   "insn": 15,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "6776",
+    "6777"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 113,
+   "codes": [
+    "77h"
+   ],
+   "span": "2B96h..2BE1h",
+   "bytes": 75,
+   "insn": 25,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "5CF2",
+    "6776"
+   ],
+   "fields": [
+    "2E",
+    "32",
+    "73"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 114,
+   "codes": [
+    "78h"
+   ],
+   "span": "2BE1h..2C32h",
+   "bytes": 81,
+   "insn": 29,
+   "globals_written": [],
+   "globals_touched": [
+    "5CF0"
+   ],
+   "fields": [
+    "0CC",
+    "2E"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 115,
+   "codes": [
+    "79h"
+   ],
+   "span": "2C32h..2D4Ch",
+   "bytes": 282,
+   "insn": 105,
+   "globals_written": [
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "108"
+   ],
+   "calls": [
+    "0100h:19",
+    "0100h:2",
+    "0100h:7",
+    "0100h:8",
+    "0100h:9",
+    "010Ah:20",
+    "010Ah:24",
+    "010Ah:25",
+    "010Ah:33",
+    "010Ah:34",
+    "013Dh:15",
+    "013Dh:16",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 116,
+   "codes": [
+    "7Ah"
+   ],
+   "span": "2D4Ch..2D99h",
+   "bytes": 77,
+   "insn": 29,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "6776",
+    "6777",
+    "677A"
+   ],
+   "fields": [
+    "0CC",
+    "2E"
+   ],
+   "calls": [
+    "0100h:9"
+   ]
+  },
+  {
+   "entry": 117,
+   "codes": [
+    "7Bh"
+   ],
+   "span": "2D99h..2DF9h",
+   "bytes": 96,
+   "insn": 34,
+   "globals_written": [
+    "6776"
+   ],
+   "globals_touched": [
+    "5CF0",
+    "5CF2",
+    "6776"
+   ],
+   "fields": [
+    "31",
+    "32"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 118,
+   "codes": [
+    "7Ch"
+   ],
+   "span": "2DF9h..2E1Fh",
+   "bytes": 38,
+   "insn": 20,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:8"
+   ]
+  },
+  {
+   "entry": 119,
+   "codes": [
+    "7Dh"
+   ],
+   "span": "2E1Fh..2E50h",
+   "bytes": 49,
+   "insn": 24,
+   "globals_written": [
+    "6774"
+   ],
+   "globals_touched": [
+    "6774",
+    "6788"
+   ],
+   "fields": [],
+   "calls": []
+  },
+  {
+   "entry": 120,
+   "codes": [
+    "7Eh"
+   ],
+   "span": "2E50h..2EECh",
+   "bytes": 156,
+   "insn": 52,
+   "globals_written": [
+    "677C",
+    "6784",
+    "6786"
+   ],
+   "globals_touched": [
+    "677C",
+    "6784",
+    "6786"
+   ],
+   "fields": [
+    "0A",
+    "0C8",
+    "108",
+    "2A",
+    "2E",
+    "31",
+    "34"
+   ],
+   "calls": []
+  },
+  {
+   "entry": 121,
+   "codes": [
+    "80h",
+    "81h",
+    "82h",
+    "85h",
+    "86h",
+    "88h",
+    "8Ah",
+    "8Bh"
+   ],
+   "span": "2EECh..2F68h",
+   "bytes": 124,
+   "insn": 52,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "3D"
+   ],
+   "calls": [
+    "0100h:1",
+    "0100h:10",
+    "0100h:2"
+   ]
+  },
+  {
+   "entry": 122,
+   "codes": [
+    "83h"
+   ],
+   "span": "2F68h..30B1h",
+   "bytes": 329,
+   "insn": 123,
+   "globals_written": [
+    "4954",
+    "677F"
+   ],
+   "globals_touched": [
+    "4954",
+    "677F"
+   ],
+   "fields": [
+    "10",
+    "16",
+    "5",
+    "7F"
+   ],
+   "calls": [
+    "0100h:10",
+    "0100h:17",
+    "0100h:18",
+    "0100h:2",
+    "010Ah:20",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 123,
+   "codes": [
+    "84h"
+   ],
+   "span": "30B1h..3141h",
+   "bytes": 144,
+   "insn": 54,
+   "globals_written": [
+    "6777",
+    "677F"
+   ],
+   "globals_touched": [
+    "4954",
+    "6777",
+    "677F"
+   ],
+   "fields": [
+    "0A0",
+    "34",
+    "3D"
+   ],
+   "calls": [
+    "0100h:19",
+    "010Ah:41"
+   ]
+  },
+  {
+   "entry": 124,
+   "codes": [
+    "87h"
+   ],
+   "span": "3141h..3186h",
+   "bytes": 69,
+   "insn": 26,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [
+    "10",
+    "34"
+   ],
+   "calls": [
+    "010Ah:19",
+    "05BBh:None"
+   ]
+  },
+  {
+   "entry": 125,
+   "codes": [
+    "89h"
+   ],
+   "span": "3186h..31A9h",
+   "bytes": 35,
+   "insn": 16,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": [
+    "0100h:2"
+   ]
+  },
+  {
+   "entry": 126,
+   "codes": [
+    "05h",
+    "0Dh",
+    "13h",
+    "18h",
+    "1Bh",
+    "3Ch",
+    "3Fh",
+    "5Ch",
+    "7Fh"
+   ],
+   "span": "31A9h..31B2h",
+   "bytes": 9,
+   "insn": 5,
+   "globals_written": [],
+   "globals_touched": [],
+   "fields": [],
+   "calls": []
+  }
+ ],
+ "outside_overlay_12": [
+  {
+   "code": "49h",
+   "segment": "0096h",
+   "stub": "00ACh",
+   "entry": 28
+  },
+  {
+   "code": "4Ah",
+   "segment": "0096h",
+   "stub": "00B1h",
+   "entry": 29
+  }
+ ]
+}
