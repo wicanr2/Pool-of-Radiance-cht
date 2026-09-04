@@ -183,6 +183,91 @@ func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) ([]explor
 	return nil, [3]int{}
 }
 
+// holdMainlineExits 在主線鎖亮著的時候，把這一張圖上所有會換圖的格子放進
+// avoid，並記在 heldBack 裡等鎖熄了再放回去。
+//
+// 兩種來源都要：`transitionUses` 是踩過才知道的，`boundaryExitKeys` 才擋得住
+// 第一次遇到的。
+func holdMainlineExits(app *app, avoid, heldBack map[[3]int]bool, transitionUses map[[3]int]int) {
+	archive, block := int(app.spawn.Map.Archive), int(app.spawn.Map.BlockID)
+	hold := func(key [3]int) {
+		if !avoid[key] {
+			avoid[key], heldBack[key] = true, true
+		}
+	}
+	for key := range transitionUses {
+		if key[0] == archive && key[1] == block {
+			hold(key)
+		}
+	}
+	for _, key := range boundaryExitKeys(app) {
+		hold(key)
+	}
+	// 城區還要多擋一層：鎖住時走到的**任何**事件格都可能把 `4A01` 寫回 1
+	// （競技場 ECL3/11 `9CACh` 就是，實測 `4A01 255→1 於 GEO3/0 (7,2)`），
+	// 前功盡棄。鎖住這段時間的任務只有一件——走到港務長，所以除了他門口的
+	// 那兩格，城區的事件格整批不去。
+	if archive == cityArchive && block == cityBlock && app.initialMap != nil {
+		for y := 0; y < geometry.Height; y++ {
+			for x := 0; x < geometry.Width; x++ {
+				if x == harbourMasterCell[0] &&
+					(y == harbourMasterCell[1] || y == harbourApproachCell[1]) {
+					continue
+				}
+				cell, ok := app.initialMap.Grid.Cell(x, y)
+				if !ok || cell.Terrain&0x7F == 0 {
+					continue
+				}
+				hold([3]int{archive, block, y*100 + x})
+			}
+		}
+	}
+}
+
+// 城區與港務長的位置。`harbourApproachCell` 是站的那一格，往北一步就是
+// 港務長；兩格都不能被鎖住時的「事件格整批不去」擋掉。
+const (
+	cityArchive = 3
+	cityBlock   = 0
+)
+
+var (
+	harbourMasterCell   = [2]int{11, 1}
+	harbourApproachCell = [2]int{11, 2}
+	// dockCell 是碼頭那一格；踩上去就會開航線選單。
+	dockCell = [2]int{15, 1}
+)
+
+// boundaryExitKeys 是這一張 GEO 邊界上「往外沒有牆」的格子。
+//
+// 換圖不是在按下前進的那一 tick 發生，是那一格的事件用 `LOAD FILES` 做掉的，
+// 所以 explorePlan 的「跨出邊界那一步不走」擋不住換圖——隊伍只要**踩到**
+// 這種格子就換走了。主線鎖住時得把它們整批從目標清單裡濾掉；靠
+// `transitionUses` 收不到，那是踩過才知道的，第一次遇到的一定擋不住。
+func boundaryExitKeys(app *app) [][3]int {
+	archive, block := int(app.spawn.Map.Archive), int(app.spawn.Map.BlockID)
+	var keys [][3]int
+	for y := 0; y < geometry.Height; y++ {
+		for x := 0; x < geometry.Width; x++ {
+			if x != 0 && y != 0 && x != geometry.Width-1 && y != geometry.Height-1 {
+				continue
+			}
+			for facing := 0; facing < 4; facing++ {
+				nx, ny := x+exploreDeltas[facing][0], y+exploreDeltas[facing][1]
+				if nx >= 0 && nx < geometry.Width && ny >= 0 && ny < geometry.Height {
+					continue
+				}
+				if !app.initialMap.Grid.CanMoveDungeonWrapped(x, y, facing*2) {
+					continue
+				}
+				keys = append(keys, [3]int{archive, block, y*100 + x})
+				break
+			}
+		}
+	}
+	return keys
+}
+
 // treasureMenuChoice 挑寶物那一串選單要停在哪一項：認得出 Exit 就選 Exit，
 // 認不出而第一項是 Yes 就選 Yes，都不是才選最後一項。
 //
@@ -541,6 +626,8 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	heldHere := false
 	// harbourTried 讓「主線鎖住就先去港務長」每個鎖住期間只試一次。
 	harbourTried := false
+	// dockTried 同理：票拿到手之後主動走一次碼頭，每個鎖住週期一次。
+	dockTried := false
 walk:
 	for step := 0; step < budget; step++ {
 		if application.eventMachine != nil {
@@ -600,6 +687,36 @@ walk:
 		}
 		if application.eventSession != nil {
 			blocks[int(application.eventSession.CurrentBlockID())] = true
+		}
+		// 主線鎖每一步都看，不只在「手上沒有計畫」的時候。實測隊伍就是帶著
+		// **鎖亮之前規劃好的路**走出城區的——鎖是在城區某一格亮起來的，那時
+		// 計畫早就排好了，等它走完往往已經換圖。
+		//
+		// 只在**由暗轉亮**那一刻丟一次計畫。每一步都丟試過，更差：隊伍會在
+		// 城區與貧民窟之間來回，走到的 block 從 5 掉到 4。
+		if application.initialMap != nil {
+			settling := mustSettleSokalGhost(application)
+			if settling {
+				holdMainlineExits(application, avoid, heldBack, transitionUses)
+			} else {
+				harbourTried = false
+			}
+			if settling != heldHere {
+				heldHere = settling
+				t.Logf("主線鎖 %v GEO%d/%d（4AA7=%d 4A01=%d 4A26=%d）", settling,
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.eventMachine.Memory[0x4AA7],
+					application.eventMachine.Memory[0x4A01],
+					application.eventMachine.Memory[0x4A26])
+				if settling {
+					plan, exit, harbourTried, dockTried = nil, nil, false, false
+				} else {
+					for key := range heldBack {
+						delete(avoid, key)
+						delete(heldBack, key)
+					}
+				}
+			}
 		}
 		switch {
 		case application.programManaging:
@@ -932,47 +1049,24 @@ walk:
 			}
 		}
 		if len(plan) == 0 && exit == nil {
-			settling := mustSettleSokalGhost(application)
-			if settling != heldHere {
-				heldHere = settling
-				t.Logf("主線鎖 %v GEO%d/%d（4AA7=%d 4A01=%d 4A26=%d）", settling,
-					application.spawn.Map.Archive, application.spawn.Map.BlockID,
-					application.eventMachine.Memory[0x4AA7],
-					application.eventMachine.Memory[0x4A01],
-					application.eventMachine.Memory[0x4A26])
-			}
-			if settling {
-				for key := range transitionUses {
-					if key[0] != int(application.spawn.Map.Archive) ||
-						key[1] != int(application.spawn.Map.BlockID) {
-						continue
-					}
-					if !avoid[key] {
-						avoid[key], heldBack[key] = true, true
-					}
-				}
-			} else if len(heldBack) != 0 {
-				for key := range heldBack {
-					delete(avoid, key)
-					delete(heldBack, key)
-				}
-			}
+			settling := heldHere
 			// 鎖住的時候，城區這一趟優先去問港務長。城區有好幾個地點會把
 			// `4A01` 寫回 1（市政廳職員 ECL3/8 `9BACh` 只在 0 時寫，
 			// 競技場 ECL3/11 `9CACh` 進到那一支就寫），先踩到就前功盡棄。
 			//
-			// **這還不夠**：這一段只在「沒有計畫」時才評估，而隊伍回到城區
-			// 時手上常常還有上一段的計畫，等它走完往往已經踩過競技場了。
-			// 實測探索器仍然到不了野外，主線那條路由專用測試釘住
-			//（`cmd/pool-game/harbour_walk_test.go`）。
-			if settling && application.spawn.Map.Archive == 3 &&
-				application.spawn.Map.BlockID == 0 && !harbourTried {
+			// 鎖的評估已經提到每一步（見迴圈上方），所以回到城區時手上的
+			// 舊計畫會在鎖亮的那一刻被丟掉，不會照著走過去踩競技場。
+			if settling && int(application.spawn.Map.Archive) == cityArchive &&
+				int(application.spawn.Map.BlockID) == cityBlock && !harbourTried {
 				harbourTried = true
-				if int(application.spawn.X) == 11 && int(application.spawn.Y) == 2 {
+				if int(application.spawn.X) == harbourApproachCell[0] &&
+					int(application.spawn.Y) == harbourApproachCell[1] {
 					plan = []exploreStep{{facing: 0}}
 				} else {
 					plan = planToCellsAvoiding(application, rotate,
-						func(x, y int) bool { return x == 11 && y == 2 },
+						func(x, y int) bool {
+							return x == harbourApproachCell[0] && y == harbourApproachCell[1]
+						},
 						func(x, y int) bool {
 							cell, ok := application.initialMap.Grid.Cell(x, y)
 							return ok && cell.Terrain&0x7F != 0
@@ -986,8 +1080,31 @@ walk:
 					continue
 				}
 			}
-			if !settling {
-				harbourTried = false
+			// 票拿到手之後主動走去碼頭。港務長那一段做完時 `4A01 == 1`
+			// 而且 `4AA7 == 254`，碼頭 (15,1) 的選單才會從「唯一的船是
+			// 索寇要塞」變成五個目的地（spec 099）。
+			//
+			// 探索器自己走不過去：碼頭是換圖點，第一次用完就進了 avoid，
+			// 規劃器再也不挑它。路上一樣繞開別的事件格，免得又踩到競技場。
+			if !settling && int(application.spawn.Map.Archive) == cityArchive &&
+				int(application.spawn.Map.BlockID) == cityBlock && !dockTried &&
+				application.eventMachine != nil &&
+				application.eventMachine.Memory[0x4A01] == 1 &&
+				application.eventMachine.Memory[0x4AA7] == 254 {
+				dockTried = true
+				plan = planToCellsAvoiding(application, rotate,
+					func(x, y int) bool { return x == dockCell[0] && y == dockCell[1] },
+					func(x, y int) bool {
+						if x == dockCell[0] && y == dockCell[1] {
+							return false
+						}
+						cell, ok := application.initialMap.Grid.Cell(x, y)
+						return ok && cell.Terrain&0x7F != 0
+					})
+				if len(plan) != 0 {
+					spin["走去碼頭"]++
+					continue
+				}
 			}
 			leaving := hops < exploreMaxTransitionHops && !settling
 			var target [3]int
@@ -1288,7 +1405,13 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	for _, failure := range hardFailures {
 		t.Logf("硬失敗：%s", failure)
 	}
-	t.Logf("走到的地圖：%d 張；ECL block：%d 個", len(maps), len(blocks))
+	blockList := make([]int, 0, len(blocks))
+	for block := range blocks {
+		blockList = append(blockList, block)
+	}
+	sort.Ints(blockList)
+	t.Logf("走到的地圖：%d 張 %v；ECL block：%d 個 %v",
+		len(maps), sortedMapNames(maps), len(blocks), blockList)
 	t.Logf("旗標 4A21=%d（要塞的裝備與那一場架）4AA7=%d（碼頭航線）4AC4=%d 6E12=%d "+
 		"4A01=%d 4AC5=%d 4ABA=%d",
 		flags[0x4A21], flags[0x4AA7], flags[0x4AC4], flags[0x6E12],
@@ -1303,6 +1426,30 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	if !blocks[21] {
 		t.Errorf("沒走到索寇要塞（ECL block 21），走到的是 %v", blocks)
 	}
+	// 走得到野外了（2026-09-04）：票拿到手之後主動走一次碼頭
+	//（`走去碼頭` 那一支），航線選單就會把隊伍送出去。這兩個數字是**量到的
+	// 下限**，不是目標——少於它代表主線那一段或碼頭那一步退步了。
+	if len(maps) < 7 {
+		t.Errorf("只走到 %d 張地圖，先前量到 7 張（%v）", len(maps), sortedMapNames(maps))
+	}
+	if len(blocks) < 7 {
+		t.Errorf("只走到 %d 個 ECL block，先前量到 7 個（%v）", len(blocks), blocks)
+	}
+	// 野外是這一項的目的地：三張野外／樞紐圖（ECL block 25／26／27，spec 105）
+	// 至少要碰到一張，才算「探索器走得到野外」。
+	if !blocks[25] && !blocks[26] && !blocks[27] {
+		t.Errorf("沒走到野外（ECL block 25／26／27），走到的是 %v", blocks)
+	}
+}
+
+// sortedMapNames 把走過的地圖名排序後列出來，好讀。
+func sortedMapNames(maps map[string]bool) []string {
+	names := make([]string, 0, len(maps))
+	for name := range maps {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }
 
 // mustSettleSokalGhost 回答「現在還不能離開這一張圖嗎」。
@@ -1320,17 +1467,18 @@ func mustSettleSokalGhost(application *app) bool {
 		return false
 	}
 	memory := application.eventMachine.Memory
-	switch {
-	case application.spawn.Map.Archive == 4 && application.spawn.Map.BlockID == 21:
-		// 要塞：票清掉了但亡魂還沒了結。
-		return memory[0x4A01] == 255 && memory[0x4A26] != 255
-	case application.spawn.Map.Archive == 3 && application.spawn.Map.BlockID == 0:
-		// 城區：航線開了、票也不在手上，這一趟就是要去找港務長。
-		// 碼頭 (15,1) 就在港務長 (11,1) 旁邊，先上船的話 `4AC4 = 0`
-		// 又被載回索寇要塞，回來時入口 4 再把 `4AC4` 清成 0，繞不出去。
-		return memory[0x4AA7] == 254 && memory[0x4A01] != 1
-	}
-	return false
+	// 兩種狀態都算「主線這一段還沒了結」，而且**與隊伍站在哪一張圖無關**：
+	//
+	//  1. 票清掉了但亡魂還沒了結（要塞那一段還沒做完）。
+	//  2. 航線開了、票卻不在手上——這一趟就是要去找港務長。碼頭 (15,1) 就在
+	//     港務長 (11,1) 旁邊，先上船的話 `4AC4 = 0` 又被載回索寇要塞，
+	//     回來時入口 4 再把 `4AC4` 清成 0，繞不出去。
+	//
+	// 先前這支**依當前地圖分派**，於是同一組記憶體值在城區回 true、走進
+	// 貧民窟就回 false。鎖一熄 `heldBack` 整批放回去，回城區又亮——實測
+	// 「找港務長」一趟觸發 112 次，走到的 ECL block 反而從 5 掉到 4。
+	return (memory[0x4A01] == 255 && memory[0x4A26] != 255) ||
+		(memory[0x4AA7] == 254 && memory[0x4A01] != 1)
 }
 
 // approachKey 把「這一格＋走進去的方向」壓成 approached 的鍵。
