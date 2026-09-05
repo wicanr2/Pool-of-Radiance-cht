@@ -259,69 +259,83 @@ func walkStojanowGateIntoTheCastle(t *testing.T) *app {
 
 // 量城門後面走得到多少東西。
 //
-// 這不是門檻測試，是量測：城堡那幾個區塊（3、4、5、6、7）先前一個都沒走到，
-// 而世界巡迴到現在也還走不到——巡迴會先去瓦海登墳場，那張圖的
-// `ecl4/10 9AD6 ADD 1 @4A00` 把馬車關掉了（class 0 是整份存檔共用的，
+// 世界巡迴到現在還走不到這裡：它會先去瓦海登墳場，那張圖的
+// `ecl4/10 9AD6 ADD 1 @4A00` 把城門的馬車關掉了（class 0 是整份存檔共用的，
 // spec 106）。所以這條路要單獨走。
+//
+// 走法是「逐格、四個朝向各踏一次」——城堡這幾張圖的出口是**朝向敏感**的
+// （`ecl5/3` 的入口 0 用 `GETTABLE @9AA6[@C04D]`，東邊出去是區塊 4、南邊是
+// 區塊 6；院子裡 (4,8) 朝北是上樓進區塊 5），光是踩過每一格挑不出來。
 func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 	blocks := map[int]bool{}
 	maps := map[string]bool{}
-	// 四種走法取聯集：繞不繞開換圖點、規劃器的方向輪替起點。單一種走法量到的
-	// 是那一種走法的下限，聯集才是「這條路後面接得到什麼」。
-	for _, pass := range []struct {
-		banPass bool
-		rotate  int
-	}{{true, 0}, {false, 0}, {true, 1}, {false, 1}} {
+	record := func(a *app) {
+		blocks[int(a.eventSession.CurrentBlockID())] = true
+		maps[fmt.Sprintf("GEO%d/%d", a.spawn.Map.Archive, a.spawn.Map.BlockID)] = true
+	}
+	// 四個方向輪替起點各掃一趟：規劃器先往哪個方向走，決定先撞到哪一個出口，
+	// 而出口一走就換圖，後面那一段就看不到了。聯集才是這條路後面的全貌。
+	for _, rotate := range []int{0, 1, 2, 3} {
 		application := walkStojanowGateIntoTheCastle(t)
-		walked := map[[3]int]bool{}
-		avoid := map[[3]int]bool{}
-		if pass.banPass {
-			// 繞開換圖點是巡迴的作法：踩到就被換走，走不完一張圖。
-			for _, key := range boundaryExitKeys(application) {
-				avoid[key] = true
+		tried := map[[3]int]bool{}
+		last := -1
+		for round := 0; round < 3000; round++ {
+			record(application)
+			if id := int(application.eventSession.CurrentBlockID()); id != last {
+				last = id
+				t.Logf("輪替 %d 第 %d 圈：ECL block %d，GEO%d/%d (%d,%d)", rotate, round, id,
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.spawn.X, application.spawn.Y)
 			}
-		}
-		lastBlock := -1
-		for step := 0; step < 20000; step++ {
-			if application.eventSession != nil {
-				id := int(application.eventSession.CurrentBlockID())
-				blocks[id] = true
-				if id != lastBlock {
-					lastBlock = id
-					t.Logf("擋換圖 %v 輪替 %d 第 %d 步：ECL block %d，GEO%d/%d (%d,%d)",
-						pass.banPass, pass.rotate, step, id,
-						application.spawn.Map.Archive, application.spawn.Map.BlockID,
-						application.spawn.X, application.spawn.Y)
-				}
+			key := func(x, y int) [3]int {
+				return [3]int{int(application.spawn.Map.Archive),
+					int(application.spawn.Map.BlockID), y*100 + x}
 			}
-			if application.initialMap != nil {
-				maps[fmt.Sprintf("GEO%d/%d",
-					application.spawn.Map.Archive, application.spawn.Map.BlockID)] = true
-			}
-			busy := application.cellWaitingMenu || application.cellEventPending ||
-				application.encounter != nil || application.treasureActive ||
-				application.tactical != nil || application.combatActive ||
-				application.shopActive || application.templeActive
-			if busy {
-				answerCellMenus(application, "YES")
-				continue
-			}
-			plan, target := explorePlan(application, walked, avoid, pass.banPass, pass.rotate)
+			plan := planToCells(application, rotate, func(x, y int) bool {
+				return !tried[key(x, y)]
+			})
 			if len(plan) == 0 {
 				break
 			}
-			walked[target] = true
-			for _, s := range plan {
-				for application.spawn.Facing != s.facing {
+			for _, step := range plan {
+				for application.spawn.Facing != step.facing {
 					press(application, ebiten.KeyArrowRight)
 				}
 				press(application, ebiten.KeyArrowUp)
-				if application.cellWaitingMenu || application.cellEventPending ||
-					application.tactical != nil {
+				answerCellMenus(application, "YES")
+			}
+			here := [2]int{int(application.spawn.X), int(application.spawn.Y)}
+			tried[key(here[0], here[1])] = true
+			for turn := 0; turn < 4; turn++ {
+				application.spawn.Facing = uint8(turn)
+				press(application, ebiten.KeyArrowUp)
+				answerCellMenus(application, "YES")
+				record(application)
+				if [2]int{int(application.spawn.X), int(application.spawn.Y)} != here {
 					break
 				}
 			}
 		}
+	}
+	// 院子南緣那一個出口深掃時碰不到（先撞到別的出口就換圖了），單獨走一次。
+	application := walkStojanowGateIntoTheCastle(t)
+	plan := planToCells(application, 0, func(x, y int) bool { return x == 11 && y == 15 })
+	for _, step := range plan {
+		for application.spawn.Facing != step.facing {
+			press(application, ebiten.KeyArrowRight)
+		}
+		press(application, ebiten.KeyArrowUp)
+		answerCellMenus(application, "YES")
+	}
+	if [2]int{int(application.spawn.X), int(application.spawn.Y)} == [2]int{11, 15} {
+		application.spawn.Facing = 2
+		press(application, ebiten.KeyArrowUp)
+		answerCellMenus(application, "YES")
+		record(application)
+		t.Logf("院子南緣 (11,15) 朝南：ECL block %d，GEO%d/%d (%d,%d)",
+			application.eventSession.CurrentBlockID(),
+			application.spawn.Map.Archive, application.spawn.Map.BlockID,
+			application.spawn.X, application.spawn.Y)
 	}
 	names := make([]string, 0, len(maps))
 	for name := range maps {
@@ -335,7 +349,9 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 	sort.Ints(ids)
 	t.Logf("城門後面走到的地圖 %d 張：%v", len(names), names)
 	t.Logf("城門後面走到的 ECL block %d 個：%v", len(ids), ids)
-	if len(ids) < 2 {
-		t.Fatalf("只走到 %v，至少要有區塊 3 與 5", ids)
+	for _, want := range []int{3, 4, 5, 6, 7} {
+		if !blocks[want] {
+			t.Errorf("沒走到區塊 %d（只有 %v）", want, ids)
+		}
 	}
 }
