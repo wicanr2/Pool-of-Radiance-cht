@@ -1,8 +1,7 @@
 # Spec 125：走到地圖邊界會怎樣——`@6DD5` 是誰寫的
 
-狀態：READY（`06AEh` 的完整行為、`[4937h]+5AAh` ＝ ECL `6DD5h` 的換算、
-查詢面繞回與位置面不繞的分工）；
-DRAFT（沒越界的那一步是誰前進的、因此 bounded／wrapped 尚未定案）。
+狀態：CONFORMED（`06AEh` 的完整行為、`[4937h]+5AAh` ＝ ECL `6DD5h` 的換算、
+真正的前進在 `CALL C01Eh`、以及**地圖是 wrapped 不是 bounded**）。
 日期：2026-09-06。
 
 ## 這一份解掉 spec 100 的 OPEN
@@ -51,20 +50,38 @@ spec 106 的 class 1（`6B00h..6EFFh`）取法是 `[4937h] + 2A00h + addr × 2`�
 **所以「牆的判定繞回去」是原版行為**，remake 的 `CanMoveDungeonWrapped`
 對得上；而位置在 `06AEh` 是被夾住的。**查詢繞、位置夾——兩件事，不要混。**
 
-## 為什麼 bounded／wrapped 還沒定案
+## 真正的前進在 `CALL C01Eh`——而且是繞的
 
-`06AEh` **只在越界的那四條路上寫 `ds:6A0Bh`／`6A0Ch`**；沒越界的那一步
-它一個字都沒寫。所以真正的前進發生在還沒讀到的呼叫端，
-不能從這一支斷定「位置一律夾」。
+`06AEh` **只在越界的那四條路上寫 `ds:6A0Bh`／`6A0Ch`**，沒越界的那一步一個字
+都沒寫。它的唯一呼叫端是 overlay-14 `0AF8h`——鍵盤分派裡掃描碼 `48h`（上鍵）
+那一支——所以它確實是「按前進」的入口，不是別的東西。
 
-實測也擋著：把 remake 改成夾之後，`TestAWildernessStepMovesBothPositions`
-與 `TestTheWildernessWalkReachesTheWesternSheet` 都紅——**野外那三張圖的
-16×16 貼圖（spec 105）靠的就是繞回去**。
+**那越界時寫的那一下是什麼？是 no-op。** 新座標是從目前座標算出來的：
+X 是 0 往西走得到 −1，夾回 0——本來就是 0；X 是 15 往東走得到 16，夾回 15
+——本來也是 15。**四條路的寫入值一律等於原值**，所以那不是「把隊伍拉回邊界」，
+只是與 `@6DD5 = 1` 成對的一個動作。真正的訊號是旗標。
 
-兩種讀法都還活著：
+接著那一格的 ECL 跑起來。它若不換圖，就用 `2Dh CALL C01Eh` 提交這一步——
+選擇子 `C01Eh` 是 **overlay-07 entry 27（`1A17h`）**，內容逐朝向寫死：
 
-1. 城區／地城夾、野外另有一條路；
-2. `06AEh` 是「這一步會不會出圖」的前置，真正的前進在呼叫端而且會繞。
+```
+朝向 0（北）  ds:6A0Ch > 0  ? --  : = 0Fh
+朝向 2（東）  ds:6A0Bh < 0Fh? ++  : = 0
+朝向 4（南）  ds:6A0Ch < 0Fh? ++  : = 0
+朝向 6（西）  ds:6A0Bh > 0  ? --  : = 0Fh
+```
 
-**在呼叫端讀出來之前不動 remake 的行為。** 現況（位置繞、牆的判定也繞）
-與野外的實測相符，改成夾會弄壞已經驗過的東西。
+**這就是 16×16 的繞回。** 所以答案是 **wrapped**：走到邊緣再走一步會出現在
+對邊，除非那一格的腳本先用 `@6DD5` 把你帶去別張圖。
+
+`1A89h` 之後還把 `0131:003Eh`（overlay-30 entry 6）的結果存進 `ds:6A0Fh`
+——那是新位置的牆位元組（spec 015 的 `C04F` 那一組）。
+
+## 對 remake 的意思
+
+**現況是對的，不要改。** `moveInitialDungeonForward` 用 `WrapCoordinate`
+與 `C01Eh` 逐條相同；`CanMoveDungeonWrapped` 的繞回與 `0131h:0039h` 相同。
+
+曾經照 `06AEh` 的夾去改過一次，結果 `TestAWildernessStepMovesBothPositions`
+與 `TestTheWildernessWalkReachesTheWesternSheet` 都紅——**那不是野外的特例，
+是把前置當成了提交**。`06AEh` 的夾是 no-op，提交在 `C01Eh`，而提交是繞的。
