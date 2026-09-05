@@ -141,7 +141,11 @@ var exploreDeltas = [4][2]int{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
 // explorePlan 回傳走去最近一格「還沒踩過」的路，以及那一格的鍵。
 // 目標要回傳出去：踩不到的格子得記次數，不然規劃器會一直挑同一格，
 // 隊伍在半路來回走而 stuck 永遠不增加——實測一趟走六萬步只踩到 479 格。
-func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) ([]exploreStep, [3]int) {
+// banPass 為真時 `avoid` 的格子**連路過都不行**（換區的格子踩到就換走）。
+// 主線鎖亮著的時候要關掉：那段期間 `avoid` 裡塞的是暫時擋起來的換圖點
+// （見 holdMainlineExits），連路過都禁的話索寇要塞那一張就走不動了
+// ——實測只踩到 19 格就宣告走不動，走到的地圖從 7 張掉到 2 張。
+func explorePlan(app *app, visited, avoid map[[3]int]bool, banPass bool, rotate int) ([]exploreStep, [3]int) {
 	type node struct{ x, y int }
 	start := node{int(app.spawn.X), int(app.spawn.Y)}
 	from := map[node]node{start: start}
@@ -180,8 +184,8 @@ func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) ([]explor
 			// 但邊界換區的格子是「踩到就換走」（spec 100 的 `LOAD FILES`
 			// 由格子事件做掉），所以路過等於換走——實測 GEO1/18 五次離開
 			// 全部是這樣發生的，`chooseAreaExit` 一次都沒輪到。
-			if avoid[[3]int{int(app.spawn.Map.Archive), int(app.spawn.Map.BlockID),
-				y*100 + x}] {
+			if banPass && avoid[[3]int{int(app.spawn.Map.Archive),
+				int(app.spawn.Map.BlockID), y*100 + x}] {
 				continue
 			}
 			from[next], via[next] = current, uint8(facing)
@@ -1179,7 +1183,7 @@ walk:
 			}
 			leaving := hops < exploreMaxTransitionHops && !settling
 			var target [3]int
-			plan, target = explorePlan(application, walked, avoid, rotate)
+			plan, target = explorePlan(application, walked, avoid, !heldHere, rotate)
 			if len(plan) != 0 {
 				spin["規劃"]++
 				// 挑同一格挑太多次還沒踩到，就當它走不進去。原因可能是
@@ -1205,9 +1209,16 @@ walk:
 					if from == [2]int{int(application.spawn.X), int(application.spawn.Y)} {
 						plan = []exploreStep{step}
 					} else {
-						plan = planToCells(application, rotate, func(x, y int) bool {
-							return x == from[0] && y == from[1]
-						})
+						// 走去地點的路上也不能路過 avoid 的格子——換區的
+						// 格子踩到就換走，`explorePlan` 已經擋了，這一條
+						// 漏掉就等於白擋。
+						plan = planToCellsAvoiding(application, rotate,
+							func(x, y int) bool { return x == from[0] && y == from[1] },
+							func(x, y int) bool {
+								return !heldHere && avoid[[3]int{
+									int(application.spawn.Map.Archive),
+									int(application.spawn.Map.BlockID), y*100 + x}]
+							})
 						if len(plan) != 0 {
 							plan = append(plan, step)
 						}
