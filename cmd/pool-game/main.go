@@ -2970,6 +2970,10 @@ func main() {
 	etenSymbol := flag.String("eten-symbol-font", "", "optional ETen SPCFONT.15 path for full-width punctuation")
 	etenASCII := flag.String("eten-ascii-font", "", "optional ETen ASCFONT.15 path; defaults to ascfont.15 beside -eten-font")
 	savePath := flag.String("save", defaultStatePath(), "remake save file; defaults to the OS user config directory")
+	// 骰子種子。預設跟著時間跑（每一局不一樣），給值就固定——
+	// 對拍截圖要的是「同一份程式碼拍出同一張圖」，擲值每次不同的話
+	// 連 HP 都會變，雜湊就永遠對不上，那份清冊也就證不了東西。
+	diceSeed := flag.Int64("dice-seed", 0, "fixed dice seed; 0 keeps the time-based seed")
 	flag.Parse()
 	uiLanguage, face, err := resolveUILanguage(*langFlag, *etenFont, *etenSymbol, *etenASCII)
 	if err != nil {
@@ -2987,6 +2991,9 @@ func main() {
 	game, err := newApp(*zipPath, *savePath)
 	if err != nil {
 		log.Fatal(err)
+	}
+	if *diceSeed != 0 {
+		game.roller = diceRoller{random: rand.New(rand.NewSource(*diceSeed))}
 	}
 	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters
 	ebiten.SetWindowSize(960, 600)

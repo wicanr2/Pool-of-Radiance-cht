@@ -30,7 +30,7 @@ cp go.mod /tmp/pool.mod
 cp go.sum /tmp/pool.sum
 printf "\nreplace github.com/wicanr2/golden-box-remake-engine => /engine\n" >> /tmp/pool.mod
 go build -modfile=/tmp/pool.mod -o /tmp/pool-game ./cmd/pool-game
-(cd /tmp && exec /tmp/pool-game -zip "/src/Pool of Radiance (1988).zip") >/tmp/game.log 2>&1 &
+(cd /tmp && exec /tmp/pool-game -dice-seed 20260905 -zip "/src/Pool of Radiance (1988).zip") >/tmp/game.log 2>&1 &
 game_pid=$!
 retries=0
 window=
