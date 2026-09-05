@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
@@ -30,6 +31,20 @@ type blockReport struct {
 	Boundaries map[string]int `json:"boundaries"`
 	Opcodes    map[string]int `json:"passthrough_opcodes"`
 	Errors     map[string]int `json:"errors,omitempty"`
+	// Menus 是這一張圖上哪幾格會冒出選單、選項是什麼。
+	//
+	// 這是給探索器瞄準用的：樞紐圖的地點是**選單選的**，不是走過去的，
+	// 所以「還走不到的區域」多半就藏在這些格子後面。同一格同一組選項只記
+	// 一次（四個朝向會重複）。
+	Menus []menuRow `json:"menus,omitempty"`
+}
+
+// menuRow 是一格上的一組選單。
+type menuRow struct {
+	X       int      `json:"x"`
+	Y       int      `json:"y"`
+	Facing  uint8    `json:"facing"`
+	Options []string `json:"options"`
 }
 
 type report struct {
@@ -63,6 +78,10 @@ func main() {
 				fmt.Printf("  錯誤 %v", sortedCounts(block.Errors))
 			}
 			fmt.Println()
+			for _, menu := range block.Menus {
+				fmt.Printf("    選單 (%2d,%2d) 朝向 %d：%v\n",
+					menu.X, menu.Y, menu.Facing, menu.Options)
+			}
 		}
 		fmt.Printf("合計 %d 格，%d 個錯誤\n", result.TotalCells, result.TotalErrors)
 		return
@@ -156,6 +175,7 @@ func sweepBlock(archive gamepack.ECLArchive, blockID uint16, geoMap gamepack.Geo
 	if err != nil {
 		return row, err
 	}
+	seen := map[string]bool{}
 	for y := 0; y < geometry.Height; y++ {
 		for x := 0; x < geometry.Width; x++ {
 			for facing := uint8(0); facing < 4; facing++ {
@@ -172,6 +192,7 @@ func sweepBlock(archive gamepack.ECLArchive, blockID uint16, geoMap gamepack.Geo
 				}
 				search, searchErr := session.RunUntilEvent(4096, nil, true)
 				record(&row, search, searchErr)
+				recordMenus(&row, seen, x, y, facing, run, search)
 			}
 		}
 	}
@@ -193,6 +214,31 @@ func sweepParty() []gamepack.InitialCharacter {
 		})
 	}
 	return party
+}
+
+// recordMenus 把停在選單上的格子記下來。
+//
+// **這是下限不是全貌**：只有 VM 已經解出選項的邊界才記得到；大部分停在
+// 選單上的格子（例如 ecl1/18 那 1024 格）`Result.Menus` 是空的，得由前端
+// 自己解才看得到選項。要完整的清單得另外走一遍前端。
+func recordMenus(row *blockReport, seen map[string]bool, x, y int, facing uint8,
+	runs ...eclvm.Result) {
+	for _, run := range runs {
+		if !run.WaitingForMenu || len(run.Menus) == 0 {
+			continue
+		}
+		options := run.Menus[len(run.Menus)-1].Options
+		if len(options) < 2 {
+			continue
+		}
+		key := fmt.Sprintf("%d,%d|%s", x, y, strings.Join(options, "|"))
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		row.Menus = append(row.Menus, menuRow{X: x, Y: y, Facing: facing,
+			Options: append([]string(nil), options...)})
+	}
 }
 
 func record(row *blockReport, run eclvm.Result, runErr error) {
