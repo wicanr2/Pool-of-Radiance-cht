@@ -994,6 +994,18 @@ walk:
 						}
 					}
 				}
+				// 在野外地形上遇到「要不要進去」就進去。進區域圖再走出來會把
+				// 野外的位移重擲一次（`ecl6/25 A472h RANDOM 3`，spec 105），
+				// 那是換口袋的唯一方法——不進去就只走得到落點那一個口袋。
+				// 只認 `ENTER`，所以不會誤選登陸點的 `TAKE BOAT`（那是回城）。
+				if application.inWildernessOverland() {
+					for index, option := range application.cellMenuOptions {
+						if strings.EqualFold(option, "ENTER") ||
+							strings.EqualFold(option, "ENTER CAVE") {
+							want = index
+						}
+					}
+				}
 				for _, option := range application.cellMenuOptions {
 					if strings.EqualFold(option, "SOKAL") {
 						t.Logf("碼頭選單 GEO%d/%d (%d,%d) 選 %d／%v",
@@ -1669,7 +1681,12 @@ func tourWorldStates() []map[uint16]uint16 {
 	for address := uint16(0x4AA6); address <= 0x4ABF; address++ {
 		completed[address] = 0xFE
 	}
-	return []map[uint16]uint16{nil, {0x4AC1: 9}, completed}
+	// `4A8C = 255` 是「接下拯救比凡特家繼承人的委任」（`ecl3/8 ACFAh`，
+	// 印出 'THE HEIR TO THE HOUSE OF BIVANT MUST BE RESCUED.' 之後才寫）。
+	// 野外圖 25 的 (12,31) 海盜基地要 `4A8C == 255` 且 `4AA9 == 0` 才會給
+	// `ENTER` 選單（`ecl6/25 9D87h`／`9D92h`），而那是 EAST 航線那個口袋裡
+	// 唯一進得去的地方——不進去就沒有機會重擲野外位移（spec 105）。
+	return []map[uint16]uint16{nil, {0x4AC1: 9}, completed, {0x4A8C: 255}}
 }
 
 func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
