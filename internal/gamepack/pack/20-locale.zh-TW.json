@@ -22,6 +22,7 @@
       "ui.campRested": "記完 %d 條法術，休息了 %d 小時。",
       "ui.campTitle": "紮營",
       "ui.castAiming": "%s　目標 %d　N 下一個　P 上一個　ENTER 施展",
+      "ui.castAimManual": "%s → 手動瞄準 (%d,%d)   H I M Q P O K G 移動　ENTER／T 選定　E 取消",
       "ui.castAnimated": "%d 具屍體被喚起。",
       "ui.castArea": "%s 打中 %d 個敵人，各 %d 點。",
       "ui.castCharmed": "%s 迷住了 %d 個敵人。",

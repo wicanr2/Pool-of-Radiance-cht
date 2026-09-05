@@ -214,6 +214,9 @@ type app struct {
 	castTargetingAttack bool
 	castTargets         []uint8
 	castTargetCursor    int
+	// castManual 與 castManualX／Y 是瞄準時的 Manual 格子游標（spec 127）。
+	castManual           bool
+	castManualX, castManualY int
 	castPending         castOption
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables

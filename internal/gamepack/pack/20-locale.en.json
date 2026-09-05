@@ -22,6 +22,7 @@
       "ui.campRested": "%d spells memorised; the rest took %d hours.",
       "ui.campTitle": "CAMP",
       "ui.castAiming": "%s -> target %d   N next  P prev  ENTER cast",
+      "ui.castAimManual": "%s -> manual aim at %d,%d   H I M Q P O K G move  ENTER/T pick  E cancel",
       "ui.castAnimated": "%d corpses are animated.",
       "ui.castArea": "%s hits %d foes for %d each.",
       "ui.castCharmed": "%s charms %d foes.",

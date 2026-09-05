@@ -25,6 +25,7 @@ var messageKeys = map[messageID]string{
 	msgCampRestTooShort: "ui.campRestTooShort",
 	msgCampRested: "ui.campRested",
 	msgCampTitle: "ui.campTitle",
+	msgCastAimManual: "ui.castAimManual",
 	msgCastAiming: "ui.castAiming",
 	msgCastArea: "ui.castArea",
 	msgCastCharmed: "ui.castCharmed",

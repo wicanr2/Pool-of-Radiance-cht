@@ -159,10 +159,16 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	drawCastTargeting(screen, a, accent)
 }
 
-// drawCastTargeting 標出選目標那一步停在誰身上。原版的選單列是
-// `Next Prev Manual`，格子游標（Manual）那一半還沒接。
+// drawCastTargeting 標出選目標那一步停在誰身上。原版的瞄準列是
+// `Aim: Next Prev Manual Center Exit`（spec 127）；Manual 的格子游標
+// 已經接上，畫的是它停在哪一格。
 func drawCastTargeting(screen *ebiten.Image, a *app, accent color.Color) {
 	if !a.castTargeting || len(a.castTargets) == 0 {
+		return
+	}
+	if a.castManual {
+		drawText(screen, fmt.Sprintf(a.text(msgCastAimManual),
+			a.castPending.Label, a.castManualX, a.castManualY), 70, 306, accent)
 		return
 	}
 	target := a.castTargets[a.castTargetCursor]

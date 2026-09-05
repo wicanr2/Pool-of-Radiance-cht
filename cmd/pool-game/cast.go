@@ -195,9 +195,16 @@ func (a *app) resolveAimedAttack(target uint8) error {
 
 // castTargetingInput 處理選目標那一步的按鍵。
 func (a *app) castTargetingInput() error {
+	// Manual 的格子游標自己吃掉按鍵（spec 127）。
+	if handled, err := a.manualAimInput(); handled || err != nil {
+		return err
+	}
 	switch {
+	case a.justPressed(ebiten.KeyM):
+		// 原版瞄準列的第三項。進去之後游標停在目前挑到的那一格。
+		a.beginManualAim()
 	case a.justPressed(ebiten.KeyEscape):
-		a.castTargeting, a.castTargetingAttack = false, false
+		a.castTargeting, a.castTargetingAttack, a.castManual = false, false, false
 	case a.justPressed(ebiten.KeyP), a.justPressed(ebiten.KeyArrowLeft),
 		a.justPressed(ebiten.KeyArrowUp):
 		a.castTargetCursor = (a.castTargetCursor + len(a.castTargets) - 1) % len(a.castTargets)

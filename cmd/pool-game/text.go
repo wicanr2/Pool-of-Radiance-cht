@@ -454,6 +454,7 @@ const (
 	msgCastArea
 	msgCastWholeSide
 	msgCastAiming
+	msgCastAimManual
 	msgAimAttack
 	msgAimOutOfRange
 	msgAimBlocked
