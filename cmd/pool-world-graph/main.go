@@ -33,6 +33,32 @@ type eclBlock struct {
 	BlockID   int         `json:"block_id"`
 	NewECL    []string    `json:"newecl_targets"`
 	LoadFiles [][3]string `json:"load_files"`
+	// Indirect 是「目標編號存在變數裡」那種 NEWECL 的餵值來源。沒有它，
+	// 圖上就會有六個區塊的出邊寫成 `@6E79` 而看起來像斷頭。
+	Indirect []indirectTarget `json:"indirect_newecl,omitempty"`
+}
+
+// indirectTarget 記錄一個 `NEWECL @變數` 是怎麼拿到編號的。這裡**只報量到的
+// 位元組**，不做選擇：
+//
+//   - `Immediates` 是整個區塊裡所有 `SAVE 立即值 → 那個變數`，**是超集**。
+//     同一個變數在別的地方會被拿去當計數器或選單索引，所以清單裡一定有
+//     不是區塊編號的值；要判定哪幾個算數得回去看那一段的控制流。
+//   - `Tables` 是 GETTABLE 的表位址與表頭 8 個位元組。表有多長沒有靜態證據
+//     ——它由索引變數的值域決定（`@C04D` 是朝向 0..3，`@6E82` 在城區腳本是
+//     地形碼），所以工具不替它裁切，也不猜哪幾格算數。
+type indirectTarget struct {
+	Address    string          `json:"address"`
+	Variable   string          `json:"variable"`
+	Immediates []int           `json:"saved_immediates,omitempty"`
+	Tables     []indirectTable `json:"tables,omitempty"`
+}
+
+type indirectTable struct {
+	Address string `json:"address"`
+	Index   string `json:"index"`
+	// Head 是表位址起算 8 個位元組的 16 進位。
+	Head string `json:"head"`
 }
 
 type geoExit struct {
@@ -91,6 +117,14 @@ func printText(result report) {
 	for _, block := range result.ECLBlocks {
 		fmt.Printf("  ecl%d/%-2d  NEWECL→ %v  LOAD FILES %v\n",
 			block.Archive, block.BlockID, block.NewECL, block.LoadFiles)
+		for _, indirect := range block.Indirect {
+			fmt.Printf("           %s NEWECL %s ← 立即值 %v", indirect.Address,
+				indirect.Variable, indirect.Immediates)
+			for _, table := range indirect.Tables {
+				fmt.Printf("  表 %s[%s]=%s", table.Address, table.Index, table.Head)
+			}
+			fmt.Println()
+		}
 	}
 	fmt.Println("GEO：邊界上往外沒有牆的格子（component 相同才走得到彼此）")
 	for _, block := range result.GEOBlocks {
@@ -208,11 +242,45 @@ func readECL(number int, block dax.Block) (eclBlock, error) {
 	}
 	targets := map[string]bool{}
 	files := map[[3]string]bool{}
+	// 先把「誰寫過哪個變數」收起來，NEWECL 才有辦法回頭問它的編號從哪來。
+	immediates := map[uint16]map[int]bool{}
+	tables := map[uint16]map[indirectTable]bool{}
+	for _, instruction := range graph.Instructions {
+		switch instruction.Command.Name {
+		case "SAVE":
+			if len(instruction.Operands) == 2 && !instruction.Operands[0].WordSet &&
+				instruction.Operands[1].WordSet {
+				destination := instruction.Operands[1].Word
+				if immediates[destination] == nil {
+					immediates[destination] = map[int]bool{}
+				}
+				immediates[destination][int(instruction.Operands[0].Low)] = true
+			}
+		case "GETTABLE":
+			if len(instruction.Operands) == 3 && instruction.Operands[0].WordSet &&
+				instruction.Operands[2].WordSet {
+				destination := instruction.Operands[2].Word
+				if tables[destination] == nil {
+					tables[destination] = map[indirectTable]bool{}
+				}
+				tables[destination][indirectTable{
+					Address: fmt.Sprintf("@%04X", instruction.Operands[0].Word),
+					Index:   operandValue(instruction.Operands[1]),
+					Head:    tableHead(block.Data, int(instruction.Operands[0].Word)),
+				}] = true
+			}
+		}
+	}
 	for _, instruction := range graph.Instructions {
 		switch instruction.Command.Name {
 		case "NEWECL":
 			if len(instruction.Operands) == 1 {
 				targets[operandValue(instruction.Operands[0])] = true
+				if instruction.Operands[0].WordSet {
+					row.Indirect = append(row.Indirect,
+						indirectSource(codeBase+instruction.Offset,
+							instruction.Operands[0].Word, immediates, tables))
+				}
 			}
 		case "LOAD FILES":
 			if len(instruction.Operands) == 3 {
@@ -240,6 +308,40 @@ func readECL(number int, block dax.Block) (eclBlock, error) {
 		return false
 	})
 	return row, nil
+}
+
+// tableHead 回傳表位址起算 8 個位元組。區塊前兩個位元組是長度標頭，
+// 所以 codeBase 對到 Data 的 offset 2（與 ecl.ParseOperands 的 `data[2:]` 同一個
+// 約定）。位址落在區塊外就回空字串——那代表那個運算元不是本區塊的表。
+func tableHead(data []byte, address int) string {
+	start := 2 + address - codeBase
+	if start < 0 || start >= len(data) {
+		return ""
+	}
+	end := start + 8
+	if end > len(data) {
+		end = len(data)
+	}
+	return strings.ToUpper(hex.EncodeToString(data[start:end]))
+}
+
+func indirectSource(address int, variable uint16,
+	immediates map[uint16]map[int]bool, tables map[uint16]map[indirectTable]bool) indirectTarget {
+	row := indirectTarget{
+		Address:  fmt.Sprintf("@%04X", address),
+		Variable: fmt.Sprintf("@%04X", variable),
+	}
+	for value := range immediates[variable] {
+		row.Immediates = append(row.Immediates, value)
+	}
+	sort.Ints(row.Immediates)
+	for table := range tables[variable] {
+		row.Tables = append(row.Tables, table)
+	}
+	sort.Slice(row.Tables, func(i, j int) bool {
+		return row.Tables[i].Address < row.Tables[j].Address
+	})
+	return row
 }
 
 // lessOperand 讓立即值照數字排在前面，記憶體參照排在後面。
