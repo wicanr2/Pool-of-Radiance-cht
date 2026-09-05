@@ -1115,9 +1115,19 @@ walk:
 			}
 			if len(plan) == 0 {
 				target := *exit
-				plan = planToCells(application, rotate, func(x, y int) bool {
-					return x == target.cell[0] && y == target.cell[1]
-				})
+				// 走去出口的路上也不能路過換區的格子。少了這一條，
+				// `chooseAreaExit` 挑到的出口等於白挑——實測 GEO1/18 三次都
+				// 挑中 (4,0) 朝北（那一支就是缺的區塊 9），三次都在半路被
+				// 別的格子換走，落點是 GEO8/29 的 (1,11)。
+				plan = planToCellsAvoiding(application, rotate,
+					func(x, y int) bool {
+						return x == target.cell[0] && y == target.cell[1]
+					},
+					func(x, y int) bool {
+						return !heldHere && avoid[[3]int{
+							int(application.spawn.Map.Archive),
+							int(application.spawn.Map.BlockID), y*100 + x}]
+					})
 				if len(plan) == 0 {
 					exit = nil
 				}
@@ -1719,7 +1729,13 @@ func tourWorldStates() []map[uint16]uint16 {
 	// 野外圖 25 的 (12,31) 海盜基地要 `4A8C == 255` 且 `4AA9 == 0` 才會給
 	// `ENTER` 選單（`ecl6/25 9D87h`／`9D92h`），而那是 EAST 航線那個口袋裡
 	// 唯一進得去的地方——不進去就沒有機會重擲野外位移（spec 105）。
-	return []map[uint16]uint16{nil, {0x4AC1: 9}, completed, {0x4A8C: 255}}
+	// `4A77 = 4` 是「近塔已清、遠塔還在」。`ecl2/9` 的 A444／A457 讀這個值的
+	// 第 3 位與第 2 位湊出 `@6E7A`，只有 `== 2` 那一支才演
+	// 'MONSTERS ARE CHARGING TOWARD YOU FROM THE FAR TOWER.'——而那一場遭遇
+	// 的非戰鬥結局是**區塊 6 唯一的入口**（`A57E ON GOTO` 兩支之外的
+	// fall-through → `A58E` 擺位置 → `A5A0 NEWECL 6`）。後面還掛著 3、4、5、7。
+	return []map[uint16]uint16{nil, {0x4AC1: 9}, completed,
+		{0x4A8C: 255, 0x4A77: 4}}
 }
 
 func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
