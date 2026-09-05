@@ -249,6 +249,9 @@ type app struct {
 	areaMapOpen bool
 	// symbolBand0 是第 0 帶（`01h..2Dh`）的全域 8×8 符號集（spec 120）。
 	symbolBand0 graphics.Picture
+	// symbolBand4 是第 4 帶（`100h..11Eh`）。畫面外框那圈繩索就在裡面
+	// （`114h`／`115h`／`116h`，spec 123）。
+	symbolBand4 graphics.Picture
 	endingActive      bool
 	endingPages      [][]gamepack.EndingLine
 	endingPage       int
@@ -315,11 +318,12 @@ func newApp(zipPath, statePath string) (*app, error) {
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial wall set: %w", err)
 	}
-	band0, _, err := gamepack.ReadDOSGlobalSymbolBands(zipPath)
+	band0, band4, err := gamepack.ReadDOSGlobalSymbolBands(zipPath)
 	if err != nil {
 		return nil, fmt.Errorf("load DOS global 8x8 symbol bands: %w", err)
 	}
 	application.symbolBand0 = band0
+	application.symbolBand4 = band4
 	application.initialWalls = &initialWalls
 	application.loadPieceSlots = func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
 		previous := graphics.PieceSet{}
@@ -2559,7 +2563,7 @@ func (a *app) Draw(screen *ebiten.Image) {
 		screen.DrawImage(a.title, op)
 		drawText(screen, a.text(msgTitleHint), 264, 382, accent)
 	} else if a.mode == modeMenu {
-		drawFrame(screen, foreground, accent)
+		a.drawFrame(screen, foreground, accent)
 		drawText(screen, a.text(msgMenuTitle), 224, 54, accent)
 		// 左欄是指令，右欄是隊伍。十一項一路排下來會撞到狀態列，
 		// 而原版的畫面本來就是指令在左、名單在右。
@@ -2593,15 +2597,17 @@ func (a *app) Draw(screen *ebiten.Image) {
 	} else {
 		drawAdventure(screen, a, foreground, accent)
 	}
-	// 基線 386：倚天字型的 ascent 是 14，畫在 390 會被 drawFrame 的下框
-	// （y 388..391）切掉字腳。
+	// 基線 366：外框下緣那一列 tile 在邏輯 y 368..383（原版 native 184..191，
+	// spec 123），所以底部文字要停在 366——ascent 14，字頂 352，剛好讓開。
+	// 原版最下面那一列文字（`PRESS <ENTER>...`）在 native y 168..174，
+	// 換算成邏輯就是 336..348，也在框上面。
 	if a.freeMovementActive() {
 		// 自由移動時最下面那一列是原版的指令列（spec 119）；F-key 提示移到
 		// F1 說明頁，不是拿掉。導覽還在跑的時候原版那一列是「按 Return 繼續」，
 		// 所以那時不畫指令列。
 		drawCommandBar(screen, a, foreground, accent)
 	} else {
-		drawText(screen, a.text(msgFooter), 16, 386, foreground)
+		drawText(screen, a.text(msgFooter), 20, 366, foreground)
 	}
 	if a.help {
 		drawHelp(screen, background, foreground, accent, a.adventureProvenanceLines())
@@ -2621,13 +2627,19 @@ func (a *app) Draw(screen *ebiten.Image) {
 }
 
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
-	drawFrame(screen, foreground, accent)
+	a.drawFrame(screen, foreground, accent)
 	drawText(screen, "INITIAL DOS FIRST-PERSON VIEW", 176, 52, accent)
 	if a.initialMap == nil || a.initialWalls == nil {
 		drawText(screen, "INITIAL MAP OR WALL ART IS NOT LOADED", 150, 190, foreground)
 		return
 	}
 	viewLeft, viewTop := 48, 86
+	// 第一人稱那一框在原版也是同一圈繩索圍起來的（spec 123）：外框
+	// native (16,16)..(119,119)、內部 88×88 從 (24,24) 起，也就是**內容外面
+	// 一圈 tile**。這裡照同樣的關係圍在 remake 的 176×176 視野外面。
+	// **絕對位置仍與原版不同**（原版的視野在畫面上方，remake 上面還有一列
+	// 標題），那屬於整體版面，不在這一項裡。
+	a.drawRopeBox(screen, viewLeft-frameTileSize*2, viewTop-frameTileSize*2, 13, 13)
 	// 結局過場時那一格畫的是結局的圖，不是第一人稱視野（spec 108）。
 	if a.endingActive && a.endingScene != nil {
 		op := &ebiten.DrawImageOptions{}
@@ -2850,7 +2862,7 @@ func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepa
 }
 
 func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) {
-	drawFrame(screen, foreground, accent)
+	a.drawFrame(screen, foreground, accent)
 	if a.flow.Stage == creation.StageRoll {
 		drawText(screen, a.text(msgCharacterSheet), 230, 42, accent)
 		if a.rolled == nil {
@@ -2970,20 +2982,6 @@ func stageName(stage creation.Stage) string {
 	default:
 		return ""
 	}
-}
-
-func drawFrame(screen *ebiten.Image, foreground, accent color.Color) {
-	for inset := 8; inset < 12; inset++ {
-		for x := inset; x < logicalWidth-inset; x++ {
-			screen.Set(x, inset, accent)
-			screen.Set(x, logicalHeight-inset-1, accent)
-		}
-		for y := inset; y < logicalHeight-inset; y++ {
-			screen.Set(inset, y, accent)
-			screen.Set(logicalWidth-inset-1, y, accent)
-		}
-	}
-	drawText(screen, "SSI GOLD BOX / POOL REMAKE", 18, 26, foreground)
 }
 
 func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color, provenance []string) {

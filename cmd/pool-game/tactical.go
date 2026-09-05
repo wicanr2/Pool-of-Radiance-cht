@@ -77,7 +77,7 @@ func fillTacticalCell(screen *ebiten.Image, column, row int, ink color.Color) {
 // drawTactical 畫出由目前地城位置生成的戰術戰場。這一版只呈現地形，
 // 還沒有 combatant、輸入或回合流程。
 func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) {
-	drawFrame(screen, foreground, accent)
+	a.drawFrame(screen, foreground, accent)
 	drawText(screen, a.text(msgTacticalTitle), 232, 44, accent)
 	if a.initialMap == nil {
 		drawText(screen, a.text(msgTacticalNoMap), 196, 190, foreground)
