@@ -490,3 +490,17 @@ ecl7/26 @B019 (29)  39 43 44 46 62 66 67 73 75 76 77 78 80 84 87 89 92 93
   `combatActive` 與 `tacticalPreview`。
 - 寶物那一串要挑 Exit（`treasureMenuChoice`），不然 View → Return → View
   繞不完。
+
+
+## 兩個地點另有主線閘門
+
+走得到不等於進得去：
+
+| 地點 | 閘門 | 沒過的話 |
+|---|---|---|
+| 野外 25 (12,31) 海盜基地 → 區塊 1 | `4A8C == 255` 且 `4AA9 == 0`（`9D87h`／`9D92h`）| 不 `NEWECL` |
+| 野外 25 (3,32) 前哨站 → 區塊 28 | `4A98 == 255`（`9E4Ch`）| 演「YOU ARE TRESSPASSING ON PRIVATE LAND」，選單 `[STAY LEAVE]`，選哪一項都進不去 |
+
+前哨站過了閘門才是「ARE YOU THE DIPLOMATIC ENVOYS FROM NEW PHLAN?」
+（選單 `[YES NO]`，`9EF6h ON GOTO` 索引 0 → `9F7Ah`
+「THE RIDERS ESCORT YOU INTO THE OUTPOST.」→ `NEWECL 28`）。

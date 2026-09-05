@@ -298,3 +298,163 @@ func TestTheNomadCampOnTheMiddleWildernessSheet(t *testing.T) {
 	}
 	t.Skipf("重擲 %d 次還沒走到 (12,11)", areas)
 }
+
+
+// 西野外的前哨站（區塊 28）：跨兩次圖到野外 25，重擲位移，再走過去答 YES。
+//
+// 兩個非走法的條件：
+//
+//   - **主線閘門**：`ecl6/25 9E4Ch COMPARE @4A98 255` 要成立，隊伍才是
+//     「新費蘭來的外交使節」。沒有它只會演「YOU ARE TRESSPASSING ON
+//     PRIVATE LAND」那一段，選 STAY 或 LEAVE 都進不去。這裡跟碼頭那條航線
+//     一樣直接把旗標設起來——它證明的是「那一區的腳本跑得動」。
+//   - **僵局安全閥**：野外 25 上有一場雙方都碰不到彼此的架（野豬 ×5），
+//     沒有 `tacticalStalemateRounds` 的話隊伍走 155 步就永遠停在那裡。
+func TestTheOutpostOnTheWesternWildernessSheet(t *testing.T) {
+	application := sailEastIntoTheWilderness(t)
+	memory := application.eventMachine.Memory
+	here := func() [2]int {
+		return [2]int{int(memory[wildernessX]), int(memory[wildernessY])}
+	}
+	block := func() int { return int(application.eventSession.CurrentBlockID()) }
+	walkTo := func(target [2]int, settle func(*app)) bool {
+		for step := 0; step < 400 && here() != target; step++ {
+			if !application.inWildernessOverland() {
+				return false
+			}
+			route := wildernessRoute(application, here(), target, nil)
+			if len(route) == 0 {
+				return false
+			}
+			for application.spawn.Facing != route[0] {
+				press(application, ebiten.KeyArrowRight)
+			}
+			press(application, ebiten.KeyArrowUp)
+			settle(application)
+		}
+		return here() == target
+	}
+	best, found := [2]int{}, false
+	for y := 3; y <= 34; y++ {
+		for x := 2; x <= 15; x++ {
+			if here() != [2]int{x, y} &&
+				len(wildernessRoute(application, here(), [2]int{x, y}, nil)) == 0 {
+				continue
+			}
+			if !found || x < best[0] {
+				best, found = [2]int{x, y}, true
+			}
+		}
+	}
+	if !found || !walkTo(best, wanderSettle) {
+		t.Skip("走不到最西的格子")
+	}
+	for attempt := 0; attempt < 8 && block() == 27; attempt++ {
+		application.spawn.Facing = 3
+		press(application, ebiten.KeyArrowUp)
+		wanderSettle(application)
+	}
+	for _, row := range []int{24, 20, 15, 28} {
+		if block() == 25 {
+			break
+		}
+		if !walkTo([2]int{2, row}, wanderSettle) {
+			continue
+		}
+		for attempt := 0; attempt < 4 && block() == 26; attempt++ {
+			application.spawn.Facing = 3
+			press(application, ebiten.KeyArrowUp)
+			wanderSettle(application)
+		}
+	}
+	if block() != 25 {
+		t.Skipf("跨不到野外 25，現在 %d", block())
+	}
+	ox, oy := wildernessOffset(application)
+	// 前哨站要「外交使節」的委任：`ecl6/25 9E4Ch COMPARE @4A98 255`。
+	// 沒有它就只會演「YOU ARE TRESSPASSING ON PRIVATE LAND」那一段。
+	memory[0x4A98] = 255
+	t.Logf("進到野外 25，在 %v 位移 (%d,%d)｜4A98=%d", here(), ox, oy, memory[0x4A98])
+	dice := rand.New(rand.NewSource(11))
+	areas, moves, last := 0, 0, here()
+	for step := 0; step < 6000; step++ {
+		if application.inWildernessOverland() && here() != last {
+			moves++
+			last = here()
+		}
+		if step%1500 == 0 {
+			_ = moves
+		}
+		if application.inWildernessOverland() && block() == 25 &&
+			len(wildernessRoute(application, here(), [2]int{3, 32}, nil)) != 0 {
+			logMenu := func(a *app) {
+				for tick := 0; tick < 800 && (a.cellEventPending || a.cellWaitingMenu ||
+					a.tactical != nil || a.combatActive || a.encounter != nil ||
+					a.treasureActive || a.tacticalPreview); tick++ {
+					if a.tactical != nil {
+						press(a, castlePilot.key(a))
+						continue
+					}
+					if a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
+						pick := 0
+						for index, option := range a.cellMenuOptions {
+							if option == "YES" || option == "ENTER" {
+								pick = index
+							}
+						}
+						for a.cellMenuCursor != pick {
+							press(a, ebiten.KeyArrowDown)
+						}
+					}
+					press(a, ebiten.KeyEnter)
+				}
+			}
+			walkTo([2]int{3, 32}, logMenu)
+			for attempt := 0; attempt < 4 && block() == 25; attempt++ {
+				application.spawn.Facing = uint8(attempt)
+				press(application, ebiten.KeyArrowUp)
+				logMenu(application)
+			}
+			if got := block(); got != 28 {
+				t.Skipf("站上 (3,32) 之後是 block %d", got)
+			}
+			t.Logf("走到 (3,32)（重擲 %d 次）：ECL block 28，GEO%d/%d", areas,
+				application.spawn.Map.Archive, application.spawn.Map.BlockID)
+			return
+		}
+		if !application.inWildernessOverland() {
+			for round := 0; round < 8000 && !application.inWildernessOverland(); round++ {
+				application.spawn.Facing = uint8(dice.Intn(4))
+				press(application, ebiten.KeyArrowUp)
+				caveSettle(application, "LEAVE", "OUT", "GO", "YES")
+			}
+			if !application.inWildernessOverland() {
+				t.Skipf("出不了 block %d", block())
+			}
+			areas++
+			x, y := wildernessOffset(application)
+			t.Logf("第 %d 次出來，在 %v 位移 (%d,%d)", areas, here(), x, y)
+			continue
+		}
+		// 只擋邊界與跨圖欄，地點照走——`wanderSettle` 對它們一律答 LEAVE。
+		deltas := [4][2]int{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
+		facing := -1
+		start := dice.Intn(4)
+		for try := 0; try < 4; try++ {
+			f := (start + try) % 4
+			next := [2]int{here()[0] + deltas[f][0], here()[1] + deltas[f][1]}
+			if next[0] <= 2 || next[0] >= 15 || next[1] < 3 || next[1] > 34 {
+				continue
+			}
+			facing = f
+			break
+		}
+		if facing < 0 {
+			facing = dice.Intn(4)
+		}
+		application.spawn.Facing = uint8(facing)
+		press(application, ebiten.KeyArrowUp)
+		wanderSettle(application)
+	}
+	t.Skipf("重擲 %d 次、移動 %d 次，沒走到 (3,32)", areas, moves)
+}

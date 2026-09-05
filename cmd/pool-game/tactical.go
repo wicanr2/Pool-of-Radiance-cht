@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
@@ -390,6 +391,48 @@ type tacticalState struct {
 	// Text 由建立者接上 app.text，讓狀態列的訊息也能翻譯。測試直接建構
 	// tacticalState 時不設它，say 會退回英文，所以測試不必知道語言這件事。
 	Text func(messageID) string
+	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
+	stallSignature string
+	stalledRounds  int
+}
+
+// tacticalStalemateRounds 是「盤面完全沒變」幾回合之後判僵局。
+//
+// **非原版**，與同一個檔案裡的繞路備案同一個性質：原版怎麼收這種場面還沒讀。
+// 實測有這樣一場——野外 25 的野豬 ×5，雙方誰也走不到誰，回合數一路衝到
+// 兩萬兩千還在跑，從外面看就是遊戲不動了（WORKLIST 的「走得到的內容量」）。
+// 五十回合完全沒有位移、沒有狀態變化、沒有人倒下，正常戰鬥不會發生。
+const tacticalStalemateRounds = 50
+
+// stallFingerprint 是「盤面有沒有變」的指紋：每一格的位置、生命值、狀態與
+// 倒地計時。
+//
+// **生命值不能漏**：不還手的隊伍站在原地被打，位置與狀態都不會變，漏了生命值
+// 就會被誤判成僵局——`TestPassiveCombatTerminates` 要的正是「這種隊伍會被
+// 打死」。
+func (state *tacticalState) stallFingerprint() string {
+	// 測試會手工組 tacticalState，那些平行陣列不一定都填滿——指紋只是安全閥
+	// 的輸入，取不到就當 0，不能因此炸掉。
+	at := func(values []int, index int) int {
+		if index < len(values) {
+			return values[index]
+		}
+		return 0
+	}
+	atByte := func(values []uint8, index int) uint8 {
+		if index < len(values) {
+			return values[index]
+		}
+		return 0
+	}
+	var builder strings.Builder
+	for index := 1; index < len(state.Roster); index++ {
+		cell := state.Roster[index]
+		fmt.Fprintf(&builder, "%d:%d,%d,%d,%d,%d,%d;", index, cell.X, cell.Y,
+			cell.FootprintClass, at(state.HitPoints, index),
+			atByte(state.States, index), atByte(state.DyingCounters, index))
+	}
+	return builder.String()
 }
 
 // say 取出一則狀態訊息的目前語言版本。
@@ -508,6 +551,18 @@ func (state *tacticalState) endRound(roll func(count, sides int) int) {
 			state.Status = state.say(msgStatusVictory)
 		}
 		return
+	}
+	// **非原版的僵局安全閥。** 盤面連續 `tacticalStalemateRounds` 回合完全
+	// 沒變（沒人移動、沒人受傷、沒人倒下）就收場——雙方都走不到對方的時候，
+	// 兩邊都會正常結束回合，於是回合數無限增加而什麼都不會發生。
+	if fingerprint := state.stallFingerprint(); fingerprint == state.stallSignature {
+		state.stalledRounds++
+		if state.stalledRounds >= tacticalStalemateRounds {
+			state.Finished, state.Outcome = true, combat.CombatOngoing
+			return
+		}
+	} else {
+		state.stallSignature, state.stalledRounds = fingerprint, 0
 	}
 	state.startRound(roll)
 	state.Status = state.say(msgStatusRound, state.Round)
@@ -1511,6 +1566,13 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
 	a.castTargetingAttack = false
+	if outcome == combat.CombatOngoing {
+		// 僵局收場：雙方都還在，只是誰也碰不到誰。跟打輸一樣要把排好的遭遇
+		// 清掉，否則同一場架會被重新排出來。
+		a.combatActive, a.combatMonsters = false, nil
+		a.statusLine = "Tactical combat ended in a stalemate; neither side could close."
+		return nil
+	}
 	if outcome != combat.CombatVictory {
 		// 輸掉之後**要把排好的遭遇清掉**，否則同一場架會被重新排出來，
 		// 隊伍的生命值又回到滿的（戰鬥的生命值是另一份陣列，沒有寫回隊伍），
