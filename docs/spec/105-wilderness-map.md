@@ -467,6 +467,18 @@ ecl7/26 @B019 (29)  39 43 44 46 62 66 67 73 75 76 77 78 80 84 87 89 92 93
 三張野外圖都有這一套：野外 25 在 `A472h`（四組），野外 26 在 `A44Ch`
 （`RANDOM 2`，三組），野外 27 在 `A255h`（四組）。
 
+**但問句不一樣，這一點很容易踩到**：
+
+| 野外 | 問句 | 位址 |
+|---|---|---|
+| 25 | YOU HAVE FOUND A SMALL DARK CAVE. WILL YOU ENTER? | `A425h` |
+| 26 | YOU HAVE FOUND A SMALL WOODED GROVE. WILL YOU ENTER? | `A45Dh` |
+| 26 | YOU HAVE FOUND SOME RUINED HUTS. WILL YOU INVESTIGATE? | `A4A6h` |
+| 27 | YOU HAVE FOUND A SMALL, DARK CAVE. WILL YOU ENTER? | `A20Dh` |
+
+只認「洞穴」的話，在野外 26 上會把每一次機會都拒絕掉——實測第一擲中了
+198 次，一次都沒進去，看起來像「那張圖不會出現洞穴」。
+
 實測（`TestTheWildernessCaveRerollReachesTheEasternOutpost`）：從船的登陸點
 出發，位移 (6,4) → 兩次重擲後 (7,10) → (1,9)，然後走到 (6,15)，
 進 **ECL block 13、GEO8/13**。
