@@ -240,6 +240,10 @@ type app struct {
 	// eclSessionArchive 是 ECL session 目前握著哪一份 archive 的區塊。
 	// 與 `eclArchive` 分開：後者是地圖與素材命名用的鏡像，會先一步更新。
 	eclSessionArchive uint8
+	// searchFlags 是 `[4937h]+594h`：第 0 位邊走邊搜、第 1 位這一次要搜
+	// （spec 119）。areaMapOpen 是 `DS:6A0Ah` 的平面圖開關。
+	searchFlags  uint16
+	areaMapOpen  bool
 	endingActive      bool
 	endingPages      [][]gamepack.EndingLine
 	endingPage       int
@@ -555,6 +559,9 @@ func (a *app) Update() error {
 	if a.campFromProgram && !a.campOpen && !a.spellsOpen {
 		a.campFromProgram = false
 		return a.closeProgramCamp()
+	}
+	if handled, err := a.adventureCommandInput(); handled {
+		return err
 	}
 	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.justPressed(ebiten.KeyE) {
 		a.openCamp()
@@ -2545,7 +2552,14 @@ func (a *app) Draw(screen *ebiten.Image) {
 	}
 	// 基線 386：倚天字型的 ascent 是 14，畫在 390 會被 drawFrame 的下框
 	// （y 388..391）切掉字腳。
-	drawText(screen, a.text(msgFooter), 16, 386, foreground)
+	if a.freeMovementActive() {
+		// 自由移動時最下面那一列是原版的指令列（spec 119）；F-key 提示移到
+		// F1 說明頁，不是拿掉。導覽還在跑的時候原版那一列是「按 Return 繼續」，
+		// 所以那時不畫指令列。
+		drawCommandBar(screen, a, foreground, accent)
+	} else {
+		drawText(screen, a.text(msgFooter), 16, 386, foreground)
+	}
 	if a.help {
 		drawHelp(screen, background, foreground, accent, a.adventureProvenanceLines())
 	}
@@ -2598,6 +2612,11 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		}
 		return
 	}
+	if a.areaMapOpen {
+		drawAreaMap(screen, a, foreground, accent, viewLeft, viewTop)
+		drawPartyPanel(screen, a, foreground, accent)
+		return
+	}
 	inset, err := a.firstPersonInsetImage()
 	if err != nil {
 		drawText(screen, "FIRST-PERSON STAGE ERROR", 72, 180, accent)
@@ -2639,7 +2658,13 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		dialogueVisible = true
 	}
 	if a.statusLine != "" && !dialogueVisible {
-		drawText(screen, a.statusLine, 42, 342, foreground)
+		// 畫面只有 640 寬，從 42 起算放得下 74 個字；超過就截掉，
+		// 不要讓字流出框外（自由移動那一張截圖抓到過）。
+		line := a.statusLine
+		if len(line) > adventureStatusLineLimit {
+			line = line[:adventureStatusLineLimit-1] + "…"
+		}
+		drawText(screen, line, 42, 342, foreground)
 	}
 	drawCamp(screen, a, foreground, accent)
 }
@@ -2952,8 +2977,12 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color, 
 	for index, line := range lines {
 		drawText(screen, line, 104, 100+index*22, foreground)
 	}
+	for index, line := range adventureCommandHelp() {
+		drawText(screen, line, 104, 100+(len(lines)+index)*22, foreground)
+	}
+	base := len(lines) + len(adventureCommandHelp()) + 1
 	for index, line := range provenance {
-		drawText(screen, line, 104, 100+(len(lines)+1+index)*22, accent)
+		drawText(screen, line, 104, 100+(base+index)*22, accent)
 	}
 }
 

@@ -12,12 +12,21 @@ import (
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
 
-// firstPersonMatchFloor 是目前對得上的比例。
+// 每個位置各自的地板。
 //
-// 這不是「差不多就好」的門檻，是**現況的地板**：兩處還沒收掉的差異
-// （遠處牆頂多出一條洋紅、正前方那道門洞沒畫）合計約 4%。收掉任何一處都
-// 應該把這個數字往上調，掉下來就是有東西壞了。
-const firstPersonMatchFloor = 96.0
+// 這不是「差不多就好」的門檻，是**現況**：收掉任何一處差異都應該把數字往上
+// 調，掉下來就是有東西壞了。
+//
+//   - `(14,1)` 朝西：96.1%。剩下的兩處都在正前方那道遠牆（牆頂多一條洋紅、
+//     門洞沒填黑）。
+//   - `(0,4)` 朝西：60.4%。**那一格正前方是城門**，而 `TraverseWallViewWrapped`
+//     對它送出的 `wallType=1` 在 `BuildWallLayout` 裡一片圖章都產不出來
+//     （WALLDEF record 0 的 slice 0 在那組版面索引上是空的），所以整道門沒畫。
+//     門的第一人稱美術從哪來還沒讀——這個數字就是那個缺口的量。
+const (
+	firstPersonMatchFloor     = 96.0
+	firstPersonGateMatchFloor = 60.0
+)
 
 // 拿原版走到 GEO3/0 (14,1) 朝西的畫面當 oracle，逐格比第一人稱內框。
 //
@@ -30,34 +39,46 @@ func TestFirstPersonInsetMatchesTheDOSShot(t *testing.T) {
 	if err != nil {
 		t.Skipf("DOS ZIP unavailable: %v", err)
 	}
-	spawn := gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 14, Y: 1, Facing: 3}
-	initial, ok := catalog.Map(spawn.Map)
-	if !ok {
-		t.Fatal("GEO3 block 0 不在")
-	}
 	piece, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	inset, err := composeFirstPersonInset(initial.Grid, piece, spawn)
-	if err != nil {
-		t.Fatal(err)
+	// 兩個位置各比一次。同一張圖上不同朝向都對得起來，才不是碰巧只有一格準。
+	cases := []struct {
+		spawn gamepack.Spawn
+		shot  string
+		floor float64
+	}{
+		{gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 14, Y: 1, Facing: 3},
+			"02-first-person-14-1-west.png", firstPersonMatchFloor},
+		{gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 0, Y: 4, Facing: 3},
+			"06-free-move-0-4-west.png", firstPersonGateMatchFloor},
 	}
-	want, err := cropDOSShot(filepath.Join("..", "..", "docs", "reference", "original-dos",
-		"adventure", "02-first-person-14-1-west.png"), 24, 24, FirstPersonInsetSize, FirstPersonInsetSize)
-	if err != nil {
-		t.Skipf("原版截圖不可用: %v", err)
-	}
-	same := 0
-	for index := range want {
-		if inset.Pixels[index] == want[index] {
-			same++
+	for _, item := range cases {
+		initial, ok := catalog.Map(item.spawn.Map)
+		if !ok {
+			t.Fatal("GEO3 block 0 不在")
 		}
-	}
-	ratio := float64(same) * 100 / float64(len(want))
-	t.Logf("第一人稱內框逐格相同 %d/%d（%.1f%%）", same, len(want), ratio)
-	if ratio < firstPersonMatchFloor {
-		t.Fatalf("逐格相同 %.1f%%，低於現況地板 %.1f%%", ratio, firstPersonMatchFloor)
+		inset, err := composeFirstPersonInset(initial.Grid, piece, item.spawn)
+		if err != nil {
+			t.Fatal(err)
+		}
+		want, err := cropDOSShot(filepath.Join("..", "..", "docs", "reference", "original-dos",
+			"adventure", item.shot), 24, 24, FirstPersonInsetSize, FirstPersonInsetSize)
+		if err != nil {
+			t.Skipf("原版截圖不可用: %v", err)
+		}
+		same := 0
+		for index := range want {
+			if inset.Pixels[index] == want[index] {
+				same++
+			}
+		}
+		ratio := float64(same) * 100 / float64(len(want))
+		t.Logf("%s：逐格相同 %d/%d（%.1f%%）", item.shot, same, len(want), ratio)
+		if ratio < item.floor {
+			t.Errorf("%s 逐格相同 %.1f%%，低於現況地板 %.1f%%", item.shot, ratio, item.floor)
+		}
 	}
 }
 

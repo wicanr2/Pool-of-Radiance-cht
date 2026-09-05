@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-05",
-  "source_commit": "c290471608952f89a0e1817c0572b2eddaff9427",
+  "source_commit": "0161e8669836566db09c52ee5c42a6166806fe46",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window with sequential key input",
   "state_relation": "normal-remake-player-path; not an original-DOS parity claim",
@@ -45,6 +45,18 @@
     {
       "path": "docs/screenshots/pool-remake-rolf-tour-tyr.png",
       "sha256": "a152c3e54828d2bd7155d26dcd8a5b1f7ca60cb660a8852b418a769c8bd0ee49",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-free-movement.png",
+      "sha256": "90d66504f050c6877888024d167577dc6c75e16cf0c4959cd6d0ab9ad784875b",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "path": "docs/screenshots/pool-remake-area-map.png",
+      "sha256": "2d3ce134b248a84902ee43fead728df3369c5b844db2176e41f708bd50e62ea8",
       "width": 960,
       "height": 600
     }

@@ -91,13 +91,27 @@ pulse Return
 sleep 2
 ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
   -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-rolf-tour-tyr.png
+# 把導覽按完（34 步、七頁），走到自由移動，再抓指令列與平面圖各一張。
+for _ in $(seq 1 40); do
+  pulse Return
+done
+sleep 2
+ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-free-movement.png
+pulse a
+sleep 0.8
+ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+  -i ":99+${X},${Y}" -frames:v 1 docs/screenshots/pool-remake-area-map.png
+pulse a
 sha256sum docs/screenshots/pool-remake-character-name.png \
   docs/screenshots/pool-remake-portrait-editor.png \
   docs/screenshots/pool-remake-combat-icon-editor.png \
   docs/screenshots/pool-remake-icon-confirm.png \
   docs/screenshots/pool-remake-party-menu.png \
   docs/screenshots/pool-remake-initial-rolf-event.png \
-  docs/screenshots/pool-remake-rolf-tour-tyr.png
+  docs/screenshots/pool-remake-rolf-tour-tyr.png \
+  docs/screenshots/pool-remake-free-movement.png \
+  docs/screenshots/pool-remake-area-map.png
 if cmp -s docs/screenshots/pool-remake-portrait-editor.png docs/screenshots/pool-remake-combat-icon-editor.png; then
   echo "combat icon capture did not leave the portrait screen" >&2
   exit 1
@@ -136,6 +150,8 @@ paths = [
     "docs/screenshots/pool-remake-party-menu.png",
     "docs/screenshots/pool-remake-initial-rolf-event.png",
     "docs/screenshots/pool-remake-rolf-tour-tyr.png",
+    "docs/screenshots/pool-remake-free-movement.png",
+    "docs/screenshots/pool-remake-area-map.png",
 ]
 
 

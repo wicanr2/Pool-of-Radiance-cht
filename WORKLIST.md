@@ -212,8 +212,20 @@
   `(0,4)` 往西進貧民窟那一步都不加），以及自由移動時畫面最下面是指令列
   `AREA CAST VIEW ENCAMP SEARCH LOOK`。時鐘已照這條接上並存進存檔
   （spec 118，六十步進位到 `01:00` 同時是進位上限表的正對照）。
+  **指令列也接上了**（spec 119）：原版有兩條字串，`DS:04CAh` 是
+  `Area Cast View Encamp Search Look`、`DS:04F3h` 是**少了 `Area`** 的野外版，
+  分派在 overlay-14 `09CAh`。`A` 切換平面全圖（照 GEO 的牆位元組畫格線加
+  一個指著朝向的箭頭）、`S` 翻 `[4937h]+594h` 第 0 位並讓狀態列多一段
+  `SEARCH`、`L` 設第 1 位並對這一格重跑 ECL entry 1（`ds:4946h` 就是
+  spec 016 的 SearchLocation）。指令列只在自由移動時出現，導覽還在跑時
+  原版那一列是「按 Return 繼續」。
+  **順帶量到一個新缺口**：拿自由移動那一格 `(0,4)` 朝西對拍只有 **60.4%**
+  ——那一格正前方是城門，`TraverseWallViewWrapped` 送出的 `wallType=1` 在
+  `BuildWallLayout` 裡一片圖章都產不出來，所以整道門沒畫。
+  `TestFirstPersonInsetMatchesTheDOSShot` 現在同時釘住兩個位置的地板
+  （96.0／60.0），門畫出來就該把後者往上調。
   對拍表上剩三項：外框美術（原版是紅色繩索花紋）、那道遠牆的兩處像素、
-  以及還沒有的指令列。
+  以及這道沒畫出來的門。
   **副產品**：那一輪對拍抓到隊伍非空的選單只有九項，沒有 `LOAD SAVED GAME`
   也沒有 `TRAIN CHARACTER`；`L)OAD` 的可見規則已照原版改成「只在空隊伍出現」，
   `T)RAIN` 因為旗標來源還沒讀，留成已知偏差（spec 008）。

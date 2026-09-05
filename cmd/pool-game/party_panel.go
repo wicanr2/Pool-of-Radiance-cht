@@ -56,9 +56,9 @@ func (a *app) partyPanelRows() []partyPanelRow {
 // 時鐘是走出來的：一步一分（`advanceGameMinute`），小時與分鐘就是那個逐位
 // 數的第 3 位與分的十位／個位。
 func (a *app) adventureStatusLine() string {
-	return fmt.Sprintf("%d, %d %s %02d:%02d", a.spawn.X, a.spawn.Y,
+	return fmt.Sprintf("%d, %d %s %02d:%02d%s", a.spawn.X, a.spawn.Y,
 		facingLetter(a.spawn.Facing),
-		a.gameTime[gamepack.TimeDigitHour], a.gameTime.Minutes())
+		a.gameTime[gamepack.TimeDigitHour], a.gameTime.Minutes(), a.searchIndicator())
 }
 
 // facingLetter 把 spec 076 的 0 北 1 東 2 南 3 西換成原版狀態列的字母。
