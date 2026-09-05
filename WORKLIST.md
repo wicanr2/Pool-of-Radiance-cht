@@ -1150,7 +1150,7 @@
   模式，先前被拆成兩頁，第一頁以 `YOU NOTE` 結尾。兩處都改由
   `joinPrintedText` 接起來，契約寫進 spec 082。
 
-- [ ] **平台驗收的 workflow 進不了共用 engine**（2026-09-03 實跑
+- [x] **平台驗收的 workflow 進不了共用 engine——決定不動 CI**（2026-09-03 實跑
   `gh workflow run platform-smoke.yml` 量到）。`build (macos-14)` 與
   `build (windows-latest)` 都掛在 **`check out the shared engine`** 那一步：
   `actions/checkout` 去抓 `wicanr2/golden-box-remake-engine`，而
@@ -1168,10 +1168,11 @@
      第二份真相，但它會讓「engine 改了、Pool 沒重新 vendor」變成一種
      新的不同步。
 
-  兩條都動到 CI，依 `30-lcy-agent-boundaries` 要先得到使用者同意才做。
-  在那之前這個 workflow 驗不到任何東西——Linux 與 Wine 的驗收改走本地 Docker
-  （`tools/linux-release-smoke.sh`、`tools/windows-release-smoke.sh`），
-  已經在做，不受影響。
+  **使用者 2026-09-05 決定：先不要動 CI。** 這一項因此不再是待辦——
+  平台驗收維持只靠本地 Docker（`tools/linux-release-smoke.sh`、
+  `tools/windows-release-smoke.sh`），`platform-smoke.yml` 留著但驗不到東西。
+  要重開這一項，條件是使用者改變上面那個決定並選一條路；在那之前不要
+  每一輪重提。
 
   動共用 engine 之前要先取得使用者同意——那是另一個 repo，本專案的 push 授權
   不涵蓋它。該 repo 的 repo-local `user.email` 已經是 `wicanr2@gmail.com`
@@ -1409,11 +1410,14 @@
   Windows ZIP 與 macOS 雙架構 ZIP，並寫 `manifest.json` 固定雜湊。
   AppImage 已由 `tools/linux-release-smoke.sh` 在容器裡實際啟動並截圖。
   契約見 spec 066。
-- [ ] Windows 與 macOS 的真機啟動驗收。目前只證明得出「建得出來、包得起來」。
-  `.github/workflows/platform-smoke.yml` 已寫好（只手動觸發），在 runner 上驗
-  原生建置與測試——那兩件事交叉編譯給不了。**啟動仍驗不了**：實測 Ebitengine
-  的 GLFW 在套件 init 就初始化，無頭環境連 `-h` 都 panic（見 spec 066）。
-  解除條件：一台實體 Windows 與一台 Mac，各啟動一次並截圖。
+- [x] **Windows 與 macOS 的真機啟動驗收交接出去了**（2026-09-05 使用者決定
+  由自己在實機執行）。這裡做得到的部分做完了：建得出來、包得起來，Linux 與
+  Wine 走本地 Docker（`tools/linux-release-smoke.sh`）。**啟動本身在這裡驗不了**
+  ——Ebitengine 的 GLFW 在套件 init 就初始化視窗系統，無頭環境連 `-h` 都 panic
+  （spec 066），所以 Docker 與 CI runner 都到不了「畫得出第一個畫面」。
+  逐步清單寫成 [`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)
+  （七步、每台要留哪三張截圖、中文介面另跑一次）。
+  **這一項不是「驗過了」，是「交接了」**：實機跑完之後把結果寫回這一條。
 - [x] repository visibility 與原版素材 deny-list（2026-09-04 使用者定案）。
   CoAB、Pool 與共用 engine 三個 repo 都維持 **private**。原版素材的 deny-list
   已經落地：`NOTICE.md` 列出不隨發行包散布的東西（原版資料、軟體世界說明書
