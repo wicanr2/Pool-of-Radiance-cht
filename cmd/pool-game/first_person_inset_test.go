@@ -17,15 +17,15 @@ import (
 // 這不是「差不多就好」的門檻，是**現況**：收掉任何一處差異都應該把數字往上
 // 調，掉下來就是有東西壞了。
 //
-//   - `(14,1)` 朝西：96.1%。剩下的兩處都在正前方那道遠牆（牆頂多一條洋紅、
-//     門洞沒填黑）。
-//   - `(0,4)` 朝西：60.4%。**那一格正前方是城門**，而 `TraverseWallViewWrapped`
-//     對它送出的 `wallType=1` 在 `BuildWallLayout` 裡一片圖章都產不出來
-//     （WALLDEF record 0 的 slice 0 在那組版面索引上是空的），所以整道門沒畫。
-//     門的第一人稱美術從哪來還沒讀——這個數字就是那個缺口的量。
+//   - `(14,1)` 朝西：98.6%
+//   - `(0,4)` 朝西（正前方是城門）：97.0%
+//
+// 兩個數字都是換成「按符號編號的帶取圖」（spec 120）之後量到的；先前用
+// 共用 engine 的 `BuildWallLayout`（按 WALLDEF 記錄取圖）分別是 96.1% 與
+// **60.4%**——後者少的就是整道城門。
 const (
-	firstPersonMatchFloor     = 96.0
-	firstPersonGateMatchFloor = 60.0
+	firstPersonMatchFloor     = 98.0
+	firstPersonGateMatchFloor = 96.0
 )
 
 // 拿原版走到 GEO3/0 (14,1) 朝西的畫面當 oracle，逐格比第一人稱內框。
@@ -40,6 +40,10 @@ func TestFirstPersonInsetMatchesTheDOSShot(t *testing.T) {
 		t.Skipf("DOS ZIP unavailable: %v", err)
 	}
 	piece, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	band0, _, err := gamepack.ReadDOSGlobalSymbolBands(zipPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +63,7 @@ func TestFirstPersonInsetMatchesTheDOSShot(t *testing.T) {
 		if !ok {
 			t.Fatal("GEO3 block 0 不在")
 		}
-		inset, err := composeFirstPersonInset(initial.Grid, piece, item.spawn)
+		inset, err := composeFirstPersonInset(initial.Grid, piece, item.spawn, band0)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -242,8 +242,10 @@ type app struct {
 	eclSessionArchive uint8
 	// searchFlags 是 `[4937h]+594h`：第 0 位邊走邊搜、第 1 位這一次要搜
 	// （spec 119）。areaMapOpen 是 `DS:6A0Ah` 的平面圖開關。
-	searchFlags  uint16
-	areaMapOpen  bool
+	searchFlags uint16
+	areaMapOpen bool
+	// symbolBand0 是第 0 帶（`01h..2Dh`）的全域 8×8 符號集（spec 120）。
+	symbolBand0 graphics.Picture
 	endingActive      bool
 	endingPages      [][]gamepack.EndingLine
 	endingPage       int
@@ -310,6 +312,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial wall set: %w", err)
 	}
+	band0, _, err := gamepack.ReadDOSGlobalSymbolBands(zipPath)
+	if err != nil {
+		return nil, fmt.Errorf("load DOS global 8x8 symbol bands: %w", err)
+	}
+	application.symbolBand0 = band0
 	application.initialWalls = &initialWalls
 	application.loadPieceSlots = func(archive uint8, selectors [3]uint8) (graphics.PieceSet, error) {
 		previous := graphics.PieceSet{}
@@ -2797,25 +2804,13 @@ func wrapASCII(value string, width int) []string {
 	return lines
 }
 
-func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepack.Spawn) ([]graphics.WallStamp, error) {
+func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepack.Spawn,
+	band0 graphics.Picture) ([]graphics.WallStamp, error) {
 	view, err := viewport.TraverseWallViewWrapped(grid, uint8(spawn.Direction()), int(spawn.X), int(spawn.Y))
 	if err != nil {
 		return nil, err
 	}
-	var result []graphics.WallStamp
-	for _, call := range view.Calls {
-		stamps, err := graphics.BuildWallLayout(piece, call.WallType, call.Layout, call.RowStart, call.ColStart)
-		if err != nil {
-			continue
-		}
-		for _, stamp := range stamps {
-			if stamp.Row < 0 || stamp.Row > 10 || stamp.Column < 0 || stamp.Column > 10 {
-				continue
-			}
-			result = append(result, stamp)
-		}
-	}
-	return result, nil
+	return resolveWallStamps(piece, view, band0), nil
 }
 
 func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) {

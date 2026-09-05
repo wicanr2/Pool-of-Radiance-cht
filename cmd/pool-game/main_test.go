@@ -992,7 +992,11 @@ func TestInitialDOSFirstPersonViewResolvesOriginalWallStamps(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	stamps, err := initialWallStamps(initial.Grid, piece, spawn)
+	band0, _, err := gamepack.ReadDOSGlobalSymbolBands(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stamps, err := initialWallStamps(initial.Grid, piece, spawn, band0)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -18,7 +18,7 @@ const FirstPersonInsetSize = 88
 // 與原版畫面逐格比。兩邊各寫一份的話，改了畫的那一份而對拍還是綠的——
 // 那種綠沒有意義。
 func composeFirstPersonInset(grid geometry.Grid, piece graphics.PieceSet,
-	spawn gamepack.Spawn) (graphics.Picture, error) {
+	spawn gamepack.Spawn, band0 graphics.Picture) (graphics.Picture, error) {
 	fill, err := poolFirstPersonStageFill()
 	if err != nil {
 		return graphics.Picture{}, err
@@ -41,7 +41,7 @@ func composeFirstPersonInset(grid geometry.Grid, piece graphics.PieceSet,
 		}
 	}
 	paint(fill.Backdrop)
-	stamps, err := initialWallStamps(grid, piece, spawn)
+	stamps, err := initialWallStamps(grid, piece, spawn, band0)
 	if err != nil {
 		return graphics.Picture{}, err
 	}
@@ -69,7 +69,7 @@ func (a *app) firstPersonInsetImage() (*graphics.Picture, error) {
 	if a.initialMap == nil || a.initialWalls == nil {
 		return nil, fmt.Errorf("initial map or wall art is not loaded")
 	}
-	picture, err := composeFirstPersonInset(a.initialMap.Grid, *a.initialWalls, a.spawn)
+	picture, err := composeFirstPersonInset(a.initialMap.Grid, *a.initialWalls, a.spawn, a.symbolBand0)
 	if err != nil {
 		return nil, err
 	}

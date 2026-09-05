@@ -209,3 +209,51 @@ func readDAXBlocks(member *zip.File) (map[uint8][]byte, error) {
 	}
 	return result, nil
 }
+
+// 全域 8×8 符號集（spec 120）。
+//
+// 原版的 `Put8x8Symbol`（overlay-35 `015Dh`）把符號編號分成五帶，
+// 帶的起點在 `DS:2736h`：`{1, 2Eh, 74h, BAh, 100h}`。第 1..3 帶是
+// `37h LOAD PIECES` 換進來的三組，**第 0 帶與第 4 帶是開機時載一次的全域集**
+// ——overlay-11 `04AAh`／`04B5h` 連著呼叫兩次 `Load8x8Set`：
+// `(202, 帶 4)` 與 `(203, 帶 0)`，而那時 `DS:52D4h` 是 1，所以檔案是
+// `8X8D1.DAX`。區塊 203 正好 45 個 item，與第 0 帶的 `01h..2Dh` 一樣寬。
+const (
+	// GlobalSymbolArchive 是那兩個全域集所在的 8X8D 檔。
+	GlobalSymbolArchive = 1
+	// GlobalSymbolBand0Block 是第 0 帶（`01h..2Dh`）的區塊。
+	GlobalSymbolBand0Block = 203
+	// GlobalSymbolBand4Block 是第 4 帶（`100h..11Eh`）的區塊。
+	GlobalSymbolBand4Block = 202
+)
+
+// ReadDOSGlobalSymbolBands 讀出那兩個全域集。
+func ReadDOSGlobalSymbolBands(zipPath string) (band0, band4 graphics.Picture, err error) {
+	zr, err := zip.OpenReader(zipPath)
+	if err != nil {
+		return graphics.Picture{}, graphics.Picture{}, fmt.Errorf("open DOS ZIP: %w", err)
+	}
+	defer zr.Close()
+	member, err := uniqueMember(zr.File, fmt.Sprintf("8X8D%d.DAX", GlobalSymbolArchive))
+	if err != nil {
+		return graphics.Picture{}, graphics.Picture{}, err
+	}
+	blocks, err := readDAXBlocks(member)
+	if err != nil {
+		return graphics.Picture{}, graphics.Picture{}, err
+	}
+	pick := func(id uint8) (graphics.Picture, error) {
+		data, ok := blocks[id]
+		if !ok {
+			return graphics.Picture{}, fmt.Errorf("8X8D%d.DAX has no block %d", GlobalSymbolArchive, id)
+		}
+		return graphics.ParsePicture(data, false, 0)
+	}
+	if band0, err = pick(GlobalSymbolBand0Block); err != nil {
+		return graphics.Picture{}, graphics.Picture{}, err
+	}
+	if band4, err = pick(GlobalSymbolBand4Block); err != nil {
+		return graphics.Picture{}, graphics.Picture{}, err
+	}
+	return band0, band4, nil
+}
