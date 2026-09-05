@@ -177,9 +177,13 @@
   並由正常 `B` 畫面解析 42 個可見原版 wall stamps。GEO／wall material identity 是
   exact；Spec 010 已閉合首次旗標、Rolf 第一頁、事件位置／朝向、monster 12 與 Return
   閘門。Spec 011 又閉合並實作四張 34-byte table、34-step scripted movement、六個停靠
-  selector／七頁文字與最終 ECL `EXIT`；正常按鍵已走到 Tyr 停靠畫面。wrapped traversal
-  仍是跨作品 strong inference；自由移動交接、地名、bounded／wrapped／door
-  policy 仍待證明。
+  selector／七頁文字與最終 ECL `EXIT`；正常按鍵已走到 Tyr 停靠畫面。
+  **自由移動交接已經量過了**（2026-09-05）：原版導覽按完停在 `(0,4)` 朝西、
+  底下換成指令列（基準圖 `06`），remake 同一格同一朝向、視野逐格 97.0%，
+  再往西一步兩邊都換到貧民窟 `(15,4)`——這一項不再是「待證明」。
+  wrapped traversal 仍是跨作品 strong inference（那一步是換圖不是繞回）；
+  地名、bounded／wrapped／door policy 仍待證明——**門現在畫得出來了
+  （spec 120），但開門／上鎖的規則還沒讀**。
   **同狀態 DOS 畫面已經對拍了**（2026-09-05）：`tools/capture-dos-adventure.sh`
   把原版一路開到第一人稱畫面，五張基準圖與逐項差異寫在
   `docs/reference/original-dos/adventure/README.md`。**Rolf 初次 APPROACH
