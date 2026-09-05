@@ -176,6 +176,14 @@ func explorePlan(app *app, visited, avoid map[[3]int]bool, rotate int) ([]explor
 			if _, seen := from[next]; seen {
 				continue
 			}
+			// avoid 的格子**連路過都不行**。先前只把它們排除在目標之外，
+			// 但邊界換區的格子是「踩到就換走」（spec 100 的 `LOAD FILES`
+			// 由格子事件做掉），所以路過等於換走——實測 GEO1/18 五次離開
+			// 全部是這樣發生的，`chooseAreaExit` 一次都沒輪到。
+			if avoid[[3]int{int(app.spawn.Map.Archive), int(app.spawn.Map.BlockID),
+				y*100 + x}] {
+				continue
+			}
 			from[next], via[next] = current, uint8(facing)
 			queue = append(queue, next)
 		}
