@@ -1,0 +1,1058 @@
+{
+  "schema": "pool-map-names-v1",
+  "zip": "Pool of Radiance (1988).zip",
+  "transitions": [
+    {
+      "archive": "ecl1.dax",
+      "block_id": 18,
+      "address": "99EC",
+      "destination": 9,
+      "text_before": null
+    },
+    {
+      "archive": "ecl1.dax",
+      "block_id": 18,
+      "address": "99F6",
+      "destination": 29,
+      "text_before": null
+    },
+    {
+      "archive": "ecl1.dax",
+      "block_id": 18,
+      "address": "9A00",
+      "destination": 2,
+      "text_before": null
+    },
+    {
+      "archive": "ecl1.dax",
+      "block_id": 18,
+      "address": "9A16",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl2.dax",
+      "block_id": 9,
+      "address": "A5A0",
+      "destination": 6,
+      "text_before": [
+        {
+          "distance": 6,
+          "text": "BUGBEARS WERE WAITING ON THE OTHER SIDE OF THE GATE."
+        }
+      ]
+    },
+    {
+      "archive": "ecl2.dax",
+      "block_id": 20,
+      "address": "995D",
+      "destination": 0,
+      "text_before": null
+    },
+    {
+      "archive": "ecl2.dax",
+      "block_id": 20,
+      "address": "9968",
+      "destination": 29,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "9962",
+      "destination": 20,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "A22D",
+      "destination": 11,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "A230",
+      "destination": 11,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "AD7F",
+      "destination": 8,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "9BF1",
+      "destination": 21,
+      "text_before": [
+        {
+          "distance": 8,
+          "text": "YOU BOARD A BOAT."
+        }
+      ]
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "9C40",
+      "destination": 27,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "9C16",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 0,
+      "address": "9C2B",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 8,
+      "address": "9A4F",
+      "destination": 0,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 11,
+      "address": "A08B",
+      "destination": 0,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 11,
+      "address": "A140",
+      "destination": 0,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 14,
+      "address": "9960",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 14,
+      "address": "9976",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl3.dax",
+      "block_id": 14,
+      "address": "9983",
+      "destination": 24,
+      "text_before": null
+    },
+    {
+      "archive": "ecl4.dax",
+      "block_id": 2,
+      "address": "9985",
+      "destination": 18,
+      "text_before": null
+    },
+    {
+      "archive": "ecl4.dax",
+      "block_id": 2,
+      "address": "998F",
+      "destination": 15,
+      "text_before": null
+    },
+    {
+      "archive": "ecl4.dax",
+      "block_id": 2,
+      "address": "99A5",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl4.dax",
+      "block_id": 10,
+      "address": "9944",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl4.dax",
+      "block_id": 21,
+      "address": "998F",
+      "destination": 0,
+      "text_before": [
+        {
+          "distance": 6,
+          "text": "YOU BOARD A BOAT."
+        },
+        {
+          "distance": 12,
+          "text": "DO YOU WANT TO TAKE A BOAT BACK TO PHLAN?"
+        }
+      ]
+    },
+    {
+      "archive": "ecl5.dax",
+      "block_id": 3,
+      "address": "B38A",
+      "destination": 5,
+      "text_before": null
+    },
+    {
+      "archive": "ecl5.dax",
+      "block_id": 4,
+      "address": "9AB2",
+      "destination": 3,
+      "text_before": null
+    },
+    {
+      "archive": "ecl5.dax",
+      "block_id": 5,
+      "address": "9C25",
+      "destination": 3,
+      "text_before": null
+    },
+    {
+      "archive": "ecl5.dax",
+      "block_id": 5,
+      "address": "A482",
+      "destination": 7,
+      "text_before": [
+        {
+          "distance": 3,
+          "text": "YOU GO UPSTAIRS."
+        }
+      ]
+    },
+    {
+      "archive": "ecl5.dax",
+      "block_id": 7,
+      "address": "A903",
+      "destination": 0,
+      "text_before": [
+        {
+          "distance": 9,
+          "text": "FINALLY YOU ENTER THE CIVILIZED AREA OF PHLAN."
+        },
+        {
+          "distance": 11,
+          "text": "KNOWING THAT TYRANTHRAXUS HAS FINALLY BEEN DEFEATED, YOU LEAVE THE CASTLE. MOVING THROUGH THE STREETS YOU CATCH OCCASIONAL GLIMPSES OF MONSTERS IN HIDING. NONE ATTACK."
+        }
+      ]
+    },
+    {
+      "archive": "ecl5.dax",
+      "block_id": 7,
+      "address": "9AC9",
+      "destination": 5,
+      "text_before": null
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 1,
+      "address": "9943",
+      "destination": 25,
+      "text_before": null
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 1,
+      "address": "A86E",
+      "destination": 25,
+      "text_before": [
+        {
+          "distance": 3,
+          "text": "YOU RUN FROM THE BATTLE AND OUT THE OUTPOST GATE.  THE YOUNG BOY COULD NOT KEEP UP AND WAS LEFT BEHIND."
+        },
+        {
+          "distance": 5,
+          "text": "THE CAPTAIN SAYS 'YOU HAVE CHOSEN WISELY.'  SOME OF THE BUCCANEERS COME FORWARD AND STRIP YOU OF SOME OF YOUR ITEMS AND MONEY.  THEY ESCORT YOU OUT OF THE COMPOUND."
+        },
+        {
+          "distance": 12,
+          "text": "YOU TRY TO RUN FROM THE GUARDS BUT ARE CUT OFF BY NEW ARRIVALS.  THE YOUNG BOY IS SLOWING YOU DOWN.  IF YOU RUN AGAIN YOU WILL LEAVE HIM BEHIND."
+        },
+        {
+          "distance": 12,
+          "text": "AFTER DEFEATING THE FIRST WAVE OF BUCCANEERS,  YOU SEE ANOTHER WAVE FORMING IN THE DISTANCE.  WITH A LOUD ROAR THEY ATTACK YOU IN FULL FORCE."
+        },
+        {
+          "distance": 13,
+          "text": "YOU HAVE RUN OUTSIDE THE CAPTAINS QUARTERS.  AN ALARM GOES OFF IN THE DISTANCE.  YOU SEE A LARGE GROUP OF ANGRY BUCCANEERS CHARGING TOWARD YOU!"
+        },
+        {
+          "distance": 13,
+          "text": "AFTER DEFEATING THE LAST, WAVE YOU SEE ANOTHER WAVE ATTACK FROM THE SOUTH OF THE COMPOUND."
+        },
+        {
+          "distance": 13,
+          "text": "THE LAST OF THE BUCCANNEERS FORM INTO A FINAL WAVE AND ATTACK."
+        },
+        {
+          "distance": 13,
+          "text": "YOU THROW CAUTION TO THE WIND AND ATTACK.  THE CAPTAIN SMILES AND THEN RUSHES TO BATTLE."
+        },
+        {
+          "distance": 14,
+          "text": "AS YOU APPROACH THE CAPTAIN'S QUARTERS THE ELITE GUARDS SOUND AN ALARM AND GUARDS RUSH FORTH AND ATTACK."
+        },
+        {
+          "distance": 14,
+          "text": "YOU KILL THE GUARDS BUT ARE CAUGHT DOING IT.  A LARGE GROUP OF GUARDS RUN TOWARD YOU AND ATTACK."
+        }
+      ]
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 19,
+      "address": "996E",
+      "destination": 25,
+      "text_before": [
+        {
+          "distance": 1,
+          "text": "YOU ENTER THE ENORMOUS CAVE, SEARCH IT AND FIND NOTHING OF INTREST.  YOU THEN LEAVE."
+        }
+      ]
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 19,
+      "address": "A565",
+      "destination": 25,
+      "text_before": [
+        {
+          "distance": 3,
+          "text": "AFTER SPEAKING, THE DRAGON FLYS THROUGH AN OPENNING IN THE CEILING OF THE CAVE.  YOU EXIT THE CAVE TO CONTINUE YOUR QUEST."
+        },
+        {
+          "distance": 3,
+          "text": "'WHEN YOU MEET THE VAMPIRE USE THE BOTTLE AND YOU MAY HAVE A CHANCE IN DEFEATING HIM.  I WISH YOU LUCK.'  AFTER SPEAKING DIOGENES FLIES THROUGH A HOLE IN THE CEILING AND DISSAPPEARS."
+        },
+        {
+          "distance": 3,
+          "text": "AFTER RECOVERING FROM THE FIREBALL YOU SEARCH THE REST OF THE LAIR AND FIND NOTHING OF INTREST."
+        },
+        {
+          "distance": 5,
+          "text": "'I ACCEPT YOUR PLEDGE.  FOR YOUR FIRST DUTY, I COMMAND YOU TO RECOVER A POWERFUL MAGICAL BOTTLE FROM A KOBOLD SETTLEMENT IN THE HILLS FAR TO THE EAST.  THEN RETURN TO ME AND I SHALL GIVE YOU ANOTHER TASK.'"
+        },
+        {
+          "distance": 5,
+          "text": "'THAT BOTTLE CONTAINS A POWERFUL EFREET WHO WAS SUMMONED TO KILL VAMPIRES.  HE WILL BE A VALUABLE ALLY IN OLD PHLAN.  IN VALHINGEN GRAVEYARD THERE IS A VAMPIRE.'"
+        },
+        {
+          "distance": 5,
+          "text": "YOU TRY TO ATTACK THE DRAGON BUT SEEM TO BE FROZEN IN TIME.  THE DRAGON THROWS A FIREBALL IN THE MIDDLE OF THE PARTY AND THEN DISAPPEARS.  YOU HAVE A STRANGE FEELING THAT YOU JUST MADE A BIG MISTAKE."
+        },
+        {
+          "distance": 6,
+          "text": "'FAR TO THE EAST THERE IS A LARGE KOBOLD COMPLEX.  THERE IS A SILVER BOTTLE OF GREAT POWER THERE THAT WILL HELP YOU ON YOUR QUEST.  RETRIEVE THAT BOTTLE THEN RETURN AND I WILL SEND YOU ON ANOTHER QUEST.'"
+        },
+        {
+          "distance": 6,
+          "text": "FAR TO THE EAST THERE IS A LARGE KOBOLD COMMUNITY.  THEY HAVE POSSESION OF A POWERFUL SILVER BOTTLE.  THIS BOTTLE WILL HELP YOU RID THE CITY OF ITS UNDEAD PROBLEM.  GET THE BOTTLE THEN RETURN TO ME."
+        },
+        {
+          "distance": 6,
+          "text": "'THERE YOU SHALL FIND A MAGICAL BOTTLE WHICH WILL HELP YOU IN CLEANSING OLD PHLAN OF ITS EVIL!'"
+        },
+        {
+          "distance": 7,
+          "text": "YOU HEAR A GREAT FLAPPING SOUND.  A STRONG WHOOSH OF AIR COMES DOWN UPON THE ADVENTURERS.  A LARGE SILVER DRAGON STANDS BEFORE YOU.  IN A BOOMING VOICE IT SAYS..."
+        },
+        {
+          "distance": 7,
+          "text": "AS YOU ENTER THE CAVE YOU ARE GREETED BY DIOGENES, THE SILVER DRAGON.  HE SAYS 'I SEE YOU HAVE RECOVERED THE SILVER BOTTLE FROM THE KOBOLD CAVES.  I CONGRADULATE YOU.'"
+        },
+        {
+          "distance": 8,
+          "text": "THE CHARACTERS HEAR A LOUD FLAPPING NOISE AND THEN A WARM RUSH OF AIR HITS THEIR FACES.  STANDING BEFORE YOU NOW IS A GREAT SILVER DRAGON.  HE SAYS, 'YOU ARE WISE TO SEEK MY COUNCIL AND I CAN HELP YOU...'"
+        },
+        {
+          "distance": 8,
+          "text": "AFTER HEARING YOUR APOLOGY THE DRAGON SAYS, 'THOUGH YOU ARE FOOLISH I BELIEVE YOUR ACTS ARE NOBLE.  I WILL HELP YOU WITH YOUR QUEST TO CLEANSE THE CITY OF PHLAN FROM EVIL.'"
+        },
+        {
+          "distance": 8,
+          "text": "THE DRAGON LANDS, LOOKS THE PARTY OVER THEN SAYS 'YOU HAVE NOTHING THAT INTRESTS ME.  IF YOU WISH TO APEASE ME THEN GO EAST AND DESTROY THE KOBOLD COMMUNITY THERE.'"
+        },
+        {
+          "distance": 10,
+          "text": "THE CHARACTERS HEAR A LOUD FLAPPING NOISE AND THEN FEEL A WARM JET OF AIR HIT THEIR FACES.  A HUGE SILVER DRAGON FLIES DOWN TO MEET THEM."
+        }
+      ]
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 25,
+      "address": "AB3B",
+      "destination": 25,
+      "text_before": null
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 25,
+      "address": "99B0",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 25,
+      "address": "A514",
+      "destination": 25,
+      "text_before": null
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 25,
+      "address": "9E18",
+      "destination": 1,
+      "text_before": null
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 25,
+      "address": "9CB9",
+      "destination": 19,
+      "text_before": [
+        {
+          "distance": 2,
+          "text": "YOU ENTER THE CAVE."
+        }
+      ]
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 25,
+      "address": "9F9F",
+      "destination": 28,
+      "text_before": [
+        {
+          "distance": 2,
+          "text": "THE RIDERS ESCORT YOU INTO THE OUTPOST."
+        }
+      ]
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 28,
+      "address": "9948",
+      "destination": 25,
+      "text_before": null
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 28,
+      "address": "B5FD",
+      "destination": 25,
+      "text_before": [
+        {
+          "distance": 4,
+          "text": "YOU CLIMB OVER THE WALL AND LEAVE THE OUTPOST."
+        }
+      ]
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 28,
+      "address": "A3AE",
+      "destination": 25,
+      "text_before": [
+        {
+          "distance": 1,
+          "text": "YOU ESCAPE FROM THE OUTPOST."
+        }
+      ]
+    },
+    {
+      "archive": "ecl6.dax",
+      "block_id": 28,
+      "address": "A15B",
+      "destination": 25,
+      "text_before": [
+        {
+          "distance": 3,
+          "text": "YOU SURRENDER.  THEY STRIP YOU OF ALL POSSESSIONS AND TOSS YOU OUT INTO THE WILDERNESS.'"
+        },
+        {
+          "distance": 4,
+          "text": "YOU TRY TO RUN BUT ARE CAUGHT.  YOU ARE CAPTURED, STRIPPED AND TOSSED OUT INTO THE WILDERNESS."
+        },
+        {
+          "distance": 11,
+          "text": "YOU RUN FOR YOUR LIVES AS THE GARRISON CHASES BEHIND YOU.  YOU RUN FOR THE FRONT GATE BUT ARE STOPPED BY SOME GUARDS."
+        }
+      ]
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 17,
+      "address": "A1FC",
+      "destination": 26,
+      "text_before": [
+        {
+          "distance": 11,
+          "text": "'NOW LEAVE. WE HAVE OUR WOUNDED TO LOOK TO.'"
+        },
+        {
+          "distance": 11,
+          "text": "'NOW PLEASE LEAVE US TO OUR MOURNING. IT IS A PERSONAL THING FOR OUR PEOPLE.'"
+        },
+        {
+          "distance": 12,
+          "text": "THE NOMADS WAIT FOR YOU TO MAKE THE FIRST MOVE."
+        },
+        {
+          "distance": 12,
+          "text": "LOOKING DISAPPOINTED THE HEADMAN SAYS, 'GOOD LUCK IN YOUR TRAVELS.'"
+        },
+        {
+          "distance": 13,
+          "text": "THIS DIRECTION WILL TAKE YOU BACK INTO THE WILDERNESS. DO YOU STILL WANT TO GO THIS WAY?"
+        },
+        {
+          "distance": 13,
+          "text": "A GROUP OF NOMADS SPOT YOU. THEY SHOUT AND CHARGE. AS THEY COME CLOSER THEIR NUMBERS SWELL WITH ARRIVALS."
+        },
+        {
+          "distance": 14,
+          "text": "YOU CAN SEE CHILDREN PEERING OUT OF THE TENT OPENINGS, ONLY TO BE PUSHED BACK INSIDE BY THEIR MOTHERS."
+        },
+        {
+          "distance": 14,
+          "text": "'THEN YOU MUST LEAVE US,' HE RESPONDS WITH AS MUCH DIGNITY AS HE CAN MUSTER. DO YOU LEAVE?"
+        }
+      ]
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 22,
+      "address": "A642",
+      "destination": 23,
+      "text_before": [
+        {
+          "distance": 13,
+          "text": "THERE IS A HOLE IN THE WALL THAT LEADS TO THE OUTSIDE. DO YOU GO THROUGH IT?"
+        }
+      ]
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 22,
+      "address": "A60F",
+      "destination": 26,
+      "text_before": [
+        {
+          "distance": 4,
+          "text": "THERE IS A HOLE IN THE WALL THAT LEADS TO THE OUTSIDE. DO YOU GO THROUGH IT?"
+        },
+        {
+          "distance": 9,
+          "text": "YOU BREAK THROUGH. THE PRIEST TEARFULLY THANKS YOU AND GOES THROUGH THE HOLE."
+        }
+      ]
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 22,
+      "address": "A62D",
+      "destination": 23,
+      "text_before": [
+        {
+          "distance": 9,
+          "text": "THERE IS A HOLE IN THE WALL THAT LEADS TO THE OUTSIDE. DO YOU GO THROUGH IT?"
+        },
+        {
+          "distance": 14,
+          "text": "YOU BREAK THROUGH. THE PRIEST TEARFULLY THANKS YOU AND GOES THROUGH THE HOLE."
+        }
+      ]
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 23,
+      "address": "9E1A",
+      "destination": 22,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "AAFE",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "99E2",
+      "destination": 25,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "99B4",
+      "destination": 27,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "A58F",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "A01A",
+      "destination": 22,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9CFA",
+      "destination": 14,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9DFA",
+      "destination": 14,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9EFE",
+      "destination": 18,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9C59",
+      "destination": 17,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9D1A",
+      "destination": 10,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9E1A",
+      "destination": 24,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9E3A",
+      "destination": 0,
+      "text_before": null
+    },
+    {
+      "archive": "ecl7.dax",
+      "block_id": 26,
+      "address": "9F1E",
+      "destination": 2,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 13,
+      "address": "9A20",
+      "destination": 27,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 13,
+      "address": "9A9D",
+      "destination": 27,
+      "text_before": [
+        {
+          "distance": 5,
+          "text": "THE PRINCESS SAYS,'I SHALL GO MY OWN WAY NOW, BUT YOU WILL ALWAYS BE REMEMBERED. GOOD HUNTING.'"
+        }
+      ]
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 16,
+      "address": "9CD5",
+      "destination": 27,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 27,
+      "address": "A84A",
+      "destination": 27,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 27,
+      "address": "A2F9",
+      "destination": 27,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 27,
+      "address": "99CE",
+      "destination": 26,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 27,
+      "address": "9C08",
+      "destination": 16,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 27,
+      "address": "9E6D",
+      "destination": 0,
+      "text_before": null
+    },
+    {
+      "archive": "ecl8.dax",
+      "block_id": 27,
+      "address": "9DDB",
+      "destination": 13,
+      "text_before": null
+    }
+  ],
+  "destinations": [
+    {
+      "block": 0,
+      "sources": [
+        "ecl2.dax block 20 @995D",
+        "ecl3.dax block 8 @9A4F",
+        "ecl3.dax block 11 @A08B",
+        "ecl3.dax block 11 @A140",
+        "ecl4.dax block 21 @998F",
+        "ecl5.dax block 7 @A903",
+        "ecl7.dax block 26 @9E3A",
+        "ecl8.dax block 27 @9E6D"
+      ],
+      "texts": [
+        "[6] YOU BOARD A BOAT.",
+        "[12] DO YOU WANT TO TAKE A BOAT BACK TO PHLAN?",
+        "[9] FINALLY YOU ENTER THE CIVILIZED AREA OF PHLAN.",
+        "[11] KNOWING THAT TYRANTHRAXUS HAS FINALLY BEEN DEFEATED, YOU LEAVE THE CASTLE. MOVING THROUGH THE STREETS YOU CATCH OCCASIONAL GLIMPSES OF MONSTERS IN HIDING. NONE ATTACK."
+      ]
+    },
+    {
+      "block": 1,
+      "sources": [
+        "ecl6.dax block 25 @9E18"
+      ],
+      "texts": null
+    },
+    {
+      "block": 2,
+      "sources": [
+        "ecl1.dax block 18 @9A00",
+        "ecl7.dax block 26 @9F1E"
+      ],
+      "texts": null
+    },
+    {
+      "block": 3,
+      "sources": [
+        "ecl5.dax block 4 @9AB2",
+        "ecl5.dax block 5 @9C25"
+      ],
+      "texts": null
+    },
+    {
+      "block": 5,
+      "sources": [
+        "ecl5.dax block 3 @B38A",
+        "ecl5.dax block 7 @9AC9"
+      ],
+      "texts": null
+    },
+    {
+      "block": 6,
+      "sources": [
+        "ecl2.dax block 9 @A5A0"
+      ],
+      "texts": [
+        "[6] BUGBEARS WERE WAITING ON THE OTHER SIDE OF THE GATE."
+      ]
+    },
+    {
+      "block": 7,
+      "sources": [
+        "ecl5.dax block 5 @A482"
+      ],
+      "texts": [
+        "[3] YOU GO UPSTAIRS."
+      ]
+    },
+    {
+      "block": 8,
+      "sources": [
+        "ecl3.dax block 0 @AD7F"
+      ],
+      "texts": null
+    },
+    {
+      "block": 9,
+      "sources": [
+        "ecl1.dax block 18 @99EC"
+      ],
+      "texts": null
+    },
+    {
+      "block": 10,
+      "sources": [
+        "ecl7.dax block 26 @9D1A"
+      ],
+      "texts": null
+    },
+    {
+      "block": 11,
+      "sources": [
+        "ecl3.dax block 0 @A22D",
+        "ecl3.dax block 0 @A230"
+      ],
+      "texts": null
+    },
+    {
+      "block": 13,
+      "sources": [
+        "ecl8.dax block 27 @9DDB"
+      ],
+      "texts": null
+    },
+    {
+      "block": 14,
+      "sources": [
+        "ecl7.dax block 26 @9CFA",
+        "ecl7.dax block 26 @9DFA"
+      ],
+      "texts": null
+    },
+    {
+      "block": 15,
+      "sources": [
+        "ecl4.dax block 2 @998F"
+      ],
+      "texts": null
+    },
+    {
+      "block": 16,
+      "sources": [
+        "ecl8.dax block 27 @9C08"
+      ],
+      "texts": null
+    },
+    {
+      "block": 17,
+      "sources": [
+        "ecl7.dax block 26 @9C59"
+      ],
+      "texts": null
+    },
+    {
+      "block": 18,
+      "sources": [
+        "ecl4.dax block 2 @9985",
+        "ecl7.dax block 26 @9EFE"
+      ],
+      "texts": null
+    },
+    {
+      "block": 19,
+      "sources": [
+        "ecl6.dax block 25 @9CB9"
+      ],
+      "texts": [
+        "[2] YOU ENTER THE CAVE."
+      ]
+    },
+    {
+      "block": 20,
+      "sources": [
+        "ecl3.dax block 0 @9962"
+      ],
+      "texts": null
+    },
+    {
+      "block": 21,
+      "sources": [
+        "ecl3.dax block 0 @9BF1"
+      ],
+      "texts": [
+        "[8] YOU BOARD A BOAT."
+      ]
+    },
+    {
+      "block": 22,
+      "sources": [
+        "ecl7.dax block 23 @9E1A",
+        "ecl7.dax block 26 @A01A"
+      ],
+      "texts": null
+    },
+    {
+      "block": 23,
+      "sources": [
+        "ecl7.dax block 22 @A642",
+        "ecl7.dax block 22 @A62D"
+      ],
+      "texts": [
+        "[13] THERE IS A HOLE IN THE WALL THAT LEADS TO THE OUTSIDE. DO YOU GO THROUGH IT?",
+        "[9] THERE IS A HOLE IN THE WALL THAT LEADS TO THE OUTSIDE. DO YOU GO THROUGH IT?",
+        "[14] YOU BREAK THROUGH. THE PRIEST TEARFULLY THANKS YOU AND GOES THROUGH THE HOLE."
+      ]
+    },
+    {
+      "block": 24,
+      "sources": [
+        "ecl3.dax block 14 @9983",
+        "ecl7.dax block 26 @9E1A"
+      ],
+      "texts": null
+    },
+    {
+      "block": 25,
+      "sources": [
+        "ecl6.dax block 1 @9943",
+        "ecl6.dax block 1 @A86E",
+        "ecl6.dax block 19 @996E",
+        "ecl6.dax block 19 @A565",
+        "ecl6.dax block 25 @AB3B",
+        "ecl6.dax block 25 @A514",
+        "ecl6.dax block 28 @9948",
+        "ecl6.dax block 28 @B5FD",
+        "ecl6.dax block 28 @A3AE",
+        "ecl6.dax block 28 @A15B",
+        "ecl7.dax block 26 @99E2"
+      ],
+      "texts": [
+        "[3] YOU RUN FROM THE BATTLE AND OUT THE OUTPOST GATE.  THE YOUNG BOY COULD NOT KEEP UP AND WAS LEFT BEHIND.",
+        "[5] THE CAPTAIN SAYS 'YOU HAVE CHOSEN WISELY.'  SOME OF THE BUCCANEERS COME FORWARD AND STRIP YOU OF SOME OF YOUR ITEMS AND MONEY.  THEY ESCORT YOU OUT OF THE COMPOUND.",
+        "[12] YOU TRY TO RUN FROM THE GUARDS BUT ARE CUT OFF BY NEW ARRIVALS.  THE YOUNG BOY IS SLOWING YOU DOWN.  IF YOU RUN AGAIN YOU WILL LEAVE HIM BEHIND.",
+        "[12] AFTER DEFEATING THE FIRST WAVE OF BUCCANEERS,  YOU SEE ANOTHER WAVE FORMING IN THE DISTANCE.  WITH A LOUD ROAR THEY ATTACK YOU IN FULL FORCE.",
+        "[13] YOU HAVE RUN OUTSIDE THE CAPTAINS QUARTERS.  AN ALARM GOES OFF IN THE DISTANCE.  YOU SEE A LARGE GROUP OF ANGRY BUCCANEERS CHARGING TOWARD YOU!",
+        "[13] AFTER DEFEATING THE LAST, WAVE YOU SEE ANOTHER WAVE ATTACK FROM THE SOUTH OF THE COMPOUND.",
+        "[13] THE LAST OF THE BUCCANNEERS FORM INTO A FINAL WAVE AND ATTACK.",
+        "[13] YOU THROW CAUTION TO THE WIND AND ATTACK.  THE CAPTAIN SMILES AND THEN RUSHES TO BATTLE.",
+        "[14] AS YOU APPROACH THE CAPTAIN'S QUARTERS THE ELITE GUARDS SOUND AN ALARM AND GUARDS RUSH FORTH AND ATTACK.",
+        "[14] YOU KILL THE GUARDS BUT ARE CAUGHT DOING IT.  A LARGE GROUP OF GUARDS RUN TOWARD YOU AND ATTACK.",
+        "[1] YOU ENTER THE ENORMOUS CAVE, SEARCH IT AND FIND NOTHING OF INTREST.  YOU THEN LEAVE.",
+        "[3] AFTER SPEAKING, THE DRAGON FLYS THROUGH AN OPENNING IN THE CEILING OF THE CAVE.  YOU EXIT THE CAVE TO CONTINUE YOUR QUEST.",
+        "[3] 'WHEN YOU MEET THE VAMPIRE USE THE BOTTLE AND YOU MAY HAVE A CHANCE IN DEFEATING HIM.  I WISH YOU LUCK.'  AFTER SPEAKING DIOGENES FLIES THROUGH A HOLE IN THE CEILING AND DISSAPPEARS.",
+        "[3] AFTER RECOVERING FROM THE FIREBALL YOU SEARCH THE REST OF THE LAIR AND FIND NOTHING OF INTREST.",
+        "[5] 'I ACCEPT YOUR PLEDGE.  FOR YOUR FIRST DUTY, I COMMAND YOU TO RECOVER A POWERFUL MAGICAL BOTTLE FROM A KOBOLD SETTLEMENT IN THE HILLS FAR TO THE EAST.  THEN RETURN TO ME AND I SHALL GIVE YOU ANOTHER TASK.'",
+        "[5] 'THAT BOTTLE CONTAINS A POWERFUL EFREET WHO WAS SUMMONED TO KILL VAMPIRES.  HE WILL BE A VALUABLE ALLY IN OLD PHLAN.  IN VALHINGEN GRAVEYARD THERE IS A VAMPIRE.'",
+        "[5] YOU TRY TO ATTACK THE DRAGON BUT SEEM TO BE FROZEN IN TIME.  THE DRAGON THROWS A FIREBALL IN THE MIDDLE OF THE PARTY AND THEN DISAPPEARS.  YOU HAVE A STRANGE FEELING THAT YOU JUST MADE A BIG MISTAKE.",
+        "[6] 'FAR TO THE EAST THERE IS A LARGE KOBOLD COMPLEX.  THERE IS A SILVER BOTTLE OF GREAT POWER THERE THAT WILL HELP YOU ON YOUR QUEST.  RETRIEVE THAT BOTTLE THEN RETURN AND I WILL SEND YOU ON ANOTHER QUEST.'",
+        "[6] FAR TO THE EAST THERE IS A LARGE KOBOLD COMMUNITY.  THEY HAVE POSSESION OF A POWERFUL SILVER BOTTLE.  THIS BOTTLE WILL HELP YOU RID THE CITY OF ITS UNDEAD PROBLEM.  GET THE BOTTLE THEN RETURN TO ME.",
+        "[6] 'THERE YOU SHALL FIND A MAGICAL BOTTLE WHICH WILL HELP YOU IN CLEANSING OLD PHLAN OF ITS EVIL!'",
+        "[7] YOU HEAR A GREAT FLAPPING SOUND.  A STRONG WHOOSH OF AIR COMES DOWN UPON THE ADVENTURERS.  A LARGE SILVER DRAGON STANDS BEFORE YOU.  IN A BOOMING VOICE IT SAYS...",
+        "[7] AS YOU ENTER THE CAVE YOU ARE GREETED BY DIOGENES, THE SILVER DRAGON.  HE SAYS 'I SEE YOU HAVE RECOVERED THE SILVER BOTTLE FROM THE KOBOLD CAVES.  I CONGRADULATE YOU.'",
+        "[8] THE CHARACTERS HEAR A LOUD FLAPPING NOISE AND THEN A WARM RUSH OF AIR HITS THEIR FACES.  STANDING BEFORE YOU NOW IS A GREAT SILVER DRAGON.  HE SAYS, 'YOU ARE WISE TO SEEK MY COUNCIL AND I CAN HELP YOU...'",
+        "[8] AFTER HEARING YOUR APOLOGY THE DRAGON SAYS, 'THOUGH YOU ARE FOOLISH I BELIEVE YOUR ACTS ARE NOBLE.  I WILL HELP YOU WITH YOUR QUEST TO CLEANSE THE CITY OF PHLAN FROM EVIL.'",
+        "[8] THE DRAGON LANDS, LOOKS THE PARTY OVER THEN SAYS 'YOU HAVE NOTHING THAT INTRESTS ME.  IF YOU WISH TO APEASE ME THEN GO EAST AND DESTROY THE KOBOLD COMMUNITY THERE.'",
+        "[10] THE CHARACTERS HEAR A LOUD FLAPPING NOISE AND THEN FEEL A WARM JET OF AIR HIT THEIR FACES.  A HUGE SILVER DRAGON FLIES DOWN TO MEET THEM.",
+        "[4] YOU CLIMB OVER THE WALL AND LEAVE THE OUTPOST.",
+        "[1] YOU ESCAPE FROM THE OUTPOST.",
+        "[3] YOU SURRENDER.  THEY STRIP YOU OF ALL POSSESSIONS AND TOSS YOU OUT INTO THE WILDERNESS.'",
+        "[4] YOU TRY TO RUN BUT ARE CAUGHT.  YOU ARE CAPTURED, STRIPPED AND TOSSED OUT INTO THE WILDERNESS.",
+        "[11] YOU RUN FOR YOUR LIVES AS THE GARRISON CHASES BEHIND YOU.  YOU RUN FOR THE FRONT GATE BUT ARE STOPPED BY SOME GUARDS."
+      ]
+    },
+    {
+      "block": 26,
+      "sources": [
+        "ecl1.dax block 18 @9A16",
+        "ecl3.dax block 0 @9C16",
+        "ecl3.dax block 0 @9C2B",
+        "ecl3.dax block 14 @9960",
+        "ecl3.dax block 14 @9976",
+        "ecl4.dax block 2 @99A5",
+        "ecl4.dax block 10 @9944",
+        "ecl6.dax block 25 @99B0",
+        "ecl7.dax block 17 @A1FC",
+        "ecl7.dax block 22 @A60F",
+        "ecl7.dax block 26 @AAFE",
+        "ecl7.dax block 26 @A58F",
+        "ecl8.dax block 27 @99CE"
+      ],
+      "texts": [
+        "[11] 'NOW LEAVE. WE HAVE OUR WOUNDED TO LOOK TO.'",
+        "[11] 'NOW PLEASE LEAVE US TO OUR MOURNING. IT IS A PERSONAL THING FOR OUR PEOPLE.'",
+        "[12] THE NOMADS WAIT FOR YOU TO MAKE THE FIRST MOVE.",
+        "[12] LOOKING DISAPPOINTED THE HEADMAN SAYS, 'GOOD LUCK IN YOUR TRAVELS.'",
+        "[13] THIS DIRECTION WILL TAKE YOU BACK INTO THE WILDERNESS. DO YOU STILL WANT TO GO THIS WAY?",
+        "[13] A GROUP OF NOMADS SPOT YOU. THEY SHOUT AND CHARGE. AS THEY COME CLOSER THEIR NUMBERS SWELL WITH ARRIVALS.",
+        "[14] YOU CAN SEE CHILDREN PEERING OUT OF THE TENT OPENINGS, ONLY TO BE PUSHED BACK INSIDE BY THEIR MOTHERS.",
+        "[14] 'THEN YOU MUST LEAVE US,' HE RESPONDS WITH AS MUCH DIGNITY AS HE CAN MUSTER. DO YOU LEAVE?",
+        "[4] THERE IS A HOLE IN THE WALL THAT LEADS TO THE OUTSIDE. DO YOU GO THROUGH IT?",
+        "[9] YOU BREAK THROUGH. THE PRIEST TEARFULLY THANKS YOU AND GOES THROUGH THE HOLE."
+      ]
+    },
+    {
+      "block": 27,
+      "sources": [
+        "ecl3.dax block 0 @9C40",
+        "ecl7.dax block 26 @99B4",
+        "ecl8.dax block 13 @9A20",
+        "ecl8.dax block 13 @9A9D",
+        "ecl8.dax block 16 @9CD5",
+        "ecl8.dax block 27 @A84A",
+        "ecl8.dax block 27 @A2F9"
+      ],
+      "texts": [
+        "[5] THE PRINCESS SAYS,'I SHALL GO MY OWN WAY NOW, BUT YOU WILL ALWAYS BE REMEMBERED. GOOD HUNTING.'"
+      ]
+    },
+    {
+      "block": 28,
+      "sources": [
+        "ecl6.dax block 25 @9F9F"
+      ],
+      "texts": [
+        "[2] THE RIDERS ESCORT YOU INTO THE OUTPOST."
+      ]
+    },
+    {
+      "block": 29,
+      "sources": [
+        "ecl1.dax block 18 @99F6",
+        "ecl2.dax block 20 @9968"
+      ],
+      "texts": null
+    }
+  ]
+}

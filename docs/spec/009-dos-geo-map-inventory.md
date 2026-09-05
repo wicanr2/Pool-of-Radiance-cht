@@ -90,6 +90,10 @@ Turbo Pascal 原版一致的**零起算 0..37**；測試固定 38 overlays／774
 ## 尚未閉合
 
 - `GEO1` 不因編號最小就自動命名為 New Phlan 或 Slums。
+  **初始那一張（GEO3/0）的名字 2026-09-06 解出來了**：ECL 區塊 0，
+  原版自己在跳過去之前說它是 `THE CIVILIZED AREA OF PHLAN`
+  ——證據是同一條控制流上的配對，兩個互不相干的封存檔各一次（spec 124）。
+  其餘的 GEO 仍然不得靠編號或關鍵字命名。
 - 第一個畫面事件與城內／地城 wrap 規則必須沿同一正常路徑驗證；direct-entry 只能縮小
   問題，不能作完成證據。
 - terrain ID、wall art selector 與地名是不同資料層；本 inventory 不替它們猜名稱。
