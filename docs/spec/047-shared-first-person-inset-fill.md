@@ -28,7 +28,32 @@
 2. engine 不得知道 CoAB／Pool、地名、frame 素材或 palette RGB；作品只提供 native
    inset 幾何及第一個由牆面接管的 row。
 3. Pool 的現行 176×176 第一人稱視窗使用 native `(24,24,88,88)`、wall row 40；
-   背景用 EGA 11（天空）與 EGA 6（地面），wall stamp 座標照原始。
+   三段的邊界照共用 engine `BuildBackground` 解出來的原版版面——天空 44 列、
+   **中間兩列黑**、地面從第 70 列起 42 列——背景色用 EGA 11（天空）與
+   EGA 6（地面），wall stamp 座標照原始。
 4. CoAB 使用自己的 `(22,22,98,98)` inset，但消費同一 API。
 5. 非法尺寸、wall row 或非三段背景失敗即關閉；輸入不得被修改。
 
+
+## 對拍：現在差多少（2026-09-05）
+
+`cmd/pool-game` 把三段背景、牆片與牆後補層組成一張 88×88 的索引圖
+（`composeFirstPersonInset`），畫面只是把它放大兩倍貼上去，對拍則直接拿它比
+——兩邊同一份，改了畫的那一份而對拍還是綠的這種事不會發生。
+
+以 GEO3/0 `(14,1)` 朝西對
+`docs/reference/original-dos/adventure/02-first-person-14-1-west.png`：
+**7744 格裡 7442 格相同（96.1%）**。透視、幾何與絕大部分像素本來就對得上；
+先前寫的「牆片縮在框底一條、上面四分之三是純色」是看舊截圖得出的，不成立。
+
+剩下的 302 格集中在兩處，都在正前方那道遠牆：
+
+| 位置（內框座標）| 原版 | remake |
+|---|---|---|
+| `y=40..42`，欄 0／2／3／5／7／8／10 | 天空 11、灰 7、白 15 | 洋紅 13 |
+| `y=43..55`，`x=32..55` | 門洞是黑的，門框是灰 7／深灰 8／藍 1 | 背景（天空 11／地面 6）透出來 |
+
+兩處都落在共用 engine 的 `BuildWallLayout` 選片與 `TraverseWallViewWrapped`
+的結果上，Pool 這邊只是照著貼。要收掉得動 `golden-box-remake-engine`，
+那是另一個 repo，**要先取得使用者同意**，所以這裡先量清楚、釘住地板
+（`TestFirstPersonInsetMatchesTheDOSShot` 的 96.0%），不擅自改。

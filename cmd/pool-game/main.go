@@ -2574,28 +2574,20 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		}
 		return
 	}
-	stageFill, err := poolFirstPersonStageFill()
+	inset, err := a.firstPersonInsetImage()
 	if err != nil {
 		drawText(screen, "FIRST-PERSON STAGE ERROR", 72, 180, accent)
 		return
 	}
-	drawPoolStageRects(screen, stageFill.Backdrop, viewLeft, viewTop, a.artPalette())
-	stamps, err := initialWallStamps(a.initialMap.Grid, *a.initialWalls, a.spawn)
+	rendered, err := inset.RGBA(0, a.artPalette())
 	if err != nil {
 		drawText(screen, "WALL VIEW ERROR", 72, 180, accent)
 	} else {
-		for _, stamp := range stamps {
-			rgba, renderErr := stamp.Picture.RGBA(stamp.Item, a.artPalette())
-			if renderErr != nil {
-				continue
-			}
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Scale(2, 2)
-			op.GeoM.Translate(float64(viewLeft+stamp.Column*16), float64(viewTop+stamp.Row*16))
-			screen.DrawImage(ebiten.NewImageFromImage(rgba), op)
-		}
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(2, 2)
+		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
+		screen.DrawImage(ebiten.NewImageFromImage(rendered), op)
 	}
-	drawPoolStageRects(screen, stageFill.PostWall, viewLeft, viewTop, a.artPalette())
 	drawText(screen, fmt.Sprintf("GEO%d BLOCK %d", a.spawn.Map.Archive, a.spawn.Map.BlockID), 310, 106, foreground)
 	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
 	// 右欄的最後一列不能低於 262：對話框的上緣在 `dialogueTop`（264），
@@ -2682,10 +2674,14 @@ const (
 )
 
 func poolFirstPersonStageFill() (viewport.StageInsetFill, error) {
+	// 三段的邊界照共用 engine 的 `BuildBackground`（它是從原版
+	// `Draw3dWorldBackground` 解出來的）：天空 44 列、中間**兩列黑**、
+	// 地面從第 70 列起 42 列。先前中間那一段寫 0 列、地面從 68 起，
+	// 對拍時那兩列會多算成地面色。
 	background := viewport.Background{SkyPalette: poolSkyPaletteIndex, Rects: []viewport.BackgroundRect{
 		{X: 24, Y: 24, Width: 88, Height: 44, PaletteIndex: poolSkyPaletteIndex},
-		{X: 24, Y: 68, Width: 88, Height: 0, PaletteIndex: 0},
-		{X: 24, Y: 68, Width: 88, Height: 44, PaletteIndex: poolGroundPaletteIndex},
+		{X: 24, Y: 68, Width: 88, Height: 2, PaletteIndex: 0},
+		{X: 24, Y: 70, Width: 88, Height: 42, PaletteIndex: poolGroundPaletteIndex},
 	}}
 	return viewport.FillBackgroundToStageInset(background, viewport.StageInset{X: 24, Y: 24, Width: 88, Height: 88, WallTop: 40})
 }
