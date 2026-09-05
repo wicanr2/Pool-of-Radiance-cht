@@ -95,10 +95,10 @@ func (a *app) castInput() error {
 // beginCastTargeting 對「挑一個目標」那幾種模式開出選目標的步驟。
 //
 // 原版是 overlay-13 `1E09h` 進到 `352Ch` 的互動介面，選單列寫著
-// `Next Prev Manual`（overlay-13 的字串），而且允許打自己人
-//（`Attack Ally:`）。這裡做的是同一件事的最小版本：N／P 或左右鍵換人、
-// Enter 確定，預設停在繞得過去的最近敵人身上。`352Ch` 那一支還沒讀，
-// 所以**格子游標（Manual）那一半沒有**。
+// `Aim: Next Prev Manual Center Exit`，而且允許打自己人
+//（`Attack Ally:`）。這裡做的是同一件事：N／P 或左右鍵換人、`M` 進格子
+// 游標、`C` 把視窗捲到目標身上、Enter 確定，預設停在繞得過去的最近敵人
+// 身上——**選項列那五個字母全部接上了**（spec 127）。
 func (a *app) beginCastTargeting(option castOption) bool {
 	state := a.tactical
 	candidates := make([]uint8, 0, len(state.Roster))
@@ -203,6 +203,10 @@ func (a *app) castTargetingInput() error {
 	case a.justPressed(ebiten.KeyM):
 		// 原版瞄準列的第三項。進去之後游標停在目前挑到的那一格。
 		a.beginManualAim()
+	case a.justPressed(ebiten.KeyC):
+		// 原版瞄準列的第四項（overlay-13 `3714h`）：把 6×6 視窗捲到
+		// 讓目前這個目標落在正中央（餘裕 0），選到誰不變。
+		a.centreOnTarget()
 	case a.justPressed(ebiten.KeyEscape):
 		a.castTargeting, a.castTargetingAttack, a.castManual = false, false, false
 	case a.justPressed(ebiten.KeyP), a.justPressed(ebiten.KeyArrowLeft),

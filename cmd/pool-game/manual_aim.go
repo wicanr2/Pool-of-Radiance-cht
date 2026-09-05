@@ -42,7 +42,41 @@ func (a *app) beginManualAim() bool {
 	}
 	a.castManual = true
 	a.castManualX, a.castManualY = int(state.Roster[target].X), int(state.Roster[target].Y)
+	// 進來的第一圈方向是 8（原地），所以 `013D:0061h` 拿目前這一格去捲，
+	// 餘裕 3。
+	a.recentreOn(a.castManualX, a.castManualY, combat.ViewportCursorMargin)
 	return true
+}
+
+// recentreOn 把 6×6 視窗捲到 (x, y)（overlay-32 `07D4h`，spec 127）。
+// 餘裕 3 是 Manual 游標用的，0 是 `Center` 與火球術用的。
+func (a *app) recentreOn(x, y int, margin uint8) {
+	state := a.tactical
+	if state == nil {
+		return
+	}
+	state.Viewport, _ = combat.RecentreViewport(state.Viewport, uint8(x), uint8(y), margin)
+}
+
+// centreOnTarget 是瞄準列的 `Center`（overlay-13 `3714h`）：
+//
+//	3718  X = 013D:006Bh(目標記錄)     ; 目標那一格
+//	3726  Y = 013D:0070h(目標記錄)
+//	3734  013D:0061h(X, Y, 0, 8)       ; 餘裕 0、方向 8（原地）→ 捲到正中央
+//	373F  [bp-0DDh] = 0                ; 不換目標
+//
+// 所以它只捲畫面，選到誰一個位元組都不動。
+func (a *app) centreOnTarget() {
+	state := a.tactical
+	if state == nil || len(a.castTargets) == 0 || a.castTargetCursor >= len(a.castTargets) {
+		return
+	}
+	target := a.castTargets[a.castTargetCursor]
+	if int(target) >= len(state.Roster) {
+		return
+	}
+	cell := state.Roster[target]
+	a.recentreOn(int(cell.X), int(cell.Y), combat.ViewportCentreMargin)
 }
 
 // manualAimInput 走 Manual 的迴圈。回傳 true 代表這一格按鍵已經被它吃掉。
@@ -79,6 +113,9 @@ func (a *app) manualAimInput() (bool, error) {
 			return true, nil
 		}
 		a.castManualX, a.castManualY = x, y
+		// 原版每走一步都用 `013D:0061h(X, Y, 3, 方向)` 對**走到的那一格**
+		// 捲一次——餘裕 3，也就是走到視窗邊緣才捲。
+		a.recentreOn(x, y, combat.ViewportCursorMargin)
 		return true, nil
 	}
 	return true, nil

@@ -101,3 +101,62 @@ func TestManualAimMovesAndPicksAnOccupant(t *testing.T) {
 		t.Error("空格子上按確定不該離開 Manual")
 	}
 }
+
+// `Center` 只捲畫面，不換目標（原版 `3714h` 之後 `[bp-0DDh] = 0`）。
+func TestCentreOnTargetScrollsWithoutChangingTheTarget(t *testing.T) {
+	state := &tacticalState{
+		Roster: []combat.CombatantCell{{},
+			{X: 5, Y: 5, FootprintClass: 1},
+			{X: 30, Y: 20, FootprintClass: 1}},
+		Viewport: combat.ViewportOrigin{X: 0, Y: 0},
+	}
+	application := &app{tactical: state}
+	application.castTargets = []uint8{1, 2}
+	application.castTargetCursor = 1
+	application.castTargeting = true
+
+	application.centreOnTarget()
+	if application.castTargetCursor != 1 {
+		t.Errorf("Center 換掉了目標：游標在 %d", application.castTargetCursor)
+	}
+	// 餘裕 0 ⇒ 中心就是 (30,20)，原點是中心減 3。
+	want := combat.ViewportOrigin{X: 30 - combat.ViewportCentreOffset, Y: 20 - combat.ViewportCentreOffset}
+	if state.Viewport != want {
+		t.Errorf("視窗原點 %+v，預期 %+v", state.Viewport, want)
+	}
+	// 再按一次不會再動。
+	before := state.Viewport
+	application.centreOnTarget()
+	if state.Viewport != before {
+		t.Errorf("已經置中還捲：%+v", state.Viewport)
+	}
+}
+
+// Manual 的游標走到視窗邊緣才捲——餘裕 3，與原版 `2E43h` 傳的模式相同。
+func TestManualAimScrollsOnlyAtTheEdgeOfTheWindow(t *testing.T) {
+	state := &tacticalState{
+		Roster: []combat.CombatantCell{{},
+			{X: 8, Y: 8, FootprintClass: 1}},
+		Viewport: combat.ViewportOrigin{X: 5, Y: 5},
+	}
+	application := &app{tactical: state}
+	application.castTargets = []uint8{1}
+	application.castTargeting = true
+	if !application.beginManualAim() {
+		t.Fatal("進不了 Manual")
+	}
+	// 目標 (8,8) 就是視窗中心（原點 +3），進來不該捲。
+	if state.Viewport != (combat.ViewportOrigin{X: 5, Y: 5}) {
+		t.Fatalf("進 Manual 就捲了：%+v", state.Viewport)
+	}
+	// 框是中心 ±3，(11,8) 還在框內。
+	application.recentreOn(11, 8, combat.ViewportCursorMargin)
+	if state.Viewport != (combat.ViewportOrigin{X: 5, Y: 5}) {
+		t.Errorf("框內就捲了：%+v", state.Viewport)
+	}
+	// (12,8) 出框，中心走到 12、原點變 9。
+	application.recentreOn(12, 8, combat.ViewportCursorMargin)
+	if state.Viewport != (combat.ViewportOrigin{X: 9, Y: 5}) {
+		t.Errorf("出框之後原點 %+v，預期 {9 5}", state.Viewport)
+	}
+}

@@ -166,13 +166,14 @@ func drawCastTargeting(screen *ebiten.Image, a *app, accent color.Color) {
 	if !a.castTargeting || len(a.castTargets) == 0 {
 		return
 	}
+	view := a.tactical.Viewport
 	if a.castManual {
 		drawText(screen, fmt.Sprintf(a.text(msgCastAimManual),
-			a.castPending.Label, a.castManualX, a.castManualY), 70, 306, accent)
+			a.castPending.Label, a.castManualX, a.castManualY, view.X, view.Y), 70, 306, accent)
 		return
 	}
 	target := a.castTargets[a.castTargetCursor]
-	drawText(screen, fmt.Sprintf(a.text(msgCastAiming), a.castPending.Label, target),
+	drawText(screen, fmt.Sprintf(a.text(msgCastAiming), a.castPending.Label, target, view.X, view.Y),
 		70, 306, accent)
 }
 
@@ -401,6 +402,13 @@ type tacticalState struct {
 	// 是在盤上生一個活的物件；地形寫在 Grid.Terrain 裡，這條串列記著
 	// 每一團的雲心、蓋過哪幾格與那幾格原本的地形。
 	Clouds gamepack.CloudList
+	// Viewport 是戰術地圖 record 的 `+2`／`+3`：6×6 視窗左上角對到哪一格
+	// （spec 127）。原版一次只畫得下 6×6，瞄準時的 Manual 游標與 `Center`
+	// 都在捲它；remake 目前整張盤面都畫得出來，所以它只影響狀態列顯示，
+	// 捲動的規則本身照原版接在 combat.RecentreViewport 裡。
+	//
+	// **初值原版從哪裡來還沒讀**，這裡用零值。
+	Viewport combat.ViewportOrigin
 	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
 	stallSignature string
 	stalledRounds  int
