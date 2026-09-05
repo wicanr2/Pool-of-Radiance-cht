@@ -233,7 +233,10 @@ type app struct {
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
 	endingScript     gamepack.EndingScript
-	endingActive     bool
+	// eclSessionArchive 是 ECL session 目前握著哪一份 archive 的區塊。
+	// 與 `eclArchive` 分開：後者是地圖與素材命名用的鏡像，會先一步更新。
+	eclSessionArchive uint8
+	endingActive      bool
 	endingPages      [][]gamepack.EndingLine
 	endingPage       int
 	// endingScene 是疊好的結局畫面（spec 108）；隊伍人數決定疊幾層。
@@ -294,6 +297,7 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.eclCatalog = eclCatalog
 	application.eclArchive = 3
+	application.eclSessionArchive = 3
 	initialWalls, err := gamepack.ReadDOSPieceSet(zipPath, 3, 1, 0)
 	if err != nil {
 		return nil, fmt.Errorf("load DOS initial wall set: %w", err)
@@ -1081,9 +1085,18 @@ func (a *app) configureEventSession(session *eclvm.BlockSession) error {
 		return err
 	}
 	a.characterBinding = binding
+	// 接上一個 session 的時候，它握著的就是呼叫端剛設好的那一份 archive。
+	// （`restoreCampaign` 是先接再設 `eclArchive`，所以它自己再設一次。）
+	a.eclSessionArchive = a.eclArchive
+	// 比較的對象是 **session 手上真的是哪一份**（`eclSessionArchive`），
+	// 不是 `eclArchive`。後者是給地圖與素材命名用的鏡像，
+	// `syncArchiveFromEventMachine` 可能在 `NEWECL` 真的執行之前就先更新
+	// 它——那時 resolver 會看到「選擇子等於現行值」而不換 catalog，
+	// session 卻還握著上一個 archive 的區塊，於是換到目的區塊時報
+	// 「target block 0x1A is unavailable」。
 	return session.SetBlockCatalogResolver(func(_, _ uint16, memory map[uint16]uint16) (map[uint16][]byte, error) {
 		selector := memory[0x6E12]
-		if selector == 0 || selector == uint16(a.eclArchive) {
+		if selector == 0 || selector == uint16(a.eclSessionArchive) {
 			return nil, nil
 		}
 		if selector > 8 {
@@ -1093,6 +1106,7 @@ func (a *app) configureEventSession(session *eclvm.BlockSession) error {
 		if !ok {
 			return nil, fmt.Errorf("Pool ECL archive %d is unavailable", selector)
 		}
+		a.eclSessionArchive = uint8(selector)
 		return archive.Blocks, nil
 	})
 }
@@ -1687,6 +1701,7 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.spawn = gamepack.Spawn{Map: key, X: campaign.X, Y: campaign.Y, Facing: campaign.Facing}
 	a.initialMap = &geometryMap
 	a.eclArchive = campaign.ECLArchive
+	a.eclSessionArchive = campaign.ECLArchive
 	a.eventSession, a.eventMachine = session, session.Machine()
 	a.introWaiting, a.introDone = false, true
 	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0

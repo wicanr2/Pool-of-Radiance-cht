@@ -17,7 +17,7 @@ func TestCellMenuDoesNotStallAtTheGEO7PasswordDoor(t *testing.T) {
 	visited := map[[3]int]bool{}
 	var hardFailures []string
 	_, reachable := exploreWorldWithFlags(t, zipPath, 106, 0, 1, 200000,
-		map[[3]int]bool{}, map[[3]int]bool{}, map[[3]int]int{}, map[[3]int]int{},
+		map[[3]int]bool{}, map[[3]int]bool{}, map[[3]int]int{}, map[string]int{},
 		map[[4]int]int{}, visited, map[string]bool{}, map[int]bool{}, nil, 2,
 		&hardFailures, nil)
 	if !reachable {

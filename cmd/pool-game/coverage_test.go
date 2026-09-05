@@ -541,7 +541,7 @@ const exploreMaxWildernessSteps = 3000
 // 之後困在索寇要塞回不來——起始圖 226 格只走了 31 格就再也沒機會走完。
 // 逐趟把已知的換圖點擋掉，下一趟就會先把這一張走完再換圖。
 func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
-	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
+	avoid, walked map[[3]int]bool, transitionUses map[[3]int]int, menuTurn map[string]int,
 	exitUses map[[4]int]int, visited map[[3]int]bool, maps map[string]bool,
 	blocks map[int]bool, hardFailures *[]string) (int, bool) {
 	return exploreWorldWithFlags(t, zipPath, seed, rotate, rewalkLimit, budget,
@@ -552,10 +552,24 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit,
 // noBoatOverride 關掉航線覆寫（見 exploreWorldWithFlags 的 boat 參數）。
 const noBoatOverride = -1
 
+// explorerCellKey 是「哪一張圖的哪一格」。
+func explorerCellKey(a *app) string {
+	return fmt.Sprintf("%d/%d/%d,%d", a.spawn.Map.Archive, a.spawn.Map.BlockID,
+		a.spawn.X, a.spawn.Y)
+}
+
+// explorerMenuKey 是「哪一格的哪一組選項」。
+//
+// 同一格會冒出好幾種選單（要不要離開、去哪個地點、YES／NO 確認），
+// 共用一個計數就會互相把指標推走。分開之後每一組選項都輪得完。
+func explorerMenuKey(a *app, options []string) string {
+	return explorerCellKey(a) + "|" + strings.Join(options, "|")
+}
+
 // exploreWorldWithFlags 與 exploreWorld 相同，另外在結束時把幾個 ECL 變數
 // 抄進 flags，讓呼叫端可以斷言主線推到哪裡。
 func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit, budget int,
-	avoid, walked map[[3]int]bool, transitionUses, menuTurn map[[3]int]int,
+	avoid, walked map[[3]int]bool, transitionUses map[[3]int]int, menuTurn map[string]int,
 	exitUses map[[4]int]int, visited map[[3]int]bool, maps map[string]bool,
 	blocks map[int]bool, flags map[uint16]uint16, boat int,
 	hardFailures *[]string, overrides map[uint16]uint16) (int, bool) {
@@ -779,9 +793,7 @@ walk:
 					application.cellMenuCursor, application.cellMenuOptions,
 					application.eventLabel, application.eventText,
 					application.statusLine, block,
-					menuTurn[[3]int{int(application.spawn.Map.Archive),
-						int(application.spawn.Map.BlockID),
-						int(application.spawn.Y)*100 + int(application.spawn.X)}]))
+					menuTurn[explorerMenuKey(application, application.cellMenuOptions)]))
 				reason = "格子選單卡住"
 				break walk
 			}
@@ -854,7 +866,8 @@ walk:
 				key := [3]int{int(application.spawn.Map.Archive),
 					int(application.spawn.Map.BlockID),
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
-				word := eclPasswords[menuTurn[key]%len(eclPasswords)]
+				inputKey := explorerCellKey(application)
+				word := eclPasswords[menuTurn[inputKey]%len(eclPasswords)]
 				// 答案就寫在問句的括號裡（`eclInputAnswer` 從原版資料解出來，
 				// 玩家看得到），治具照著打——這也是玩家實際會做的事，比自己
 				// 猜準。多個候選（同一個變數被 `SAVE` 兩次）就輪流試。
@@ -864,7 +877,7 @@ walk:
 				// bit 就 EXIT——**那一格只有一次機會**，輪流猜等於把它用掉。
 				switch hints := answerHints(application.eventText); {
 				case len(hints) != 0:
-					word = hints[menuTurn[key]%len(hints)]
+					word = hints[menuTurn[inputKey]%len(hints)]
 				case flags != nil && application.spawn.Map.BlockID == 21:
 					// 提示解不出來時的退路。索寇要塞登陸那一格的亡魂只問一次
 					// （問完 `SAVE 255 @4A13`），答錯就再也不出現。
@@ -876,7 +889,7 @@ walk:
 						word = known
 					}
 				}
-				menuTurn[key]++
+				menuTurn[inputKey]++
 				confirmInput[key] = true
 				t.Logf("密碼輸入 GEO%d/%d (%d,%d)：問句 %q，送出 %q",
 					application.spawn.Map.Archive, application.spawn.Map.BlockID,
@@ -909,6 +922,14 @@ walk:
 				key := [3]int{int(application.spawn.Map.Archive),
 					int(application.spawn.Map.BlockID),
 					int(application.spawn.Y)*100 + int(application.spawn.X)}
+				// 計數的鍵是「格子 ＋ 這一組選項」，不是只有格子。
+				// 只用格子的話，同一格上的 YES／NO、地點選單與密碼輸入
+				// 共用一個計數，彼此把指標推走，選項就不是逐一輪完而是跳著選。
+				//
+				// **這一步本身沒有讓覆蓋變多**（改前改後都是 17 個 ECL 區塊、
+				// 18 張地圖，A／B 各跑一次量過）。留著是因為「每一組選項各自
+				// 輪完」才是這個治具想做的事；覆蓋要再往上得靠別的。
+				optionKey := explorerMenuKey(application, application.cellMenuOptions)
 				if signature := strings.Join(application.cellMenuOptions, "|"); !seenMenus[signature] {
 					seenMenus[signature] = true
 					// 一併印文字框：問句是選單自己的 Prompt 還是前面幾條
@@ -919,7 +940,7 @@ walk:
 						application.spawn.Facing, application.cellMenuOptions,
 						application.eventText)
 				}
-				want := menuTurn[key] % len(application.cellMenuOptions)
+				want := menuTurn[optionKey] % len(application.cellMenuOptions)
 				// 剛打完密碼的那一次是確認框，答 NO 只會跳回去重打。
 				if confirmInput[key] {
 					want = 0
@@ -944,7 +965,7 @@ walk:
 					// NONE 是不上船，所以在 EAST／WEST／BAY 之間輪流挑。
 					if len(application.cellMenuOptions) == 5 &&
 						strings.EqualFold(application.cellMenuOptions[0], "SOKAL") {
-						want = 1 + menuTurn[key]%3
+						want = 1 + menuTurn[optionKey]%3
 					}
 					for index, option := range application.cellMenuOptions {
 						if strings.EqualFold(option, "Parlay") {
@@ -986,7 +1007,7 @@ walk:
 					}
 					continue
 				}
-				menuTurn[key]++
+				menuTurn[optionKey]++
 				delete(confirmInput, key)
 			}
 			if err := press(application, ebiten.KeyEnter); err != nil {
@@ -1288,7 +1309,7 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	transitionUses := map[[3]int]int{}
 	// menuTurn 跨趟保留：每一格的選單逐趟換一個答案。留在單趟裡的話每趟都
 	// 從第 0 項開始，「要不要接任務」這種問句永遠是同一個答案。
-	menuTurn := map[[3]int]int{}
+	menuTurn := map[string]int{}
 	visited := map[[3]int]bool{}
 	maps := map[string]bool{}
 	blocks := map[int]bool{}
@@ -1368,7 +1389,7 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	avoid := map[[3]int]bool{}
 	transitionUses := map[[3]int]int{}
-	menuTurn := map[[3]int]int{}
+	menuTurn := map[string]int{}
 	visited := map[[3]int]bool{}
 	maps := map[string]bool{}
 	blocks := map[int]bool{}
@@ -1657,7 +1678,7 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	// 每一趟重新歸零的話，每一趟都只選得到第 0 項。樞紐圖的地點是選單選的
 	// （`geo6/25` 只有 62 格卻分成 42 個互不相連的區塊），不換選項就永遠
 	// 只進得去同一個地點。
-	menuTurn := map[[3]int]int{}
+	menuTurn := map[string]int{}
 	for pass, destination := range []int{0, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3} {

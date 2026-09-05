@@ -1372,3 +1372,46 @@ func TestPartyAllowsTwoNPCsBeyondTheSixPlayers(t *testing.T) {
 		t.Fatal("七名玩家角色不該過")
 	}
 }
+
+// `eclArchive` 這個鏡像會比 session 早一步更新——`syncArchiveFromEventMachine`
+// 在腳本已經把 `6E12h` 寫成新值、但 `NEWECL` 還沒執行的那個空檔就會設它。
+// 換 catalog 的判斷若拿它當基準，那一刻會看到「選擇子等於現行值」而不換，
+// session 卻還握著上一個 archive 的區塊，於是換過去就報
+// `ECL session target block ... is unavailable`。
+//
+// 這一則把那個空檔造出來：接好 session（此時它握著 ECL3）之後，先把鏡像撥到
+// 2，再讓 ECL3/0 的控制器跑 `SAVE 2,6E12h → NEWECL 20`。修好之前這裡會紅。
+func TestArchiveSwapFollowsTheSessionNotTheMirror(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(3)
+	if !ok {
+		t.Fatal("ECL3 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 0, 0x9955)
+	if err != nil {
+		t.Fatal(err)
+	}
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 3
+	application.spawn = gamepack.Spawn{Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 0, Y: 4, Facing: 3}
+	if err := application.configureEventSession(session); err != nil {
+		t.Fatal(err)
+	}
+	// 鏡像先跑到前面去。
+	application.eclArchive = 2
+	result, err := session.RunUntilEvent(4096, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := application.consumeInitialTransitionResources(result); err != nil {
+		t.Fatalf("鏡像領先時換不過去：%v", err)
+	}
+	if session.CurrentBlockID() != 20 || application.eclSessionArchive != 2 {
+		t.Fatalf("session block=%d archive=%d，預期 20／2",
+			session.CurrentBlockID(), application.eclSessionArchive)
+	}
+}
