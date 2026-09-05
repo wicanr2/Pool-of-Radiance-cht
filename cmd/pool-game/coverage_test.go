@@ -1019,7 +1019,7 @@ walk:
 			}
 			continue
 		}
-		if application.inWilderness() {
+		if application.inWildernessOverland() {
 			// 野外的位置存在 `DS:49C3h`／`DS:49C4h`，不在 GEO 格子上
 			//（spec 105），但**有地點表**，而且野外座標與 GEO 格子是同步走
 			// 的——所以規劃得起來。細節見 wilderness_explore_test.go。
@@ -1035,10 +1035,8 @@ walk:
 			}
 			key := ebiten.KeyArrowUp
 			aimed := false
-			if application.eventMachine != nil {
-				if want, ok := wildernessNextFacing(application, zipPath, wild); ok {
-					key, aimed = wildernessTurnKey(application.spawn.Facing, want), true
-				}
+			if want, ok := wildernessNextFacing(application, zipPath, wild); ok {
+				key, aimed = wildernessTurnKey(application.spawn.Facing, want), true
 			}
 			if !aimed {
 				switch application.roller.Roll(1, 6) {

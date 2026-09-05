@@ -424,7 +424,7 @@ func TestTheWildernessWalkReachesTheWesternSheet(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	walk := newWildernessWalk(true, 0)
 	sheets := []int{int(application.eventSession.CurrentBlockID())}
-	for step := 0; step < 3000 && application.inWilderness(); step++ {
+	for step := 0; step < 3000 && application.inWildernessOverland(); step++ {
 		key := ebiten.KeyArrowRight
 		if want, ok := wildernessNextFacing(application, zipPath, walk); ok {
 			key = wildernessTurnKey(application.spawn.Facing, want)
@@ -467,5 +467,65 @@ func TestTheWildernessWalkReachesTheWesternSheet(t *testing.T) {
 		}
 		t.Fatalf("沒有站上圖 25 的 (12,31)（海盜基地）；圖 25 上踩過 %d 格：%v",
 			len(onSheet), onSheet)
+	}
+}
+
+// 在區域圖裡走一步，不可以動到野外座標。
+//
+// 野外那三個區塊各有兩種身分（spec 105）：地形圖上走路時野外座標跟著動，
+// 而 `ecl6/25 A46Ch` 寫下 `4A9E = 255` 進區域圖之後，入口 0 的第一行
+// `COMPARE @4A9E, 255 → EXIT` 讓整段野外處理不跑——`00FBh`／`00FCh` 因此停在
+// 上一次野外移動留下的舊值，前端要是照抄回 `49C3`／`49C4`，隊伍就會被拉回
+// 上一個野外位置。
+func TestAnAreaMapStepLeavesTheWildernessPositionAlone(t *testing.T) {
+	application := sailEastIntoTheWilderness(t)
+	memory := application.eventMachine.Memory
+	// 先在地形上走一步，讓 `00FBh`／`00FCh` 帶著「上一步」的值。
+	application.spawn.Facing = 3
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	drainWildernessEvents(application)
+	if !application.inWildernessOverland() {
+		t.Fatalf("走一步之後不在野外地形上（4A9E = %d）", memory[wildernessArea])
+	}
+	memory[wildernessArea] = 255
+	if application.inWildernessOverland() {
+		t.Fatal("4A9E = 255 之後還被當成野外地形")
+	}
+	before := [2]uint16{memory[wildernessX], memory[wildernessY]}
+	// 把 `00FBh`／`00FCh` 換成一組看得出來的值：前端若照抄就會露餡。
+	memory[wildernessNextX], memory[wildernessNextY] = 99, 99
+	// 一定要真的走到一步才算數——牆擋住的話 `moveForward` 在寫回之前就返回，
+	// 測試會因為「什麼都沒發生」而綠。
+	moved := 0
+	for facing := uint8(0); facing < 4; facing++ {
+		application.spawn.Facing = facing
+		cell := [2]uint8{application.spawn.X, application.spawn.Y}
+		if err := press(application, ebiten.KeyArrowUp); err != nil {
+			t.Fatal(err)
+		}
+		drainWildernessEvents(application)
+		if [2]uint8{application.spawn.X, application.spawn.Y} != cell {
+			moved++
+		}
+		if got := [2]uint16{memory[wildernessX], memory[wildernessY]}; got != before {
+			t.Fatalf("區域圖裡朝向 %d 走一步，野外座標從 %v 變成 %v", facing, before, got)
+		}
+	}
+	if moved == 0 {
+		t.Fatal("四個方向都被牆擋住，這一條什麼都沒驗到")
+	}
+}
+
+// drainWildernessEvents 把格子事件與選單按掉，讓下一次方向鍵真的送進移動。
+func drainWildernessEvents(a *app) {
+	for tick := 0; tick < 200 && (a.cellEventPending || a.cellWaitingMenu); tick++ {
+		if a.cellWaitingMenu && len(a.cellMenuOptions) > 1 &&
+			a.cellMenuCursor != len(a.cellMenuOptions)-1 {
+			press(a, ebiten.KeyArrowRight)
+			continue
+		}
+		press(a, ebiten.KeyEnter)
 	}
 }

@@ -885,7 +885,7 @@ func (a *app) moveInitialDungeonForward() error {
 	// （spec 105）。前端要做的只是「先把方向交給 ECL、事後把算出來的野外
 	// 座標收回去」，不是換一條移動路徑——野外那三個區塊都有自己的 GEO
 	// （進去時 `LOAD FILES 6, 6, 0`），也照樣用 `CALL @C018` 重畫牆。
-	wilderness := a.inWilderness() && a.eventMachine != nil
+	wilderness := a.inWildernessOverland()
 	if wilderness {
 		a.eventMachine.Memory[wildernessFacing] = wildernessFacingIndex(a.spawn.Facing)
 		a.eventMachine.Memory[wildernessRefuse] = 0
@@ -2018,6 +2018,15 @@ const (
 	// wildernessRefuse 由 ECL 寫 255 表示「這一步不給走」。三處都是這個
 	// 意思：撞到不可通行表、Y 到北緣、跨圖的例外座標。
 	wildernessRefuse = 0x6DC9
+	// wildernessArea 是 255 就代表隊伍在**區域圖**裡，不在野外地形上。
+	//
+	// 野外那三個區塊各有兩種身分：`LOAD FILES 4,4,0` 載的是地形（在上面走，
+	// 野外座標跟著動），`LOAD FILES 25,2,255` 載的是區域圖，進去之前
+	// `ecl6/25 A46Ch` 會寫 `4A9E = 255`，而入口 0 的第一行就是
+	// `COMPARE @4A9E, 255 → EXIT`——**整段野外的每步處理不跑**。
+	// 所以在區域圖裡不能再做野外那一套：`00FBh`／`00FCh` 是上一次野外移動
+	// 留下的舊值，照抄回 `49C3`／`49C4` 沒有意義（spec 105）。
+	wildernessArea = 0x4A9E
 )
 
 // wildernessBlocks 是三張野外圖的 ECL 區塊編號（spec 105）。
@@ -2026,6 +2035,13 @@ var wildernessBlocks = map[uint16]bool{25: true, 26: true, 27: true}
 // inWilderness 說目前的腳本區塊是不是野外圖。
 func (a *app) inWilderness() bool {
 	return a.eventSession != nil && wildernessBlocks[a.eventSession.CurrentBlockID()]
+}
+
+// inWildernessOverland 說隊伍是不是真的站在野外地形上——野外區塊的另一種
+// 身分（區域圖）不算。
+func (a *app) inWildernessOverland() bool {
+	return a.inWilderness() && a.eventMachine != nil &&
+		a.eventMachine.Memory[wildernessArea] != 255
 }
 
 // mapExitCommitCall 是 `2Dh CALL C01Eh` 的選擇子。
