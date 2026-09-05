@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -82,6 +84,9 @@ func enterStojanowGate(t *testing.T) *app {
 	return application
 }
 
+// castlePilot 是這一組測試共用的戰術地圖駕駛。
+var castlePilot = &tacticalPilot{}
+
 // answerCellMenus 把等待中的事件按完，選單挑 want 裡認得的那一項。
 func answerCellMenus(a *app, want ...string) {
 	for tick := 0; tick < 3000; tick++ {
@@ -91,11 +96,9 @@ func answerCellMenus(a *app, want ...string) {
 			return
 		}
 		if a.tactical != nil {
-			if a.tactical.Prompt {
-				press(a, ebiten.KeyY)
-			} else {
-				press(a, ebiten.KeyEnter)
-			}
+			// 只按 Enter 的話全隊都不出手，那一場永遠結束不了——用探索器
+			// 那個「自己人怎麼打」的駕駛（coverage_test.go）。
+			press(a, castlePilot.key(a))
 			continue
 		}
 		if a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
@@ -201,3 +204,138 @@ func TestPayingTheTollAtStojanowGateOpensTheCastle(t *testing.T) {
 	}
 }
 
+// stojanowGateBlockID 是斯托亞諾夫城門的 ECL 區塊編號。
+const stojanowGateBlockID = 9
+
+// walkStojanowGateIntoTheCastle 走完整條城門的路，回傳進到城堡之後的 app。
+// 走不成就 Skip——那條路本身由上面那個測試釘住。
+func walkStojanowGateIntoTheCastle(t *testing.T) *app {
+	t.Helper()
+	application := enterStojanowGate(t)
+	terrain := func(x, y int) int {
+		return int(application.initialMap.Grid.Cells[y][x].Terrain) & 0x1F
+	}
+	guards := func(x, y int) bool { return terrain(x, y) == 3 }
+	walkTo := func(wanted func(x, y int) bool) bool {
+		plan := planToCellsAvoiding(application, 0, wanted, guards)
+		if len(plan) == 0 {
+			return false
+		}
+		for _, step := range plan {
+			for application.spawn.Facing != step.facing {
+				press(application, ebiten.KeyArrowRight)
+			}
+			press(application, ebiten.KeyArrowUp)
+			answerCellMenus(application, "YES")
+		}
+		return true
+	}
+	if !walkTo(func(x, y int) bool { return terrain(x, y) == 9 }) {
+		t.Skip("走不到馬車格")
+	}
+	if !walkTo(func(x, y int) bool { return terrain(x, y) == 5 }) {
+		t.Skip("走不到索賄格")
+	}
+	if [2]int{int(application.spawn.X), int(application.spawn.Y)} != [2]int{8, 5} {
+		t.Skip("過路費沒付成")
+	}
+	for _, cell := range [][2]int{{4, 0}, {11, 0}} {
+		if !walkTo(func(x, y int) bool { return x == cell[0] && y == cell[1] }) {
+			continue
+		}
+		if [2]int{int(application.spawn.X), int(application.spawn.Y)} != cell {
+			continue
+		}
+		application.spawn.Facing = 0
+		press(application, ebiten.KeyArrowUp)
+		answerCellMenus(application, "YES")
+		break
+	}
+	if int(application.eventSession.CurrentBlockID()) == stojanowGateBlockID {
+		t.Skip("沒走出北緣")
+	}
+	return application
+}
+
+// 量城門後面走得到多少東西。
+//
+// 這不是門檻測試，是量測：城堡那幾個區塊（3、4、5、6、7）先前一個都沒走到，
+// 而世界巡迴到現在也還走不到——巡迴會先去瓦海登墳場，那張圖的
+// `ecl4/10 9AD6 ADD 1 @4A00` 把馬車關掉了（class 0 是整份存檔共用的，
+// spec 106）。所以這條路要單獨走。
+func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
+	blocks := map[int]bool{}
+	maps := map[string]bool{}
+	// 四種走法取聯集：繞不繞開換圖點、規劃器的方向輪替起點。單一種走法量到的
+	// 是那一種走法的下限，聯集才是「這條路後面接得到什麼」。
+	for _, pass := range []struct {
+		banPass bool
+		rotate  int
+	}{{true, 0}, {false, 0}, {true, 1}, {false, 1}} {
+		application := walkStojanowGateIntoTheCastle(t)
+		walked := map[[3]int]bool{}
+		avoid := map[[3]int]bool{}
+		if pass.banPass {
+			// 繞開換圖點是巡迴的作法：踩到就被換走，走不完一張圖。
+			for _, key := range boundaryExitKeys(application) {
+				avoid[key] = true
+			}
+		}
+		lastBlock := -1
+		for step := 0; step < 20000; step++ {
+			if application.eventSession != nil {
+				id := int(application.eventSession.CurrentBlockID())
+				blocks[id] = true
+				if id != lastBlock {
+					lastBlock = id
+					t.Logf("擋換圖 %v 輪替 %d 第 %d 步：ECL block %d，GEO%d/%d (%d,%d)",
+						pass.banPass, pass.rotate, step, id,
+						application.spawn.Map.Archive, application.spawn.Map.BlockID,
+						application.spawn.X, application.spawn.Y)
+				}
+			}
+			if application.initialMap != nil {
+				maps[fmt.Sprintf("GEO%d/%d",
+					application.spawn.Map.Archive, application.spawn.Map.BlockID)] = true
+			}
+			busy := application.cellWaitingMenu || application.cellEventPending ||
+				application.encounter != nil || application.treasureActive ||
+				application.tactical != nil || application.combatActive ||
+				application.shopActive || application.templeActive
+			if busy {
+				answerCellMenus(application, "YES")
+				continue
+			}
+			plan, target := explorePlan(application, walked, avoid, pass.banPass, pass.rotate)
+			if len(plan) == 0 {
+				break
+			}
+			walked[target] = true
+			for _, s := range plan {
+				for application.spawn.Facing != s.facing {
+					press(application, ebiten.KeyArrowRight)
+				}
+				press(application, ebiten.KeyArrowUp)
+				if application.cellWaitingMenu || application.cellEventPending ||
+					application.tactical != nil {
+					break
+				}
+			}
+		}
+	}
+	names := make([]string, 0, len(maps))
+	for name := range maps {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	ids := make([]int, 0, len(blocks))
+	for id := range blocks {
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+	t.Logf("城門後面走到的地圖 %d 張：%v", len(names), names)
+	t.Logf("城門後面走到的 ECL block %d 個：%v", len(ids), ids)
+	if len(ids) < 2 {
+		t.Fatalf("只走到 %v，至少要有區塊 3 與 5", ids)
+	}
+}
