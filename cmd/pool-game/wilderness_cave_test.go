@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"math/rand"
 	"path/filepath"
 	"testing"
@@ -40,6 +41,18 @@ func caveSettle(a *app, prefer ...string) {
 		}
 		press(a, ebiten.KeyEnter)
 	}
+}
+
+// wanderSettle 是野外亂走時的按鍵策略：**只有洞穴那一句才進去**。
+//
+// 對任何選單都挑 ENTER 會出事——野外的地點裡有「進城」「上船」，踩到就離開
+// 野外了，而回來的路很長。
+func wanderSettle(a *app) {
+	if strings.Contains(a.eventText, "DARK CAVE") {
+		caveSettle(a, "ENTER", "ENTER CAVE")
+		return
+	}
+	caveSettle(a, "LEAVE", "NO", "GO BACK")
 }
 
 // 東野外的 (6,15)（區塊 13）要靠洞穴重擲位移才走得到。
@@ -142,7 +155,7 @@ func TestTheWildernessCaveRerollReachesTheEasternOutpost(t *testing.T) {
 				}
 				application.spawn.Facing = uint8(dice.Intn(4))
 				press(application, ebiten.KeyArrowUp)
-				caveSettle(application, "ENTER", "ENTER CAVE")
+				wanderSettle(application)
 			}
 			t.Skipf("重擲 %d 次還沒走到 %v", caves, want.target)
 		})
