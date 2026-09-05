@@ -100,7 +100,12 @@ type AbilityBonus struct {
 	Cap int
 }
 
-// FireballAreaBudget 是火球術收人的預算（overlay-22 `2675h`）。
+// FireballAreaBudget 是 overlay-22 `2675h` 那一支推的常數。
+//
+// **它不是唯一的預算**：`2675h` 那一段被 `2661h` 的
+// `cmp word [4933h]+1CCh, 0 / jne` 罩著，只有那個旗標為零時才跑；
+// 通用的那條路（overlay-09 `0272h`、overlay-13 `1F56h`）推的是參數表
+// `+0Fh`，火球術那一格是 **3**。兩個數字都照原版留著（spec 074）。
 // 它會傳給 `0419h` 當上限，所以「在範圍內」＝ 那個預算內走得到。
 const FireballAreaBudget = 2
 
@@ -393,7 +398,13 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 	if id == 0 || int(id) >= len(parameters) {
 		return CastEffect{}, fmt.Errorf("Pool spell %d is outside the parameter table", id)
 	}
-	effect := CastEffect{EffectCode: parameters[id].EffectCode()}
+	effect := CastEffect{
+		EffectCode: parameters[id].EffectCode(),
+		// 範圍法術收人的預算一律來自參數表 `+0Fh`（spec 074）。零代表這一支
+		// 不靠這條路收人，呼叫端就收整邊——那是**原版資料就是零**，
+		// 不是還沒讀出來。
+		AreaBudget: parameters[id].AreaBudget(),
+	}
 	switch id {
 	case SpellIDBless, SpellIDCurse:
 		// 兩支都走 0F35h 那條整邊的路，差別只在訊息（"is Blessed" 與
@@ -516,9 +527,9 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `3049h` 整支只有 push bp / mov bp,sp / mov sp,bp / pop bp / retf——
 		// **原版就是什麼都不做**。接成 no-op 是照實接，不是還沒做。
 	case SpellIDFireball, SpellIDFireballAlt:
-		// `2675h` 推給 `0138h:003Eh` 的預算是 2，方向 FFh（不限方向）。
+		// 預算改由參數表 `+0Fh` 帶（火球術那一格是 3），與其他範圍法術
+		// 同一條路；`2675h` 的常數 2 只在 `[4933h]+1CCh` 為零時才跑。
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
-		effect.AreaBudget = FireballAreaBudget
 	case SpellIDCharmPerson:
 		// `11C5h` 先擋不是人的目標，過得了才走泛型那條——四個覆寫參數是
 		// `(施法者 +10Eh << 7) + 施法者等級`、1、0、0。高位那一段是

@@ -806,3 +806,41 @@ func TestStrengthSpellResultFollowsTheTargetClass(t *testing.T) {
 		t.Errorf("沒超過 18 應該是 14/07，算出 %d/%02d", value, percentile)
 	}
 }
+
+// 範圍法術收人的預算來自參數表 `+0Fh`（spec 074）。六十七格裡只有七格非零，
+// 而且正好都是範圍法術——**分組本身就是證據**，不是抽樣。
+func TestAreaBudgetComesFromTheParameterTable(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	want := map[int]int{
+		SpellIDSleep:          1,
+		25:                    1, // Silence, 15' Radius
+		SpellIDStinkingCloud:  1,
+		SpellIDDispelMagic:    1,
+		SpellIDDispelMagicAlt: 1,
+		SpellIDFireball:       3,
+		SpellIDFireballAlt:    3,
+	}
+	for id := 1; id < len(parameters); id++ {
+		got := parameters[id].AreaBudget()
+		if expected, ok := want[id]; ok {
+			if got != expected {
+				t.Errorf("法術 %d 的 +0Fh 是 %d，預期 %d", id, got, expected)
+			}
+			continue
+		}
+		if got != 0 {
+			t.Errorf("法術 %d 的 +0Fh 是 %d，不在那七支裡就該是 0", id, got)
+		}
+	}
+	// 施法算出來的 AreaBudget 要跟著參數表走，不是寫死的常數。
+	effect, err := CastSpell(SpellIDFireball, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if effect.AreaBudget != 3 {
+		t.Errorf("火球術算出來的預算是 %d，參數表 +0Fh 是 3", effect.AreaBudget)
+	}
+}

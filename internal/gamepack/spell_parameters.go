@@ -64,6 +64,15 @@ const (
 	// 效果碼。`0A13h` 先檢查它大於零才進掛效果那一段，所以值為零就是
 	// 「不留狀態」。
 	spellParameterEffectCode = 10
+	// spellParameterAreaBudget 是 `+0Fh`：**範圍法術收人的預算**
+	//（spec 074）。overlay-09 `0272h` 與 overlay-13 `1F56h` 都用
+	// `[編號 × 16 + 31A3h]` 取它，推給 `0138h:003Eh`（鄰近查詢）當第三個
+	// 引數——也就是 `TraceMovement` 的上限，所以「在範圍內」＝**那個預算
+	// 內走得到**，不是半徑比大小。
+	//
+	// 六十七格裡只有七格非零，而且正好都是範圍法術：睡眠、沉默 15 呎、
+	// 臭雲、解除魔法兩個編號各 1，火球與 64 號各 3。
+	spellParameterAreaBudget = 0x0F
 
 	// spellParameterAttackRollFlag 是 `+2` 代表「要擲命中」的值。
 	spellParameterAttackRollFlag = 0xff
@@ -210,6 +219,10 @@ func (p SpellParameters) SaveCategory() SaveCategory {
 
 // EffectCode 是掛上去的效果碼；0 表示這個法術不留狀態。
 func (p SpellParameters) EffectCode() uint8 { return p.Raw[spellParameterEffectCode] }
+
+// AreaBudget 是 `+0Fh`：範圍法術收人的預算（spec 074）。零代表這一支不靠
+// 這條路收人。
+func (p SpellParameters) AreaBudget() int { return int(p.Raw[spellParameterAreaBudget]) }
 
 // ParseSpellParameterTable 從 START.EXE 的位元組解出整張表。
 func ParseSpellParameterTable(executable []byte) ([]SpellParameters, error) {
