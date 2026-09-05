@@ -683,6 +683,20 @@ walk:
 				avoid[key] = true
 			}
 			lastMap = application.spawn.Map
+			// 踏上新的一張圖就先把邊界出口格擋起來。
+			//
+			// 不擋的話探索器是**走路走出去的，不是挑出口挑出去的**：規劃器
+			// 逐格踩的時候會先踩到某一個邊界格、當場換走，而
+			// `chooseAreaExit`（照 `exitUses` 輪流挑八個方向）只在「這一張
+			// 踩完了」之後才跑。實測 GEO1/18 每一趟都只用 (15,4) 往東那一個
+			// 出口，北邊那兩個一次都沒試過——而北邊那一支就是缺的區塊 9
+			// （`99D4 ON GOTO @C04D` 第 0 支），後面還掛著 6→3→{4,5}→7。
+			//
+			// 擋住的是**走路踩上去**；`chooseAreaExit` 與它的走位不看 avoid，
+			// 所以刻意離開這條路不受影響。
+			for _, key := range boundaryExitKeys(application) {
+				avoid[key] = true
+			}
 		}
 		// boat：**測試治具**，不是遊玩。港務長那一段目前推不動（船票旗標
 		// `4A01` 沒有人清回去，spec 102 的 OPEN），而碼頭的船照著 `4AC4`
