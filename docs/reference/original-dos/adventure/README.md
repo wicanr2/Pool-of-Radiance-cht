@@ -10,8 +10,9 @@
 | `00-party-menu-empty.png` | `01-party-menu` | 密碼過後的人物管理選擇項，**隊伍是空的** | `375804341398328372b497b8322fe39c87d0c5e53fcde9a84ad01ccf75d8f3c5` |
 | `01-add-character.png` | `15-a` | `A)DD CHARACTER TO PARTY` 的名單頁 | `84f907b8324b32bf4b658e51f89180bb0d8d1142188ade312bef6c38aca61cec` |
 | `04-party-menu-with-party.png` | `18-b-raw` | 同一張選單，但**隊伍裡有人** | `4230ad4f0d7f29c1bc766472b6d05cb0a5832f986ac3f1d098930dc5189e9f17` |
-| `03-rolf-approach.png` | `18-b` | `B)EGIN ADVENTURING` 之後立刻觸發的 Rolf 事件，位置 `15, 1 W` | `a95eb80b15997bc9df5f8bbc27dc9ad8727c58ef1178379f559cc9f3e7265c00` |
+| `03-rolf-approach.png` | `18-b` | `B)EGIN ADVENTURING` 之後立刻觸發的 Rolf 事件，位置 `15, 1 W` | `91450b3c7cd89d8fdfb835386bdba0a16ae563b3b638aeb2f25d4f0d03b7b617` |
 | `02-first-person-14-1-west.png` | `19-Return-raw` | 台詞關掉後的第一人稱視野，位置 `14, 1 W` | `958f76ab5db7b45ca6c82dddd6cd5679d85130136dc0797f7690e1ec1750c32c` |
+| `05-tyr-stop-11-2-south.png` | `19-Return` | 導覽第二段的提爾神殿，位置 `11, 2 S` | `7857a683609562929fb1fcdca326936ac1e024070c2dc235f3cee176cd8a5ad5` |
 
 **「按下 `B` 之後的第一人稱畫面」拍不到乾淨的那一張**：`B` 一按下去，Rolf 的
 事件就蓋上來了，所以靜止後拍到的是 Rolf（`18-b`），而按鍵當下拍到的還是上一幕
@@ -39,6 +40,10 @@
 
 **`03`**：Rolf 的半身像**畫在第一人稱那一框裡**，台詞在下框，底部
 `PRESS <ENTER>/<RETURN> TO CONTINUE`，狀態列 `15, 1 W 00:00`。
+那張像是 `HEAD3.DAX` 區塊 8 疊上 `BODY3.DAX` 區塊 9（spec 117 已逐格比對）。
+
+**`05`**：同一趟導覽的第二段，狀態列 `11, 2 S 00:00`。那一框裡是**視野**，
+不是半身像——所以半身像只蓋第一頁，按下 Return 就收掉。
 
 **`02`**：狀態列是 `14, 1 W 00:00`——位置 (14,1)、朝向 **W**、時鐘 00:00。
 朝向與 spec 010 的「facing 6」在共用 engine 的 0/2/4/6 制下換算相符
@@ -52,7 +57,7 @@
 | 狀態 | 原版 | remake |
 |---|---|---|
 | `B` 之後的第一個事件 | `03`（`15, 1 W`）| `pool-remake-initial-rolf-event.png`（`X 15 Y 1 FACING 3`）|
-| 導覽第二段 | `19-Return`（`11, 2 S`，提爾神殿）| `pool-remake-rolf-tour-tyr.png`（`X 11 Y 2 FACING 2`）|
+| 導覽第二段 | `05`（`11, 2 S`，提爾神殿）| `pool-remake-rolf-tour-tyr.png`（`X 11 Y 2 FACING 2`）|
 
 **位置、朝向與台詞逐字相同**——`FACING 3`／`FACING 2` 換算成 W／S，與原版狀態列
 一致（spec 076 的 0 北 1 東 2 南 3 西）。事件鏈這一段對得上。
@@ -65,10 +70,11 @@
 | 地面色 | EGA 6 棕 | EGA 6 棕 | **已對上**（先前是 EGA 8 深灰）|
 | 內框幾何 | 320×200 座標 `(24,24)` 起 88×88 | 同 | **已對上**（本來就對）|
 | 視野的透視尺度 | 透視填滿整框 | 牆片縮在底部一條 | 未對上 |
-| 對話時框裡畫什麼 | NPC 半身像蓋掉視野 | 仍畫第一人稱視野 | 未對上 |
+| APPROACH 時框裡畫什麼 | NPC 半身像蓋掉視野 | 半身像（`HEAD3`/8 ＋ `BODY3`/9） | **已對上**（spec 117）|
 | 兩側 | 藍色水面加棕色柱子 | 藍色格子加紅／粉紅柱子 | 未對上 |
 | 右半版面 | 隊伍面板 `NAME / AC / HP` ＋狀態列 `14, 1 W 00:00` | 除錯文字（`GEO3 BLOCK 0`、`X 15 Y 1 FACING 3`…）| 未對上 |
 | 外框美術 | 紅色繩索花紋 | 黃色細線 | 未對上 |
+| 文字框與視野的關係 | 文字框在視野**下面**，不重疊 | 同 | **已對上**（原本壓掉視野下面 64 個像素）|
 
 **視野的尺度是剩下最大的一項**：remake 的牆片畫在 `viewLeft + 欄 × 16` 再放大
 兩倍，而背景填的是 `StageInset{88×88}`——兩者對不上，所以牆片縮在底部。

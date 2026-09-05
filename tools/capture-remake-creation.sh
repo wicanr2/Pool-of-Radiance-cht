@@ -116,3 +116,65 @@ if cmp -s docs/screenshots/pool-remake-initial-rolf-event.png docs/screenshots/p
   exit 1
 fi
 '
+
+# 清冊跟著重生：手維護的雜湊表只要漏更新一次，之後每一份報告都在引用一個
+# 已經不存在的畫面（rulebook 63）。這裡直接由剛拍好的檔案寫出去。
+python3 - "$ROOT" <<'PY'
+import hashlib
+import json
+import os
+import struct
+import subprocess
+import sys
+
+root = sys.argv[1]
+paths = [
+    "docs/screenshots/pool-remake-character-name.png",
+    "docs/screenshots/pool-remake-portrait-editor.png",
+    "docs/screenshots/pool-remake-combat-icon-editor.png",
+    "docs/screenshots/pool-remake-icon-confirm.png",
+    "docs/screenshots/pool-remake-party-menu.png",
+    "docs/screenshots/pool-remake-initial-rolf-event.png",
+    "docs/screenshots/pool-remake-rolf-tour-tyr.png",
+]
+
+
+def png_size(data):
+    # IHDR 的寬高就在檔頭後面，量尺寸不必拉一個影像函式庫進來。
+    width, height = struct.unpack(">II", data[16:24])
+    return width, height
+
+
+def git(*args):
+    return subprocess.run(["git", "-C", root, *args],
+                          capture_output=True, text=True, check=True).stdout.strip()
+
+
+screenshots = []
+for path in paths:
+    data = open(os.path.join(root, path), "rb").read()
+    width, height = png_size(data)
+    screenshots.append({
+        "path": path,
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "width": width,
+        "height": height,
+    })
+
+manifest = {
+    "schema": "pool-remake-screenshot-manifest/1",
+    "captured_at": git("log", "-1", "--format=%cs"),
+    "source_commit": git("rev-parse", "HEAD"),
+    # 拍的時候工作區是不是乾淨的。髒的話 source_commit 只是「最接近的那一個」，
+    # 不是「拍出這幾張的那一份程式碼」。
+    "source_tree_dirty": bool(git("status", "--porcelain")),
+    "method": "Docker/Xvfb real Ebitengine window with sequential key input",
+    "state_relation": "normal-remake-player-path; not an original-DOS parity claim",
+    "screenshots": screenshots,
+}
+target = os.path.join(root, "docs/audit/remake-screenshot-manifest.json")
+with open(target, "w", encoding="utf-8") as handle:
+    json.dump(manifest, handle, ensure_ascii=False, indent=2)
+    handle.write("\n")
+print("manifest →", target)
+PY

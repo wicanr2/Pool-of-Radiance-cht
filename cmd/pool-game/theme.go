@@ -71,8 +71,8 @@ func (a *app) artPalette() [16]color.RGBA { return a.currentTheme().palette }
 // switchTheme 換一套外觀，並把已經算成圖的素材重畫一次。
 //
 // 每格重算的東西（牆面圖章、背景色塊）下一影格就跟上；算過一次就存起來的
-// 三張（標題、肖像、戰鬥圖示）不重畫的話會留在舊色盤上——那正是「換了主題
-// 只有文字變色」的樣子。
+// 那幾張（標題、肖像、戰鬥圖示、NPC 半身像）不重畫的話會留在舊色盤上——
+// 那正是「換了主題只有文字變色」的樣子。
 func (a *app) switchTheme() error {
 	a.modern = !a.modern
 	if a.reloadTitle != nil {
@@ -90,5 +90,6 @@ func (a *app) switchTheme() error {
 			return err
 		}
 	}
+	a.clearNPCPortrait()
 	return nil
 }

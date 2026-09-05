@@ -18,6 +18,12 @@ func TestReadDOSInitialEventMatchesSpec010(t *testing.T) {
 	if event.Position != wantPosition || event.MonsterID != 12 {
 		t.Fatalf("position=%+v monster=%d", event.Position, event.MonsterID)
 	}
+	// `SETUP MONSTER 12,2,9` 的三個 operand（spec 117）：SPRIT 區塊、接近距離、
+	// BODY 區塊。第三個要是 9——半身像的下半就是 `BODY3.DAX` 區塊 9。
+	if event.SpriteBlock != 12 || event.ApproachDistance != 2 || event.PortraitBody != 9 {
+		t.Fatalf("SETUP MONSTER operands=%d,%d,%d，預期 12,2,9",
+			event.SpriteBlock, event.ApproachDistance, event.PortraitBody)
+	}
 	if !strings.Contains(event.Message, "ROLF") || !strings.Contains(event.Message, "PHLAN") {
 		t.Fatalf("greeting lacks semantic anchors: %q", event.Message)
 	}

@@ -1,49 +1,50 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
-  "captured_at": "2026-09-01",
-  "source_commit": "601ddfd0b77e407efd07c43e8e01a5e628a2ca0e",
+  "captured_at": "2026-09-05",
+  "source_commit": "f9f46ab397bb3105df4ef96f34dd3b34371f280c",
+  "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window with sequential key input",
   "state_relation": "normal-remake-player-path; not an original-DOS parity claim",
   "screenshots": [
     {
       "path": "docs/screenshots/pool-remake-character-name.png",
-      "sha256": "3669c707c6f75f6a229e86b63353c28db715c9ac3372d9afffd03f3299fec530",
+      "sha256": "75b265c801aba240f8015ffd03e005fc6647fac02415e11521b2c0ea593cf555",
       "width": 960,
       "height": 600
     },
     {
       "path": "docs/screenshots/pool-remake-portrait-editor.png",
-      "sha256": "2cb68d231d22b8039e2a0db36753541e3f8cf712ad482d84f830f58abba2e91f",
+      "sha256": "93c13d7829e8b9837971cb07374f53c14d5f192d93ac5ce43b88fae6d5666b7d",
       "width": 960,
       "height": 600
     },
     {
       "path": "docs/screenshots/pool-remake-combat-icon-editor.png",
-      "sha256": "4a5749c574f437ebf08ed3e94974b2a2631376d6ad5818f25a66be4ee9f13741",
+      "sha256": "77b48f2acbd2f3f07880a3b285938f296cfaf1140d8b329eb09201449f1fefd6",
       "width": 960,
       "height": 600
     },
     {
       "path": "docs/screenshots/pool-remake-icon-confirm.png",
-      "sha256": "dd9416ea9a05a1643a62f7f707876c29f5a59a8df8246f1706cb659e54773ff7",
+      "sha256": "09ec5a0f1210a728030ef5e6f6f45d13dcf4ca4323c88124b694bd5cd94b3e1e",
       "width": 960,
       "height": 600
     },
     {
       "path": "docs/screenshots/pool-remake-party-menu.png",
-      "sha256": "e77f64be80f312c07610a22c2b400cf671267cb079ec99785a866a76864124d0",
+      "sha256": "2a7f6e7001e0c8cb2f2d8ca7e8874c9a8093cfe5cd4a2c47d9c19e4199ba2c5e",
       "width": 960,
       "height": 600
     },
     {
       "path": "docs/screenshots/pool-remake-initial-rolf-event.png",
-      "sha256": "4f2844db13817824c2670350e74e95e5475d06d86ef0f28cf2f05876d7b10abf",
+      "sha256": "c557a8f2fd78b9941d3e4a272695aa3549bcd1e0b6e57242c9cbea7e2248d4cd",
       "width": 960,
       "height": 600
     },
     {
       "path": "docs/screenshots/pool-remake-rolf-tour-tyr.png",
-      "sha256": "0329b941ef919bc29d54aae216f65d440bd92ed641b0b4096d54e115d6fa1cc1",
+      "sha256": "310868c0b7f8736f05095a5790d18ba8300a4f479db43c780c6ffe2a35f3b9b5",
       "width": 960,
       "height": 600
     }

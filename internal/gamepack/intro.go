@@ -20,6 +20,12 @@ type InitialEvent struct {
 	HandlerAddress uint16
 	Position       Spawn
 	MonsterID      uint16
+	// SpriteBlock／ApproachDistance／PortraitBody 是 `SETUP MONSTER` 的三個
+	// operand（spec 117）：第一個是 `SPRIT<區號>.DAX` 的區塊（第一人稱視野裡
+	// 走過來的那個人形），第二個是接近距離，第三個是 `BODY<區號>.DAX` 的區塊。
+	SpriteBlock      uint8
+	ApproachDistance uint8
+	PortraitBody     uint8
 	Message        string
 	ContinueLabel  string
 	Tour           []TourStep
@@ -344,7 +350,10 @@ func ReadDOSInitialEvent(zipPath string) (InitialEvent, error) {
 			Y:      values[1],
 			Facing: values[2],
 		},
-		MonsterID:     uint16(monster.Operands[0].Low),
+		MonsterID:        uint16(monster.Operands[0].Low),
+		SpriteBlock:      monster.Operands[0].Low,
+		ApproachDistance: monster.Operands[1].Low,
+		PortraitBody:     monster.Operands[2].Low,
 		Message:       ecl.DecodePackedText(message.Operands[0].Packed),
 		ContinueLabel: menu.OptionTexts[0],
 		Tour:          tour,
@@ -594,3 +603,19 @@ func RunInitialSearchEntry(machine *eclvm.Machine) (eclvm.Result, error) {
 	}
 	return machine.RunUntilEvent(4096, nil, true)
 }
+
+// RolfPortraitHeadBlock 是 Rolf 半身像的 HEAD 區塊。
+//
+// **head 選擇子不在 ECL 裡**：原版是 `SETUP MONSTER` 存下 body 區塊，head 則來自
+// 那個結構的 `+5C2h`（overlay-7 `0699h` 把它當第一個參數傳給 overlay-29 entry 9
+// 的 `HEAD` 檔）。整包 38 顆 overlay 與 `START.EXE` 逐位元組掃過 `5C2h` 這個位移，
+// 唯一的寫入是 overlay-7 `0233h` 在 ECL block 初始化時寫 `0FFh`——所以真正的
+// producer 一定是用別的定址形式（算出來的偏移或整塊搬移）寫進去的，那是掃描面的
+// 洞，不是「沒有 producer」。
+//
+// 這個 8 因此是**從原版畫面量出來的**：`docs/reference/original-dos/adventure/`
+// 的 `03-rolf-approach.png` 裁下 `(24,24)` 起的 88×88，上半 88×40 與
+// `HEAD3.DAX` 區塊 8 逐格 100% 相同，下半 88×48 與 `BODY3.DAX` 區塊 9
+// 逐格 100% 相同（後者也正好等於 ECL operand）。負對照：八個 `PIC*.DAX`
+// 的每一張 88×88 都比不到 60%，所以那張圖不可能來自 `PIC` 那條路。
+const RolfPortraitHeadBlock = 8

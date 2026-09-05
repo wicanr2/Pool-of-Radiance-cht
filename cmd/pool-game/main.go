@@ -240,6 +240,10 @@ type app struct {
 	endingScene *ebiten.Image
 	// loadEndingScene 由 newApp 注入，測試不必碰檔案系統。
 	loadEndingScene func(partySize int) (*ebiten.Image, error)
+	// loadNPCPortrait 疊 APPROACH 的 NPC 半身像（spec 117）；同樣由 newApp 注入。
+	loadNPCPortrait func(archive, head, body uint8) (*ebiten.Image, error)
+	// npcPortrait 是現在要蓋在第一人稱框上的半身像；沒有就畫視野。
+	npcPortrait *ebiten.Image
 	treasureActive   bool
 	treasureStage    treasureStage
 	treasureItems    []gamepack.TreasureItemRecord
@@ -404,6 +408,17 @@ func newApp(zipPath, statePath string) (*app, error) {
 			return nil, err
 		}
 		rendered, err := scene.RGBA(0, application.artPalette())
+		if err != nil {
+			return nil, err
+		}
+		return ebiten.NewImageFromImage(rendered), nil
+	}
+	application.loadNPCPortrait = func(archive, head, body uint8) (*ebiten.Image, error) {
+		picture, err := assets.ReadNPCPortrait(zipPath, archive, head, body)
+		if err != nil {
+			return nil, err
+		}
+		rendered, err := picture.RGBA(0, application.artPalette())
 		if err != nil {
 			return nil, err
 		}
@@ -2541,6 +2556,24 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		drawDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
 		return
 	}
+	// APPROACH 的時候原版把半身像整個蓋在那一框上，不是畫視野（spec 117）。
+	if portrait := a.approachPortrait(); portrait != nil {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(2, 2)
+		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
+		screen.DrawImage(portrait, op)
+		if a.initialEvent != nil {
+			message, label := a.initialEvent.Message, a.initialEvent.ContinueLabel
+			if a.eventText != "" {
+				message = a.eventText
+			}
+			if a.eventLabel != "" {
+				label = a.eventLabel
+			}
+			drawDialogue(screen, a.gameText.Translate(message), a.gameText.Translate(label), foreground, accent)
+		}
+		return
+	}
 	stageFill, err := poolFirstPersonStageFill()
 	if err != nil {
 		drawText(screen, "FIRST-PERSON STAGE ERROR", 72, 180, accent)
@@ -2565,21 +2598,22 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	drawPoolStageRects(screen, stageFill.PostWall, viewLeft, viewTop, a.artPalette())
 	drawText(screen, fmt.Sprintf("GEO%d BLOCK %d", a.spawn.Map.Archive, a.spawn.Map.BlockID), 310, 106, foreground)
 	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
-	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 184, accent)
-	drawText(screen, "VIEW TRAVERSAL: STRONG INFERENCE", 310, 210, accent)
+	// 右欄的最後一列不能低於 262：對話框的上緣在 `dialogueTop`（264），
+	// 再往下就被蓋掉一半。`ESC` 那一列拿掉了——底部說明列本來就有 `ESC BACK`。
+	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 172, accent)
+	drawText(screen, "VIEW TRAVERSAL: STRONG INFERENCE", 310, 196, accent)
 	moveStatus := "MOVE POLICY: PENDING / DISABLED"
 	if a.introDone {
 		moveStatus = "GEO WALK: ENABLED / EVENTS PENDING"
 	}
-	drawText(screen, moveStatus, 310, 246, foreground)
+	drawText(screen, moveStatus, 310, 220, foreground)
 	if a.initialEvent != nil {
-		drawText(screen, fmt.Sprintf("FIRST EVENT: ROLF / MONSTER %d", a.initialEvent.MonsterID), 310, 272, foreground)
+		drawText(screen, fmt.Sprintf("FIRST EVENT: ROLF / MONSTER %d", a.initialEvent.MonsterID), 310, 244, foreground)
 	} else {
-		drawText(screen, "FIRST EVENT: NOT LOADED", 310, 272, foreground)
+		drawText(screen, "FIRST EVENT: NOT LOADED", 310, 244, foreground)
 	}
-	drawText(screen, "ESC: PARTY CREATION MENU", 310, 308, foreground)
 	if a.tourActive && a.initialEvent != nil {
-		drawText(screen, fmt.Sprintf("TOUR STEP %02d / %02d", a.tourStep+1, len(a.initialEvent.Tour)), 310, 294, accent)
+		drawText(screen, fmt.Sprintf("TOUR STEP %02d / %02d", a.tourStep+1, len(a.initialEvent.Tour)), 310, 262, accent)
 	}
 	dialogueVisible := false
 	if a.introWaiting && a.initialEvent != nil {
@@ -2674,25 +2708,40 @@ func poolStageScreenRect(rectangle viewport.BackgroundRect, viewLeft, viewTop in
 	return image.Rect(left, top, left+rectangle.Width*2, top+rectangle.Height*2)
 }
 
+// 對話框的上緣壓在第一人稱框底下（`dialogueTop`）。
+//
+// 原版的文字框在那一框**下面**，兩者不重疊——`03-rolf-approach.png` 的半身像
+// 是整張看得見的。remake 原本把框畫在 `198`，剛好切掉視野下面 64 個像素，
+// 症狀在只畫牆片時看起來像「牆片本來就矮」，換成半身像之後才明顯：Rolf 被
+// 攔腰截斷。視野框是 `(48,86)` 起的 176×176，所以下緣在 262。
+// 下緣停在 370：底部那一列說明文字的字頂在 372（基線 386、ascent 14），
+// 畫到 372 以下框線就會壓在字上。264..370 只放得下五列訊息加一列提示。
+const (
+	dialogueTop      = 264
+	dialogueBottom   = 370
+	dialogueLines    = 5
+	dialogueFirstRow = 280
+)
+
 func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
-	panel := ebiten.NewImage(560, 142)
+	panel := ebiten.NewImage(560, dialogueBottom-dialogueTop)
 	panel.Fill(color.RGBA{0, 0, 0, 255})
-	screen.DrawImage(panel, &ebiten.DrawImageOptions{GeoM: translated(40, 198)})
+	screen.DrawImage(panel, &ebiten.DrawImageOptions{GeoM: translated(40, dialogueTop)})
 	for x := 40; x < 600; x++ {
-		screen.Set(x, 198, accent)
-		screen.Set(x, 339, accent)
+		screen.Set(x, dialogueTop, accent)
+		screen.Set(x, dialogueBottom, accent)
 	}
-	for y := 198; y <= 339; y++ {
+	for y := dialogueTop; y <= dialogueBottom; y++ {
 		screen.Set(40, y, accent)
 		screen.Set(599, y, accent)
 	}
 	for index, line := range wrapDisplay(message, 68) {
-		if index >= 6 {
+		if index >= dialogueLines {
 			break
 		}
-		drawText(screen, line, 52, 218+index*16, foreground)
+		drawText(screen, line, 52, dialogueFirstRow+index*16, foreground)
 	}
-	drawText(screen, label, 52, 326, accent)
+	drawText(screen, label, 52, dialogueBottom-8, accent)
 }
 
 func translated(x, y float64) ebiten.GeoM {
