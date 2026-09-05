@@ -104,7 +104,28 @@ type wildernessWalk struct {
 	// 重算（`49C3` 被設成 14／3，GEO 只是往旁邊走一格），所以**從哪一列跨
 	// 過去，決定了下一張圖是哪一座迷宮**。固定一列就只看得到一種。
 	rowPick int
+	// crossings 是這一趟跨過幾次圖。跨圖的列要一次換一個，不然三張圖會用
+	// 同一條路線，等於只看得到一座迷宮。
+	crossings int
+	// stall 是「連續幾個 tick 位置沒動」。牆擋住的時候按前進不會有任何效果，
+	// 而規劃器看不出差別——實測有一趟就這樣站在圖 26 的 (2,23) 對著西邊的牆
+	// 按了七千多次。
+	stall    int
+	lastHere [2]int
+	// reshuffles 是「這張圖能走的都走完了，從另一列跨出去再跨回來換一座
+	// 迷宮」做過幾次。實測每一個地點都有兩成以上的位移走得到
+	//（`workplace/wildreach` 把 16×16 種位移乘上每一種入口列全跑過），
+	// 所以走不到的時候換一座迷宮再試是有根據的，不是亂撞。
+	reshuffles int
 }
+
+// wildernessMaxReshuffles 是一趟最多換幾座迷宮。沒有上限的話，地點全部走不到
+// 的那幾張圖會把整趟的預算耗在來回跨圖上。
+const wildernessMaxReshuffles = 6
+
+// wildernessMaxStall 是位置沒動幾個 tick 就當這個目標走不到。轉向也要一個
+// tick，所以不能太小。
+const wildernessMaxStall = 8
 
 func newWildernessWalk(crossFirst bool, rowPick int) *wildernessWalk {
 	return &wildernessWalk{walked: map[[3]int]bool{},
@@ -127,6 +148,15 @@ func wildernessOffset(a *app) (int, int) {
 	x := (int(a.spawn.X) - int(memory[wildernessX])) % 16
 	y := (int(a.spawn.Y) - int(memory[wildernessY])) % 16
 	return (x + 16) % 16, (y + 16) % 16
+}
+
+// wildernessCanLeave 說站在 cell 上往 facing 踏一步，GEO 的牆讓不讓。跨圖是
+// 「走到某一個 X 再踏出去」，而**踏出去那一步一樣會被牆擋**——只看 X 對不對
+// 會站在邊界對著牆一直按前進。
+func wildernessCanLeave(a *app, cell [2]int, facing uint8) bool {
+	offsetX, offsetY := wildernessOffset(a)
+	return a.initialMap.Grid.CanMoveDungeonWrapped(
+		(cell[0]+offsetX)%16, (cell[1]+offsetY)%16, int(facing)*2)
 }
 
 // wildernessRoute 用 BFS 算一條從 from 到 target 的路線，回傳每一步的四方位。
@@ -190,6 +220,16 @@ func wildernessNextFacing(a *app, zipPath string, walk *wildernessWalk) (uint8, 
 	walk.sheets[block] = true
 	if block != walk.block {
 		walk.block, walk.route, walk.steps = block, nil, 0
+		walk.stall, walk.lastHere = 0, here
+	}
+	if here == walk.lastHere {
+		walk.stall++
+	} else {
+		walk.stall, walk.lastHere = 0, here
+	}
+	if walk.stall > wildernessMaxStall {
+		walk.gaveUp[[3]int{block, walk.target[0], walk.target[1]}] = true
+		walk.route, walk.stall = nil, 0
 	}
 	switch {
 	case len(walk.route) == 0:
@@ -214,7 +254,8 @@ func wildernessNextFacing(a *app, zipPath string, walk *wildernessWalk) (uint8, 
 	if len(walk.route) == 0 {
 		// 已經站在跨圖那一格上：往外踏一步就換圖。
 		for _, crossing := range wildernessCrossings[block] {
-			if !walk.sheets[crossing.To] && here[0] == crossing.X {
+			if !walk.sheets[crossing.To] && here[0] == crossing.X &&
+				wildernessCanLeave(a, here, crossing.Facing) {
 				return crossing.Facing, true
 			}
 		}
@@ -235,10 +276,12 @@ func planWildernessRoute(a *app, zipPath string, block int, here [2]int,
 			if walk.sheets[edge.To] || walk.gaveUp[[3]int{block, edge.X, -1}] {
 				continue
 			}
-			if here[0] == edge.X {
+			if here[0] == edge.X && wildernessCanLeave(a, here, edge.Facing) {
 				return nil, [2]int{edge.X, -1}, true
 			}
-			if route, ok := wildernessCrossingStep(a, zipPath, block, here, edge.X, walk.rowPick); ok {
+			if route, ok := wildernessCrossingStep(a, zipPath, block, here, edge.X,
+				edge.Facing, walk.rowPick+walk.crossings); ok {
+				walk.crossings++
 				return route, [2]int{edge.X, -1}, true
 			}
 			walk.gaveUp[[3]int{block, edge.X, -1}] = true
@@ -266,6 +309,16 @@ func planWildernessRoute(a *app, zipPath string, block int, here [2]int,
 			return route, target
 		}
 	}
+	// 這張圖能走的都走完了：從另一列跨出去再跨回來，換一座迷宮再試一次。
+	if walk.reshuffles < wildernessMaxReshuffles {
+		walk.reshuffles++
+		walk.rowPick++
+		walk.sheets = map[int]bool{block: true}
+		walk.gaveUp = map[[3]int]bool{}
+		if route, target, ok := crossing(); ok {
+			return route, target
+		}
+	}
 	return nil, [2]int{}
 }
 
@@ -280,10 +333,10 @@ func planWildernessRoute(a *app, zipPath string, block int, here [2]int,
 // 但**繞不過去的時候寧可路過也要跨圖**：最西邊那一張圖上有三個區塊的入口，
 // 停在原地一個都拿不到。
 func wildernessCrossingStep(a *app, zipPath string, block int, here [2]int,
-	edge, rowPick int) ([]uint8, bool) {
+	edge int, facing uint8, rowPick int) ([]uint8, bool) {
 	places := wildernessPlaceSet(zipPath, block)
 	for _, avoid := range []map[[2]int]bool{places, nil} {
-		if route, ok := wildernessCrossingRow(a, here, edge, avoid, rowPick); ok {
+		if route, ok := wildernessCrossingRow(a, here, edge, facing, avoid, rowPick); ok {
 			return route, true
 		}
 	}
@@ -293,10 +346,13 @@ func wildernessCrossingStep(a *app, zipPath string, block int, here [2]int,
 // wildernessCrossingRow 列出所有走得到的邊界格，照路線長度排序，挑第
 // rowPick 條。跨圖是「走到某一個 X 再踏出去」，同一個 X 有很多列，而**從哪
 // 一列跨過去決定了下一張圖的迷宮長什麼樣**（見 wildernessWalk.rowPick）。
-func wildernessCrossingRow(a *app, here [2]int, edge int,
+func wildernessCrossingRow(a *app, here [2]int, edge int, facing uint8,
 	avoid map[[2]int]bool, rowPick int) ([]uint8, bool) {
 	var routes [][]uint8
 	for y := wildernessMinY; y <= wildernessMaxY; y++ {
+		if !wildernessCanLeave(a, [2]int{edge, y}, facing) {
+			continue
+		}
 		if route := wildernessRoute(a, here, [2]int{edge, y}, avoid); len(route) != 0 {
 			routes = append(routes, route)
 		}

@@ -642,7 +642,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	harbourTried := false
 	// 野外的目標追蹤（wilderness_explore_test.go）。兩種走法與跨圖的列由
 	// 種子決定：單一種走法量到的區塊不一樣，聯集才是覆蓋面。
-	wild := newWildernessWalk(seed%2 == 0, int(seed%7))
+	wild := newWildernessWalk(seed%2 == 0, int(seed%32))
 	// dockTried 同理：票拿到手之後主動走一次碼頭，每個鎖住週期一次。
 	dockTried := false
 walk:
