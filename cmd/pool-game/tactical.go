@@ -556,7 +556,8 @@ func (state *tacticalState) endRound(roll func(count, sides int) int) {
 		}
 		return
 	}
-	// **非原版的僵局安全閥。** 盤面連續 `tacticalStalemateRounds` 回合完全
+	// **非原版的僵局安全閥**（使用者 2026-09-06 決定留著）。
+	// 盤面連續 `tacticalStalemateRounds` 回合完全
 	// 沒變（沒人移動、沒人受傷、沒人倒下）就收場——雙方都走不到對方的時候，
 	// 兩邊都會正常結束回合，於是回合數無限增加而什麼都不會發生。
 	if fingerprint := state.stallFingerprint(); fingerprint == state.stallSignature {
