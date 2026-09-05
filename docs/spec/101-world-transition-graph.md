@@ -145,7 +145,7 @@ tools/go.sh run ./cmd/pool-world-graph -text
 | 2 | 區塊 18 或 26 | **已打通**（野外 26 的 (11,28)）|
 | 15 | 區塊 29 或 2 | 走出圖 29 的**南**邊界（表 `@AFCA` 的朝向 2）|
 | 9 | 區塊 18 | **已實跑驗過**：走出 GEO1/18 的北邊界（`99D4 ON GOTO @C04D` 第 0 支：`6E12 = 2`、`NEWECL 9`），`TestTheNorthEdgeOfBlockEighteenLeadsToBlockNine` |
-| 6 → 3 → {4, 5} → 7 | 區塊 9 | 兩條路都還沒通。**邊界那條走不到**：從區塊 18 進來的落點是 GEO2/9 的 (4,15)（第 24 連通區），而兩個北緣出口在第 2 區，所以入口 0 的「`C04C == 0` 就 `NEWECL 6`」永遠不成立。**遭遇那條沒觸發**：`ecl2/9 A558h ENCOUNTER MENU`（'MONSTERS ARE CHARGING TOWARD YOU FROM THE FAR TOWER.'）之後 `A57E ON GOTO @6E82` 只有兩支，索引落在兩支之外才 fall-through 到 `A58E`（擺到 (4,15) 朝北）→ `A5A0 NEWECL 6` |
+| 6 → 3 → {4, 5} → 7 | 區塊 9 | 兩條路都還沒通。**邊界那條走不到**：從區塊 18 進來的落點是 GEO2/9 的 (4,15)（第 24 連通區），而兩個北緣出口在第 2 區，所以入口 0 的「`C04C == 0` 就 `NEWECL 6`」永遠不成立。**遭遇那條沒觸發**：那一段掛在兩座塔的旗標上（`A444`／`A457` 讀 `DS:4A77h` 的第 3 位與第 2 位，湊出 `@6E7A`；只有 `@6E7A == 2` 才演「MONSTERS ARE CHARGING TOWARD YOU FROM THE FAR TOWER.」）。之後 `A57E ON GOTO @6E82` 只有兩支，索引落在兩支之外才 fall-through 到 `A58E`（擺到 (4,15) 朝北）→ `A5A0 NEWECL 6`。`4A77` 的十個寫入點全在 `ecl2/9` 自己裡面，都是 `OR`——在區塊 9 裡清塔才會設起來 |
 
 走到的區塊現在是 **19 個**（世界巡迴，三種主線狀態加上 `4A8C = 255`）：
 `[0 1 2 8 10 11 14 16 18 19 20 21 22 23 24 25 26 27 29]`。
