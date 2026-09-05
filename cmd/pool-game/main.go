@@ -164,6 +164,9 @@ type app struct {
 	// cellMovedByScript 記「這一步是腳本自己用 `CALL C01Eh` 走掉的」。
 	cellMovedByScript bool
 	cellMenuOptions   []string
+	// door 是目前擋在前面的那一道鎖住的門（spec 122）。**不走
+	// cellMenuOptions**：那一條的選擇要餵回 ECL VM，這一個不用。
+	door *doorMenu
 	// characterBinding 是 ECL 的 active-character 視窗與隊伍之間的來回。
 	characterBinding *gamepack.CharacterBinding
 	cellMenuCursor   int
@@ -806,6 +809,12 @@ func (a *app) Update() error {
 						}
 					}
 				}
+				if a.door != nil {
+					return a.doorMenuInput(
+						a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp),
+						a.justPressed(ebiten.KeyArrowRight) || a.justPressed(ebiten.KeyArrowDown),
+						a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace))
+				}
 				if a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
 					if a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp) {
 						a.cellMenuCursor = (a.cellMenuCursor + len(a.cellMenuOptions) - 1) % len(a.cellMenuOptions)
@@ -891,7 +900,12 @@ func (a *app) moveInitialDungeonForward() error {
 		a.eventMachine.Memory[wildernessRefuse] = 0
 	}
 	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
-		a.statusLine = "A wall or locked door blocks the way."
+		// 鎖住的門會出 `Bash`／`Pick`／`Knock`／`Exit` 的選單（spec 122）；
+		// 實牆就只是擋著。
+		if a.beginDoorMenu(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
+			return nil
+		}
+		a.statusLine = "A wall blocks the way."
 		return nil
 	}
 	if a.eventMachine != nil {

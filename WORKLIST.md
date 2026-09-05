@@ -182,8 +182,19 @@
   底下換成指令列（基準圖 `06`），remake 同一格同一朝向、視野逐格 97.0%，
   再往西一步兩邊都換到貧民窟 `(15,4)`——這一項不再是「待證明」。
   wrapped traversal 仍是跨作品 strong inference（那一步是換圖不是繞回）；
-  地名、bounded／wrapped／door policy 仍待證明——**門現在畫得出來了
-  （spec 120），但開門／上鎖的規則還沒讀**。
+  地名與 bounded／wrapped 仍待證明。
+  **開門／上鎖的規則讀完並接上了**（2026-09-05，spec 122）：撞上一道鎖住的門
+  原版出 `Bash`／`Pick`／`Knock`／`Exit` 的選單（overlay-14 `0DB7h`）。
+  找它的方法是掃字串——三十八支 overlay 裡和門有關的字面只有那一組。
+  門的狀態由 `0131h:0039h`（overlay-30 entry 5）用**目前格子與朝向**問出來，
+  1 沒鎖、2 鎖住、3 閂住；那三個參數就是 `DS:6A0Bh`..`6A0Dh`，
+  **spec 012 掛著的「`6A0Bh`／`6A0Ch` 用途」順帶解掉了**。
+  `Bash` 是 AD&D 一版力量表的 Open Doors 欄（狀態 3 用括號裡的數字），
+  整隊每人各試一次；`Pick` 是賊的開鎖百分比（記錄 `+78h`）而且**一扇門只能試
+  一次**；`Knock` 一定成功但吃掉一格記憶。成功之後兩邊的旗標一起改
+  ——共用 engine 的 `UnlockDoorWrapped` 做的就是這件事。
+  remake 已照接（`internal/gamepack/door.go`＋`cmd/pool-game/door.go`），
+  兩張力量表逐格有測試。
   **鎖住的門有多少，量過了**（2026-09-05，`workplace/doorscan`）：
   `CanMoveDungeonWrapped` 對門旗標 1（未鎖）放行，2（鎖住可撬）與 3（撬不開）
   擋住。GEO2/9 有 29 道、GEO4/2 19 道、GEO2/20 11 道、GEO1/18 2 道；
