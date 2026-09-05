@@ -528,7 +528,7 @@ const exploreMaxTargetTries = 12
 // exploreMaxWildernessSteps 是一趟在野外最多亂走幾步。野外沒有「這一格踩過
 // 了」可用（位置在 `DS:49C3h`／`DS:49C4h`，不是 GEO 格子，spec 105），
 // 所以隨機走不會自己停；沒有上限的話一趟就把整包預算花在那裡。
-const exploreMaxWildernessSteps = 3000
+const exploreMaxWildernessSteps = 800
 
 // 有目的地走：把每一張圖上「走得到的格子」逐格踩過，換圖就換到新圖上繼續。
 //
@@ -640,6 +640,9 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	heldHere := false
 	// harbourTried 讓「主線鎖住就先去港務長」每個鎖住期間只試一次。
 	harbourTried := false
+	// 野外的目標追蹤（wilderness_explore_test.go）。兩種走法與跨圖的列由
+	// 種子決定：單一種走法量到的區塊不一樣，聯集才是覆蓋面。
+	wild := newWildernessWalk(seed%2 == 0, int(seed%7))
 	// dockTried 同理：票拿到手之後主動走一次碼頭，每個鎖住週期一次。
 	dockTried := false
 walk:
@@ -1018,11 +1021,11 @@ walk:
 		}
 		if application.inWilderness() {
 			// 野外的位置存在 `DS:49C3h`／`DS:49C4h`，不在 GEO 格子上
-			//（spec 105），所以規劃器沒得規劃。輪流轉向再往前走，
-			// 讓它把野外那幾張圖走開。
+			//（spec 105），但**有地點表**，而且野外座標與 GEO 格子是同步走
+			// 的——所以規劃得起來。細節見 wilderness_explore_test.go。
 			//
-			// 要有上限：野外沒有「這一格踩過了」可用，隨機亂走不會自己停，
-			// 一趟就會把整包預算吃在那裡（實測連帶把整個 package 的
+			// 仍然要有上限：野外沒有「這一格踩過了」可用，走不到目標也不會
+			// 自己停，一趟就會把整包預算吃在那裡（實測連帶把整個 package 的
 			// 10 分鐘 timeout 用完）。
 			plan, exit = nil, nil
 			spin["野外"]++
@@ -1031,11 +1034,19 @@ walk:
 				break
 			}
 			key := ebiten.KeyArrowUp
-			switch application.roller.Roll(1, 6) {
-			case 1:
-				key = ebiten.KeyArrowRight
-			case 2:
-				key = ebiten.KeyArrowLeft
+			aimed := false
+			if application.eventMachine != nil {
+				if want, ok := wildernessNextFacing(application, zipPath, wild); ok {
+					key, aimed = wildernessTurnKey(application.spawn.Facing, want), true
+				}
+			}
+			if !aimed {
+				switch application.roller.Roll(1, 6) {
+				case 1:
+					key = ebiten.KeyArrowRight
+				case 2:
+					key = ebiten.KeyArrowLeft
+				}
 			}
 			if err := press(application, key); err != nil {
 				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
