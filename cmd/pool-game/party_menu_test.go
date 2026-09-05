@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 )
 
 func menuApp(party ...poolsave.Character) *app {
@@ -41,14 +42,14 @@ func TestEmptyPartyShowsOnlyTheFourOriginalEntries(t *testing.T) {
 	}
 	// 有人之後換一組。原版隊伍非空的截圖上是九項：
 	// CREATE／DROP／MODIFY／VIEW／ADD／REMOVE／SAVE／BEGIN／EXIT
-	// ——**沒有 LOAD，也沒有 TRAIN**。remake 多一項 T）RAIN，那是已知的偏差
-	// （原版由 `DS:06D4h` 控制，那個旗標的來源還沒讀）。
+	// ——**沒有 LOAD，也沒有 TRAIN**。兩張截圖都不在訓練所裡，所以 `T` 的
+	// 那一道（`DS:06D4h`，見 training_gate.go）不成立。
 	a = menuApp(rookie("HERO"))
 	keys = nil
 	for _, entry := range a.visiblePartyMenuEntries() {
 		keys = append(keys, entry.key)
 	}
-	want = []ebiten.Key{ebiten.KeyC, ebiten.KeyD, ebiten.KeyM, ebiten.KeyT,
+	want = []ebiten.Key{ebiten.KeyC, ebiten.KeyD, ebiten.KeyM,
 		ebiten.KeyV, ebiten.KeyA, ebiten.KeyR, ebiten.KeyS, ebiten.KeyB, ebiten.KeyE}
 	if len(keys) != len(want) {
 		t.Fatalf("有隊伍時列出 %d 項，預期 %d 項", len(keys), len(want))
@@ -195,5 +196,76 @@ func TestSaveAndExitEntries(t *testing.T) {
 	a.keys = scriptedKeys{ebiten.KeyE: true}
 	if err := a.partyMenuCommand(); err != ebiten.Termination {
 		t.Fatalf("E 應該結束遊戲，得到 %v", err)
+	}
+}
+
+// `T)RAIN` 只在訓練所裡出現（spec 008）。原版的閘門是
+// `es:[4937h]+550h > 0`，也就是 ECL 位址 `6DA8h` 非零——全遊戲只有
+// ECL3 區塊 11 的四道門寫它。
+func TestTrainOnlyAppearsInsideATrainingHall(t *testing.T) {
+	a := menuApp(rookie("HERO"))
+	if a.trainingHallOpen() {
+		t.Fatal("沒進訓練所就開著")
+	}
+	listed := func() bool {
+		for _, entry := range a.visiblePartyMenuEntries() {
+			if entry.key == ebiten.KeyT {
+				return true
+			}
+		}
+		return false
+	}
+	if listed() {
+		t.Error("沒進訓練所卻列出 T）RAIN")
+	}
+	a.eventMachine = &eclvm.Machine{Memory: map[uint16]uint16{}}
+	for _, mask := range []uint16{TrainingMaskMagicUser, TrainingMaskCleric,
+		TrainingMaskThief, TrainingMaskFighter} {
+		a.eventMachine.Memory[trainingMaskAddress] = mask
+		if !a.trainingHallOpen() || !listed() {
+			t.Errorf("遮罩 %#x 該讓 T）RAIN 出現", mask)
+		}
+	}
+	a.eventMachine.Memory[trainingMaskAddress] = 0
+	if listed() {
+		t.Error("離開訓練所之後 T）RAIN 還在")
+	}
+}
+
+// 除錯碼：`J` 再輸入 `STING`，原版回 "I Understand, master..." 並讓
+// `T)RAIN` 無條件出現（overlay-16 `049Ah` → `ds:466Eh = 1`）。
+func TestTheStingCodeUnlocksTraining(t *testing.T) {
+	a := menuApp(rookie("HERO"))
+	a.stingPrompt = true
+	text := &scriptedTextKeys{scriptedKeys: scriptedKeys{}, chars: []rune("sting")}
+	a.keys = text
+	if !a.stingInput() {
+		t.Fatal("輸入列沒吃掉按鍵")
+	}
+	if a.stingBuffer != stingPassword {
+		t.Fatalf("緩衝區是 %q，預期 %q", a.stingBuffer, stingPassword)
+	}
+	text.scriptedKeys[ebiten.KeyEnter] = true
+	a.stingInput()
+	if !a.stingUnlocked {
+		t.Fatal("對的碼沒有解開")
+	}
+	if a.statusLine != stingAcknowledge {
+		t.Errorf("回話是 %q，預期 %q", a.statusLine, stingAcknowledge)
+	}
+	if !a.trainingHallOpen() {
+		t.Error("解開之後訓練所還是關的")
+	}
+
+	// 錯的碼什麼都不做。原版比的是整串。
+	b := menuApp(rookie("HERO"))
+	b.stingPrompt = true
+	wrong := &scriptedTextKeys{scriptedKeys: scriptedKeys{}, chars: []rune("stin")}
+	b.keys = wrong
+	b.stingInput()
+	wrong.scriptedKeys[ebiten.KeyEnter] = true
+	b.stingInput()
+	if b.stingUnlocked {
+		t.Error("錯的碼卻解開了")
 	}
 }

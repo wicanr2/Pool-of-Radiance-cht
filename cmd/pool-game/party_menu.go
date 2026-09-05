@@ -16,6 +16,9 @@ import (
 // **可見規則**：「若你未將任何人物加入隊伍，則大部份的人物處理選擇項都將
 // 不會出現」——隊伍是空的時候只剩 C、A、L、E 四項，正好是那張截圖上的四項。
 // 需要對象的七項（D、M、T、V、R）與需要隊伍的兩項（S、B）都藏起來。
+//
+// `T)RAIN` 還多一道「這一區有沒有訓練所」，見 training_gate.go——
+// 那也是原版兩張截圖上都看不到它的原因。
 
 // partyMenuEntry 是選單上的一列。
 type partyMenuEntry struct {
@@ -27,28 +30,29 @@ type partyMenuEntry struct {
 	// emptyOnly 為真時反過來：**隊伍有人就不顯示**。
 	// `L)OAD SAVED GAME` 是唯一一個——原版隊伍非空的截圖上沒有它。
 	emptyOnly bool
+	// needsTrainingHall 為真時再多一道：這一區要有訓練所（或輸入過除錯碼）。
+	// `T)RAIN` 是唯一一個，見 training_gate.go。
+	needsTrainingHall bool
 }
 
 // partyMenuEntries 依說明書 p.8..p.10 的敘述順序列出十一項。
 func partyMenuEntries() []partyMenuEntry {
 	return []partyMenuEntry{
-		{ebiten.KeyC, msgMenuCreate, false, false},
-		{ebiten.KeyD, msgMenuDrop, true, false},
-		{ebiten.KeyM, msgMenuModify, true, false},
-		// T)RAIN **原版在這個畫面上不顯示**（兩張原版截圖都沒有它）。
-		// 它由 `DS:06D4h` 那個旗標控制，而那個旗標從哪裡設還沒讀出來，
-		// 所以 remake 先一律顯示——藏起來玩家就昇不了級。這是**已知的
-		// 偏差**，不是照原版接的。
-		{ebiten.KeyT, msgMenuTrain, true, false},
-		{ebiten.KeyV, msgMenuView, true, false},
-		{ebiten.KeyA, msgMenuAdd, false, false},
-		{ebiten.KeyR, msgMenuRemove, true, false},
+		{ebiten.KeyC, msgMenuCreate, false, false, false},
+		{ebiten.KeyD, msgMenuDrop, true, false, false},
+		{ebiten.KeyM, msgMenuModify, true, false, false},
+		// T)RAIN 還要這一區有訓練所——**原版那兩張截圖都沒有它，是因為
+		// 兩張都不在訓練所裡**（`DS:06D4h` 的來源見 training_gate.go）。
+		{ebiten.KeyT, msgMenuTrain, true, false, true},
+		{ebiten.KeyV, msgMenuView, true, false, false},
+		{ebiten.KeyA, msgMenuAdd, false, false, false},
+		{ebiten.KeyR, msgMenuRemove, true, false, false},
 		// L)OAD 只在隊伍是空的時候出現：原版隊伍非空的截圖上沒有它，
 		// 空隊伍那一張有。
-		{ebiten.KeyL, msgMenuLoad, false, true},
-		{ebiten.KeyS, msgMenuSave, true, false},
-		{ebiten.KeyB, msgMenuBegin, true, false},
-		{ebiten.KeyE, msgMenuExit, false, false},
+		{ebiten.KeyL, msgMenuLoad, false, true, false},
+		{ebiten.KeyS, msgMenuSave, true, false, false},
+		{ebiten.KeyB, msgMenuBegin, true, false, false},
+		{ebiten.KeyE, msgMenuExit, false, false, false},
 	}
 }
 
@@ -61,6 +65,9 @@ func (a *app) visiblePartyMenuEntries() []partyMenuEntry {
 			continue
 		}
 		if entry.emptyOnly && hasParty {
+			continue
+		}
+		if entry.needsTrainingHall && !a.trainingHallOpen() {
 			continue
 		}
 		visible = append(visible, entry)

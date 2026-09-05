@@ -176,6 +176,11 @@ type app struct {
 	appraiseValue    int
 	templeParty      int
 	templeService    int
+	// stingPrompt／stingBuffer／stingUnlocked 是原版的除錯碼（`J` 再輸入
+	// `STING`，overlay-16 `049Ah`），見 training_gate.go。
+	stingPrompt   bool
+	stingBuffer   string
+	stingUnlocked bool
 	// programManaging 為真時，隊伍管理畫面是 `38h PROGRAM` 從地圖上開的，
 	// 離開時要回地圖並讓 ECL 繼續，不是重新開始冒險。
 	programManaging bool
@@ -622,6 +627,14 @@ func (a *app) Update() error {
 			a.mode = modeMenu
 		}
 	case modeMenu:
+		// `J` 的除錯碼在原版就是掛在這個畫面上，兩種進法都吃得到。
+		if a.stingInput() {
+			return nil
+		}
+		if a.justPressed(ebiten.KeyJ) {
+			a.stingPrompt, a.stingBuffer = true, ""
+			return nil
+		}
 		if a.programManaging {
 			// 1-6 挑人、T 訓練（spec 097）。原版把訓練掛在這個畫面的 `T` 上。
 			for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2,
