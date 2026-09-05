@@ -449,3 +449,32 @@ ecl7/26 @B019 (29)  39 43 44 46 62 66 67 73 75 76 77 78 80 84 87 89 92 93
   25 與 27 幾乎每一格都自成一個元件，不像走得動的空間；6 與 26 才像，
   而進野外載入的正是 6。
 - `LOAD PIECES repeats symbol block 17`（治具走到野外時出現兩次）。
+
+
+## 洞穴是隨機事件，而且它是換位移的唯一辦法
+
+野外的位移決定走得到哪些地點，而換位移只有一條路——**兩個隨機事件串起來**：
+
+1. 在野外走路時擲：`ecl8/27 9EA7h RANDOM 19` 中 0，再 `A867h` 裡的
+   `RANDOM 20` 中 20，才跳 `A20Dh`「YOU HAVE FOUND A SMALL, DARK CAVE.
+   WILL YOU ENTER?」。**它不是地點**，走不過去，只能等它出現。
+2. 進去之後那張區域圖（`LOAD FILES 27,2,255`，GEO8/27）**一個邊界出口都
+   沒有**；要在裡面走到 `A7F7h`「YOU FIND A PASSAGEWAY GOING OUT.
+   WHAT WILL YOU DO?」選 LEAVE 才出得來。那一句同樣是隨機事件。
+3. 出來時 `A255h RANDOM 3` 從四組 `4A18/4A19` 挑一組寫進 `C04B`／`C04C`
+   （野外 27 是 (0,3)、(6,15)、(12,15)、(11,0)），位移就換了。
+
+三張野外圖都有這一套：野外 25 在 `A472h`（四組），野外 26 在 `A44Ch`
+（`RANDOM 2`，三組），野外 27 在 `A255h`（四組）。
+
+實測（`TestTheWildernessCaveRerollReachesTheEasternOutpost`）：從船的登陸點
+出發，位移 (6,4) → 兩次重擲後 (7,10) → (1,9)，然後走到 (6,15)，
+進 **ECL block 13、GEO8/13**。
+
+**做這件事的走法要注意兩個坑**，不然看起來像「洞穴不會出現」：
+
+- 戰術地圖只按 Enter 全隊都不出手，那一場永遠結束不了——隊伍會卡在原地，
+  看起來像走不動。要用探索器的駕駛（`tacticalPilot`），而且 busy 的判斷要含
+  `combatActive` 與 `tacticalPreview`。
+- 寶物那一串要挑 Exit（`treasureMenuChoice`），不然 View → Return → View
+  繞不完。
