@@ -529,3 +529,90 @@ func drainWildernessEvents(a *app) {
 		press(a, ebiten.KeyEnter)
 	}
 }
+
+// 野外 → 城西緣 → 區塊 18 → 北邊界 → 區塊 9。
+//
+// 這一條是 spec 101 那張缺口表裡「9→6→3→{4,5}→7 那條邊界鏈」的第一段，
+// 而且是**在完整的前端底下走的**：從東邊的登陸點出發，往西跨到野外圖 26，
+// 走到 (11,28)（城西緣，spec 105 的地點 4），選 NORTH 進區塊 18，再從
+// GEO1/18 的北緣踏出去——`ecl1/18 99D4h` 的 `ON GOTO @C04D` 第 0 支就是
+// `6E12 = 2`、`NEWECL 9`。
+//
+// 世界巡迴走不到這裡不是因為機制不通，是因為 34 趟裡只有兩趟到得了 GEO1/18，
+// 而且都是走完野外之後才進去的（見 WORKLIST）。
+func TestTheNorthEdgeOfBlockEighteenLeadsToBlockNine(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application := sailEastIntoTheWilderness(t)
+	walk := newWildernessWalk(true, 0)
+	for step := 0; step < 2000 && int(application.eventSession.CurrentBlockID()) != 26; step++ {
+		if !application.inWildernessOverland() {
+			t.Fatalf("中途離開野外，block %d", application.eventSession.CurrentBlockID())
+		}
+		key := ebiten.KeyArrowRight
+		if want, ok := wildernessNextFacing(application, zipPath, walk); ok {
+			key = wildernessTurnKey(application.spawn.Facing, want)
+		}
+		if err := press(application, key); err != nil {
+			t.Fatal(err)
+		}
+		drainWildernessEvents(application)
+	}
+	memory := application.eventMachine.Memory
+	// 走到城西緣 (11,28)，選單第一項是 NORTH。
+	for step := 0; step < 400 && application.inWildernessOverland(); step++ {
+		here := [2]int{int(memory[wildernessX]), int(memory[wildernessY])}
+		if here == [2]int{11, 28} {
+			break
+		}
+		route := wildernessRoute(application, here, [2]int{11, 28}, nil)
+		if len(route) == 0 {
+			t.Fatalf("從 (%d,%d) 走不到 (11,28)", here[0], here[1])
+		}
+		for application.spawn.Facing != route[0] {
+			press(application, ebiten.KeyArrowRight)
+		}
+		press(application, ebiten.KeyArrowUp)
+		for tick := 0; tick < 200 &&
+			(application.cellEventPending || application.cellWaitingMenu); tick++ {
+			press(application, ebiten.KeyEnter)
+		}
+	}
+	if got := int(application.eventSession.CurrentBlockID()); got != 18 {
+		t.Fatalf("城西緣選 NORTH 之後是 block %d，要 18", got)
+	}
+	// GEO1/18 的北緣：(4,0) 與 (11,0)。走到其中一個再往北踏出去。
+	reached := false
+	for _, cell := range [][2]int{{4, 0}, {11, 0}} {
+		plan := planToCells(application, 0, func(x, y int) bool {
+			return x == cell[0] && y == cell[1]
+		})
+		if len(plan) == 0 {
+			continue
+		}
+		for _, step := range plan {
+			for application.spawn.Facing != step.facing {
+				press(application, ebiten.KeyArrowRight)
+			}
+			press(application, ebiten.KeyArrowUp)
+			drainWildernessEvents(application)
+		}
+		if [2]uint8{application.spawn.X, application.spawn.Y} !=
+			[2]uint8{uint8(cell[0]), uint8(cell[1])} {
+			continue
+		}
+		application.spawn.Facing = 0
+		press(application, ebiten.KeyArrowUp)
+		drainWildernessEvents(application)
+		reached = true
+		break
+	}
+	if !reached {
+		t.Fatal("GEO1/18 的兩個北緣格都走不到")
+	}
+	if got := int(application.eventSession.CurrentBlockID()); got != 9 {
+		t.Fatalf("從 GEO1/18 北緣踏出去之後是 block %d，要 9", got)
+	}
+	if got := application.spawn.Map.BlockID; got != 9 {
+		t.Fatalf("地圖是 GEO%d/%d，要 GEO2/9", application.spawn.Map.Archive, got)
+	}
+}
