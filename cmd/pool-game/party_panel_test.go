@@ -1,6 +1,7 @@
 package main
 
 import (
+	"path/filepath"
 	"testing"
 
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -68,5 +69,33 @@ func TestProvenanceLinesMovedIntoHelp(t *testing.T) {
 		if !seen {
 			t.Fatalf("說明頁少了 %q（現有：%q）", line, lines)
 		}
+	}
+}
+
+// 走一步加一分，轉向不加。原版量出來的是 `00:00 → 00:01 → 00:02`
+//（`workplace/oracle/screens` 那一輪從導覽結束的 `(0,4)` 起走，spec 118）。
+func TestGameClockAdvancesOneMinutePerStep(t *testing.T) {
+	radix, err := gamepack.ReadDOSTimeRadix(filepath.Join("..", "..", "Pool of Radiance (1988).zip"))
+	if err != nil {
+		t.Skipf("DOS ZIP unavailable: %v", err)
+	}
+	application := &app{timeRadix: radix, spawn: gamepack.Spawn{X: 14, Y: 4, Facing: 3}}
+	if got := application.adventureStatusLine(); got != "14, 4 W 00:00" {
+		t.Fatalf("起點是 %q", got)
+	}
+	application.advanceGameMinute()
+	if got := application.adventureStatusLine(); got != "14, 4 W 00:01" {
+		t.Fatalf("走一步之後是 %q", got)
+	}
+	application.advanceGameMinute()
+	if got := application.adventureStatusLine(); got != "14, 4 W 00:02" {
+		t.Fatalf("走兩步之後是 %q", got)
+	}
+	// 分進到時：逐位上限表說一分的個位滿十進到十位，十位滿六進到時。
+	for step := 0; step < 58; step++ {
+		application.advanceGameMinute()
+	}
+	if got := application.adventureStatusLine(); got != "14, 4 W 01:00" {
+		t.Fatalf("走滿六十步之後是 %q，預期進位到 01:00", got)
 	}
 }

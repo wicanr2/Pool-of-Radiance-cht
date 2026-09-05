@@ -53,11 +53,12 @@ func (a *app) partyPanelRows() []partyPanelRow {
 
 // adventureStatusLine 是原版第一人稱畫面底下那一列：`14, 1 W 00:00`。
 //
-// 時鐘目前一定是 `00:00`——remake 還沒有走路推進時間的那一段（原版是
-// `ECL` 時鐘，spec 114 只接了紮營休息）。原版剛開場也是 `00:00`，所以這一列
-// 現在對得上，但它不是「算出來的」。
+// 時鐘是走出來的：一步一分（`advanceGameMinute`），小時與分鐘就是那個逐位
+// 數的第 3 位與分的十位／個位。
 func (a *app) adventureStatusLine() string {
-	return fmt.Sprintf("%d, %d %s 00:00", a.spawn.X, a.spawn.Y, facingLetter(a.spawn.Facing))
+	return fmt.Sprintf("%d, %d %s %02d:%02d", a.spawn.X, a.spawn.Y,
+		facingLetter(a.spawn.Facing),
+		a.gameTime[gamepack.TimeDigitHour], a.gameTime.Minutes())
 }
 
 // facingLetter 把 spec 076 的 0 北 1 東 2 南 3 西換成原版狀態列的字母。
@@ -123,4 +124,17 @@ func (a *app) adventureProvenanceLines() []string {
 		lines = append(lines, "FIRST EVENT: NOT LOADED")
 	}
 	return lines
+}
+
+// advanceGameMinute 走一步加一分鐘（spec 118）。
+//
+// 量原版量出來的：`workplace/oracle/screens` 那一輪從導覽結束的 `(0,4)` 起走，
+// 狀態列的時鐘是 `00:00 → 00:01 → 00:02`，一步一分。**轉向、被牆擋下來的
+// 那一步、以及換圖那一步都不加**——換圖那一步（`(0,4)` 往西進貧民窟）之後
+// 時鐘還是 `00:00`，下一步才變 `00:01`。
+//
+// 進位用原版的逐位上限表（`DS:35D4h`），與紮營共用同一份。
+func (a *app) advanceGameMinute() {
+	a.gameTime[gamepack.TimeDigitMinuteOnes]++
+	a.gameTime, _ = a.gameTime.Normalise(a.timeRadix)
 }

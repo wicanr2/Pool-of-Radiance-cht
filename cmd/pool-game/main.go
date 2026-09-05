@@ -197,6 +197,10 @@ type app struct {
 	// 紮營要玩家挑的休息時間（spec 114）。原版的欄位是天／時／分，
 	// 分鐘一次五分；`restField` 是目前選中的那一欄。
 	restDuration gamepack.RestDuration
+	// timeRadix 是逐位的進位上限（`DS:35D4h`）；gameTime 是遊戲時鐘本身，
+	// 狀態列的 `HH:MM` 就是它（spec 118）。
+	timeRadix gamepack.TimeRadix
+	gameTime  gamepack.GameTime
 	restField    gamepack.RestField
 	// 戰鬥中的施法清單（spec 098）。
 	castOpen    bool
@@ -360,6 +364,7 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.restDuration = gamepack.NewRestDuration(timeRadix)
+	application.timeRadix = timeRadix
 	application.restField = gamepack.RestFieldMinutes
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }
 	application.exportDOSCharacter = func(member poolsave.Character) error {
@@ -901,11 +906,13 @@ func (a *app) moveInitialDungeonForward() error {
 		if !a.cellMovedByScript {
 			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
 			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
+			a.advanceGameMinute()
 		}
 		return a.beginInitialSearch()
 	}
 	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
 	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
+	a.advanceGameMinute()
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
 }
@@ -1660,7 +1667,8 @@ func (a *app) stateForSave() (poolsave.State, error) {
 	next.Campaign = &poolsave.Campaign{
 		MapArchive: a.spawn.Map.Archive, MapBlock: a.spawn.Map.BlockID,
 		ECLArchive: eclArchive,
-		X:          a.spawn.X, Y: a.spawn.Y, Facing: a.spawn.Facing, Session: snapshot,
+		X:          a.spawn.X, Y: a.spawn.Y, Facing: a.spawn.Facing,
+		Clock:      a.gameTime, Session: snapshot,
 	}
 	return next, nil
 }
@@ -1702,6 +1710,7 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.initialMap = &geometryMap
 	a.eclArchive = campaign.ECLArchive
 	a.eclSessionArchive = campaign.ECLArchive
+	a.gameTime = campaign.Clock
 	a.eventSession, a.eventMachine = session, session.Machine()
 	a.introWaiting, a.introDone = false, true
 	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0

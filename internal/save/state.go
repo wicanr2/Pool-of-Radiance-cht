@@ -106,7 +106,10 @@ type Campaign struct {
 	X          uint8                      `json:"x"`
 	Y          uint8                      `json:"y"`
 	Facing     uint8                      `json:"facing"`
-	Session    eclvm.BlockSessionSnapshot `json:"session"`
+	// Clock 是遊戲時鐘那七位（spec 118）。走一步加一分，狀態列的 `HH:MM`
+	// 就是它；沒有這一欄的舊存檔載回來就是 `00:00`。
+	Clock   [7]int                     `json:"clock,omitempty"`
+	Session eclvm.BlockSessionSnapshot `json:"session"`
 }
 
 type State struct {
