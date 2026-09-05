@@ -1754,6 +1754,11 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	// （`geo6/25` 只有 62 格卻分成 42 個互不相連的區塊），不換選項就永遠
 	// 只進得去同一個地點。
 	menuTurn := map[string]int{}
+	// exitUses **跨趟共用**。每一趟重新建的話，`chooseAreaExit` 每一趟都從
+	// 同一個出口開始輪——實測 GEO4/2 六次都挑北邊那兩個，而缺的區塊 15 在
+	// **東**邊（`ecl4/2 996Dh` 的 `ON GOTO @C04D` 第 1 支：`6E12 = 2`、
+	// `NEWECL 15`）。共用之後八個方向才輪得完。
+	exitUses := map[[4]int]int{}
 	for pass, destination := range []int{0, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 		1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3} {
@@ -1762,7 +1767,7 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 		transitionUses := map[[3]int]int{}
 		states := tourWorldStates()
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 1, 200000,
-			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
+			avoid, map[[3]int]bool{}, transitionUses, menuTurn, exitUses,
 			visited, maps, blocks, nil, destination, &hardFailures,
 			states[pass%len(states)])
 		if !reachable {
