@@ -448,6 +448,7 @@ const (
 	msgCastHint
 	msgCastSlept
 	msgCastSleptNone
+	msgCastCloud
 	msgCastCured
 	msgCastNoEffect
 	msgCastArea
@@ -518,6 +519,7 @@ const (
 	msgStatusHit
 	msgStatusDown
 	msgStatusAsleep
+	msgStatusCoughing
 	msgStatusCharmed
 	msgStatusHeld
 	msgFoeNoTarget

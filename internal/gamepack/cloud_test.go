@@ -124,3 +124,44 @@ func TestCloudListCountsPerCaster(t *testing.T) {
 		t.Fatalf("找不存在的團回 %d，預期 -1", got)
 	}
 }
+
+// 站在雲裡的判定是「佔格裡只要有一格是雲」——原版 `013Dh:007Fh` 的
+// 三條短路規則裡，`1Eh` 排在 0 之後、權重比較之前（spec 121）。
+func TestStandingInCloudTakesAnySingleCell(t *testing.T) {
+	for _, testCase := range []struct {
+		name    string
+		terrain []uint8
+		want    bool
+	}{
+		{"四格都不是雲", []uint8{1, 2, 3, 4}, false},
+		{"只有一格是雲也算", []uint8{1, CloudTerrain, 3, 4}, true},
+		{"四格都是雲", []uint8{CloudTerrain, CloudTerrain, CloudTerrain, CloudTerrain}, true},
+		{"沒有佔格就不算", nil, false},
+		// 0 在原版是「直接收工」的那一條，但它排在雲**前面**，所以
+		// 「有 0 也有雲」的時候原版回 0。這裡只回答「是不是雲」，用不到
+		// 那一段；把這個案例釘住是為了讓將來補權重時記得順序有意義。
+		{"有 0 也有雲", []uint8{0, CloudTerrain}, true},
+	} {
+		if got := StandingInCloud(testCase.terrain); got != testCase.want {
+			t.Errorf("%s：得到 %v，預期 %v", testCase.name, got, testCase.want)
+		}
+	}
+}
+
+// AC 每結算一次變差 2 點，最差停在內部值 32h（顯示 AC 10）。
+// 內部值越大 AC 越好（顯示 AC ＝ 60 − 內部值，spec 049），所以「變差」是減。
+func TestStinkingCloudArmourClassWorsensToTheFloor(t *testing.T) {
+	for _, testCase := range []struct{ from, want int }{
+		{0x3C, 0x3A}, // 顯示 AC 0 → 2
+		{0x36, 0x34}, // 顯示 AC 6 → 8
+		{0x35, 0x33}, // 35h > 34h，照樣減 2
+		{0x34, 0x32}, // 不大於 34h 就一路壓到底
+		{0x33, 0x32},
+		{0x32, 0x32}, // 已經最差就不動
+		{0x20, 0x32}, // 比下限還差的（原版不會出現）也被拉回 32h
+	} {
+		if got := StinkingCloudArmourClass(testCase.from); got != testCase.want {
+			t.Errorf("內部 AC %#x 結算後是 %#x，預期 %#x", testCase.from, got, testCase.want)
+		}
+	}
+}

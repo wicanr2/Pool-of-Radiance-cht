@@ -268,3 +268,28 @@ spec 074 早就把 `+0Ah` 標成「掛進效果串列的效果碼」，而
 **參數表 `+0Ah` → `0100h:0052h` 掛上代碼 `1Eh` → 群組 11／15 每次問到 →
 overlay-12 `0A76h` 印 `is coughing`、收掉這一回合、AC 變差**，
 盤面那一半（蓋／收／還原）與腳下判定（`013D:007F`）本來就有了。
+
+## remake 這一側
+
+`internal/gamepack/cloud.go` 原本只有盤面那一半（`Cloud`／`CloudList`、
+蓋／收／還原／重疊重蓋）。2026-09-05 補上人這一半：
+
+| 東西 | 對應原版 |
+|---|---|
+| `StinkingCloudEffectCode`（`1Eh`）| 參數表 `+0Ah`。**和 `CloudTerrain` 同樣是 `1Eh` 純屬巧合**，一個是效果碼一個是地形碼，所以留成兩個常數 |
+| `StandingInCloud(terrain)` | `013Dh:007Fh` 對雲那一條：佔格裡有一格是雲就算 |
+| `StinkingCloudArmourClass(內部值)` | `0AD3h` 的 `> 34h ? −2 : := 32h` |
+| `cmd/pool-game/cloud.go` 的 `placeCloud` | `1AF6h`：數團數、存四格原地形、蓋成 `1Eh` |
+| 同檔的 `stinkingCloudTurn` | 群組 15 問到 `1Eh` 時 `0A76h` 做的事 |
+| `tacticalBoard` | `DS:6674h` 那張 `y × 32h + x` 的地形表 |
+
+**兩個地方比原版保守，都是因為證據還沒到**：
+
+1. **結算要求「身上有 `1Eh`」與「腳下還是雲」兩個都成立。** 掛的時機只讀到
+   施法當下（`08BCh` 依參數表 `+0Ah` 對目標掛），走進別人放的雲會不會自己
+   中招沒有讀到；而 overlay-24 `0B0Ch` 的形狀是先判地形再查效果，所以
+   「兩個都要」是這兩份證據的交集。取寬了會讓走出雲的人一直咳。
+2. **`Covered` 取「在盤面上」。** 節點 `+0Ch`..`+0Fh` 是逐格決定的，
+   規則還沒讀出來；`tacticalBoard.Occupied` 同理一律回 false
+   （`DS:6634h` 那張表還沒讀），所以收雲一律還原成原地形，
+   不會寫 `ObstacleTerrain`。

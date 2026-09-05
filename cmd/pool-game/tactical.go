@@ -391,6 +391,10 @@ type tacticalState struct {
 	// Text 由建立者接上 app.text，讓狀態列的訊息也能翻譯。測試直接建構
 	// tacticalState 時不設它，say 會退回英文，所以測試不必知道語言這件事。
 	Text func(messageID) string
+	// Clouds 是盤面上的雲團物件（spec 121）。臭雲術不是對目標下效果，
+	// 是在盤上生一個活的物件；地形寫在 Grid.Terrain 裡，這條串列記著
+	// 每一團的雲心、蓋過哪幾格與那幾格原本的地形。
+	Clouds gamepack.CloudList
 	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
 	stallSignature string
 	stalledRounds  int
@@ -1342,6 +1346,18 @@ func (a *app) tacticalInput() error {
 	asleep := state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.SleepEffectCode)
 	if asleep {
 		state.Status = state.say(msgStatusAsleep, state.Mover)
+		state.endTurn(a.rollDice, false)
+		if state.Finished {
+			return a.finishCombat(state.Outcome)
+		}
+		return nil
+	}
+	// 站在臭雲裡的一輪到就咳一場，這一回合也沒了（spec 121）。
+	// 順序放在定身與睡著之後：那兩個原版是群組 15 裡更前面的代碼
+	// （`4Ah`／`4Bh` 在 `1Eh` 之後，但 `15h`、`1Eh` 在最前面），
+	// 三者都是「這一回合不能動」，先後不影響結果。
+	if state.Mover != 0 && state.stinkingCloudTurn(int(state.Mover)) {
+		state.Status = state.say(msgStatusCoughing, state.Mover)
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
 			return a.finishCombat(state.Outcome)

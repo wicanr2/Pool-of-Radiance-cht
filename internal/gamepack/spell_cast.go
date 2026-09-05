@@ -84,6 +84,10 @@ type CastEffect struct {
 	// MessageOnly 為真代表這一支過了前面的關卡之後**只印一句話**，
 	// 不掛效果、不解效果、不算傷害。縮小術就是這樣。
 	MessageOnly bool
+	// Cloud 為真代表這一支在盤面上生一團雲，不是對目標下效果（spec 121）。
+	// 效果碼照樣從參數表來（臭雲術是 `1Eh`），但掛的時機不同：**誰站進去
+	// 誰才掛**，而不是施法當下挑一批目標。
+	Cloud bool
 }
 
 // AbilityBonus 是「把某個能力值加上去，加到上限為止」。
@@ -231,6 +235,9 @@ const (
 	// 解除魔法有兩個編號，共用 `2356h` 那一支。
 	SpellIDDispelMagic    = 41 // 2356h
 	SpellIDDispelMagicAlt = 46 // 2356h
+	// SpellIDStinkingCloud 是臭雲術（`1AF6h`）。**Pool 的 67 支法術裡
+	// 沒有迷霧術**，參數表裡帶「雲」的只有這一支（34 ＝ `22h`）。
+	SpellIDStinkingCloud = 34
 )
 
 
@@ -549,6 +556,12 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 拉一條射線（長度因子 3 × 2），沿線逐格再打。
 		// 射線的幾何還沒逐條讀完，所以與閃電束同一個近似：先收整邊。
 		effect.Damage, effect.Area = roller.Roll(1, 6)+20, true
+	case SpellIDStinkingCloud:
+		// `1AF6h`：先數這個施法者身上已經有幾團雲（串列比對 `DS:5CF0h`），
+		// 再生一團 2×2 蓋成地形 `1Eh`。效果碼 `1Eh` 由參數表 `+0Ah` 帶進來，
+		// 掛在**站進去的人**身上，不是施法當下的目標——所以這裡不設
+		// Damage／Area，只把旗標立起來，實際的格子由呼叫端擺。
+		effect.Cloud = true
 	case SpellIDLightningBolt:
 		// 閃電束走的是 `287Ch` 那條（目標模式 8＝直線），預算還沒讀。
 		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
@@ -576,7 +589,7 @@ func SpellIsImplemented(id uint8) bool {
 		SpellIDCharmPerson, SpellIDHoldPerson, SpellIDHoldPersonAlt, SpellIDSnakeCharm,
 		SpellIDReduce, SpellIDGiantStrength, SpellIDRayDamage, SpellIDStrength,
 		SpellIDDispelMagic, SpellIDDispelMagicAlt, SpellIDAnimateDead,
-		SpellIDRestoration:
+		SpellIDRestoration, SpellIDStinkingCloud:
 		return true
 	}
 	return false

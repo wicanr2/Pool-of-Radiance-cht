@@ -17,6 +17,17 @@ const (
 	ObstacleTerrain = 0x1F
 	// CloudCells 是一團雲蓋幾格。
 	CloudCells = 4
+	// StinkingCloudEffectCode 是站在雲裡的人身上掛的效果碼——臭雲術
+	// （編號 34）參數表 `+0Ah` 的值。**它和 CloudTerrain 同樣是 `1Eh`
+	// 純屬巧合**：一個是地形碼，一個是效果碼，兩套編號沒有關係
+	// （spec 112 也提醒過同一件事）。留成兩個常數就是為了不讓人以為
+	// 改一個另一個會跟著對。
+	StinkingCloudEffectCode = 0x1E
+	// StinkingCloudArmourClassFloor 是臭雲把 AC 拖到最差的那個內部值
+	// （`32h` ＝ 顯示 AC 10）。
+	StinkingCloudArmourClassFloor = 0x32
+	// stinkingCloudArmourClassStep 是每結算一次變差多少。
+	stinkingCloudArmourClassStep = 2
 )
 
 // cloudDirections 是 `DS:28A7h` 的 `[1..4]`：中心、東、東南、南。
@@ -138,4 +149,38 @@ func (l CloudList) RemoveAt(position int, board TerrainWriter) (CloudList, error
 		}
 	}
 	return result, nil
+}
+
+// StandingInCloud 說一組佔格的地形算不算「站在雲裡」。
+//
+// 原版是 overlay-32 entry 19（`013Dh:007Fh`，`0CB9h`）：把一個戰鬥者佔的
+// 四格各查一次合成**一個**地形碼，三條規則依序是
+//
+//	這一格是 0        → 結果就是 0，直接收工
+//	這一格是 1Eh      → 結果就是 1Eh，直接收工   ← 雲一票否決
+//	否則              → 比 DS:2758h 的權重，大的贏
+//
+// 所以只要**任一格**踩在雲上，回報的地形就是雲——雲不必蓋滿他的佔格。
+// 這裡只要回答「是不是雲」，所以權重那一段用不到。
+func StandingInCloud(terrain []uint8) bool {
+	for _, code := range terrain {
+		if code == CloudTerrain {
+			return true
+		}
+	}
+	return false
+}
+
+// StinkingCloudArmourClass 是臭雲術每結算一次對 AC 做的事
+// （overlay-12 entry 29 `0AD3h`）：
+//
+//	+112h > 34h ? +112h -= 2 : +112h := 32h
+//
+// 傳進來與回傳的都是**內部值**（顯示 AC ＝ 60 − 內部值，spec 049），
+// 所以內部值變小就是 AC 變差。下限 `32h` 對應顯示 AC 10。
+func StinkingCloudArmourClass(internal int) int {
+	if internal > StinkingCloudArmourClassFloor+stinkingCloudArmourClassStep {
+		return internal - stinkingCloudArmourClassStep
+	}
+	return StinkingCloudArmourClassFloor
 }

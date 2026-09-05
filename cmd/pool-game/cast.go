@@ -441,6 +441,28 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		state.HitPoints[healed] += effect.Heal
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
 			strings.TrimSpace(member.Name), option.Label, state.HitPoints[healed]-before))
+	case effect.Cloud:
+		// 臭雲術（overlay-22 `1AF6h`，spec 121）：在盤上生一團 2×2 的雲，
+		// 蓋成地形 `1Eh`；效果碼 `1Eh` 掛在**當下站在那四格裡的人**身上，
+		// 之後每次輪到他行動就結算一次（stinkingCloudTurn）。
+		centreX, centreY := int(state.Roster[state.Mover].X), int(state.Roster[state.Mover].Y)
+		if chosen && int(target) < len(state.Roster) {
+			centreX, centreY = int(state.Roster[target].X), int(state.Roster[target].Y)
+		} else if picked, ok := state.nearestReachableOpposing(state.Mover); ok {
+			centreX, centreY = int(state.Roster[picked].X), int(state.Roster[picked].Y)
+		}
+		if !state.placeCloud(index, centreX, centreY) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
+		}
+		for cell := 1; cell < len(state.Roster); cell++ {
+			if state.Roster[cell].FootprintClass == 0 || !state.standingInCloud(cell) {
+				continue
+			}
+			state.addEffect(cell, effect.EffectCode, 0, casterLevel)
+		}
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCloud),
+			strings.TrimSpace(member.Name)))
 	case effect.Restore:
 		// 恢復術（overlay-22 `2C01h`）：把能量吸取的欠帳還一級。
 		// 沒欠就整支直接返回——原版的 `2C16h` 就是這樣。

@@ -59,17 +59,32 @@ func TestCastSpellFormulas(t *testing.T) {
 
 // 沒讀過的法術要硬失敗，不能安靜地什麼都不做——那與「正確地不做事」
 // 在報表上分不出來。
+//
+// **六十七支現在都讀完了**，所以「沒讀過」的案例只剩表外的編號。
+// 這條測試留著是因為它守的是機制不是名單：哪天派發表長出新的一格，
+// 沒接的那一支要炸，不能安靜地回一個空的 CastEffect。
 func TestUnreadSpellsFailLoudly(t *testing.T) {
 	parameters, err := ReadDOSSpellParameters(poolZipPath())
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
-	// 34 是臭雲術：處理常式（1AF6h）還沒讀。
-	if _, err := CastSpell(34, parameters, 6, maxRoller{}); err == nil {
-		t.Error("臭雲術還沒讀完，卻沒有硬失敗")
+	if _, err := CastSpell(uint8(len(parameters)), parameters, 6, maxRoller{}); err == nil {
+		t.Error("表外的編號沒有硬失敗")
 	}
-	if SpellIsImplemented(34) {
-		t.Error("臭雲術不該被當成已實作")
+	if SpellIsImplemented(0) {
+		t.Error("編號 0 那一筆整筆是零，走不到，不該算已實作")
+	}
+	// 34 是臭雲術（`1AF6h`），2026-09-05 接完（spec 121）。
+	if !SpellIsImplemented(SpellIDStinkingCloud) {
+		t.Error("臭雲術讀完了，應該算已實作")
+	}
+	if effect, err := CastSpell(SpellIDStinkingCloud, parameters, 6, maxRoller{}); err != nil {
+		t.Errorf("臭雲術施不出來：%v", err)
+	} else if !effect.Cloud {
+		t.Error("臭雲術沒有把 Cloud 立起來")
+	} else if effect.EffectCode != StinkingCloudEffectCode {
+		t.Errorf("臭雲術掛的是 %#x，參數表 +0Ah 是 %#x",
+			effect.EffectCode, StinkingCloudEffectCode)
 	}
 	if !SpellIsImplemented(SpellIDMagicMissile) {
 		t.Error("魔法飛彈讀過了，應該算已實作")
@@ -223,9 +238,9 @@ func TestSpellCasterCoversTheGenericBatch(t *testing.T) {
 	if missile.Damage != 15 {
 		t.Errorf("第 6 級的魔法飛彈擲滿應該 15 點，拿到 %d", missile.Damage)
 	}
-	// 兩邊都沒有的仍然硬失敗。
-	if _, err := caster.Cast(34, parameters, 6, maxRoller{}); err == nil {
-		t.Error("臭雲術兩邊都沒有，應該硬失敗")
+	// 兩邊都沒有的仍然硬失敗——派發表外的編號就是這種。
+	if _, err := caster.Cast(uint8(len(parameters)), parameters, 6, maxRoller{}); err == nil {
+		t.Error("表外的編號兩邊都沒有，應該硬失敗")
 	}
 }
 
@@ -382,9 +397,9 @@ func TestImplementedSpellCount(t *testing.T) {
 			generic++
 		}
 	}
-	if read != 41 || generic != 25 || total != 66 {
+	if read != 42 || generic != 25 || total != 67 {
 		t.Fatalf("逐支讀的 %d 支、純泛型的 %d 支、合計 %d 支；"+
-			"文件寫的是 41／25／66，改了實作要一起改", read, generic, total)
+			"文件寫的是 42／25／67，改了實作要一起改", read, generic, total)
 	}
 	if SpellDispatchCount != 67 {
 		t.Fatalf("派發表是 %d 格，spec 寫的是 67", SpellDispatchCount)
