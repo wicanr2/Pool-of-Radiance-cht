@@ -2089,6 +2089,17 @@ const mapExitCommitCall = 0xC01E
 // 座標本身是繞回去的（overlay-30 `0358h` 在查牆之前把 X／Y 夾回 0..15，
 // spec 099），所以繞回之後那一格看起來合法——引擎另外記下「這一步本來會
 // 走出去」才說得通。
+// 邊界：**原版是夾不是繞，但這裡照舊是繞**，理由見 spec 125。
+//
+// overlay-14 `06AEh` 量出來的行為是「這一步會走出 16×16 就把座標夾在邊界，
+// 並把 ECL 的 `@6DD5` 立成 1」（`[4937h]+5AAh` 依 class 1 換算就是 `6DD5h`，
+// spec 106）。**但它只在越界時寫座標**——沒越界的那一步是誰前進的還沒讀到，
+// 所以不能斷定「位置一律夾」。
+//
+// 實測也擋著：改成夾之後 `TestAWildernessStepMovesBothPositions` 與
+// `TestTheWildernessWalkReachesTheWesternSheet` 都紅——野外的 16×16 貼圖
+// （spec 105）靠的就是繞回去。**在呼叫端讀出來之前不動行為。**
+
 func (a *app) setMapExitFlag(dx, dy int) {
 	if a.eventMachine == nil {
 		return
