@@ -973,6 +973,12 @@ func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Resu
 			return result, fmt.Errorf("continue Pool transition resource 0x%02X from ecl%d/%d: %w",
 				event.Opcode, a.eclArchive, a.eventSession.CurrentBlockID(), err)
 		}
+		// **寫入要累積，不能跟著 result 一起換掉。** 呼叫端只會套用最後回傳
+		// 的那一個 result，所以被吃掉的那幾段裡的 `SAVE` 就這樣消失了——
+		// 而腳本的傳送正是寫在資源邊界之間：斯托亞諾夫城門付過路費那一支
+		// （`ecl2/9 AC4Bh`）在 `PICTURE 255` 與 `CALL 2C90h` 中間寫
+		// `C04B`／`C04C`，隊伍因此站在原地不動，記憶體裡卻已經是新座標。
+		next.Writes = append(append([]eclvm.Write{}, result.Writes...), next.Writes...)
 		result = next
 	}
 	detail := ""

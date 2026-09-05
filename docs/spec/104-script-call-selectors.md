@@ -57,3 +57,16 @@ ecl7/26、ecl8/27、ecl8/29 各 1024 格全部停在 `2Dh`），所以隊伍一�
 - `8000h`／`8001h` 那一支（overlay-07 `00A2h`）做什麼。
 - `BA03h` 播的兩段是什麼（`DS:263Ch`／`DS:263Eh`）。
 - `2C90h` 那一支後半段的五個旗標（`DS:82A6h` 等）與兩個呼叫。
+
+## remake 這邊：吃掉邊界的時候不能把 `Writes`一起吃掉
+
+`cmd/pool-game` 的 `consumeInitialTransitionResources` 把這些沒有動作的邊界
+一個個吃掉再往下跑。它原本每吃一個就 `result = next`，於是**被吃掉的那一段裡
+的記憶體寫入跟著消失**——呼叫端只會套用最後回傳的那一個 `result`。
+
+會踩到的是「腳本自己把隊伍搬走」的那些段落：`ecl2/9 AC4Bh`（斯托亞諾夫城門
+付過路費）在 `PICTURE 255` 與 `CALL 2C90h` 中間寫 `C04B`／`C04C`，
+症狀是**記憶體裡座標已經換了，隊伍卻站在原地**，而且畫面上什麼錯都沒有。
+
+所以那個迴圈要把 `Writes` 累積下去。`TestPayingTheTollAtStojanowGateOpensTheCastle`
+釘住這一條（spec 101 有那條路線的完整腳本）。
