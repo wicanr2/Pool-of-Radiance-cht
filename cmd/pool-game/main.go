@@ -2523,7 +2523,7 @@ func (a *app) Draw(screen *ebiten.Image) {
 	// （y 388..391）切掉字腳。
 	drawText(screen, a.text(msgFooter), 16, 386, foreground)
 	if a.help {
-		drawHelp(screen, background, foreground, accent)
+		drawHelp(screen, background, foreground, accent, a.adventureProvenanceLines())
 	}
 	if a.journalOpen && a.journal != nil {
 		drawJournal(screen, a, background, foreground, accent)
@@ -2588,25 +2588,10 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
 		screen.DrawImage(ebiten.NewImageFromImage(rendered), op)
 	}
-	drawText(screen, fmt.Sprintf("GEO%d BLOCK %d", a.spawn.Map.Archive, a.spawn.Map.BlockID), 310, 106, foreground)
-	drawText(screen, fmt.Sprintf("X %d  Y %d  FACING %d", a.spawn.X, a.spawn.Y, a.spawn.Facing), 310, 136, foreground)
-	// 右欄的最後一列不能低於 262：對話框的上緣在 `dialogueTop`（264），
-	// 再往下就被蓋掉一半。`ESC` 那一列拿掉了——底部說明列本來就有 `ESC BACK`。
-	drawText(screen, "GEO / WALL SOURCE: EXACT", 310, 172, accent)
-	drawText(screen, "VIEW TRAVERSAL: STRONG INFERENCE", 310, 196, accent)
-	moveStatus := "MOVE POLICY: PENDING / DISABLED"
-	if a.introDone {
-		moveStatus = "GEO WALK: ENABLED / EVENTS PENDING"
-	}
-	drawText(screen, moveStatus, 310, 220, foreground)
-	if a.initialEvent != nil {
-		drawText(screen, fmt.Sprintf("FIRST EVENT: ROLF / MONSTER %d", a.initialEvent.MonsterID), 310, 244, foreground)
-	} else {
-		drawText(screen, "FIRST EVENT: NOT LOADED", 310, 244, foreground)
-	}
-	if a.tourActive && a.initialEvent != nil {
-		drawText(screen, fmt.Sprintf("TOUR STEP %02d / %02d", a.tourStep+1, len(a.initialEvent.Tour)), 310, 262, accent)
-	}
+	// 右邊那一塊是原版的隊伍面板加狀態列，不是除錯文字；出處與現況那幾列
+	// 移到 F1 的說明頁（`adventureProvenanceLines`），畫面上留給玩家看得到的
+	// 東西。右欄的最後一列不能低於 262——對話框的上緣在 `dialogueTop`（264）。
+	drawPartyPanel(screen, a, foreground, accent)
 	dialogueVisible := false
 	if a.introWaiting && a.initialEvent != nil {
 		message, label := a.initialEvent.Message, a.initialEvent.ContinueLabel
@@ -2921,7 +2906,7 @@ func drawFrame(screen *ebiten.Image, foreground, accent color.Color) {
 	drawText(screen, "SSI GOLD BOX / POOL REMAKE", 18, 26, foreground)
 }
 
-func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) {
+func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color, provenance []string) {
 	for y := 54; y < 340; y++ {
 		for x := 72; x < 568; x++ {
 			screen.Set(x, y, background)
@@ -2941,7 +2926,10 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color) 
 		"K: browse the original spell list",
 	}
 	for index, line := range lines {
-		drawText(screen, line, 104, 120+index*30, foreground)
+		drawText(screen, line, 104, 100+index*22, foreground)
+	}
+	for index, line := range provenance {
+		drawText(screen, line, 104, 100+(len(lines)+1+index)*22, accent)
 	}
 }
 
