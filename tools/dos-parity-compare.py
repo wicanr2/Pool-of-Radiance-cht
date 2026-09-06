@@ -175,6 +175,7 @@ def main():
 
     report = {"screens": []}
     failed = False
+    dosbox_dir = sys.argv[3] if len(sys.argv) > 3 else None
     for item in plan:
         matches = [s for s in shots if s["sha256"] == item["digest"]]
         if not matches:
@@ -207,6 +208,34 @@ def main():
         report["screens"].append(entry)
         mark = "" if item["status"] == "compared" else "（基準側有缺口）"
         print(f"{item['name']}: {same}/{total} = {same / total:.2%} {mark}")
+
+    # 交叉核對：同一框對 repo 裡**早就存著的** DOSBox 基準圖。
+    # **沒有重跑 DOSBox**（使用者 2026-09-07 指定不再使用它）；那張圖是
+    # 之前留下來的產物，這裡只是拿它當第二個意見。
+    #
+    # 這一項存在的理由：dosgolem 那邊的低分要能分辨是「remake 畫錯」還是
+    # 「基準畫錯」。兩個 oracle 都不對的時候，只看一個數字分不出來。
+    if dosbox_dir:
+        path = os.path.join(dosbox_dir, "06-free-move-0-4-west.png")
+        if os.path.exists(path):
+            w, h, rgb = read_png_rgb(path)
+            dosbox = to_indices(downsample_nearest(w, h, rgb))
+            actual = load_remake(os.path.join(out_dir, "remake-first-person.png"))
+            same = total = 0
+            for y in range(88):
+                for x in range(88):
+                    total += 1
+                    if dosbox[(24 + y) * WIDTH + 24 + x] == actual[(43 + y) * WIDTH + 24 + x]:
+                        same += 1
+            report["screens"].append({
+                "name": "first-person-vs-dosbox", "status": "cross-check",
+                "reference": "docs/reference/original-dos/adventure/06-free-move-0-4-west.png",
+                "remake": "remake-first-person.png",
+                "same": same, "total": total, "ratio": round(same / total, 4),
+                "note": "既有的 DOSBox 基準圖，沒有重跑 DOSBox。用來分辨低分是"
+                        "remake 畫錯還是基準畫錯。",
+            })
+            print(f"first-person-vs-dosbox: {same}/{total} = {same / total:.2%} （交叉核對）")
 
     with open(os.path.join(out_dir, "parity.json"), "w", encoding="utf-8") as handle:
         json.dump(report, handle, ensure_ascii=False, indent=2)

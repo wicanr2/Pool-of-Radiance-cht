@@ -1,0 +1,45 @@
+{
+  "schema": "pool-dos-parity-sample/1",
+  "captured_at": "2026-09-07",
+  "release": "v1.1.1-20260907",
+  "flavour": "full-local",
+  "lang": "zh",
+  "source_commit": "0384790c9a8fc9ae2f1563cac090744cca20c6cf",
+  "oracle": "dosgolem pool-of-radiance-oracle 04e09cb（cmd/shots）；不使用 DOSBox 執行",
+  "method": "AppImage 在 Xvfb 裡的真視窗截圖，最近鄰降到 320x200 後對回 EGA 16 色，與 dosgolem 的色號陣列逐格比",
+  "screens": [
+    {
+      "name": "title",
+      "status": "compared",
+      "reference": "06-Space.png",
+      "reference_step": 26300000,
+      "remake": "remake-title.png",
+      "same": 63866,
+      "total": 64000,
+      "ratio": 0.9979,
+      "note": "整張。原版與 remake 畫的是同一份 TITLE.DAX，位置與縮放相同；唯一預期的差異是 remake 自己加的按鍵提示那一行。"
+    },
+    {
+      "name": "first-person",
+      "status": "blocked",
+      "reference": "45-Return.png",
+      "reference_step": 410000000,
+      "remake": "remake-first-person.png",
+      "same": 1466,
+      "total": 7744,
+      "ratio": 0.1893,
+      "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。",
+      "blocked_by": "dosgolem 還沒實作 EGA 圖形控制器（3CE／3CF），第一人稱那一框在基準側是黑底白線框——dosgolem docs/findings/004。這個數字量的是 oracle 的缺口，不是 remake 的正確性。"
+    },
+    {
+      "name": "first-person-vs-dosbox",
+      "status": "cross-check",
+      "reference": "docs/reference/original-dos/adventure/06-free-move-0-4-west.png",
+      "remake": "remake-first-person.png",
+      "same": 7744,
+      "total": 7744,
+      "ratio": 1.0,
+      "note": "既有的 DOSBox 基準圖，沒有重跑 DOSBox。用來分辨低分是remake 畫錯還是基準畫錯。"
+    }
+  ]
+}

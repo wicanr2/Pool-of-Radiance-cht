@@ -47,7 +47,8 @@ docker run --rm --network none --memory 3g --cpus "${PARITY_CPUS:-2}" --pids-lim
   -e HOME=/tmp/home -e LANG_MODE="$LANG_MODE" \
   -v "$APPIMAGE:/game.AppImage:ro" -v "$FONT_DIR:/fonts:ro" \
   -v "$ROOT/Pool of Radiance (1988).zip:/zip/pool.zip:ro" \
-  -v "$REF:/ref:ro" -v "$OUT:/out" -v "$ROOT/tools:/tools:ro" -w /tmp \
+  -v "$REF:/ref:ro" -v "$OUT:/out" -v "$ROOT/tools:/tools:ro" \
+  -v "$ROOT/docs/reference/original-dos/adventure:/ref-dosbox:ro" -w /tmp \
   wasteland-go:1.24-x11-record-r1 bash -c '
 set -eu
 mkdir -p "$HOME" /tmp/run
@@ -135,6 +136,6 @@ step Return adventure-move 60
 sleep 0.6
 shot remake-first-person
 
-python3 /tools/dos-parity-compare.py /ref /out
+python3 /tools/dos-parity-compare.py /ref /out /ref-dosbox
 '
 echo "報告 → $OUT"
