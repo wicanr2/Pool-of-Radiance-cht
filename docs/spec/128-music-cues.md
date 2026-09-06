@@ -95,7 +95,7 @@ BC11  LDA ($B8),Y …             ; 每首三個 word，加上基底變成絕對
 ## PC-98 版：唯一一個全程有配樂的版本
 
 Pony Canyon 1989-12-21。細節在 pc98golem 的
-[spec 005](https://github.com/wicanr2/pc98golem/blob/main/docs/spec/005-pool-pc98-music.md)；
+[spec 005](https://github.com/wicanr2/pc98golem/blob/master/docs/spec/005-pool-pc98-music.md)；
 這裡只留對 remake 有影響的三點。
 
 **15 首曲子**，走 PC-9801-26K（YM2203）的音源 BIOS。`MSCDRV.EXE` 是開機必經的
@@ -132,6 +132,12 @@ TSR，掛 `INT 7Eh`；曲目表每首 6 個聲道指標，表長 `$B4` ＝ 15 ×
 15 首都渲染得出來。兩條獨立的路徑互相驗證：`golden-box-remake-engine` 的
 `audio/pc98mscdrv` 靜態解析格式，`pc98golem` 把原版的 `MSCDRV.EXE` 在模擬的
 CPU 上跑起來攔它交給音源 BIOS 的資料——**15 首 × 6 聲道 90／90 逐筆相同**。
+上面那張對照表也對過一次：在模擬器裡跑 `GAME.EXE` 自己的區域配樂常式，
+**29 個 ECL 區塊逐筆相同**。
+
+格式的第一手來源是 NEC 的音源 BIOS ROM（命令寬度、音高換算、調變開關方向、
+音色欄位的反向刻度都是從 ROM 讀出來的，不是用語料推的）。ROM 與渲染出來的
+音訊都不進版控。
 
 還沒做的是**遊戲層的實跑對拍**：跑整支 `GAME.EXE`，在 `INT 7Eh` 攔截，
 看上面那張區域表在實際遊玩時逐格成立。
