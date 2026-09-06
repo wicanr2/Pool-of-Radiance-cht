@@ -217,28 +217,44 @@ Slums 用共用計數 helper（`B69Ch`，累加到 25），波多廣場則是 in
 ——那些是「玩家知道要做什麼」，不是「走得到那一格」。要讓探索器自己解開，
 得先給它那些知識，而那會讓它不再是探索器。
 
-### 開放缺陷：`GEO8/29 (7,7)` 的井卡住
+### 開放缺陷：探索器在 `GEO8/29` 的井選單答了四千次出不來
 
-第二種帶法把探索器帶到那口井，然後它在那裡答了四千次選單出不來：
+第二種帶法把探索器帶到那裡，然後它在那裡答了四千次選單出不來：
 
 ```
 文字   RUNGS ARE SET IN THE SIDES OF THE WELL WALL.  DO YOU WANT TO CLIMB DOWN?
 選單   [YES NO]   狀態列 "Original Pool cell text is waiting for RETURN."
+探索器回報的位置   GEO8/29 (7,7)
 ```
 
-已經讀到的：文字是 `ecl8/29` 的 `A1DAh PRINTCLEAR #94`，前面是
-`A1CCh SAVE #2 → 4ADBh`、`GOSUB AF30h`、`CALL 2C90h`；選單在
-`AF71h HORIZONTAL MENU`，答案存進 `9802h`，`AF80h COMPARE 9802h,#0 ; IF = ; RETURN`
-——**選 YES 才 RETURN 回去往下走**，選 NO 落到 `AF88h EXIT`。回去之後是
-`A23Fh SAVE #0 → 4A10h`、`PRINTCLEAR #34`、`LOAD FILES #29`、`LOAD PIECES #3,#20,#1`、
-`SAVE #1 → 4ADBh`、`GOTO 9A23h`。
+**原版那一段已經讀完了**：
 
-**還沒讀的**：`LOAD FILES 29` 載的是同一張圖，所以「下到井底」是同一個 GEO
-區塊換一組資源與旗標（`4A10h`／`4ADBh`），不是換圖。目前的 `21h` handler 只
-把 `initialMap` 與 `spawn.Map` 指到同一張圖，隊伍座標不動——嫌疑最大的是
-這裡，但 `GOTO 9A23h` 之後那一段還沒讀完，不下結論。
+- 每一格的處理從 `9A23h` 起：`AND #127,[C04Fh] → 6E82h`（取這一格的地形碼），
+  `GETTABLE $AFCE,[6E82h] → 9800h`，然後 `9A4Bh ON GOTO` 十六支。
+- 井是**第 3 支**（`9A81h`）。查表結果是 3 的地形碼是 **4、7、18、19**。
+- `9A81h COMPARE [4A10h],#0 ; IF <> ; GOTO $A1CC`——**`4A10h` 非零才問**。
+- `A1CCh` 起：`SAVE #2 → 4ADBh`、`GOSUB AF30h`、`CALL 2C90h`、
+  `A1DAh PRINTCLEAR #94`（RUNGS 那一段）、`A23Bh GOSUB AF71h`。
+- `AF71h HORIZONTAL MENU` 把答案存進 `9802h`；`AF80h COMPARE [9802h],#0 ; IF = ;
+  RETURN`——**選 YES（索引 0）才 RETURN**，選 NO 落到 `AF88h EXIT`。
+- RETURN 回到 `A23Fh`：`SAVE #0 → 4A10h`（**下去了就把旗標清掉**）、
+  `PRINTCLEAR #34`、`LOAD FILES #29`、`LOAD PIECES #3,#20,#1`、
+  `SAVE #1 → 4ADBh`、`GOSUB AF30h`、`CALL 2C90h`、`GOTO 9A23h`。
 
-重現：把 `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 改成兩階段
-（第二階段帶 `4AC1h = 2` 與槽 1／11／23 為 `FFh`）就會撞到。
+所以原版的設計是：問一次、答 YES 就清掉 `4A10h`，再回 `9A23h` 重跑這一格時
+`9A87h` 那個 `IF <>` 就不成立了，不會再問。**照這條路走不出無限迴圈。**
 
-達成前不得用測試直接注入 `4AC1h=4` 宣稱墓園委託已正常解鎖。
+**線索指向的不是井，是回報的位置。** `GEO8/29 (7,7)` 的地形碼是 **1**，
+不在 {4,7,18,19} 裡——那一格根本不會走到井那一支。井格在
+(11,9)、(8,10)、(11,10)、(10,11)、(11,11)、(6,14)、(8,14)、(6,15)、(7,15)、(8,15)。
+也就是說**探索器印出來的座標與 ECL 正在處理的那一格對不起來**，
+下一個人該先查的是這個，不是井的腳本。
+
+> 先前這一段寫成「`GEO8/29 (7,7)` 的井卡住」，把回報座標當成井的位置。
+> 那是錯的——地形碼一查就知道。
+
+**還沒能在隔離環境重現**：直接把角色擺到井格旁邊往上踩，`C04Fh` 一直是 0、
+隊伍也沒有移動，所以那一段的重現條件還沒抓到（探索器是怎麼走到那個狀態的
+還沒還原）。目前唯一的重現路徑是把
+`TestPlayingTheWorldCompletesCommissionsOnItsOwn` 改成兩階段
+（第二階段帶 `4AC1h = 2` 與槽 1／11／23 為 `FFh`）。
