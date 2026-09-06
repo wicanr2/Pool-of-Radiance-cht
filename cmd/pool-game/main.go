@@ -2624,17 +2624,26 @@ func (a *app) Draw(screen *ebiten.Image) {
 	} else {
 		drawAdventure(screen, a, foreground, accent)
 	}
-	// 基線 366：外框下緣那一列 tile 在邏輯 y 368..383（原版 native 184..191，
-	// spec 123），所以底部文字要停在 366——ascent 14，字頂 352，剛好讓開。
+	// 基線 366（footerBaseline）：外框下緣那一列 tile 在邏輯 y 368..383
+	// （原版 native 184..191，spec 123），所以底部文字要停在 366——
+	// ascent 14，字頂 352，剛好讓開。**那是硬下限，不是建議值。**
 	// 原版最下面那一列文字（`PRESS <ENTER>...`）在 native y 168..174，
 	// 換算成邏輯就是 336..348，也在框上面。
-	if a.freeMovementActive() {
+	switch {
+	case a.mode == modeTitle:
+		// 標題那一張是原版的整幅美術，底下那條藍帶裡就是原版的版權文字。
+		// 再疊一列 F-key 提示會直接壓在上面——標題畫面也按不到那幾個鍵，
+		// 畫它只是把原版的畫面弄髒。`msgTitleHint` 那一句留著，那是要按的。
+	case a.freeMovementActive():
 		// 自由移動時最下面那一列是原版的指令列（spec 119）；F-key 提示移到
 		// F1 說明頁，不是拿掉。導覽還在跑的時候原版那一列是「按 Return 繼續」，
 		// 所以那時不畫指令列。
 		drawCommandBar(screen, a, foreground, accent)
-	} else {
-		drawText(screen, a.text(msgFooter), 20, 366, foreground)
+	case a.tacticalPreview:
+		// 戰術盤面那一頁自己用掉這一列（移動鍵與回合鍵的提示），
+		// 而且它第一行右邊就寫著 `F5 返回`。兩邊都畫會疊在一起。
+	default:
+		drawText(screen, a.text(msgFooter), 20, footerBaseline, foreground)
 	}
 	if a.help {
 		drawHelp(screen, background, foreground, accent, a.adventureProvenanceLines())
@@ -3045,6 +3054,12 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color, 
 func drawText(screen *ebiten.Image, value string, x, y int, ink color.Color) {
 	text.Draw(screen, strings.ToUpper(displayText(value)), uiFace, x, y, ink)
 }
+
+// footerBaseline 是畫面最底下那一列文字的基線，也是硬下限：外框下緣那一列
+// tile 在邏輯 y 368..383（spec 123），字型 ascent 14，所以 366 的字頂是 352，
+// 剛好讓開。**比它大的基線會畫進框裡**——戰術盤面那一頁原本用 370，結果
+// 既壓到框又和這一列疊在一起。
+const footerBaseline = 366
 
 func (a *app) Layout(_, _ int) (int, int) { return logicalWidth, logicalHeight }
 

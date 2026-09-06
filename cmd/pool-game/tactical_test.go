@@ -509,3 +509,31 @@ func TestCombatMovementKeysAreNotMapShortcuts(t *testing.T) {
 		}
 	}
 }
+
+// 畫面最底下那一列是硬下限：外框下緣那一列 tile 在邏輯 y 368..383（spec 123）。
+// 戰術盤面的四行資訊要全部落在它上面，而且最後一行就是那一列本身——
+// 那一頁自己接管它，所以全域的功能鍵列不畫，兩邊不會疊在一起。
+func TestTacticalTextStaysAboveTheFrame(t *testing.T) {
+	if tacticalHintBaseline != footerBaseline {
+		t.Fatalf("戰術頁最底下那一行在 %d，功能鍵列在 %d：那一頁接管了這一列，兩個要相同",
+			tacticalHintBaseline, footerBaseline)
+	}
+	// 盤面 25 列、每列 10 像素，最後一列畫到 tacticalTop+250。第一行資訊的
+	// 字頂（基線 − ascent）要在它下面。
+	const boardBottom = tacticalTop + combat.TacticalMapHeight*tacticalCellSize
+	const ascent = 14
+	baselines := []int{tacticalLine1, tacticalLine2, tacticalLine3, tacticalHintBaseline}
+	if baselines[0]-ascent < boardBottom {
+		t.Errorf("第一行的字頂 %d 壓到盤面底 %d", baselines[0]-ascent, boardBottom)
+	}
+	for index := 1; index < len(baselines); index++ {
+		if gap := baselines[index] - baselines[index-1]; gap < ascent+1 {
+			t.Errorf("第 %d 行與上一行只差 %d 像素，ascent 是 %d：會疊在一起",
+				index+1, gap, ascent)
+		}
+	}
+	// 框上緣是 368：最後一行的基線不能碰到它。
+	if tacticalHintBaseline >= 368 {
+		t.Errorf("最後一行基線 %d 已經畫進下框（368..383）", tacticalHintBaseline)
+	}
+}

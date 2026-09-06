@@ -16,10 +16,22 @@ import (
 const (
 	tacticalCellSize = 10
 	tacticalLeft     = 70
-	// 盤面往上挪，讓底下擠得下四行資訊加功能鍵列。25 列 × 10 像素從 58 畫到 307，
-	// 四行基線 322／338／354／370，功能鍵列 386；漢字字型的 ascent 是 14，
-	// 16 像素行距剛好不相疊，也不會壓到下框。
-	tacticalTop = 58
+	// 盤面往上挪，讓底下擠得下四行資訊。25 列 × 10 像素從 46 畫到 295，
+	// 四行基線 312／330／348／366，行距 18——漢字字型的 ascent 是 14，
+	// 18 的行距不相疊。最後一行落在 366，那是外框下緣讓出來的最後一條基線
+	//（下框 tile 在邏輯 y 368..383，spec 123）。
+	//
+	// **最後一行原本畫在 370、盤面從 58 起**：370 既壓到下框，又和全域
+	// 功能鍵列（366）疊在一起，繁中字型下就是兩行字糊成一團。四行要同時
+	// 避開盤面與下框，只有把盤面往上挪才排得開。那一列由這一頁自己接管
+	//（`drawTactical` 畫指令提示），全域那一列不畫。
+	tacticalTop = 46
+
+	// 四行資訊的基線。最後一行也是外框讓出來的下限。
+	tacticalLine1        = 312
+	tacticalLine2        = 330
+	tacticalLine3        = 348
+	tacticalHintBaseline = 366
 )
 
 // geoDetailForDirection 取出 GEO cell 在該方向的 detail 位元。
@@ -143,18 +155,21 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 
 	drawText(screen, fmt.Sprintf(a.text(msgTacticalBoard),
-		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, 322, foreground)
+		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, tacticalLine1, foreground)
 	drawText(screen, fmt.Sprintf(a.text(msgTacticalRound),
 		a.tactical.Round, a.tactical.Mover, a.tactical.Scores[a.tactical.Mover],
-		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, 338, foreground)
+		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, tacticalLine2, foreground)
 	drawText(screen, fmt.Sprintf("%s   %s", a.text(msgTacticalProvisional), a.tactical.FoeLog),
-		70, 354, foreground)
-	hint := a.text(msgTacticalKeys) + "  " + a.text(msgCastHint)
-	if a.tactical.Prompt {
-		hint = a.text(msgTacticalPrompt)
+		70, tacticalLine3, foreground)
+	// 挑目標的時候那一列換成瞄準列——同一條基線，兩者不會同時出現。
+	if !a.castTargeting || len(a.castTargets) == 0 {
+		hint := a.text(msgTacticalKeys) + "  " + a.text(msgCastHint)
+		if a.tactical.Prompt {
+			hint = a.text(msgTacticalPrompt)
+		}
+		drawText(screen, hint, 70, tacticalHintBaseline, accent)
 	}
-	drawText(screen, hint, 70, 370, accent)
-	drawText(screen, a.text(msgTacticalBack), 500, 322, foreground)
+	drawText(screen, a.text(msgTacticalBack), 500, tacticalLine1, foreground)
 	drawCastMenu(screen, a, foreground, accent)
 	drawCastTargeting(screen, a, accent)
 }
@@ -169,12 +184,13 @@ func drawCastTargeting(screen *ebiten.Image, a *app, accent color.Color) {
 	view := a.tactical.Viewport
 	if a.castManual {
 		drawText(screen, fmt.Sprintf(a.text(msgCastAimManual),
-			a.castPending.Label, a.castManualX, a.castManualY, view.X, view.Y), 70, 306, accent)
+			a.castPending.Label, a.castManualX, a.castManualY, view.X, view.Y),
+			70, tacticalHintBaseline, accent)
 		return
 	}
 	target := a.castTargets[a.castTargetCursor]
 	drawText(screen, fmt.Sprintf(a.text(msgCastAiming), a.castPending.Label, target, view.X, view.Y),
-		70, 306, accent)
+		70, tacticalHintBaseline, accent)
 }
 
 // drawCastMenu 把施法清單畫在盤面右邊。只列得出已經讀過處理常式的法術，
