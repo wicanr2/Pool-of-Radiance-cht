@@ -16,7 +16,9 @@ import (
 // 表本身是原版 START.EXE 裡那 56 筆（spec 068），順序即原版的順序。
 const (
 	spellTextLeft   = 48
-	spellFirstLine  = 118
+	// 每一段之間至少 18，字高 15 加下伸 3 剛好不相碰。原本 92／106／118
+	// 三段只差 12–14，槽位那一行與清單第一列直接疊在一起。
+	spellFirstLine  = 134
 	spellLineHeight = 16
 	spellLineCount  = 8
 	spellColumns    = 64
@@ -153,7 +155,7 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 		className = a.text(msgSpellsMagicUser)
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgSpellsGroup), className, current.Level),
-		spellTextLeft, 92, accent)
+		spellTextLeft, 90, accent)
 
 	// 被選中的人在這一級還能記幾個。上限與已記都由記錄與參數表算出來
 	// （spec 072／074），不是寫死的。
@@ -167,9 +169,8 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 		drawText(screen, fmt.Sprintf(a.text(msgSpellsSlotLine),
 			strings.TrimSpace(member.Name), a.spellMember+1,
 			used[spellGroup][current.Level-1], maxima[spellGroup][current.Level-1], free),
-			spellTextLeft, 106, foreground)
+			spellTextLeft, 112, foreground)
 	}
-	drawText(screen, a.text(msgSpellsMemoriseHint), spellTextLeft, 366, accent)
 
 	group := state.current()
 	// 一頁放不下十三條，捲動時讓游標留在畫面內。
@@ -210,15 +211,18 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 			if index >= 4 {
 				break
 			}
-			drawText(screen, line, spellTextLeft, 258+index*spellLineHeight, foreground)
+			drawText(screen, line, spellTextLeft, 264+index*spellLineHeight, foreground)
 		}
 	}
 	// 這一行的三件事全部來自原版的參數表（spec 074），不是說明書。
 	if state.cursor < len(group) {
-		drawText(screen, a.spellFacts(group[state.cursor]), spellTextLeft, 316, foreground)
+		drawText(screen, a.spellFacts(group[state.cursor]), spellTextLeft, 330, foreground)
 	}
-	drawText(screen, fmt.Sprintf(a.text(msgSpellsCount), len(group)), spellTextLeft, 336, foreground)
-	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, 356, accent)
+	drawText(screen, fmt.Sprintf(a.text(msgSpellsCount), len(group)), spellTextLeft, 348, foreground)
+	// 鍵盤提示只有一列。原本是兩列（356 與 366），而基線只差 10、字高 15
+	// ——兩列直接疊在一起，看起來像字型壞掉。底下那一列的硬下限是
+	// `footerBaseline`（366），所以往下挪不了，只能併。
+	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, 366, accent)
 }
 
 // 記憶法術（spec 070／072／074）。原版的入口在紮營選單，remake 還沒有紮營

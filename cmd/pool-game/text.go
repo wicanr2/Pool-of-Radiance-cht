@@ -484,7 +484,6 @@ const (
 	msgSpellsForgot
 	msgSpellsNotMemorised
 	msgSpellsNoSlot
-	msgSpellsMemoriseHint
 	msgSpellsNotInBook
 	msgSpellsNoCredit
 	msgSpellsCannotLearn

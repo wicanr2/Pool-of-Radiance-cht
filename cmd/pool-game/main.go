@@ -2683,6 +2683,10 @@ func (a *app) Draw(screen *ebiten.Image) {
 		// 標題那一張是原版的整幅美術，底下那條藍帶裡就是原版的版權文字。
 		// 再疊一列 F-key 提示會直接壓在上面——標題畫面也按不到那幾個鍵，
 		// 畫它只是把原版的畫面弄髒。`msgTitleHint` 那一句留著，那是要按的。
+	case a.panelOpen():
+		// 手冊、裝備、法術、商店、紮營那幾頁自己有一列鍵盤提示，而且它們
+		// 開著的時候 `Update` 提早返回、指令列的鍵按不到。畫它只會從面板
+		// 底下露出半個字（裝備頁左下角原本會冒出一個 `A`）。
 	case a.freeMovementActive():
 		// 自由移動時最下面那一列是原版的指令列（spec 119）；F-key 提示移到
 		// F1 說明頁，不是拿掉。導覽還在跑的時候原版那一列是「按 Return 繼續」，
@@ -2901,6 +2905,12 @@ const (
 // 功能鍵列畫在 `footerBaseline`（366）——兩條只差四個像素，同時畫就疊成一團
 // 看不懂的字。原版在導覽跑的時候最下面本來就只有「按 RETURN 繼續」，
 // 沒有功能鍵列。
+// panelOpen 回報「有一頁面板蓋在冒險畫面上」。這幾個在 `Update` 裡都會
+// 提早返回，所以指令列那一列的鍵此時按不到。
+func (a *app) panelOpen() bool {
+	return a.journalOpen || a.equipmentOpen || a.spellsOpen || a.shopActive || a.campOpen
+}
+
 func (a *app) dialogueVisible() bool {
 	switch {
 	case a.introWaiting && a.initialEvent != nil:

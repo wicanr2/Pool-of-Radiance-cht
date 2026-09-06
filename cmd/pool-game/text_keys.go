@@ -126,7 +126,6 @@ var messageKeys = map[messageID]string{
 	msgSpellsGroup: "ui.spellsGroup",
 	msgSpellsLearned: "ui.spellsLearned",
 	msgSpellsMagicUser: "ui.spellsMagicUser",
-	msgSpellsMemoriseHint: "ui.spellsMemoriseHint",
 	msgSpellsMemorised: "ui.spellsMemorised",
 	msgSpellsNeedsMember: "ui.spellsNeedsMember",
 	msgSpellsNoCredit: "ui.spellsNoCredit",

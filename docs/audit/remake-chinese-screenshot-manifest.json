@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-07",
-  "source_commit": "dfcc467534704b657df58e29b36ad7c5a43ed59b",
+  "source_commit": "8790fd464b861b36f01b8ca443e480e715622546",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
   "state_relation": "normal-remake-player-path with -lang zh, stepped by the game's own -screen-state identifiers: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "9b760dea2909a80d075a8d64314487da8719199d49cf73c60bfb067a023a5a50",
+      "sha256": "34d7deaca92cec0008e1bd912d5ce90abbcdd9afd973abafefa523a92c3178bf",
       "width": 960,
       "height": 600,
       "screen": "character sheet, keep-or-reroll prompt"
@@ -89,49 +89,49 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-movement.png",
-      "sha256": "dcd20fe8c453f5a3ffc7d66468c8aefab0b4a352f4862aecbc3cc81cca5dfced",
+      "sha256": "0b0b3595d23722dc2716d240c9b06c48fe0e27238a1f1999029f19df5a5994d5",
       "width": 960,
       "height": 600,
       "screen": "free movement after the tour reaches its ECL exit"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-map.png",
-      "sha256": "d629caa15bb690085451c5c1bf0a3ee48f3bffc941fb0560747480f03ba6266f",
+      "sha256": "d27bef2833a5a043477c37cccf1ab9e1fa77cb5ff2a141ede91540e43746a96b",
       "width": 960,
       "height": 600,
       "screen": "area map"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal.png",
-      "sha256": "0965d8dbdb8645ba5476c42046e687fb0aa9af15ff04cbd1112130ffab5fce8a",
+      "sha256": "5f4207bf2701751320cc90b66c74a26d55199f3aa5e45f5bf1173e7a4077faec",
       "width": 960,
       "height": 600,
       "screen": "adventurer's journal"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal-46.png",
-      "sha256": "f20ea8f966f14714ce0864fbb9bc18f70563504fa94a69564117d8e127552cb6",
+      "sha256": "dc3906f6c5d8a5fb79fd87449b63acd658da56b0c3483d28c2214603d5cc96f2",
       "width": 960,
       "height": 600,
       "screen": "journal clue 46"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-equipment.png",
-      "sha256": "978e5ee88a15585afc14036d05dc67389bfd9fd2e86a4b10a3db486f8baa8909",
+      "sha256": "306aa8ded0e68262d5b1e0b4e362f7be53857a6817027cb0228a00a4386e0924",
       "width": 960,
       "height": 600,
       "screen": "equipment screen, empty pack"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-spells.png",
-      "sha256": "c93507c49b362ba0834c9d3634f2992d140c8347a0f18285a6950ea07fde32d7",
+      "sha256": "5d2cea370c2d185673483124bbdd89b94e9c280093881d65c57a7f33b375c293",
       "width": 960,
       "height": 600,
       "screen": "spell list, magic-user level 1"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tactical.png",
-      "sha256": "12e7655a9bb3ef002712e2635a75b1c308f9160ffbbf56002435828100b1e37a",
+      "sha256": "0285cead082215b944b3a38d365dca819944b0bb82232145b9eac070ccaf5f93",
       "width": 960,
       "height": 600,
       "screen": "tactical board (F5)"

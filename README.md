@@ -253,13 +253,14 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![裝備頁](docs/screenshots/pool-remake-chinese-equipment.png) | |
 
-| `K` 法術一覽：巫術第 1 級 | `F5` 戰術盤面 |
+| `K` 法術一覽 | `F5` 戰術盤面 |
 |---|---|
 | ![法術一覽](docs/screenshots/pool-remake-chinese-spells.png) | ![戰術盤面](docs/screenshots/pool-remake-chinese-tactical.png) |
 
 手冊那一張是說明書上冊的線索報導 46，遊戲文字裡「抄進手冊，成為線索報導 46」
-說得出口，翻得到就是翻得到。法術頁列的是巫術第 1 級 13 種，原文名與譯名並列，
-底下是該條的說明、射程、持續與豁免——六十七支法術全部接完了。
+說得出口，翻得到就是翻得到。法術頁原文名與譯名並列，底下是該條的說明、
+射程、持續與豁免；`*` 標的是施得出來的——記得起來但施不出來的不列，
+與其讓玩家選了才失敗，不如一開始就看得出差別。
 
 戰術盤面是由目前地城座標與真實 GEO 牆面資料現場生成的 50×25 戰術格；牆呈斜線是
 投影本身的形狀（`X = 21 + 6dx + 5dy + subB`）。原版 Move 命令的八個方向鍵
