@@ -1,63 +1,126 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
-  "captured_at": "2026-09-02",
-  "source_commit": "daa55019a535f34b57acc0cfbfac3dd74cc7efed",
+  "captured_at": "2026-09-06",
+  "source_commit": "817035f6bdebc33e98e613b3374ade9f74bea3cd",
+  "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
-  "state_relation": "normal-remake-player-path: title, ENTER, C, the whole creation flow, A, B, then F5. Run with -lang zh and the ETen font mounted read-only from the host.",
+  "state_relation": "normal-remake-player-path with -lang zh: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
   "font": {
     "family": "ETen 16x15 Big5 bitmap",
     "files_present": [
-      "stdfont.15",
-      "ascfont.15"
+      "ascfont.15",
+      "stdfont.15"
     ],
     "files_absent": [
       "spcfont.15"
     ],
-    "note": "spcfont.15 holds the full-width punctuation block. It was not in the font directory for this capture, so full-width quotes, commas and periods fell back to the built-in half-width glyphs.",
     "in_repository": false
   },
   "screenshots": [
     {
       "path": "docs/screenshots/pool-remake-chinese-menu.png",
-      "sha256": "64337075719adf0af007eda57379f02bbf6cf137049dab07697e5ca27baac52a",
+      "sha256": "0d5ade7cc51a8691e08fbd3a2c63a6303bdd2070d1f6c469ac48192bd355d21c",
       "width": 960,
       "height": 600,
       "screen": "party creation menu"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-race.png",
-      "sha256": "c8bf525987ec641dc051480ef7b9452b1e2bcbe3d43fa1b7b16d60b88a16c737",
+      "sha256": "bf2014ababfe2e62374c82292e6ec6e9137d93516b02d2bce92365dfb841bd5e",
       "width": 960,
       "height": 600,
       "screen": "race picker"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-class.png",
-      "sha256": "0524b901d5d43b89422f8e28abe444a424f5ae7f9d1e051c648c76ae959b008c",
+      "sha256": "38dfa757cc4d1f39d20ff160826098d96419f3f482c89eec8c81a225be652376",
       "width": 960,
       "height": 600,
-      "screen": "class picker, including the multi-class name"
+      "screen": "class picker"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "3712189a6cecd6b36074c179e1136a3299f71504bb1eced648c56b563352a531",
+      "sha256": "c8d828a9175138cadedc3fa6e2b68a6cd68022599d05e74ea2af4c254830711e",
       "width": 960,
       "height": 600,
-      "screen": "rolled character sheet"
+      "screen": "character sheet, keep-or-reroll prompt"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-portrait.png",
+      "sha256": "b3f13d387e24882c3d3b176d5fe0436ebef220c18a16b8d05964d4fd8668b9d6",
+      "width": 960,
+      "height": 600,
+      "screen": "portrait editor"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-icon.png",
+      "sha256": "9334fadf287649f0bbfbe3518ab490b41735f4804fccd55c2b840a931a0a0f26",
+      "width": 960,
+      "height": 600,
+      "screen": "combat icon editor, top level"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-party.png",
+      "sha256": "dc92b9f958b7b998242dde86a23581e6eb4ace3234548738da8cf02909e2d7e0",
+      "width": 960,
+      "height": 600,
+      "screen": "party creation menu with one member added"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tour.png",
-      "sha256": "7f687cb7b73a158af891d772e040fbe21f10ea14f86269d8eeab500489d1a2ce",
+      "sha256": "8165730f10c3b53010e9c8744f354c550433b2f3d7797dcaee7618200dc89928",
       "width": 960,
       "height": 600,
-      "screen": "Rolf's tour, the first original narrative text shown in Chinese"
+      "screen": "first page of the Rolf guided tour"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-movement.png",
+      "sha256": "6eccd82d78c527ba146a812e84a2ba45a4015f3469123548edfce584a77a309e",
+      "width": 960,
+      "height": 600,
+      "screen": "free movement after the tour reaches its ECL exit"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-map.png",
+      "sha256": "893fe30094169afd3fca3d19b0708e18328fc024d20d38e784e8041dcb40fb53",
+      "width": 960,
+      "height": 600,
+      "screen": "area map"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-journal.png",
+      "sha256": "969768c7d094690372edf091f2753c55e11d9afb67740777d041922eeb6d740f",
+      "width": 960,
+      "height": 600,
+      "screen": "adventurer's journal"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-journal-46.png",
+      "sha256": "4894fd9e48d9289df88ed0e8ca6dc63a6799c9ce952270148662ee9e305d1cf2",
+      "width": 960,
+      "height": 600,
+      "screen": "journal clue 46"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-equipment.png",
+      "sha256": "55e3ef0f74700a8608741cbf034b5f7903be01916b8ed1413083de610ffb6f4b",
+      "width": 960,
+      "height": 600,
+      "screen": "equipment screen, empty pack"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-spells.png",
+      "sha256": "cb7f7036461c6275d8755e2a258bc96ddbc85850c7c687d5c647122ce7b079c0",
+      "width": 960,
+      "height": 600,
+      "screen": "spell list, magic-user level 1"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tactical.png",
+      "sha256": "3e828ab991b433cbe626bad674161f3c883ba3db7c58b0de7fbfe49bb28f6ebc",
       "width": 960,
       "height": 600,
-      "screen": "tactical board with the reworked four-line HUD",
-      "sha256": "7e1baac1e29f3d8c13182d4f511f5015b549131e4b023991e8ce1795c508fe30"
+      "screen": "tactical board (F5)"
     }
   ]
 }

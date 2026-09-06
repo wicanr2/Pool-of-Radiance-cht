@@ -154,58 +154,66 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ## 目前 remake 畫面
 
-姓名輸入至 Rolf 導覽的七張操作畫面已從真實 Ebitengine 視窗，透過 Docker／Xvfb
-逐鍵重拍；標題與角色資料頁沿用較早的同一路徑收據。重拍後七張 PNG 與版控內容
-逐 byte 相同；來源提交、日期、雜湊、尺寸與狀態標籤見
-[截圖 manifest](docs/audit/remake-screenshot-manifest.json)。這些圖片只證明各圖所列的
-正常路徑與目前畫面，不代表完整遊戲 parity。
+下面十五張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
+在 Docker／Xvfb 裡開真的 Ebitengine 視窗、逐鍵走一次正常玩家路徑拍下來的：
+標題 → `ENTER` → `C` 建角 → 命名 → 肖像 → 戰鬥圖示 → 加入隊伍 → `B` 開始冒險
+→ 按完羅夫導覽 → 自由移動 → 平面圖 → 手冊 → 裝備 → 法術 → 戰術盤面。
+中途任何一步沒有換到預期的畫面，腳本就失敗即關閉，不會拍出一張看起來對的圖。
+來源提交、日期、雜湊與字型狀態見
+[繁中截圖 manifest](docs/audit/remake-chinese-screenshot-manifest.json)。
 
-| 標題（原版素材 typed decode） | 建角角色資料頁（Spec 003／004） |
+字型是倚天 16×15 點陣字，屬第三方資產、不進 repo，執行時以 `-eten-font` 指定。
+
+### 建角
+
+| 人物管理選擇項 | 種族 |
 |---|---|
-| ![Pool remake 標題](docs/screenshots/pool-remake-title.png) | ![Pool remake 角色資料頁](docs/screenshots/pool-remake-character-sheet.png) |
+| ![人物管理選擇項](docs/screenshots/pool-remake-chinese-menu.png) | ![種族](docs/screenshots/pool-remake-chinese-race.png) |
 
-| 姓名輸入（原版順序） | 肖像編輯器（原版 HEAD3／BODY3 素材） |
+| 職業 | 人物資料頁 |
 |---|---|
-| ![Pool remake 姓名輸入](docs/screenshots/pool-remake-character-name.png) | ![Pool remake 肖像編輯器](docs/screenshots/pool-remake-portrait-editor.png) |
+| ![職業](docs/screenshots/pool-remake-chinese-class.png) | ![人物資料頁](docs/screenshots/pool-remake-chinese-sheet.png) |
 
-| 戰鬥圖示編輯器（原版 READY／ACTION 素材） |
-|---|
-| ![Pool remake 戰鬥圖示編輯器](docs/screenshots/pool-remake-combat-icon-editor.png) |
-
-| 最終確認 | 返回建隊選單並加入角色 |
+| 肖像編輯器（原版 HEAD／BODY 素材） | 戰鬥圖示編輯器（原版 READY／ACTION 素材） |
 |---|---|
-| ![Pool remake icon 最終確認](docs/screenshots/pool-remake-icon-confirm.png) | ![Pool remake Party Creation Menu](docs/screenshots/pool-remake-party-menu.png) |
+| ![肖像編輯器](docs/screenshots/pool-remake-chinese-portrait.png) | ![戰鬥圖示編輯器](docs/screenshots/pool-remake-chinese-icon.png) |
 
-| 建隊後正常按 `B` 進入原版 Rolf 導覽第一頁 |
-|---|
-| ![Pool remake 初始 Rolf 導覽事件](docs/screenshots/pool-remake-initial-rolf-event.png) |
+`人物管理選擇項`那一張是九項：`C D M V A R S B E`，**沒有 `T)RAIN`**。
+那不是漏做——原版 `T` 的啟用旗標 `DS:06D4h` 只有在訓練所那一區才會設起來
+（[spec 008](docs/spec/008-character-library-and-party-menu.md)），這張圖不在訓練所裡。
 
-| 冒險畫面按 `F5` 的戰術地圖預覽（Spec 060） |
-|---|
-| ![Pool remake 戰術地圖預覽](docs/screenshots/pool-remake-tactical-preview.png) |
+### 冒險
 
-這張圖是由目前地城座標與真實 GEO 牆面資料現場生成的 50×25 戰術格，1250 格全部
-有內容；牆呈斜線是投影本身的形狀（`X = 21 + 6dx + 5dy + subB`）。牆面值依
-overlay-10 `0138h` 分成開放、牆與門三種，界外一律當牆、只有隊伍那一列的東西向
-例外。綠色是隊伍成員；這條擷取路徑上沒有 staged 怪物，所以敵方是 0。
+| 隊伍組好，準備開始 | 羅夫導覽（原版敘事，繁中） |
+|---|---|
+| ![隊伍](docs/screenshots/pool-remake-chinese-party.png) | ![羅夫導覽](docs/screenshots/pool-remake-chinese-tour.png) |
 
-原版 Move 命令的八個方向鍵（`H I M Q P O K G`）已經接上移動判定，回合流程也照
-Spec 062 的順序在跑：每回合重設所有人的移動預算、重擲先攻，再反覆「選行動者→
-行動」，選不到人才進下一回合——先攻是每次行動後重選，不是整場排一次順序表。
-`Enter` 結束回合，`D` 是原版的 Delay（分數寫成 1 而非 0，稍後還會被選到）。
+| 導覽按完之後的自由移動 | `A` 開平面圖 |
+|---|---|
+| ![自由移動](docs/screenshots/pool-remake-chinese-movement.png) | ![平面圖](docs/screenshots/pool-remake-chinese-map.png) |
 
-圖中的狀態是按了兩次正東再按一次右上斜向之後：預算由 24 扣成 20（兩步正東、
-每步 2），第三步因為右上那格在牆線上而回報 `BLOCKED`。撞到人會走攻擊分支，
-走出盤面會走離開戰鬥的詢問分支。
+第一人稱那一格是由目前地城座標與原版 GEO 牆面資料現場合成的，
+與原版 DOS 的同一格同一朝向**逐格 100% 相同**（7744/7744，兩張基準圖，
+[spec 126](docs/spec/126-first-person-inset-pixel-parity.md)）。
 
-兩處仍是暫定的，都標在畫面上：部署位置由原版執行期填的陣型樣板決定，那張表不在
-檔案裡（Spec 061）；移動預算與怪物的 DEX 在沒有 staged 怪物時用暫定值，因為
-remake 的角色記錄還沒有移動欄位。來源提交與雜湊見
-[戰術預覽截圖 manifest](docs/audit/remake-tactical-screenshot-manifest.json)。
+### 面板
 
-| Rolf 34-step 導覽的 Tyr 停靠點（正常 Return 路徑） |
-|---|
-| ![Pool remake Rolf 導覽 Tyr 停靠點](docs/screenshots/pool-remake-rolf-tour-tyr.png) |
+| `J` 探險者手冊：線索報導 46 | `I` 裝備頁 |
+|---|---|
+| ![探險者手冊](docs/screenshots/pool-remake-chinese-journal-46.png) | ![裝備頁](docs/screenshots/pool-remake-chinese-equipment.png) |
+
+| `K` 法術一覽：巫術第 1 級 | `F5` 戰術盤面 |
+|---|---|
+| ![法術一覽](docs/screenshots/pool-remake-chinese-spells.png) | ![戰術盤面](docs/screenshots/pool-remake-chinese-tactical.png) |
+
+手冊那一張是說明書上冊的線索報導 46，遊戲文字裡「抄進手冊，成為線索報導 46」
+說得出口，翻得到就是翻得到。法術頁列的是巫術第 1 級 13 種，原文名與譯名並列，
+底下是該條的說明、射程、持續與豁免——六十七支法術全部接完了。
+
+戰術盤面是由目前地城座標與真實 GEO 牆面資料現場生成的 50×25 戰術格；牆呈斜線是
+投影本身的形狀（`X = 21 + 6dx + 5dy + subB`）。原版 Move 命令的八個方向鍵
+（`H I M Q P O K G`）已接上移動判定，回合流程照
+[spec 062](docs/spec/062-combat-round-loop.md) 的順序在跑。
 
 目前以 Docker／Xvfb 做離線測試與煙霧擷取：
 
