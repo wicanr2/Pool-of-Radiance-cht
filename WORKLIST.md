@@ -2193,6 +2193,29 @@
 
 ## 發行
 
+### 第一階段完成（2026-09-07，`v1.1.0-20260907`）
+
+repository 轉 public，release 對外掛四個發行包＋`manifest.json`：
+<https://github.com/wicanr2/Pool-of-Radiance-cht/releases/tag/v1.1.0-20260907>
+
+這一版之前修掉兩個「玩不下去」的缺陷，兩個都是**讓治具真的從開場走一遍**
+抓到的，不是讀程式碼看出來的：`36h ADD NPC` 沒把職業從記錄帶出來；
+「先換地圖再問問題」的腳本因為事件處理提早返回而地圖不換。
+
+公開時的三個決定（2026-09-07 使用者定案）：
+
+- **engine 維持 private**，所以公開的 repository clone 下來建置不起來。
+  README 開頭直說這件事，不讓人白試。
+- **軟體世界說明書譯文照原樣公開**。`NOTICE.md` 的敘述同步改成與現況一致
+  （未取得授權、不因 RRSAL-1.0 重新授權、留移除管道）——留一句與現況相反的
+  聲明比沒有聲明更糟。
+- **推廣片留在本機不發布**：它嵌 Amiga 原版配樂（Wally Beben），公開等於散布
+  他人著作。影片本身已建好（122 秒、15 段字幕）在 `dist-all/<版本>/promo/`。
+
+尚未驗證的仍然是 macOS 與真實 Windows 機器上的啟動（見
+[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)）。
+
+
 - [x] 授權已定案並落地：RRSAL-1.0（非商業免費含修改再散布，實況與平台分潤
   明示允許，商業另談），`LICENSE` 與 `NOTICE.md` 在 repo 根目錄，也複製進每一個
   發行包。`NOTICE.md` 明列不因此被重新授權的東西：SSI 原版資產、軟體世界的
