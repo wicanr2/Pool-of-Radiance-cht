@@ -21,3 +21,6 @@
 *.ogg
 Pool_of_Radiance.lha
 wb.Pool_of_Radiance
+
+# PC-98 版原版磁碟映像（Pony Canyon 1989）：不得散布
+/pc98/
