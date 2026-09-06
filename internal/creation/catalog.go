@@ -137,6 +137,22 @@ func ClassDOSCode(classID string) (uint8, bool) {
 	return 0, false
 }
 
+// ClassIDForDOSCode 是 [ClassDOSCode] 的反查：從原版記錄的 `+2Fh` 回到職業 ID。
+//
+// NPC 沒有經過建角流程，它的職業只存在記錄裡（`36h ADD NPC` 從
+// `MON<n>CHA.DAX` 讀一筆 285 位元組的記錄）。少了這一條，NPC 入隊之後任何
+// 要查職業的地方都會拿到空字串——**症狀不是顯示錯，是整支查詢報錯**。
+func ClassIDForDOSCode(code uint8) (string, bool) {
+	for _, choices := range classesByRace {
+		for _, choice := range choices {
+			if choice.DOSCode == code {
+				return choice.ID, true
+			}
+		}
+	}
+	return "", false
+}
+
 // RaceDOSCode 回傳原版角色記錄 `+2Eh` 那個位元組。碼不連續（人類是 7
 // 不是 6），所以一定要查表，不能拿 Races 的索引充當。
 func RaceDOSCode(raceID string) (uint8, bool) {

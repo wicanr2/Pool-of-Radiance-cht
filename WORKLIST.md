@@ -2178,8 +2178,14 @@
   負對照 `TestCityHallSaysNothingWithNoCommissionDone`：一條都沒完成就去交差，
   26 條通知一條都不該出現。把期望文字整體位移三槽再跑，26 條裡 23 條失敗。
 
-  剩下的是「從開場走到各區觸發格」逐區實跑。現在的覆蓋是兩段接起來的
-  （producer 端 ＋ 交差端），中間那一段只有貧民窟那一條是整條連著跑的。
+  **中間那一段也開始量了**（`TestPlayingTheWorldCompletesCommissionsOnItsOwn`）：
+  完全不給主線旗標，讓探索器從開場自己走，走完看有幾個槽被寫成 `FEh`。
+  現在量得到三條（1 索寇要塞、11 瓦海登墳場、23 巴恩神殿）。
+  **這一支上線的第一次就抓到一個玩不下去的缺陷**：`36h ADD NPC` 沒有把職業
+  從記錄帶出來，WARRIOR 入隊之後整局停在
+  `Pool character "WARRIOR" has unknown class ""`。修掉之後從一條變成三條。
+
+  剩下的槽還沒被探索器走到；門檻是量到的下限，不是目標。
 
 ## 發行
 

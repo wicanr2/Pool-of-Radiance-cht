@@ -1419,3 +1419,89 @@ func TestArchiveSwapFollowsTheSessionNotTheMirror(t *testing.T) {
 			session.CurrentBlockID(), application.eclSessionArchive)
 	}
 }
+
+// NPC 入隊時要把職業從記錄帶出來。
+//
+// **這是實跑抓到的**：探索器走到某一格讓 WARRIOR 入隊之後，
+// `Pool character "WARRIOR" has unknown class ""` 讓整局停在那裡。NPC 沒有
+// 經過建角流程，職業只存在記錄的 `+2Fh`（複合職業碼）與 `+96h` 起的八個
+// 等級裡；不帶出來的話 `partyClassCodes`（ECL 的隊伍查詢）與
+// `partyClassLevels`（THAC0 與豁免）都會報錯——症狀不是顯示錯，是玩不下去。
+func TestAddNPCTakesItsClassFromTheRecord(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	// 原版的記錄照讀，不做代用品——要驗的正是「記錄裡的碼查得到職業」。
+	// 八個封存檔全掃：只驗一筆的話，查不到的那一筆正好沒被挑到就看不出來。
+	var sample poolsave.Character
+	records := 0
+	for archive := uint8(1); archive <= 8; archive++ {
+		for id := 0; id < 64; id++ {
+			record, err := application.loadMonster(archive, uint8(id))
+			if err != nil {
+				continue
+			}
+			records++
+			raw := record.Raw[:]
+			code := raw[gamepack.ClassCodeOffset]
+			classID, ok := creation.ClassIDForDOSCode(code)
+			if !ok {
+				t.Errorf("mon%d/%d %q 的 +2Fh=%d 查不到職業", archive, id, record.Name, code)
+				continue
+			}
+			if back, ok := creation.ClassDOSCode(classID); !ok || back != code {
+				t.Errorf("mon%d/%d 的職業 %q 反查回來是 %d，原本是 %d",
+					archive, id, classID, back, code)
+			}
+			if sample.Record != nil {
+				continue
+			}
+			levels, err := gamepack.ClassLevels(raw)
+			if err != nil {
+				t.Fatalf("mon%d/%d 的 +96h 取不出等級：%v", archive, id, err)
+			}
+			sample = poolsave.Character{Name: record.Name, NPC: true, ClassID: classID,
+				Record: append([]byte(nil), raw...),
+				ClassLevels: append([]uint8(nil), levels[:]...)}
+		}
+	}
+	if records == 0 {
+		t.Skip("讀不到原版的 NPC 記錄")
+	}
+	t.Logf("掃過 %d 筆記錄，`+2Fh` 全部查得到職業", records)
+
+	// 兩個先前會炸的消費端都要過。
+	application.state.Party = []poolsave.Character{sample}
+	code := sample.Record[gamepack.ClassCodeOffset]
+	codes, err := application.partyClassCodes()
+	if err != nil {
+		t.Fatalf("隊伍職業碼：%v", err)
+	}
+	if len(codes) != 1 || codes[0] != code {
+		t.Errorf("查出來的職業碼是 %v，記錄裡是 %d", codes, code)
+	}
+	if _, err := partyClassLevels(sample); err != nil {
+		t.Fatalf("職業等級：%v", err)
+	}
+	// 等級全零的記錄不能帶進 ClassLevels：帶了 `partyClassLevels` 會回一組
+	// 全零，而不是退回「沒訓練過就照第 1 級算」。
+	blank := poolsave.Character{Name: "Z", NPC: true, ClassID: sample.ClassID,
+		Record: make([]byte, len(sample.Record))}
+	levelsForBlank, err := partyClassLevels(blank)
+	if err != nil {
+		t.Fatalf("沒有等級的 NPC：%v", err)
+	}
+	sum := 0
+	for _, level := range levelsForBlank {
+		sum += int(level)
+	}
+	if sum == 0 {
+		t.Error("沒有等級的 NPC 應該退回第 1 級，不是一組全零")
+	}
+	// 負對照：職業空著又沒有等級就要報錯，不能靜靜當成 0。
+	if _, err := partyClassLevels(poolsave.Character{Name: "X"}); err == nil {
+		t.Error("沒有職業也沒有等級的角色被接受了")
+	}
+}

@@ -1354,7 +1354,12 @@ walk:
 		*hardFailures = append(*hardFailures, failures...)
 	}
 	if flags != nil && application.eventMachine != nil {
-		for _, address := range []uint16{0x4A21, 0x4AA7, 0x4AC4, 0x6E12, 0x4A01, 0x4AC5, 0x4ABA} {
+		for _, address := range []uint16{0x4A21, 0x4AC4, 0x6E12, 0x4A01, 0x4AC5} {
+			flags[address] = application.eventMachine.Memory[address]
+		}
+		// 二十六個委任槽（spec 041）也一起帶出來：它們是「玩家真的走到那個
+		// 條件了沒有」唯一的直接答案。
+		for address := uint16(0x4AA6); address <= 0x4ABF; address++ {
 			flags[address] = application.eventMachine.Memory[address]
 		}
 	}
@@ -1807,5 +1812,72 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	// 次數的修改又會紅。
 	if len(blocks) < 15 {
 		t.Errorf("只走到 %d 個 ECL block：%v", len(blocks), blockIDs)
+	}
+}
+
+// 委任的前半段：**玩家自己走得到那個條件嗎。**
+//
+// spec 041 的另外兩支測試各驗一半——producer 端驗「條件成立時腳本會不會把槽
+// 寫成 `FEh`」，交差端驗「`FEh` 之後職員會做什麼」。中間那一段（從開場走過去、
+// 在那張圖上把條件滿足掉）只有貧民窟（`TestTwentyFiveRealSlumsWins…`）與索寇
+// 要塞（`TestSokalKeepOpensTheOtherBoatRoutes`）是整條連著跑的。
+//
+// 這一支量的就是那一段：**完全不給主線旗標**，讓探索器從開場自己走，
+// 走完看有幾個委任槽被寫成 `FEh`。與世界巡迴那一支的差別正在這裡——
+// 那一支會把 26 槽全部預設成 `FEh` 去解鎖內容，所以它量不到這件事。
+func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	completed := map[uint16]bool{}
+	visited := map[[3]int]bool{}
+	maps := map[string]bool{}
+	blocks := map[int]bool{}
+	menuTurn := map[string]int{}
+	exitUses := map[[4]int]int{}
+	var hardFailures []string
+	ok := false
+	// **每一趟都重開一局，不把上一趟的成果帶進來。**
+	//
+	// 試過帶：把打出來的槽與主線旗標當成下一趟的起始狀態，理由是這個遊戲
+	// 層層解鎖（清掉索寇要塞才開得出其他航線，spec 099）。**結果更差**——
+	// 走完的委任從三條掉到一條、地圖從 13 張掉到 7 張，而且整支跑得更快，
+	// 也就是探索器更早就沒地方去了。帶著旗標會改變港務長的選單與各區的出口，
+	// 探索器跟著走進另一條路，反而繞不到原本走得到的地方。
+	// 獨立起局再取聯集，涵蓋面比較大。
+	for pass, boat := range []int{0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3} {
+		flags := map[uint16]uint16{}
+		transitionUses := map[[3]int]int{}
+		_, reachable := exploreWorldWithFlags(t, zipPath, int64(29+pass*11+boat),
+			pass%4, 1, 120000, map[[3]int]bool{}, map[[3]int]bool{}, transitionUses,
+			menuTurn, exitUses, visited, maps, blocks, flags, boat,
+			&hardFailures, nil)
+		if !reachable {
+			t.Skip("original DOS ZIP is intentionally not tracked")
+		}
+		ok = true
+		for address := uint16(0x4AA6); address <= 0x4ABF; address++ {
+			if flags[address] >= 0xFE {
+				completed[address] = true
+			}
+		}
+	}
+	if !ok {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	slots := make([]int, 0, len(completed))
+	for address := range completed {
+		slots = append(slots, int(address-0x4AA6))
+	}
+	sort.Ints(slots)
+	t.Logf("玩家自己走完的委任 %d 條：%v", len(slots), slots)
+	t.Logf("順帶走到的地圖 %d 張、ECL block %d 個", len(maps), len(blocks))
+	// 量到的下限，不是目標。現在量得到三條：1（索寇要塞）、11（瓦海登墳場）、
+	// 23（巴恩神殿）。**少於這個數代表玩家走得到的主線退步了**，而那是
+	// 「測試綠、玩家卡關」這一類缺陷唯一擋得住的地方——這一支上線的第一次
+	// 就抓到 NPC 入隊沒帶職業，修掉之後從一條變成三條。
+	if len(slots) < 3 {
+		t.Errorf("只走完 %d 條委任：%v", len(slots), slots)
+	}
+	if len(hardFailures) != 0 {
+		t.Errorf("出現 %d 次硬失敗", len(hardFailures))
 	}
 }

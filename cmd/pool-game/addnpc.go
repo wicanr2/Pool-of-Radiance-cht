@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/ecl"
@@ -62,6 +63,28 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 		Record:    append([]byte(nil), record.Raw[:]...),
 		MaxHP:     int(record.MaxHitPoints()),
 		CurrentHP: int(record.CurrentHitPoints()),
+	}
+	// **職業要從記錄帶出來。** NPC 沒有經過建角流程，它的職業只存在記錄的
+	// `+2Fh`（複合職業碼）與 `+96h` 起的八個等級裡。不帶出來的話後面任何
+	// 要查職業的地方都會拿到空字串——症狀不是顯示錯，是
+	// `partyClassCodes`（ECL 的隊伍查詢）與 `partyClassLevels`（THAC0 與
+	// 豁免）直接報錯，整局停在那裡。
+	raw := record.Raw[:]
+	if len(raw) > gamepack.ClassCodeOffset {
+		if classID, ok := creation.ClassIDForDOSCode(raw[gamepack.ClassCodeOffset]); ok {
+			member.ClassID = classID
+		}
+	}
+	// **等級全是 0 的記錄不要帶。** 98 筆裡有 12 筆是這樣（純怪物，不是真的
+	// NPC）。帶了的話 `partyClassLevels` 會看到「有等級」而直接回一組全零，
+	// 而不是退回「沒訓練過就照建角的第 1 級算」（spec 097）。
+	if levels, err := gamepack.ClassLevels(raw); err == nil {
+		for _, level := range levels {
+			if level != 0 {
+				member.ClassLevels = append([]uint8(nil), levels[:]...)
+				break
+			}
+		}
 	}
 	if member.CurrentHP > member.MaxHP {
 		member.CurrentHP = member.MaxHP
