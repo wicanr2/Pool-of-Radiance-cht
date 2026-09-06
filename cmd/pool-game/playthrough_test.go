@@ -1589,3 +1589,156 @@ func TestEndingCutsceneSceneFollowsPartySize(t *testing.T) {
 		t.Fatal("圖載不出來時台詞也不見了")
 	}
 }
+
+// runECLFrom 從指定的 ECL 位址起跑，先照 setup 佈好記憶體，再跑到停下來。
+// 回傳當下的記憶體，讓呼叫端檢查腳本寫了什麼。
+//
+// 這裡不經過 app：要測的是腳本自己的完成條件，不是畫面或按鍵。
+func runECLFrom(
+	t *testing.T, archiveID uint8, blockID uint16, start uint16,
+	setup map[uint16]uint16,
+) map[uint16]uint16 {
+	t.Helper()
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(archiveID)
+	if !ok {
+		t.Fatalf("ECL%d archive is absent", archiveID)
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, blockID, start)
+	if err != nil {
+		t.Fatal(err)
+	}
+	machine := session.Machine()
+	for address, value := range setup {
+		machine.Memory[address] = value
+	}
+	if _, err := session.RunUntilEvent(256, nil, true); err != nil {
+		t.Fatalf("ecl%d/%d 從 $%04X 起跑：%v", archiveID, blockID, start, err)
+	}
+	return machine.Memory
+}
+
+// 「收集或旗標」與「計數」那兩類委任的完成條件（spec 041）。
+//
+// 每一條都有**負對照**：條件不成立時那一槽不能被寫成 `FEh`。少了負對照，
+// 測到的只是「這條 `SAVE` 指令執行得到」，那對每一條都成立，什麼也沒證明。
+//
+// 起跑位址取自 spec 041 的生產者表往前的條件判斷，是掃描讀出來的。
+func TestFlagAndCountCommissionsNeedTheirCondition(t *testing.T) {
+	for _, want := range []struct {
+		name     string
+		archive  uint8
+		block    uint16
+		start    uint16
+		slot     uint16
+		met      map[uint16]uint16 // 條件成立時的前置狀態
+		unmet    map[uint16]uint16 // 條件不成立時的前置狀態
+		alsoWant map[uint16]uint16 // 條件成立時順帶要寫的東西
+	}{
+		// 曼多爾圖書館的六本書：拿到就在 `4A2Fh` 記一個位元，並在該槽還沒被
+		// 市政廳結算（`!= FFh`）時寫 `FEh`。負對照是已經結算過的 `FFh`。
+		{"圖書館 論述", 2, 15, 0x9FF4, 0x4AAA,
+			map[uint16]uint16{}, map[uint16]uint16{0x4AAA: 0xFF},
+			map[uint16]uint16{0x4A2F: 0x01}},
+		{"圖書館 遊記", 2, 15, 0xA0A5, 0x4AAB,
+			map[uint16]uint16{}, map[uint16]uint16{0x4AAB: 0xFF},
+			map[uint16]uint16{0x4A2F: 0x02}},
+		{"圖書館 地圖", 2, 15, 0xA272, 0x4AAC,
+			map[uint16]uint16{}, map[uint16]uint16{0x4AAC: 0xFF},
+			map[uint16]uint16{0x4A2F: 0x04}},
+		{"圖書館 史書", 2, 15, 0xA31A, 0x4AAD,
+			map[uint16]uint16{}, map[uint16]uint16{0x4AAD: 0xFF},
+			map[uint16]uint16{0x4A2F: 0x08}},
+		{"圖書館 檔案", 2, 15, 0xA3AC, 0x4AAE,
+			map[uint16]uint16{}, map[uint16]uint16{0x4AAE: 0xFF},
+			map[uint16]uint16{0x4A2F: 0x10}},
+		{"圖書館 雜物", 2, 15, 0xA0FF, 0x4AAF,
+			map[uint16]uint16{}, map[uint16]uint16{0x4AAF: 0xFF},
+			map[uint16]uint16{0x4A2F: 0x80}},
+
+		// 斯托揚諾河：`4A52h` 的位元 2 立起來之後由 `AC4Ch` 那支結案。
+		{"斯托揚諾河", 7, 23, 0xAC35, 0x4AB3,
+			map[uint16]uint16{}, map[uint16]uint16{0x4AB3: 0xFF},
+			map[uint16]uint16{0x4A52: 0x04}},
+
+		// 遊牧營地：條件是 `4A7Ch` 的位元 0，不成立就直接跳過那一段。
+		{"遊牧營地", 7, 17, 0xA1DB, 0x4AB7,
+			map[uint16]uint16{0x4A7C: 0x01}, map[uint16]uint16{0x4A7C: 0x00}, nil},
+
+		// 蜥蜴人：計數到 40 才算。39 是負對照——差一個就不能結案。
+		{"蜥蜴人 40 場", 8, 16, 0x9CBD, 0x4AB5,
+			map[uint16]uint16{0x4A5D: 40}, map[uint16]uint16{0x4A5D: 39}, nil},
+
+		// 卡德納是叛徒（找到報告那一支）：`4A67h` 的位元 3 還沒立才算數。
+		{"卡德納的報告", 5, 4, 0xAD88, 0x4ABE,
+			map[uint16]uint16{0x4A67: 0x00}, map[uint16]uint16{0x4A67: 0x08},
+			map[uint16]uint16{0x4A67: 0x08}},
+
+		// 卡德納是叛徒（市政廳那一支）：已經是 `FEh` 以上就不重寫。
+		{"卡德納 市政廳", 3, 8, 0xAF3A, 0x4ABE,
+			map[uint16]uint16{}, map[uint16]uint16{0x4ABE: 0xFF}, nil},
+
+		// 提前完成任務是兩段式：`ecl6/28` 先寫 `FDh`。
+		{"提前完成 第一段", 6, 28, 0x9934, 0x4AB4,
+			map[uint16]uint16{0x6DD5: 1}, map[uint16]uint16{0x6DD5: 0}, nil},
+	} {
+		t.Run(want.name, func(t *testing.T) {
+			expect := uint16(0xFE)
+			if want.name == "提前完成 第一段" {
+				expect = 0xFD
+			}
+			memory := runECLFrom(t, want.archive, want.block, want.start, want.met)
+			if got := memory[want.slot]; got != expect {
+				t.Errorf("條件成立時 %04Xh=%02X，應該是 %02X", want.slot, got, expect)
+			}
+			for address, value := range want.alsoWant {
+				if got := memory[address]; got&value != value {
+					t.Errorf("條件成立時 %04Xh=%02X，缺了 %02X", address, got, value)
+				}
+			}
+			before := want.unmet[want.slot]
+			memory = runECLFrom(t, want.archive, want.block, want.start, want.unmet)
+			if got := memory[want.slot]; got != before {
+				t.Errorf("條件不成立時 %04Xh 從 %02X 變成 %02X", want.slot, before, got)
+			}
+		})
+	}
+}
+
+// 槽 14「提前完成任務」是唯一的兩段式：`ecl6/28` 先寫 `FDh`，`ecl6/25` 才把
+// `FDh` 升成 `FEh`。**`FDh` 與 `FEh` 差一階**，把 `FDh` 當完成會讓市政廳的
+// 通知早一步跑出來。
+func TestTheEarlyCompletionCommissionTakesTwoStages(t *testing.T) {
+	first := runECLFrom(t, 6, 28, 0x9934, map[uint16]uint16{0x6DD5: 1})
+	if got := first[0x4AB4]; got != 0xFD {
+		t.Fatalf("第一段之後 4AB4h=%02X，應該是 FDh", got)
+	}
+	for _, want := range []struct {
+		name   string
+		before uint16
+		after  uint16
+	}{
+		{"第一段跑過（FDh）才升級", 0xFD, 0xFE},
+		{"還沒跑第一段就不升級", 0x00, 0x00},
+		{"已經結算過就不重寫", 0xFF, 0xFF},
+	} {
+		t.Run(want.name, func(t *testing.T) {
+			memory := runECLFrom(t, 6, 25, 0x9E57, map[uint16]uint16{0x4AB4: want.before})
+			if got := memory[0x4AB4]; got != want.after {
+				t.Errorf("4AB4h 從 %02X 變成 %02X，預期 %02X", want.before, got, want.after)
+			}
+			// 升級的同時會寫 `4A11h = 1`；沒升級就不能寫。
+			flag := memory[0x4A11]
+			if want.after == 0xFE && flag != 1 {
+				t.Errorf("升級了卻沒寫 4A11h（=%02X）", flag)
+			}
+			if want.after != 0xFE && flag == 1 {
+				t.Errorf("沒升級卻寫了 4A11h")
+			}
+		})
+	}
+}
