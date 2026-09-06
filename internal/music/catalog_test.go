@@ -72,3 +72,23 @@ func TestEmptyDirectoryMeansNoPlayer(t *testing.T) {
 		t.Fatal("空目錄卻開出 player")
 	}
 }
+
+// 預設模式照量出來的原版行為：只有標題有音樂，地圖與戰鬥是靜的。
+// 那是 2026-09-06 在 VICE 裡錄 C64 版的 SID 輸出量出來的（spec 128）：
+// 標題那段 −35 dBFS，進遊戲之後 −78 dBFS。
+func TestOriginalModePlaysOnlyTheTitle(t *testing.T) {
+	if _, found := TrackForMode(ModeOriginal, CueTitle); !found {
+		t.Error("原版模式下標題應該要有音樂")
+	}
+	for _, cue := range []Cue{CueAdventure, CueCombat} {
+		if _, found := TrackForMode(ModeOriginal, cue); found {
+			t.Errorf("原版模式下 %q 應該是靜的——實跑量到的就是靜的", cue)
+		}
+	}
+	// full 是 remake 自己加的，三個都放。
+	for _, cue := range Cues() {
+		if _, found := TrackForMode(ModeFull, cue); !found {
+			t.Errorf("full 模式下 %q 沒有對到曲子", cue)
+		}
+	}
+}

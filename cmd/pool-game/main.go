@@ -3084,6 +3084,9 @@ func main() {
 	// 配樂目錄。空字串時找執行檔旁邊的 music/；那個目錄只有本機的 full-local
 	// 發行包才有，可散布的包不帶音訊（spec 128）。
 	musicDir := flag.String("music-dir", "", "directory holding the OGG music; defaults to music/ beside the executable")
+	// 原版（C64，實跑量過）只有標題有音樂；地圖與戰鬥是靜的。full 會連那兩處
+	// 也放，那是 remake 自己加的（spec 128）。
+	musicMode := flag.String("music-mode", "original", "music cues: original (title only, as measured) or full")
 	flag.Parse()
 	uiLanguage, face, err := resolveUILanguage(*langFlag, *etenFont, *etenSymbol, *etenASCII)
 	if err != nil {
@@ -3118,6 +3121,12 @@ func main() {
 	if player, err := music.NewPlayer(dir); err != nil {
 		fmt.Fprintln(os.Stderr, "music:", err)
 	} else {
+		switch music.Mode(*musicMode) {
+		case music.ModeOriginal, music.ModeFull:
+			player.SetMode(music.Mode(*musicMode))
+		default:
+			log.Fatalf("-music-mode 只能是 original 或 full，收到 %q", *musicMode)
+		}
 		game.musicPlayer = player
 		defer player.Close()
 	}

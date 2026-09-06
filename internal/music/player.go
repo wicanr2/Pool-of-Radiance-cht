@@ -18,6 +18,16 @@ type Player struct {
 	context *audio.Context
 	streams map[int]*audio.Player
 	active  Cue
+	// mode 決定要不要放原版沒有的那兩個情境（見 Mode 的說明）。
+	mode Mode
+}
+
+// SetMode 換模式。換掉之後目前這一首若不再該放，下一次 Set 會停掉它。
+func (p *Player) SetMode(mode Mode) {
+	if p == nil {
+		return
+	}
+	p.mode = mode
 }
 
 // NewPlayer 開一個輸出。dir 是放 OGG 的目錄；空字串代表不要音樂。
@@ -35,7 +45,7 @@ func NewPlayer(dir string) (*Player, error) {
 	if context == nil {
 		context = audio.NewContext(SampleRate)
 	}
-	player := &Player{context: context, streams: map[int]*audio.Player{}}
+	player := &Player{context: context, streams: map[int]*audio.Player{}, mode: ModeOriginal}
 	loaded := 0
 	for _, track := range Catalog() {
 		path := filepath.Join(dir, track.File)
@@ -84,8 +94,9 @@ func (p *Player) Set(cue Cue) {
 	if cue == CueNone {
 		return
 	}
-	track, found := TrackFor(cue)
+	track, found := TrackForMode(p.mode, cue)
 	if !found {
+		// 這個模式下這個情境不放音樂——原版在地圖與戰鬥就是靜的。
 		return
 	}
 	stream, ok := p.streams[track.Subsong]
@@ -108,7 +119,7 @@ func (p *Player) stopActive() {
 	if p.active == CueNone {
 		return
 	}
-	if track, found := TrackFor(p.active); found {
+	if track, found := TrackForMode(p.mode, p.active); found {
 		if stream, ok := p.streams[track.Subsong]; ok {
 			stream.Pause()
 		}

@@ -12,20 +12,40 @@
 // remake 用 Amiga 那一份（見 docs/spec/128-music-cues.md）。音訊是第三方著作權，
 // **不進 repo、不隨可散布的發行包走**；只有本機的 full-local 包會帶。
 //
-// # 派曲的形狀從哪裡來
+// # 什麼時候放——**在 VICE 裡實跑量出來的**
 //
-// DOS 版沒有音樂，所以「什麼時候放」不可能有 DOS 的對照。C64 版有，而且結構
-// 讀得出來：驅動掛在 `LIBRARY $1FA2` 的 IRQ 上每格 tick，`$BA03` 是「放第 A 首」，
-// 而全遊戲只有三支包裝——**INIT（開機／標題）、DUNGEON、COMBAT**。
+// DOS 版沒有音樂，所以沒有 DOS 對照。C64 版有，而且是完整可跑的遊戲，
+// 所以直接錄它的 SID 輸出來量（spec 128）：
 //
-// 所以 [Cue] 這三個情境是**原版結構的證據**；至於每個情境配 Amiga 的哪一首，
-// 是 **remake 自己決定的**，不是原版對照——Amiga 版的遊戲程式我們沒有。
-// 這條界線寫在型別註解裡，因為它最容易在轉述時變成「照原版接的」。
+//	  0– 60 秒  −99 dBFS（完全靜音）        載入
+//	 60–180 秒  −35 dBFS                    **標題畫面：音樂在放**
+//	180–320 秒  −78 dBFS（等同靜音）        已經進遊戲
+//	320–360 秒  −58 dBFS                    短暫有聲＝音效
+//
+// **原版只有標題有音樂。進遊戲之後沒有背景音樂，只有偶發音效。**
+// 檔案佈局也對得上：`MUSIC` 只在 Disk 1 Side A，與 `BOOT`、`TITLEPG` 同一面，
+// 其餘七面都沒有。`DUNGEON`／`COMBAT` 裡那兩支驅動包裝是**音效**用的。
+//
+// 所以 [ModeOriginal] 是預設：只有標題放音樂。[ModeFull] 是 **remake 自己加的**
+// ——Amiga 版有六首，只用一首說不過去，但那六首在 Amiga 版實際放在哪裡，
+// 沒有那一版的遊戲程式就核對不了。這條界線寫在這裡，因為它最容易在轉述時
+// 變成「照原版接的」。
 package music
 
 import "fmt"
 
-// Cue 是「現在該放哪一種曲子」。三個值對應 C64 版驅動的三支包裝。
+// Mode 決定要不要放**原版沒有的**那兩個情境。
+type Mode string
+
+const (
+	// ModeOriginal 照量出來的原版行為：只有標題有音樂。
+	ModeOriginal Mode = "original"
+	// ModeFull 連地圖與戰鬥也放。**那是 remake 自己加的**，原版在那兩處是靜的。
+	ModeFull Mode = "full"
+)
+
+// Cue 是「現在該放哪一種曲子」。三個值對應 C64 版驅動的三支包裝，
+// 但只有 [CueTitle] 那一支在實跑裡真的放出音樂。
 type Cue string
 
 const (
@@ -80,7 +100,8 @@ func Bindings() map[Cue]int {
 		// 第 1 首是六首裡唯一夠長又會循環的（渲染 240 秒仍未結束），
 		// 音量也最飽（peak −0.2 dBFS）。標題要的就是這種。
 		CueTitle: 1,
-		// 第 6 首是另一首長曲，153.7 秒自然結束。走地圖的時間最長，
+		// 下面兩個**原版是靜的**（實跑量過），只有 ModeFull 會用到。
+		// 第 6 首是另一首長曲，153.7 秒自然結束；走地圖的時間最長，
 		// 放第二長的那一首。
 		CueAdventure: 6,
 		// 第 4 首 15.4 秒，是四首短曲裡最長、也是唯一峰值低於 −3 dBFS 的
@@ -89,7 +110,17 @@ func Bindings() map[Cue]int {
 	}
 }
 
-// TrackFor 回傳這個情境要放的那一首。
+// TrackForMode 回傳這個模式下、這個情境要放的那一首。
+//
+// ModeOriginal 只放標題——那是量出來的原版行為，不是省事。
+func TrackForMode(mode Mode, cue Cue) (Track, bool) {
+	if mode == ModeOriginal && cue != CueTitle {
+		return Track{}, false
+	}
+	return TrackFor(cue)
+}
+
+// TrackFor 回傳這個情境要放的那一首（不看模式）。
 func TrackFor(cue Cue) (Track, bool) {
 	subsong, found := Bindings()[cue]
 	if !found {
