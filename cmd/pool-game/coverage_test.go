@@ -10,6 +10,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
@@ -844,6 +845,7 @@ walk:
 					menuTurn[explorerMenuKey(application, application.cellMenuOptions)],
 					loaded, terrain, code, gate, answer, at))
 				reason = "格子選單卡住"
+				traceApp = application
 				break walk
 			}
 		case application.encounter != nil:
@@ -994,9 +996,21 @@ walk:
 				if confirmInput[key] {
 					want = 0
 				}
-				// flags 非 nil 那一條要推主線，所以 YES／NO 一律答 YES
+				// flags 非 nil 那一條要推主線，所以 YES／NO 先答 YES
 				//（「要不要拿走裝備」答 NO 就推不動要塞那一段）。
-				if flags != nil && strings.EqualFold(application.cellMenuOptions[0], "YES") {
+				//
+				// **但不能一直答 YES。** 有些 YES／NO 是雙向的梯子：
+				// `ecl8/29` 的井答 YES 下去（`AE87h` 把 `4A10h` 設 1、
+				// `AEAFh LOAD FILES #32`），到下面再答 YES 就爬回來
+				// （`A23Fh` 把 `4A10h` 清 0、`A26Ah LOAD FILES #29`）。
+				// 一律 YES 的話探索器就在兩層之間上上下下，永遠出不來——
+				// 那正是先前「答了四千次」的成因，**遊戲沒有壞，是治具的
+				// 答題策略壞了**（指令級追蹤只花六個位址就看出來：
+				// `AF71 AF80 AF86 AF87 AE87 AE8D`，答完 `4A10h` 就變 1）。
+				//
+				// 答過幾次之後改回輪流，玩家也是這樣——下去看過了就不會再下去。
+				if flags != nil && strings.EqualFold(application.cellMenuOptions[0], "YES") &&
+					menuTurn[optionKey] < 4 {
 					want = 0
 				}
 				// 同一條路上要走到亡魂那一段：登陸的遭遇要選「交涉」，
@@ -1855,37 +1869,54 @@ func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
 	exitUses := map[[4]int]int{}
 	var hardFailures []string
 	ok := false
-	// **每一趟都重開一局，不把上一趟的成果帶進來。**
+	var carry map[uint16]uint16
+	incrementsProgress := progressIncrementSlots(t, zipPath)
+	// 兩個階段。第一階段從乾淨的開場走；第二階段從「把第一階段打出來的委任
+	// 交差完」那個狀態走。
 	//
-	// 試過兩種帶法，都不留：
+	// **交差是解鎖的關鍵，不是收尾。** 探索器會把委任打完，但它不會走進市政廳
+	// 交差，所以 `4AC1h`（公告進度）永遠是 0——而下一批區域正是靠那個數字開的。
+	// 第二階段帶的是這些趟**自己打出來的**成果經過交差之後的狀態：該槽變成
+	// `FFh`、十個會加一的槽各讓 `4AC1h` 加一。那條交差鏈由
+	// TestEveryCommissionHandsInAtCityHall 逐槽驗過，所以把兩段接起來是有
+	// 根據的，不是憑空給旗標。
 	//
-	//  1. 直接把打出來的槽當成 `FEh` 帶進下一趟（沒交差）。**更差**——委任
-	//     從三條掉到一條、地圖從 13 張掉到 7 張，而且跑得更快，也就是探索器
-	//     更早就沒地方去了。`FEh` 是「做完但還沒回報」，港務長的選單與各區
-	//     出口會走到另一條路上去。
-	//  2. 帶「交差完」的狀態（槽 `FFh` ＋ `4AC1h` 加一）。**世界確實開了**：
-	//     地圖 13→22 張、ECL block 13→19 個。但**委任還是三條**，而且它把
-	//     探索器帶進 `GEO8/29 (7,7)` 那口井卡死（見 spec 041 的〈開放缺陷〉）。
-	//     解鎖更多地圖不等於解得開更多委任——剩下的條件要密碼、湊物品或挑
-	//     特定選單，那不是走圖走得到的。
-	//
-	// 兩個實驗的數字都留在這裡：下一個人不必再跑一次才知道結論。
-	for pass, boat := range []int{0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3} {
-		flags := map[uint16]uint16{}
-		transitionUses := map[[3]int]int{}
-		_, reachable := exploreWorldWithFlags(t, zipPath, int64(29+pass*11+boat),
-			pass%4, 1, 120000, map[[3]int]bool{}, map[[3]int]bool{}, transitionUses,
-			menuTurn, exitUses, visited, maps, blocks, flags, boat,
-			&hardFailures, nil)
-		if !reachable {
-			t.Skip("original DOS ZIP is intentionally not tracked")
-		}
-		ok = true
-		for address := uint16(0x4AA6); address <= 0x4ABF; address++ {
-			if flags[address] >= 0xFE {
-				completed[address] = true
+	// 試過直接帶 `FEh`（做完但沒交差）：**更差**——委任 3→1 條、地圖 13→7 張。
+	// `FEh` 是「做完還沒回報」，港務長的選單與各區出口會走到另一條路上。
+	for stage, boats := range [][]int{
+		{0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3},
+		{0, 1, 2, 3, 0, 1, 2, 3},
+	} {
+		for pass, boat := range boats {
+			flags := map[uint16]uint16{}
+			_, reachable := exploreWorldWithFlags(t, zipPath,
+				int64(29+stage*101+pass*11+boat), pass%4, 1, 120000,
+				map[[3]int]bool{}, map[[3]int]bool{}, map[[3]int]int{},
+				menuTurn, exitUses, visited, maps, blocks, flags, boat,
+				&hardFailures, carry)
+			if !reachable {
+				t.Skip("original DOS ZIP is intentionally not tracked")
+			}
+			ok = true
+			for address := uint16(0x4AA6); address <= 0x4ABF; address++ {
+				if flags[address] >= 0xFE {
+					completed[address] = true
+				}
 			}
 		}
+		if stage != 0 {
+			continue
+		}
+		carry = map[uint16]uint16{}
+		progress := uint16(0)
+		for address := range completed {
+			carry[address] = uint16(gamepack.CityHallSlotAcknowledged)
+			if incrementsProgress[int(address-0x4AA6)] {
+				progress++
+			}
+		}
+		carry[0x4AC1] = progress
+		t.Logf("第一階段打完 %d 條，交差之後 4AC1h = %d", len(completed), progress)
 	}
 	if !ok {
 		t.Skip("original DOS ZIP is intentionally not tracked")
@@ -1897,14 +1928,43 @@ func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
 	sort.Ints(slots)
 	t.Logf("玩家自己走完的委任 %d 條：%v", len(slots), slots)
 	t.Logf("順帶走到的地圖 %d 張、ECL block %d 個", len(maps), len(blocks))
-	// 量到的下限，不是目標。現在量得到三條：1（索寇要塞）、11（瓦海登墳場）、
-	// 23（巴恩神殿）。**少於這個數代表玩家走得到的主線退步了**，而那是
-	// 「測試綠、玩家卡關」這一類缺陷唯一擋得住的地方——這一支上線的第一次
-	// 就抓到 NPC 入隊沒帶職業，修掉之後從一條變成三條。
-	if len(slots) < 3 {
+	// 量到的下限，不是目標。現在量得到五條：0（諾里斯）、1（索寇要塞）、
+	// 11（瓦海登墳場）、18（卡德納的付款）、23（巴恩神殿）。
+	// **少於這個數代表玩家走得到的主線退步了**，而那是「測試綠、玩家卡關」
+	// 這一類缺陷唯一擋得住的地方。這一支抓到過兩個：NPC 入隊沒帶職業
+	// （一條→三條），以及治具在雙向梯子上一律答 YES 上上下下（三條→五條）。
+	if len(slots) < 5 {
 		t.Errorf("只走完 %d 條委任：%v", len(slots), slots)
 	}
 	if len(hardFailures) != 0 {
 		t.Errorf("出現 %d 次硬失敗", len(hardFailures))
 	}
+}
+
+// traceApp 留下最後一個卡在格子選單的 app，讓追蹤探針接手。**只在測試裡用。**
+var traceApp *app
+
+// progressIncrementSlots 是「交差會讓 `4AC1h` 加一」的那十個槽。
+// 名單解自原版 ECL3/block 8 的 `9D63h` ON GOSUB，不是抄的。
+func progressIncrementSlots(t *testing.T, zipPath string) map[int]bool {
+	t.Helper()
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(3)
+	if !ok {
+		t.Fatal("ECL3 archive is absent")
+	}
+	slots, err := gamepack.ReadCityHallNotifications(archive)
+	if err != nil {
+		t.Fatal(err)
+	}
+	out := map[int]bool{}
+	for _, slot := range slots {
+		if slot.IncrementsProgress {
+			out[slot.Index] = true
+		}
+	}
+	return out
 }
