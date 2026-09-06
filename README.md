@@ -136,6 +136,19 @@
   engine source。
 - 第一支 `cmd/pool-inventory` 只做唯讀 ZIP／DAX 形狀盤點，不解讀劇情語意。
 
+## 從原始碼建置需要什麼
+
+**這個 repository 公開的是原始碼與發行包，不是一份 clone 下來就編得起來的專案。**
+
+`go.mod` 依賴共用引擎 [`golden-box-remake-engine`](https://github.com/wicanr2/golden-box-remake-engine)，
+那個 repository 是**私有**的——遊戲專屬的內容在這裡，可重用的引擎另外授權
+（見 [LICENSE](LICENSE) 與 [NOTICE.md](NOTICE.md)）。沒有引擎的存取權，
+`go build` 會停在抓不到模組那一步。
+
+想玩的人請直接下載[發行版](#下載)，不需要建置。
+想讀程式碼、回報問題或提修正建議的人，原始碼在這裡都看得到。
+需要建置權限請來信洽談。
+
 ## 本機盤點
 
 原版檔案不進 Git。將 `Pool of Radiance (1988).zip` 放在 repository 根目錄後，

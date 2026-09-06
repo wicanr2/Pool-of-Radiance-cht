@@ -2223,8 +2223,15 @@
   逐步清單寫成 [`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)
   （七步、每台要留哪三張截圖、中文介面另跑一次）。
   **這一項不是「驗過了」，是「交接了」**：實機跑完之後把結果寫回這一條。
-- [x] repository visibility 與原版素材 deny-list（2026-09-04 使用者定案）。
-  CoAB、Pool 與共用 engine 三個 repo 都維持 **private**。原版素材的 deny-list
-  已經落地：`NOTICE.md` 列出不隨發行包散布的東西（原版資料、軟體世界說明書
-  譯文、倚天字型），`tools/package-release.sh` 的 patch 封包排除原版 ZIP 與
-  字型，公開 Release 只掛 patch。
+- [x] repository visibility 與原版素材 deny-list。原版素材的 deny-list 已經
+  落地：`NOTICE.md` 列出不隨發行包散布的東西（原版資料、軟體世界說明書譯文、
+  倚天字型），`tools/package-release.sh` 的 patch 封包排除原版 ZIP 與字型，
+  公開 Release 只掛 patch。
+
+  **可見性（2026-09-07 使用者定案，改掉 09-04 的「三個都 private」）**：
+  Pool 轉為 **public**，CoAB 與共用 engine 維持 **private**。
+
+  代價要講明：`go.mod` 依賴私有的 `golden-box-remake-engine`，所以**公開的
+  repository clone 下來建置不起來**——模組抓不到。這是刻意的取捨：遊戲專屬的
+  內容公開，可重用的引擎另外授權。README 開頭因此加了〈從原始碼建置需要什麼〉，
+  直說「想玩的人下載發行版，不需要建置」，不讓人白試。
