@@ -203,4 +203,42 @@ Slums 用共用計數 helper（`B69Ch`，累加到 25），波多廣場則是 in
 剩下的槽還沒被探索器走到。門檻是量到的下限，不是目標；把它頂到實測值等於
 再做一次單一亂數對齊的快照。
 
+### 為什麼不是「多走幾趟就會多幾條」
+
+試過兩種把成果帶到下一趟的作法，結論都寫在測試裡：
+
+1. **帶 `FEh`（做完但沒交差）更差**：委任 3→1 條、地圖 13→7 張，而且跑得更快
+   ——探索器更早就沒地方去了。`FEh` 會改變港務長的選單與各區出口。
+2. **帶「交差完」的狀態（槽 `FFh` ＋ `4AC1h` 加一）確實把世界打開了**：
+   地圖 13→22 張、ECL block 13→19 個。**但委任還是三條。**
+
+第二個結果才是重點：**解鎖更多地圖不等於解得開更多委任**。剩下的條件要密碼
+（`NOKNOK`／`SAMOSUD`）、要湊六本書、要打滿 40 隻蜥蜴人、要在拍賣會挑對選項
+——那些是「玩家知道要做什麼」，不是「走得到那一格」。要讓探索器自己解開，
+得先給它那些知識，而那會讓它不再是探索器。
+
+### 開放缺陷：`GEO8/29 (7,7)` 的井卡住
+
+第二種帶法把探索器帶到那口井，然後它在那裡答了四千次選單出不來：
+
+```
+文字   RUNGS ARE SET IN THE SIDES OF THE WELL WALL.  DO YOU WANT TO CLIMB DOWN?
+選單   [YES NO]   狀態列 "Original Pool cell text is waiting for RETURN."
+```
+
+已經讀到的：文字是 `ecl8/29` 的 `A1DAh PRINTCLEAR #94`，前面是
+`A1CCh SAVE #2 → 4ADBh`、`GOSUB AF30h`、`CALL 2C90h`；選單在
+`AF71h HORIZONTAL MENU`，答案存進 `9802h`，`AF80h COMPARE 9802h,#0 ; IF = ; RETURN`
+——**選 YES 才 RETURN 回去往下走**，選 NO 落到 `AF88h EXIT`。回去之後是
+`A23Fh SAVE #0 → 4A10h`、`PRINTCLEAR #34`、`LOAD FILES #29`、`LOAD PIECES #3,#20,#1`、
+`SAVE #1 → 4ADBh`、`GOTO 9A23h`。
+
+**還沒讀的**：`LOAD FILES 29` 載的是同一張圖，所以「下到井底」是同一個 GEO
+區塊換一組資源與旗標（`4A10h`／`4ADBh`），不是換圖。目前的 `21h` handler 只
+把 `initialMap` 與 `spawn.Map` 指到同一張圖，隊伍座標不動——嫌疑最大的是
+這裡，但 `GOTO 9A23h` 之後那一段還沒讀完，不下結論。
+
+重現：把 `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 改成兩階段
+（第二階段帶 `4AC1h = 2` 與槽 1／11／23 為 `FFh`）就會撞到。
+
 達成前不得用測試直接注入 `4AC1h=4` 宣稱墓園委託已正常解鎖。
