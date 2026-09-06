@@ -2193,6 +2193,25 @@
 
 ## 發行
 
+### 對原版的抽樣對拍（2026-09-07 起）
+
+`v1.1.1-20260907` 的第一輪結果與方法在
+[`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md)：
+標題整張 99.79%（差的是 remake 自己加的按鍵提示），第一人稱框 88×88 100%。
+**原版那一側改用 [dosgolem](https://github.com/wicanr2/dosgolem) 跑真的
+`START.EXE`，不再用 DOSBox**（使用者 2026-09-07 指定；DOSBox 只作 dosgolem
+的參考）。重生：`tools/dosgolem-reference.sh` → `tools/appimage-dos-parity.sh`。
+
+- [ ] **第一人稱那一框改成對 dosgolem 比。** 現在它對的是 repo 裡既有的
+      DOSBox 截圖（7744/7744），對 dosgolem 只有 18.93%——因為 dosgolem 還沒
+      實作 EGA 圖形控制器（`3CE`／`3CF`），第一人稱框在它那邊畫成黑底白線框
+      （dosgolem `docs/findings/004`）。**驗收**：dosgolem 補完圖形控制器之後
+      重跑對拍，`first-person` 那一項的 status 從 `blocked` 變 `compared`，
+      而且比例不低於 DOSBox 交叉核對那一項；交叉核對那一項可以刪掉。
+- [ ] **抽樣擴到戰鬥畫面。** dosgolem 目前走到導覽結束的自由移動；戰鬥、商店、
+      神殿、結局都還沒走到。**驗收**：`tools/dosgolem-reference.sh` 的鍵序
+      走進一場戰鬥並拍到戰術盤面，`docs/audit/dos-parity-sample.json` 多一項。
+
 ### 第一階段完成（2026-09-07，`v1.1.0-20260907`）
 
 repository 轉 public，release 對外掛四個發行包＋`manifest.json`：
