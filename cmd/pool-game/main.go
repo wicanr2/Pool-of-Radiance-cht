@@ -22,6 +22,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/music"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -176,6 +177,9 @@ type app struct {
 	appraiseValue    int
 	templeParty      int
 	templeService    int
+	// musicPlayer 是可選的配樂輸出（spec 128）。nil 代表沒有音訊資產——
+	// 可散布的發行包本來就不帶，所有方法對 nil 安全。
+	musicPlayer *music.Player
 	// stingPrompt／stingBuffer／stingUnlocked 是原版的除錯碼（`J` 再輸入
 	// `STING`，overlay-16 `049Ah`），見 training_gate.go。
 	stingPrompt   bool
@@ -514,6 +518,9 @@ func (a *app) reloadIcons() error {
 }
 
 func (a *app) Update() error {
+	// 配樂跟著畫面狀態走（spec 128）。沒有音訊資產時 musicPlayer 是 nil，
+	// 這一行什麼都不做。
+	a.updateMusic()
 	if a.justPressed(ebiten.KeyF10) {
 		if a.saveState != nil {
 			state, err := a.stateForSave()
@@ -3074,6 +3081,9 @@ func main() {
 	// 對拍截圖要的是「同一份程式碼拍出同一張圖」，擲值每次不同的話
 	// 連 HP 都會變，雜湊就永遠對不上，那份清冊也就證不了東西。
 	diceSeed := flag.Int64("dice-seed", 0, "fixed dice seed; 0 keeps the time-based seed")
+	// 配樂目錄。空字串時找執行檔旁邊的 music/；那個目錄只有本機的 full-local
+	// 發行包才有，可散布的包不帶音訊（spec 128）。
+	musicDir := flag.String("music-dir", "", "directory holding the OGG music; defaults to music/ beside the executable")
 	flag.Parse()
 	uiLanguage, face, err := resolveUILanguage(*langFlag, *etenFont, *etenSymbol, *etenASCII)
 	if err != nil {
@@ -3096,6 +3106,21 @@ func main() {
 		game.roller = diceRoller{random: rand.New(rand.NewSource(*diceSeed))}
 	}
 	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters
+	dir := *musicDir
+	if dir == "" {
+		dir = defaultMusicDir()
+	}
+	if dir != "" && !audioDeviceLikelyAvailable() {
+		fmt.Fprintln(os.Stderr, "music: 找不到音訊裝置，這一次不放音樂")
+		dir = ""
+	}
+	// 音樂開不起來不該讓遊戲開不起來：報一行就繼續，安靜地跑。
+	if player, err := music.NewPlayer(dir); err != nil {
+		fmt.Fprintln(os.Stderr, "music:", err)
+	} else {
+		game.musicPlayer = player
+		defer player.Close()
+	}
 	ebiten.SetWindowSize(960, 600)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("Pool of Radiance Remake")

@@ -1,7 +1,7 @@
 # 原版與在地化來源只作本機 oracle，不進 Git。
 /Pool of Radiance (1988).zip
 /珍009-光芒之池.rar
-/amiga/
+/c64-disks/
 
 # 可重生工作與交付物。
 /workplace/
@@ -15,3 +15,9 @@
 # go build 在 repo 根目錄產出的 cmd 執行檔
 /pool-*
 !/pool-*.md
+
+# Amiga 版配樂（Wally Beben，第三方著作權）：渲染出來的中間檔與 OGG 都不進版控。
+# workplace/ 與 dist-all/ 本來就排除了，這一行是為了「即使有人把它們搬到別處」。
+*.ogg
+Pool_of_Radiance.lha
+wb.Pool_of_Radiance

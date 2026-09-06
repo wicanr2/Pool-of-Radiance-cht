@@ -4,6 +4,12 @@
 #
 # 發行包不含原版遊戲資料與倚天字型：兩者都沒有公開散布權（見 NOTICE.md），
 # 玩家要自己準備。`packaging/README-發行包.md` 說明放哪裡。
+#
+# 兩種口味（與 CoAB 同一套）：
+#   * `patch`      可散布：只有執行檔與條款檔。
+#   * `full-local` **本機保留**：另外把 Amiga 版的配樂 OGG 放進去。
+#     那是第三方著作權（Wally Beben），只有本機存在 workplace/amiga-music/ogg
+#     時才會產生，而且 dist-all/ 整個在 .gitignore 裡。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -59,7 +65,7 @@ run_helper() { # run_helper <script>
     -u "$UID_NOW:$GID_NOW" -v "$ROOT:/src" -w /src "$GO_IMAGE" bash -c "$1"
 }
 
-run_helper "set -eu; rm -rf '$OUT'; mkdir -p '$OUT/build' '$OUT/patch'"
+run_helper "set -eu; rm -rf '$OUT'; mkdir -p '$OUT/build' '$OUT/patch' '$OUT/full-local'"
 
 build "$GO_IMAGE"  linux   amd64 1 pool-game-linux-amd64
 build "$GO_IMAGE"  windows amd64 0 pool-game.exe
@@ -157,4 +163,55 @@ for row in rows:
     print(row["sha256"], row["name"], row["bytes"], "bytes")
 ' "$OUT/patch" "$VERSION"
 
-echo "發行包在 $ROOT/$OUT/patch"
+# ── full-local：patch 的內容再加上 Amiga 版的配樂 OGG ───────────────────────
+#
+# **本機保留，不散布。** 只有 workplace/amiga-music/ogg 存在時才做；
+# 沒有那個目錄就只輸出 patch，這樣在沒有音訊的機器上也建得起來。
+MUSIC_DIR="$ROOT/workplace/amiga-music/ogg"
+if [ -d "$MUSIC_DIR" ] && [ -n "$(ls -A "$MUSIC_DIR" 2>/dev/null)" ]; then
+  run_helper "set -eu
+    V='$VERSION'
+    BASE='$OUT/full-local'
+    cp -R '$OUT/patch/.' \"\$BASE/\"
+    rm -f \"\$BASE\"/*.AppImage \"\$BASE\"/*.zip
+    # 三個平台的版面各自把 OGG 放在執行檔旁邊的 music/：
+    # cmd/pool-game 的 defaultMusicDir 就是找那個位置。
+    for target in \
+      \"\$BASE/linux/AppDir/usr/bin\" \
+      \"\$BASE/windows\" \
+      \"\$BASE/macos-amd64/Pool of Radiance Remake.app/Contents/MacOS\" \
+      \"\$BASE/macos-arm64/Pool of Radiance Remake.app/Contents/MacOS\"; do
+      mkdir -p \"\$target/music\"
+      cp workplace/amiga-music/ogg/*.ogg \"\$target/music/\"
+    done
+    cp packaging/README-配樂.md \"\$BASE/README-配樂.md\""
+
+  docker run --rm --network none --memory 1g --cpus 1 --pids-limit 128 \
+    --log-opt max-size=10m --log-opt max-file=3 \
+    -u "$UID_NOW:$GID_NOW" -v "$ROOT:/src" -w /src "$APPIMAGE_IMAGE" bash -c \
+    "ARCH=x86_64 appimagetool '$OUT/full-local/linux/AppDir' '$OUT/full-local/pool-of-radiance-remake-$VERSION-x86_64.AppImage'"
+
+  docker run --rm --network none --memory 512m --cpus 1 --pids-limit 128 \
+    --log-opt max-size=10m --log-opt max-file=3 \
+    -u "$UID_NOW:$GID_NOW" -v "$ROOT:/src" -w /src python:3.12-slim python -c '
+import pathlib, sys, zipfile
+root, version = pathlib.Path(sys.argv[1]), sys.argv[2]
+for source, name in [
+    (root / "windows", f"pool-of-radiance-remake-{version}-windows-x86_64.zip"),
+    (root / "macos-amd64", f"pool-of-radiance-remake-{version}-macos-x86_64.zip"),
+    (root / "macos-arm64", f"pool-of-radiance-remake-{version}-macos-arm64.zip"),
+]:
+    with zipfile.ZipFile(root / name, "w", zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(source.rglob("*")):
+            if path.is_file():
+                info = zipfile.ZipInfo(str(path.relative_to(source)))
+                info.external_attr = (path.stat().st_mode & 0xFFFF) << 16
+                info.compress_type = zipfile.ZIP_DEFLATED
+                archive.writestr(info, path.read_bytes())
+' "$OUT/full-local" "$VERSION"
+  echo "本機完整版（含 Amiga 配樂，**不要散布**）在 $ROOT/$OUT/full-local"
+else
+  echo "沒有 workplace/amiga-music/ogg，略過 full-local（先跑 tools/build-amiga-music.sh）"
+fi
+
+echo "可散布的發行包在 $ROOT/$OUT/patch"
