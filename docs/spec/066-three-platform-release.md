@@ -61,8 +61,14 @@ version `GLIBC_2.38' not found (required by .../usr/lib/libX11.so.6)
 - `tools/linux-release-smoke.sh <版本>` 在 Docker／Xvfb 裡用
   `--appimage-extract` 啟動 AppImage（容器沒有 FUSE），確認視窗開得起來並截圖。
   驗的是包內容與相依，不是 FUSE 掛載本身。
-- Windows 與 macOS 目前只有「建得出來、包得起來」；真機啟動尚未驗收，
-  不宣稱可用。
+- `tools/windows-release-smoke.sh <版本> [口味]` 在 Docker／Wine／Xvfb 裡跑
+  `pool-game.exe`，等它畫出畫面之後從 root 裁下視窗並**擋掉全黑**——視窗開得
+  起來但沒畫東西，和啟動失敗一樣糟。兩個坑寫在腳本裡：先跑 `wineboot -u`
+  （第一次要建 prefix，不先做等再久都是全黑），截圖要從 root 裁
+  （沒有視窗管理員時 `import -window <id>` 拿到的是全黑）。
+- macOS 目前只有「建得出來、包得起來」。**Wine 過不等於 Windows 過**：
+  驅動、字型後備與 DPI 縮放都不同。兩者的真機啟動驗收見
+  [`docs/verification/real-machine-startup-checklist.md`](../verification/real-machine-startup-checklist.md)。
 
 ## 無頭環境跑不動這個執行檔
 

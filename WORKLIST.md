@@ -2172,9 +2172,14 @@
   槽 14 的兩段式單獨驗（`TestTheEarlyCompletionCommissionTakesTwoStages`）：
   `ecl6/28` 寫 `FDh`、`ecl6/25` 只在讀到 `FDh` 時升成 `FEh`。
 
-  剩下的是各槽的正常玩家路徑實跑（走到地圖事件、看到市政廳通知、`4AC1h`
-  增量、存檔）。上面驗的是「條件成立時腳本會不會結案」，不是「玩家走得到
-  那個條件」。
+  **交差那一段也逐槽走過了**（2026-09-06，`TestEveryCommissionHandsInAtCityHall`）：
+  二十六槽各走一次「走回城區 → 進市政廳 → 走到職員面前」，檢查演出的是這一槽
+  的通知、`4AC1h` 只在該加的十槽加一、有獎賞的收得到、該槽從 `FEh` 變成 `FFh`。
+  負對照 `TestCityHallSaysNothingWithNoCommissionDone`：一條都沒完成就去交差，
+  26 條通知一條都不該出現。把期望文字整體位移三槽再跑，26 條裡 23 條失敗。
+
+  剩下的是「從開場走到各區觸發格」逐區實跑。現在的覆蓋是兩段接起來的
+  （producer 端 ＋ 交差端），中間那一段只有貧民窟那一條是整條連著跑的。
 
 ## 發行
 
@@ -2186,9 +2191,23 @@
   Windows ZIP 與 macOS 雙架構 ZIP，並寫 `manifest.json` 固定雜湊。
   AppImage 已由 `tools/linux-release-smoke.sh` 在容器裡實際啟動並截圖。
   契約見 spec 066。
+- [x] **Windows 版在 Wine 裡實際啟動並截圖**（2026-09-06，
+  `tools/windows-release-smoke.sh`）。它在 Docker／Wine／Xvfb 裡跑
+  `pool-game.exe -lang zh -eten-font …`，等它畫出畫面之後從 root 裁下視窗，
+  **並且擋掉全黑**——視窗開得起來但沒畫東西，和啟動失敗一樣糟。
+  結果是原版標題畫面加上中文的「ENTER/空白鍵」提示，截圖在
+  `docs/screenshots/pool-release-windows-wine.png`。順帶用同一組判準檢查
+  發行包內容（full-local 六個 OGG、patch 包一個都不能有）。
+  兩個做法上的坑寫在腳本裡：**先跑 `wineboot -u`**（第一次啟動要建 prefix，
+  不先做的話等再久都是全黑，看起來像畫不出來）；**截圖要從 root 裁**
+  （沒有視窗管理員時 `import -window <id>` 拿到的是全黑）。
+  **這不能取代真機**：Wine 不是 Windows，驅動、字型後備與 DPI 縮放都不同。
+  它證的是「不是連跑都跑不起來」。
+
 - [x] **Windows 與 macOS 的真機啟動驗收交接出去了**（2026-09-05 使用者決定
-  由自己在實機執行）。這裡做得到的部分做完了：建得出來、包得起來，Linux 與
-  Wine 走本地 Docker（`tools/linux-release-smoke.sh`）。**啟動本身在這裡驗不了**
+  由自己在實機執行）。這裡做得到的部分做完了：建得出來、包得起來，Linux 走
+  `tools/linux-release-smoke.sh`、Windows 走 `tools/windows-release-smoke.sh`
+  （兩支都在本地 Docker 裡實際啟動並截圖）。**macOS 在這裡驗不了**
   ——Ebitengine 的 GLFW 在套件 init 就初始化視窗系統，無頭環境連 `-h` 都 panic
   （spec 066），所以 Docker 與 CI runner 都到不了「畫得出第一個畫面」。
   逐步清單寫成 [`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)

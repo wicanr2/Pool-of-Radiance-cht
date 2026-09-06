@@ -1062,6 +1062,28 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 		t.Fatalf("走出貧民窟之後停在 ecl%d/%d，應該是 ecl3/0",
 			application.eclArchive, session.CurrentBlockID())
 	}
+	return walkIntoCityHall(t, application, session)
+}
+
+// walkIntoCityHall 從城區（ecl3/0）的門口進市政廳，走到職員面前，
+// 把演出翻完。回傳最後看到的文字。
+//
+// **獎賞服務開起來就停**——交給呼叫端決定收不收；在那裡亂按 Enter 只會在
+// View 與 Return 之間來回。
+func walkIntoCityHall(t *testing.T, application *app, session *eclvm.BlockSession) string {
+	t.Helper()
+	// **通知會分頁**，所以要把每一頁都收起來——最後停在哪一頁不一定是
+	// 有關鍵字的那一頁，只看 `eventText` 會漏掉。
+	var pages []string
+	seen := map[string]bool{}
+	note := func() {
+		page := strings.TrimSpace(application.eventText)
+		if page != "" && !seen[page] {
+			pages = append(pages, page)
+			seen[page] = true
+		}
+	}
+	defer note()
 	application.spawn = gamepack.Spawn{
 		Map: gamepack.MapKey{Archive: 3, BlockID: 0}, X: 3, Y: 4, Facing: 1,
 	}
@@ -1072,6 +1094,7 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 		t.Fatalf("進門之後停在區塊 %d，應該是 8", session.CurrentBlockID())
 	}
 	for step := 0; step < 40; step++ {
+		note()
 		if application.treasureActive {
 			// 獎賞服務開起來就停下來，交給呼叫端決定收不收——
 			// 在這裡亂按 Enter 只會在 View 與 Return 之間來回。
@@ -1106,6 +1129,7 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 		}
 	}
 	for step := 0; step < 20; step++ {
+		note()
 		if application.treasureActive || (!application.cellEventPending && !application.cellWaitingMenu) {
 			break
 		}
@@ -1113,7 +1137,8 @@ func handInAtCityHall(t *testing.T, application *app, session *eclvm.BlockSessio
 			break
 		}
 	}
-	return strings.TrimSpace(application.eventText)
+	note()
+	return strings.Join(pages, " ")
 }
 
 // hasMenuOption 說目前的選單裡有沒有這一項。
@@ -1740,5 +1765,118 @@ func TestTheEarlyCompletionCommissionTakesTwoStages(t *testing.T) {
 				t.Errorf("沒升級卻寫了 4A11h")
 			}
 		})
+	}
+}
+
+// handInSlotAtCityHall 走完一條委任的交差鏈：從貧民窟出發（一場都不打）、
+// 把指定的槽設成 `FEh`——那是那一區的腳本結案之後的狀態，producer 端由
+// TestWinningTheAreaBattlesCompletesTheirCommissions 與
+// TestFlagAndCountCommissionsNeedTheirCondition 驗過——再走回城區、
+// 進市政廳、走到職員面前。回傳交差過程中看到的所有文字。
+func handInSlotAtCityHall(t *testing.T, slot int) (*app, *eclvm.BlockSession, string) {
+	t.Helper()
+	application, session, _ := slumsCommissionApp(t, 0)
+	if slot >= 0 {
+		session.Machine().Memory[uint16(0x4AA6+slot)] = 0xFE
+	}
+	return application, session, handInAtCityHall(t, application, session)
+}
+
+// 二十六條委任在市政廳的交差鏈：職員演出通知、該加的把 `4AC1h` 加一、
+// 該槽從 `FEh` 變成 `FFh`。
+//
+// 期望值全部取自原版資料（`gamepack.ReadCityHallNotifications` 解 ECL3/block 8
+// 的 `9D63h` ON GOSUB），不是抄一份表。**這一條補的是玩家路徑的後半段**：
+// 前半段（那一區的腳本會不會把槽寫成 `FEh`）由 producer 端那兩支測試守著。
+func TestEveryCommissionHandsInAtCityHall(t *testing.T) {
+	reference, _, _ := handInSlotAtCityHall(t, -1)
+	archive, ok := reference.eclCatalog.Archive(3)
+	if !ok {
+		t.Fatal("ECL3 archive is absent")
+	}
+	slots, err := gamepack.ReadCityHallNotifications(archive)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(slots) != 26 {
+		t.Fatalf("解出 %d 條通知分支，應該是 26", len(slots))
+	}
+	for _, want := range slots {
+		name := fmt.Sprintf("槽%02d", want.Index)
+		t.Run(name, func(t *testing.T) {
+			application, session, text := handInSlotAtCityHall(t, want.Index)
+			machine := session.Machine()
+			address := uint16(0x4AA6 + want.Index)
+
+			if want.Text == "" {
+				// 槽 22 的分支是 `RETURN`：沒有文字、沒有生產者，
+				// 所以交差時什麼都不該發生。
+				if got := machine.Memory[address]; got != 0xFE {
+					t.Errorf("沒有通知的槽卻被結算了：%04Xh=%02X", address, got)
+				}
+				if got := machine.Memory[0x4AC1]; got != 0 {
+					t.Errorf("沒有通知的槽卻讓 4AC1h 變成 %d", got)
+				}
+				return
+			}
+
+			// 通知文字要真的出現過。取前 24 個字比，避免分頁把後面切掉。
+			head := want.Text
+			if len(head) > 24 {
+				head = head[:24]
+			}
+			if !strings.Contains(strings.ToUpper(text), head) {
+				t.Errorf("沒看到這一槽的通知 %q，看到的是 %q", head, text)
+			}
+			progress := machine.Memory[0x4AC1]
+			if want.IncrementsProgress && progress != 1 {
+				t.Errorf("這一槽該把 4AC1h 加一，實際是 %d", progress)
+			}
+			if !want.IncrementsProgress && progress != 0 {
+				t.Errorf("這一槽不該動 4AC1h，實際是 %d", progress)
+			}
+			if application.treasureActive {
+				collectCityHallReward(t, application)
+			}
+			if got := machine.Memory[address]; got != 0xFF {
+				t.Errorf("交差之後 %04Xh=%02X，應該是 FFh（`9F5Ah` 的 SAVE TABLE）",
+					address, got)
+			}
+		})
+	}
+}
+
+// 負對照：一條委任都沒完成就去交差，職員不該演出任何一條通知。
+//
+// 沒有這一條的話，上面那 26 條證不了因果——職員本來就會講話，而
+// 「文字裡有這一段」對一段夠長的獨白可能永遠成立。
+func TestCityHallSaysNothingWithNoCommissionDone(t *testing.T) {
+	application, session, text := handInSlotAtCityHall(t, -1)
+	archive, ok := application.eclCatalog.Archive(3)
+	if !ok {
+		t.Fatal("ECL3 archive is absent")
+	}
+	slots, err := gamepack.ReadCityHallNotifications(archive)
+	if err != nil {
+		t.Fatal(err)
+	}
+	upper := strings.ToUpper(text)
+	for _, slot := range slots {
+		if slot.Text == "" {
+			continue
+		}
+		head := slot.Text
+		if len(head) > 24 {
+			head = head[:24]
+		}
+		if strings.Contains(upper, head) {
+			t.Errorf("什麼都沒完成卻演出了槽 %d 的通知 %q", slot.Index, head)
+		}
+	}
+	if got := session.Machine().Memory[0x4AC1]; got != 0 {
+		t.Errorf("什麼都沒完成卻讓 4AC1h 變成 %d", got)
+	}
+	if application.treasureActive {
+		t.Error("什麼都沒完成卻開了獎賞服務")
 	}
 }

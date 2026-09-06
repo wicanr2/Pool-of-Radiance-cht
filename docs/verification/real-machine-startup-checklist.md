@@ -1,10 +1,15 @@
 # 實機啟動驗收清單（Windows／macOS）
 
-跨平台目前只證明得出「建得出來、包得起來」。**啟動這件事沒辦法在這裡驗**：
-Ebitengine 的 GLFW 在套件 init 就初始化視窗系統，無頭環境連 `-h` 都會 panic
-（spec 066），所以 Docker 與 CI runner 都跑不到「畫得出第一個畫面」。
-Linux 與 Wine 走本地 Docker（`tools/linux-release-smoke.sh`）已經在做，
-剩下的兩個平台要一台實體機器。
+**在這裡驗得到的**：Linux 版由 `tools/linux-release-smoke.sh`、Windows 版由
+`tools/windows-release-smoke.sh` 在 Docker／Xvfb（Windows 那支再加 Wine）裡
+實際啟動並截圖，兩支都會擋掉「視窗開得起來但畫面全黑」。
+
+**在這裡驗不到的**：macOS——沒有機器，而 Ebitengine 的 GLFW 在套件 init 就
+初始化視窗系統，無頭環境連 `-h` 都會 panic（spec 066），CI runner 也到不了
+「畫得出第一個畫面」。**真的 Windows 也還沒跑過**：Wine 不是 Windows，
+驅動、字型後備與 DPI 縮放都不同，Wine 過只代表「不是連跑都跑不起來」。
+
+所以這一份清單要在一台實體 Windows 與一台實體 macOS 上各跑一次。
 
 使用者 2026-09-05 決定由自己在實機執行，這一份就是那時照著跑的清單。
 

@@ -1,0 +1,299 @@
+{
+  "schema": "pool-city-hall-structural-audit-v1",
+  "source_schema": "pool-ecl-static-trace-v1",
+  "source_block_sha256": "fd446439973994d9f887b8628b512054a822369eb4360769b21eb2224982f012",
+  "source_member_sha256": "db58f0c6326d400cc65902933392ce928812c7cd3baf7f68827aed0dff64d076",
+  "code_address_base": "0x9900",
+  "reward_dispatch": {
+    "address": "0x9C83",
+    "slot_count": 7,
+    "targets": [
+      "0xB5C4",
+      "0xB5CC",
+      "0xB5CC",
+      "0xB5D7",
+      "0xB5D7",
+      "0xB5E2",
+      "0xB5E2"
+    ],
+    "unique_targets": [
+      "0xB5C4",
+      "0xB5CC",
+      "0xB5D7",
+      "0xB5E2"
+    ]
+  },
+  "commission_dispatch": {
+    "address": "0xA85B",
+    "slot_count": 16,
+    "targets": [
+      "0xA8AB",
+      "0xA8EC",
+      "0xA91C",
+      "0xA9B0",
+      "0xAA31",
+      "0xAAA8",
+      "0xAB10",
+      "0xAB7E",
+      "0xABC0",
+      "0xAC1D",
+      "0xAC21",
+      "0xAC58",
+      "0xAC9A",
+      "0xAD01",
+      "0xAE25",
+      "0xAEA5"
+    ],
+    "unique_targets": [
+      "0xA8AB",
+      "0xA8EC",
+      "0xA91C",
+      "0xA9B0",
+      "0xAA31",
+      "0xAAA8",
+      "0xAB10",
+      "0xAB7E",
+      "0xABC0",
+      "0xAC1D",
+      "0xAC21",
+      "0xAC58",
+      "0xAC9A",
+      "0xAD01",
+      "0xAE25",
+      "0xAEA5"
+    ]
+  },
+  "progress_4ac1_increment_producers": [
+    "0x9FAE",
+    "0x9FF3",
+    "0xA179",
+    "0xA1BB",
+    "0xA201",
+    "0xA24C",
+    "0xA304",
+    "0xA342",
+    "0xA37F",
+    "0xA4D1"
+  ],
+  "completion_notification_table": [
+    {
+      "index": 0,
+      "state_address": "0x4AA6",
+      "target": "0x9F77",
+      "text": "THE COUNCIL HAS AWARDED A BONUS FOR YOUR ELIMINATING NORRIS THE GRAY.",
+      "increments_4ac1": true,
+      "increment_address": "0x9FAE"
+    },
+    {
+      "index": 1,
+      "state_address": "0x4AA7",
+      "target": "0x9FB8",
+      "text": "WITH SOKAL KEEP IN OUR HANDS, WE CAN USE BOATS TO BYPASS THE BARREN RIVER.",
+      "increments_4ac1": true,
+      "increment_address": "0x9FF3"
+    },
+    {
+      "index": 2,
+      "state_address": "0x4AA8",
+      "target": "0x9FFD",
+      "text": "YOU HAVE CLEARED THE AREA NEXT TO THE EVIL TEMPLE.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 3,
+      "state_address": "0x4AA9",
+      "target": "0xA027",
+      "text": "BIVANT WAS DELIGHTED WITH THE CHILD'S RESCUE.  THEY LEFT SOME TRINKETS FOR YOU.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 4,
+      "state_address": "0x4AAA",
+      "target": "0xA06D",
+      "text": "WE FIND THESE DISCOURSES VALUABLE.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 5,
+      "state_address": "0x4AAB",
+      "target": "0xA08B",
+      "text": "THE COUNCIL WILL BE AMUSED BY THE DESCRIPTIONS.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 6,
+      "state_address": "0x4AAC",
+      "target": "0xA0B3",
+      "text": "THESE MAPS SHOULD HELP US TO LOCATE SEVERAL LEGENDARY BUILDINGS.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 7,
+      "state_address": "0x4AAD",
+      "target": "0xA0E7",
+      "text": "THESE HISTORIES CONTAIN MUCH USEFUL INFORMATION.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 8,
+      "state_address": "0x4AAE",
+      "target": "0xA10F",
+      "text": "THE RECORDS PROVIDE INSIGHTS INTO MUCH THAT WAS PUZZLING.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 9,
+      "state_address": "0x4AAF",
+      "target": "0xA13E",
+      "text": "THIS MATERIAL IS OF SMALL VALUE.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 10,
+      "state_address": "0x4AB0",
+      "target": "0xA15A",
+      "text": "YOUR SUCCESS AT PODAL PLAZA IS NOTED.",
+      "increments_4ac1": true,
+      "increment_address": "0xA179"
+    },
+    {
+      "index": 11,
+      "state_address": "0x4AB1",
+      "target": "0xA183",
+      "text": "THE COUNCIL HAS VOTED A SPECIAL PRIZE FOR ENDING THE GRAVEYARD MENACE.",
+      "increments_4ac1": true,
+      "increment_address": "0xA1BB"
+    },
+    {
+      "index": 12,
+      "state_address": "0x4AB2",
+      "target": "0xA1C5",
+      "text": "THE COUNCIL WAS PLEASED BY THE ELIMINATION OF THE THIEVES IN KOVEL MANSION.",
+      "increments_4ac1": true,
+      "increment_address": "0xA201"
+    },
+    {
+      "index": 13,
+      "state_address": "0x4AB3",
+      "target": "0xA20B",
+      "text": "WITH THE CLEARING OF THE STOJONOW RIVER, WE CAN OPEN UP THE HINTERLANDS FOR TRADE.",
+      "increments_4ac1": true,
+      "increment_address": "0xA24C"
+    },
+    {
+      "index": 14,
+      "state_address": "0x4AB4",
+      "target": "0xA256",
+      "text": "WE WERE PLEASANTLY SURPRISED THAT YOU COMPLETED YOUR MISSION SO SWIFTLY.  CADORNA WAS WAGERING YOUR RETURN WOULD BE MUCH DELAYED.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 15,
+      "state_address": "0x4AB5",
+      "target": "0xA2C1",
+      "text": "YOUR ELIMINATION OF THE LIZARDMEN MENACE HAS GREATLY IMPROVED OUR STRATEGIC POSITION.",
+      "increments_4ac1": true,
+      "increment_address": "0xA304"
+    },
+    {
+      "index": 16,
+      "state_address": "0x4AB6",
+      "target": "0xA30E",
+      "text": "THIS LOSS OF THE KOBOLD FORCES WILL BE A MAJOR BLOW TO THE ENEMY.",
+      "increments_4ac1": true,
+      "increment_address": "0xA342"
+    },
+    {
+      "index": 17,
+      "state_address": "0x4AB7",
+      "target": "0xA34C",
+      "text": "WE WERE MUCH RELIEVED BY THE NEWS YOU BRING FROM THE NOMAD CAMP.",
+      "increments_4ac1": true,
+      "increment_address": "0xA37F"
+    },
+    {
+      "index": 18,
+      "state_address": "0x4AB8",
+      "target": "0xA389",
+      "text": "COUNCILMAN CADORNA LEFT THIS PAYMENT FOR SOME SERVICE YOU HAD RENDERED.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 19,
+      "state_address": "0x4AB9",
+      "target": "0xA3C3",
+      "text": "YOUR TAKING THE GATE WILL ENABLE OUR FORCES TO ASSAULT THE ENEMY STRONGHOLD. RETURN THERE TO LEAD THE ATTACK.",
+      "increments_4ac1": false
+    },
+    {
+      "index": 20,
+      "state_address": "0x4ABA",
+      "target": "0xA421",
+      "text": "CONGRATULATIONS! YOUR QUEST IS OVER! TYRANTHRAXUS IS DEFEATED! PHLAN IS FREE! IF YOU WISH, YOU MAY CONTINUE TO HELP US CLEAR ANY REMAINING MONSTERS. ALL PHLAN SALUTES YOU!",
+      "increments_4ac1": false
+    },
+    {
+      "index": 21,
+      "state_address": "0x4ABB",
+      "target": "0xA4A6",
+      "text": "YOUR CLEARING OF THE SLUM AREAS PERMITS US TO EXPAND.",
+      "increments_4ac1": true,
+      "increment_address": "0xA4D1"
+    },
+    {
+      "index": 22,
+      "state_address": "0x4ABC",
+      "target": "0xA4DB",
+      "text": "",
+      "increments_4ac1": false
+    },
+    {
+      "index": 23,
+      "state_address": "0x4ABD",
+      "target": "0xA4DC",
+      "text": "CONGRATULATIONS, YOU MAY KEEP ALL YOU FOUND IN THE TEMPLE OF BANE AS A REWARD.'",
+      "increments_4ac1": false
+    },
+    {
+      "index": 24,
+      "state_address": "0x4ABE",
+      "target": "0xA520",
+      "text": "PORPHYRYS CADORNA IS A TRAITOR TO THE CITY. IF YOU FIND HIM, KILL HIM.'",
+      "increments_4ac1": false
+    },
+    {
+      "index": 25,
+      "state_address": "0x4ABF",
+      "target": "0xA55E",
+      "text": "THE COUNCIL HAS NOTED THE PASSING OF THE TRAITOR CADORNA.'",
+      "increments_4ac1": false
+    }
+  ],
+  "external_calls": [
+    {
+      "address": "0x9F28",
+      "opcode": 39,
+      "name": "TREASURE"
+    },
+    {
+      "address": "0x9F3E",
+      "opcode": 36,
+      "name": "COMBAT"
+    },
+    {
+      "address": "0xA5A8",
+      "opcode": 29,
+      "name": "PARTYSTRENGTH"
+    },
+    {
+      "address": "0xA780",
+      "opcode": 39,
+      "name": "TREASURE"
+    },
+    {
+      "address": "0xA791",
+      "opcode": 36,
+      "name": "COMBAT"
+    }
+  ]
+}
