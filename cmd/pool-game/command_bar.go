@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"golang.org/x/image/font"
 
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
@@ -91,10 +92,47 @@ func drawCommandBar(screen *ebiten.Image, a *app, foreground, accent color.Color
 	// 基線 366：讓開外框下緣那一列 tile（邏輯 y 368..383，spec 123）。
 	x := 20
 	for _, command := range a.adventureCommandList() {
-		drawText(screen, command[:1], x, 366, accent)
-		drawText(screen, command[1:], x+commandGlyphWidth, 366, foreground)
-		x += (len(command) + 1) * commandGlyphWidth
+		label := a.commandLabel(command)
+		// **按 rune 切，不是按位元組。** 中文標籤第一個 byte 切下去會切在
+		// UTF-8 的中間，畫出來是亂碼。原版那一列本來就是「首字母選擇」
+		// （說明書 p.21），所以第一個字元用強調色，其餘用前景色。
+		key := []rune(label)
+		if len(key) == 0 {
+			continue
+		}
+		head, rest := string(key[:1]), string(key[1:])
+		drawText(screen, head, x, 366, accent)
+		headWidth := font.MeasureString(uiFace, displayText(head)).Ceil()
+		drawText(screen, rest, x+headWidth, 366, foreground)
+		// 間距一格。寬度要量出來——中文字是兩格寬，用 len() 會算錯。
+		x += font.MeasureString(uiFace, displayText(label)).Ceil() + commandGlyphWidth
 	}
+}
+
+// commandLabel 取這一個指令在目前語言下的字樣。
+//
+// 英文就是原版的位元組（`DS:04CAh`）。繁中取自軟體世界說明書 p.21–p.31 對
+// 每一個指令的說明用詞：AREA 是「平面圖」（「便會出現一幅本地區的平面全圖」）、
+// CAST 施法、VIEW 檢視、ENCAMP 紮營、SEARCH 邊走邊搜、LOOK 搜尋。
+// **鍵名留在最前面**，因為原版就是首字母選擇，換成純中文會讓玩家不知道按什麼。
+func (a *app) commandLabel(command string) string {
+	id, ok := commandMessages[command]
+	if !ok {
+		return command
+	}
+	if label := a.text(id); label != "" {
+		return label
+	}
+	return command
+}
+
+var commandMessages = map[string]messageID{
+	"AREA":   msgCommandArea,
+	"CAST":   msgCommandCast,
+	"VIEW":   msgCommandView,
+	"ENCAMP": msgCommandEncamp,
+	"SEARCH": msgCommandSearch,
+	"LOOK":   msgCommandLook,
 }
 
 // commandGlyphWidth 是等寬字的一格。倚天與退路字型的半形都是這個寬度。

@@ -41,6 +41,14 @@ const (
 	msgMenuCounts
 	// 功能鍵列是 remake 自己的東西，說明書沒有；鍵名保持原文。
 	msgFooter
+	// 冒險畫面最下面那一列的六個原版指令（`DS:04CAh`，spec 119）。
+	// 繁中用詞取自說明書 p.21–p.31 對每一個指令的說明。
+	msgCommandArea
+	msgCommandCast
+	msgCommandView
+	msgCommandEncamp
+	msgCommandSearch
+	msgCommandLook
 )
 
 // text 取出目前語言的字串。缺譯時退回英文而不是留白——留白在畫面上看不出是
@@ -189,6 +197,58 @@ const (
 	msgNameRule
 )
 
+// 肖像與戰鬥造形編輯器的字串，外加人物管理選擇項的幾則回應。
+// 繁中一律取自說明書 p.15–p.18「戰鬥造形」那一節：備戰／攻擊的姿勢、
+// P)ARTS 的頭與武器、COLOR1／COLOR2 的各部位、SIZE 的大小、
+// NEXT／PREV／KEEP／EXIT 的四個出口，說明書都逐項寫過。
+//
+// 選項的識別字（`PARTS`、`COLOR-1`、`KEEP`…）同時是 `chooseIconMenu` 的
+// 分派鍵，所以**只在畫的時候翻**——識別字本身留英文，翻譯查表在
+// `iconOptionLabel`。指令列（spec 119）用的是同一個作法。
+const (
+	msgPortraitTitle messageID = iota + 700
+	msgPortraitHead
+	msgPortraitBody
+	msgPortraitKeep
+	msgPortraitAccepted
+	msgIconTitle
+	msgIconReady
+	msgIconAction
+	msgIconSummary
+	msgIconConfirm
+	msgIconConfirmYes
+	msgIconConfirmNo
+	msgIconParts
+	msgIconColour1
+	msgIconColour2
+	msgIconSize
+	msgIconExit
+	msgIconHead
+	msgIconWeapon
+	msgIconNext
+	msgIconPrev
+	msgIconKeep
+	msgIconBody
+	msgIconHair
+	msgIconFace
+	msgIconShield
+	msgIconArm
+	msgIconLeg
+	msgIconLarge
+	msgIconSmall
+	msgMenuPartyFull
+	msgMenuAddedToParty
+	msgMenuNoSpareCharacter
+	msgMenuSavedToLibrary
+	msgMenuNameTaken
+	msgMenuNeedsOneCharacter
+	// 第一人稱畫面右邊那一塊的欄位名（說明書 p.19：「人物狀況資料欄
+	//（欄位為 NAME／AC／HP）」）。
+	msgPartyPanelName
+	msgPartyPanelAC
+	msgPartyPanelHP
+)
+
 // hintNames 是建角各階段的提示。繁中依說明書的對應段落改寫成一行：
 // 種族限制職業見 p.10「種族能影響職別的種類」，兼職分經驗見 p.13 第 (2) 點，
 // 陣營影響 NPC 觀感見 p.15，肖像與戰鬥造形見 p.11 與第五章。
@@ -197,7 +257,7 @@ var hintNames = map[string]string{
 	"class":     "兼職的人物昇級較慢，經驗點數會分到各職別去。",
 	"alignment": "陣營是人物的生活方式，會影響特殊隊員對他的觀感。",
 	"portrait":  "H 換頭、B 換身體，K 決定這個肖像。",
-	"icon":      "編輯部位、雙色與大小時，右邊會同步預覽 READY 與 ACTION。",
+	"icon":      "編輯部位、雙色與大小時，右邊會同步預覽備戰與攻擊的姿勢。",
 }
 
 func (a *app) hint(stage string) string {

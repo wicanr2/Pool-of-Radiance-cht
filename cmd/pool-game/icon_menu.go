@@ -283,26 +283,55 @@ func (a *app) cycleIconColour(label string) error {
 	return a.reloadIcons()
 }
 
-// iconMenuPath 是畫面上那一行「現在在哪一層」。
+// iconOptionLabels 把選單識別字對到它的 messageID。識別字本身是
+// `chooseIconMenu` 的分派鍵（`case "COLOR-1":`），所以不能翻——翻譯只發生在
+// 畫面上，查這張表。指令列（spec 119）用的是同一個作法。
+//
+// 繁中取自說明書 p.16–p.18：頭部、武器、身體、頭髮、盾牌、手臂、腳、
+// 下一個（NEXT）、前一個（PREV）、決定（KEEP）、離開（EXIT）。
+var iconOptionLabels = map[string]messageID{
+	"PARTS": msgIconParts, "COLOR-1": msgIconColour1, "COLOR-2": msgIconColour2,
+	"SIZE": msgIconSize, "EXIT": msgIconExit, "HEAD": msgIconHead,
+	"WEAPON": msgIconWeapon, "NEXT": msgIconNext, "PREV": msgIconPrev,
+	"KEEP": msgIconKeep, "BODY": msgIconBody, "HAIR": msgIconHair,
+	"FACE": msgIconFace, "SHIELD": msgIconShield, "ARM": msgIconArm,
+	"LEG": msgIconLeg, "LARGE": msgIconLarge, "SMALL": msgIconSmall,
+}
+
+// iconOptionLabel 是某個選單識別字在畫面上的樣子。表裡沒有就照原樣畫，
+// 那樣至少看得出是哪一項，比留白好認。
+func (a *app) iconOptionLabel(label string) string {
+	if id, ok := iconOptionLabels[label]; ok {
+		return a.text(id)
+	}
+	return label
+}
+
+// iconMenuPath 是畫面上那一行「現在在哪一層」。它只給人看，所以整行都用
+// 譯文組；分派走的是 `chooseIconMenu` 收到的識別字，不經過這裡。
 func (a *app) iconMenuPath() string {
 	switch a.iconMenu.level {
 	case iconMenuParts:
-		return "PARTS"
+		return a.iconOptionLabel("PARTS")
 	case iconMenuPartCycle:
 		if a.iconMenu.editingWeapon {
-			return fmt.Sprintf("PARTS / WEAPON %02d", a.flow.IconWeapon)
+			return fmt.Sprintf("%s / %s %02d", a.iconOptionLabel("PARTS"),
+				a.iconOptionLabel("WEAPON"), a.flow.IconWeapon)
 		}
-		return fmt.Sprintf("PARTS / HEAD %02d", a.flow.IconHead)
+		return fmt.Sprintf("%s / %s %02d", a.iconOptionLabel("PARTS"),
+			a.iconOptionLabel("HEAD"), a.flow.IconHead)
 	case iconMenuColour:
-		return colourMenuName(a.iconMenu.component)
+		return a.iconOptionLabel(colourMenuName(a.iconMenu.component))
 	case iconMenuColourCycle:
-		return fmt.Sprintf("%s / %s %X", colourMenuName(a.iconMenu.component),
-			iconPartLabel(int(a.flow.IconPart), a.iconMenu.component),
+		return fmt.Sprintf("%s / %s %X", a.iconOptionLabel(colourMenuName(a.iconMenu.component)),
+			a.iconOptionLabel(iconPartLabel(int(a.flow.IconPart), a.iconMenu.component)),
 			a.flow.IconColors[a.flow.IconPart][a.iconMenu.component])
 	case iconMenuSize:
-		return "SIZE"
+		return a.iconOptionLabel("SIZE")
 	}
-	return "COMBAT ICON EDITOR"
+	// 頂層沒有「上一層」可寫。這裡本來回標題，而標題已經畫在上面一列了
+	// ——同一句話印兩次。
+	return ""
 }
 
 func colourMenuName(component int) string {

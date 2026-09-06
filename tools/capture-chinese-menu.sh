@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# 以真實 Ebitengine 視窗拍下繁中人物管理選擇項。
+# 以真實 Ebitengine 視窗拍下繁中畫面。
 #
-# 倚天字型是第三方資產，不進 repo：這裡以唯讀掛載從主機路徑帶進容器，
+# 倚天字型是第三方資產、不進 repo：這裡以唯讀掛載從主機路徑帶進容器，
 # 路徑可由 ETEN_FONT_DIR 覆寫。沒有字型時遊戲會失敗即關閉，不會默默用英文跑，
 # 所以這支腳本拍不到圖就是拍不到，不會拍出一張看起來對的英文畫面。
+#
+# **走位靠遊戲自己回報的畫面識別字**（`-screen-state`，見
+# `cmd/pool-game/screen_state.go`），不是靠「按幾下、睡幾秒」。
+# 舊版是盲按：漏掉一次 Return 時前後兩張圖仍然不一樣（畫面確實動了，
+# 只是動到別的地方），`cmp` 判定通過，整條流程於是偏掉十幾步，
+# 最後以「A 打不開平面圖」的形式炸出來——真正的原因早就發生在建角途中。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -35,8 +41,10 @@ cp go.mod /tmp/pool.mod
 cp go.sum /tmp/pool.sum
 printf "\nreplace github.com/wicanr2/golden-box-remake-engine => /engine\n" >> /tmp/pool.mod
 go build -modfile=/tmp/pool.mod -o /tmp/pool-game ./cmd/pool-game
+STATE=/tmp/pool-screen
+rm -f "$STATE"
 (cd /tmp && exec /tmp/pool-game -zip "/src/Pool of Radiance (1988).zip" \
-   -lang zh -eten-font /fonts/stdfont.15) >/tmp/game.log 2>&1 &
+   -lang zh -eten-font /fonts/stdfont.15 -screen-state "$STATE") >/tmp/game.log 2>&1 &
 game_pid=$!
 retries=0
 window=
@@ -53,182 +61,166 @@ done
 xdotool windowfocus "$window"
 eval "$(xdotool getwindowgeometry --shell "$window")"
 xdotool mousemove 1190 790
+
+screen() { cat "$STATE" 2>/dev/null | tr -d "\n"; }
+die() {
+  echo "$1" >&2
+  echo "目前畫面：$(screen)" >&2
+  tail -20 /tmp/game.log >&2 || true
+  exit 1
+}
+# await <畫面> [輪數]：等遊戲自己回報走到了那個畫面。
+await() {
+  want=$1
+  rounds=${2:-100}
+  n=0
+  while test "$(screen)" != "$want"; do
+    sleep 0.1
+    n=$((n + 1))
+    test "$n" -lt "$rounds" || die "等不到畫面 $want"
+  done
+}
 pulse() {
   xdotool keydown "$1"
-  sleep 0.18
+  sleep 0.12
   xdotool keyup "$1"
-  sleep 0.28
+  sleep 0.12
+}
+# step <鍵> <目標畫面>：按到走到目標為止。每按一次先等一段時間再決定要不要
+# 重按——不等就重按會把 A、J、I、K 這種開關鍵按回去，看起來像「按了沒反應」。
+step() {
+  key=$1
+  want=$2
+  attempt=0
+  while test "$(screen)" != "$want"; do
+    attempt=$((attempt + 1))
+    test "$attempt" -le 40 || die "按 $key 走不到 $want"
+    pulse "$key"
+    waited=0
+    while test "$(screen)" != "$want" && test "$waited" -lt 15; do
+      sleep 0.1
+      waited=$((waited + 1))
+    done
+  done
 }
 shot() {
   ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
     -i ":99+${X},${Y}" -frames:v 1 "$1"
 }
-sleep 1.0
-shot /tmp/title.png
-pulse Return
-sleep 0.8
-shot docs/screenshots/pool-remake-chinese-menu.png
-if cmp -s /tmp/title.png docs/screenshots/pool-remake-chinese-menu.png; then
-  echo "ENTER did not leave the title screen" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
-# C 進建角：種族 → 性別 → 職業，各拍一張能證明選單項目也是中文的。
-pulse c
-sleep 0.6
-shot docs/screenshots/pool-remake-chinese-race.png
-if cmp -s docs/screenshots/pool-remake-chinese-menu.png docs/screenshots/pool-remake-chinese-race.png; then
-  echo "C did not open character creation" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
-for key in Return Return; do
-  pulse "$key"
-done
-sleep 0.6
-shot docs/screenshots/pool-remake-chinese-class.png
-if cmp -s docs/screenshots/pool-remake-chinese-race.png docs/screenshots/pool-remake-chinese-class.png; then
-  echo "the creation flow did not reach the class picker" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
-for key in Return Return; do
-  pulse "$key"
-done
-sleep 0.8
-shot docs/screenshots/pool-remake-chinese-sheet.png
-if cmp -s docs/screenshots/pool-remake-chinese-class.png docs/screenshots/pool-remake-chinese-sheet.png; then
-  echo "the creation flow did not reach the character sheet" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
-# 走完建角、加入隊伍、開始冒險，拍下羅夫導覽的第一頁——那是原版敘述文字
-# 第一次以中文出現在畫面上的地方。
-pulse Return
+# differs <前> <後> <說明>：同一個畫面識別字底下的內容變化（加入隊伍、
+# 翻到某一條線索）只能靠比圖，這一個留給那幾處。
+differs() {
+  if cmp -s "$1" "$2"; then
+    die "$3"
+  fi
+}
+
+await title 200
 sleep 0.5
+shot docs/screenshots/pool-remake-chinese-title.png
+step Return menu
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-menu.png
+
+# C 進建角：種族 → 性別 → 職業 → 陣營 → 屬性表，各拍一張能證明選單項目
+# 也是中文的。每一站都等遊戲回報自己到了，不用猜要按幾下。
+step c creation-race
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-race.png
+step Return creation-class
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-class.png
+step Return creation-alignment
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-alignment.png
+step Return creation-roll
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-sheet.png
+
+step Return creation-name
+sleep 0.3
 xdotool type --delay 120 HERO
-pulse Return
-sleep 0.6
+sleep 0.3
+step Return creation-portrait
+sleep 0.4
 shot docs/screenshots/pool-remake-chinese-portrait.png
+
 # combat icon editor 是巢狀選單（spec 003 第 7..10 步）：PARTS → HEAD →
 # NEXT → KEEP → EXIT 回到頂層，**頂層再按一次 EXIT 才進確認頁**。
-# 先前這裡沿用扁平版的 `Return`，結果整條流程停在圖示編輯器裡，
-# 後面每一張都拍到同一個畫面——而 `cmp` 只擋得住「兩張一樣」，
-# 擋不住「兩張都是錯的畫面」。
-pulse k
-sleep 0.8
-for key in p h n k e; do
-  pulse "$key"
-done
-sleep 0.5
+# 識別字帶著層號（`creation-icon-<層>`），所以走錯層會當場停住。
+step k creation-icon-0
+step p creation-icon-1
+step h creation-icon-2
+pulse n
+step k creation-icon-1
+step e creation-icon-0
+sleep 0.4
 shot docs/screenshots/pool-remake-chinese-icon.png
-pulse e
+step e creation-icon-confirm
+step y menu
+
+# A 把人物加進隊伍。畫面識別字仍然是 menu（原版也是留在同一頁），
+# 所以這一步只能比圖。
+sleep 0.4
+pulse a
 sleep 0.6
-pulse y
-sleep 0.8
-pulse a
-sleep 0.8
 shot docs/screenshots/pool-remake-chinese-party.png
-pulse b
-sleep 1.5
+differs docs/screenshots/pool-remake-chinese-menu.png \
+        docs/screenshots/pool-remake-chinese-party.png "A 沒有把人物加進隊伍"
+
+step b adventure-intro
+sleep 0.6
 shot docs/screenshots/pool-remake-chinese-tour.png
-if cmp -s docs/screenshots/pool-remake-chinese-party.png docs/screenshots/pool-remake-chinese-tour.png; then
-  echo "B did not begin the adventure" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
-# 把 34 步導覽按完走到自由移動，抓第一人稱視野與平面圖各一張——
-# 那兩張是繁中介面配原版素材最說明問題的畫面。
-# 導覽是 34 步腳本移動加七頁文字，按不完就還在事件裡——**事件沒結束時
-# `J`／`I`／`K` 會被 adventureCommandInput 先吃掉**，後面那幾張就會全部
-# 拍到同一個第一人稱畫面。按到有餘裕再往下走。
-for _ in $(seq 1 80); do
-  pulse Return
-done
-sleep 2
+# 導覽是 34 步腳本移動加七頁文字；只有文字那幾頁在等 Return，其餘自己走。
+# 走完才是自由移動，指令列那時才會出現。
+step Return adventure-move 60
+sleep 0.6
 shot docs/screenshots/pool-remake-chinese-movement.png
-if cmp -s docs/screenshots/pool-remake-chinese-tour.png docs/screenshots/pool-remake-chinese-movement.png; then
-  echo "the guided tour never reached free movement" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
-pulse a
-sleep 0.8
-shot docs/screenshots/pool-remake-chinese-map.png
-if cmp -s docs/screenshots/pool-remake-chinese-movement.png docs/screenshots/pool-remake-chinese-map.png; then
-  echo "A did not open the area map" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
-pulse a
+
+step a adventure-map
 sleep 0.5
+shot docs/screenshots/pool-remake-chinese-map.png
+step a adventure-move
+
 # **順序有意義**：`J`／`I`／`K` 三個面板都擋在 `a.tactical == nil` 後面，
 # 而 F5 關掉戰術預覽時只清 `tacticalPreview`、**不清 `a.tactical`**——
 # 開過一次盤面之後那三個面板就再也叫不出來。所以先拍面板，最後才拍盤面。
 #
 # J 開探險者手冊，再打 46 + ENTER 跳到遊戲文字實際引用的那一條——
 # 「抄進手冊，成為線索報導 46」在畫面上說得出口，這裡就要翻得到。
-pulse j
-sleep 0.8
+step j journal
+sleep 0.5
 shot docs/screenshots/pool-remake-chinese-journal.png
-if cmp -s docs/screenshots/pool-remake-chinese-movement.png docs/screenshots/pool-remake-chinese-journal.png; then
-  echo "J did not open the journal" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
 pulse 4
-sleep 0.4
 pulse 6
-sleep 0.4
 pulse Return
-sleep 0.8
+sleep 0.6
 shot docs/screenshots/pool-remake-chinese-journal-46.png
-if cmp -s docs/screenshots/pool-remake-chinese-journal.png docs/screenshots/pool-remake-chinese-journal-46.png; then
-  echo "typing 46 did not jump to clue 46" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
+differs docs/screenshots/pool-remake-chinese-journal.png \
+        docs/screenshots/pool-remake-chinese-journal-46.png "打 46 沒有跳到線索 46"
+
 # 三個面板都用自己的字母開關（`J`／`I`／`K`）。**不要用 ESC**——
 # 冒險畫面的 ESC 是「回隊伍管理選單」，一按就掉出整條路徑。
 # 這一隊剛建好、身上沒有東西，所以裝備頁看到的是空清單；拍它是為了確認
 # 版面與字型，物品邏輯由 cmd/pool-game 的測試顧。
-pulse j
+step j adventure-move
+step i equipment
 sleep 0.5
-pulse i
-sleep 0.8
 shot docs/screenshots/pool-remake-chinese-equipment.png
-if cmp -s docs/screenshots/pool-remake-chinese-journal-46.png docs/screenshots/pool-remake-chinese-equipment.png; then
-  echo "I did not open the equipment screen" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
 # K 開法術一覽，TAB 翻到巫術第 1 級——那一頁 13 種，是最長的一組。
-pulse i
-sleep 0.5
-pulse k
-sleep 0.8
-for step in 1 2 3; do
-  pulse Tab
-  sleep 0.3
-done
+step i adventure-move
+step k spells
+sleep 0.4
+pulse Tab
+pulse Tab
+pulse Tab
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-spells.png
-if cmp -s docs/screenshots/pool-remake-chinese-equipment.png docs/screenshots/pool-remake-chinese-spells.png; then
-  echo "K did not open the spell list" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
 # 最後才開戰術盤面：確認那一頁在漢字字型下四行資訊與功能鍵列都不相疊。
-pulse k
-sleep 0.5
-pulse F5
-sleep 0.8
+step k adventure-move
+step F5 tactical
+sleep 0.6
 shot docs/screenshots/pool-remake-chinese-tactical.png
-if cmp -s docs/screenshots/pool-remake-chinese-spells.png docs/screenshots/pool-remake-chinese-tactical.png; then
-  echo "F5 did not open the tactical board" >&2
-  tail -20 /tmp/game.log >&2 || true
-  exit 1
-fi
 sha256sum docs/screenshots/pool-remake-chinese-*.png
 '
 
@@ -244,9 +236,11 @@ import sys
 
 root, font_dir = sys.argv[1], sys.argv[2]
 screens = [
+    ("pool-remake-chinese-title.png", "title screen"),
     ("pool-remake-chinese-menu.png", "party creation menu"),
     ("pool-remake-chinese-race.png", "race picker"),
     ("pool-remake-chinese-class.png", "class picker"),
+    ("pool-remake-chinese-alignment.png", "alignment picker"),
     ("pool-remake-chinese-sheet.png", "character sheet, keep-or-reroll prompt"),
     ("pool-remake-chinese-portrait.png", "portrait editor"),
     ("pool-remake-chinese-icon.png", "combat icon editor, top level"),
@@ -290,9 +284,10 @@ manifest = {
     "source_commit": git("rev-parse", "HEAD"),
     "source_tree_dirty": bool(git("status", "--porcelain")),
     "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
-    "state_relation": ("normal-remake-player-path with -lang zh: title, ENTER, C, the whole "
-                       "creation flow, A, B, the guided tour, free movement, then the "
-                       "J/I/K panels and F5. Not an original-DOS parity claim."),
+    "state_relation": ("normal-remake-player-path with -lang zh, stepped by the game's own "
+                       "-screen-state identifiers: title, ENTER, C, the whole creation flow, "
+                       "A, B, the guided tour, free movement, then the J/I/K panels and F5. "
+                       "Not an original-DOS parity claim."),
     "font": {
         "family": "ETen 16x15 Big5 bitmap",
         "files_present": present,

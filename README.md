@@ -183,25 +183,30 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ## 目前 remake 畫面
 
-下面十五張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
+下面十七張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
 在 Docker／Xvfb 裡開真的 Ebitengine 視窗、逐鍵走一次正常玩家路徑拍下來的：
 標題 → `ENTER` → `C` 建角 → 命名 → 肖像 → 戰鬥圖示 → 加入隊伍 → `B` 開始冒險
 → 按完羅夫導覽 → 自由移動 → 平面圖 → 手冊 → 裝備 → 法術 → 戰術盤面。
-中途任何一步沒有換到預期的畫面，腳本就失敗即關閉，不會拍出一張看起來對的圖。
+**每一步都等遊戲自己回報走到了哪一個畫面**（`-screen-state`）才往下按，
+沒走到就停在那一步，不會拍出一張看起來對的圖。
 來源提交、日期、雜湊與字型狀態見
 [繁中截圖 manifest](docs/audit/remake-chinese-screenshot-manifest.json)。
 
 字型是倚天 16×15 點陣字，屬第三方資產、不進 repo，執行時以 `-eten-font` 指定。
 
-### 建角
+### 開場與建角
 
-| 人物管理選擇項 | 種族 |
+| 標題（原版 `TITLE.DAX`）| 人物管理選擇項 |
 |---|---|
-| ![人物管理選擇項](docs/screenshots/pool-remake-chinese-menu.png) | ![種族](docs/screenshots/pool-remake-chinese-race.png) |
+| ![標題](docs/screenshots/pool-remake-chinese-title.png) | ![人物管理選擇項](docs/screenshots/pool-remake-chinese-menu.png) |
 
-| 職業 | 人物資料頁 |
+| 種族 | 職業 |
 |---|---|
-| ![職業](docs/screenshots/pool-remake-chinese-class.png) | ![人物資料頁](docs/screenshots/pool-remake-chinese-sheet.png) |
+| ![種族](docs/screenshots/pool-remake-chinese-race.png) | ![職業](docs/screenshots/pool-remake-chinese-class.png) |
+
+| 陣營 | 人物資料頁 |
+|---|---|
+| ![陣營](docs/screenshots/pool-remake-chinese-alignment.png) | ![人物資料頁](docs/screenshots/pool-remake-chinese-sheet.png) |
 
 | 肖像編輯器（原版 HEAD／BODY 素材） | 戰鬥圖示編輯器（原版 READY／ACTION 素材） |
 |---|---|
@@ -227,9 +232,13 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ### 面板
 
-| `J` 探險者手冊：線索報導 46 | `I` 裝備頁 |
+| `J` 探險者手冊 | 同一本翻到線索報導 46 |
 |---|---|
-| ![探險者手冊](docs/screenshots/pool-remake-chinese-journal-46.png) | ![裝備頁](docs/screenshots/pool-remake-chinese-equipment.png) |
+| ![探險者手冊](docs/screenshots/pool-remake-chinese-journal.png) | ![線索報導 46](docs/screenshots/pool-remake-chinese-journal-46.png) |
+
+| `I` 裝備頁 | |
+|---|---|
+| ![裝備頁](docs/screenshots/pool-remake-chinese-equipment.png) | |
 
 | `K` 法術一覽：巫術第 1 級 | `F5` 戰術盤面 |
 |---|---|

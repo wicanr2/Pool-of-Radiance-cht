@@ -18,6 +18,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
+	"golang.org/x/image/font"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
@@ -125,6 +126,10 @@ type app struct {
 	journalOpen     bool
 	modern          bool
 	statusLine      string
+	// screenStatePath 是 `-screen-state` 指定的檔案；自動截圖用它等畫面，
+	// 不用猜時間（screen_state.go）。空字串代表不寫。
+	screenStatePath string
+	screenStateLast string
 	keys            keySource
 	nameInput       string
 	portrait        *ebiten.Image
@@ -518,6 +523,9 @@ func (a *app) reloadIcons() error {
 }
 
 func (a *app) Update() error {
+	// 這一格的畫面識別字（screen_state.go）。放在最前面：上一格處理完的
+	// 結果就是這一格玩家看到的東西，而腳本要等的正是那個。
+	a.publishScreenName()
 	// 配樂跟著畫面狀態走（spec 128）。沒有音訊資產時 musicPlayer 是 nil，
 	// 這一行什麼都不做。
 	a.updateMusic()
@@ -759,7 +767,10 @@ func (a *app) Update() error {
 			a.tourStep++
 			if a.tourStep >= len(a.initialEvent.Tour) {
 				a.tourActive, a.introDone = false, true
-				a.statusLine = "Rolf tour reached ECL EXIT at (0,4), facing 3; player movement policy remains pending."
+				// **導覽走完不留字。** 原版走完就是自由移動，最下面換成指令列。
+				// 這裡本來留著一句開發用的英文狀態（「movement policy remains
+				// pending」），那是給自己看的，卻是玩家導覽結束後第一眼看到的東西。
+				a.statusLine = ""
 				return nil
 			}
 			step := a.initialEvent.Tour[a.tourStep]
@@ -2329,7 +2340,7 @@ func (a *app) applyECLResult(result eclvm.Result) {
 	}
 	if result.Exited {
 		a.tourActive, a.introWaiting, a.introDone = false, false, true
-		a.statusLine = "Rolf tour reached ECL EXIT at (0,4), facing 3; player movement policy remains pending."
+		a.statusLine = "" // 同上：導覽走完不留開發用的字
 	}
 }
 
@@ -2427,7 +2438,7 @@ func (a *app) updateCreation() error {
 			if err := a.flow.KeepPortrait(); err != nil {
 				return err
 			}
-			a.statusLine = "Portrait accepted."
+			a.statusLine = a.text(msgPortraitAccepted)
 			a.resetIconMenu()
 			return a.reloadIcons()
 		}
@@ -2465,7 +2476,7 @@ func (a *app) updateCreation() error {
 //（說明書 p.10）。
 func (a *app) beginAdventuring() error {
 	if len(a.state.Party) == 0 {
-		a.statusLine = "Add at least one character before beginning adventure."
+		a.statusLine = a.text(msgMenuNeedsOneCharacter)
 		return nil
 	}
 	if a.initialMap == nil || a.initialWalls == nil || a.initialEvent == nil {
@@ -2538,7 +2549,7 @@ func (a *app) finishCharacter() error {
 	}
 	for _, existing := range a.state.CharacterLibrary {
 		if existing.Name == a.flow.Name {
-			a.statusLine = "A character with that name already exists."
+			a.statusLine = a.text(msgMenuNameTaken)
 			return nil
 		}
 	}
@@ -2570,7 +2581,7 @@ func (a *app) finishCharacter() error {
 	}
 	a.mode, a.flow, a.cursor, a.rolled = modeMenu, creation.NewFlow(), 0, nil
 	a.portrait, a.iconReady, a.iconAction = nil, nil, nil
-	a.statusLine = character.Name + " saved to the character library."
+	a.statusLine = fmt.Sprintf(a.text(msgMenuSavedToLibrary), character.Name)
 	// 原版在同一個時機寫出 `<NAME>.CHA`／`.SPC`（spec 003 第 11 步）。
 	// remake 的真相是自己的 JSON，所以匯出失敗只回報，不把角色收回去。
 	if a.exportDOSCharacter != nil {
@@ -2583,7 +2594,7 @@ func (a *app) finishCharacter() error {
 
 func (a *app) addFirstLibraryCharacter() error {
 	if len(a.state.Party) >= 6 {
-		a.statusLine = "The party already has six characters."
+		a.statusLine = a.text(msgMenuPartyFull)
 		return nil
 	}
 	for _, candidate := range a.state.CharacterLibrary {
@@ -2605,10 +2616,10 @@ func (a *app) addFirstLibraryCharacter() error {
 				return nil
 			}
 		}
-		a.statusLine = candidate.Name + " added to the party."
+		a.statusLine = fmt.Sprintf(a.text(msgMenuAddedToParty), candidate.Name)
 		return nil
 	}
-	a.statusLine = "No unassigned character is available."
+	a.statusLine = a.text(msgMenuNoSpareCharacter)
 	return nil
 }
 
@@ -2620,7 +2631,13 @@ func (a *app) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Scale(2, 2)
 		screen.DrawImage(a.title, op)
-		drawText(screen, a.text(msgTitleHint), 264, 382, accent)
+		// 提示放在標題美術中間那一條黑帶：原版那一張在 native y 146..157
+		// 是純黑（12 列，dosgolem 逐列量的），換算成邏輯座標是 292..315。
+		// 原本畫在 382，正好壓在下面那條藍帶的第二行版權字上——兩段文字
+		// 疊在一起，看起來像字型壞掉。
+		hint := a.text(msgTitleHint)
+		hintWidth := font.MeasureString(uiFace, displayText(hint)).Ceil()
+		drawText(screen, hint, (logicalWidth-hintWidth)/2, 308, accent)
 	} else if a.mode == modeMenu {
 		a.drawFrame(screen, foreground, accent)
 		drawText(screen, a.text(msgMenuTitle), 224, 54, accent)
@@ -2674,6 +2691,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	case a.tacticalPreview:
 		// 戰術盤面那一頁自己用掉這一列（移動鍵與回合鍵的提示），
 		// 而且它第一行右邊就寫著 `F5 返回`。兩邊都畫會疊在一起。
+	case a.dialogueVisible():
+		// 對話框自己在框內畫「按 RETURN 繼續」，基線只差四個像素。
+		// 兩邊都畫的話兩行字會疊成一團——導覽那一張截圖就是這樣。
 	default:
 		drawText(screen, a.text(msgFooter), 20, footerBaseline, foreground)
 	}
@@ -2696,7 +2716,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	a.drawFrame(screen, foreground, accent)
-	drawText(screen, "INITIAL DOS FIRST-PERSON VIEW", 176, 52, accent)
+	// 原版的冒險畫面上面沒有標題列，這裡本來留著一句開發用的英文
+	// （`INITIAL DOS FIRST-PERSON VIEW`）。那是給自己看的，卻是玩家
+	// 整趟冒險每一格都看得到的東西。
 	if a.initialMap == nil || a.initialWalls == nil {
 		drawText(screen, "INITIAL MAP OR WALL ART IS NOT LOADED", 150, 190, foreground)
 		return
@@ -2758,7 +2780,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	// 移到 F1 的說明頁（`adventureProvenanceLines`），畫面上留給玩家看得到的
 	// 東西。右欄的最後一列不能低於 262——對話框的上緣在 `dialogueTop`（264）。
 	drawPartyPanel(screen, a, foreground, accent)
-	dialogueVisible := false
+	dialogueVisible := a.dialogueVisible()
 	if a.introWaiting && a.initialEvent != nil {
 		message, label := a.initialEvent.Message, a.initialEvent.ContinueLabel
 		if a.eventText != "" {
@@ -2768,17 +2790,14 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 			label = a.eventLabel
 		}
 		drawDialogue(screen, a.gameText.Translate(message), a.gameText.Translate(label), foreground, accent)
-		dialogueVisible = true
 	} else if a.tourActive && a.tourPage >= 0 && a.initialEvent != nil && a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour) {
 		step := a.initialEvent.Tour[a.tourStep]
 		if a.tourPage < len(step.Messages) {
 			drawDialogue(screen, a.gameText.Translate(step.Messages[a.tourPage]),
 				a.gameText.Translate(a.initialEvent.ContinueLabel), foreground, accent)
-			dialogueVisible = true
 		}
 	} else if a.cellEventPending && a.eventText != "" {
 		drawDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
-		dialogueVisible = true
 	}
 	if a.statusLine != "" && !dialogueVisible {
 		// 畫面只有 640 寬，從 42 起算放得下 74 個字；超過就截掉，
@@ -2876,6 +2895,25 @@ const (
 	dialogueFirstRow = 280
 )
 
+// dialogueVisible 說這一格會不會畫出對話框。
+//
+// **功能鍵列要靠它讓位。** 對話框的提示畫在 `dialogueBottom-8`（基線 362），
+// 功能鍵列畫在 `footerBaseline`（366）——兩條只差四個像素，同時畫就疊成一團
+// 看不懂的字。原版在導覽跑的時候最下面本來就只有「按 RETURN 繼續」，
+// 沒有功能鍵列。
+func (a *app) dialogueVisible() bool {
+	switch {
+	case a.introWaiting && a.initialEvent != nil:
+		return true
+	case a.tourActive && a.tourPage >= 0 && a.initialEvent != nil &&
+		a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour):
+		return a.tourPage < len(a.initialEvent.Tour[a.tourStep].Messages)
+	case a.cellEventPending && a.eventText != "":
+		return true
+	}
+	return false
+}
+
 func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
 	panel := ebiten.NewImage(560, dialogueBottom-dialogueTop)
 	panel.Fill(color.RGBA{0, 0, 0, 255})
@@ -2968,10 +3006,10 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		return
 	}
 	if a.flow.Stage == creation.StagePortrait {
-		drawText(screen, "HEAD / BODY / KEEP", 48, 72, accent)
-		drawText(screen, fmt.Sprintf("H HEAD %02d/14", a.flow.PortraitHead), 48, 118, foreground)
-		drawText(screen, fmt.Sprintf("B BODY %02d/12", a.flow.PortraitBody), 48, 150, foreground)
-		drawText(screen, "K KEEP", 48, 182, foreground)
+		drawText(screen, a.text(msgPortraitTitle), 48, 72, accent)
+		drawText(screen, fmt.Sprintf(a.text(msgPortraitHead), a.flow.PortraitHead), 48, 118, foreground)
+		drawText(screen, fmt.Sprintf(a.text(msgPortraitBody), a.flow.PortraitBody), 48, 150, foreground)
+		drawText(screen, a.text(msgPortraitKeep), 48, 182, foreground)
 		if a.portrait != nil {
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Scale(2, 2)
@@ -2981,17 +3019,17 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		return
 	}
 	if a.flow.Stage == creation.StageIcon {
-		drawText(screen, "COMBAT ICON EDITOR", 216, 52, accent)
+		drawText(screen, a.text(msgIconTitle), 216, 52, accent)
 		drawText(screen, a.iconMenuPath(), 48, 84, accent)
 		for index, option := range a.iconMenuOptions() {
 			prefix, ink := "  ", foreground
 			if index == a.iconMenu.cursor {
 				prefix, ink = "> ", accent
 			}
-			drawText(screen, prefix+option.label, 48, 116+index*22, ink)
+			drawText(screen, prefix+a.iconOptionLabel(option.label), 48, 116+index*22, ink)
 		}
-		drawText(screen, "READY", 356, 88, accent)
-		drawText(screen, "ACTION", 472, 88, accent)
+		drawText(screen, a.text(msgIconReady), 356, 88, accent)
+		drawText(screen, a.text(msgIconAction), 472, 88, accent)
 		for index, icon := range []*ebiten.Image{a.iconReady, a.iconAction} {
 			if icon == nil {
 				continue
@@ -3001,19 +3039,19 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 			op.GeoM.Translate(float64(340+index*116), 112)
 			screen.DrawImage(icon, op)
 		}
-		size := "LARGE"
+		size := a.iconOptionLabel("LARGE")
 		if a.flow.IconSize == 1 {
-			size = "SMALL"
+			size = a.iconOptionLabel("SMALL")
 		}
-		drawText(screen, fmt.Sprintf("HEAD %02d  WEAPON %02d  SIZE %s",
+		drawText(screen, fmt.Sprintf(a.text(msgIconSummary),
 			a.flow.IconHead, a.flow.IconWeapon, size), 340, 268, foreground)
 		drawText(screen, a.hint("icon"), 48, 332, foreground)
 		return
 	}
 	if a.flow.Stage == creation.StageIconConfirm {
-		drawText(screen, "IS THIS ICON OK?", 230, 138, accent)
-		drawText(screen, "Y / ENTER  YES", 230, 190, foreground)
-		drawText(screen, "N          NO", 230, 222, foreground)
+		drawText(screen, a.text(msgIconConfirm), 230, 138, accent)
+		drawText(screen, a.text(msgIconConfirmYes), 230, 190, foreground)
+		drawText(screen, a.text(msgIconConfirmNo), 230, 222, foreground)
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 72, 310, foreground)
 		}
@@ -3112,6 +3150,9 @@ func main() {
 	// 原版（C64，實跑量過）只有標題有音樂；地圖與戰鬥是靜的。full 會連那兩處
 	// 也放，那是 remake 自己加的（spec 128）。
 	musicMode := flag.String("music-mode", "original", "music cues: original (title only, as measured) or full")
+	// 自動截圖用：每次畫面換了就把識別字寫進這個檔（screen_state.go）。
+	// 空字串（預設）什麼都不寫。
+	screenState := flag.String("screen-state", "", "write the current screen identifier to this file; used by the capture scripts")
 	flag.Parse()
 	uiLanguage, face, err := resolveUILanguage(*langFlag, *etenFont, *etenSymbol, *etenASCII)
 	if err != nil {
@@ -3133,6 +3174,7 @@ func main() {
 	if *diceSeed != 0 {
 		game.roller = diceRoller{random: rand.New(rand.NewSource(*diceSeed))}
 	}
+	game.screenStatePath = defaultScreenStatePath(*screenState)
 	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters
 	dir := *musicDir
 	if dir == "" {

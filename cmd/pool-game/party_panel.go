@@ -77,9 +77,12 @@ func facingLetter(facing uint8) string {
 
 // drawPartyPanel 畫第一人稱畫面右邊那一塊。
 func drawPartyPanel(screen *ebiten.Image, a *app, foreground, accent color.Color) {
-	drawText(screen, "NAME", partyPanelLeft, partyPanelHeaderRow, accent)
-	drawTextRight(screen, "AC", partyPanelACRight, partyPanelHeaderRow, accent)
-	drawTextRight(screen, "HP", partyPanelHPRight, partyPanelHeaderRow, accent)
+	// `AC` 與 `HP` 留原文：說明書自己在中文行文裡就是這樣用的
+	//（p.19「欄位為 NAME／AC／HP」、p.22「裝甲防護力（AC）」、
+	// 詞彙表「Hit Points 生命力（H、P）」），換成漢字反而與手冊對不上。
+	drawText(screen, a.text(msgPartyPanelName), partyPanelLeft, partyPanelHeaderRow, accent)
+	drawTextRight(screen, a.text(msgPartyPanelAC), partyPanelACRight, partyPanelHeaderRow, accent)
+	drawTextRight(screen, a.text(msgPartyPanelHP), partyPanelHPRight, partyPanelHeaderRow, accent)
 	for index, row := range a.partyPanelRows() {
 		if index >= poolsave.PartyMaximum {
 			break

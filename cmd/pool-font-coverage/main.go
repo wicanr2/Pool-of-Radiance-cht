@@ -23,6 +23,7 @@ import (
 	"golang.org/x/image/font/basicfont"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/etenfont"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/journal"
 )
@@ -57,7 +58,9 @@ func main() {
 			if r == ' ' || r == '\t' || r == '\u3000' {
 				continue
 			}
-			if r == '\n' {
+			// 控制字元不會被畫成字模（`drawText` 也不畫），拿它去問字型
+			// 只會得到假的缺字。
+			if r < 0x20 || r == 0x7F {
 				continue
 			}
 			// 判準是「畫出來有東西」，不是「取得到字模格」。
@@ -88,6 +91,18 @@ func main() {
 	if err := noteSourceStrings(note); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+
+	// 介面字串現在住在 game pack 的 locale 表，不再是程式碼裡的常值
+	// （`internal/gamepack/pack/20-locale.zh-TW.json`）。只掃 .go 會整批漏掉，
+	// 而漏掉的症狀就是缺字直接上線。
+	locale, err := gamepack.LocaleTable("zh-TW")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	for key, text := range locale {
+		note(text, "locale zh-TW "+key)
 	}
 
 	catalogue, err := gametext.TraditionalChinese()
