@@ -152,6 +152,22 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 標題格式與驗收見 [Spec 001](docs/spec/001-dos-title-picture.md)；原版啟動收據見
 [DOS 標題／主選單 oracle](docs/playtest/dos-title-main-menu.md)。
 
+## 下載
+
+[**最新發行版**](https://github.com/wicanr2/Pool-of-Radiance-cht/releases/latest)
+有 Linux AppImage、Windows ZIP 與 macOS 雙架構 ZIP。
+
+發行包**不含原版遊戲資料，也不含中文字型**——兩者都沒有公開散布權，要自己準備：
+
+| 要準備的 | 怎麼給 |
+|---|---|
+| 原版遊戲的 ZIP | `-zip <路徑>` |
+| 倚天中文系統的 `stdfont.15` | `-eten-font <路徑>` |
+
+沒有指定字型時 `-lang zh` 會直接結束並說明原因，不會默默用英文跑——中文介面
+缺字型時畫面會整片空白，那看起來像繪圖壞掉，不像沒有字型。其餘旗標見發行包裡的
+`README.md`。
+
 ## 目前 remake 畫面
 
 下面十五張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
