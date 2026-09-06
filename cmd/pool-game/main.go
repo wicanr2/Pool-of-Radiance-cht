@@ -995,7 +995,32 @@ func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Resu
 		if err := a.syncArchiveFromEventMachine(); err != nil {
 			return result, err
 		}
-		if result.Exited || result.WaitingForMenu || len(result.Events) != 1 {
+		if result.WaitingForMenu {
+			// **停在選單之前發生的資源事件仍然要套用。**
+			//
+			// 一段腳本可以先換地圖再問問題，而 `RunUntilEvent` 會把兩者放進
+			// 同一個 result：`ecl8/29 AEAFh` 是
+			// `LOAD FILES #32` → `LOAD PIECES` → `GOTO A1CCh` → 選單。
+			// 先前這裡看到 `WaitingForMenu` 就整個返回，那兩個資源事件因此
+			// 被丟掉——地圖沒換，隊伍留在原本那一張圖上，而腳本以為已經換了。
+			//
+			// 症狀是**無限迴圈而不是報錯**：`AE87h` 把 `4A10h` 設回 1、
+			// 跳到井的問句，答完 `A23Fh` 再清成 0，下一步又被設回 1，
+			// 井的問句就一直跳。探索器在那裡答了四千次出不來。
+			//
+			// 這裡只套用、不續跑：續跑要等玩家回答。
+			for _, event := range result.Events {
+				if len(event.Arguments) != len(event.ArgumentsValid) {
+					return result, fmt.Errorf(
+						"Pool resource event 0x%02X has mismatched argument validity", event.Opcode)
+				}
+				if _, err := a.applyTransitionResource(event); err != nil {
+					return result, err
+				}
+			}
+			return result, nil
+		}
+		if result.Exited || len(result.Events) != 1 {
 			return result, nil
 		}
 		event := result.Events[0]

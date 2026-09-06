@@ -814,15 +814,35 @@ walk:
 				if application.eventSession != nil {
 					block = int(application.eventSession.CurrentBlockID())
 				}
+				// **地圖與地形碼要一起印。** 腳本分派看的是 `C04Fh`
+				// （由 `initialMap` 那一張的地形碼投影進去的），而這裡印的
+				// 位置來自 `spawn`。兩者對不起來的時候，只印座標會把人帶去
+				// 查錯的腳本——井那一條就是這樣繞了一圈（spec 041）。
+				loaded, terrain := "無", -1
+				if application.initialMap != nil {
+					loaded = fmt.Sprintf("GEO%d/%d",
+						application.initialMap.Key.Archive, application.initialMap.Key.BlockID)
+					cell := application.initialMap.Grid.CellWrapped(
+						int(application.spawn.X), int(application.spawn.Y))
+					terrain = int(cell.Terrain & 0x7F)
+				}
+				code, gate, answer, at := -1, -1, -1, -1
+				if application.eventMachine != nil {
+					code = int(application.eventMachine.Memory[0xC04F] & 0x7F)
+					gate = int(application.eventMachine.Memory[0x4A10])
+					answer = int(application.eventMachine.Memory[0x9802])
+					at = 0x9900 + application.eventMachine.PC
+				}
 				failures = append(failures, fmt.Sprintf(
 					"格子選單卡住：GEO%d/%d (%d,%d) 游標 %d／%v 標籤 %q 文字 %q 狀態列 %q "+
-						"block %d 這一格答過 %d 次",
+						"block %d 這一格答過 %d 次 載入的地圖 %s 地形碼 %d C04F %d 4A10 %d 9802 %d PC $%04X",
 					application.spawn.Map.Archive, application.spawn.Map.BlockID,
 					application.spawn.X, application.spawn.Y,
 					application.cellMenuCursor, application.cellMenuOptions,
 					application.eventLabel, application.eventText,
 					application.statusLine, block,
-					menuTurn[explorerMenuKey(application, application.cellMenuOptions)]))
+					menuTurn[explorerMenuKey(application, application.cellMenuOptions)],
+					loaded, terrain, code, gate, answer, at))
 				reason = "格子選單卡住"
 				break walk
 			}
