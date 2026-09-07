@@ -276,10 +276,10 @@ tools/go.sh test ./...
 `tools/go.sh` 會在測試容器內自行建立有界 Xvfb。可互動封包尚未完成；本階段不把
 主機 X11 socket 掛入開發容器，也不把只在背景 Xvfb 執行的入口寫成玩家啟動方式。
 
-這仍是首條玩家垂直鏈。remake 自有角色庫、建隊、穩定邊界存讀檔、初始 map identity、
-Rolf 導覽、Sune／City Hall 早期事件與 Slums 戰鬥前 staging 已接通；DOS 相容角色檔、
-完整 Party Creation Menu、Pool 專屬視錐 oracle、Rolf 初次 APPROACH 圖像、全部鎖門／
-地圖事件、完整戰術戰鬥、對話／服務／戰鬥中途續點及主線破關仍未完成。
+**還沒完成的四項**（就是把自評壓在 60～70% 的那四項，帶驗收條件的版本在
+[WORKLIST.md](WORKLIST.md) 開頭）：戰鬥數值沒有對過原版、主線沒有從開場到結局
+連續跑過一次、Windows 與 macOS 的真機啟動還沒回填結果、說明書下冊附錄的三張
+規則表還沒接進 UI。
 
 ## 授權、致謝與聲明
 
