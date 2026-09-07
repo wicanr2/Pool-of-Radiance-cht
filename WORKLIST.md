@@ -2238,6 +2238,16 @@
       神殿、結局都還沒走到。**驗收**：`tools/dosgolem-reference.sh` 的鍵序
       走進一場戰鬥並拍到戰術盤面，`docs/audit/dos-parity-sample.json` 多一項。
 
+### `v1.1.1-20260907`（2026-09-07）
+
+介面中文化補完那一版。Release：
+<https://github.com/wicanr2/Pool-of-Radiance-cht/releases/tag/v1.1.1-20260907>
+
+發行包由 `tools/package-release.sh v1.1.1-20260907` 從 `f8fc2dc` 重生，
+`patch` 口味兩支煙霧測試都過：Linux AppImage 起得來、OGG 0 個；
+Windows 在 Wine 下起得來、畫面平均亮度 0.23（擋掉「視窗開了但全黑」）。
+對拍數字見 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md)。
+
 ### 第一階段完成（2026-09-07，`v1.1.0-20260907`）
 
 repository 轉 public，release 對外掛四個發行包＋`manifest.json`：
