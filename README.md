@@ -23,15 +23,14 @@
 細節與未知項以 [CONTEXT.md](CONTEXT.md) 與 [WORKLIST.md](WORKLIST.md) 為準。
 
 **發行包對原版的抽樣對拍**（`v1.1.1-20260907`，
-[報告](docs/audit/dos-parity-sample.md)）。比的是打包好的 AppImage 在真視窗裡的
-截圖，不是原始碼建置，也不是單元測試裡的合成圖：
+[報告](docs/audit/dos-parity-sample.md)）。比的是**發行的那個 AppImage** 在真
+視窗裡的截圖，不是原始碼建置，也不是單元測試裡的合成圖：
 
-- **標題整張 63,866/64,000 ＝ 99.79%**。原版那一側由
-  [dosgolem](https://github.com/wicanr2/dosgolem) 跑真的 `START.EXE` 產生。
-  差的 134 格集中在一個 47×7 的方框裡，那是 remake 自己加的按鍵提示。
-- **第一人稱那一框 88×88 ＝ 7,744/7,744（100%）**。這一張比的是 repo 裡既有的
-  原版截圖，因為 dosgolem 還沒實作 EGA 圖形控制器，它畫出來的第一人稱框
-  目前是黑底白線框（`docs/audit/dos-parity-sample.md` 有兩個數字與原因）。
+- **標題整張 63,866/64,000 ＝ 99.79%**。差的 134 格集中在一個 47×7 的方框裡，
+  那是 remake 自己加的按鍵提示——原版沒有那一行。
+- **第一人稱那一框 88×88 ＝ 7,744/7,744（100%）**。這一張有兩個獨立來源
+  各量一次、答案相同：[dosgolem](https://github.com/wicanr2/dosgolem) 跑真的
+  `START.EXE`，以及 repo 裡既有的原版截圖。
 
 ## 現況
 

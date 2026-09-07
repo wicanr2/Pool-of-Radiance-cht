@@ -2228,15 +2228,23 @@
 `START.EXE`，不再用 DOSBox**（使用者 2026-09-07 指定；DOSBox 只作 dosgolem
 的參考）。重生：`tools/dosgolem-reference.sh` → `tools/appimage-dos-parity.sh`。
 
-- [ ] **第一人稱那一框改成對 dosgolem 比。** 現在它對的是 repo 裡既有的
-      DOSBox 截圖（7744/7744），對 dosgolem 只有 18.93%——因為 dosgolem 還沒
-      實作 EGA 圖形控制器（`3CE`／`3CF`），第一人稱框在它那邊畫成黑底白線框
-      （dosgolem `docs/findings/004`）。**驗收**：dosgolem 補完圖形控制器之後
-      重跑對拍，`first-person` 那一項的 status 從 `blocked` 變 `compared`，
-      而且比例不低於 DOSBox 交叉核對那一項；交叉核對那一項可以刪掉。
+- [x] **第一人稱那一框已經改成對 dosgolem 比**（2026-09-07 當天收掉）。
+      原本卡在 dosgolem 少了 EGA 圖形控制器（`3CE`／`3CF`），第一人稱框在它
+      那邊畫成黑底白線框、只有 18.93%。它的 master 併進其他分支的平面式寫入
+      模式之後就畫得出來了：**7744/7744**。
+      **交叉核對那一項留著沒刪**——兩個獨立 oracle 現在互相同意，
+      「兩個來源說同一件事」比任何一個單獨的數字都強，哪一邊之後退步了
+      它會先開口。
 - [ ] **抽樣擴到戰鬥畫面。** dosgolem 目前走到導覽結束的自由移動；戰鬥、商店、
       神殿、結局都還沒走到。**驗收**：`tools/dosgolem-reference.sh` 的鍵序
       走進一場戰鬥並拍到戰術盤面，`docs/audit/dos-parity-sample.json` 多一項。
+
+**dosgolem 放在 `workplace/dosgolem`**（gitignore，使用者 2026-09-07 指定）。
+用 `master` 就好：Pool 的那一批（`cmd/shots`、
+`docs/spec/008-bios-keyboard-injection.md`、`009-scratch-writes.md`）已經併進去，
+`pool-of-radiance-oracle` 分支功成身退。**引用 dosgolem 的規格一律連檔名**
+——它十條分支各自從 007 開始編，同一個號碼底下有好幾份（它的
+`docs/spec/000-index.md`）。
 
 ### `v1.1.1-20260907`（2026-09-07）
 

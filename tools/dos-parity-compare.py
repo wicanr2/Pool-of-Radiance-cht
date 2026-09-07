@@ -161,15 +161,14 @@ def main():
         },
         {
             "name": "first-person",
-            "digest": "fc2383a02d907c874c4e8ab381291b5fd952c89d21002ff73e241b18731754f7",
+            "digest": "f384683d3f49ece193dcb8eff272e5fe79af836a67db866eefc56fa183952642",
             "remake": "remake-first-person.png",
             "ref_box": [24, 24, 88, 88], "remake_box": [24, 43, 88, 88],
-            "status": "blocked",
-            "blocked_by": "dosgolem 還沒實作 EGA 圖形控制器（3CE／3CF），"
-                          "第一人稱那一框在基準側是黑底白線框——"
-                          "dosgolem docs/findings/004。這個數字量的是 oracle 的缺口，"
-                          "不是 remake 的正確性。",
-            "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。",
+            "status": "compared",
+            "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。"
+                    "2026-09-07 之前這一項是 blocked：dosgolem 少了 EGA 圖形控制器，"
+                    "基準側畫成黑底白線框。它的 master 併進其他分支的平面式寫入模式"
+                    "之後就畫得出來了。",
         },
     ]
 
@@ -210,11 +209,12 @@ def main():
         print(f"{item['name']}: {same}/{total} = {same / total:.2%} {mark}")
 
     # 交叉核對：同一框對 repo 裡**早就存著的** DOSBox 基準圖。
-    # **沒有重跑 DOSBox**（使用者 2026-09-07 指定不再使用它）；那張圖是
-    # 之前留下來的產物，這裡只是拿它當第二個意見。
+    # **沒有重跑 DOSBox**（使用者 2026-09-07 指定它只作 dosgolem 的參考）；
+    # 那張圖是之前留下來的產物，這裡只是拿它當第二個意見。
     #
-    # 這一項存在的理由：dosgolem 那邊的低分要能分辨是「remake 畫錯」還是
-    # 「基準畫錯」。兩個 oracle 都不對的時候，只看一個數字分不出來。
+    # **兩個 oracle 現在互相同意**（各自對 remake 都是 7744/7744）。留著它是
+    # 因為「兩個獨立來源說同一件事」比任何一個單獨的數字都強——哪一邊之後
+    # 退步了，這一項會先開口。
     if dosbox_dir:
         path = os.path.join(dosbox_dir, "06-free-move-0-4-west.png")
         if os.path.exists(path):

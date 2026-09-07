@@ -2,11 +2,11 @@
   "schema": "pool-dos-parity-sample/1",
   "captured_at": "2026-09-07",
   "release": "v1.1.1-20260907",
-  "flavour": "full-local",
+  "flavour": "patch",
   "lang": "zh",
-  "source_commit": "0384790c9a8fc9ae2f1563cac090744cca20c6cf",
-  "oracle": "dosgolem pool-of-radiance-oracle 04e09cb（cmd/shots）；不使用 DOSBox 執行",
-  "method": "AppImage 在 Xvfb 裡的真視窗截圖，最近鄰降到 320x200 後對回 EGA 16 色，與 dosgolem 的色號陣列逐格比",
+  "source_commit": "69c3240d1c622b24b6589e76d871824781d54d23",
+  "oracle": "dosgolem master fd74640（cmd/shots）；不使用 DOSBox 執行",
+  "method": "發行的 AppImage 在 Xvfb 裡的真視窗截圖，最近鄰降到 320x200 後對回 EGA 16 色，與 dosgolem 的色號陣列逐格比",
   "screens": [
     {
       "name": "title",
@@ -21,15 +21,14 @@
     },
     {
       "name": "first-person",
-      "status": "blocked",
+      "status": "compared",
       "reference": "45-Return.png",
       "reference_step": 410000000,
       "remake": "remake-first-person.png",
-      "same": 1466,
+      "same": 7744,
       "total": 7744,
-      "ratio": 0.1893,
-      "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。",
-      "blocked_by": "dosgolem 還沒實作 EGA 圖形控制器（3CE／3CF），第一人稱那一框在基準側是黑底白線框——dosgolem docs/findings/004。這個數字量的是 oracle 的缺口，不是 remake 的正確性。"
+      "ratio": 1.0,
+      "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。2026-09-07 之前這一項是 blocked：dosgolem 少了 EGA 圖形控制器，基準側畫成黑底白線框。它的 master 併進其他分支的平面式寫入模式之後就畫得出來了。"
     },
     {
       "name": "first-person-vs-dosbox",
