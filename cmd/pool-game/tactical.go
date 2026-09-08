@@ -107,13 +107,20 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	drawCombatBoard(screen, a, foreground)
 	drawCombatInfo(screen, a, foreground, accent)
 
-	// remake 自己加的兩行：鍵位與「還是暫定的那幾項」。原版沒有這兩行，
-	// 但拿掉的話玩家看得到指令名卻不知道按什麼——remake 還沒有原版那套
-	// 「先按 M 進移動模式」的子模式輸入。
-	// 資訊欄只有 32 個半形位寬，這兩段都比它長，所以照寬度折行；
-	// 不折的話字會直接畫出右框（第一次拍出來就是「結束回合」被切一半）。
-	notes := append(wrapDisplay(a.text(msgTacticalKeys), combatNoteColumns),
-		wrapDisplay(a.text(msgTacticalProvisional), combatNoteColumns)...)
+	// remake 自己加的一行：鍵位。原版沒有這一行，但拿掉的話玩家看得到指令名
+	// 卻不知道按什麼——remake 還沒有原版那套「先按 M 進移動模式」的子模式輸入。
+	//
+	// **「還是暫定的那幾項」不畫在這裡。** 那是 remake 對自己的狀態說明，
+	// 玩家在戰場上不需要知道；它移到 `F1` 的說明頁
+	//（`adventureProvenanceLines`），與其他出處那幾列放在一起。
+	//
+	// 資訊欄只有 30 個半形位寬，這一段比它長，**所以訊息自己帶換行**：
+	// 交給 `wrapDisplay` 按寬度折會折在「結｜束」中間，因為中文可以在任何
+	// 兩個字之間斷。不折則會直接畫出右框。
+	var notes []string
+	for _, paragraph := range strings.Split(a.text(msgTacticalKeys), "\n") {
+		notes = append(notes, wrapDisplay(paragraph, combatNoteColumns)...)
+	}
 	for index, line := range notes {
 		if index >= combatNoteLines {
 			break

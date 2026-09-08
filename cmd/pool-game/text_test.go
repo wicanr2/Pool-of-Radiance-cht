@@ -194,11 +194,38 @@ func TestWrapDisplayKeepsSpacesBetweenWords(t *testing.T) {
 	}
 }
 
-// 中英混排時，全形字兩側不補空白，半形詞之間補。
-func TestWrapDisplayMixesHanAndLatin(t *testing.T) {
-	lines := wrapDisplay("Hills with cave 有山洞的山丘", 68)
-	if len(lines) != 1 || lines[0] != "Hills with cave有山洞的山丘" {
-		t.Fatalf("mixed line came out as %q", lines)
+// 折行不猜空白：**原文有就保留，沒有就不加**。
+//
+// 先前那一版靠「兩個半形詞相鄰」推斷，於是中英夾雜的譯文在全形／半形交界處
+// 把空白吃掉——戰鬥畫面的鍵位那一行畫出來是 `G移動 ENTER結束回合 D延後`。
+// 那個推斷本來只是為了修 `PRESS RETURN OR BUTTON` 被接成一串，
+// 「全形字兩側不補空白」是它的副作用，不是排版決定。
+func TestWrapDisplayKeepsTheSpacingItWasGiven(t *testing.T) {
+	cases := []struct {
+		name    string
+		value   string
+		columns int
+		want    []string
+	}{
+		{"中英之間原文有空白就留著", "Hills with cave 有山洞的山丘", 68,
+			[]string{"Hills with cave 有山洞的山丘"}},
+		{"純中文不會被插進空白", "有山洞的山丘", 68, []string{"有山洞的山丘"}},
+		{"英文詞之間的空白不能吃掉", "PRESS RETURN OR BUTTON", 68,
+			[]string{"PRESS RETURN OR BUTTON"}},
+		{"折到下一行時行首不留空白", "ENTER 結束回合", 10, []string{"ENTER 結束", "回合"}},
+	}
+	for _, item := range cases {
+		t.Run(item.name, func(t *testing.T) {
+			lines := wrapDisplay(item.value, item.columns)
+			if len(lines) != len(item.want) {
+				t.Fatalf("折成 %q，要 %q", lines, item.want)
+			}
+			for index := range lines {
+				if lines[index] != item.want[index] {
+					t.Fatalf("第 %d 行是 %q，要 %q", index, lines[index], item.want[index])
+				}
+			}
+		})
 	}
 }
 

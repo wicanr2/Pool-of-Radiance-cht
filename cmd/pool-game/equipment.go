@@ -147,6 +147,10 @@ func drawEquipment(screen *ebiten.Image, a *app, background, foreground, accent 
 
 	// 裝備上之後的戰鬥數值直接畫出來：看不到數字就分不出「裝備沒生效」與
 	// 「這把武器本來就這麼弱」。
+	//
+	// 沒有備妥武器時這一行只寫「徒手」。**原版此時不動傷害骰**（記錄裡的
+	// 傷害欄留在建角時算出來的值），所以這裡也不另外算一組——那是 remake
+	// 對照原版的結論，寫在這裡就好，不必印在玩家的畫面上。
 	line := a.text(msgEquipmentUnarmed)
 	if weapon, ok := a.readiedWeapon(member); ok {
 		baseThac0, _, _, err := partyCombatStats(member)

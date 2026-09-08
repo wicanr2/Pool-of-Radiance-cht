@@ -126,6 +126,11 @@ func (a *app) adventureProvenanceLines() []string {
 	} else {
 		lines = append(lines, "FIRST EVENT: NOT LOADED")
 	}
+	// 戰場開著的時候，把「還是暫定的那幾項」放進來。它原本畫在戰鬥畫面的
+	// 資訊欄，而那是 remake 對自己的狀態說明——玩家在戰場上不需要知道。
+	if a.tactical != nil {
+		lines = append(lines, a.text(msgTacticalProvisional))
+	}
 	return lines
 }
 

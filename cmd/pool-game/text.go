@@ -400,9 +400,15 @@ func wrapDisplay(value string, columns int) []string {
 	type token struct {
 		text  string
 		width int
+		// spaced 記「這個 token 在原文裡前面有空白」。組行時照它補回來——
+		// **不能靠猜**：先前的啟發式是「兩個半形詞相鄰就補」，中英夾雜的
+		// 譯文因此在全形／半形交界處把空白吃掉，畫面上變成
+		// `G移動 ENTER結束回合 D延後`。
+		spaced bool
 	}
 	var tokens []token
 	var word strings.Builder
+	spaced := false
 	flush := func() {
 		if word.Len() == 0 {
 			return
@@ -412,16 +418,19 @@ func wrapDisplay(value string, columns int) []string {
 		for _, r := range text {
 			width += runeWidth(r)
 		}
-		tokens = append(tokens, token{text, width})
+		tokens = append(tokens, token{text, width, spaced})
 		word.Reset()
+		spaced = false
 	}
 	for _, r := range value {
 		switch {
 		case r == ' ' || r == '\t' || r == '\n':
 			flush()
+			spaced = true
 		case runeWidth(r) == 2:
 			flush()
-			tokens = append(tokens, token{string(r), 2})
+			tokens = append(tokens, token{string(r), 2, spaced})
+			spaced = false
 		default:
 			word.WriteRune(r)
 		}
@@ -433,16 +442,11 @@ func wrapDisplay(value string, columns int) []string {
 	used := 0
 	for index := 0; index < len(tokens); index++ {
 		current := tokens[index]
-		// 兩個半形詞會相鄰，只可能是原文那裡本來就有空白——切詞時全形字自成一個
-		// token，半形的一串只在遇到空白時才斷。所以這裡補回來的空白就是原本那個。
-		// 舊版的條件寫成「這個 token 寬度是 1」，於是 `PRESS RETURN OR BUTTON`
-		// 會被接成 `PRESSRETURNORBUTTON`。
+		// 原文有空白就補回來。切詞時已經記在 token 上，所以中英夾雜的
+		// `ENTER 結束回合` 與純英文的 `PRESS RETURN OR BUTTON` 走同一條路。
 		separator := ""
-		if used > 0 && line.Len() > 0 && runeWidth([]rune(current.text)[0]) == 1 {
-			last, _ := utf8DecodeLast(line.String())
-			if runeWidth(last) == 1 {
-				separator = " "
-			}
+		if used > 0 && line.Len() > 0 && current.spaced {
+			separator = " "
 		}
 		need := current.width + len(separator)
 		if used > 0 && used+need > columns {
