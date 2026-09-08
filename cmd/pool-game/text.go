@@ -280,6 +280,7 @@ const (
 	msgSpriteMonsters
 	msgSpriteNoMonsters
 	msgSpriteEffects
+	msgSpriteTerrain
 	// 探索畫面的 `V)IEW`（spec 119）。
 	msgViewSheetPick
 	msgViewSheetFooter

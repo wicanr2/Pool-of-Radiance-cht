@@ -67,6 +67,24 @@ func (a *app) openSpriteOverview() {
 			a.spriteMonsters = append(a.spriteMonsters, pair)
 		}
 	}
+	// 戰場地形：三個 `*COM.DAX` 各一組（spec 131）。與戰鬥畫面共用同一份
+	// 快取，所以在戰鬥裡看過之後這一頁不會再載一次。
+	if a.loadCombatTiles != nil {
+		for _, row := range spriteTerrainRows {
+			if _, done := a.combatTiles[row.Name]; done {
+				continue
+			}
+			if a.combatTiles == nil {
+				a.combatTiles = map[string][]*ebiten.Image{}
+			}
+			tiles, err := a.loadCombatTiles(row.Name)
+			if err != nil {
+				a.combatTiles[row.Name] = nil
+				continue
+			}
+			a.combatTiles[row.Name] = tiles
+		}
+	}
 	// 戰鬥造形要自己載一組樣本：`iconReady`／`iconAction` 是建角那一步留下的，
 	// 冒險畫面按 F4 時是空的。
 	if len(a.spriteIcons) == 0 && a.loadIcon != nil {
@@ -97,11 +115,12 @@ func (a *app) spriteOverviewInput() (bool, error) {
 	return true, nil
 }
 
-// 三頁：素材、戰場造形、戰鬥特效。
+// 四頁：素材、戰場造形、戰鬥特效、戰場地形。
 const (
 	spritePageAssets = iota
 	spritePageMonsters
 	spritePageEffects
+	spritePageTerrain
 	spritePageCount
 )
 
@@ -127,6 +146,44 @@ func drawEffectOverview(screen *ebiten.Image, a *app, foreground, accent color.C
 			op.GeoM.Scale(1.5, 1.5)
 			op.GeoM.Translate(float64(left+offset*36), float64(top))
 			screen.DrawImage(icon, op)
+		}
+	}
+}
+
+// 地形那一頁的版面。三組各一列標籤加圖塊，圖塊畫成 1.5 倍（36 像素）。
+var spriteTerrainRows = []struct {
+	Name    string
+	Label   int
+	Columns int
+}{
+	{assets.DungeonCombatTiles, 82, 15},
+	{assets.WildernessCombatTiles, 176, 15},
+	{assets.RandomCombatTiles, 320, 15},
+}
+
+// drawTerrainOverview 畫戰場的地形圖塊（spec 131）。三個 `*COM.DAX` 各一組：
+// 地城 25 個、野外 34 個、隨機遭遇 6 個，每個 item 24×24 正好戰場一格。
+//
+// 地圖裡存的是格位類別碼，不是這裡的序號；中間隔著類別表第四個欄位
+// `PresentationCode`。這一頁畫的是圖塊本身，照序號排。
+func drawTerrainOverview(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	drawText(screen, a.text(msgSpriteTerrain), spriteLabelLeft, spritePortraitTop, accent)
+	for _, row := range spriteTerrainRows {
+		tiles := a.combatTiles[row.Name]
+		drawText(screen, row.Name, spriteLabelLeft, row.Label, foreground)
+		if len(tiles) == 0 {
+			continue
+		}
+		const cell = 38
+		for index, tile := range tiles {
+			if tile == nil {
+				continue
+			}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(1.5, 1.5)
+			op.GeoM.Translate(float64(spriteRowLeft+(index%row.Columns)*cell),
+				float64(row.Label+8+(index/row.Columns)*cell))
+			screen.DrawImage(tile, op)
 		}
 	}
 }
@@ -171,6 +228,10 @@ func drawSpriteOverview(screen *ebiten.Image, a *app, background, foreground, ac
 		return
 	case spritePageEffects:
 		drawEffectOverview(screen, a, foreground, accent)
+		drawText(screen, a.text(msgSpriteFooter), 0, footerBaseline, accent)
+		return
+	case spritePageTerrain:
+		drawTerrainOverview(screen, a, foreground, accent)
 		drawText(screen, a.text(msgSpriteFooter), 0, footerBaseline, accent)
 		return
 	}

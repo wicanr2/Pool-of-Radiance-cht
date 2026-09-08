@@ -30,6 +30,10 @@ const (
 	combatInfoLine1 = 30
 	combatInfoLine2 = 62
 	combatInfoLine3 = 94
+	// 第四行是備妥的武器名。原版那一頁是 `"OGRE" G.R.X ／ HITPOINTS 29 ／
+	// AC -2 ／ SILVER BROAD SWORD`（說明書下冊 p.37），第 49 幀那個角色空手
+	// 所以只有三行。
+	combatInfoLine4 = 126
 	// combatNoteLine 是 remake 自己加的那一行（原版沒有）：標明這一頁哪幾項
 	// 還是暫定的。放在資訊欄最下面，不動原版那三行的位置。
 	combatNoteLine = 242
@@ -206,11 +210,22 @@ func deploymentCandidates(grid combat.TacticalGrid, classes combat.CellClasses, 
 // **陣營是逐人看的**：`36h ADD NPC` 加進來的 NPC 記錄 `+10Eh` 非零時站在
 // 對面（spec 091），所以不能整批當成我方；隊伍索引也因此要另外記，
 // 不能靠「友方槽依序對應隊伍」那個假設。
-func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) ([]combat.CombatantCell, []bool, []int) {
+func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) (
+	[]combat.CombatantCell, []bool, []int, []boardIcon) {
 	cells := []combat.CombatantCell{{}}
 	friendly := []bool{false}
 	partySlot := []int{-1}
+	icons := []boardIcon{{}}
 	taken := map[[2]int]bool{}
+	// 怪物照 ECL 的順序展開：`LOAD MONSTER` 的第三個引數是那一群共用的造形
+	// 編號（`MonsterSpawn.IconBlock`），數量是第二個。
+	foeIcons := make([]uint8, 0, 8)
+	for _, monster := range a.combatMonsters {
+		for index := 0; index < int(monster.Spawn.Count); index++ {
+			foeIcons = append(foeIcons, monster.Spawn.IconBlock)
+		}
+	}
+	nextFoe := 0
 
 	// reach 非 nil 時只收「與隊伍走得通」的格子，見 assignOpposing 的說明。
 	assign := func(members []int, offsetX int, isParty bool, reach map[int]int) int {
@@ -230,6 +245,7 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 			})
 			friendly = append(friendly, isParty)
 			partySlot = append(partySlot, members[next])
+			icons = append(icons, a.boardIconFor(members[next], isParty, foeIcons, &nextFoe))
 			next++
 		}
 		return next
@@ -253,7 +269,38 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 		opposing = append(opposing, -1)
 	}
 	assignOpposing(grid, classes, cells, assign, opposing)
-	return cells, friendly, partySlot
+	return cells, friendly, partySlot, icons
+}
+
+// boardIcon 是一格用哪一個戰鬥造形。怪物與角色共用 `CBODY.DAX` 的身體，
+// 差別只在誰指定它：角色是自己建角時選的，怪物是 ECL `LOAD MONSTER` 的
+// 第三個引數（見 CONTEXT 2026-09-08 那一節）。
+type boardIcon struct {
+	Head, Body, Size uint8
+	Colours          [6][2]uint8
+	Valid            bool
+}
+
+// boardIconFor 取一格的造形。`slot` 是隊伍索引，-1 代表敵方。
+func (a *app) boardIconFor(slot int, isParty bool, foeIcons []uint8, nextFoe *int) boardIcon {
+	if isParty && slot >= 0 && slot < len(a.state.Party) {
+		member := a.state.Party[slot]
+		size := member.IconSize
+		if size != 1 && size != 2 {
+			size = 1
+		}
+		return boardIcon{Head: member.IconHead, Body: member.IconWeapon, Size: size,
+			Colours: member.IconColors, Valid: true}
+	}
+	// 敵方：怪物記錄裡的造形欄位全是 0，編號來自 ECL。用完就沒有了，
+	// 那時退回第一個——寧可畫錯一隻，也不要整場沒有敵人的圖。
+	body := uint8(0)
+	if len(foeIcons) > 0 {
+		body = foeIcons[*nextFoe%len(foeIcons)]
+		*nextFoe++
+	}
+	return boardIcon{Head: 0, Body: body, Size: 1,
+		Colours: [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}, Valid: true}
 }
 
 // assignOpposing 把敵方擺上去，而且**只擺在與隊伍走得通的格子**。
@@ -380,6 +427,8 @@ type tacticalState struct {
 	//
 	// **初值原版從哪裡來還沒讀**，這裡用零值。
 	Viewport combat.ViewportOrigin
+	// Icons 是每一格用哪一個戰鬥造形（spec 129 的 24×24，正好一格）。
+	Icons []boardIcon
 	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
 	stallSignature string
 	stalledRounds  int
@@ -591,7 +640,7 @@ func (a *app) enterTacticalPreview() error {
 		return err
 	}
 	classes := gamepack.OriginalCombatCellClassTable()
-	roster, friendly, partySlot := provisionalRoster(a, grid, classes)
+	roster, friendly, partySlot, icons := provisionalRoster(a, grid, classes)
 
 	base, source := uint8(placeholderBaseMovement), a.text(msgBudgetPlaceholder)
 	if len(a.combatMonsters) > 0 {
@@ -609,6 +658,7 @@ func (a *app) enterTacticalPreview() error {
 		BaseMovement: make([]uint8, size),
 		BudgetSource: source,
 		PartySlot:    partySlot,
+		Icons:        icons,
 		AIDriven:     aiDriven(partySlot),
 		Text:         a.text,
 	}

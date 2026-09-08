@@ -238,6 +238,9 @@ shot docs/screenshots/pool-remake-chinese-monsters.png
 step Tab sprites-effects
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-effects.png
+step Tab sprites-terrain
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-terrain.png
 step Escape adventure-move
 # V 是探索畫面的人物資料頁（spec 119 → spec 130）。
 step v view-pick
@@ -260,6 +263,35 @@ step Escape adventure-move
 step F5 tactical
 sleep 0.6
 shot docs/screenshots/pool-remake-chinese-tactical.png
+# 再走到**真的打起來的那一場**，拍一張有敵方造形的。遭遇是隨機的，所以這裡
+# 輪流四個方向走，中途碰到格子事件就按 Return 讓它跑完；走不到就跳過這一張
+# ——那一張是加分項，不該讓整支腳本失敗。
+pulse F5
+sleep 0.4
+n=0
+while test "$(screen)" != "combat-staged" && test "$n" -lt 400; do
+  case "$(screen)" in
+    adventure-cell-menu|adventure-cell-text|adventure-intro|adventure-tour)
+      pulse Return ;;
+    adventure-move)
+      # **方向鍵是「左右轉向、上前進」**，不是四方向移動。輪流按四個方向的話
+      # 四分之三的按鍵都在原地轉，走不出去。這裡走五步轉一次。
+      case $((n % 6)) in
+        5) pulse Right ;;
+        *) pulse Up ;;
+      esac ;;
+    *) pulse Escape ;;
+  esac
+  n=$((n + 1))
+done
+if test "$(screen)" = "combat-staged"; then
+  step Return tactical
+  sleep 0.6
+  shot docs/screenshots/pool-remake-chinese-combat.png
+  echo "走了 $n 步撞上一場架"
+else
+  echo "走了 $n 步沒遇到架，跳過實際戰鬥那一張" >&2
+fi
 sha256sum docs/screenshots/pool-remake-chinese-*.png
 '
 
@@ -297,8 +329,10 @@ screens = [
     ("pool-remake-chinese-sprites.png", "sprite overview (F4): portraits, combat icons, wall pieces, frame symbols"),
     ("pool-remake-chinese-monsters.png", "board icons (F4, TAB): the 32 bodies monsters and characters share"),
     ("pool-remake-chinese-effects.png", "combat effects (F4, TAB twice): missiles and blasts from COMSPR.DAX"),
+    ("pool-remake-chinese-terrain.png", "combat terrain tiles (F4, TAB three times): DUNGCOM/WILDCOM/RANDCOM"),
     ("pool-remake-chinese-guide.png", "in-game guide (F3), fogged to explored cells"),
     ("pool-remake-chinese-guide-full.png", "in-game guide (F3) with V, every point shown"),
+    ("pool-remake-chinese-combat.png", "a real fight: enemy icons on the board"),
     ("pool-remake-chinese-tactical.png", "tactical board (F5)"),
 ]
 
@@ -316,7 +350,12 @@ def git(*args):
 shots = []
 for name, screen in screens:
     path = os.path.join("docs/screenshots", name)
-    data = open(os.path.join(root, path), "rb").read()
+    full = os.path.join(root, path)
+    if not os.path.exists(full):
+        # 有幾張是加分項（例如要撞上一場架才拍得到的那一張）。缺了就跳過，
+        # 不要讓整份清單產不出來。
+        continue
+    data = open(full, "rb").read()
     width, height = png_size(data)
     shots.append({"path": path, "sha256": hashlib.sha256(data).hexdigest(),
                   "width": width, "height": height, "screen": screen})

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -30,6 +31,93 @@ func fillCombatCell(screen *ebiten.Image, column, row int, ink color.Color) {
 		for x := left; x < left+combatBoardCell-1; x++ {
 			screen.Set(x, y, ink)
 		}
+	}
+}
+
+// boardSprite 取一格的戰鬥造形，載一次就留著。
+func (a *app) boardSprite(index int) *ebiten.Image {
+	state := a.tactical
+	if state == nil || index >= len(state.Icons) || a.loadIcon == nil {
+		return nil
+	}
+	choice := state.Icons[index]
+	if !choice.Valid {
+		return nil
+	}
+	if icon, ok := a.boardIcons[choice]; ok {
+		return icon
+	}
+	if a.boardIcons == nil {
+		a.boardIcons = map[boardIcon]*ebiten.Image{}
+	}
+	icon, err := a.loadIcon(choice.Head, choice.Body, choice.Size, false, choice.Colours)
+	if err != nil {
+		// 載不出來也記著，不然每一影格都重試一次。
+		a.boardIcons[choice] = nil
+		return nil
+	}
+	a.boardIcons[choice] = icon
+	return icon
+}
+
+// 地形圖塊的分段（spec 131）。地圖裡存的是格位類別碼，類別表第四個欄位
+// `PresentationCode` 才是圖塊集裡的序號。
+//
+// 66 筆類別分兩段：**0..31 是室內、32..65 是野外**。這一刀是從序號範圍推的
+// ——前段的序號正好蓋滿 DUNGCOM 的 `00h..18h`（25 個）加 RANDCOM 的
+// `22h..27h`（6 個），後段正好蓋滿 WILDCOM 的 `00h..21h`（34 個），三個檔
+// 一個 item 都不多不少。哪一段由誰選還沒從程式碼讀出來。
+const (
+	combatIndoorClassLimit = 32
+	// combatRandomTileBase 是隨機遭遇那一組在序號空間裡的起點。
+	combatRandomTileBase = 0x22
+)
+
+// combatTerrainTile 取一格要鋪的圖塊。取不到就回 nil，由呼叫端退回色塊。
+func (a *app) combatTerrainTile(code uint8) *ebiten.Image {
+	state := a.tactical
+	if state == nil || a.loadCombatTiles == nil || int(code) >= len(state.Classes) {
+		return nil
+	}
+	presentation := int(state.Classes[code].PresentationCode)
+	name := assets.WildernessCombatTiles
+	item := presentation
+	if int(code) < combatIndoorClassLimit {
+		name = assets.DungeonCombatTiles
+		if presentation >= combatRandomTileBase {
+			name, item = assets.RandomCombatTiles, presentation-combatRandomTileBase
+		}
+	}
+	tiles, ok := a.combatTiles[name]
+	if !ok {
+		if a.combatTiles == nil {
+			a.combatTiles = map[string][]*ebiten.Image{}
+		}
+		loaded, err := a.loadCombatTiles(name)
+		if err != nil {
+			// 載不出來也記著，不然每一影格都重試一次。
+			a.combatTiles[name] = nil
+			return nil
+		}
+		a.combatTiles[name] = loaded
+		tiles = loaded
+	}
+	if item < 0 || item >= len(tiles) {
+		return nil
+	}
+	return tiles[item]
+}
+
+// outlineCombatCell 在一格外圍畫一圈框。
+func outlineCombatCell(screen *ebiten.Image, column, row int, ink color.Color) {
+	left, top := combatBoardCellRect(column, row)
+	for x := left; x < left+combatBoardCell-1; x++ {
+		screen.Set(x, top, ink)
+		screen.Set(x, top+combatBoardCell-2, ink)
+	}
+	for y := top; y < top+combatBoardCell-1; y++ {
+		screen.Set(left, y, ink)
+		screen.Set(left+combatBoardCell-2, y, ink)
 	}
 }
 
@@ -114,6 +202,12 @@ func drawCombatInfo(screen *ebiten.Image, a *app, foreground, accent color.Color
 		drawText(screen, fmt.Sprintf("%s %d", a.text(msgCombatHitPoints),
 			state.HitPoints[mover]), combatInfoLeft, combatInfoLine2, foreground)
 	}
+	if member, ok := a.combatMoverCharacter(); ok {
+		if weapon, has := a.readiedWeapon(member); has {
+			drawText(screen, strings.TrimSpace(weapon.Name),
+				combatInfoLeft, combatInfoLine4, foreground)
+		}
+	}
 	if mover < len(state.ArmorClass) {
 		// `state.ArmorClass` 存的是**內部值** `60 − AC`（命中判定用的那個，
 		// 見 `MonsterRecord.ArmorClass`）。畫面上要顯示的是 AC 本身，
@@ -153,21 +247,45 @@ func drawCombatBoard(screen *ebiten.Image, a *app, foreground color.Color) {
 			if code == combat.UnpaintedCellClass {
 				continue
 			}
-			ink := floor
-			if int(code) < len(state.Classes) &&
-				state.Classes[code].EntryThreshold == 0xFF {
-				ink = wall
+			// 先鋪地形。原版每一格是 `*COM.DAX` 的一個 24×24 圖塊
+			// （spec 131）；載不出來才退回色塊，那時牆與地板仍分得開。
+			if tile := a.combatTerrainTile(code); tile != nil {
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Scale(2, 2)
+				left, top := combatBoardCellRect(column, row)
+				op.GeoM.Translate(float64(left), float64(top))
+				screen.DrawImage(tile, op)
+			} else {
+				ink := floor
+				if int(code) < len(state.Classes) &&
+					state.Classes[code].EntryThreshold == 0xFF {
+					ink = wall
+				}
+				fillCombatCell(screen, column, row, ink)
 			}
-			fillCombatCell(screen, column, row, ink)
 			index := occupancy[offset]
 			if index == 0 {
 				continue
 			}
-			mark := foeInk
-			if int(index) < len(state.Friendly) && state.Friendly[index] {
-				mark = partyInk
+			// 有人就畫**戰鬥造形**（24×24，正好一格；spec 129）。載不出來
+			// 才退回色塊——那時畫面上還是看得出誰站哪裡。
+			if icon := a.boardSprite(int(index)); icon != nil {
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Scale(2, 2)
+				left, top := combatBoardCellRect(column, row)
+				op.GeoM.Translate(float64(left), float64(top))
+				screen.DrawImage(icon, op)
+			} else {
+				mark := foeInk
+				if int(index) < len(state.Friendly) && state.Friendly[index] {
+					mark = partyInk
+				}
+				fillCombatCell(screen, column, row, mark)
 			}
-			fillCombatCell(screen, column, row, mark)
+			// 輪到誰就框起來，原版那一格有一圈白框。
+			if uint8(index) == state.Mover {
+				outlineCombatCell(screen, column, row, color.RGBA{255, 255, 255, 255})
+			}
 		}
 	}
 }

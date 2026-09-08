@@ -271,7 +271,8 @@
       "ui.spriteFooter": "TAB PAGE   F4/ESC CLOSE",
       "ui.spriteMonsters": "BOARD ICONS (MONSTERS AND CHARACTERS SHARE THESE 32)",
       "ui.spriteNoMonsters": "Monster sprites could not be loaded.",
-      "ui.spriteEffects": "COMBAT EFFECTS (MISSILES AND BLASTS)"
+      "ui.spriteEffects": "COMBAT EFFECTS (MISSILES AND BLASTS)",
+      "ui.spriteTerrain": "COMBAT TERRAIN TILES (24x24 PER CELL)"
     }
   }
 }

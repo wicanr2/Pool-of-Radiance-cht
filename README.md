@@ -279,11 +279,11 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![素材總覽](docs/screenshots/pool-remake-chinese-sprites.png) | ![戰場造形](docs/screenshots/pool-remake-chinese-monsters.png) |
 
-| 再按 `TAB` 戰鬥特效 | |
+| 再按 `TAB` 戰鬥特效 | 再按一次 戰場地形 |
 |---|---|
-| ![戰鬥特效](docs/screenshots/pool-remake-chinese-effects.png) | |
+| ![戰鬥特效](docs/screenshots/pool-remake-chinese-effects.png) | ![戰場地形圖塊](docs/screenshots/pool-remake-chinese-terrain.png) |
 
-`F4` 分三頁。第一頁是肖像、戰鬥造形、第一人稱的牆面圖塊與外框符號。
+`F4` 分四頁。第一頁是肖像、戰鬥造形、第一人稱的牆面圖塊與外框符號。
 
 第二頁是**戰場上的造形**：`CBODY.DAX` 的三十二種身體。**怪物與玩家角色共用
 這一組**——怪物記錄裡的造形欄位（`+BDh`..`+C6h`）全是 0，戰場上用哪一個由 ECL
@@ -293,7 +293,13 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 第三頁是 `COMSPR.DAX` 的十三組**戰鬥特效**：箭、飛斧、石頭、閃光、爆炸。
 那一份的檔名容易誤讀成「怪物」，它不是。
 
-三頁都是**遊戲畫面**，不是素材匯出——圖形仍然只從玩家自己的原版 ZIP 讀出來，
+第四頁是**戰場的地形圖塊**（spec 131）：戰術地圖本身是戰鬥開始時生成的，
+鋪在每一格上的圖不是——三個 `*COM.DAX` 各是一組 24×24 的圖塊，正好戰場一格：
+`DUNGCOM.DAX` 25 個（地城的碎石與牆）、`WILDCOM.DAX` 34 個（樹、水、草、
+仙人掌）、`RANDCOM.DAX` 6 個（隨機遭遇）。地圖裡存的是格位類別碼，中間隔著
+類別表第四個欄位 `PresentationCode`，那個值就是圖塊集裡的序號。
+
+四頁都是**遊戲畫面**，不是素材匯出——圖形仍然只從玩家自己的原版 ZIP 讀出來，
 repo 不含也不產生任何素材檔。
 
 | `K` 法術一覽 | `F5` 戰術盤面 |

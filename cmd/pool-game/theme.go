@@ -91,5 +91,8 @@ func (a *app) switchTheme() error {
 		}
 	}
 	a.clearNPCPortrait()
+	// 戰場上那兩批也是算過一次就存起來的：造形與地形圖塊都吃 artPalette，
+	// 不丟掉的話換完主題戰鬥畫面會留在舊色盤上。
+	a.boardIcons, a.combatTiles = nil, nil
 	return nil
 }

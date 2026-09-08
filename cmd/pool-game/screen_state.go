@@ -75,6 +75,8 @@ func (a *app) screenName() string {
 			return "sprites-monsters"
 		case spritePageEffects:
 			return "sprites-effects"
+		case spritePageTerrain:
+			return "sprites-terrain"
 		}
 		return "sprites"
 	case a.viewSheetOpen:

@@ -145,6 +145,7 @@ type app struct {
 	iconAction      *ebiten.Image
 	loadPortrait    func(head, body uint8) (*ebiten.Image, error)
 	loadIcon        func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
+	loadCombatTiles func(name string) ([]*ebiten.Image, error)
 	state           poolsave.State
 	// iconMenu 是 combat icon editor 的巢狀選單狀態（spec 003 第 7..10 步）。
 	iconMenu        iconMenuState
@@ -271,6 +272,10 @@ type app struct {
 	spriteIcons     []*ebiten.Image
 	spriteMonsters  [][2]*ebiten.Image
 	spriteEffects   [][2]*ebiten.Image
+	// boardIcons 是戰場上每一種造形載好的圖，載一次就留著。
+	boardIcons map[boardIcon]*ebiten.Image
+	// combatTiles 是戰場的地形圖塊，一組（DUNGCOM／WILDCOM／RANDCOM）載一次。
+	combatTiles map[string][]*ebiten.Image
 	spritePage      int
 	// loadMonsterSprite 讀戰場上的怪物圖形（`COMSPR.DAX`）。
 	loadMonsterSprite func(block uint8, action bool) (*ebiten.Image, error)
@@ -479,6 +484,21 @@ func newApp(zipPath, statePath string) (*app, error) {
 			return nil, err
 		}
 		return ebiten.NewImageFromImage(rendered), nil
+	}
+	application.loadCombatTiles = func(name string) ([]*ebiten.Image, error) {
+		picture, err := assets.ReadCombatTerrainTiles(zipPath, name)
+		if err != nil {
+			return nil, err
+		}
+		tiles := make([]*ebiten.Image, 0, int(picture.ItemCount))
+		for item := 0; item < int(picture.ItemCount); item++ {
+			rendered, err := picture.RGBA(item, application.artPalette())
+			if err != nil {
+				return nil, err
+			}
+			tiles = append(tiles, ebiten.NewImageFromImage(rendered))
+		}
+		return tiles, nil
 	}
 	application.loadMonsterSprite = func(block uint8, action bool) (*ebiten.Image, error) {
 		picture, err := assets.ReadMonsterSprite(zipPath, block, action)
