@@ -124,6 +124,37 @@ def to_indices(rgb):
     return bytes(out)
 
 
+# 原版那一圈繩索外框的位置（native 320x200，量出來的）：
+# 上 0..7、下 184..191、左 0..7、右 312..319。**底下那一列指令／選單字
+# 在 192..198，也就是框的外面**——那是原版的版面，不是框的一部分。
+FRAME_ROWS = list(range(0, 8)) + list(range(184, 192))
+FRAME_COLS = list(range(0, 8)) + list(range(312, 320))
+
+
+def frame_cells():
+    """外框那一圈的格子座標。"""
+    cells = set()
+    for y in FRAME_ROWS:
+        for x in range(WIDTH):
+            cells.add((x, y))
+    for x in FRAME_COLS:
+        for y in range(HEIGHT):
+            cells.add((x, y))
+    return sorted(cells)
+
+
+FRAME = frame_cells()
+
+
+def compare_frame(reference, actual):
+    """只比外框那一圈。框線對不對得上是幾何問題，與文字語言無關。"""
+    same = 0
+    for x, y in FRAME:
+        if reference[y * WIDTH + x] == actual[y * WIDTH + x]:
+            same += 1
+    return same, len(FRAME)
+
+
 def compare(reference, actual, box):
     left, top, width, height = box
     same = total = 0
@@ -149,37 +180,68 @@ def main():
     # **用內容雜湊挑基準，不用索引。** 索引跟著 settle 的時機浮動（同一段
     # 鍵序兩次跑出來的張數會差一兩張），而雜湊在決定性模擬底下是穩的。
     # 挑錯一張的症狀是「比出一個很低的百分比」，看起來像 remake 畫錯。
+    # 逐格相同只對 title 與 first-person 宣稱；其餘是建隊到進城那一段的
+    # 逐張對照，量的是版面差異，不是缺陷計數。
+    #
+    # **用內容雜湊挑基準，不用索引。** 索引跟著 settle 的時機浮動（同一段
+    # 鍵序兩次跑出來的張數會差一兩張），而雜湊在決定性模擬底下是穩的。
+    # 挑錯一張的症狀是「比出一個很低的百分比」，看起來像 remake 畫錯。
     plan = [
         {
-            "name": "title",
+            "name": "title", "kind": "pixel-parity",
             "digest": "04cfb632f3f3fe4dc15b39dc13a74b7f68f386014132c9e67595517e4968ac68",
             "remake": "remake-title.png",
             "ref_box": [0, 0, 320, 200], "remake_box": [0, 0, 320, 200],
-            "status": "compared",
             "note": "整張。原版與 remake 畫的是同一份 TITLE.DAX，位置與縮放相同；"
                     "唯一預期的差異是 remake 自己加的按鍵提示那一行。",
         },
         {
-            "name": "first-person",
+            "name": "first-person", "kind": "pixel-parity",
             "digest": "f384683d3f49ece193dcb8eff272e5fe79af836a67db866eefc56fa183952642",
             "remake": "remake-first-person.png",
             "ref_box": [24, 24, 88, 88], "remake_box": [24, 43, 88, 88],
-            "status": "compared",
-            "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。"
-                    "2026-09-07 之前這一項是 blocked：dosgolem 少了 EGA 圖形控制器，"
-                    "基準側畫成黑底白線框。它的 master 併進其他分支的平面式寫入模式"
-                    "之後就畫得出來了。",
+            "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。",
         },
+        # 建隊到進城。這幾張比的是版面，所以另外報外框那一圈。
+        {"name": "menu-empty", "kind": "layout",
+         "digest": "ad32b0c0", "remake": "remake-menu-empty.png",
+         "note": "人物管理選擇項，空隊伍"},
+        {"name": "race", "kind": "layout",
+         "digest": "c3d05e32", "remake": "remake-race.png", "note": "種族"},
+        {"name": "gender", "kind": "layout",
+         "digest": "b0a1c460", "remake": "remake-gender.png", "note": "性別"},
+        {"name": "class", "kind": "layout",
+         "digest": "563ce90d", "remake": "remake-class.png", "note": "職業"},
+        {"name": "alignment", "kind": "layout",
+         "digest": "389c0055", "remake": "remake-alignment.png", "note": "陣營"},
+        {"name": "sheet", "kind": "layout",
+         "digest": "f33c0725", "remake": "remake-sheet.png",
+         "note": "人物資料頁（KEEP THIS CHARACTER?）"},
+        {"name": "name", "kind": "layout",
+         "digest": "17fdd284", "remake": "remake-name.png", "note": "姓名輸入"},
+        {"name": "portrait", "kind": "layout",
+         "digest": "9019afcf", "remake": "remake-portrait.png",
+         "note": "肖像編輯器（原版底下是 HEAD BODY KEEP）"},
+        {"name": "icon", "kind": "layout",
+         "digest": "60fbf041", "remake": "remake-icon.png",
+         "note": "戰鬥造形設計（原版是 OLD／NEW 四格加底部指令列）"},
+        {"name": "menu-party", "kind": "layout",
+         "digest": "11c6caa4", "remake": "remake-menu-party.png",
+         "note": "人物管理選擇項，隊伍裡有人"},
+        {"name": "intro", "kind": "layout",
+         "digest": "3717ce93", "remake": "remake-intro.png",
+         "note": "按下 B 之後的第一幕"},
     ]
 
     report = {"screens": []}
     failed = False
     dosbox_dir = sys.argv[3] if len(sys.argv) > 3 else None
     for item in plan:
-        matches = [s for s in shots if s["sha256"] == item["digest"]]
+        digest = item["digest"]
+        matches = [s for s in shots if s["sha256"].startswith(digest)]
         if not matches:
-            print(f"基準裡找不到 {item['name']} 的畫面（雜湊 {item['digest'][:8]}）"
-                  f"——鍵序改過了，先更新對照表", file=sys.stderr)
+            print(f"基準裡找不到 {item['name']} 的畫面（雜湊 {digest[:8]}）"
+                  f"——鍵序或 dosgolem 版本改過了，先重生基準再更新對照表", file=sys.stderr)
             failed = True
             continue
         info = matches[0]
@@ -187,8 +249,8 @@ def main():
         reference = bytes(v & 0x0F for v in raw)
         actual = load_remake(os.path.join(out_dir, item["remake"]))
 
-        rl, rt, w, h = item["ref_box"]
-        ml, mt, _, _ = item["remake_box"]
+        rl, rt, w, h = item.get("ref_box", [0, 0, WIDTH, HEIGHT])
+        ml, mt, _, _ = item.get("remake_box", [0, 0, WIDTH, HEIGHT])
         same = total = 0
         for y in range(h):
             for x in range(w):
@@ -196,17 +258,20 @@ def main():
                 if reference[(rt + y) * WIDTH + rl + x] == actual[(mt + y) * WIDTH + ml + x]:
                     same += 1
         entry = {
-            "name": item["name"], "status": item["status"],
+            "name": item["name"], "kind": item["kind"],
             "reference": info["path"], "reference_step": info["step"],
             "remake": item["remake"],
             "same": same, "total": total, "ratio": round(same / total, 4),
             "note": item["note"],
         }
-        if "blocked_by" in item:
-            entry["blocked_by"] = item["blocked_by"]
+        line = f"{item['name']:14s} 整張 {same:6d}/{total:6d} = {same / total:6.2%}"
+        if item["kind"] == "layout":
+            fs, ft = compare_frame(reference, actual)
+            entry["frame_same"], entry["frame_total"] = fs, ft
+            entry["frame_ratio"] = round(fs / ft, 4)
+            line += f"   外框 {fs:5d}/{ft:5d} = {fs / ft:6.2%}"
         report["screens"].append(entry)
-        mark = "" if item["status"] == "compared" else "（基準側有缺口）"
-        print(f"{item['name']}: {same}/{total} = {same / total:.2%} {mark}")
+        print(line)
 
     # 交叉核對：同一框對 repo 裡**早就存著的** DOSBox 基準圖。
     # **沒有重跑 DOSBox**（使用者 2026-09-07 指定它只作 dosgolem 的參考）；
@@ -228,12 +293,12 @@ def main():
                     if dosbox[(24 + y) * WIDTH + 24 + x] == actual[(43 + y) * WIDTH + 24 + x]:
                         same += 1
             report["screens"].append({
-                "name": "first-person-vs-dosbox", "status": "cross-check",
+                "name": "first-person-vs-dosbox", "kind": "cross-check",
                 "reference": "docs/reference/original-dos/adventure/06-free-move-0-4-west.png",
                 "remake": "remake-first-person.png",
                 "same": same, "total": total, "ratio": round(same / total, 4),
-                "note": "既有的 DOSBox 基準圖，沒有重跑 DOSBox。用來分辨低分是"
-                        "remake 畫錯還是基準畫錯。",
+                "note": "既有的 DOSBox 基準圖，沒有重跑 DOSBox。兩個 oracle 互相同意，"
+                        "哪一邊之後退步了這一項會先開口。",
             })
             print(f"first-person-vs-dosbox: {same}/{total} = {same / total:.2%} （交叉核對）")
 

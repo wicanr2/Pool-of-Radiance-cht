@@ -2749,6 +2749,11 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		op.GeoM.Scale(2, 2)
 		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
 		screen.DrawImage(portrait, op)
+		// **半身像只蓋左邊那一框，右邊那一塊照畫。** 原版在羅夫講話的時候
+		// 隊伍面板與座標時鐘都還在（dosgolem 的 `31-b`：`NAME AC HP`、
+		// `HERO 10 8`、`15,1 W 00:00`）。這裡本來提早返回，把整個右半邊留白，
+		// 而那是玩家第一次看到的畫面。
+		drawPartyPanel(screen, a, foreground, accent)
 		if a.initialEvent != nil {
 			message, label := a.initialEvent.Message, a.initialEvent.ContinueLabel
 			if a.eventText != "" {
@@ -3131,7 +3136,17 @@ func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color, 
 	}
 }
 
+// drawnText 是測試用的接縫：非 nil 時每畫一段字就記一筆（內容與位置）。
+//
+// 離線讀不到畫面像素——`(*ebiten.Image).At` 在遊戲迴圈外會 panic，所以
+// 「這一塊到底有沒有畫」在測試裡只能靠這條路問。正常執行時它是 nil，
+// 一次 nil 比較而已。
+var drawnText func(value string, x, y int)
+
 func drawText(screen *ebiten.Image, value string, x, y int, ink color.Color) {
+	if drawnText != nil {
+		drawnText(value, x, y)
+	}
 	text.Draw(screen, strings.ToUpper(displayText(value)), uiFace, x, y, ink)
 }
 

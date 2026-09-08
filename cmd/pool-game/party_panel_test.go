@@ -1,12 +1,16 @@
 package main
 
 import (
+	"image/color"
 	"path/filepath"
 	"testing"
+
+	"github.com/hajimehoshi/ebiten/v2"
 
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
 
 // 狀態列的格式與原版逐字相同：`14, 1 W 00:00`。朝向那個字母是 spec 076 的
@@ -97,5 +101,61 @@ func TestGameClockAdvancesOneMinutePerStep(t *testing.T) {
 	}
 	if got := application.adventureStatusLine(); got != "14, 4 W 01:00" {
 		t.Fatalf("走滿六十步之後是 %q，預期進位到 01:00", got)
+	}
+}
+
+// 羅夫講話的時候，右邊那一塊照畫。
+//
+// 原版在 APPROACH 的半身像蓋上來時，隊伍面板與座標時鐘都還在
+//（dosgolem 的基準畫面 `31-b`：`NAME AC HP`、`HERO 10 8`、`15,1 W 00:00`）。
+// remake 的繪製本來在畫完半身像之後**提早返回**，把整個右半邊留白——
+// 而那是玩家按下 `B` 之後看到的第一個畫面。
+//
+// 這一條擋的是「又有人在那個分支前面 return」：只要面板沒畫，
+// 右半邊就會整片是背景色。
+func TestApproachPortraitKeepsThePartyPanel(t *testing.T) {
+	member := poolsave.Character{Name: "HERO", MaxHP: 8, CurrentHP: 8}
+	state := poolsave.NewState()
+	state.Party = []poolsave.Character{member}
+	// `drawAdventure` 沒有地圖與牆面素材時會提早返回並印一行錯誤，
+	// 所以這兩個要給——不然測到的是那條路，不是要測的那條。
+	initialMap := gamepack.GeometryMap{}
+	walls := graphics.PieceSet{}
+	application := &app{
+		mode:         modeAdventure,
+		state:        state,
+		spawn:        gamepack.Spawn{X: 15, Y: 1, Facing: 3},
+		introWaiting: true,
+		initialEvent: &gamepack.InitialEvent{Message: "GREETINGS", ContinueLabel: "PRESS"},
+		npcPortrait:  ebiten.NewImage(88, 88),
+		initialMap:   &initialMap,
+		initialWalls: &walls,
+	}
+	if application.approachPortrait() == nil {
+		t.Skip("這個 app 組不出 APPROACH 半身像")
+	}
+	var drawn []string
+	drawnText = func(value string, x, y int) {
+		if x >= partyPanelLeft-40 && y >= partyPanelHeaderRow-20 && y <= partyPanelStatusRow {
+			drawn = append(drawn, value)
+		}
+	}
+	defer func() { drawnText = nil }()
+
+	screen := ebiten.NewImage(logicalWidth, logicalHeight)
+	drawAdventure(screen, application, color.RGBA{255, 255, 255, 255}, color.RGBA{255, 255, 0, 255})
+
+	want := []string{"HERO", "15, 1 W 00:00"}
+	for _, value := range want {
+		found := false
+		for _, got := range drawn {
+			if got == value {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Fatalf("APPROACH 半身像蓋上來之後，右邊少了 %q（畫到的是 %q）", value, drawn)
+		}
 	}
 }

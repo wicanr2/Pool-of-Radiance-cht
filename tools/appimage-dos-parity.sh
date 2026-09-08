@@ -13,15 +13,13 @@
 # 尺度：remake 的邏輯畫布是 640x400、視窗 960x600（3 倍）。截圖用**最近鄰**
 # 降回 320x200 再比；平滑縮放會把差異抹掉。
 #
-# 抽樣，不是全程（使用者 2026-09-07 指定）。取的是兩張最說明問題的：
-#   * `title`：整張畫面。原版與 remake 畫的是同一份 TITLE.DAX，
-#     位置與縮放也一樣，所以這一張**應該逐格相同**（扣掉 remake 自己加的
-#     按鍵提示那一行）。
-#   * `first-person`：第一人稱那一框的 88x88 內容。**那是唯一宣稱過逐格
-#     相同的東西**（spec 047／126），也是玩家整趟冒險看最久的一塊。
+# 逐格相同是**只對兩張**宣稱的：`title`（同一份 TITLE.DAX，位置與縮放都一樣）
+# 與 `first-person`（spec 047／126，玩家整趟冒險看最久的一塊）。
 #
-# 其餘畫面（人物管理選擇項、種族選單、人物資料頁）的版面是 remake 自己的，
-# 不是對拍目標；它們的中文化由 `tools/capture-chinese-menu.sh` 顧。
+# 建隊到進城那一段的每一張也拍、也比，但那幾張的版面是 remake 自己的
+#（原版是 320x200 的文字排版，remake 是 640x400 加漢字），所以比出來的數字
+# 是**版面差異的量度**，不是缺陷計數。看的是「框線對不對得上」與
+#「哪一塊排在哪裡」，逐項判讀在 docs/audit/dos-parity-sample.md。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -115,23 +113,48 @@ await title
 sleep 0.6
 shot remake-title
 
-# 走完建角與導覽到自由移動，那時第一人稱框裡是乾淨的視野。
+# 建隊到進城，每一站拍一張。原版同一段由 tools/dosgolem-reference.sh 拍，
+# 兩邊逐張對得起來，版面差在哪就看得出來。
 step Return menu
+sleep 0.4
+shot remake-menu-empty
 step c creation-race
+sleep 0.4
+shot remake-race
+step Return creation-gender
+sleep 0.4
+shot remake-gender
 step Return creation-class
+sleep 0.4
+shot remake-class
 step Return creation-alignment
+sleep 0.4
+shot remake-alignment
 step Return creation-roll
+sleep 0.5
+shot remake-sheet
 step Return creation-name
-xdotool type --delay 120 HERO
 sleep 0.3
+shot remake-name
+xdotool type --delay 120 HERO
+sleep 0.4
 step Return creation-portrait
+sleep 0.4
+shot remake-portrait
 step k creation-icon-0
+sleep 0.4
+shot remake-icon
 step e creation-icon-confirm
+sleep 0.4
+shot remake-icon-confirm
 step y menu
 sleep 0.4
 pulse a
 sleep 0.6
+shot remake-menu-party
 step b adventure-intro
+sleep 0.6
+shot remake-intro
 step Return adventure-move 60
 sleep 0.6
 shot remake-first-person
