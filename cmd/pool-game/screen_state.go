@@ -70,6 +70,12 @@ func (a *app) screenName() string {
 		}
 		return "guide"
 	case a.spriteOpen:
+		switch a.spritePage {
+		case spritePageMonsters:
+			return "sprites-monsters"
+		case spritePageEffects:
+			return "sprites-effects"
+		}
 		return "sprites"
 	case a.viewSheetOpen:
 		if a.viewSheetShown {
@@ -97,6 +103,10 @@ func (a *app) screenName() string {
 		return "temple"
 	case a.tacticalPreview:
 		return "tactical"
+	case a.combatActive:
+		// 遭遇已經排好、還沒按 ENTER 進戰術盤面的那一步。不報出來的話
+		// 截圖腳本沒辦法等到「架打起來了」。
+		return "combat-staged"
 	case a.introWaiting:
 		return "adventure-intro"
 	case a.tourActive:

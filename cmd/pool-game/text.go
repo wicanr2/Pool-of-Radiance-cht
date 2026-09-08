@@ -277,6 +277,9 @@ const (
 	msgSpriteNoWalls
 	msgSpriteFrame
 	msgSpriteFooter
+	msgSpriteMonsters
+	msgSpriteNoMonsters
+	msgSpriteEffects
 	// 探索畫面的 `V)IEW`（spec 119）。
 	msgViewSheetPick
 	msgViewSheetFooter

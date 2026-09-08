@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-08",
-  "source_commit": "66d1434f2b3ae75953d42b3907aaddc59e69f78e",
+  "source_commit": "1ccaa51f4cc43a60f3755c16ce3d943ed40da67d",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
   "state_relation": "normal-remake-player-path with -lang zh, stepped by the game's own -screen-state identifiers: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "4059e83a70a726c313c056d78cf19cce186115c3499dae4904d82572796e7464",
+      "sha256": "f0982783689ef5f4d7f27a6f270f6156c3f7bb435b2a8f7e552efebf08a25f82",
       "width": 960,
       "height": 600,
       "screen": "character sheet, keep-or-reroll prompt"
@@ -82,21 +82,21 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tour.png",
-      "sha256": "ccca18e68db62e0c5fb714a1d81d1336d7e03f4be432ad289273d99853fe0737",
+      "sha256": "c1e835670629d2aa01dc9b69798eb8d48bf2de4c113389a89857075c617177cb",
       "width": 960,
       "height": 600,
       "screen": "first page of the Rolf guided tour"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-movement.png",
-      "sha256": "4d662cd8d36970d76683dcbb10c87b841e2bd421b931e3aeada4ea6e965666b9",
+      "sha256": "dc416c507403655799ce3e39f86ad7d9bfd8990d38b3941b974919b4c0eae6ab",
       "width": 960,
       "height": 600,
       "screen": "free movement after the tour reaches its ECL exit"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-map.png",
-      "sha256": "e0758147d6db8035c9f76af036832a7941d7f6a8b3e1e2e60cd6d34e3d3b49e1",
+      "sha256": "1fd3c91ee2e1ae04df26880f5fca955f32f6f37cf26fa12c1a0cfa3faa8a026c",
       "width": 960,
       "height": 600,
       "screen": "area map"
@@ -138,24 +138,38 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-field-cast.png",
-      "sha256": "54338ef5fb1cdc472d6fc85d63377361f2638f02e40b85404a171f52275fa36f",
+      "sha256": "32d2fbbbd838a1368dc529f489353b303ab592ade400ab376c013ff2e1a3404b",
       "width": 960,
       "height": 600,
       "screen": "casting outside combat (C on the command bar)"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-view-sheet.png",
-      "sha256": "df277ee18c83bcfcdf5a6d13539a21cf54cb7c03333b4c15bd01c3b6893093aa",
+      "sha256": "461fe2f6274d5943443702dcf3aa0c9984be31a13251b4ec1afc8e618085c4d3",
       "width": 960,
       "height": 600,
       "screen": "a party member's sheet from the command bar (V)"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sprites.png",
-      "sha256": "a434a1c9d1178bf2cc7fb001275241ef3a009f2a14330df4614384807156b3fa",
+      "sha256": "9ab5e13b31cab9bc8aff4fb5eeee16c7b9dc50fd2b407719319d3223bc98f39d",
       "width": 960,
       "height": 600,
       "screen": "sprite overview (F4): portraits, combat icons, wall pieces, frame symbols"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-monsters.png",
+      "sha256": "8a12de2c635acdbc96f87e2bb2459d195082e87f2ec5a21857b3f0dee5a0ed8e",
+      "width": 960,
+      "height": 600,
+      "screen": "board icons (F4, TAB): the 32 bodies monsters and characters share"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-effects.png",
+      "sha256": "a8a312df79b7c7153821eb58be06d24ddc40582a0b685d980cfc8f3de6f2497a",
+      "width": 960,
+      "height": 600,
+      "screen": "combat effects (F4, TAB twice): missiles and blasts from COMSPR.DAX"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-guide.png",
@@ -173,7 +187,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tactical.png",
-      "sha256": "43cebf9ca1a0e78763d3b24ac110382f5263216523b8738fd78dd25c607f30d7",
+      "sha256": "ba25b1e421adeb0521bad6a19f4da75ab865a6da9b81c5f4a398327bf6aae176",
       "width": 960,
       "height": 600,
       "screen": "tactical board (F5)"

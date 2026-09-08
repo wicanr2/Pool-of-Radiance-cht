@@ -268,7 +268,10 @@
       "ui.spriteWalls": "WALL PIECES",
       "ui.spriteNoWalls": "No wall pieces are loaded here.",
       "ui.spriteFrame": "FRAME SYMBOLS",
-      "ui.spriteFooter": "F4/ESC CLOSE"
+      "ui.spriteFooter": "TAB PAGE   F4/ESC CLOSE",
+      "ui.spriteMonsters": "BOARD ICONS (MONSTERS AND CHARACTERS SHARE THESE 32)",
+      "ui.spriteNoMonsters": "Monster sprites could not be loaded.",
+      "ui.spriteEffects": "COMBAT EFFECTS (MISSILES AND BLASTS)"
     }
   }
 }

@@ -195,7 +195,7 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ## 目前 remake 畫面
 
-下面二十三張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
+下面二十五張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
 在 Docker／Xvfb 裡開真的 Ebitengine 視窗、逐鍵走一次正常玩家路徑拍下來的：
 標題 → `ENTER` → `C` 建角 → 命名 → 肖像 → 戰鬥圖示 → 加入隊伍 → `B` 開始冒險
 → 按完羅夫導覽 → 自由移動 → 平面圖 → 手冊 → 裝備 → 法術 → 戰術盤面。
@@ -275,13 +275,26 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![裝備頁](docs/screenshots/pool-remake-chinese-equipment.png) | |
 
-| `F4` 素材總覽 | |
+| `F4` 素材總覽 | `TAB` 戰場造形 |
 |---|---|
-| ![素材總覽](docs/screenshots/pool-remake-chinese-sprites.png) | |
+| ![素材總覽](docs/screenshots/pool-remake-chinese-sprites.png) | ![戰場造形](docs/screenshots/pool-remake-chinese-monsters.png) |
 
-`F4` 把 remake 目前畫得出來的四類圖形排在同一個畫面上：肖像、戰鬥造形、
-第一人稱的牆面圖塊、外框符號。它是**遊戲畫面**，不是素材匯出——圖形仍然只從
-玩家自己的原版 ZIP 讀出來，repo 不含也不產生任何素材檔。
+| 再按 `TAB` 戰鬥特效 | |
+|---|---|
+| ![戰鬥特效](docs/screenshots/pool-remake-chinese-effects.png) | |
+
+`F4` 分三頁。第一頁是肖像、戰鬥造形、第一人稱的牆面圖塊與外框符號。
+
+第二頁是**戰場上的造形**：`CBODY.DAX` 的三十二種身體。**怪物與玩家角色共用
+這一組**——怪物記錄裡的造形欄位（`+BDh`..`+C6h`）全是 0，戰場上用哪一個由 ECL
+`LOAD MONSTER` 的第三個引數指定。圖上是玩家的預設配色；原版把哥布林那一類畫成
+紅色是換了配色，配色從哪來還沒定位。
+
+第三頁是 `COMSPR.DAX` 的十三組**戰鬥特效**：箭、飛斧、石頭、閃光、爆炸。
+那一份的檔名容易誤讀成「怪物」，它不是。
+
+三頁都是**遊戲畫面**，不是素材匯出——圖形仍然只從玩家自己的原版 ZIP 讀出來，
+repo 不含也不產生任何素材檔。
 
 | `K` 法術一覽 | `F5` 戰術盤面 |
 |---|---|

@@ -232,6 +232,12 @@ step Escape adventure-move
 step F4 sprites
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-sprites.png
+step Tab sprites-monsters
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-monsters.png
+step Tab sprites-effects
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-effects.png
 step Escape adventure-move
 # V 是探索畫面的人物資料頁（spec 119 → spec 130）。
 step v view-pick
@@ -289,6 +295,8 @@ screens = [
     ("pool-remake-chinese-field-cast.png", "casting outside combat (C on the command bar)"),
     ("pool-remake-chinese-view-sheet.png", "a party member's sheet from the command bar (V)"),
     ("pool-remake-chinese-sprites.png", "sprite overview (F4): portraits, combat icons, wall pieces, frame symbols"),
+    ("pool-remake-chinese-monsters.png", "board icons (F4, TAB): the 32 bodies monsters and characters share"),
+    ("pool-remake-chinese-effects.png", "combat effects (F4, TAB twice): missiles and blasts from COMSPR.DAX"),
     ("pool-remake-chinese-guide.png", "in-game guide (F3), fogged to explored cells"),
     ("pool-remake-chinese-guide-full.png", "in-game guide (F3) with V, every point shown"),
     ("pool-remake-chinese-tactical.png", "tactical board (F5)"),

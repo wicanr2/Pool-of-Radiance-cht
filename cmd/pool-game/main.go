@@ -269,6 +269,11 @@ type app struct {
 	spriteOpen      bool
 	spritePortraits []*ebiten.Image
 	spriteIcons     []*ebiten.Image
+	spriteMonsters  [][2]*ebiten.Image
+	spriteEffects   [][2]*ebiten.Image
+	spritePage      int
+	// loadMonsterSprite 讀戰場上的怪物圖形（`COMSPR.DAX`）。
+	loadMonsterSprite func(block uint8, action bool) (*ebiten.Image, error)
 	// 探索畫面的 `V)IEW`（spec 119，view_sheet.go）。
 	viewSheetOpen     bool
 	viewSheetShown    bool
@@ -466,6 +471,17 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.loadIcon = func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error) {
 		picture, err := assets.ReadCustomizedCombatIcon(zipPath, assets.CombatIconSelection{Head: head, Body: body, Size: size}, action, colors)
+		if err != nil {
+			return nil, err
+		}
+		rendered, err := picture.RGBA(0, application.artPalette())
+		if err != nil {
+			return nil, err
+		}
+		return ebiten.NewImageFromImage(rendered), nil
+	}
+	application.loadMonsterSprite = func(block uint8, action bool) (*ebiten.Image, error) {
+		picture, err := assets.ReadMonsterSprite(zipPath, block, action)
 		if err != nil {
 			return nil, err
 		}

@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
 )
 
@@ -42,6 +43,30 @@ func (a *app) openSpriteOverview() {
 			a.spritePortraits = append(a.spritePortraits, portrait)
 		}
 	}
+	// 戰鬥特效：`COMSPR.DAX` 十三組，站立與動作各一張。
+	if len(a.spriteEffects) == 0 && a.loadMonsterSprite != nil {
+		for _, block := range assets.MonsterSpriteBlocks() {
+			var pair [2]*ebiten.Image
+			for index, action := range []bool{false, true} {
+				if icon, err := a.loadMonsterSprite(block, action); err == nil {
+					pair[index] = icon
+				}
+			}
+			a.spriteEffects = append(a.spriteEffects, pair)
+		}
+	}
+	// 戰場上的造形：`CBODY.DAX` 的身體逐個配同一個頭。
+	// 怪物記錄與角色記錄同格式，所以走的是同一套（`ReadCombatIcon`）。
+	if len(a.spriteMonsters) == 0 && a.loadIcon != nil {
+		colours := [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}
+		for body := uint8(0); body < 32; body++ {
+			var pair [2]*ebiten.Image
+			if icon, err := a.loadIcon(1, body, 1, false, colours); err == nil {
+				pair[0] = icon
+			}
+			a.spriteMonsters = append(a.spriteMonsters, pair)
+		}
+	}
 	// 戰鬥造形要自己載一組樣本：`iconReady`／`iconAction` 是建角那一步留下的，
 	// 冒險畫面按 F4 時是空的。
 	if len(a.spriteIcons) == 0 && a.loadIcon != nil {
@@ -58,15 +83,79 @@ func (a *app) openSpriteOverview() {
 	}
 }
 
-// spriteOverviewInput 處理這一頁的鍵。
+// spriteOverviewInput 處理這一頁的鍵。TAB 在「素材」與「怪物」兩頁之間切。
 func (a *app) spriteOverviewInput() (bool, error) {
 	if !a.spriteOpen {
 		return false, nil
 	}
-	if a.justPressed(ebiten.KeyEscape) || a.justPressed(ebiten.KeyF4) {
+	switch {
+	case a.justPressed(ebiten.KeyEscape), a.justPressed(ebiten.KeyF4):
 		a.spriteOpen = false
+	case a.justPressed(ebiten.KeyTab):
+		a.spritePage = (a.spritePage + 1) % spritePageCount
 	}
 	return true, nil
+}
+
+// 三頁：素材、戰場造形、戰鬥特效。
+const (
+	spritePageAssets = iota
+	spritePageMonsters
+	spritePageEffects
+	spritePageCount
+)
+
+// drawEffectOverview 畫戰鬥特效（`COMSPR.DAX`）：箭、飛斧、石頭、閃光、
+// 爆炸那一類**投射物與特效**，站立／動作各一張。它不是怪物——怪物走的是
+// 下面那一頁的造形庫。
+func drawEffectOverview(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	drawText(screen, a.text(msgSpriteEffects), spriteLabelLeft, spritePortraitTop, accent)
+	if len(a.spriteEffects) == 0 {
+		drawText(screen, a.text(msgSpriteNoMonsters), spriteLabelLeft,
+			spritePortraitTop+24, foreground)
+		return
+	}
+	const columns, cell = 7, 80
+	for index, pair := range a.spriteEffects {
+		left := spriteRowLeft + (index%columns)*cell
+		top := spritePortraitTop + 16 + (index/columns)*cell
+		for offset, icon := range pair {
+			if icon == nil {
+				continue
+			}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(1.5, 1.5)
+			op.GeoM.Translate(float64(left+offset*36), float64(top))
+			screen.DrawImage(icon, op)
+		}
+	}
+}
+
+// drawMonsterOverview 畫戰場上的造形庫（`CBODY.DAX` 的三十二種身體）。
+//
+// **怪物與玩家角色共用這一組**：怪物記錄裡的造形欄位（`+BDh`..`+C6h`）全是 0，
+// 戰場上用哪一個由 ECL 的 `LOAD MONSTER` 第三個引數（`MonsterSpawn.IconBlock`）
+// 指定。這裡畫的是玩家的預設配色；原版把哥布林那一類畫成紅色是換了配色，
+// **配色從哪來還沒定位**。
+func drawMonsterOverview(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	drawText(screen, a.text(msgSpriteMonsters), spriteLabelLeft, spritePortraitTop, accent)
+	if len(a.spriteMonsters) == 0 {
+		drawText(screen, a.text(msgSpriteNoMonsters), spriteLabelLeft,
+			spritePortraitTop+24, foreground)
+		return
+	}
+	const columns, cellWidth, cellHeight = 8, 72, 60
+	for index, pair := range a.spriteMonsters {
+		icon := pair[0]
+		if icon == nil {
+			continue
+		}
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(1.5, 1.5)
+		op.GeoM.Translate(float64(spriteRowLeft+(index%columns)*cellWidth),
+			float64(spritePortraitTop+16+(index/columns)*cellHeight))
+		screen.DrawImage(icon, op)
+	}
 }
 
 // drawSpriteOverview 畫那四區。
@@ -75,6 +164,16 @@ func drawSpriteOverview(screen *ebiten.Image, a *app, background, foreground, ac
 	panel.Fill(background)
 	screen.DrawImage(panel, &ebiten.DrawImageOptions{
 		GeoM: translated(guidePanelInset, guidePanelTop)})
+	switch a.spritePage {
+	case spritePageMonsters:
+		drawMonsterOverview(screen, a, foreground, accent)
+		drawText(screen, a.text(msgSpriteFooter), 0, footerBaseline, accent)
+		return
+	case spritePageEffects:
+		drawEffectOverview(screen, a, foreground, accent)
+		drawText(screen, a.text(msgSpriteFooter), 0, footerBaseline, accent)
+		return
+	}
 	palette := a.artPalette()
 	drawText(screen, a.text(msgSpritePortraits), spriteLabelLeft, spritePortraitTop, foreground)
 	for index, portrait := range a.spritePortraits {
