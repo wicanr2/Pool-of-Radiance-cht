@@ -48,7 +48,7 @@ func (a *app) beginManualAim() bool {
 	return true
 }
 
-// recentreOn 把 6×6 視窗捲到 (x, y)（overlay-32 `07D4h`，spec 127）。
+// recentreOn 把 7×7 視窗捲到 (x, y)（overlay-32 `07D4h`，spec 127）。
 // 餘裕 3 是 Manual 游標用的，0 是 `Center` 與火球術用的。
 func (a *app) recentreOn(x, y int, margin uint8) {
 	state := a.tactical

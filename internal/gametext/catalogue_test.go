@@ -84,6 +84,14 @@ func TestEverySourceExistsInTheOriginalInventory(t *testing.T) {
 			known[line.Text] = true
 		}
 	}
+	// 戰鬥指令列那六段也是 overlay 內嵌字串，不在 ECL 的 6-bit packed 盤點裡
+	// （spec 129）。守的還是同一件事：每一條原文都要真的出現在原版資料裡。
+	if segments, err := gamepack.ReadDOSCombatCommands(
+		filepath.Join("..", "..", "Pool of Radiance (1988).zip")); err == nil {
+		for _, segment := range segments {
+			known[segment.Text] = true
+		}
+	}
 	for _, source := range catalogue.Sources() {
 		if !known[source] {
 			t.Fatalf("catalogue source is not in the original data: %q", source)

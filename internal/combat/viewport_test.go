@@ -72,7 +72,7 @@ func TestRecentreViewportForceMarginSkipsTheInsideTest(t *testing.T) {
 }
 
 func TestViewportSpanCoversWhatTheOriginalRedraws(t *testing.T) {
-	// 重畫迴圈兩層都數到 6，而中心在原點 +3——視窗容得下中心。
+	// 重畫迴圈兩層跑 0..6（七格），而中心在原點 +3——正好是正中央。
 	if ViewportCentreOffset >= ViewportTileSpan {
 		t.Fatalf("中心 +%d 落在 %d 格的視窗外", ViewportCentreOffset, ViewportTileSpan)
 	}

@@ -17,10 +17,13 @@ import (
 //	116h（item 22）橫的繩子——上下兩列
 //
 // 位置是拿 `docs/reference/original-dos/adventure/` 那幾張原版截圖量的：
-// 外框佔 320×200 的**第 0 列與第 23 列 tile、第 0 欄與第 39 欄 tile**，
+// 冒險側的外框佔 320×200 的**第 0 列與第 23 列 tile、第 0 欄與第 39 欄 tile**，
 // 也就是 y=0..7／184..191、x=0..7／312..319。最後一列（y=192..199）是空的。
-// 五張截圖（空隊伍選單、有隊伍選單、Rolf、自由移動、貧民窟）逐格相同，
-// 所以它是**整個遊戲共用的畫面框**，不是某一個畫面的裝飾。
+// 空隊伍選單、有隊伍選單、Rolf、自由移動、貧民窟這五張逐格相同。
+//
+// **戰鬥畫面用的是另一套**：下緣在第 22 列（y=176..183），而且第 22 欄
+// 還有一條直的，把畫面切成左邊的戰場與右邊的資訊欄（spec 129，量自
+// dosgolem 的第 49 幀）。所以這一圈不是「整個遊戲共用」，是兩套。
 const (
 	// frameCornerItem 是四個角。
 	frameCornerItem = 0x14
@@ -30,14 +33,43 @@ const (
 	frameHorizontalItem = 0x16
 	// frameTileSize 是一個符號的邊長。
 	frameTileSize = 8
-	// frameBottomTileRow 是外框下緣那一列 tile 的編號（0 起算）。
+	// frameBottomTileRow 是冒險側外框下緣那一列 tile 的編號（0 起算）。
 	// 200 ÷ 8 ＝ 25 列，原版用的是第 23 列——**最後一列是空的**。
 	frameBottomTileRow = 23
+	// combatBottomTileRow 是戰鬥畫面外框下緣那一列，比冒險側高一列（spec 129）。
+	combatBottomTileRow = 22
+	// combatBoardRightTileCol 是戰場框右邊那一欄；它右邊到畫面右框之間
+	// 是資訊欄。
+	combatBoardRightTileCol = 22
 )
 
 // drawFrame 畫畫面外框。band 4 沒載進來（測試的假 app、或原版 ZIP 不在）
 // 時退回原本那圈素色方框，畫面不會空掉。
 func (a *app) drawFrame(screen *ebiten.Image, foreground, accent color.Color) {
+	a.drawFrameWithBottom(screen, frameBottomTileRow, foreground, accent)
+}
+
+// drawCombatFrame 畫戰鬥畫面那一套（spec 129）：外框下緣高一列，
+// 另外在第 22 欄豎一條，把戰場與右邊的資訊欄分開。
+func (a *app) drawCombatFrame(screen *ebiten.Image, foreground, accent color.Color) {
+	a.drawFrameWithBottom(screen, combatBottomTileRow, foreground, accent)
+	if a == nil || a.symbolBand4.ItemCount <= frameHorizontalItem {
+		return
+	}
+	palette := a.artPalette()
+	scale := logicalWidth / 320
+	put := func(item, column, row int) {
+		a.drawSymbol(screen, item, column*frameTileSize*scale, row*frameTileSize*scale, scale, palette)
+	}
+	for row := 1; row < combatBottomTileRow; row++ {
+		put(frameVerticalItem, combatBoardRightTileCol, row)
+	}
+	put(frameCornerItem, combatBoardRightTileCol, 0)
+	put(frameCornerItem, combatBoardRightTileCol, combatBottomTileRow)
+}
+
+func (a *app) drawFrameWithBottom(screen *ebiten.Image, bottomRow int,
+	foreground, accent color.Color) {
 	if a == nil || a.symbolBand4.ItemCount <= frameHorizontalItem {
 		drawPlainFrame(screen, a.text(msgFrameTitle), foreground, accent)
 		return
@@ -50,16 +82,16 @@ func (a *app) drawFrame(screen *ebiten.Image, foreground, accent color.Color) {
 	}
 	for column := 1; column < columns-1; column++ {
 		put(frameHorizontalItem, column, 0)
-		put(frameHorizontalItem, column, frameBottomTileRow)
+		put(frameHorizontalItem, column, bottomRow)
 	}
-	for row := 1; row < frameBottomTileRow; row++ {
+	for row := 1; row < bottomRow; row++ {
 		put(frameVerticalItem, 0, row)
 		put(frameVerticalItem, columns-1, row)
 	}
 	put(frameCornerItem, 0, 0)
 	put(frameCornerItem, columns-1, 0)
-	put(frameCornerItem, 0, frameBottomTileRow)
-	put(frameCornerItem, columns-1, frameBottomTileRow)
+	put(frameCornerItem, 0, bottomRow)
+	put(frameCornerItem, columns-1, bottomRow)
 	drawText(screen, a.text(msgFrameTitle), 20, 36, foreground)
 }
 

@@ -13,25 +13,31 @@ import (
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
+// 戰鬥畫面照原版的版面（spec 129）：外框下緣在 tile row 22、第 22 欄豎一條
+// 把畫面切成左邊的戰場與右邊的資訊欄；戰場內部是 7×7 格，一格三個字元格。
+// 換算到 640×400（原版的兩倍）就是下面這幾個數字。
 const (
-	tacticalCellSize = 10
-	tacticalLeft     = 70
-	// 盤面往上挪，讓底下擠得下四行資訊。25 列 × 10 像素從 46 畫到 295，
-	// 四行基線 312／330／348／366，行距 18——漢字字型的 ascent 是 14，
-	// 18 的行距不相疊。最後一行落在 366，那是外框下緣讓出來的最後一條基線
-	//（下框 tile 在邏輯 y 368..383，spec 123）。
-	//
-	// **最後一行原本畫在 370、盤面從 58 起**：370 既壓到下框，又和全域
-	// 功能鍵列（366）疊在一起，繁中字型下就是兩行字糊成一團。四行要同時
-	// 避開盤面與下框，只有把盤面往上挪才排得開。那一列由這一頁自己接管
-	//（`drawTactical` 畫指令提示），全域那一列不畫。
-	tacticalTop = 46
+	// combatBoardLeft／Top 是戰場內部的左上角（native 8,8）。
+	combatBoardLeft = 16
+	combatBoardTop  = 16
+	// combatBoardCell 是一格的邊長（native 24）。7 × 48 ＝ 336，
+	// 正好鋪滿 x 16..351。
+	combatBoardCell = 48
+	// combatInfoLeft 是右側資訊欄的左界（native 184）。
+	combatInfoLeft = 368
+	// 資訊欄三行的基線。原版三行的字佔 native y 8..14／24..30／40..46，
+	// 兩倍之後是 16../48../80..；倚天字型的 ascent 是 14，所以基線加 14。
+	combatInfoLine1 = 30
+	combatInfoLine2 = 62
+	combatInfoLine3 = 94
+	// combatNoteLine 是 remake 自己加的那一行（原版沒有）：標明這一頁哪幾項
+	// 還是暫定的。放在資訊欄最下面，不動原版那三行的位置。
+	combatNoteLine = 242
+	// 那一塊排得下幾行、一行幾個半形位。資訊欄寬 640−368−16 ＝ 256，
+	// 一個半形位 8 像素。
+	combatNoteColumns = 30
+	combatNoteLines   = 5
 
-	// 四行資訊的基線。最後一行也是外框讓出來的下限。
-	tacticalLine1        = 312
-	tacticalLine2        = 330
-	tacticalLine3        = 348
-	tacticalHintBaseline = footerBaseline
 )
 
 // geoDetailForDirection 取出 GEO cell 在該方向的 detail 位元。
@@ -76,100 +82,49 @@ func geoWallProbe(grid geometry.Grid, partyY int) combat.WallProbe {
 	}
 }
 
-func fillTacticalCell(screen *ebiten.Image, column, row int, ink color.Color) {
-	left := tacticalLeft + column*tacticalCellSize
-	top := tacticalTop + row*tacticalCellSize
-	for y := top; y < top+tacticalCellSize-1; y++ {
-		for x := left; x < left+tacticalCellSize-1; x++ {
-			screen.Set(x, y, ink)
-		}
-	}
-}
-
-// drawTactical 畫出由目前地城位置生成的戰術戰場。這一版只呈現地形，
-// 還沒有 combatant、輸入或回合流程。
+// drawTactical 畫戰鬥畫面。版面照原版（spec 129）：左邊 7×7 格的戰場、
+// 右邊三行資訊、框外一列指令。
+//
+// **這一頁同時是 `F5` 的預覽與實際戰鬥的畫面**——`combatActive` 時按 ENTER
+// 進的是同一支。
+//
+// 原版沒有標題列，也沒有「格／阻擋／隊伍／敵方」那幾個數字：那些是 remake
+// 自己的診斷欄位，現在收進資訊欄底下那一行，跟「哪幾項還是暫定的」一起講。
 func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) {
-	a.drawFrame(screen, foreground, accent)
-	drawText(screen, a.text(msgTacticalTitle), 232, 44, accent)
+	a.drawCombatFrame(screen, foreground, accent)
 	if a.initialMap == nil {
-		drawText(screen, a.text(msgTacticalNoMap), 196, 190, foreground)
+		drawText(screen, a.text(msgTacticalNoMap), combatBoardLeft, combatBoardTop+16, foreground)
 		return
 	}
-
 	if a.tactical == nil {
-		drawText(screen, a.text(msgTacticalNoState), 190, 190, foreground)
+		drawText(screen, a.text(msgTacticalNoState), combatBoardLeft, combatBoardTop+16, foreground)
 		return
 	}
-	grid := a.tactical.Grid
-	classes := a.tactical.Classes
-	skin := a.currentTheme()
-	floor, wall := skin.tacticalFloor, skin.tacticalWall
+	drawCombatBoard(screen, a, foreground)
+	drawCombatInfo(screen, a, foreground, accent)
 
-	painted := 0
-	blocking := 0
-	for row := 0; row < combat.TacticalMapHeight; row++ {
-		for column := 0; column < combat.TacticalMapWidth; column++ {
-			code := grid.Terrain[row*combat.TacticalRowStride+column]
-			if code == combat.UnpaintedCellClass {
-				continue
-			}
-			painted++
-			ink := floor
-			if int(code) < len(classes) && classes[code].EntryThreshold == 0xFF {
-				ink = wall
-				blocking++
-			}
-			fillTacticalCell(screen, column, row, ink)
+	// remake 自己加的兩行：鍵位與「還是暫定的那幾項」。原版沒有這兩行，
+	// 但拿掉的話玩家看得到指令名卻不知道按什麼——remake 還沒有原版那套
+	// 「先按 M 進移動模式」的子模式輸入。
+	// 資訊欄只有 32 個半形位寬，這兩段都比它長，所以照寬度折行；
+	// 不折的話字會直接畫出右框（第一次拍出來就是「結束回合」被切一半）。
+	notes := append(wrapDisplay(a.text(msgTacticalKeys), combatNoteColumns),
+		wrapDisplay(a.text(msgTacticalProvisional), combatNoteColumns)...)
+	for index, line := range notes {
+		if index >= combatNoteLines {
+			break
 		}
+		drawText(screen, line, combatInfoLeft, combatNoteLine+index*18, foreground)
 	}
 
-	roster, friendly := a.tactical.Roster, a.tactical.Friendly
-	occupancy, err := combat.RebuildOccupancy(roster)
-	if err != nil {
-		drawText(screen, "OCCUPANCY ERROR", 232, 190, accent)
-		return
-	}
-	partyInk := color.RGBA{85, 255, 85, 255}
-	foeInk := color.RGBA{255, 85, 85, 255}
-	for row := 0; row < combat.TacticalMapHeight; row++ {
-		for column := 0; column < combat.TacticalMapWidth; column++ {
-			index := occupancy[row*combat.TacticalRowStride+column]
-			if index == 0 {
-				continue
-			}
-			ink := foeInk
-			if int(index) < len(friendly) && friendly[index] {
-				ink = partyInk
-			}
-			fillTacticalCell(screen, column, row, ink)
-		}
-	}
-
-	party, foes := 0, 0
-	for index := 1; index < len(roster); index++ {
-		if friendly[index] {
-			party++
-		} else {
-			foes++
-		}
-	}
-
-	drawText(screen, fmt.Sprintf(a.text(msgTacticalBoard),
-		a.spawn.X, a.spawn.Y, painted, blocking, party, foes), 70, tacticalLine1, foreground)
-	drawText(screen, fmt.Sprintf(a.text(msgTacticalRound),
-		a.tactical.Round, a.tactical.Mover, a.tactical.Scores[a.tactical.Mover],
-		a.tactical.Budget(), a.tactical.BudgetSource, a.tactical.Status), 70, tacticalLine2, foreground)
-	drawText(screen, fmt.Sprintf("%s   %s", a.text(msgTacticalProvisional), a.tactical.FoeLog),
-		70, tacticalLine3, foreground)
-	// 挑目標的時候那一列換成瞄準列——同一條基線，兩者不會同時出現。
+	// 最下面那一列。挑目標的時候換成瞄準列——同一條基線，兩者不會同時出現。
 	if !a.castTargeting || len(a.castTargets) == 0 {
-		hint := a.text(msgTacticalKeys) + "  " + a.text(msgCastHint)
+		line := a.combatCommandBar()
 		if a.tactical.Prompt {
-			hint = a.text(msgTacticalPrompt)
+			line = a.text(msgTacticalPrompt)
 		}
-		drawText(screen, hint, 70, tacticalHintBaseline, accent)
+		drawText(screen, line, 0, footerBaseline, accent)
 	}
-	drawText(screen, a.text(msgTacticalBack), 500, tacticalLine1, foreground)
 	drawCastMenu(screen, a, foreground, accent)
 	drawCastTargeting(screen, a, accent)
 }
@@ -185,12 +140,12 @@ func drawCastTargeting(screen *ebiten.Image, a *app, accent color.Color) {
 	if a.castManual {
 		drawText(screen, fmt.Sprintf(a.text(msgCastAimManual),
 			a.castPending.Label, a.castManualX, a.castManualY, view.X, view.Y),
-			70, tacticalHintBaseline, accent)
+			0, footerBaseline, accent)
 		return
 	}
 	target := a.castTargets[a.castTargetCursor]
 	drawText(screen, fmt.Sprintf(a.text(msgCastAiming), a.castPending.Label, target, view.X, view.Y),
-		70, tacticalHintBaseline, accent)
+		0, footerBaseline, accent)
 }
 
 // drawCastMenu 把施法清單畫在盤面右邊。只列得出已經讀過處理常式的法術，
@@ -205,7 +160,7 @@ func drawCastMenu(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 			cursor, ink = ">", accent
 		}
 		drawText(screen, fmt.Sprintf("%s%s", cursor, option.Label),
-			420, 100+index*16, ink)
+			combatInfoLeft, combatInfoLine3+32+index*18, ink)
 	}
 }
 
@@ -418,8 +373,8 @@ type tacticalState struct {
 	// 是在盤上生一個活的物件；地形寫在 Grid.Terrain 裡，這條串列記著
 	// 每一團的雲心、蓋過哪幾格與那幾格原本的地形。
 	Clouds gamepack.CloudList
-	// Viewport 是戰術地圖 record 的 `+2`／`+3`：6×6 視窗左上角對到哪一格
-	// （spec 127）。原版一次只畫得下 6×6，瞄準時的 Manual 游標與 `Center`
+	// Viewport 是戰術地圖 record 的 `+2`／`+3`：7×7 視窗左上角對到哪一格
+	// （spec 127）。原版一次只畫得下 7×7，瞄準時的 Manual 游標與 `Center`
 	// 都在捲它；remake 目前整張盤面都畫得出來，所以它只影響狀態列顯示，
 	// 捲動的規則本身照原版接在 combat.RecentreViewport 裡。
 	//

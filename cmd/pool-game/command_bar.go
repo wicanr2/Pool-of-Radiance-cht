@@ -91,7 +91,9 @@ func (a *app) adventureCommandInput() (bool, error) {
 func drawCommandBar(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	// 基線是 `footerBaseline`：外框下緣那一列 tile（邏輯 y 368..383，
 	// spec 123）**下面**那一條，與原版同一個位置。
-	x := 20
+	// 從畫面最左邊起，跟原版一樣（量到的起點是 native x 0..1，
+	// 也就是邏輯 0..2）。那一列在框外面，不受框的內縮限制。
+	x := 0
 	for _, command := range a.adventureCommandList() {
 		label := a.commandLabel(command)
 		// **按 rune 切，不是按位元組。** 中文標籤第一個 byte 切下去會切在

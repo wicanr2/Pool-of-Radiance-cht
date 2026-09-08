@@ -1,13 +1,4 @@
 {
-  "schema": "pool-dos-parity-sample/2",
-  "captured_at": "2026-09-08",
-  "release": "v1.1.2-dev（本機建置，未發布；含 APPROACH 隊伍面板修正）",
-  "flavour": "patch",
-  "lang": "en",
-  "source_commit": "360d521b666c606dd7cc81581297b1b65a6dff20",
-  "oracle": "dosgolem master fd74640（cmd/shots）；不使用 DOSBox 執行",
-  "method": "AppImage 在 Xvfb 裡的真視窗截圖，最近鄰降到 320x200 後對回 EGA 16 色，與 dosgolem 的色號陣列逐格比。英文模式跑，把語言從變數裡拿掉。",
-  "reading": "kind=pixel-parity 的兩張是逐格相同的宣稱；kind=layout 的十張量的是**版面差異**，不是缺陷計數——remake 的畫布是 640x400、原版是 320x200 的文字排版，元素位置本來就不同。那幾張要看的是 frame_ratio（外框幾何）與逐張判讀，不是整張比例。整張比例甚至會因為補上一個原版有的元素而下降（intro 補了隊伍面板之後 50275→50201），因為它畫在 remake 自己的座標上。",
   "screens": [
     {
       "name": "title",
@@ -37,13 +28,13 @@
       "reference": "11-Return.png",
       "reference_step": 47300000,
       "remake": "remake-menu-empty.png",
-      "same": 61368,
+      "same": 61388,
       "total": 64000,
-      "ratio": 0.9589,
+      "ratio": 0.9592,
       "note": "人物管理選擇項，空隊伍",
-      "frame_same": 8042,
-      "frame_total": 8064,
-      "frame_ratio": 0.9973
+      "frame_same": 7936,
+      "frame_total": 7936,
+      "frame_ratio": 1.0
     },
     {
       "name": "race",
@@ -51,12 +42,12 @@
       "reference": "12-c.png",
       "reference_step": 50500000,
       "remake": "remake-race.png",
-      "same": 62409,
+      "same": 62392,
       "total": 64000,
-      "ratio": 0.9751,
+      "ratio": 0.9749,
       "note": "種族",
-      "frame_same": 8064,
-      "frame_total": 8064,
+      "frame_same": 7936,
+      "frame_total": 7936,
       "frame_ratio": 1.0
     },
     {
@@ -65,12 +56,12 @@
       "reference": "13-Return.png",
       "reference_step": 53600000,
       "remake": "remake-gender.png",
-      "same": 63364,
+      "same": 63347,
       "total": 64000,
-      "ratio": 0.9901,
+      "ratio": 0.9898,
       "note": "性別",
-      "frame_same": 8064,
-      "frame_total": 8064,
+      "frame_same": 7936,
+      "frame_total": 7936,
       "frame_ratio": 1.0
     },
     {
@@ -79,12 +70,12 @@
       "reference": "14-Return.png",
       "reference_step": 56700000,
       "remake": "remake-class.png",
-      "same": 62832,
+      "same": 62815,
       "total": 64000,
-      "ratio": 0.9818,
+      "ratio": 0.9815,
       "note": "職業",
-      "frame_same": 8064,
-      "frame_total": 8064,
+      "frame_same": 7936,
+      "frame_total": 7936,
       "frame_ratio": 1.0
     },
     {
@@ -93,12 +84,12 @@
       "reference": "15-Return.png",
       "reference_step": 60000000,
       "remake": "remake-alignment.png",
-      "same": 60406,
+      "same": 60389,
       "total": 64000,
-      "ratio": 0.9438,
+      "ratio": 0.9436,
       "note": "陣營",
-      "frame_same": 8064,
-      "frame_total": 8064,
+      "frame_same": 7936,
+      "frame_total": 7936,
       "frame_ratio": 1.0
     },
     {
@@ -107,13 +98,13 @@
       "reference": "16-Return.png",
       "reference_step": 64600000,
       "remake": "remake-sheet.png",
-      "same": 54499,
+      "same": 54500,
       "total": 64000,
-      "ratio": 0.8515,
+      "ratio": 0.8516,
       "note": "人物資料頁（KEEP THIS CHARACTER?）",
-      "frame_same": 7906,
-      "frame_total": 8064,
-      "frame_ratio": 0.9804
+      "frame_same": 7808,
+      "frame_total": 7936,
+      "frame_ratio": 0.9839
     },
     {
       "name": "name",
@@ -121,13 +112,13 @@
       "reference": "19-y.png",
       "reference_step": 74400000,
       "remake": "remake-name.png",
-      "same": 54886,
+      "same": 54882,
       "total": 64000,
-      "ratio": 0.8576,
+      "ratio": 0.8575,
       "note": "姓名輸入",
-      "frame_same": 7914,
-      "frame_total": 8064,
-      "frame_ratio": 0.9814
+      "frame_same": 7808,
+      "frame_total": 7936,
+      "frame_ratio": 0.9839
     },
     {
       "name": "portrait",
@@ -135,13 +126,13 @@
       "reference": "24-Return.png",
       "reference_step": 90100000,
       "remake": "remake-portrait.png",
-      "same": 58974,
+      "same": 58962,
       "total": 64000,
-      "ratio": 0.9215,
+      "ratio": 0.9213,
       "note": "肖像編輯器（原版底下是 HEAD BODY KEEP）",
-      "frame_same": 7900,
-      "frame_total": 8064,
-      "frame_ratio": 0.9797
+      "frame_same": 7808,
+      "frame_total": 7936,
+      "frame_ratio": 0.9839
     },
     {
       "name": "icon",
@@ -149,13 +140,13 @@
       "reference": "25-k.png",
       "reference_step": 94100000,
       "remake": "remake-icon.png",
-      "same": 58920,
+      "same": 58950,
       "total": 64000,
-      "ratio": 0.9206,
+      "ratio": 0.9211,
       "note": "戰鬥造形設計（原版是 OLD／NEW 四格加底部指令列）",
-      "frame_same": 8039,
-      "frame_total": 8064,
-      "frame_ratio": 0.9969
+      "frame_same": 7936,
+      "frame_total": 7936,
+      "frame_ratio": 1.0
     },
     {
       "name": "menu-party",
@@ -163,13 +154,13 @@
       "reference": "30-e.png",
       "reference_step": 110700000,
       "remake": "remake-menu-party.png",
-      "same": 58226,
+      "same": 58246,
       "total": 64000,
-      "ratio": 0.9098,
+      "ratio": 0.9101,
       "note": "人物管理選擇項，隊伍裡有人",
-      "frame_same": 8042,
-      "frame_total": 8064,
-      "frame_ratio": 0.9973
+      "frame_same": 7936,
+      "frame_total": 7936,
+      "frame_ratio": 1.0
     },
     {
       "name": "intro",
@@ -177,13 +168,27 @@
       "reference": "31-b.png",
       "reference_step": 147100000,
       "remake": "remake-intro.png",
-      "same": 50201,
+      "same": 50240,
       "total": 64000,
-      "ratio": 0.7844,
+      "ratio": 0.785,
       "note": "按下 B 之後的第一幕",
-      "frame_same": 7566,
-      "frame_total": 8064,
-      "frame_ratio": 0.9382
+      "frame_same": 7463,
+      "frame_total": 7936,
+      "frame_ratio": 0.9404
+    },
+    {
+      "name": "combat",
+      "kind": "layout",
+      "reference": "49-Return.png",
+      "reference_step": 603300000,
+      "remake": "remake-tactical.png",
+      "same": 34420,
+      "total": 64000,
+      "ratio": 0.5378,
+      "note": "戰鬥畫面（spec 129）。原版那一側是第一場遭遇，remake 這一側是 F5 叫出來的同一支繪製——盤面內容本來就不同，這一項看的是版面",
+      "frame_same": 9152,
+      "frame_total": 9152,
+      "frame_ratio": 1.0
     },
     {
       "name": "first-person-vs-dosbox",

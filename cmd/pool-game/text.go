@@ -257,6 +257,13 @@ const (
 	// F1 說明頁。整頁的鍵盤說明放同一條，用換行分隔。
 	msgHelpTitle
 	msgHelpKeys
+	// 戰鬥畫面右側的資訊欄（spec 129）。`HITPOINTS` 與 `AC` 照原版留英文，
+	// 與隊伍面板的欄名同一個處理。
+	msgCombatHitPoints
+	msgCombatArmorClass
+	// 行動的是怪物時資訊欄第一行放什麼。原版放怪物名（`"OGRE" G.R.X`），
+	// remake 還沒有把名字接到戰術格上。
+	msgCombatFoe
 	// 外框上緣那一行。**原版沒有這一行**（見 `docs/audit/dos-parity-sample.md`
 	// 的 31-b），是 remake 自己加的識別，所以它走譯文表而不是寫死英文。
 	msgFrameTitle

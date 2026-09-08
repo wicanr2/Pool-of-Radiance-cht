@@ -204,7 +204,7 @@ func (a *app) castTargetingInput() error {
 		// 原版瞄準列的第三項。進去之後游標停在目前挑到的那一格。
 		a.beginManualAim()
 	case a.justPressed(ebiten.KeyC):
-		// 原版瞄準列的第四項（overlay-13 `3714h`）：把 6×6 視窗捲到
+		// 原版瞄準列的第四項（overlay-13 `3714h`）：把 7×7 視窗捲到
 		// 讓目前這個目標落在正中央（餘裕 0），選到誰不變。
 		a.centreOnTarget()
 	case a.justPressed(ebiten.KeyEscape):

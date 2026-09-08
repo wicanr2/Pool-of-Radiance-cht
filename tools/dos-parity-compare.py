@@ -130,29 +130,43 @@ def to_indices(rgb):
 FRAME_ROWS = list(range(0, 8)) + list(range(184, 192))
 FRAME_COLS = list(range(0, 8)) + list(range(312, 320))
 
+# 戰鬥畫面用的是另一套框（spec 129）：下緣高一列（176..183），而且第 22 欄
+# （176..183）還有一條直的，把畫面切成左邊的戰場與右邊的資訊欄。
+COMBAT_FRAME_ROWS = list(range(0, 8)) + list(range(176, 184))
+COMBAT_FRAME_COLS = list(range(0, 8)) + list(range(176, 184)) + list(range(312, 320))
 
-def frame_cells():
-    """外框那一圈的格子座標。"""
+
+def frame_cells(rows, cols):
+    """外框那一圈的格子座標。
+
+    直行只算到框的下緣，**不延伸到畫面最底**：框下面那一條（native 192..198）
+    是指令列，是文字不是框。把它算進來的話，兩邊語言不同就會被記成框線對不上
+    ——一開始戰鬥那一項差的 72 格全部落在那七列，一格框線都沒差。
+    """
+    bottom = max(rows)
     cells = set()
-    for y in FRAME_ROWS:
+    for y in rows:
         for x in range(WIDTH):
             cells.add((x, y))
-    for x in FRAME_COLS:
-        for y in range(HEIGHT):
+    for x in cols:
+        for y in range(bottom + 1):
             cells.add((x, y))
     return sorted(cells)
 
 
-FRAME = frame_cells()
+FRAME = frame_cells(FRAME_ROWS, FRAME_COLS)
+COMBAT_FRAME = frame_cells(COMBAT_FRAME_ROWS, COMBAT_FRAME_COLS)
 
 
-def compare_frame(reference, actual):
+def compare_frame(reference, actual, cells=None):
     """只比外框那一圈。框線對不對得上是幾何問題，與文字語言無關。"""
+    if cells is None:
+        cells = FRAME
     same = 0
-    for x, y in FRAME:
+    for x, y in cells:
         if reference[y * WIDTH + x] == actual[y * WIDTH + x]:
             same += 1
-    return same, len(FRAME)
+    return same, len(cells)
 
 
 def compare(reference, actual, box):
@@ -231,6 +245,10 @@ def main():
         {"name": "intro", "kind": "layout",
          "digest": "3717ce93", "remake": "remake-intro.png",
          "note": "按下 B 之後的第一幕"},
+        {"name": "combat", "kind": "layout", "frame": "combat",
+         "digest": "1bcdbd55", "remake": "remake-tactical.png",
+         "note": "戰鬥畫面（spec 129）。原版那一側是第一場遭遇，remake 這一側是"
+                 " F5 叫出來的同一支繪製——盤面內容本來就不同，這一項看的是版面"},
     ]
 
     report = {"screens": []}
@@ -266,7 +284,8 @@ def main():
         }
         line = f"{item['name']:14s} 整張 {same:6d}/{total:6d} = {same / total:6.2%}"
         if item["kind"] == "layout":
-            fs, ft = compare_frame(reference, actual)
+            cells = COMBAT_FRAME if item.get("frame") == "combat" else FRAME
+            fs, ft = compare_frame(reference, actual, cells)
             entry["frame_same"], entry["frame_total"] = fs, ft
             entry["frame_ratio"] = round(fs / ft, 4)
             line += f"   外框 {fs:5d}/{ft:5d} = {fs / ft:6.2%}"

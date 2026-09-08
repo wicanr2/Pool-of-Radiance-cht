@@ -158,6 +158,11 @@ shot remake-intro
 step Return adventure-move 60
 sleep 0.6
 shot remake-first-person
+# 戰鬥畫面（spec 129）。原版那一側是走到第一場遭遇拍的；remake 這一側用 F5
+# 叫出同一支繪製——盤面內容本來就不同，這一項看的是版面。
+step F5 tactical
+sleep 0.6
+shot remake-tactical
 
 python3 /tools/dos-parity-compare.py /ref /out /ref-dosbox
 '

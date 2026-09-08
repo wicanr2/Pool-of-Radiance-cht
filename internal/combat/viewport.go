@@ -2,8 +2,13 @@ package combat
 
 // 戰術地圖的捲動視窗（overlay-32 `07D4h`）。
 //
-// 原版的戰術畫面一次只看得到 **6×6 格**：重畫迴圈兩層都數到 6，每畫一格
-// 螢幕座標加 3、地圖座標加 1，資料讀 `[DS:6674h] + 7 + y*32h + x`。
+// 原版的戰術畫面一次只看得到 **7×7 格**：重畫迴圈兩層都是 Pascal 的
+// `for … to 6`，也就是 0..6 共**七**次；每畫一格螢幕座標加 3（三個 8×8
+// 字元格 ＝ 24 像素）、地圖座標加 1，資料讀 `[DS:6674h] + 7 + y*32h + x`。
+//
+// 七格是量出來的，不是從迴圈上界推的：原版戰鬥畫面的戰場區內部是
+// 168×168 像素（spec 129 的色號量測），168 ÷ 24 ＝ 7。中心在原點 +3
+// 對七格視窗正好是正中央，對六格則沒有正中央——兩邊互相印證。
 // 視窗左上角就是戰術地圖 record 的 `+2`／`+3`（[ViewportOrigin]），
 // 所以視窗中心是原點加 3。
 //
@@ -14,14 +19,18 @@ package combat
 //	0813  框 ＝ [cx−餘裕, cx+餘裕] × [cy−餘裕, cy+餘裕]
 //	084C  餘裕 ≠ 0FFh 且 (X,Y) 在框內 → 回 0（不捲、不重畫）
 //	0875  否則把 cx 一格一格朝 X 移，夾在 3..2Eh；cy 朝 Y 移，夾在 3..15h
-//	08E5  新的 cx−3／cy−3 寫回 `+2`／`+3`，重畫整個 6×6 視窗，回 1
+//	08E5  新的 cx−3／cy−3 寫回 `+2`／`+3`，重畫整個 7×7 視窗，回 1
 //
 // **餘裕就是「離中心多遠才捲」**：Manual 的格子游標用 3（走到視窗邊緣才捲），
 // `Center` 與火球術的雲心用 0（一定捲到正中央）。`0FFh` 是「不看框、直接
 // 重畫」，餘裕仍當 0。
 const (
-	// ViewportTileSpan 是視窗的邊長（格）。
-	ViewportTileSpan = 6
+	// ViewportTileSpan 是視窗的邊長（格）。迴圈的上界是 6，跑的是 0..6，
+	// 所以邊長是 7 不是 6。
+	ViewportTileSpan = 7
+	// ViewportTilePixels 是一格在原版畫面上佔幾個像素（螢幕座標一次加 3 個
+	// 8×8 字元格）。7 × 24 ＝ 168，正好是戰場區內部的邊長。
+	ViewportTilePixels = 24
 	// ViewportCentreOffset 是中心相對於原點的位移（`07EAh`／`07F9h` 的 +3）。
 	ViewportCentreOffset = 3
 
@@ -53,7 +62,7 @@ func stepCentre(centre, target, low, high int) int {
 	return centre
 }
 
-// RecentreViewport 重現 overlay-32 `07D4h`：把 6×6 視窗捲到讓 (x, y) 落在
+// RecentreViewport 重現 overlay-32 `07D4h`：把 7×7 視窗捲到讓 (x, y) 落在
 // 距離中心 margin 格的框裡。第二個回傳值就是原版的 AL——true 代表捲了
 // 並且重畫過，false 代表本來就在框內、原點一個位元組都沒動。
 //

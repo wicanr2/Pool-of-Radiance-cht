@@ -265,6 +265,9 @@ type app struct {
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
 	endingScript     gamepack.EndingScript
+	// combatCommands 是戰鬥指令列那六段原版字串（spec 129）。哪幾段接上去
+	// 由 `combatCommandBar` 依角色算。
+	combatCommands []gamepack.CombatCommandSegment
 	// eclSessionArchive 是 ECL session 目前握著哪一份 archive 的區塊。
 	// 與 `eclArchive` 分開：後者是地圖與素材命名用的鏡像，會先一步更新。
 	eclSessionArchive uint8
@@ -392,6 +395,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.spellCaster = spellCaster
+	// 戰鬥指令列的六段。讀不到就讓它是空的——那一列不畫，不要拿寫死的
+	// 八項頂替：頂替出來的畫面看起來是對的，而玩家按下去沒有反應。
+	if segments, err := gamepack.ReadDOSCombatCommands(zipPath); err == nil {
+		application.combatCommands = segments
+	}
 	endingScript, err := gamepack.ReadDOSEndingScript(zipPath)
 	if err != nil {
 		return nil, err

@@ -36,7 +36,9 @@ test -f "$SOURCE/start.exe" || {
 # 名字**一個字母一個 script 項**：整串一次推進佇列時，原版的輸入欄只收得到
 # 最後一個字（量到的結果是 `O.cha` 不是 `HERO.CHA`）。原因還沒解，
 # 所以照會動的方式送，不要假設它跟一次推一串等價。
-KEYS="${POOL_DOSGOLEM_KEYS:-rep:9:Space,Return,Return,c,Return,Return,Return,Return,Return,Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:14:Return}"
+# 導覽結束之後**再往前走三步**就會撞上第一場遭遇（`YOU ARE SURPRISED BY …`），
+# 接著按 Return 進戰鬥畫面——spec 129 的基準就是那一幀。
+KEYS="${POOL_DOSGOLEM_KEYS:-rep:9:Space,Return,Return,c,Return,Return,Return,Return,Return,Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:14:Return,Up,Up,Up,rep:10:Return}"
 
 rm -rf "$OUT"
 mkdir -p "$OUT" "$ROOT/workplace/dosgolem-scratch"
@@ -59,6 +61,6 @@ docker run --rm --network none --memory 4g --cpus "${PARITY_CPUS:-2}" --pids-lim
   -e GOCACHE=/gocache -e GOMODCACHE=/gomodcache -e HOME=/tmp -e GOFLAGS=-mod=mod \
   -w /dosgolem golang:1.24-bookworm \
   go run ./cmd/shots -exe /orig/start.exe -root /orig -scratch /scratch \
-    -out /out -budget 60000000 -idle 3000000 -keys "$KEYS"
+    -out /out -budget 150000000 -idle 3000000 -keys "$KEYS"
 
 echo "基準畫面 → $OUT"

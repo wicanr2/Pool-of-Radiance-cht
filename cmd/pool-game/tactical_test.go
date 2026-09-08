@@ -515,37 +515,44 @@ func TestCombatMovementKeysAreNotMapShortcuts(t *testing.T) {
 // 指令列都畫在 native 192..198，也就是框下面那一條。
 //
 // 戰術盤面的前三行資訊要落在框上緣以上，第四行就是那一列本身：
-// 那一頁自己接管它，所以全域的功能鍵列不畫，兩邊不會疊在一起。
-func TestTacticalTextStaysAboveTheFrame(t *testing.T) {
-	if tacticalHintBaseline != footerBaseline {
-		t.Fatalf("戰術頁最底下那一行在 %d，功能鍵列在 %d：那一頁接管了這一列，兩個要相同",
-			tacticalHintBaseline, footerBaseline)
+// 戰鬥畫面的版面照原版（spec 129）：戰場 7×7 格鋪滿 x 16..351，
+// 資訊欄從 368 起，最下面那一列在外框**外面**。
+//
+// 這一則守的是幾何本身。先前那一版守的是 remake 自己的四行狀態列，
+// 那些行已經不在畫面上了。
+func TestCombatScreenMatchesTheOriginalLayout(t *testing.T) {
+	const ascent, descent = 14, 1
+	// 戰場內部：7 格 × 48 ＝ 336，從 16 鋪到 351；戰場框那一欄 tile 在
+	// 352..367，所以右界不能碰到它。
+	right := combatBoardLeft + combat.ViewportTileSpan*combatBoardCell
+	if want := combatBoardRightTileCol * frameTileSize * (logicalWidth / 320); right != want {
+		t.Errorf("戰場畫到 %d，戰場框那一欄從 %d 起", right, want)
 	}
-	// 盤面 25 列、每列 10 像素，最後一列畫到 tacticalTop+250。第一行資訊的
-	// 字頂（基線 − ascent）要在它下面。
-	const boardBottom = tacticalTop + combat.TacticalMapHeight*tacticalCellSize
-	const ascent = 14
-	baselines := []int{tacticalLine1, tacticalLine2, tacticalLine3, tacticalHintBaseline}
-	if baselines[0]-ascent < boardBottom {
-		t.Errorf("第一行的字頂 %d 壓到盤面底 %d", baselines[0]-ascent, boardBottom)
+	// 資訊欄要在戰場框右邊那一欄之後。
+	if combatInfoLeft < right+frameTileSize*(logicalWidth/320) {
+		t.Errorf("資訊欄左界 %d 壓到戰場框（%d..）", combatInfoLeft, right)
 	}
-	for index := 1; index < len(baselines); index++ {
-		if gap := baselines[index] - baselines[index-1]; gap < ascent+1 {
-			t.Errorf("第 %d 行與上一行只差 %d 像素，ascent 是 %d：會疊在一起",
-				index+1, gap, ascent)
+	// 三行不相疊，而且都在外框下緣（352..367）以上。
+	lines := []int{combatInfoLine1, combatInfoLine2, combatInfoLine3}
+	for index := 1; index < len(lines); index++ {
+		if gap := lines[index] - lines[index-1]; gap < ascent+1 {
+			t.Errorf("資訊欄第 %d 行與上一行只差 %d 像素", index+1, gap)
 		}
 	}
-	// 前三行要停在框上緣（368）以上。
-	if bottom := tacticalLine3 + 1; bottom > 368 {
-		t.Errorf("第三行的字底 %d 已經畫進下框（368..383）", bottom)
+	bottomFrameTop := combatBottomTileRow * frameTileSize * (logicalWidth / 320)
+	if bottom := combatNoteLine + (combatNoteLines-1)*18 + descent; bottom > bottomFrameTop {
+		t.Errorf("備註最後一行的字底 %d 畫進下框（%d..）", bottom, bottomFrameTop)
 	}
-	// 最後那一行整條要落在框**外面**那一帶（384..399），不能壓到框，
-	// 也不能掉出畫布。
-	const descent = 1
-	if top := tacticalHintBaseline - ascent; top < 384 {
-		t.Errorf("最底下那一行的字頂 %d 壓到下框（368..383）", top)
+	// 備註那一塊的寬度要放得進資訊欄，不然字會畫出右框。
+	if width := combatNoteColumns * 8; combatInfoLeft+width > logicalWidth-16 {
+		t.Errorf("備註 %d 個半形位從 %d 起會畫到 %d，右框從 %d 起",
+			combatNoteColumns, combatInfoLeft, combatInfoLeft+width, logicalWidth-16)
 	}
-	if bottom := tacticalHintBaseline + descent; bottom > logicalHeight {
-		t.Errorf("最底下那一行的字底 %d 掉出畫布（%d）", bottom, logicalHeight)
+	// 最下面那一列整條要落在框外那一帶。
+	if top := footerBaseline - ascent; top < bottomFrameTop+frameTileSize*(logicalWidth/320) {
+		t.Errorf("指令列的字頂 %d 壓到下框", top)
+	}
+	if bottom := footerBaseline + descent; bottom > logicalHeight {
+		t.Errorf("指令列的字底 %d 掉出畫布（%d）", bottom, logicalHeight)
 	}
 }

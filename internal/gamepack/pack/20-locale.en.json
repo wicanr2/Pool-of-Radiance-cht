@@ -239,7 +239,10 @@
       "ui.trainNeedsMember": "Choose a character with 1-6 before training.",
       "ui.trainNotYet": " does not have enough experience to train.",
       "ui.whoPrompt": "Who?",
-      "ui.frameTitle": "SSI GOLD BOX / POOL REMAKE"
+      "ui.frameTitle": "SSI GOLD BOX / POOL REMAKE",
+      "ui.combatHitPoints": "HITPOINTS",
+      "ui.combatArmorClass": "AC",
+      "ui.combatFoe": "FOE"
     }
   }
 }
