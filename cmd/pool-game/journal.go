@@ -123,6 +123,20 @@ func (s *journalState) jump(id string) bool {
 	return false
 }
 
+// jumpTo 切到某一章別再跳。`jump` 只在目前這一章裡找，而自動翻頁時
+// 引用哪一章是文字自己講的。
+func (s *journalState) jumpTo(kind journal.Kind, id string) bool {
+	for index, candidate := range journal.Kinds {
+		if candidate != kind {
+			continue
+		}
+		s.kind = index
+		s.typed, s.message = "", ""
+		return s.jump(id)
+	}
+	return false
+}
+
 func (s *journalState) scrollBy(delta int) {
 	max := len(s.rendered) - journalLineCount
 	if max < 0 {

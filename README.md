@@ -49,11 +49,14 @@
   另有測試拿盤點檔逐條核對每個原文都真的存在。用詞以軟體世界的官方說明書與
   探險者手冊為準，說明書沒收的專名逐條記在 `docs/reference/manual/glossary.md`。
   戰術畫面已中文化。
-- **探險者手冊進遊戲了**：說明書上冊的線索報導 58 條、酒店傳言 23 條與議會公告
-  18 則共 99 條，由 `cmd/pool-journal-corpus` 從轉錄稿切成
-  `internal/journal`，遊戲裡按 `J` 開啟，直接打編號就跳到那一條。畫面說
-  「成為線索報導 46」時，玩家不必再去找三十多年前的紙本說明書。
-  下冊附錄的規則表（金錢換算、法術表、武器表）還沒接。
+- **探險者手冊進遊戲了，而且不必自己翻**：說明書上冊的線索報導 58 條、
+  酒店傳言 23 條與議會公告 18 則共 99 條，由 `cmd/pool-journal-corpus` 從
+  轉錄稿切成 `internal/journal`。**畫面說「成為線索報導 46」時，按繼續的
+  那一下就直接翻到那一則**（spec 132）——玩家不必再去找三十多年前的紙本
+  說明書，也不必自己按 `J` 打編號。一段話報好幾則（市政廳外牆一次報四則
+  公告）就一則一則翻，框外那一列同時顯示還剩幾則。`J` 仍然開得起來，
+  直接打編號就跳到那一條。下冊附錄的規則表（金錢換算、法術表、武器表）
+  還沒接。
 - **武器會影響戰鬥了**：物品型別表不在執行檔裡（`DS:54E0h` 那段是未初始化的），
   來源是 ZIP 的 `poolrad/items`。索引由墓園那把 `Two-Handed Sword +1` 正對照
   釘住：它的記錄寫 `+2Eh = 26h`，而表的第 `26h` 筆正是雙手劍的 1d10／3d6。
@@ -270,6 +273,13 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 | `J` 探險者手冊 | 同一本翻到線索報導 46 |
 |---|---|
 | ![探險者手冊](docs/screenshots/pool-remake-chinese-journal.png) | ![線索報導 46](docs/screenshots/pool-remake-chinese-journal-46.png) |
+
+| 市政廳外牆報了四則公告 | 按下去就翻到 LXIV |
+|---|---|
+| ![引用提示](docs/screenshots/pool-remake-chinese-journal-cue.png) | ![議會公告 LXIV](docs/screenshots/pool-remake-chinese-journal-proclamation.png) |
+
+原版在這裡只寫得下編號，玩家要自己翻紙本。remake 把手冊收進遊戲，所以那一下
+ENTER 直接翻過去；四則公告一則一則翻完，才輪到「繼續」（spec 132）。
 
 | `I` 裝備頁 | |
 |---|---|

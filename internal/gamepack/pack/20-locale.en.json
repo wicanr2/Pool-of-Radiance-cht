@@ -272,7 +272,9 @@
       "ui.spriteMonsters": "BOARD ICONS (MONSTERS AND CHARACTERS SHARE THESE 32)",
       "ui.spriteNoMonsters": "Monster sprites could not be loaded.",
       "ui.spriteEffects": "COMBAT EFFECTS (MISSILES AND BLASTS)",
-      "ui.spriteTerrain": "COMBAT TERRAIN TILES (24x24 PER CELL)"
+      "ui.spriteTerrain": "COMBAT TERRAIN TILES (24x24 PER CELL)",
+      "ui.journalCue": "ENTER TO OPEN %s %s",
+      "ui.journalCueMore": "ENTER TO OPEN %s %s (%d MORE)"
     }
   }
 }

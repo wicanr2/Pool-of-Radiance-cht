@@ -97,6 +97,8 @@ var messageKeys = map[messageID]string{
 	msgSpriteNoMonsters: "ui.spriteNoMonsters",
 	msgSpriteEffects: "ui.spriteEffects",
 	msgSpriteTerrain: "ui.spriteTerrain",
+	msgJournalCue: "ui.journalCue",
+	msgJournalCueMore: "ui.journalCueMore",
 	msgViewSheetPick: "ui.viewSheetPick",
 	msgViewSheetFooter: "ui.viewSheetFooter",
 	msgSheetLevel: "ui.sheetLevel",

@@ -272,6 +272,10 @@ type app struct {
 	spriteIcons     []*ebiten.Image
 	spriteMonsters  [][2]*ebiten.Image
 	spriteEffects   [][2]*ebiten.Image
+	// journalCue 是文字框現在引用的手冊條目，按繼續那一下就翻過去；
+	// journalCueDone 記這一格已經翻過哪幾則，免得讀完回來又彈一次。
+	journalCues    []journalCue
+	journalCueDone map[journalCue]bool
 	// boardIcons 是戰場上每一種造形載好的圖，載一次就留著。
 	boardIcons map[boardIcon]*ebiten.Image
 	// combatTiles 是戰場的地形圖塊，一組（DUNGCOM／WILDCOM／RANDCOM）載一次。
@@ -961,6 +965,15 @@ func (a *app) Update() error {
 					}
 				}
 				if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+					// 文字報了手冊編號就先翻過去（`journal_link.go`）。
+					// 有選單或有其他子系統在等答案時不插隊——那一下 ENTER
+					// 是玩家在回答問題，不是在翻頁。
+					if a.encounter == nil && !a.templeActive && a.parlay == nil &&
+						!a.whoPending && !a.cellWaitingMenu {
+						if cue, ok := a.takeJournalCue(); ok {
+							return a.openJournalAt(cue)
+						}
+					}
 					if a.encounter != nil {
 						return a.selectEncounterOption()
 					}
@@ -2110,6 +2123,7 @@ func (a *app) finishCellBlock() {
 	a.templeActive = false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText, a.eventLabel = "", ""
+	a.journalCues, a.journalCueDone = nil, nil
 	a.rememberGuideCell()
 	a.statusLine = "Moved using original GEO data; per-turn and SearchLocation returned normally."
 }
@@ -2407,6 +2421,7 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 			}
 		}
 	}
+	a.updateJournalCue()
 }
 
 func (a *app) applyECLResult(result eclvm.Result) {
@@ -2847,12 +2862,16 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		drawText(screen, "INITIAL MAP OR WALL ART IS NOT LOADED", 150, 190, foreground)
 		return
 	}
-	viewLeft, viewTop := 48, 86
+	viewLeft, viewTop := 48, 70
 	// 第一人稱那一框在原版也是同一圈繩索圍起來的（spec 123）：外框
 	// native (16,16)..(119,119)、內部 88×88 從 (24,24) 起，也就是**內容外面
 	// 一圈 tile**。這裡照同樣的關係圍在 remake 的 176×176 視野外面。
-	// **絕對位置仍與原版不同**（原版的視野在畫面上方，remake 上面還有一列
-	// 標題），那屬於整體版面，不在這一項裡。
+	//
+	// 視野在 `(48,70)`，所以連繩索在內這一框佔 `(32,54)..(240,278)`——
+	// **一框的下緣是 278，不是視野的 262**。對話框接在 278 底下
+	//（`dialogueTop`）；先前照 262 排，上框線會從繩索中間切過去。
+	// 位置仍比原版低（原版視野在 native `(24,24)`，這裡是 `(24,35)`，
+	// 差在 remake 上面多一列標題），那屬於整體版面，不在這一項裡。
 	a.drawRopeBox(screen, viewLeft-frameTileSize*2, viewTop-frameTileSize*2, 13, 13)
 	// 結局過場時那一格畫的是結局的圖，不是第一人稱視野（spec 108）。
 	if a.endingActive && a.endingScene != nil {
@@ -2860,7 +2879,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		op.GeoM.Scale(2, 2)
 		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
 		screen.DrawImage(a.endingScene, op)
-		drawDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
+		a.showDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
 		return
 	}
 	// APPROACH 的時候原版把半身像整個蓋在那一框上，不是畫視野（spec 117）。
@@ -2882,7 +2901,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 			if a.eventLabel != "" {
 				label = a.eventLabel
 			}
-			drawDialogue(screen, a.gameText.Translate(message), a.gameText.Translate(label), foreground, accent)
+			a.showDialogue(screen, a.gameText.Translate(message), a.dialogueLabel(label), foreground, accent)
 		}
 		return
 	}
@@ -2918,15 +2937,15 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		if a.eventLabel != "" {
 			label = a.eventLabel
 		}
-		drawDialogue(screen, a.gameText.Translate(message), a.gameText.Translate(label), foreground, accent)
+		a.showDialogue(screen, a.gameText.Translate(message), a.dialogueLabel(label), foreground, accent)
 	} else if a.tourActive && a.tourPage >= 0 && a.initialEvent != nil && a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour) {
 		step := a.initialEvent.Tour[a.tourStep]
 		if a.tourPage < len(step.Messages) {
-			drawDialogue(screen, a.gameText.Translate(step.Messages[a.tourPage]),
+			a.showDialogue(screen, a.gameText.Translate(step.Messages[a.tourPage]),
 				a.gameText.Translate(a.initialEvent.ContinueLabel), foreground, accent)
 		}
 	} else if a.cellEventPending && a.eventText != "" {
-		drawDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
+		a.showDialogue(screen, a.eventText, a.dialogueLabel(a.eventLabel), foreground, accent)
 	}
 	if a.statusLine != "" && !dialogueVisible {
 		// 畫面只有 640 寬，從 42 起算放得下 74 個字；超過就截掉，
@@ -3009,19 +3028,30 @@ func poolStageScreenRect(rectangle viewport.BackgroundRect, viewLeft, viewTop in
 	return image.Rect(left, top, left+rectangle.Width*2, top+rectangle.Height*2)
 }
 
-// 對話框的上緣壓在第一人稱框底下（`dialogueTop`）。
+// 對話框的上緣停在第一人稱框**整個**下面（`dialogueTop`）。
 //
-// 原版的文字框在那一框**下面**，兩者不重疊——`03-rolf-approach.png` 的半身像
+// 原版的文字框在那一框下面，兩者不重疊——`03-rolf-approach.png` 的半身像
 // 是整張看得見的。remake 原本把框畫在 `198`，剛好切掉視野下面 64 個像素，
 // 症狀在只畫牆片時看起來像「牆片本來就矮」，換成半身像之後才明顯：Rolf 被
-// 攔腰截斷。視野框是 `(48,86)` 起的 176×176，所以下緣在 262。
+// 攔腰截斷。
+//
+// **視野的 176×176 不是那一框的全部。** 視野是 `(48,70)` 起的 176×176，
+// 下緣 246；但外面還圍著一圈繩索（`drawRopeBox` 從 `(32,54)` 起 13×13 個
+// tile，每個 16 像素），所以那一框真正的下緣在 **262**。照視野的下緣排會讓
+// 對話框的上框線從繩索中間切過去——畫面上看起來是「視野框沒有下緣」，
+// 而不是「有東西蓋住它」，所以不容易發現。
+//
+// 264 也接近原版：原版那一幕（`31-b`）的文字框上緣繩索在 native 129..134
+//（logical 258..269），下緣在 185..190（logical 370..381）。
+//
 // 下緣停在 370：底部那一列說明文字的字頂在 372（基線 386、ascent 14），
-// 畫到 372 以下框線就會壓在字上。264..370 只放得下五列訊息加一列提示。
+// 畫到 372 以下框線就會壓在字上。264..370 這 106 像素放五列訊息：首列基線
+// 282（離上框線兩像素，不然中文字的頂會壓在框線上），末列字底 346。
 const (
 	dialogueTop      = 264
 	dialogueBottom   = 370
 	dialogueLines    = 5
-	dialogueFirstRow = 280
+	dialogueFirstRow = 282
 )
 
 // dialogueVisible 說這一格會不會畫出對話框。
@@ -3049,6 +3079,18 @@ func (a *app) dialogueVisible() bool {
 		return true
 	}
 	return false
+}
+
+// showDialogue 畫對話框，但**面板蓋上來時整段不畫**。
+//
+// 框本身會被面板蓋住，框外那一列提示（`footerBaseline`）卻不會——只擋框、
+// 不擋提示的話，冒險畫面的「按 RETURN 繼續」會與手冊自己的頁尾疊在同一行，
+// 看起來像字型壞了。
+func (a *app) showDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
+	if a.panelOpen() {
+		return
+	}
+	drawDialogue(screen, message, label, foreground, accent)
 }
 
 func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {

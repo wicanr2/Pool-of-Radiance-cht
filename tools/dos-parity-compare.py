@@ -15,6 +15,11 @@ import sys
 import zlib
 
 WIDTH, HEIGHT = 320, 200
+# remake 的第一人稱視野在 native 座標的左上角。原版在 (24,24)；remake 上面
+# 多一列標題，所以往下 11 列。**這個數字有兩個 consumer**（版面比對的
+# `remake_box` 與底下的 DOSBox 交叉核對），先前寫死了兩份，改了一份之後
+# 交叉核對從 100% 掉到 59.89%，而那看起來像 remake 退步了。
+REMAKE_VIEW_LEFT, REMAKE_VIEW_TOP = 24, 35
 
 # 標準 EGA 十六色。dosgolem 的 PNG 與 remake 的畫面用的是同一張表。
 EGA = [
@@ -213,8 +218,9 @@ def main():
             "name": "first-person", "kind": "pixel-parity",
             "digest": "f384683d3f49ece193dcb8eff272e5fe79af836a67db866eefc56fa183952642",
             "remake": "remake-first-person.png",
-            "ref_box": [24, 24, 88, 88], "remake_box": [24, 43, 88, 88],
-            "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 19 列。",
+            "ref_box": [24, 24, 88, 88],
+            "remake_box": [REMAKE_VIEW_LEFT, REMAKE_VIEW_TOP, 88, 88],
+            "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 11 列。",
         },
         # 建隊到進城。這幾張比的是版面，所以另外報外框那一圈。
         {"name": "menu-empty", "kind": "layout",
@@ -309,7 +315,8 @@ def main():
             for y in range(88):
                 for x in range(88):
                     total += 1
-                    if dosbox[(24 + y) * WIDTH + 24 + x] == actual[(43 + y) * WIDTH + 24 + x]:
+                    if dosbox[(24 + y) * WIDTH + 24 + x] == \
+                            actual[(REMAKE_VIEW_TOP + y) * WIDTH + REMAKE_VIEW_LEFT + x]:
                         same += 1
             report["screens"].append({
                 "name": "first-person-vs-dosbox", "kind": "cross-check",

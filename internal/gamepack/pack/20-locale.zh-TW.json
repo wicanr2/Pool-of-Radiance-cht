@@ -272,7 +272,9 @@
       "ui.spriteMonsters": "戰場造形（怪物與角色共用這 32 種）",
       "ui.spriteNoMonsters": "怪物圖形載不進來。",
       "ui.spriteEffects": "戰鬥特效（投射物與爆炸）",
-      "ui.spriteTerrain": "戰場地形圖塊（每格 24×24）"
+      "ui.spriteTerrain": "戰場地形圖塊（每格 24×24）",
+      "ui.journalCue": "ENTER 翻到%s %s",
+      "ui.journalCueMore": "ENTER 翻到%s %s（還有 %d 則）"
     }
   }
 }

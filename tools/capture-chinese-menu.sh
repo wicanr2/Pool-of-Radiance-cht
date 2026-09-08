@@ -259,6 +259,34 @@ step v guide-full
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-guide-full.png
 step Escape adventure-move
+# 市政廳外牆一次報四則公告字號。remake 把手冊收進遊戲，那一下 ENTER 直接
+# 翻過去——玩家不必再按 J 自己查（spec 132）。
+# 導覽在 (0,4) 結束、朝西（spec 076）：右轉兩次朝東，再往前走就到 (3,4)。
+pulse Right
+pulse Right
+step Up adventure-cell-text
+pulse Return
+sleep 0.4
+pulse Return
+sleep 0.4
+pulse Return
+sleep 0.6
+shot docs/screenshots/pool-remake-chinese-journal-cue.png
+step Return journal-proclamation
+sleep 0.6
+shot docs/screenshots/pool-remake-chinese-journal-proclamation.png
+step Escape adventure-cell-text
+# 剩下三則翻完，回到自由移動。
+n=0
+while test "$(screen)" != "adventure-move" && test "$n" -lt 30; do
+  case "$(screen)" in
+    journal-*) pulse Escape ;;
+    *) pulse Return ;;
+  esac
+  n=$((n + 1))
+done
+test "$(screen)" = "adventure-move" || die "市政廳那一段走不回自由移動"
+
 # 最後才開戰術盤面：確認那一頁在漢字字型下四行資訊與功能鍵列都不相疊。
 step F5 tactical
 sleep 0.6
@@ -332,6 +360,8 @@ screens = [
     ("pool-remake-chinese-terrain.png", "combat terrain tiles (F4, TAB three times): DUNGCOM/WILDCOM/RANDCOM"),
     ("pool-remake-chinese-guide.png", "in-game guide (F3), fogged to explored cells"),
     ("pool-remake-chinese-guide-full.png", "in-game guide (F3) with V, every point shown"),
+    ("pool-remake-chinese-journal-cue.png", "the City Hall wall cites four proclamations; ENTER opens the journal there"),
+    ("pool-remake-chinese-journal-proclamation.png", "the journal opened straight at the cited proclamation"),
     ("pool-remake-chinese-combat.png", "a real fight: enemy icons on the board"),
     ("pool-remake-chinese-tactical.png", "tactical board (F5)"),
 ]
