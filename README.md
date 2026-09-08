@@ -271,7 +271,11 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 與其讓玩家選了才失敗，不如一開始就看得出差別。
 
 戰術盤面是由目前地城座標與真實 GEO 牆面資料現場生成的 50×25 戰術格；牆呈斜線是
-投影本身的形狀（`X = 21 + 6dx + 5dy + subB`）。原版 Move 命令的八個方向鍵
+投影本身的形狀（`X = 21 + 6dx + 5dy + subB`）。**那一頁的版面是 remake 自己的**
+——標題、四行狀態與底下那一列鍵位都出自 `ui.tactical*`，不是原版字串的譯文；
+原版的戰鬥畫面（說明書下冊 p.37）右側是選中對象的資訊欄，最下一列是
+`MOVE VIEW AIM USE CAST TURN QUICK DONE` 八項。對齊那個版面的條件記在
+[WORKLIST.md](WORKLIST.md)。原版 Move 命令的八個方向鍵
 （`H I M Q P O K G`）已接上移動判定，回合流程照
 [spec 062](docs/spec/062-combat-round-loop.md) 的順序在跑。
 
