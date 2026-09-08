@@ -31,7 +31,7 @@ const (
 	tacticalLine1        = 312
 	tacticalLine2        = 330
 	tacticalLine3        = 348
-	tacticalHintBaseline = 366
+	tacticalHintBaseline = footerBaseline
 )
 
 // geoDetailForDirection 取出 GEO cell 在該方向的 detail 位元。

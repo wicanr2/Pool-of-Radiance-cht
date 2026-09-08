@@ -58,7 +58,7 @@ const (
 // 這一側只留 `messageID` 與它的出處註解，字串本身用 `messageKeys` 的 key 去查。
 //
 // 繁中一律取自軟體世界代理當年的官方中文說明書
-// （`docs/reference/manual/manual-vol2.md` p.8–p.10 的「人物管理選擇項」一節），
+// （（`docs/reference/manual/manual-vol2.md` p.8–p.10 的「人物管理選擇項」一節），
 // 不是重新翻譯。說明書沒有對應字串的（畫面提示、功能鍵列）才自行擬定，
 // 用詞依 `docs/reference/manual/glossary.md` 的定案譯名。
 func (a *app) text(id messageID) string {
@@ -182,7 +182,7 @@ func (a *app) optionText(id, label string) string {
 }
 
 // 建角畫面的字串。屬性名稱取自說明書 p.11–p.12 的六段解釋
-// （力量、智慧、睿智、敏捷、體質、魅力），生命力與金幣同頁。
+// （（力量、智慧、睿智、敏捷、體質、魅力），生命力與金幣同頁。
 const (
 	msgStageRace messageID = iota + 100
 	msgStageGender
@@ -247,6 +247,16 @@ const (
 	msgPartyPanelName
 	msgPartyPanelAC
 	msgPartyPanelHP
+	// 遊戲內攻略（`F3`，guide.go）。
+	msgGuideTitle
+	msgGuideNoMap
+	msgGuideNothingSeen
+	msgGuideFullOn
+	msgGuideSpoilerWarning
+	msgGuideFooter
+	// F1 說明頁。整頁的鍵盤說明放同一條，用換行分隔。
+	msgHelpTitle
+	msgHelpKeys
 )
 
 // hintNames 是建角各階段的提示。繁中依說明書的對應段落改寫成一行：

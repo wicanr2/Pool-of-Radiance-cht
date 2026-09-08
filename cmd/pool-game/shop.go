@@ -298,5 +298,5 @@ func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color
 	if state.message != "" {
 		footer = state.message
 	}
-	drawText(screen, footer, shopTextLeft, 356, accent)
+	drawText(screen, footer, shopTextLeft, footerBaseline, accent)
 }

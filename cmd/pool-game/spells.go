@@ -220,9 +220,9 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgSpellsCount), len(group)), spellTextLeft, 348, foreground)
 	// 鍵盤提示只有一列。原本是兩列（356 與 366），而基線只差 10、字高 15
-	// ——兩列直接疊在一起，看起來像字型壞掉。底下那一列的硬下限是
-	// `footerBaseline`（366），所以往下挪不了，只能併。
-	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, 366, accent)
+	// ——兩列直接疊在一起，看起來像字型壞掉。底下那一列走 `footerBaseline`
+	// （框外那一條），所以往下挪不了，只能併。
+	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, footerBaseline, accent)
 }
 
 // 記憶法術（spec 070／072／074）。原版的入口在紮營選單，remake 還沒有紮營

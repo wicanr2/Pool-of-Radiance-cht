@@ -510,8 +510,11 @@ func TestCombatMovementKeysAreNotMapShortcuts(t *testing.T) {
 	}
 }
 
-// 畫面最底下那一列是硬下限：外框下緣那一列 tile 在邏輯 y 368..383（spec 123）。
-// 戰術盤面的四行資訊要全部落在它上面，而且最後一行就是那一列本身——
+// 版面的兩條硬規則：外框下緣那一列 tile 佔邏輯 y 368..383（spec 123），
+// 而**最底下那一列文字在框外面**（384..399），跟原版一樣——原版每一頁的
+// 指令列都畫在 native 192..198，也就是框下面那一條。
+//
+// 戰術盤面的前三行資訊要落在框上緣以上，第四行就是那一列本身：
 // 那一頁自己接管它，所以全域的功能鍵列不畫，兩邊不會疊在一起。
 func TestTacticalTextStaysAboveTheFrame(t *testing.T) {
 	if tacticalHintBaseline != footerBaseline {
@@ -532,8 +535,17 @@ func TestTacticalTextStaysAboveTheFrame(t *testing.T) {
 				index+1, gap, ascent)
 		}
 	}
-	// 框上緣是 368：最後一行的基線不能碰到它。
-	if tacticalHintBaseline >= 368 {
-		t.Errorf("最後一行基線 %d 已經畫進下框（368..383）", tacticalHintBaseline)
+	// 前三行要停在框上緣（368）以上。
+	if bottom := tacticalLine3 + 1; bottom > 368 {
+		t.Errorf("第三行的字底 %d 已經畫進下框（368..383）", bottom)
+	}
+	// 最後那一行整條要落在框**外面**那一帶（384..399），不能壓到框，
+	// 也不能掉出畫布。
+	const descent = 1
+	if top := tacticalHintBaseline - ascent; top < 384 {
+		t.Errorf("最底下那一行的字頂 %d 壓到下框（368..383）", top)
+	}
+	if bottom := tacticalHintBaseline + descent; bottom > logicalHeight {
+		t.Errorf("最底下那一行的字底 %d 掉出畫布（%d）", bottom, logicalHeight)
 	}
 }

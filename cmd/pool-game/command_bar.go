@@ -101,9 +101,9 @@ func drawCommandBar(screen *ebiten.Image, a *app, foreground, accent color.Color
 			continue
 		}
 		head, rest := string(key[:1]), string(key[1:])
-		drawText(screen, head, x, 366, accent)
+		drawText(screen, head, x, footerBaseline, accent)
 		headWidth := font.MeasureString(uiFace, displayText(head)).Ceil()
-		drawText(screen, rest, x+headWidth, 366, foreground)
+		drawText(screen, rest, x+headWidth, footerBaseline, foreground)
 		// 間距一格。寬度要量出來——中文字是兩格寬，用 len() 會算錯。
 		x += font.MeasureString(uiFace, displayText(label)).Ceil() + commandGlyphWidth
 	}

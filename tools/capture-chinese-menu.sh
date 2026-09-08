@@ -216,8 +216,20 @@ pulse Tab
 pulse Tab
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-spells.png
-# 最後才開戰術盤面：確認那一頁在漢字字型下四行資訊與功能鍵列都不相疊。
+# F3 是遊戲內攻略。剛走完導覽只有幾格是走過的，所以先拍霧的那一張，
+# 再按兩次 V 攤開（第一次只出警告）拍完整的那一張。
 step k adventure-move
+step F3 guide
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-guide.png
+# **兩次 `V` 都要等狀態，不能盲按。** 盲按時漏掉其中一次的症狀是
+# 「停在 guide 等不到 guide-full」，看起來像 `V` 沒接上，實際上是按鍵掉了。
+step v guide-warned
+step v guide-full
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-guide-full.png
+step Escape adventure-move
+# 最後才開戰術盤面：確認那一頁在漢字字型下四行資訊與功能鍵列都不相疊。
 step F5 tactical
 sleep 0.6
 shot docs/screenshots/pool-remake-chinese-tactical.png
@@ -252,6 +264,8 @@ screens = [
     ("pool-remake-chinese-journal-46.png", "journal clue 46"),
     ("pool-remake-chinese-equipment.png", "equipment screen, empty pack"),
     ("pool-remake-chinese-spells.png", "spell list, magic-user level 1"),
+    ("pool-remake-chinese-guide.png", "in-game guide (F3), fogged to explored cells"),
+    ("pool-remake-chinese-guide-full.png", "in-game guide (F3) with V, every point shown"),
     ("pool-remake-chinese-tactical.png", "tactical board (F5)"),
 ]
 

@@ -176,6 +176,5 @@ func drawEquipment(screen *ebiten.Image, a *app, background, foreground, accent 
 	if state.message != "" {
 		footer = state.message
 	}
-	drawText(screen, footer, equipmentTextLeft, 356, foreground)
+	drawText(screen, footer, equipmentTextLeft, footerBaseline, foreground)
 }
-

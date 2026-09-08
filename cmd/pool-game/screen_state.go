@@ -20,7 +20,7 @@ import (
 // 只有帶 `-screen-state` 時才寫檔，正常遊玩完全不受影響。
 
 // screenName 是目前畫面的識別字。順序照「誰蓋在誰上面」排：先問覆蓋層
-// （說明頁、面板），再問主畫面。
+// （（說明頁、面板），再問主畫面。
 func (a *app) screenName() string {
 	if a.help {
 		return "help"
@@ -57,6 +57,18 @@ func (a *app) screenName() string {
 		return "creation"
 	}
 	switch {
+	case a.guideOpen:
+		// 三個狀態都要分得出來。攤開前會先出一次劇透警告，那一步只換底部
+		// 那一列字——不報出來的話，截圖腳本只能盲按兩次 `V` 再賭結果，
+		// 而漏掉其中一次的症狀是「停在 guide 等不到 guide-full」，
+		// 看起來像功能壞了，其實是按鍵掉了。
+		switch {
+		case a.guideFull:
+			return "guide-full"
+		case a.guideSpoilerWarned:
+			return "guide-warned"
+		}
+		return "guide"
 	case a.journalOpen:
 		return "journal"
 	case a.equipmentOpen:

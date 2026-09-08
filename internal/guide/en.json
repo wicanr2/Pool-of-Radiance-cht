@@ -1,0 +1,348 @@
+{
+  "schema": "pool-guide-maps/1",
+  "note": "Coordinates come from the original GEO terrain bytes; names come from this repository's own specs, not from any walkthrough.",
+  "maps": {
+    "3/00": {
+      "title": "The civilized area of Phlan",
+      "source": "docs/spec/124-map-names-from-the-original.md",
+      "points": [
+        {
+          "x": 1,
+          "y": 0,
+          "label": "Riverside",
+          "summary": "The Stojanow river.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 0,
+          "label": "General store",
+          "summary": "Ordinary goods (another door).",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "label": "Temple of Sune",
+          "summary": "Priestess Joy is here.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "label": "Temple of Sune",
+          "summary": "Priestess Joy is here.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "label": "General store",
+          "summary": "Ordinary goods.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 1,
+          "label": "Harbour master",
+          "summary": "Knows the routes.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 1,
+          "label": "Boat",
+          "summary": "Sails to Sokal Keep and the wilderness.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "label": "General store",
+          "summary": "Ordinary goods.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "label": "Signpost",
+          "summary": "Points north to the passenger dock.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "label": "Temple of Sune",
+          "summary": "Priestess Joy is here.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "label": "City hall proclamations",
+          "summary": "The commissions on offer.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 3,
+          "label": "Temple of Tyr",
+          "summary": "Temple services.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "label": "City gate",
+          "summary": "Out to the wilderness; the party starts on this cell.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "label": "City hall proclamations",
+          "summary": "The commissions on offer.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "label": "City guard",
+          "summary": "Stops the party.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "label": "City hall proclamations",
+          "summary": "The commissions on offer.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "label": "Temple of Tyr",
+          "summary": "Temple services.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 10,
+          "y": 5,
+          "label": "Bishop of Tyr",
+          "summary": "Bishop Braccio is here.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "label": "Temple of Tyr",
+          "summary": "Temple services.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "label": "Tavern and gambling hall",
+          "summary": "Rumours and games.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "label": "Armoury",
+          "summary": "Weapons and armour.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "label": "General store",
+          "summary": "Ordinary goods (a third door).",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "label": "Tavern and gambling hall",
+          "summary": "Rumours and games.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 10,
+          "label": "Jeweller",
+          "summary": "Gems and jewellery.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "label": "General store",
+          "summary": "Ordinary goods (a third door).",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "label": "Silversmith",
+          "summary": "Silverware.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "label": "General store",
+          "summary": "Ordinary goods (a third door).",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 14,
+          "y": 10,
+          "label": "Tavern and gambling hall",
+          "summary": "Rumours and games.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "label": "Tavern and gambling hall",
+          "summary": "Rumours and games.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 11,
+          "label": "Armoury",
+          "summary": "Weapons and armour.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "label": "General store",
+          "summary": "Ordinary goods (a third door).",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 11,
+          "label": "General store",
+          "summary": "Ordinary goods (a third door).",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 0,
+          "y": 12,
+          "label": "Temple of Tempus",
+          "summary": "Temple services.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 2,
+          "y": 12,
+          "label": "Temple of Tempus",
+          "summary": "Temple services.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 12,
+          "label": "Inn",
+          "summary": "One platinum a night; camp and memorise.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "label": "Inn",
+          "summary": "One platinum a night; camp and memorise.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 12,
+          "label": "Armoury",
+          "summary": "Weapons and armour.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 12,
+          "label": "Tavern and gambling hall",
+          "summary": "Rumours and games.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 13,
+          "label": "Inn",
+          "summary": "One platinum a night; camp and memorise.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "label": "Inn",
+          "summary": "One platinum a night; camp and memorise.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "label": "Armoury",
+          "summary": "Weapons and armour.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 13,
+          "label": "Armoury",
+          "summary": "Weapons and armour.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 10,
+          "y": 13,
+          "label": "Silversmith",
+          "summary": "Silverware.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 13,
+          "label": "Tavern and gambling hall",
+          "summary": "Rumours and games.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 0,
+          "y": 14,
+          "label": "Inn",
+          "summary": "One platinum a night; camp and memorise.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 1,
+          "y": 14,
+          "label": "Inn",
+          "summary": "One platinum a night; camp and memorise.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 2,
+          "y": 14,
+          "label": "Inn",
+          "summary": "One platinum a night; camp and memorise.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 14,
+          "label": "Tavern and gambling hall",
+          "summary": "Rumours and games.",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        }
+      ]
+    }
+  }
+}

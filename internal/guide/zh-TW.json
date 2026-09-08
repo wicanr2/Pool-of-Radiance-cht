@@ -1,0 +1,348 @@
+{
+  "schema": "pool-guide-maps/1",
+  "note": "座標一律由原始 GEO 的地形碼算出來（cmd/pool-world-graph 的 cell_terrain），名字取自 repo 自己的規格，不抄任何攻略。",
+  "maps": {
+    "3/00": {
+      "title": "費蘭的文明區",
+      "source": "docs/spec/124-map-names-from-the-original.md",
+      "points": [
+        {
+          "x": 1,
+          "y": 0,
+          "label": "河邊",
+          "summary": "斯托亞諾河。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 0,
+          "label": "雜貨店",
+          "summary": "一般物品（同一間的另一個門）。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "label": "蘇妮神殿",
+          "summary": "女祭司喬伊在這裡。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "label": "蘇妮神殿",
+          "summary": "女祭司喬伊在這裡。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "label": "雜貨店",
+          "summary": "一般物品。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 1,
+          "label": "港務長",
+          "summary": "問得到航線。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 1,
+          "label": "碼頭的船",
+          "summary": "搭船去索卡爾城堡與各野外區。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "label": "雜貨店",
+          "summary": "一般物品。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "label": "指示牌",
+          "summary": "寫著北邊是旅客碼頭。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "label": "蘇妮神殿",
+          "summary": "女祭司喬伊在這裡。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "label": "市政廳外的布告",
+          "summary": "看得到目前的委任公告。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 3,
+          "label": "泰爾神殿",
+          "summary": "神殿服務。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "label": "城門",
+          "summary": "往未開拓區；開場就站在這一格。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "label": "市政廳外的布告",
+          "summary": "看得到目前的委任公告。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "label": "城衛兵",
+          "summary": "會攔下隊伍。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "label": "市政廳外的布告",
+          "summary": "看得到目前的委任公告。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "label": "泰爾神殿",
+          "summary": "神殿服務。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 10,
+          "y": 5,
+          "label": "泰爾神殿主教",
+          "summary": "巴西歐主教在這裡。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "label": "泰爾神殿",
+          "summary": "神殿服務。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "label": "酒館兼賭場",
+          "summary": "傳言與賭局。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "label": "武具店",
+          "summary": "武器與護甲。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "label": "雜貨店",
+          "summary": "一般物品（同一間的第三個門）。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "label": "酒館兼賭場",
+          "summary": "傳言與賭局。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 10,
+          "label": "珠寶店",
+          "summary": "珠寶買賣。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "label": "雜貨店",
+          "summary": "一般物品（同一間的第三個門）。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "label": "銀器店",
+          "summary": "銀製品。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "label": "雜貨店",
+          "summary": "一般物品（同一間的第三個門）。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 14,
+          "y": 10,
+          "label": "酒館兼賭場",
+          "summary": "傳言與賭局。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "label": "酒館兼賭場",
+          "summary": "傳言與賭局。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 11,
+          "label": "武具店",
+          "summary": "武器與護甲。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "label": "雜貨店",
+          "summary": "一般物品（同一間的第三個門）。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 11,
+          "label": "雜貨店",
+          "summary": "一般物品（同一間的第三個門）。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 0,
+          "y": 12,
+          "label": "坦帕斯神殿",
+          "summary": "神殿服務。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 2,
+          "y": 12,
+          "label": "坦帕斯神殿",
+          "summary": "神殿服務。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 12,
+          "label": "旅店",
+          "summary": "住一晚一枚白金；紮營與記憶法術。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "label": "旅店",
+          "summary": "住一晚一枚白金；紮營與記憶法術。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 11,
+          "y": 12,
+          "label": "武具店",
+          "summary": "武器與護甲。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 12,
+          "label": "酒館兼賭場",
+          "summary": "傳言與賭局。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 4,
+          "y": 13,
+          "label": "旅店",
+          "summary": "住一晚一枚白金；紮營與記憶法術。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "label": "旅店",
+          "summary": "住一晚一枚白金；紮營與記憶法術。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "label": "武具店",
+          "summary": "武器與護甲。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 9,
+          "y": 13,
+          "label": "武具店",
+          "summary": "武器與護甲。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 10,
+          "y": 13,
+          "label": "銀器店",
+          "summary": "銀製品。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 13,
+          "label": "酒館兼賭場",
+          "summary": "傳言與賭局。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 0,
+          "y": 14,
+          "label": "旅店",
+          "summary": "住一晚一枚白金；紮營與記憶法術。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 1,
+          "y": 14,
+          "label": "旅店",
+          "summary": "住一晚一枚白金；紮營與記憶法術。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 2,
+          "y": 14,
+          "label": "旅店",
+          "summary": "住一晚一枚白金；紮營與記憶法術。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        },
+        {
+          "x": 15,
+          "y": 14,
+          "label": "酒館兼賭場",
+          "summary": "傳言與賭局。",
+          "source": "docs/spec/102-city-location-dispatch.md"
+        }
+      ]
+    }
+  }
+}

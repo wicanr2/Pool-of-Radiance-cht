@@ -227,5 +227,5 @@ func drawJournal(screen *ebiten.Image, a *app, background, foreground, accent co
 	if state.message != "" {
 		footer = state.message
 	}
-	drawText(screen, footer, journalTextLeft, 356, accent)
+	drawText(screen, footer, journalTextLeft, footerBaseline, accent)
 }

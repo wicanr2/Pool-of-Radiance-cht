@@ -195,7 +195,7 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ## 目前 remake 畫面
 
-下面十七張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
+下面十九張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
 在 Docker／Xvfb 裡開真的 Ebitengine 視窗、逐鍵走一次正常玩家路徑拍下來的：
 標題 → `ENTER` → `C` 建角 → 命名 → 肖像 → 戰鬥圖示 → 加入隊伍 → `B` 開始冒險
 → 按完羅夫導覽 → 自由移動 → 平面圖 → 手冊 → 裝備 → 法術 → 戰術盤面。
@@ -243,6 +243,15 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 [spec 126](docs/spec/126-first-person-inset-pixel-parity.md)）。
 
 ### 面板
+
+| `F3` 遊戲內攻略 | 按 `V` 攤開完整版 |
+|---|---|
+| ![攻略](docs/screenshots/pool-remake-chinese-guide.png) | ![完整攻略](docs/screenshots/pool-remake-chinese-guide-full.png) |
+
+攻略頁的**座標一律出自原始 GEO 的地形碼**（spec 102 的索引表），名字取自原版
+腳本自己印出來的第一句話，**不抄任何第三方攻略**——抄錯一格的症狀是
+「測試綠、玩家走不到」。預設只顯示走過的格子，按 `V` 才攤開，第一次會先警告。
+做法與資料格式見 [`docs/guide/README.md`](docs/guide/README.md)。
 
 | `J` 探險者手冊 | 同一本翻到線索報導 46 |
 |---|---|

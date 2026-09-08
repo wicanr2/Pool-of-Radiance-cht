@@ -25,6 +25,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/etenfont"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/guide"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/journal"
 )
 
@@ -103,6 +104,22 @@ func main() {
 	}
 	for key, text := range locale {
 		note(text, "locale zh-TW "+key)
+	}
+
+	// 遊戲內攻略（`F3`）的字也會畫出來，而它不在 .go 也不在 locale 表裡。
+	// 每加一個新的文字來源就要記得補進來——上一次漏掉的是 locale 表，
+	// 而漏掉的時候這支工具照樣回「沒有缺字」。
+	guideCatalogue, err := guide.TraditionalChinese()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	for key, definition := range guideCatalogue.Maps {
+		note(definition.Title, "guide "+key)
+		for _, point := range definition.Points {
+			note(point.Label, "guide "+key)
+			note(point.Summary, "guide "+key)
+		}
 	}
 
 	catalogue, err := gametext.TraditionalChinese()

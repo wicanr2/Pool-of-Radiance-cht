@@ -23,9 +23,10 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
-	"github.com/wicanr2/Pool-of-Radiance-cht/internal/music"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/guide"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/music"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/temple"
 	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
@@ -124,6 +125,13 @@ type app struct {
 	equipment       *equipmentState
 	equipmentOpen   bool
 	journalOpen     bool
+	// 遊戲內攻略（`F3`，guide.go）。guideFull 是攤開全圖的劇透模式，
+	// guideSpoilerWarned 讓第一次按 `V` 只出警告不攤開。
+	guide              *guide.Catalogue
+	guideOpen          bool
+	guideFull          bool
+	guideSpoilerWarned bool
+	guideExplored      map[guideCellKey]bool
 	modern          bool
 	statusLine      string
 	// screenStatePath 是 `-screen-state` 指定的檔案；自動截圖用它等畫面，
@@ -554,6 +562,18 @@ func (a *app) Update() error {
 			a.statusLine = err.Error()
 		}
 	}
+	// 攻略頁開著的時候由它先吃鍵，`F3` 與 ESC 才關得掉。
+	if handled, err := a.guideInput(); handled {
+		return err
+	}
+	if a.justPressed(ebiten.KeyF3) && a.mode == modeAdventure && a.introDone {
+		// 站著的那一格當然走過了。只在「移動之後」記的話，剛進城還沒走
+		// 就開攻略會看到一張全空的圖，看起來像攻略沒資料。
+		a.rememberGuideCell()
+		a.guideOpen, a.guideFull = true, false
+		a.help = false
+		return nil
+	}
 	if a.justPressed(ebiten.KeyF5) && a.mode == modeAdventure {
 		a.tacticalPreview = !a.tacticalPreview
 		if a.tacticalPreview {
@@ -979,6 +999,7 @@ func (a *app) moveInitialDungeonForward() error {
 	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
 	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 	a.advanceGameMinute()
+	a.rememberGuideCell()
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
 }
@@ -2014,6 +2035,7 @@ func (a *app) finishCellBlock() {
 	a.templeActive = false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText, a.eventLabel = "", ""
+	a.rememberGuideCell()
 	a.statusLine = "Moved using original GEO data; per-turn and SearchLocation returned normally."
 }
 
@@ -2673,11 +2695,8 @@ func (a *app) Draw(screen *ebiten.Image) {
 	} else {
 		drawAdventure(screen, a, foreground, accent)
 	}
-	// 基線 366（footerBaseline）：外框下緣那一列 tile 在邏輯 y 368..383
-	// （原版 native 184..191，spec 123），所以底部文字要停在 366——
-	// ascent 14，字頂 352，剛好讓開。**那是硬下限，不是建議值。**
-	// 原版最下面那一列文字（`PRESS <ENTER>...`）在 native y 168..174，
-	// 換算成邏輯就是 336..348，也在框上面。
+	// 底部那一列畫在 `footerBaseline`（398），也就是繩索框**外面**——
+	// 原版每一頁的指令列都在那裡（native 192..198）。
 	switch {
 	case a.mode == modeTitle:
 		// 標題那一張是原版的整幅美術，底下那條藍帶裡就是原版的版權文字。
@@ -2702,7 +2721,7 @@ func (a *app) Draw(screen *ebiten.Image) {
 		drawText(screen, a.text(msgFooter), 20, footerBaseline, foreground)
 	}
 	if a.help {
-		drawHelp(screen, background, foreground, accent, a.adventureProvenanceLines())
+		drawHelp(screen, a, background, foreground, accent, a.adventureProvenanceLines())
 	}
 	if a.journalOpen && a.journal != nil {
 		drawJournal(screen, a, background, foreground, accent)
@@ -2715,6 +2734,10 @@ func (a *app) Draw(screen *ebiten.Image) {
 	}
 	if a.spellsOpen && a.spells != nil {
 		drawSpells(screen, a, background, foreground, accent)
+	}
+	// 攻略疊在最上層：它是覆蓋層，不是另一個模式。
+	if a.guideOpen {
+		drawGuide(screen, a, background, foreground, accent)
 	}
 }
 
@@ -2906,14 +2929,15 @@ const (
 
 // dialogueVisible 說這一格會不會畫出對話框。
 //
-// **功能鍵列要靠它讓位。** 對話框的提示畫在 `dialogueBottom-8`（基線 362），
-// 功能鍵列畫在 `footerBaseline`（366）——兩條只差四個像素，同時畫就疊成一團
-// 看不懂的字。原版在導覽跑的時候最下面本來就只有「按 RETURN 繼續」，
-// 沒有功能鍵列。
+// **功能鍵列要靠它讓位**：原版在導覽跑的時候，最下面那一列只有
+// 「按 RETURN 繼續」，沒有功能鍵列。
+//（`footerBaseline` 移到框外之後兩條不再相疊，但這一條的理由本來就是對版面，
+// 不是閃避。）
 // panelOpen 回報「有一頁面板蓋在冒險畫面上」。這幾個在 `Update` 裡都會
 // 提早返回，所以指令列那一列的鍵此時按不到。
 func (a *app) panelOpen() bool {
-	return a.journalOpen || a.equipmentOpen || a.spellsOpen || a.shopActive || a.campOpen
+	return a.journalOpen || a.equipmentOpen || a.spellsOpen || a.shopActive ||
+		a.campOpen || a.guideOpen
 }
 
 func (a *app) dialogueVisible() bool {
@@ -3105,25 +3129,15 @@ func stageName(stage creation.Stage) string {
 	}
 }
 
-func drawHelp(screen *ebiten.Image, background, foreground, accent color.Color, provenance []string) {
+func drawHelp(screen *ebiten.Image, a *app, background, foreground, accent color.Color, provenance []string) {
 	for y := 54; y < 340; y++ {
 		for x := 72; x < 568; x++ {
 			screen.Set(x, y, background)
 		}
 	}
-	drawText(screen, "HELP", 292, 80, accent)
-	lines := []string{
-		"UP/DOWN or HOME/END: choose an item",
-		"ENTER: accept the selected item",
-		"ESC: return to the previous screen",
-		"R: reroll on the character sheet",
-		"F2: switch original/modern presentation",
-		"B: begin adventure after adding a party member",
-		"F10: save the remake state and quit",
-		"J: open the adventurer's journal (-lang zh)",
-		"I: ready or unready a party member's items",
-		"K: browse the original spell list",
-	}
+	drawText(screen, a.text(msgHelpTitle), 292, 80, accent)
+	// 每一行一句，換行分隔——翻譯要換行數或併行時不用改程式。
+	lines := strings.Split(a.text(msgHelpKeys), "\n")
 	for index, line := range lines {
 		drawText(screen, line, 104, 100+index*22, foreground)
 	}
@@ -3150,11 +3164,20 @@ func drawText(screen *ebiten.Image, value string, x, y int, ink color.Color) {
 	text.Draw(screen, strings.ToUpper(displayText(value)), uiFace, x, y, ink)
 }
 
-// footerBaseline 是畫面最底下那一列文字的基線，也是硬下限：外框下緣那一列
-// tile 在邏輯 y 368..383（spec 123），字型 ascent 14，所以 366 的字頂是 352，
-// 剛好讓開。**比它大的基線會畫進框裡**——戰術盤面那一頁原本用 370，結果
-// 既壓到框又和這一列疊在一起。
-const footerBaseline = 366
+// footerBaseline 是畫面最底下那一列文字的基線。
+//
+// **在繩索框外面，跟原版一樣。** 原版每一頁的指令／提示列都畫在 native
+// y 192..198，也就是外框下緣（184..191）**下面**那一條——`CHOOSE A FUNCTION`、
+// `KEEP THIS CHARACTER? YES NO`、`AREA CAST VIEW ENCAMP SEARCH LOOK` 都是
+//（用 dosgolem 逐列量的，`docs/audit/dos-parity-sample.md`）。
+//
+// 換算到 remake 的 640×400：外框下緣那一列 tile 佔 368..383（tile row 23，
+// spec 123），底下 384..399 整條是空的。倚天字型 ascent 14／descent 1，
+// 所以 398 的字剛好落在 384..399——**那一條就是原版留給這一列的位置**。
+//
+// 先前是 366（框內）。那時的註解說「比它大的基線會畫進框裡」——在那個版面下
+// 沒錯，但真正的解法是整列移到框外，不是把字往上擠。
+const footerBaseline = 398
 
 func (a *app) Layout(_, _ int) (int, int) { return logicalWidth, logicalHeight }
 
@@ -3201,6 +3224,13 @@ func main() {
 	}
 	game.screenStatePath = defaultScreenStatePath(*screenState)
 	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters
+	// 遊戲內攻略（`F3`）。載不進來就讓它是 nil——那時 F3 會說「這張地圖還沒有
+	// 建過攻略點」，不是把遊戲收掉。
+	if guideCatalogue, err := guideFor(uiLanguage); err == nil {
+		game.guide = guideCatalogue
+	} else {
+		fmt.Fprintln(os.Stderr, "guide:", err)
+	}
 	dir := *musicDir
 	if dir == "" {
 		dir = defaultMusicDir()
