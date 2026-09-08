@@ -162,6 +162,26 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
 
 ## 7. 原版對拍與截圖契約
 
+- **[HARD] 基準畫面一律由 dosgolem 產，對拍一律走
+  `tools/appimage-dos-parity.sh`。** DOSBox 只能從外面看畫面：送鍵靠
+  xdotool、等畫面靠 sleep、判斷靠像素，而「猜對」與「猜錯」在截圖上長得
+  一樣。dosgolem 走位靠「程式讀走了幾個鍵」與「畫面連續多少道指令沒動」，
+  而且直接吐 320×200 的色號陣列——對拍本來就該在色號空間做，不是在 PNG 上。
+  `tools/dosgolem-reference.sh` 產基準時會寫下
+  `workplace/dosgolem-ref/provenance.json`（generator、dosgolem 的 commit、
+  原版 `start.exe` 的 SHA-256、鍵序、幀數）；**對拍腳本檢查這一份，
+  generator 不是 dosgolem 就拒絕跑**。報告裡那條 `first-person-vs-dosbox`
+  是 repo 裡早就存著的一張 DOSBox 圖，只作第二個意見，**不是基準，
+  也不重跑 DOSBox**。
+- **[HARD] 動到任何玩家看得到的畫面就要跑對拍，不能只看截圖。** 截圖證明
+  「這一版長這樣」，對拍才證明「與原版的距離變近還是變遠」。數字（含變好、
+  變差與不變的那幾項）寫進 commit message。
+- **對拍對的是發行包，不是原始碼建置。** 「測試綠」與「我們寄出去的那個檔案
+  畫得對」是兩件事，中間隔著打包、資源內嵌、視窗縮放與實際的繪圖路徑，
+  所以流程是 `tools/package-release.sh <版本>` 之後才對拍。
+- **同一個座標不要寫死兩份。** 對拍腳本裡 remake 的視野原點曾經在版面比對與
+  DOSBox 交叉核對各寫一次；只改一份的症狀是交叉核對從 100% 掉到 59.89%，
+  而那看起來像 remake 退步了。現在收斂成 `REMAKE_VIEW_TOP`。
 - 對拍前固定 DOS 輸入雜湊、存檔、地圖、座標、朝向、隊伍、旗標、
   RNG／動畫相位、畫布、色盤與輸入序列。狀態不同時只可標為
   `nearby`、`material-exact/layout-reconstructed` 或 `layout-only`。

@@ -63,4 +63,32 @@ docker run --rm --network none --memory 4g --cpus "${PARITY_CPUS:-2}" --pids-lim
   go run ./cmd/shots -exe /orig/start.exe -root /orig -scratch /scratch \
     -out /out -budget 150000000 -idle 3000000 -keys "$KEYS"
 
+# 產地證明。對拍腳本認這一份：**沒有它、或 generator 不是 dosgolem 就不准跑**
+# （AGENTS.md §7）。基準來自哪裡是對拍結論的前提，靠自律記得換是不夠的——
+# 一份放了幾天的 `workplace/` 目錄，從外表看不出它是誰產的。
+python3 - "$OUT" "$SOURCE/start.exe" "$DOSGOLEM" "$KEYS" <<'PROVENANCE'
+import hashlib, json, os, subprocess, sys
+
+out, exe, dosgolem, keys = sys.argv[1:5]
+def revision(path):
+    try:
+        return subprocess.run(["git", "-C", path, "rev-parse", "HEAD"],
+                              capture_output=True, text=True, check=True).stdout.strip()
+    except Exception:
+        return ""
+
+shots = json.load(open(os.path.join(out, "shots.json"), encoding="utf-8"))
+record = {
+    "generator": "dosgolem",
+    "generator_revision": revision(dosgolem),
+    "original_exe_sha256": hashlib.sha256(open(exe, "rb").read()).hexdigest(),
+    "keys": keys,
+    "frames": len(shots),
+}
+with open(os.path.join(out, "provenance.json"), "w", encoding="utf-8") as handle:
+    json.dump(record, handle, ensure_ascii=False, indent=2)
+    handle.write("\n")
+print(f"產地證明：generator={record['generator']} 幀數={record['frames']}")
+PROVENANCE
+
 echo "基準畫面 → $OUT"

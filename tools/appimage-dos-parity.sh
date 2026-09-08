@@ -36,6 +36,22 @@ test -f "$APPIMAGE"
 test -f "$ROOT/Pool of Radiance (1988).zip"
 test -f "$REF/shots.json" || {
   echo "沒有基準畫面：先跑 tools/dosgolem-reference.sh" >&2; exit 2; }
+# **基準一律由 dosgolem 產**（AGENTS.md §7）。這裡不是提醒是閘門：
+# 一份放了幾天的 `workplace/` 目錄從外表看不出它是誰產的，而基準來自哪裡
+# 是整份對拍結論的前提。缺產地證明就重跑 `tools/dosgolem-reference.sh`。
+python3 - "$REF" <<'GATE'
+import json, os, sys
+
+path = os.path.join(sys.argv[1], "provenance.json")
+if not os.path.exists(path):
+    sys.exit(f"{path} 不在：基準不知道是誰產的。重跑 tools/dosgolem-reference.sh")
+record = json.load(open(path, encoding="utf-8"))
+if record.get("generator") != "dosgolem":
+    sys.exit(f"基準的 generator 是 {record.get('generator')!r}，對拍只認 dosgolem")
+print(f"基準：dosgolem {record.get('generator_revision', '')[:12]} "
+      f"{record.get('frames', 0)} 幀　原版 start.exe "
+      f"{record.get('original_exe_sha256', '')[:12]}")
+GATE
 [[ "$LANG_MODE" != zh ]] || test -f "$FONT_DIR/stdfont.15"
 
 rm -rf "$OUT"; mkdir -p "$OUT"
