@@ -257,6 +257,18 @@ const (
 	// F1 說明頁。整頁的鍵盤說明放同一條，用換行分隔。
 	msgHelpTitle
 	msgHelpKeys
+	// 人物資料頁的欄名（spec 130）。原版是英文，remake 照留——與隊伍面板的
+	// `AC`／`HP` 同一個處理：說明書講規則時用的就是這幾個字。
+	msgSheetLevel
+	msgSheetExperience
+	msgSheetArmourClass
+	msgSheetThac0
+	msgSheetEncumbrance
+	msgSheetHitPoints
+	msgSheetDamage
+	msgSheetMovement
+	msgSheetStatus
+	msgSheetGold
 	// 探索畫面的施法（spec 119 的 `C)AST`）。
 	msgFieldCastPickCaster
 	msgFieldCastPickSpell

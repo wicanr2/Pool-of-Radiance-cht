@@ -249,7 +249,17 @@
       "ui.fieldCastNoSpells": "%s 沒有記住任何法術。",
       "ui.fieldCastDone": "%[1]s 對 %[3]s 施了 %[2]s。",
       "ui.fieldCastCombatOnly": "%s 要在戰鬥中才有目標。",
-      "ui.fieldCastFooter": "上下選擇　ENTER 確定　ESC 返回"
+      "ui.fieldCastFooter": "上下選擇　ENTER 確定　ESC 返回",
+      "ui.sheetLevel": "LEVEL",
+      "ui.sheetExperience": "EXP",
+      "ui.sheetArmourClass": "AC",
+      "ui.sheetThac0": "THAC0",
+      "ui.sheetEncumbrance": "ENCUMBRANCE",
+      "ui.sheetHitPoints": "HP",
+      "ui.sheetDamage": "DAMAGE",
+      "ui.sheetMovement": "MOVEMENT",
+      "ui.sheetStatus": "STATUS",
+      "ui.sheetGold": "GOLD"
     }
   }
 }

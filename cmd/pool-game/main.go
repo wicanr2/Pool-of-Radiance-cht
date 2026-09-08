@@ -2431,6 +2431,16 @@ func (a *app) updateCreation() error {
 				return err
 			}
 			a.rolled = &rolled
+			// 原版的資料頁右上角就有肖像（spec 130 的第 16 幀），用的是
+			// 預設那一張——玩家要到後面（`StagePortrait`）才換得動它。
+			// 那一步本來就從 1／1 起算，這裡先填同一組，不然是 0／0，
+			// 載不出圖，資料頁右上角就空著。
+			if a.flow.PortraitHead == 0 {
+				a.flow.PortraitHead, a.flow.PortraitBody = 1, 1
+			}
+			if err := a.reloadPortrait(); err != nil {
+				a.statusLine = err.Error()
+			}
 		}
 		if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeyY) {
 			if err := a.flow.AcceptRoll(); err != nil {
@@ -2722,6 +2732,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 		// 標題那一張是原版的整幅美術，底下那條藍帶裡就是原版的版權文字。
 		// 再疊一列 F-key 提示會直接壓在上面——標題畫面也按不到那幾個鍵，
 		// 畫它只是把原版的畫面弄髒。`msgTitleHint` 那一句留著，那是要按的。
+	case a.mode == modeCreation && a.flow.Stage == creation.StageRoll:
+		// 人物資料頁最下面那一列是原版的 `KEEP THIS CHARACTER? YES NO`
+		// （spec 130），由 `drawCreation` 自己畫。兩邊都畫會疊成一團。
 	case a.panelOpen():
 		// 手冊、裝備、法術、商店、紮營那幾頁自己有一列鍵盤提示，而且它們
 		// 開著的時候 `Update` 提早返回、指令列的鍵按不到。畫它只會從面板
@@ -3036,30 +3049,12 @@ func initialWallStamps(grid geometry.Grid, piece graphics.PieceSet, spawn gamepa
 func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	a.drawFrame(screen, foreground, accent)
 	if a.flow.Stage == creation.StageRoll {
-		drawText(screen, a.text(msgCharacterSheet), 230, 42, accent)
 		if a.rolled == nil {
-			drawText(screen, a.text(msgRolling), 40, 82, foreground)
+			drawText(screen, a.text(msgRolling), sheetLeft, sheetLine1, foreground)
 			return
 		}
-		value := a.rolled
-		gender := a.optionText(a.flow.SelectedGender().ID, a.flow.SelectedGender().Label)
-		race := a.optionText(a.flow.SelectedRace().ID, a.flow.SelectedRace().Label)
-		class := a.optionText(a.flow.SelectedClass().ID, a.flow.SelectedClass().Label)
-		drawText(screen, fmt.Sprintf("%s  %s  %s", gender, race, class), 48, 82, foreground)
-		drawText(screen, fmt.Sprintf(a.text(msgAge), value.Age), 48, 110, foreground)
-		for index := range value.Abilities {
-			extra := ""
-			if index == 0 && value.ExceptionalStrength != 0 {
-				extra = fmt.Sprintf("/%02d", value.ExceptionalStrength)
-			}
-			drawText(screen, fmt.Sprintf("%s %2d%s", a.abilityName(index), value.Abilities[index], extra),
-				48+(index/3)*180, 150+(index%3)*28, foreground)
-		}
-		drawText(screen, fmt.Sprintf(a.text(msgGoldAndHP), value.Gold, value.HP, value.HP), 48, 252, foreground)
-		drawText(screen, a.text(msgKeepCharacter), 48, 302, accent)
-		if a.statusLine != "" {
-			drawText(screen, a.statusLine, 48, 334, foreground)
-		}
+		drawCharacterSheet(screen, a, foreground, accent)
+		drawText(screen, a.text(msgKeepCharacter), 0, footerBaseline, accent)
 		return
 	}
 	if a.flow.Stage == creation.StageName {

@@ -249,7 +249,17 @@
       "ui.fieldCastNoSpells": "%s has no spells memorized.",
       "ui.fieldCastDone": "%s casts %s on %s.",
       "ui.fieldCastCombatOnly": "%s needs a target in combat.",
-      "ui.fieldCastFooter": "UP/DOWN CHOOSE   ENTER CONFIRM   ESC BACK"
+      "ui.fieldCastFooter": "UP/DOWN CHOOSE   ENTER CONFIRM   ESC BACK",
+      "ui.sheetLevel": "LEVEL",
+      "ui.sheetExperience": "EXP",
+      "ui.sheetArmourClass": "AC",
+      "ui.sheetThac0": "THAC0",
+      "ui.sheetEncumbrance": "ENCUMBRANCE",
+      "ui.sheetHitPoints": "HP",
+      "ui.sheetDamage": "DAMAGE",
+      "ui.sheetMovement": "MOVEMENT",
+      "ui.sheetStatus": "STATUS",
+      "ui.sheetGold": "GOLD"
     }
   }
 }
