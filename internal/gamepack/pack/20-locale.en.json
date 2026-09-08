@@ -261,7 +261,14 @@
       "ui.sheetStatus": "STATUS",
       "ui.sheetGold": "GOLD",
       "ui.viewSheetPick": "VIEW WHOM?",
-      "ui.viewSheetFooter": "ESC BACK"
+      "ui.viewSheetFooter": "ESC BACK",
+      "ui.spriteTitle": "SPRITE OVERVIEW",
+      "ui.spritePortraits": "PORTRAITS",
+      "ui.spriteIcons": "COMBAT ICONS",
+      "ui.spriteWalls": "WALL PIECES",
+      "ui.spriteNoWalls": "No wall pieces are loaded here.",
+      "ui.spriteFrame": "FRAME SYMBOLS",
+      "ui.spriteFooter": "F4/ESC CLOSE"
     }
   }
 }

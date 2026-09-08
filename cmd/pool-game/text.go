@@ -269,6 +269,14 @@ const (
 	msgSheetMovement
 	msgSheetStatus
 	msgSheetGold
+	// `F4` 的素材總覽。
+	msgSpriteTitle
+	msgSpritePortraits
+	msgSpriteIcons
+	msgSpriteWalls
+	msgSpriteNoWalls
+	msgSpriteFrame
+	msgSpriteFooter
 	// 探索畫面的 `V)IEW`（spec 119）。
 	msgViewSheetPick
 	msgViewSheetFooter

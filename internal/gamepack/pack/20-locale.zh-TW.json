@@ -261,7 +261,14 @@
       "ui.sheetStatus": "STATUS",
       "ui.sheetGold": "GOLD",
       "ui.viewSheetPick": "看誰的資料？",
-      "ui.viewSheetFooter": "ESC 返回"
+      "ui.viewSheetFooter": "ESC 返回",
+      "ui.spriteTitle": "素材總覽",
+      "ui.spritePortraits": "肖像",
+      "ui.spriteIcons": "戰鬥造形",
+      "ui.spriteWalls": "牆面圖塊",
+      "ui.spriteNoWalls": "這一區還沒載入牆面圖塊。",
+      "ui.spriteFrame": "外框符號",
+      "ui.spriteFooter": "F4／ESC 關閉"
     }
   }
 }

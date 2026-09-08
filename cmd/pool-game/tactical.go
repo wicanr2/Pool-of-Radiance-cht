@@ -740,6 +740,11 @@ func (a *app) enterTacticalPreview() error {
 	state.startRound(a.rollDice)
 	state.Status = state.say(msgStatusRound, state.Round)
 	a.tactical = state
+	// 視窗一開始就對到行動者身上。原版重畫視窗時中心一定跟著行動者
+	// （overlay-32 `07D4h`，餘裕 0 一定捲到正中央）；不捲的話視窗停在
+	// (0,0)，而部署好的隊伍在別的地方——盤面看起來是空的。
+	a.recentreOn(int(state.Roster[state.Mover].X), int(state.Roster[state.Mover].Y),
+		combat.ViewportCentreMargin)
 	return nil
 }
 

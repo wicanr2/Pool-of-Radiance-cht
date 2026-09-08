@@ -195,7 +195,7 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ## 目前 remake 畫面
 
-下面二十二張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
+下面二十三張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
 在 Docker／Xvfb 裡開真的 Ebitengine 視窗、逐鍵走一次正常玩家路徑拍下來的：
 標題 → `ENTER` → `C` 建角 → 命名 → 肖像 → 戰鬥圖示 → 加入隊伍 → `B` 開始冒險
 → 按完羅夫導覽 → 自由移動 → 平面圖 → 手冊 → 裝備 → 法術 → 戰術盤面。
@@ -275,6 +275,14 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 |---|---|
 | ![裝備頁](docs/screenshots/pool-remake-chinese-equipment.png) | |
 
+| `F4` 素材總覽 | |
+|---|---|
+| ![素材總覽](docs/screenshots/pool-remake-chinese-sprites.png) | |
+
+`F4` 把 remake 目前畫得出來的四類圖形排在同一個畫面上：肖像、戰鬥造形、
+第一人稱的牆面圖塊、外框符號。它是**遊戲畫面**，不是素材匯出——圖形仍然只從
+玩家自己的原版 ZIP 讀出來，repo 不含也不產生任何素材檔。
+
 | `K` 法術一覽 | `F5` 戰術盤面 |
 |---|---|
 | ![法術一覽](docs/screenshots/pool-remake-chinese-spells.png) | ![戰術盤面](docs/screenshots/pool-remake-chinese-tactical.png) |
@@ -296,7 +304,8 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 照抄八項會讓玩家看到按不動的鍵。
 
 盤面本身由目前地城座標與真實 GEO 牆面資料現場生成，牆呈斜線是投影本身的形狀
-（`X = 21 + 6dx + 5dy + subB`）。原版 Move 命令的八個方向鍵
+（`X = 21 + 6dx + 5dy + subB`）。視窗一進畫面就對到行動者身上，與原版一樣
+（overlay-32 `07D4h`，餘裕 0 一定捲到正中央）。原版 Move 命令的八個方向鍵
 （`H I M Q P O K G`）已接上移動判定，回合流程照
 [spec 062](docs/spec/062-combat-round-loop.md) 的順序在跑。
 

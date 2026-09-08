@@ -265,6 +265,10 @@ type app struct {
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
 	endingScript     gamepack.EndingScript
+	// `F4` 的素材總覽（sprite_overview.go）。
+	spriteOpen      bool
+	spritePortraits []*ebiten.Image
+	spriteIcons     []*ebiten.Image
 	// 探索畫面的 `V)IEW`（spec 119，view_sheet.go）。
 	viewSheetOpen     bool
 	viewSheetShown    bool
@@ -593,6 +597,13 @@ func (a *app) Update() error {
 	}
 	if handled, err := a.viewSheetInput(); handled {
 		return err
+	}
+	if handled, err := a.spriteOverviewInput(); handled {
+		return err
+	}
+	if a.justPressed(ebiten.KeyF4) && a.mode == modeAdventure && a.introDone {
+		a.openSpriteOverview()
+		return nil
 	}
 	if a.justPressed(ebiten.KeyF3) && a.mode == modeAdventure && a.introDone {
 		// 站著的那一格當然走過了。只在「移動之後」記的話，剛進城還沒走
@@ -2782,6 +2793,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.viewSheetOpen {
 		drawViewSheet(screen, a, background, foreground, accent)
 	}
+	if a.spriteOpen {
+		drawSpriteOverview(screen, a, background, foreground, accent)
+	}
 	// 攻略疊在最上層：它是覆蓋層，不是另一個模式。
 	if a.guideOpen {
 		drawGuide(screen, a, background, foreground, accent)
@@ -2984,7 +2998,8 @@ const (
 // 提早返回，所以指令列那一列的鍵此時按不到。
 func (a *app) panelOpen() bool {
 	return a.journalOpen || a.equipmentOpen || a.spellsOpen || a.shopActive ||
-		a.campOpen || a.guideOpen || a.fieldCastOpen || a.viewSheetOpen
+		a.campOpen || a.guideOpen || a.fieldCastOpen || a.viewSheetOpen ||
+		a.spriteOpen
 }
 
 func (a *app) dialogueVisible() bool {
