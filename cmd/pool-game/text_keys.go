@@ -85,6 +85,7 @@ var messageKeys = map[messageID]string{
 	msgGuideTitle: "ui.guideTitle",
 	msgHelpKeys: "ui.helpKeys",
 	msgHelpTitle: "ui.helpTitle",
+	msgFrameTitle: "ui.frameTitle",
 	msgKeepCharacter: "ui.keepCharacter",
 	msgMenuAdd: "ui.menuAdd",
 	msgMenuBegin: "ui.menuBegin",

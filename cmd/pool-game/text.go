@@ -257,6 +257,9 @@ const (
 	// F1 說明頁。整頁的鍵盤說明放同一條，用換行分隔。
 	msgHelpTitle
 	msgHelpKeys
+	// 外框上緣那一行。**原版沒有這一行**（見 `docs/audit/dos-parity-sample.md`
+	// 的 31-b），是 remake 自己加的識別，所以它走譯文表而不是寫死英文。
+	msgFrameTitle
 )
 
 // hintNames 是建角各階段的提示。繁中依說明書的對應段落改寫成一行：

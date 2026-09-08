@@ -2971,7 +2971,11 @@ func drawDialogue(screen *ebiten.Image, message, label string, foreground, accen
 		}
 		drawText(screen, line, 52, dialogueFirstRow+index*16, foreground)
 	}
-	drawText(screen, label, 52, dialogueBottom-8, accent)
+	// 提示畫在**繩索框外面**那一列，跟原版同一個位置——原版導覽那一幕
+	// （`docs/audit/dos-parity-sample.md` 的 31-b）文字框裡只有台詞，
+	// `PRESS <ENTER>/<RETURN> TO CONTINUE` 在框下緣底下那一條。
+	// 畫在框裡的話，中文台詞只有兩行時框內會空一大塊，而框外整條是空的。
+	drawText(screen, label, 52, footerBaseline, accent)
 }
 
 func translated(x, y float64) ebiten.GeoM {

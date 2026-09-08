@@ -238,7 +238,8 @@
       "ui.trainGained": " 升了一級，生命值 ",
       "ui.trainNeedsMember": "先用 1-6 選一個角色再訓練。",
       "ui.trainNotYet": " 的經驗值還不夠訓練。",
-      "ui.whoPrompt": "誰？"
+      "ui.whoPrompt": "誰？",
+      "ui.frameTitle": "SSI金盒子　光芒之池　重製版"
     }
   }
 }

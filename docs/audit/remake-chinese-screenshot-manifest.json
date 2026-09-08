@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-08",
-  "source_commit": "1c50f6b3833702d1df9535ca7e518523870758fc",
+  "source_commit": "3d61f185c2507420daaec190e308069f5d205eda",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
   "state_relation": "normal-remake-player-path with -lang zh, stepped by the game's own -screen-state identifiers: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
@@ -26,133 +26,133 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-menu.png",
-      "sha256": "2616319cddfc25d3d1e9f974437a4afde21223a26fec81cd4a9889e49678a114",
+      "sha256": "ee03e1079459c0cc9d06b43d9e7dc2d00a80201c47fc3626e448ef199267c524",
       "width": 960,
       "height": 600,
       "screen": "party creation menu"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-race.png",
-      "sha256": "622e052531368ef1d8656f54307743cc55bdec4916a36ad2b8601746a780b860",
+      "sha256": "12e146a08cc3e7f00f6f2a03f2fbe5e0c19519f51b697d4c3c3de1b8edf5f0e6",
       "width": 960,
       "height": 600,
       "screen": "race picker"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-class.png",
-      "sha256": "cdd1d61040ce506e68fb49a22c84b837c28b96de895ebf554cb893d95d06fd9e",
+      "sha256": "e5c341ae7aa6be5cb1b0e1c192ded07ac60ed82acba3254ee298386ab385c21a",
       "width": 960,
       "height": 600,
       "screen": "class picker"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-alignment.png",
-      "sha256": "9d918dff0d083e8809dd2f6657f4d83d1e2a18c0f31c3c656b6b552a49ec4807",
+      "sha256": "cf6974714adcf4ecb6b4ab7fee944db8f83d7e8237e2f518618bdcd5d8855750",
       "width": 960,
       "height": 600,
       "screen": "alignment picker"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "61f864e571c9b184fe316163f2f035b22072e4c86969f5a3cef9971af8885fed",
+      "sha256": "ab99f16989c9f90e6100dd5527d176552a2e52be9839656d8c28d0ecb5b0d8cb",
       "width": 960,
       "height": 600,
       "screen": "character sheet, keep-or-reroll prompt"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-portrait.png",
-      "sha256": "9a238e98e8cf17bce884b75bc5163bba9a830d2acf8f7c7594a691b5efec9400",
+      "sha256": "df72494d17074b903f3ad0014335fde29b5060a8e92ef90cd07d0e7d3bf6f7a4",
       "width": 960,
       "height": 600,
       "screen": "portrait editor"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-icon.png",
-      "sha256": "7dd2fe8a32a2df301c55751252cda54fce760e79b729fddf0cd6f65b59bd6b51",
+      "sha256": "993f03550e196897740959c4dcb41dbbe4d09036ef9c5db2d38fa21c2900ee3b",
       "width": 960,
       "height": 600,
       "screen": "combat icon editor, top level"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-party.png",
-      "sha256": "4fee3f94063137f0dcd50a346535afd7cf2e18fe61e5c106d9d94b7c324723d4",
+      "sha256": "7d48c2c6e8abea58c3ff977484064f627eebce3d0562be72900c739314851462",
       "width": 960,
       "height": 600,
       "screen": "party creation menu with one member added"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tour.png",
-      "sha256": "38f918b291ac21776ec43123df11efbcfe1263c1efe87fbd314bfecca16f3893",
+      "sha256": "d8302d2e0269b1917297e8786b49b418422b70ce74904630f58ab354da832701",
       "width": 960,
       "height": 600,
       "screen": "first page of the Rolf guided tour"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-movement.png",
-      "sha256": "c897eb4f209defbf5f69c81af796570981e312e2628d3e092e3396d5dca5c0c0",
+      "sha256": "0105f026b8a8861446103f490bce805a749ff5de78e9aab5c53efd63498d1b1e",
       "width": 960,
       "height": 600,
       "screen": "free movement after the tour reaches its ECL exit"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-map.png",
-      "sha256": "44f654bd6637cebf17fff4be875384f48f2395735db14d5f2049aee81bcd2ef0",
+      "sha256": "7ded71e40c90a65310d4da20f51a7d7d7ced959bd1eab6654daa0549ac380e6c",
       "width": 960,
       "height": 600,
       "screen": "area map"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal.png",
-      "sha256": "a1c57d19bbd6a9a352e0152dbd49c7ed828a75132f1a63917117499389caaf26",
+      "sha256": "14204a5e79ec8455de5f39551ee0340a456874860486964c94d6caf87f2415e2",
       "width": 960,
       "height": 600,
       "screen": "adventurer's journal"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal-46.png",
-      "sha256": "464072903dd5cb31acca13832a721dbf77a832ca4e90ac401b6e64edbdd02813",
+      "sha256": "b4120cf0bb6d222eb18410d0739ed81bc978637a4b4cb852d9893f2bce065acc",
       "width": 960,
       "height": 600,
       "screen": "journal clue 46"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal-appendix.png",
-      "sha256": "c3c8eb8f61ed4a62f1ef7fba8c067f35f83152a8afedcc52f17cf77a188d4f3d",
+      "sha256": "b3cb0b3d25ecdcec229478756f60f9a03ee8126b29960217a64b95b53d6b5af6",
       "width": 960,
       "height": 600,
       "screen": "journal appendix: the manual's rule tables"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-equipment.png",
-      "sha256": "697b57c8ad47ad06615e3ace5dd24aa421bb905ed82fa4f0b6ce73227109d2b3",
+      "sha256": "055d66f7b0666ef901350fca94ca1c4ea7bde269178a609f7bd6936ed473863b",
       "width": 960,
       "height": 600,
       "screen": "equipment screen, empty pack"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-spells.png",
-      "sha256": "bede49b1c897dff8215ffb52937c6bbfc8190c13bcadec33edf2e95d95b06e0d",
+      "sha256": "d4d6bcb4253f0229f2d4b7c612b27f919458561d0544594e06f48227f989074b",
       "width": 960,
       "height": 600,
       "screen": "spell list, magic-user level 1"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-guide.png",
-      "sha256": "ec7a0bb975c6f3bef5682ab73a8a40397844ac158ea385e6244735f3b7033b4c",
+      "sha256": "f836131f1d64c44fb564bf58fbd75dc59cff0ad9ea3397ee84339c90da2592fd",
       "width": 960,
       "height": 600,
       "screen": "in-game guide (F3), fogged to explored cells"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-guide-full.png",
-      "sha256": "1501adb66eba5d1b109009cd0204c23a7f75723383bd2eda2559b968907b8793",
+      "sha256": "f8c67c7934c475effa73ee117125e6c48414b9ac3a82261aea08c4dc51fb334d",
       "width": 960,
       "height": 600,
       "screen": "in-game guide (F3) with V, every point shown"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tactical.png",
-      "sha256": "17becc7075f042c02bad61f79c1f81114e269b64fdac8f5a22343ee09943ea68",
+      "sha256": "66f717ad7b6eed163b3470891bb4f7c6e0158b57f12d7a1689a64c0db76242e7",
       "width": 960,
       "height": 600,
       "screen": "tactical board (F5)"

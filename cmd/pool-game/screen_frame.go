@@ -39,7 +39,7 @@ const (
 // 時退回原本那圈素色方框，畫面不會空掉。
 func (a *app) drawFrame(screen *ebiten.Image, foreground, accent color.Color) {
 	if a == nil || a.symbolBand4.ItemCount <= frameHorizontalItem {
-		drawPlainFrame(screen, foreground, accent)
+		drawPlainFrame(screen, a.text(msgFrameTitle), foreground, accent)
 		return
 	}
 	palette := a.artPalette()
@@ -60,7 +60,7 @@ func (a *app) drawFrame(screen *ebiten.Image, foreground, accent color.Color) {
 	put(frameCornerItem, columns-1, 0)
 	put(frameCornerItem, 0, frameBottomTileRow)
 	put(frameCornerItem, columns-1, frameBottomTileRow)
-	drawText(screen, "SSI GOLD BOX / POOL REMAKE", 20, 36, foreground)
+	drawText(screen, a.text(msgFrameTitle), 20, 36, foreground)
 }
 
 // drawRopeBox 用同三個符號圍一個框。left／top 是外框左上角的**邏輯座標**，
@@ -115,7 +115,7 @@ func (a *app) drawSymbol(screen *ebiten.Image, item, left, top, scale int, palet
 }
 
 // drawPlainFrame 是沒有原版素材時的退路。
-func drawPlainFrame(screen *ebiten.Image, foreground, accent color.Color) {
+func drawPlainFrame(screen *ebiten.Image, title string, foreground, accent color.Color) {
 	for inset := 8; inset < 12; inset++ {
 		for x := inset; x < logicalWidth-inset; x++ {
 			screen.Set(x, inset, accent)
@@ -126,6 +126,6 @@ func drawPlainFrame(screen *ebiten.Image, foreground, accent color.Color) {
 			screen.Set(logicalWidth-inset-1, y, accent)
 		}
 	}
-	drawText(screen, "SSI GOLD BOX / POOL REMAKE", 18, 26, foreground)
+	drawText(screen, title, 18, 26, foreground)
 }
 
