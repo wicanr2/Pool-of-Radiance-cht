@@ -188,7 +188,7 @@ step a adventure-move
 #
 # J 開探險者手冊，再打 46 + ENTER 跳到遊戲文字實際引用的那一條——
 # 「抄進手冊，成為線索報導 46」在畫面上說得出口，這裡就要翻得到。
-step j journal
+step j journal-clue
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-journal.png
 pulse 4
@@ -198,6 +198,10 @@ sleep 0.6
 shot docs/screenshots/pool-remake-chinese-journal-46.png
 differs docs/screenshots/pool-remake-chinese-journal.png \
         docs/screenshots/pool-remake-chinese-journal-46.png "打 46 沒有跳到線索 46"
+# 附錄是說明書書末那七節規則表（金錢換算、法術表、武器表…），TAB 翻到它。
+step Tab journal-appendix
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-journal-appendix.png
 
 # 三個面板都用自己的字母開關（`J`／`I`／`K`）。**不要用 ESC**——
 # 冒險畫面的 ESC 是「回隊伍管理選單」，一按就掉出整條路徑。
@@ -262,6 +266,7 @@ screens = [
     ("pool-remake-chinese-map.png", "area map"),
     ("pool-remake-chinese-journal.png", "adventurer's journal"),
     ("pool-remake-chinese-journal-46.png", "journal clue 46"),
+    ("pool-remake-chinese-journal-appendix.png", "journal appendix: the manual's rule tables"),
     ("pool-remake-chinese-equipment.png", "equipment screen, empty pack"),
     ("pool-remake-chinese-spells.png", "spell list, magic-user level 1"),
     ("pool-remake-chinese-guide.png", "in-game guide (F3), fogged to explored cells"),

@@ -202,3 +202,47 @@ func TestJournalInputTypesANumberAndJumps(t *testing.T) {
 		t.Fatal("ESC did not close the journal")
 	}
 }
+
+// 附錄靠空白對齊欄位，所以那幾章不能走段落換行器——`wrapDisplay` 把空白
+// 當分詞符丟掉，走一趟回來「銅幣　200 銅幣＝1 黃金」會擠成一串。
+func TestAppendixTablesKeepTheirColumnSpacing(t *testing.T) {
+	state := newTestJournal(t)
+	state.kind = indexOfKind(journal.Appendix)
+	aligned := 0
+	for index := range state.corpus.Entries(journal.Appendix) {
+		state.entry[journal.Appendix] = index
+		state.reflow()
+		for _, line := range state.rendered {
+			if strings.Contains(strings.TrimSpace(line), "  ") {
+				aligned++
+			}
+		}
+	}
+	// 七節裡有六節排成多欄，對齊用的空白一定不只一處。
+	if aligned < 20 {
+		t.Fatalf("附錄裡只有 %d 行留著對齊用的空白，欄位排版被吃掉了", aligned)
+	}
+	// 金錢換算那一節的表頭與內容在同一組欄位上，兩者的第二欄要從同一格開始。
+	state.entry[journal.Appendix] = 0
+	state.reflow()
+	if len(state.rendered) < 3 {
+		t.Fatalf("附錄 1 只排出 %d 行", len(state.rendered))
+	}
+	// 比的是**畫出來的欄位**，不是位元組位置——漢字一個字三個位元組、
+	// 兩格寬，拿位元組索引比會兩邊都對不上而看不出真正的原因。
+	head := columnOf(state.rendered[0], "換算方法")
+	body := columnOf(state.rendered[1], "200")
+	if head < 0 || body < 0 || head != body {
+		t.Errorf("附錄 1 的第二欄從第 %d 與第 %d 格開始：\n%q\n%q",
+			head, body, state.rendered[0], state.rendered[1])
+	}
+}
+
+// columnOf 是 needle 在這一行的第幾格（半形位），找不到回 -1。
+func columnOf(line, needle string) int {
+	at := strings.Index(line, needle)
+	if at < 0 {
+		return -1
+	}
+	return lineWidth(line[:at])
+}

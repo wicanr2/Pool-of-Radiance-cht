@@ -497,6 +497,12 @@ func TestTranscriptionAndGameCorpusAgree(t *testing.T) {
 	transcribed := transcribedEntries(t)
 	checked := 0
 	for _, kind := range journal.Kinds {
+		if kind == journal.Appendix {
+			// 附錄是**表格**，進遊戲時重排過（欄位對齊、過寬的表頭縮寫、
+			// 跨頁重印的小標題只留一份），所以不能逐字比。守它的是
+			// `TestAppendixKeepsEveryCellFromTheTranscription`：每一格都要在。
+			continue
+		}
 		for _, entry := range corpus.Entries(kind) {
 			source, ok := transcribed[kind][entry.ID]
 			if !ok {

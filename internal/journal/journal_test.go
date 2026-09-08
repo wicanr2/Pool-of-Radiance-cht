@@ -23,12 +23,13 @@ func TestTraditionalChineseCorpusLoads(t *testing.T) {
 	}
 	for kind, want := range map[journal.Kind]int{
 		journal.Clue: 58, journal.Rumour: 23, journal.Proclamation: 18,
+		journal.Appendix: 7,
 	} {
 		if got := len(corpus.Entries(kind)); got != want {
 			t.Fatalf("%s has %d entries, want %d", kind, got, want)
 		}
 	}
-	if corpus.Size() != 99 {
+	if corpus.Size() != 106 {
 		t.Fatalf("corpus size %d", corpus.Size())
 	}
 }

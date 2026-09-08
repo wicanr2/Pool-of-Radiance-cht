@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-08",
-  "source_commit": "1c9bc57429955212ebf4bc4bd520452d0306d544",
+  "source_commit": "1c50f6b3833702d1df9535ca7e518523870758fc",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
   "state_relation": "normal-remake-player-path with -lang zh, stepped by the game's own -screen-state identifiers: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "a4d9c63911a174a4f04ec26b2629814be78c8dd7e3e53cc58aa4c88f42844d27",
+      "sha256": "61f864e571c9b184fe316163f2f035b22072e4c86969f5a3cef9971af8885fed",
       "width": 960,
       "height": 600,
       "screen": "character sheet, keep-or-reroll prompt"
@@ -103,17 +103,24 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal.png",
-      "sha256": "f62731026594e3b91817e612397396e2a2915fd48e84ec27decd1507d2c5a323",
+      "sha256": "a1c57d19bbd6a9a352e0152dbd49c7ed828a75132f1a63917117499389caaf26",
       "width": 960,
       "height": 600,
       "screen": "adventurer's journal"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal-46.png",
-      "sha256": "1b3645e83dd0e74bbc0375d1e35e6b7f8d53e17fb69ae53fe7a9d94213496eeb",
+      "sha256": "464072903dd5cb31acca13832a721dbf77a832ca4e90ac401b6e64edbdd02813",
       "width": 960,
       "height": 600,
       "screen": "journal clue 46"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-journal-appendix.png",
+      "sha256": "c3c8eb8f61ed4a62f1ef7fba8c067f35f83152a8afedcc52f17cf77a188d4f3d",
+      "width": 960,
+      "height": 600,
+      "screen": "journal appendix: the manual's rule tables"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-equipment.png",
@@ -145,7 +152,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tactical.png",
-      "sha256": "ad808a392fe7cce2829ddd20b8fbeb4165e4f9e58efbb94ad1739bbf7d09ca6e",
+      "sha256": "17becc7075f042c02bad61f79c1f81114e269b64fdac8f5a22343ee09943ea68",
       "width": 960,
       "height": 600,
       "screen": "tactical board (F5)"

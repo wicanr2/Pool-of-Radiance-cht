@@ -88,8 +88,8 @@ func (a *app) enterProgram(event eclvm.Event) error {
 		return nil
 	case gamepack.ProgramEnding:
 		// 值 8 是結局過場（overlay-18 entry 1，spec 108）：打贏泰倫斯拉克斯
-		// 之後 `ECL5/7` 的 `A82Ah` 會推它。台詞接上了，中間那幾張
-		// `FINAL5.DAX` 的圖還沒接。
+		// 之後 `ECL5/7` 的 `A82Ah` 會推它。台詞與 `FINAL5.DAX` 那五層圖
+		// 都在 `ending.go` 接好了。
 		return a.enterEnding()
 	default:
 		// 其餘的值原版就是直接返回，什麼都不做（spec 081 的 `3167h`）。

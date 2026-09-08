@@ -19,23 +19,30 @@ import (
 //go:embed zh-TW.json
 var traditionalChineseJSON []byte
 
-// Kind 是手冊裡的三種條目，對應說明書的第五、六、四章。
+// Kind 是手冊裡的四種條目，對應說明書的第五、六、四章與書末的附錄。
 type Kind string
 
 const (
 	Clue         Kind = "clue"         // 第五章 探險者線索提示，編號 1..58
 	Rumour       Kind = "rumour"       // 第六章 酒店傳言，編號 1..23
 	Proclamation Kind = "proclamation" // 第四章 新菲蘭城議會公告，字號為羅馬數字
+	// Appendix 是書末的七節附錄（p.48–54）：金錢換算、法術表、裝備、
+	// 昇級經驗、對抗不死、各等級可用裝備武器、武器一覽。它們是**規則表**，
+	// 原版要玩家翻紙本才查得到。
+	Appendix Kind = "appendix"
 )
 
-// Kinds 是顯示順序：遊戲最常引用線索報導，其次是傳言，公告只在市政廳出現。
-var Kinds = []Kind{Clue, Rumour, Proclamation}
+// Kinds 是顯示順序：遊戲最常引用線索報導，其次是傳言，公告只在市政廳出現，
+// 附錄是查規則用的，放最後。
+var Kinds = []Kind{Clue, Rumour, Proclamation, Appendix}
 
 // Entry 是一條手冊條目。ID 是說明書印出的編號本身（線索與傳言是十進位數字，
 // 公告是羅馬數字），因為遊戲畫面說的就是那個編號。
 type Entry struct {
 	Kind Kind   `json:"kind"`
 	ID   string `json:"id"`
+	// Title 只有附錄有：書上那一節的標題（「金錢換算方法」）。
+	Title string `json:"title,omitempty"`
 	Page string `json:"page,omitempty"`
 	Pic  string `json:"pic,omitempty"`
 	Text string `json:"text"`
@@ -57,7 +64,7 @@ type Corpus struct {
 
 // 說明書自己的條目數。數量對不上就失敗即關閉：少一條的症狀是玩家查不到那一條，
 // 而畫面上看起來像遊戲沒有這個功能，不像資料缺了一筆。
-var wantCounts = map[Kind]int{Clue: 58, Rumour: 23, Proclamation: 18}
+var wantCounts = map[Kind]int{Clue: 58, Rumour: 23, Proclamation: 18, Appendix: 7}
 
 // Parse 讀入一份手冊。
 func Parse(raw []byte) (*Corpus, error) {

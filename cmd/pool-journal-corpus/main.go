@@ -29,12 +29,15 @@ const (
 	wantClues         = 58
 	wantRumours       = 23
 	wantProclamations = 18
+	wantAppendices    = 7
 )
 
 // entry 是一條手冊條目。ID 用說明書自己的編號，不自創。
 type entry struct {
 	Kind string `json:"kind"`
 	ID   string `json:"id"`
+	// Title 只有附錄有：書上那一節的標題（「金錢換算方法」）。
+	Title string `json:"title,omitempty"`
 	Page string `json:"page,omitempty"`
 	Pic  string `json:"pic,omitempty"`
 	Text string `json:"text"`
@@ -53,6 +56,8 @@ var (
 	otherHeading  = regexp.MustCompile(`^#{2,6} `)
 	rumourLine    = regexp.MustCompile(`^\*\*傳言 ([0-9]+)\*\*[：:]\s*(.*)$`)
 	proclamHeader = regexp.MustCompile(`^\*\*公告字號 ([IVXLCDM]+)\*\*\s*$`)
+	// 附錄那七節的標題是 `#### 1. 金錢換算方法`，編號就是書上的編號。
+	appendixHeading = regexp.MustCompile(`^#### ([0-9]+)\. (.+?)\s*$`)
 )
 
 func main() {
@@ -88,6 +93,7 @@ type collector struct {
 	id    string
 	page  string
 	pic   string
+	title string
 	lines []string
 }
 
@@ -129,9 +135,13 @@ func extract(text string) ([]entry, error) {
 			return
 		}
 		body := open.paragraphs()
+		if open.kind == "appendix" {
+			body = appendixText(open.id, open.lines)
+		}
 		if body != "" {
 			entries = append(entries, entry{
-				Kind: open.kind, ID: open.id, Page: open.page, Pic: open.pic, Text: body,
+				Kind: open.kind, ID: open.id, Page: open.page, Pic: open.pic,
+				Title: open.title, Text: body,
 			})
 		}
 		open = nil
@@ -157,6 +167,12 @@ func extract(text string) ([]entry, error) {
 		if match := clueHeading.FindStringSubmatch(line); match != nil {
 			flush()
 			open = &collector{kind: "clue", id: match[1], page: page, pic: pic}
+			continue
+		}
+		if match := appendixHeading.FindStringSubmatch(line); match != nil {
+			flush()
+			open = &collector{kind: "appendix", id: match[1], page: page, pic: pic,
+				title: match[2]}
 			continue
 		}
 		if match := proclamHeader.FindStringSubmatch(line); match != nil {
@@ -237,6 +253,7 @@ func checkCounts(entries []entry) error {
 	}
 	for kind, want := range map[string]int{
 		"clue": wantClues, "rumour": wantRumours, "proclamation": wantProclamations,
+		"appendix": wantAppendices,
 	} {
 		if got := len(seen[kind]); got != want {
 			return fmt.Errorf("%s 取出 %d 條，說明書是 %d 條", kind, got, want)

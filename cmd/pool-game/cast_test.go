@@ -6,6 +6,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
 // 傷害法術要先讓目標擲豁免，再依參數表 `+8` 的規則處置傷害（spec 074）。
@@ -274,5 +275,69 @@ func TestRestorationPaysBackOneDrainedLevel(t *testing.T) {
 	}
 	if total != 9 {
 		t.Fatalf("還回來 %d 點，原本欠 9 點", total)
+	}
+}
+
+// 解病術作用在**選中的目標**身上，不是施法者。原版 `225Bh` 逐個
+// `lcall 0100h:006Bh(目標, …)` 再 `002Ah(目標, …)`（spec 098），
+// 問的一直是目標；對自己施等於隊友中了病也治不好。
+func TestCureDiseaseWorksOnTheChosenTarget(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	parameters, err := gamepack.ReadDOSSpellParameters(zipPath)
+	if err != nil {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	caster, err := gamepack.ReadDOSSpellCaster(zipPath)
+	if err != nil {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	levels := make([]uint8, gamepack.ClassThac0ClassCount)
+	levels[gamepack.ClassSlotCleric] = 6
+	party := make([]poolsave.Character, 2)
+	for index := range party {
+		party[index] = poolsave.Character{Name: string(rune('A' + index)),
+			MaxHP: 20, CurrentHP: 20,
+			ClassLevels: append([]uint8(nil), levels...),
+			Memorised:   make([]uint8, gamepack.MemorisedSpellSlots)}
+		party[index].Memorised[0] = gamepack.SpellIDCureDisease
+	}
+	// 第二個人身上有致病術的效果碼；施法者身上也放一個，用來證明
+	// 拿掉的是目標那一份，不是順手把自己也治了。
+	party[0].Effects = []uint8{gamepack.CureDiseaseEffectCodes[2]}
+	party[1].Effects = []uint8{gamepack.CureDiseaseEffectCodes[2]}
+	state := &tacticalState{
+		Roster:      make([]combat.CombatantCell, 3),
+		Friendly:    []bool{false, true, true},
+		HitPoints:   []int{0, 20, 20},
+		PartySlot:   []int{-1, 0, 1},
+		States:      make([]uint8, 3),
+		Scores:      []uint8{0, 5, 5},
+		Budgets:     make([]uint8, 3),
+		HitDice:     make([]uint8, 3),
+		SleepFlag:   make([]uint8, 3),
+		Effects:     make([]gamepack.EffectList, 3),
+		ArmorClass:  make([]int, 3),
+		THAC0:       make([]uint8, 3),
+		Damage:      make([]combat.DamageDice, 3),
+		SaveTargets: make([][gamepack.SavingThrowCategories]uint8, 3),
+		SaveBonus:   make([]int, 3),
+		Mover:       1,
+	}
+	for index := 1; index < 3; index++ {
+		state.Roster[index] = combat.CombatantCell{X: uint8(index), Y: 1, FootprintClass: 1}
+	}
+	application := &app{tactical: state, tacticalPreview: true, mode: modeAdventure,
+		spellParameters: parameters, spellCaster: caster, roller: fixedRoller{10},
+		state: poolsave.State{Schema: poolsave.Schema, Party: party}}
+	if err := application.finishCast(
+		castOption{ID: gamepack.SpellIDCureDisease, Label: "解病術"}, 2, true); err != nil {
+		t.Fatal(err)
+	}
+	if len(application.state.Party[1].Effects) != 0 {
+		t.Errorf("目標身上還留著 %v，解病術沒有作用在他身上",
+			application.state.Party[1].Effects)
+	}
+	if len(application.state.Party[0].Effects) != 1 {
+		t.Errorf("施法者身上的效果被順手拿掉了：%v", application.state.Party[0].Effects)
 	}
 }

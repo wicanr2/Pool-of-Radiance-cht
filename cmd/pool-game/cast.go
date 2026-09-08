@@ -338,22 +338,28 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	}
 	switch {
 	case len(effect.RemoveEffects) > 0:
-		// 解病術這一類：從施法者身上拿掉那幾個效果碼。原版問的是選中的目標，
-		// 而瞄準（`beginCastTargeting`）只接進了治療與復活那幾支，這一支
-		// 還沒吃 `target`，所以目前一律對自己。
+		// 解病術這一類：拿掉**選中的目標**身上那幾個效果碼。原版
+		// `225Bh` 是逐個 `lcall 0100h:006Bh(目標, …)` 再 `002Ah(目標, …)`
+		// （spec 098），問的一直是目標，不是施法者；沒挑目標時才是自己。
+		subject := member
+		if chosen {
+			if index, ok := a.moverPartyIndex(target); ok {
+				subject = &a.state.Party[index]
+			}
+		}
 		removed := 0
 		for _, code := range effect.RemoveEffects {
-			for index, value := range member.Effects {
+			for index, value := range subject.Effects {
 				if value == code {
-					member.Effects = append(member.Effects[:index], member.Effects[index+1:]...)
+					subject.Effects = append(subject.Effects[:index], subject.Effects[index+1:]...)
 					removed++
 					break
 				}
 			}
 		}
-		syncTrainedLibraryCharacter(&a.state, *member)
+		syncTrainedLibraryCharacter(&a.state, *subject)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured),
-			strings.TrimSpace(member.Name), removed))
+			strings.TrimSpace(subject.Name), removed))
 	case effect.EffectCode == gamepack.HoldPersonEffectCode:
 		// 定身術：規則 1（豁免成功完全無效，spec 074）。中了就照參數表的
 		// 持續回合數定住，那一格輪到就直接結束回合。

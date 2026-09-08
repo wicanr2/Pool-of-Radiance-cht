@@ -60,11 +60,34 @@ func (s *journalState) reflow() {
 		return
 	}
 	for index, paragraph := range strings.Split(entry.Text, "\n") {
+		// 附錄是**已經排好的表格**，每一行就是一行；中間插空行會把欄位
+		// 對齊拆散，看起來像資料壞掉。線索與傳言相反：那是段落，
+		// 兩段擠在一起會看不出換人說話。
+		if entry.Kind == journal.Appendix {
+			// **不能走 `wrapDisplay`。** 那一支把空白當分詞符丟掉——
+			// 它是給中文段落用的，而附錄靠空白對齊欄位，走一趟回來
+			// 會變成「銅幣200銅幣＝1黃金」擠成一串。
+			if lineWidth(paragraph) <= journalColumns {
+				s.rendered = append(s.rendered, paragraph)
+				continue
+			}
+			s.rendered = append(s.rendered, wrapDisplay(paragraph, journalColumns)...)
+			continue
+		}
 		if index > 0 {
 			s.rendered = append(s.rendered, "")
 		}
 		s.rendered = append(s.rendered, wrapDisplay(paragraph, journalColumns)...)
 	}
+}
+
+// lineWidth 是一行畫出來佔幾個半形位。
+func lineWidth(value string) int {
+	width := 0
+	for _, symbol := range value {
+		width += runeWidth(symbol)
+	}
+	return width
 }
 
 func (s *journalState) selectKind(delta int) {
@@ -118,6 +141,7 @@ var journalKindNames = map[journal.Kind]string{
 	journal.Clue:         "線索報導",
 	journal.Rumour:       "酒店傳言",
 	journal.Proclamation: "議會公告",
+	journal.Appendix:     "附錄",
 }
 
 // openJournal 只在繁中模式開得起來：手冊本身是軟體世界的中譯，英文模式下的
@@ -206,6 +230,9 @@ func drawJournal(screen *ebiten.Image, a *app, background, foreground, accent co
 		return
 	}
 	header := fmt.Sprintf("%s %s", journalKindNames[entry.Kind], entry.ID)
+	if entry.Title != "" {
+		header += " " + entry.Title
+	}
 	if entry.Page != "" {
 		header += fmt.Sprintf("　（說明書上冊 p.%s）", entry.Page)
 	}
