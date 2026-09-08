@@ -69,6 +69,11 @@ func (a *app) screenName() string {
 			return "guide-warned"
 		}
 		return "guide"
+	case a.viewSheetOpen:
+		if a.viewSheetShown {
+			return "view-sheet"
+		}
+		return "view-pick"
 	case a.fieldCastOpen:
 		return "field-cast"
 	case a.journalOpen:

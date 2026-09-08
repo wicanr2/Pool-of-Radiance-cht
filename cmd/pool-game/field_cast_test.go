@@ -82,3 +82,43 @@ func TestFieldCastOpensWithCAndCountsAsAPanel(t *testing.T) {
 		t.Fatal("ESC 沒有關掉")
 	}
 }
+
+// `V` 開得起來，先挑人再看那個人的資料頁（spec 119 → spec 130）。
+func TestViewSheetPicksAMemberThenShowsTheSheet(t *testing.T) {
+	application := fieldCastApp(healer("A", 5, 10, 0), healer("B", 8, 12, 0))
+	application.openViewSheet()
+	if !application.viewSheetOpen || application.viewSheetShown {
+		t.Fatal("開起來應該停在挑人那一步")
+	}
+	if !application.panelOpen() {
+		t.Fatal("開著卻不算面板，底下的指令列會露出來")
+	}
+	if got := application.screenName(); got != "view-pick" {
+		t.Fatalf("挑人那一步回報 %q", got)
+	}
+	if err := press(application, ebiten.KeyArrowDown); err != nil {
+		t.Fatal(err)
+	}
+	if application.viewSheetCursor != 1 {
+		t.Fatalf("下鍵沒有換人，游標停在 %d", application.viewSheetCursor)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if !application.viewSheetShown || application.screenName() != "view-sheet" {
+		t.Fatalf("Enter 之後回報 %q", application.screenName())
+	}
+	// ESC 先回挑人那一步，再按一次才關掉——兩步都要回得去。
+	if err := press(application, ebiten.KeyEscape); err != nil {
+		t.Fatal(err)
+	}
+	if application.viewSheetShown || !application.viewSheetOpen {
+		t.Fatal("第一次 ESC 應該回到挑人那一步")
+	}
+	if err := press(application, ebiten.KeyEscape); err != nil {
+		t.Fatal(err)
+	}
+	if application.viewSheetOpen {
+		t.Fatal("第二次 ESC 沒有關掉")
+	}
+}

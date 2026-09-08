@@ -259,7 +259,9 @@
       "ui.sheetDamage": "DAMAGE",
       "ui.sheetMovement": "MOVEMENT",
       "ui.sheetStatus": "STATUS",
-      "ui.sheetGold": "GOLD"
+      "ui.sheetGold": "GOLD",
+      "ui.viewSheetPick": "VIEW WHOM?",
+      "ui.viewSheetFooter": "ESC BACK"
     }
   }
 }

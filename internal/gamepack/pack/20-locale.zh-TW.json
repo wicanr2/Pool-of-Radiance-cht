@@ -259,7 +259,9 @@
       "ui.sheetDamage": "DAMAGE",
       "ui.sheetMovement": "MOVEMENT",
       "ui.sheetStatus": "STATUS",
-      "ui.sheetGold": "GOLD"
+      "ui.sheetGold": "GOLD",
+      "ui.viewSheetPick": "看誰的資料？",
+      "ui.viewSheetFooter": "ESC 返回"
     }
   }
 }

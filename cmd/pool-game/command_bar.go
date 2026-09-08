@@ -75,6 +75,11 @@ func (a *app) adventureCommandInput() (bool, error) {
 		// remake 沒有「選定角色」那個全域，所以直接開挑人那一步。
 		a.openFieldCast()
 		return true, nil
+	case a.justPressed(ebiten.KeyV):
+		// 原版 `0A8Fh`：`V` 走 overlay-19 entry 5（spec 119），那一頁就是
+		// 人物資料頁（spec 130）。
+		a.openViewSheet()
+		return true, nil
 	case a.justPressed(ebiten.KeyS):
 		a.searchFlags ^= SearchWhileWalkingBit
 		return true, nil

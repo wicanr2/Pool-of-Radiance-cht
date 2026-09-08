@@ -86,6 +86,8 @@ var messageKeys = map[messageID]string{
 	msgHelpKeys: "ui.helpKeys",
 	msgHelpTitle: "ui.helpTitle",
 	msgFrameTitle: "ui.frameTitle",
+	msgViewSheetPick: "ui.viewSheetPick",
+	msgViewSheetFooter: "ui.viewSheetFooter",
 	msgSheetLevel: "ui.sheetLevel",
 	msgSheetExperience: "ui.sheetExperience",
 	msgSheetArmourClass: "ui.sheetArmourClass",

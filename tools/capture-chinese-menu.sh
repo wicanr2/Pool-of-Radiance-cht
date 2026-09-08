@@ -228,6 +228,13 @@ step c field-cast
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-field-cast.png
 step Escape adventure-move
+# V 是探索畫面的人物資料頁（spec 119 → spec 130）。
+step v view-pick
+step Return view-sheet
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-view-sheet.png
+step Escape view-pick
+step Escape adventure-move
 step F3 guide
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-guide.png
@@ -275,6 +282,7 @@ screens = [
     ("pool-remake-chinese-equipment.png", "equipment screen, empty pack"),
     ("pool-remake-chinese-spells.png", "spell list, magic-user level 1"),
     ("pool-remake-chinese-field-cast.png", "casting outside combat (C on the command bar)"),
+    ("pool-remake-chinese-view-sheet.png", "a party member's sheet from the command bar (V)"),
     ("pool-remake-chinese-guide.png", "in-game guide (F3), fogged to explored cells"),
     ("pool-remake-chinese-guide-full.png", "in-game guide (F3) with V, every point shown"),
     ("pool-remake-chinese-tactical.png", "tactical board (F5)"),

@@ -269,6 +269,9 @@ const (
 	msgSheetMovement
 	msgSheetStatus
 	msgSheetGold
+	// 探索畫面的 `V)IEW`（spec 119）。
+	msgViewSheetPick
+	msgViewSheetFooter
 	// 探索畫面的施法（spec 119 的 `C)AST`）。
 	msgFieldCastPickCaster
 	msgFieldCastPickSpell

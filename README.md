@@ -195,7 +195,7 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ## 目前 remake 畫面
 
-下面二十一張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
+下面二十二張全部是**繁體中文介面的實機畫面**，由 `tools/capture-chinese-menu.sh`
 在 Docker／Xvfb 裡開真的 Ebitengine 視窗、逐鍵走一次正常玩家路徑拍下來的：
 標題 → `ENTER` → `C` 建角 → 命名 → 肖像 → 戰鬥圖示 → 加入隊伍 → `B` 開始冒險
 → 按完羅夫導覽 → 自由移動 → 平面圖 → 手冊 → 裝備 → 法術 → 戰術盤面。
@@ -244,14 +244,19 @@ tools/go.sh run ./cmd/pool-inventory -zip "Pool of Radiance (1988).zip"
 
 ### 面板
 
-| `C` 探索時施法 | |
+| `C` 探索時施法 | `V` 看隊員的資料頁 |
 |---|---|
-| ![探索施法](docs/screenshots/pool-remake-chinese-field-cast.png) | |
+| ![探索施法](docs/screenshots/pool-remake-chinese-field-cast.png) | ![人物資料頁](docs/screenshots/pool-remake-chinese-view-sheet.png) |
 
 指令列的 `C` 走原版 overlay-15 entry 2（[spec 119](docs/spec/119-adventure-command-bar.md)）：
 挑人 → 挑法術 → 挑目標，施完可以接著施下一條。它與戰鬥中的施法**是同一支派發**
 （overlay-22 entry 5），所以清單也共用同一個閘——看得到的就是施得出來的。
 挑到沒記法術的人會照原版說一句「沒有記住任何法術」。
+
+`V` 走 overlay-19 entry 5，開出來的是人物資料頁
+（[spec 130](docs/spec/130-character-sheet-layout.md)）：十三行與每一欄的位置
+都逐格對原版量過，`LEVEL`／`EXP`、`AC`／`THAC0`／`ENCUMBRANCE`、
+`HP`／`DAMAGE`／`MOVEMENT`、`STATUS` 與右上角的肖像都在。
 
 | `F3` 遊戲內攻略 | 按 `V` 攤開完整版 |
 |---|---|

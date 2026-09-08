@@ -168,34 +168,39 @@ const (
 	sheetPortraitTop  = 16
 )
 
-// drawCharacterSheet 畫原版那一頁。欄名保持英文，欄位的 x 逐格對原版。
+// drawCharacterSheet 畫建角那一頁：剛擲出來的值。
 func drawCharacterSheet(screen *ebiten.Image, a *app, foreground, accent color.Color) {
-	value := a.rolled
-	if value == nil {
+	if a.rolled == nil {
 		return
 	}
-	gender := a.optionText(a.flow.SelectedGender().ID, a.flow.SelectedGender().Label)
-	race := a.optionText(a.flow.SelectedRace().ID, a.flow.SelectedRace().Label)
-	class := a.optionText(a.flow.SelectedClass().ID, a.flow.SelectedClass().Label)
-	alignment := a.optionText(a.flow.SelectedAlignment().ID, a.flow.SelectedAlignment().Label)
-	drawText(screen, fmt.Sprintf("%s %s  %s", gender, race,
-		fmt.Sprintf(a.text(msgAge), value.Age)), sheetLeft, sheetLine1, accent)
-	drawText(screen, alignment, sheetLeft, sheetLine2, accent)
-	drawText(screen, class, sheetLeft, sheetLine3, accent)
+	drawSheetFor(screen, a, a.rolledCharacter(), nil, foreground, accent)
+}
 
-	for index := range value.Abilities {
+// drawSheetFor 畫原版那一頁。欄名保持英文，欄位的 x 逐格對原版（spec 130）。
+// portrait 為 nil 時不畫右上角那一張。
+func drawSheetFor(screen *ebiten.Image, a *app, member poolsave.Character,
+	portrait *ebiten.Image, foreground, accent color.Color) {
+	drawText(screen, fmt.Sprintf("%s %s  %s",
+		a.optionText(member.GenderID, member.GenderID),
+		a.optionText(member.RaceID, member.RaceID),
+		fmt.Sprintf(a.text(msgAge), member.Age)), sheetLeft, sheetLine1, accent)
+	drawText(screen, a.optionText(member.AlignmentID, member.AlignmentID),
+		sheetLeft, sheetLine2, accent)
+	drawText(screen, a.optionText(member.ClassID, member.ClassID), sheetLeft, sheetLine3, accent)
+
+	for index := range member.Abilities {
 		line := sheetAbilityTop + index*sheetAbilityStep
 		drawText(screen, a.abilityName(index), sheetLeft, line, foreground)
-		text := fmt.Sprintf("%d", value.Abilities[index])
-		if index == 0 && value.ExceptionalStrength != 0 {
-			text += fmt.Sprintf("/%02d", value.ExceptionalStrength)
+		text := fmt.Sprintf("%d", member.Abilities[index])
+		if index == 0 && member.ExceptionalStrength != 0 {
+			text += fmt.Sprintf("/%02d", member.ExceptionalStrength)
 		}
 		drawText(screen, text, sheetAbilityValue, line, foreground)
 	}
 	drawText(screen, a.text(msgSheetGold), sheetGoldLabel, sheetAbilityTop, foreground)
-	drawText(screen, fmt.Sprintf("%d", value.Gold), sheetGoldValue, sheetAbilityTop, foreground)
+	drawText(screen, fmt.Sprintf("%d", member.Money[pooltreasure.Gold]),
+		sheetGoldValue, sheetAbilityTop, foreground)
 
-	member := a.rolledCharacter()
 	sheet, err := a.characterSheetFor(member)
 	if err != nil {
 		drawText(screen, err.Error(), sheetLeft, sheetLevelLine, foreground)
@@ -214,7 +219,7 @@ func drawCharacterSheet(screen *ebiten.Image, a *app, foreground, accent color.C
 	drawText(screen, fmt.Sprintf("%d", sheet.Encumbrance), sheetEncValue, sheetCombatLine1, foreground)
 
 	drawText(screen, a.text(msgSheetHitPoints), sheetLeft, sheetCombatLine2, foreground)
-	drawText(screen, fmt.Sprintf("%d", value.HP), sheetHitPointValue, sheetCombatLine2, foreground)
+	drawText(screen, fmt.Sprintf("%d", member.CurrentHP), sheetHitPointValue, sheetCombatLine2, foreground)
 	drawText(screen, a.text(msgSheetDamage), sheetDamageLabel, sheetCombatLine2, foreground)
 	drawText(screen, sheet.Damage, sheetDamageValue, sheetCombatLine2, foreground)
 	drawText(screen, a.text(msgSheetMovement), sheetMovementLabel, sheetCombatLine2, foreground)
@@ -225,11 +230,14 @@ func drawCharacterSheet(screen *ebiten.Image, a *app, foreground, accent color.C
 
 	// 右上角的肖像。原版那一張佔 native x 216..311、y 8..103，
 	// 兩倍之後從 (432,16) 起。
-	if a.portrait != nil {
+	if portrait == nil {
+		portrait = a.portrait
+	}
+	if portrait != nil {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Scale(2, 2)
 		op.GeoM.Translate(sheetPortraitLeft, sheetPortraitTop)
-		screen.DrawImage(a.portrait, op)
+		screen.DrawImage(portrait, op)
 	}
 }
 
@@ -237,6 +245,10 @@ func drawCharacterSheet(screen *ebiten.Image, a *app, foreground, accent color.C
 func (a *app) rolledCharacter() poolsave.Character {
 	value := a.rolled
 	member := poolsave.Character{
+		GenderID:            a.flow.SelectedGender().ID,
+		RaceID:              a.flow.SelectedRace().ID,
+		AlignmentID:         a.flow.SelectedAlignment().ID,
+		Age:                 value.Age,
 		Abilities:           value.Abilities,
 		ExceptionalStrength: value.ExceptionalStrength,
 		MaxHP:               value.HP,

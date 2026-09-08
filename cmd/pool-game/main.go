@@ -265,6 +265,11 @@ type app struct {
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
 	endingScript     gamepack.EndingScript
+	// 探索畫面的 `V)IEW`（spec 119，view_sheet.go）。
+	viewSheetOpen     bool
+	viewSheetShown    bool
+	viewSheetCursor   int
+	viewSheetPortrait *ebiten.Image
 	// 探索畫面的施法（spec 119 的 `C)AST`，field_cast.go）。
 	fieldCastOpen    bool
 	fieldCastStage   int
@@ -584,6 +589,9 @@ func (a *app) Update() error {
 	}
 	// 探索施法那一頁同理。
 	if handled, err := a.fieldCastInput(); handled {
+		return err
+	}
+	if handled, err := a.viewSheetInput(); handled {
 		return err
 	}
 	if a.justPressed(ebiten.KeyF3) && a.mode == modeAdventure && a.introDone {
@@ -2771,6 +2779,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.fieldCastOpen {
 		drawFieldCast(screen, a, background, foreground, accent)
 	}
+	if a.viewSheetOpen {
+		drawViewSheet(screen, a, background, foreground, accent)
+	}
 	// 攻略疊在最上層：它是覆蓋層，不是另一個模式。
 	if a.guideOpen {
 		drawGuide(screen, a, background, foreground, accent)
@@ -2973,7 +2984,7 @@ const (
 // 提早返回，所以指令列那一列的鍵此時按不到。
 func (a *app) panelOpen() bool {
 	return a.journalOpen || a.equipmentOpen || a.spellsOpen || a.shopActive ||
-		a.campOpen || a.guideOpen || a.fieldCastOpen
+		a.campOpen || a.guideOpen || a.fieldCastOpen || a.viewSheetOpen
 }
 
 func (a *app) dialogueVisible() bool {
