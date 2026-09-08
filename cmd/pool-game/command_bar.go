@@ -89,7 +89,8 @@ func (a *app) adventureCommandInput() (bool, error) {
 
 // drawCommandBar 畫那一列，每個字的首字母用強調色——原版就是這樣標可按的鍵。
 func drawCommandBar(screen *ebiten.Image, a *app, foreground, accent color.Color) {
-	// 基線 366：讓開外框下緣那一列 tile（邏輯 y 368..383，spec 123）。
+	// 基線是 `footerBaseline`：外框下緣那一列 tile（邏輯 y 368..383，
+	// spec 123）**下面**那一條，與原版同一個位置。
 	x := 20
 	for _, command := range a.adventureCommandList() {
 		label := a.commandLabel(command)

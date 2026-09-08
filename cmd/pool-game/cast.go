@@ -339,7 +339,8 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	switch {
 	case len(effect.RemoveEffects) > 0:
 		// 解病術這一類：從施法者身上拿掉那幾個效果碼。原版問的是選中的目標，
-		// remake 還沒有瞄準那一層，所以先對自己。
+		// 而瞄準（`beginCastTargeting`）只接進了治療與復活那幾支，這一支
+		// 還沒吃 `target`，所以目前一律對自己。
 		removed := 0
 		for _, code := range effect.RemoveEffects {
 			for index, value := range member.Effects {

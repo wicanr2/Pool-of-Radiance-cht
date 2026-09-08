@@ -10,8 +10,10 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
-// 法術一覽兼記憶畫面。**施展還沒接**，畫面上也不假裝接好了——原版的施法
-// 常式有 53 支，各自的效果還沒讀（spec 073）。
+// 法術一覽兼記憶畫面。施展只在戰鬥中接得起來（`cast.go`）：`SpellIsImplemented`
+// 認得 42 個編號，`*` 標的就是那些——選得到的都施得出來，不讓玩家選了才失敗。
+// 探索畫面那一列的 `CAST` 還沒有分派（`command_bar.go`），spec 073 的派發表
+// 也還有 67 格沒讀完。
 //
 // 表本身是原版 START.EXE 裡那 56 筆（spec 068），順序即原版的順序。
 const (
@@ -225,8 +227,9 @@ func drawSpells(screen *ebiten.Image, a *app, background, foreground, accent col
 	drawText(screen, a.text(msgSpellsFooter), spellTextLeft, footerBaseline, accent)
 }
 
-// 記憶法術（spec 070／072／074）。原版的入口在紮營選單，remake 還沒有紮營
-// 畫面，所以先掛在法術一覽上：1-6 挑人、M 記憶游標上那一條、F 忘掉一格。
+// 記憶法術（spec 070／072／074）。原版的入口在紮營選單，remake 的紮營畫面
+// （`camp.go`）也開得到它，另外掛在法術一覽上一份：1-6 挑人、M 記憶游標上
+// 那一條、F 忘掉一格。
 //
 // 規則本身照原版接：可記憶數依職業等級與睿智算（睿智加成只給牧師），
 // 那是**上限**不是遞減的剩餘量，所以「還能記幾個」是上限減掉已經記了幾個。
