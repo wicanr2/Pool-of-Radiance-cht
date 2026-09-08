@@ -222,7 +222,12 @@ sleep 0.5
 shot docs/screenshots/pool-remake-chinese-spells.png
 # F3 是遊戲內攻略。剛走完導覽只有幾格是走過的，所以先拍霧的那一張，
 # 再按兩次 V 攤開（第一次只出警告）拍完整的那一張。
+# C 是探索畫面的施法（spec 119）：挑人 → 挑法術 → 挑目標。
 step k adventure-move
+step c field-cast
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-field-cast.png
+step Escape adventure-move
 step F3 guide
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-guide.png
@@ -269,6 +274,7 @@ screens = [
     ("pool-remake-chinese-journal-appendix.png", "journal appendix: the manual's rule tables"),
     ("pool-remake-chinese-equipment.png", "equipment screen, empty pack"),
     ("pool-remake-chinese-spells.png", "spell list, magic-user level 1"),
+    ("pool-remake-chinese-field-cast.png", "casting outside combat (C on the command bar)"),
     ("pool-remake-chinese-guide.png", "in-game guide (F3), fogged to explored cells"),
     ("pool-remake-chinese-guide-full.png", "in-game guide (F3) with V, every point shown"),
     ("pool-remake-chinese-tactical.png", "tactical board (F5)"),

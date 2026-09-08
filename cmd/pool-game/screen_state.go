@@ -69,6 +69,8 @@ func (a *app) screenName() string {
 			return "guide-warned"
 		}
 		return "guide"
+	case a.fieldCastOpen:
+		return "field-cast"
 	case a.journalOpen:
 		// 章別也報出來。手冊有四章，翻章只換內容不換畫面，不報的話
 		// 截圖腳本只能盲按 TAB 再賭自己停在哪一章。

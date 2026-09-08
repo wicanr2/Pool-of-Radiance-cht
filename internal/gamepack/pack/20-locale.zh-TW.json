@@ -242,7 +242,14 @@
       "ui.frameTitle": "SSI金盒子　光芒之池　重製版",
       "ui.combatHitPoints": "HITPOINTS",
       "ui.combatArmorClass": "AC",
-      "ui.combatFoe": "敵方"
+      "ui.combatFoe": "敵方",
+      "ui.fieldCastPickCaster": "誰要施法？",
+      "ui.fieldCastPickSpell": "施哪一條？",
+      "ui.fieldCastPickTarget": "對誰施？",
+      "ui.fieldCastNoSpells": "%s 沒有記住任何法術。",
+      "ui.fieldCastDone": "%[1]s 對 %[3]s 施了 %[2]s。",
+      "ui.fieldCastCombatOnly": "%s 要在戰鬥中才有目標。",
+      "ui.fieldCastFooter": "上下選擇　ENTER 確定　ESC 返回"
     }
   }
 }

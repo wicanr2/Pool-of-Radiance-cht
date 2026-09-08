@@ -257,6 +257,14 @@ const (
 	// F1 說明頁。整頁的鍵盤說明放同一條，用換行分隔。
 	msgHelpTitle
 	msgHelpKeys
+	// 探索畫面的施法（spec 119 的 `C)AST`）。
+	msgFieldCastPickCaster
+	msgFieldCastPickSpell
+	msgFieldCastPickTarget
+	msgFieldCastNoSpells
+	msgFieldCastDone
+	msgFieldCastCombatOnly
+	msgFieldCastFooter
 	// 戰鬥畫面右側的資訊欄（spec 129）。`HITPOINTS` 與 `AC` 照原版留英文，
 	// 與隊伍面板的欄名同一個處理。
 	msgCombatHitPoints

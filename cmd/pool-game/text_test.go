@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -229,19 +230,42 @@ func TestDisplayTextReplacesGlyphsTheFontLacks(t *testing.T) {
 
 // 兩種語言的格式化字串要吃同一組參數。順序寫反時 go vet 抓不到
 // （兩邊都是合法的字串），但畫面上會印出 %!d(string=…) 這種東西。
+//
+// **顯式索引（`%[2]s`）算數。** 中文與英文的語序常常不同——「A 對 B 施了 C」
+// 對上 `A casts C on B`——Go 的顯式索引就是為了這個而存在。把它當成沒有 verb
+// 會逼譯文遷就英文語序，而那才是真正的錯誤。這裡比的是**參數集合**：
+// 兩邊要用到同樣的第 n 個參數、而且同一個參數的動詞相同。
 func TestTranslatedFormatStringsTakeTheSameArguments(t *testing.T) {
-	verbs := regexp.MustCompile(`%[-+ #0]*[0-9*]*(?:\.[0-9*]+)?[a-zA-Z]`)
+	verbs := regexp.MustCompile(`%(?:\[([0-9]+)\])?[-+ #0]*[0-9*]*(?:\.[0-9*]+)?([a-zA-Z])`)
+	// argumentVerbs 把一條字串攤成「第 n 個參數用的是哪個動詞」。
+	argumentVerbs := func(value string) map[int]byte {
+		out := map[int]byte{}
+		next := 1
+		for _, match := range verbs.FindAllStringSubmatch(value, -1) {
+			position := next
+			if match[1] != "" {
+				parsed, err := strconv.Atoi(match[1])
+				if err != nil {
+					continue
+				}
+				position = parsed
+			}
+			out[position] = match[2][0]
+			next = position + 1
+		}
+		return out
+	}
 	for id := range messageKeys {
 		first, second := packMessage(id, "en"), packMessage(id, "zh-TW")
-		english, chinese := verbs.FindAllString(first, -1), verbs.FindAllString(second, -1)
+		english, chinese := argumentVerbs(first), argumentVerbs(second)
 		if len(english) != len(chinese) {
-			t.Fatalf("message %d has %d verbs in English and %d in Chinese: %q / %q",
+			t.Fatalf("message %d takes %d arguments in English and %d in Chinese: %q / %q",
 				id, len(english), len(chinese), first, second)
 		}
-		for index := range english {
-			if english[index][len(english[index])-1] != chinese[index][len(chinese[index])-1] {
-				t.Fatalf("message %d verb %d is %s in English and %s in Chinese: %q / %q",
-					id, index, english[index], chinese[index], first, second)
+		for position, verb := range english {
+			if chinese[position] != verb {
+				t.Fatalf("message %d argument %d is %%%c in English and %%%c in Chinese: %q / %q",
+					id, position, verb, chinese[position], first, second)
 			}
 		}
 	}

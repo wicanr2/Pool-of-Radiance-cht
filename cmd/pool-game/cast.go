@@ -8,6 +8,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
 // 戰鬥中施法（spec 098）。C 開清單、上下挑、Enter 施、ESC 取消。
@@ -39,7 +40,17 @@ func (a *app) openCastMenu() {
 		a.tacticalStatus(state, a.text(msgCastNotACaster))
 		return
 	}
-	member := a.state.Party[index]
+	options := a.spellOptionsFor(a.state.Party[index])
+	if len(options) == 0 {
+		a.tacticalStatus(state, a.text(msgCastNothingReady))
+		return
+	}
+	a.castOptions, a.castCursor, a.castOpen = options, 0, true
+}
+
+// spellOptionsFor 列出這個人**記著、記完了、而且處理常式已經讀出來**的法術。
+// 戰鬥中與探索時共用同一份清單：看得到的就是施得出來的。
+func (a *app) spellOptionsFor(member poolsave.Character) []castOption {
 	options := make([]castOption, 0, gamepack.MemorisedSpellSlots)
 	for slot, value := range member.Memorised {
 		// 還沒記完的（第 7 位還在）施不出來，要休息過（spec 070）。
@@ -47,7 +58,7 @@ func (a *app) openCastMenu() {
 			continue
 		}
 		id := value & 0x7f
-		if !a.spellCaster.Implemented(id) {
+		if a.spellCaster == nil || !a.spellCaster.Implemented(id) {
 			continue
 		}
 		label := fmt.Sprintf("%d", id)
@@ -58,11 +69,7 @@ func (a *app) openCastMenu() {
 		}
 		options = append(options, castOption{Slot: slot, ID: id, Label: label})
 	}
-	if len(options) == 0 {
-		a.tacticalStatus(state, a.text(msgCastNothingReady))
-		return
-	}
-	a.castOptions, a.castCursor, a.castOpen = options, 0, true
+	return options
 }
 
 // moverPartyIndex 把戰場上的位置換回隊伍索引。

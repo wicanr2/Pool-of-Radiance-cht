@@ -70,6 +70,11 @@ func (a *app) adventureCommandInput() (bool, error) {
 	case a.justPressed(ebiten.KeyA) && !a.inWilderness():
 		a.areaMapOpen = !a.areaMapOpen
 		return true, nil
+	case a.justPressed(ebiten.KeyC):
+		// 原版 `0A84h`：狀態正常才進 overlay-15 entry 2（spec 119）。
+		// remake 沒有「選定角色」那個全域，所以直接開挑人那一步。
+		a.openFieldCast()
+		return true, nil
 	case a.justPressed(ebiten.KeyS):
 		a.searchFlags ^= SearchWhileWalkingBit
 		return true, nil

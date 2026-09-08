@@ -242,7 +242,14 @@
       "ui.frameTitle": "SSI GOLD BOX / POOL REMAKE",
       "ui.combatHitPoints": "HITPOINTS",
       "ui.combatArmorClass": "AC",
-      "ui.combatFoe": "FOE"
+      "ui.combatFoe": "FOE",
+      "ui.fieldCastPickCaster": "WHO WILL CAST?",
+      "ui.fieldCastPickSpell": "CAST WHICH SPELL?",
+      "ui.fieldCastPickTarget": "ON WHOM?",
+      "ui.fieldCastNoSpells": "%s has no spells memorized.",
+      "ui.fieldCastDone": "%s casts %s on %s.",
+      "ui.fieldCastCombatOnly": "%s needs a target in combat.",
+      "ui.fieldCastFooter": "UP/DOWN CHOOSE   ENTER CONFIRM   ESC BACK"
     }
   }
 }

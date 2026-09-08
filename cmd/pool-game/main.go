@@ -265,6 +265,14 @@ type app struct {
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
 	endingScript     gamepack.EndingScript
+	// 探索畫面的施法（spec 119 的 `C)AST`，field_cast.go）。
+	fieldCastOpen    bool
+	fieldCastStage   int
+	fieldCastCursor  int
+	fieldCastCaster  int
+	fieldCastSpell   int
+	fieldCastOptions []castOption
+	fieldCastMessage string
 	// combatCommands 是戰鬥指令列那六段原版字串（spec 129）。哪幾段接上去
 	// 由 `combatCommandBar` 依角色算。
 	combatCommands []gamepack.CombatCommandSegment
@@ -572,6 +580,10 @@ func (a *app) Update() error {
 	}
 	// 攻略頁開著的時候由它先吃鍵，`F3` 與 ESC 才關得掉。
 	if handled, err := a.guideInput(); handled {
+		return err
+	}
+	// 探索施法那一頁同理。
+	if handled, err := a.fieldCastInput(); handled {
 		return err
 	}
 	if a.justPressed(ebiten.KeyF3) && a.mode == modeAdventure && a.introDone {
@@ -2743,6 +2755,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.spellsOpen && a.spells != nil {
 		drawSpells(screen, a, background, foreground, accent)
 	}
+	if a.fieldCastOpen {
+		drawFieldCast(screen, a, background, foreground, accent)
+	}
 	// 攻略疊在最上層：它是覆蓋層，不是另一個模式。
 	if a.guideOpen {
 		drawGuide(screen, a, background, foreground, accent)
@@ -2945,7 +2960,7 @@ const (
 // 提早返回，所以指令列那一列的鍵此時按不到。
 func (a *app) panelOpen() bool {
 	return a.journalOpen || a.equipmentOpen || a.spellsOpen || a.shopActive ||
-		a.campOpen || a.guideOpen
+		a.campOpen || a.guideOpen || a.fieldCastOpen
 }
 
 func (a *app) dialogueVisible() bool {

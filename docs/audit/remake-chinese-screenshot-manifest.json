@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-08",
-  "source_commit": "596a836d1f308d97d23a4330de6b3299cd94d8e6",
+  "source_commit": "6692d6cd439617c02d317c4cff60e0724c2626d9",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
   "state_relation": "normal-remake-player-path with -lang zh, stepped by the game's own -screen-state identifiers: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "bf01fae3027cd1d0e6eb1b3a59dcb805e879f766c52533b1ae345af5a83d2136",
+      "sha256": "c760f587c1556f610c87185d9222d649dbbf49372ef5c0a96ad7625c57ee641d",
       "width": 960,
       "height": 600,
       "screen": "character sheet, keep-or-reroll prompt"
@@ -135,6 +135,13 @@
       "width": 960,
       "height": 600,
       "screen": "spell list, magic-user level 1"
+    },
+    {
+      "path": "docs/screenshots/pool-remake-chinese-field-cast.png",
+      "sha256": "e1620c6e0dd47dccd4922b01de37af67f702e5c1ea9aa4f0a986b450af059427",
+      "width": 960,
+      "height": 600,
+      "screen": "casting outside combat (C on the command bar)"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-guide.png",
