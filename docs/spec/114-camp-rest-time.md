@@ -130,14 +130,34 @@ INCREASE 增加，DECREASE 減少，當時間調整好了之後，按下 R 鍵�
 
 規則實作成 `gamepack.SimulateRest`，兩個參數包在 `RestInterruption` 裡。
 
+## 實跑：貧民區一定會被打斷（2026-09-09）
+
+拿 dosgolem 走「建人類牧師 → 導覽走完 → `E` 紮營 → 排兩小時 → `R`」，
+**休息在第五分鐘就被打斷**，畫面是：
+
+```
+YOU ARE ROUSTED BY THE CITY WATCH AND TOLD TO MOVE ALONG. WHAT DO YOU DO?
+GO   STAY
+```
+
+那一段是 **ECL3／block 0 的 entry 3**（`0x9A93` 起：`SAVE 0 → @6DD3`、
+`GOSUB 0xAF40`、`PRINTCLEAR` 那句話、`HORIZONTAL MENU GO／STAY`、`ON GOTO`），
+不是 overlay-20 自己印的 `The Party is rudely interrupted!`。休息迴圈
+（`0C45h`）裡沒有任何 ECL 呼叫——`0D69`／`0D6D`／`0D76` 是 entry 11／14／15，
+`0DA2`／`0DB4` 是 overlay-24 entry 8 與 overlay-25 entry 21。所以順序是
+**打斷 → 回傳 1 → 呼叫端跑 ECL 的紮營入口 → 城衛隊**。
+
 ## OPEN
 
-- **那兩個欄位的非零來源還沒找到。** 全 36 顆 overlay 掃過所有 disp16 的
-  modrm 形狀，寫 `+5A4h`／`+5A6h` 的只有兩處：overlay-07 `0244h`／`024Fh`
-  把它們**清成 0**，以及 overlay-20 自己只讀不寫。所以非零值一定是某個
-  **整塊複製**帶進來的（`DS:4937h` 是 spec 078 分出來的三個記憶體區之一）。
-  在找到之前，remake 一律用 0／0——那正是原版初始化之後的狀態，所以不是
-  近似而是「還沒有哪一區把它設起來」。
+- **那兩個欄位的非零來源還沒找到，但 `0／0` 已經被實跑推翻。** 全 36 顆
+  overlay 掃過所有 disp16 的 modrm 形狀，寫 `+5A4h`／`+5A6h` 的只有兩處：
+  overlay-07 `0244h`／`024Fh` 把它們**清成 0**，以及 overlay-20 自己只讀不寫。
+  先前據此推論「remake 用 0／0 不是近似，而是還沒有哪一區把它設起來」——
+  **那個推論錯了**：貧民區明明會打斷，所以一定有第三個 writer（整塊複製，
+  或 ECL 寫進 `DS:4937h` 指到的結構）。找到它之前 remake 仍是 0／0，
+  但要當成**已知缺口**而不是「與原版一致」。
+- **打斷之後呼叫端跑的是哪一個 ECL 入口還沒讀。** 城衛隊在 ECL entry 3，
+  但 remake 目前只跑 entry 0（每格）與 entry 1（搜尋）。
 - `DS:6CC3h` 那個每人一 byte 的顯示格（entry 15 寫 `結果 × 3`）是什麼。
 - 索引 0 那一位（上限 10）代表多細的一格；紮營碰不到它。
 - entry 14（`0AC0h`）在休息迴圈裡做什麼。

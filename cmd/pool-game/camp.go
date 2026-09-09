@@ -22,8 +22,10 @@ import (
 // 休息的效果也照原版與說明書 p.29：**每二十四小時每人回一點生命力**，
 // 而法術要記完得休息夠久（各法術等級的總和，單位是小時）。
 //
-// **還沒接**：休息被怪物打斷（`Stop Resting?  The Party is rudely interrupted!`，
-// overlay-20 entry 3）。那一段要先有「這一格安不安全」的判定。
+// **還沒接**：休息被打斷。原版的順序是「打斷 → 休息回傳 1 → 呼叫端跑 ECL
+// 的紮營入口」，貧民區跑到的是城市守衛那一段（ECL3／block 0 entry 3）；
+// overlay-20 自己印的 `The Party is rudely interrupted!` 只是其中一條路。
+// 缺的是判定用的那兩個參數從哪裡來，見 spec 114 的 OPEN。
 
 // openCamp 開紮營選單。
 func (a *app) openCamp() {
@@ -99,9 +101,11 @@ func (a *app) campRestTimeLine() string {
 //     說明書 p.29 也是這樣寫）。原版的 `The Whole Party Is Healed`
 //     就印在那一刻。
 func (a *app) restParty() {
-	// 打斷的兩個參數目前是 0／0——原版在 overlay-07 `0244h` 把它們清成 0，
-	// 而全 36 顆 overlay 裡沒有第二處寫它們，所以非零值一定是某個整塊複製
-	// 帶進來的（spec 114 的 OPEN）。找到來源之後只要改這一行。
+	// 打斷的兩個參數目前是 0／0，也就是**永遠不會被打斷**——這是已知缺口，
+	// 不是與原版一致。原版在貧民區排兩小時，第五分鐘就被城市守衛趕起來
+	//（`YOU ARE ROUSTED BY THE CITY WATCH…`，ECL3／block 0 entry 3）。
+	// 全 36 顆 overlay 裡只有 overlay-07 `0244h` 寫這兩個欄位，而且是清成 0，
+	// 所以一定還有第三個 writer 沒找到（spec 114 的 OPEN）。
 	outcome := gamepack.SimulateRest(a.restDuration, gamepack.RestInterruption{}, a.rollDice)
 	ticks := outcome.Ticks
 	restedHours := ticks / gamepack.RestTicksPerHour
