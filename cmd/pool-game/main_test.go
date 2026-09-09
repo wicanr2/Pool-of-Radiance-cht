@@ -815,11 +815,15 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if application.spawn.X != 1 || application.spawn.Y != 3 || !application.cellEventPending || !strings.Contains(application.eventText, "PRIESTESS JOY OF SUNE") {
 		t.Fatalf("Sune event spawn=%+v pending=%v text=%q", application.spawn, application.cellEventPending, application.eventText)
 	}
+	// **問句與它的選單是同一頁**：`12h PRINTCLEAR` 之後接著的 `11h PRINT`
+	// 不清框、不換頁（spec 082），所以按一次 Return 就同時看到
+	// `DO YOU SEEK HEALING` 與 `YES NO`——先前每個 `11h` 都停一次，
+	// 中間那一幀是原版沒有的。
 	if err := press(application, ebiten.KeyEnter); err != nil || !strings.Contains(application.eventText, "DO YOU SEEK HEALING") {
 		t.Fatalf("Sune question pending=%v text=%q err=%v", application.cellEventPending, application.eventText, err)
 	}
-	if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || !reflect.DeepEqual(application.cellMenuOptions, []string{"YES", "NO"}) || application.cellMenuCursor != 0 {
-		t.Fatalf("Sune menu waiting=%v options=%v cursor=%d label=%q err=%v", application.cellWaitingMenu, application.cellMenuOptions, application.cellMenuCursor, application.eventLabel, err)
+	if !application.cellWaitingMenu || !reflect.DeepEqual(application.cellMenuOptions, []string{"YES", "NO"}) || application.cellMenuCursor != 0 {
+		t.Fatalf("Sune menu waiting=%v options=%v cursor=%d label=%q", application.cellWaitingMenu, application.cellMenuOptions, application.cellMenuCursor, application.eventLabel)
 	}
 	if err := press(application, ebiten.KeyArrowRight); err != nil || application.cellMenuCursor != 1 || !strings.Contains(application.eventLabel, "> NO") {
 		t.Fatalf("Sune NO selection cursor=%d label=%q err=%v", application.cellMenuCursor, application.eventLabel, err)

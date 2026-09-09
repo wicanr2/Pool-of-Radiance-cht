@@ -339,17 +339,18 @@ shot docs/screenshots/pool-remake-chinese-journal-cue.png
 step Return journal-proclamation
 sleep 0.6
 shot docs/screenshots/pool-remake-chinese-journal-proclamation.png
-step Escape adventure-cell-text
-# 剩下三則翻完，回到自由移動。
-n=0
-while test "$(screen)" != "adventure-move" && test "$n" -lt 30; do
-  case "$(screen)" in
-    journal-*) pulse Escape ;;
-    *) pulse Return ;;
-  esac
-  n=$((n + 1))
+# 關掉手冊就回到自由移動了——**腳本跑完之後文字留在框裡，但事件已經結束**
+# （原版就是這樣，見 spec 132 與 `docs/audit/dos-parity-sample.md`）。
+step Escape adventure-cell-done
+# 剩下三則：每一則 ENTER 翻進去、ESC 出來。翻完之後 ENTER 就沒有作用了，
+# 所以這裡數次數，不等畫面。
+for _ in 1 2 3; do
+  pulse Return
+  sleep 0.4
+  pulse Escape
+  sleep 0.3
 done
-test "$(screen)" = "adventure-move" || die "市政廳那一段走不回自由移動"
+test "$(screen)" = "adventure-cell-done" || die "市政廳那一段走不回自由移動"
 
 # 最後才開戰術盤面：確認那一頁在漢字字型下四行資訊與功能鍵列都不相疊。
 step F5 tactical

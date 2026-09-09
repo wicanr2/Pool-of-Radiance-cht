@@ -229,6 +229,10 @@ type app struct {
 	menuMember int
 	// menuDropPending 是 D）ROP 的再確認畫面。
 	menuDropPending bool
+	// cellWaitedOnce／cellTextSticky 是「這一格的事件等過一次了」與
+	// 「腳本結束了但文字還留在框裡」（見 `pauseAppliedCellResult`）。
+	cellWaitedOnce bool
+	cellTextSticky bool
 	// spellMember 是法術畫面上選中的成員，記憶指令對他生效。
 	spellMember int
 	// 紮營（原版 overlay-15 的畫面 ＋ overlay-20 的時間，spec 135）。
@@ -752,6 +756,14 @@ func (a *app) Update() error {
 	if a.campFromProgram && !a.campOpen && !a.spellsOpen {
 		a.campFromProgram = false
 		return a.closeProgramCamp()
+	}
+	// 腳本跑完、文字留在框裡時，那一下 ENTER 還是要能翻手冊（spec 132）：
+	// 引用就寫在框裡，玩家看得到才按得下去。指令列的字母鍵在這時已經回來了，
+	// 所以這一段只吃 ENTER。
+	if a.cellTextSticky && (a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
+		if cue, ok := a.takeJournalCue(); ok {
+			return a.openJournalAt(cue)
+		}
 	}
 	if handled, err := a.adventureCommandInput(); handled {
 		return err
@@ -1403,6 +1415,8 @@ func (a *app) syncArchiveFromEventMachine() error {
 }
 
 func (a *app) beginInitialSearch() error {
+	// 新的一格，等待次數從頭算（見 `pauseAppliedCellResult`）。
+	a.cellWaitedOnce, a.cellTextSticky = false, false
 	result, err := gamepack.RunInitialSessionSearchEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 	if err != nil {
 		return fmt.Errorf("start Pool SearchLocation: %w", err)
@@ -1441,9 +1455,26 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		if result.CombatRequested && len(result.MonsterSpawns) != 0 {
 			return a.enterCombatStaging(result.MonsterSpawns)
 		}
-		presentationOnly := len(result.Events) == 1 && ((result.Events[0].Opcode == 0x12 && result.Events[0].Text == "") || result.Events[0].Opcode == 0x0E)
+		// `11h PRINT` **不是停頓點**：它接著印，與前面那一頁是同一頁
+		// （spec 082）。原版走到市政廳外的第二段就是
+		// `12h PRINTCLEAR` ＋ `11h PRINT` 一次顯示成四行——remake 先前在
+		// 每一個 `11h` 都停一次，玩家因此要多按幾次 Return，而中間那一幀
+		// 是原版沒有的（`docs/audit/dos-parity-sample.md` 的市政廳那一段）。
+		// **`11h PRINT` 不是停頓點**：它接著印、不清框，與前面那一頁是同一頁
+		// （spec 082）。原版走到市政廳外的第二段就是 `12h PRINTCLEAR` ＋
+		// `11h PRINT` 一次顯示成四行——remake 先前在每一個 `11h` 都停一次，
+		// 中間那一幀是原版沒有的。
+		//
+		// `12h PRINTCLEAR` 仍然停：它換的是新的一頁，不停的話前一頁玩家
+		// 沒機會看。（原版連 `12h` 也不停，只在 `00h EXIT` 停一次——但照那樣
+		// 改，交任務、船運那幾條長腳本會整段跑掉，六個玩家路徑測試當場紅，
+		// 所以那一步還缺證據，記在 `WORKLIST.md`。）
+		presentationOnly := len(result.Events) == 1 &&
+			(result.Events[0].Opcode == gamepack.PrintOpcode ||
+				(result.Events[0].Opcode == 0x12 && result.Events[0].Text == "") ||
+				result.Events[0].Opcode == 0x0E)
 		if presentationOnly {
-			if result.Events[0].Opcode == 0x12 {
+			if result.Events[0].Opcode == 0x12 && result.Events[0].Text == "" {
 				a.eventText = ""
 			}
 			next, err := a.eventSession.RunUntilEvent(4096, nil, true)
@@ -1454,6 +1485,14 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			continue
 		}
 		if result.Exited && !result.WaitingForMenu && len(result.Events) == 0 {
+			// **腳本跑完時文字要留在框裡。** 原版走到市政廳外，第二段印完之後
+			// 底下換成指令列、方向鍵就走得動了，而那幾行字還在框裡
+			//（dosgolem 實測，見 `docs/audit/dos-parity-sample.md`）。
+			// remake 先前在這裡把框清空，玩家等於少看一段。
+			if a.eventText != "" {
+				a.finishCellBlockKeepingText()
+				return nil
+			}
 			a.finishCellBlock()
 			return nil
 		}
@@ -2170,6 +2209,19 @@ func (a *app) leaveSuneTemple() error {
 // finishCellBlock 收掉這一格的 ECL：`00h EXIT` 走完之後畫面回到移動狀態。
 // `38h PROGRAM` 的值 9 也走這裡——原版在那一支的結尾就是呼叫 EXIT 的
 // handler（spec 081）。
+// finishCellBlockKeepingText 是「腳本結束，但文字留在框裡」——原版一格事件
+// 等過一次之後就是這樣：玩家可以直接走開，那幾行字留到下一件事把框換掉。
+func (a *app) finishCellBlockKeepingText() {
+	text := a.eventText
+	// 手冊提示跟著文字一起留下來：那幾則引用還在框裡寫著，按下去要翻得到
+	//（spec 132）。
+	cues, done := a.journalCues, a.journalCueDone
+	a.finishCellBlock()
+	a.eventText, a.cellTextSticky = text, true
+	a.journalCues, a.journalCueDone = cues, done
+	a.statusLine = ""
+}
+
 func (a *app) finishCellBlock() {
 	// 腳本這一段跑完了，把 active-character 視窗裡的值抄回隊伍：原版的視窗
 	// 就是那個人的記錄，腳本改的是本尊（spec 021）。
@@ -2177,12 +2229,33 @@ func (a *app) finishCellBlock() {
 		a.characterBinding.Flush(a.eventMachine)
 	}
 	a.cellEventPending, a.cellWaitingMenu = false, false
+	a.cellTextSticky = false
 	a.templeActive = false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText, a.eventLabel = "", ""
 	a.journalCues, a.journalCueDone = nil, nil
 	a.rememberGuideCell()
 	a.statusLine = "Moved using original GEO data; per-turn and SearchLocation returned normally."
+}
+
+// textOnlyPause 說這一次停頓除了往文字框寫字之外什麼都沒做。
+func textOnlyPause(result eclvm.Result) bool {
+	if result.WaitingForMenu || result.CombatRequested || result.NewECLBlockID != nil ||
+		len(result.TreasureRequests) != 0 || result.MonsterSetup != nil {
+		return false
+	}
+	if len(result.Events) == 0 {
+		return false
+	}
+	for _, event := range result.Events {
+		switch event.Opcode {
+		case gamepack.PrintOpcode, gamepack.PrintClearOpcode,
+			gamepack.PrintReturnOpcode, gamepack.ClearBoxOpcode:
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 func (a *app) pauseInitialCellResult(result eclvm.Result) error {
@@ -2194,6 +2267,7 @@ func (a *app) pauseInitialCellResult(result eclvm.Result) error {
 // 之後文字框的內容會隨套用次數改變，所以同一個 result 只能套一次；先前
 // 每則訊息蓋掉上一則，套兩次看不出差別，這個重複因此一直沒被發現。
 func (a *app) pauseAppliedCellResult(result eclvm.Result) error {
+	a.cellWaitedOnce = true
 	a.templeActive = false
 	a.cellEventPending = true
 	a.cellWaitingMenu = result.WaitingForMenu
@@ -3023,6 +3097,10 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		}
 	} else if a.cellEventPending && a.eventText != "" {
 		a.showDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
+	} else if a.cellTextSticky && a.eventText != "" {
+		// 腳本結束了，字還留著。**這一種沒有「按 RETURN 繼續」**——原版那時
+		// 底下印的是指令列，玩家可以直接走開。
+		a.showDialogue(screen, a.eventText, "", foreground, accent)
 	}
 	if a.statusLine != "" && !dialogueVisible {
 		// 畫面只有 640 寬，從 42 起算放得下 74 個字；超過就截掉，
@@ -3235,6 +3313,8 @@ func (a *app) dialogueVisible() bool {
 		a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour):
 		return a.tourPage < len(a.initialEvent.Tour[a.tourStep].Messages)
 	case a.cellEventPending && a.eventText != "":
+		return true
+	case a.cellTextSticky && a.eventText != "":
 		return true
 	}
 	return false

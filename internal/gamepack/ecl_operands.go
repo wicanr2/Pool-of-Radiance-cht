@@ -113,6 +113,9 @@ const (
 	PrintReturnOpcode = 0x33
 	// ClearBoxOpcode 是 `3Dh CLEAR BOX`（spec 082）：清掉文字框。
 	ClearBoxOpcode = 0x3D
+	// PrintClearOpcode 是 `12h PRINTCLEAR`（spec 082）：清框再印，也就是
+	// 新的一頁。
+	PrintClearOpcode = 0x12
 )
 
 // EncounterMenuChoices 是選單的四個選項，順序即畫面順序。第四項依情境在

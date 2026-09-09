@@ -175,15 +175,21 @@ Right,Right,Up,Up,Up,rep:6:Return
    JOURNAL YOU NOTE PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX.`，
    **底下換成指令列 `AREA CAST VIEW ENCAMP SEARCH LOOK`**。
 
-remake 的第一段一致；第二段的**底下那一列不是指令列**，而是 spec 132 的
-「ENTER 翻到議會公告」提示。差異有兩層：
+**第一段時方向鍵完全按不動，第二段時走得動**——這是後來另外跑一趟量的
+（鍵序把 `Up,Up,Up` 之後改成 `Up,Up,Return,Up`）：`59-Up` 是第一段，
+`60-Up`／`61-Up` 的畫面**一格都沒變**；`62-Return` 換成第二段，`63-Up` 就
+走到下一格了。所以第一段是真的擋住移動，第二段是真的回到自由移動。
 
-- 提示畫在框外那一列（`footerBaseline`），把指令列擠掉了。
-- 更根本的是**事件在第二段就已經結束了**：原版底下是指令列，表示玩家那時
-  已經可以直接走開；remake 仍停在 `cellEventPending`，要再按一次 Return。
+remake 現在對得上了（`docs/screenshots/pool-remake-chinese-journal-cue.png`）：
+第二段的四行一次顯示、底下是指令列、方向鍵走得動，手冊提示畫在框裡。
+兩處差異還在：
 
-第一段兩邊都等 Return，所以不是「remake 多等一次」而是「remake 少結束一次」。
-那一格的 ECL 結構還沒讀，先記在 `WORKLIST.md`。
+- **remake 要按兩次 Return 才走到第二段，原版一次。** `12h PRINTCLEAR` 在
+  remake 仍是停頓點，原版只在 `00h EXIT` 停。照原版改過一次——把 `12h` 也
+  變成不停頓——結果交任務、船運那幾條長腳本整段跑掉，六個玩家路徑測試當場
+  紅，所以那一步還缺證據（原版怎麼在同一格裡分辨「這一頁要不要等」）。
+- `11h PRINT` 已經不是停頓點了：它接著印、與前一頁同一頁（spec 082），
+  原版第二段就是 `12h` ＋ `11h` 一次顯示成四行。
 
 **四個公告字號 remake 是對的**：低解析度縮圖上最後一個看起來像 `CXX`，
 把原版那一塊放大六倍看是 `LIX.`——縮圖不能拿來讀字。

@@ -158,6 +158,10 @@ func (a *app) screenName() string {
 		return "adventure-cell-menu"
 	case a.cellEventPending:
 		return "adventure-cell-text"
+	case a.cellTextSticky && a.eventText != "":
+		// 腳本跑完了，字還留在框裡：底下已經換成指令列、方向鍵走得動，
+		// 但畫面與「什麼都沒發生的自由移動」不一樣，所以分開報。
+		return "adventure-cell-done"
 	case a.areaMapOpen:
 		return "adventure-map"
 	case a.freeMovementActive():
