@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
 // 自動截圖用的畫面狀態輸出。
@@ -101,6 +102,17 @@ func (a *app) screenName() string {
 	case a.equipmentOpen:
 		return "equipment"
 	case a.spellsOpen:
+		// 組別也報出來。法術一覽有六組（神術一到三、巫術一到三），翻組只換
+		// 內容不換畫面——不報的話截圖腳本只能盲按 TAB 再賭自己停在哪一組，
+		// 而掉一次鍵的症狀是「拍到的那一張標題寫著別的級別」，看起來像沒事。
+		if a.spells != nil && a.spells.group < len(spellGroups) {
+			item := spellGroups[a.spells.group]
+			class := "cleric"
+			if item.Class == gamepack.SpellClassMagicUser {
+				class = "magic-user"
+			}
+			return fmt.Sprintf("spells-%s-%d", class, item.Level)
+		}
 		return "spells"
 	case a.shopActive:
 		return "shop"

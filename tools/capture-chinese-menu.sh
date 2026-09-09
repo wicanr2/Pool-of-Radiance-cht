@@ -125,6 +125,11 @@ shot docs/screenshots/pool-remake-chinese-menu.png
 # C 進建角：種族 → 性別 → 職業 → 陣營 → 屬性表，各拍一張能證明選單項目
 # 也是中文的。每一站都等遊戲回報自己到了，不用猜要按幾下。
 step c creation-race
+# **這一隊建的是牧師，不是戰士。** 挑法術那一頁（spec 134）要有記得起來的
+# 法術才走得到，而種族清單的第一個是矮人——矮人當不了施法職業。往下五格
+# 到人類，人類的職業清單第一個就是牧師，所以職業那一頁不用再動游標。
+# 清單用 `End` 往下：原版的清單就是 Home／End，沒有 Up／Down（spec 133）。
+for _ in 1 2 3 4 5; do pulse End; done
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-race.png
 step Return creation-class
@@ -212,24 +217,48 @@ step i equipment
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-equipment.png
 # K 開法術一覽，TAB 翻到巫術第 1 級——那一頁 13 種，是最長的一組。
+# **組別要等畫面自己報**：這裡本來盲按三次 TAB，而掉一次鍵的症狀是拍到
+# 神術第 3 級，標題白紙黑字寫著別的級別卻沒有任何一步失敗。
 step i adventure-move
-step k spells
-sleep 0.4
-pulse Tab
-pulse Tab
-pulse Tab
+step k spells-cleric-1
+step Tab spells-magic-user-1
 sleep 0.5
 shot docs/screenshots/pool-remake-chinese-spells.png
+# 拍完巫術第 1 級再繞回神術第 1 級（六組，TAB 一直按就會轉回去），
+# 用 `M` 記第一條祝福術。記了還不算數——法術要休息夠久才會 ready
+#（spec 070），所以下一步去紮營。
+step Tab spells-cleric-1
+sleep 0.3
+pulse m
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-memorise.png
 # F3 是遊戲內攻略。剛走完導覽只有幾格是走過的，所以先拍霧的那一張，
 # 再按兩次 V 攤開（第一次只出警告）拍完整的那一張。
 # C 是探索畫面的施法（spec 119）：挑人 → 挑法術 → 挑目標。
 step k adventure-move
+# 紮營休息兩小時。祝福術是第 1 級，記完要一小時（overlay-20 entry 15 每小時
+# 把記錄 `+2Ch` 減一，spec 114）；多排一小時是留餘裕，不是規則。
+# `H` 選到小時欄、`I` 加一、`R` 開始休息——休息完自己回到自由移動。
+step e camp
+sleep 0.3
+pulse h
+pulse i
+pulse i
+sleep 0.3
+shot docs/screenshots/pool-remake-chinese-camp.png
+pulse r
+await adventure-move 60
+sleep 0.4
 step c field-cast
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-field-cast.png
-# **挑完人那一頁（整頁的法術清單，spec 134）這裡拍不到**：截圖流程建的是
-# 戰士，按下去只會得到「沒有記憶法術」。要拍它得先建施法職業、用 `K` 記一條、
-# 紮營休息讓它生效——那一段還沒接進來。版面由單元測試釘住。
+# 挑完人就是整頁的法術清單（spec 134）。**走得到這裡等於前面三件事都成立**：
+# 建的是施法職業、`M` 把法術記進去了、紮營休息讓它變成可施展。少任何一件，
+# 按下去只會得到「沒有記憶法術」，這一步就會停在 field-cast 等到逾時。
+step Return field-cast-spell
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-spell-page.png
+step Escape field-cast
 step Escape adventure-move
 # F4 是素材總覽：肖像、戰鬥造形、牆面圖塊與外框符號各一排。
 step F4 sprites
@@ -355,7 +384,10 @@ screens = [
     ("pool-remake-chinese-journal-appendix.png", "journal appendix: the manual's rule tables"),
     ("pool-remake-chinese-equipment.png", "equipment screen, empty pack"),
     ("pool-remake-chinese-spells.png", "spell list, magic-user level 1"),
+    ("pool-remake-chinese-memorise.png", "spell list, cleric level 1, after M memorises Bless"),
+    ("pool-remake-chinese-camp.png", "camp menu with two hours of rest queued"),
     ("pool-remake-chinese-field-cast.png", "casting outside combat (C on the command bar)"),
+    ("pool-remake-chinese-spell-page.png", "the full-page memorised-spell list the caster picks from (spec 134)"),
     ("pool-remake-chinese-view-sheet.png", "a party member's sheet from the command bar (V)"),
     ("pool-remake-chinese-sprites.png", "sprite overview (F4): portraits, combat icons, wall pieces, frame symbols"),
     ("pool-remake-chinese-monsters.png", "board icons (F4, TAB): the 32 bodies monsters and characters share"),

@@ -46,25 +46,32 @@ const (
 )
 
 // 挑法術那一步是**整頁**，版面照原版量的（spec 134）。原版 native 座標乘二
-// 就是這裡的邏輯座標；只有標題那一行往下讓，因為 remake 在框上緣有自己的
-// 一行標題（原版沒有），其餘各行的絕對位置與原版相同。
+// 就是這裡的邏輯座標，每一行都沒有讓位——這一頁的面板從 native 8 起，
+// 蓋掉 remake 自己那一行頁首，因為原版這一頁沒有它。
+//
+// 每一列的 `Row` 是**基線**：`drawText` 把字畫在 `Row-14 .. Row-1`。所以
+// 原版量到的「文字最後一列」native `n` 對應的常數是 `2n+2`，不是 `2n`。
 const (
 	spellPageLeft = 18 // 原版 native 9
-	// 標題：原版在 native 14（logical 28），那裡被 remake 的標題佔著。
-	spellPageTitleRow = 62
-	spellPageRuleTop  = 70
-	// 級別那一行與清單：原版 native 46／54，行距 8。
-	spellPageLevelRow = 92
-	spellPageFirstRow = 108
+	// 面板上緣：原版 native 8，正好在上框繩索（native 1..6）下面。
+	spellPagePanelTop = 16
+	// 標題：原版 native 8..14。
+	spellPageTitleRow = 30
+	// 兩條繩索橫條給的是**圖塊左上角**，不是線的 y：原版 native 16 與 128
+	// 各鋪一列 8×8 的橫繩符號，畫出來是 17..22 與 129..134。
+	spellPageRuleTop = 32
+	// 級別那一行與清單：原版 native 40..46／48..54，行距 8。
+	spellPageLevelRow = 94
+	spellPageFirstRow = 110
 	spellPagePitch    = 16
 	spellPageIndent   = 50 // 原版 native 25：清單比級別再縮 16 個像素
-	// 清單塞得下幾條：原版第一條在 native 54、下一條橫條在 129。
+	// 清單塞得下幾條：原版第一條在 native 48、下一條橫條在 129。
 	spellPageLines = 9
-	// 清單與資訊之間那條橫條，以及底下三行：原版 native 129／150／158／166。
-	spellPageRuleBottom  = 262
-	spellPageNameRow     = 300
-	spellPageCanRow      = 316
-	spellPageCountRow    = 332
+	// 清單與資訊之間那條橫條，以及底下三行：原版 native 128／150／158／166。
+	spellPageRuleBottom  = 256
+	spellPageNameRow     = 302
+	spellPageCanRow      = 318
+	spellPageCountRow    = 334
 	spellPageCountIndent = 82 // 原版 native 41
 )
 
@@ -323,10 +330,10 @@ func drawFieldCast(screen *ebiten.Image, a *app, background, foreground, accent 
 // **原版這一頁是整頁，不是疊在冒險畫面上的小框**——挑人那一步才是小框，
 // 而挑人本來就是 remake 自己加的（原版對「目前角色」施法，spec 119）。
 func drawSpellPage(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
-	panel := ebiten.NewImage(logicalWidth-2*guidePanelInset, guidePanelBottom-guidePanelTop)
+	panel := ebiten.NewImage(logicalWidth-2*guidePanelInset, guidePanelBottom-spellPagePanelTop)
 	panel.Fill(background)
 	screen.DrawImage(panel, &ebiten.DrawImageOptions{
-		GeoM: translated(guidePanelInset, guidePanelTop)})
+		GeoM: translated(guidePanelInset, spellPagePanelTop)})
 
 	caster := ""
 	if a.fieldCastCaster < len(a.state.Party) {
@@ -334,7 +341,7 @@ func drawSpellPage(screen *ebiten.Image, a *app, background, foreground, accent 
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgSpellPageTitle), caster),
 		spellPageLeft, spellPageTitleRow, accent)
-	drawSpellPageRule(screen, spellPageRuleTop, accent)
+	a.drawSpellPageRule(screen, spellPageRuleTop)
 
 	drawText(screen, a.text(msgSpellPageLevel), spellPageLeft, spellPageLevelRow, foreground)
 	top := fieldCastWindow(a.fieldCastCursor, len(a.fieldCastOptions), spellPageLines)
@@ -348,7 +355,7 @@ func drawSpellPage(screen *ebiten.Image, a *app, background, foreground, accent 
 			spellPageIndent, spellPageFirstRow+offset*spellPagePitch, ink)
 	}
 
-	drawSpellPageRule(screen, spellPageRuleBottom, accent)
+	a.drawSpellPageRule(screen, spellPageRuleBottom)
 	drawText(screen, caster, spellPageLeft, spellPageNameRow, foreground)
 	if a.fieldCastMessage != "" {
 		drawText(screen, a.fieldCastMessage, spellPageLeft, spellPageCanRow, foreground)
@@ -360,11 +367,20 @@ func drawSpellPage(screen *ebiten.Image, a *app, background, foreground, accent 
 	drawText(screen, a.text(msgFieldCastFooter), spellPageLeft, footerBaseline, accent)
 }
 
-// drawSpellPageRule 畫一條橫線。原版那兩條是繩索圖塊，remake 這一頁在面板
-// 上，畫繩索會與外框的繩索重疊成一團，所以用一條線——標為
-// layout-reconstructed，見 spec 134。
-func drawSpellPageRule(screen *ebiten.Image, y int, ink color.Color) {
-	for x := spellPageLeft; x < logicalWidth-spellPageLeft; x++ {
-		screen.Set(x, y, ink)
+// drawSpellPageRule 鋪一條繩索橫條。原版那兩條橫貫整個畫面寬（native
+// x 0..319）：兩端各一個角落符號，中間全是橫繩符號，與上下框用的是同一組
+// 圖塊。畫在面板之上，所以會蓋過外框的直繩——原版就是這樣。
+func (a *app) drawSpellPageRule(screen *ebiten.Image, top int) {
+	if a == nil || a.symbolBand4.ItemCount <= frameHorizontalItem {
+		return
 	}
+	palette := a.artPalette()
+	scale := logicalWidth / 320
+	step := frameTileSize * scale
+	columns := logicalWidth / step
+	for column := 1; column < columns-1; column++ {
+		a.drawSymbol(screen, frameHorizontalItem, column*step, top, scale, palette)
+	}
+	a.drawSymbol(screen, frameCornerItem, 0, top, scale, palette)
+	a.drawSymbol(screen, frameCornerItem, (columns-1)*step, top, scale, palette)
 }
