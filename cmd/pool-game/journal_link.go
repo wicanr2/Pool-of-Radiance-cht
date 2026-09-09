@@ -149,14 +149,17 @@ func (a *app) takeJournalCue() (journalCue, bool) {
 	return cue, true
 }
 
-// journalCuePrompt 是文字框外那一列的提示。原本那一列在一般事件時是空的，
-// 玩家沒有理由知道按下去會翻手冊；一次引用好幾則時也要看得出還有幾則。
+// journalCuePrompt 是**文字框裡**最後一行的提示。玩家沒有理由知道按下去會
+// 翻手冊，一次引用好幾則時也要看得出還有幾則。
+//
+// 畫在框裡而不是框外那一列：那一列是原版的指令列與「按 RETURN 繼續」的
+// 位置——原版走到市政廳外時印的是 `AREA CAST VIEW ENCAMP SEARCH LOOK`，
+// 提示放上去會把它擠掉（spec 132）。
 func (a *app) journalCuePrompt() string {
 	if len(a.journalCues) == 0 {
 		return ""
 	}
-	// 面板蓋上來時對話框已經看不見了，但提示畫在框**外面**那一列
-	// （`footerBaseline`），不擋掉的話會與面板自己的頁尾疊在同一行。
+	// 面板蓋上來時對話框整個不畫，提示自然也不該出現。
 	if a.panelOpen() {
 		return ""
 	}
@@ -168,14 +171,6 @@ func (a *app) journalCuePrompt() string {
 	return fmt.Sprintf(a.text(msgJournalCue), name, cue.ID)
 }
 
-// dialogueLabel 決定文字框外那一列要印什麼。**有待翻的手冊條目時 cue 優先**：
-// 那一下 ENTER 的作用確實是翻手冊而不是繼續，印「按 RETURN 繼續」會說錯。
-func (a *app) dialogueLabel(fallback string) string {
-	if prompt := a.journalCuePrompt(); prompt != "" {
-		return prompt
-	}
-	return a.gameText.Translate(fallback)
-}
 
 // openJournalAt 開手冊並停在指定的一則。
 func (a *app) openJournalAt(cue journalCue) error {

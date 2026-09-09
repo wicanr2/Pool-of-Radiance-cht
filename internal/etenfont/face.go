@@ -149,12 +149,18 @@ func (f *Face) glyph(r rune) (cachedGlyph, bool) {
 	return cachedGlyph{}, false
 }
 
+// rasterGlyph 把一個字模畫成 alpha 遮罩。加粗是「把每個亮點往右也點一格」。
+//
+// **最後一欄不加粗。** 字身佔 `width-1` 欄（全形 16 欄的字模，Big5 的字身在
+// 0..14），最後那一欄是字與字之間的留白；讓加粗擴進去的話字模就填滿整個
+// advance，相鄰兩個字會黏成一團——筆畫密的字（「鈕繼」那種）在畫面上看起來
+// 像疊字，而同一個字型不加粗畫出來是清楚的。
 func rasterGlyph(raw []byte, width, bytesPerRow int, bold bool) *image.Alpha {
 	mask := image.NewAlpha(image.Rect(0, 0, width, glyphHeight))
 	for y := 0; y < glyphHeight; y++ {
 		for x := 0; x < width; x++ {
 			on := raw[y*bytesPerRow+x/8]&(0x80>>uint(x&7)) != 0
-			if bold && x > 0 {
+			if bold && x > 0 && x < width-1 {
 				on = on || raw[y*bytesPerRow+(x-1)/8]&(0x80>>uint((x-1)&7)) != 0
 			}
 			if on {

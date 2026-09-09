@@ -25,7 +25,7 @@ docker run --rm --network none --memory 2g --cpus 2 --pids-limit 256 \
   wasteland-go:1.24-x11-record-r1 bash -c '
 set -eu
 mkdir -p "$HOME" /tmp/run docs/screenshots
-Xvfb :99 -screen 0 1200x800x24 >/tmp/xvfb.log 2>&1 &
+Xvfb :99 -screen 0 1400x900x24 >/tmp/xvfb.log 2>&1 &
 xvfb_pid=$!
 game_pid=
 finish() {

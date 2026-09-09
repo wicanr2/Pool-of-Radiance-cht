@@ -2978,7 +2978,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 			if a.eventLabel != "" {
 				label = a.eventLabel
 			}
-			a.showDialogue(screen, a.gameText.Translate(message), a.dialogueLabel(label), foreground, accent)
+			a.showDialogue(screen, a.gameText.Translate(message), a.gameText.Translate(label), foreground, accent)
 		}
 		return
 	}
@@ -3014,7 +3014,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		if a.eventLabel != "" {
 			label = a.eventLabel
 		}
-		a.showDialogue(screen, a.gameText.Translate(message), a.dialogueLabel(label), foreground, accent)
+		a.showDialogue(screen, a.gameText.Translate(message), a.gameText.Translate(label), foreground, accent)
 	} else if a.tourActive && a.tourPage >= 0 && a.initialEvent != nil && a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour) {
 		step := a.initialEvent.Tour[a.tourStep]
 		if a.tourPage < len(step.Messages) {
@@ -3022,7 +3022,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 				a.gameText.Translate(a.initialEvent.ContinueLabel), foreground, accent)
 		}
 	} else if a.cellEventPending && a.eventText != "" {
-		a.showDialogue(screen, a.eventText, a.dialogueLabel(a.eventLabel), foreground, accent)
+		a.showDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
 	}
 	if a.statusLine != "" && !dialogueVisible {
 		// 畫面只有 640 寬，從 42 起算放得下 74 個字；超過就截掉，
@@ -3249,7 +3249,7 @@ func (a *app) showDialogue(screen *ebiten.Image, message, label string, foregrou
 	if a.panelOpen() {
 		return
 	}
-	drawDialogue(screen, message, label, foreground, accent)
+	drawDialogue(screen, message, label, a.journalCuePrompt(), foreground, accent)
 }
 
 // drawDialogueFrame 只畫那個框。探索施法的選單也用它——原版在開清單之前
@@ -3269,13 +3269,24 @@ func drawDialogueFrame(screen *ebiten.Image, accent color.Color) {
 	}
 }
 
-func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
+func drawDialogue(screen *ebiten.Image, message, label, cue string, foreground, accent color.Color) {
 	drawDialogueFrame(screen, accent)
-	for index, line := range wrapDisplay(message, 68) {
+	lines := wrapDisplay(message, 68)
+	for index, line := range lines {
 		if index >= dialogueLines {
 			break
 		}
 		drawText(screen, line, dialogueLeft, dialogueFirstRow+index*dialoguePitch, foreground)
+	}
+	// 手冊提示畫在**框裡**最後一行，不是框外那一列（spec 132）。框外那一列
+	// 是原版的指令列與「按 RETURN 繼續」的位置——提示放那裡會把它擠掉，
+	// 而原版走到市政廳外時那一列印的是 `AREA CAST VIEW ENCAMP SEARCH LOOK`。
+	if cue != "" {
+		row := len(lines)
+		if row >= dialogueLines {
+			row = dialogueLines - 1
+		}
+		drawText(screen, cue, dialogueLeft, dialogueFirstRow+row*dialoguePitch, accent)
 	}
 	// 提示畫在**繩索框外面**那一列，跟原版同一個位置——原版導覽那一幕
 	// （`docs/audit/dos-parity-sample.md` 的 31-b）文字框裡只有台詞，
@@ -3518,7 +3529,12 @@ func main() {
 		game.musicPlayer = player
 		defer player.Close()
 	}
-	ebiten.SetWindowSize(960, 600)
+	// **整數倍**：邏輯畫布 640×400，視窗是它的兩倍。原版的字是 8×15／16×15
+	// 的點陣，非整數倍放大會把某些像素行複製、某些丟掉——筆畫密的漢字
+	//（「鈕」「繼」那種）看起來就像糊在一起。先前是 960×600（1.5 倍），
+	// 那一列「按 <RETURN> 或按鈕繼續」在截圖上疊成一團，而同一個字型在
+	// 邏輯解析度下畫出來是清楚的。
+	ebiten.SetWindowSize(1280, 800)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("Pool of Radiance Remake")
 	if err := ebiten.RunGame(game); err != nil && err != ebiten.Termination {

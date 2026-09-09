@@ -143,3 +143,23 @@ func TestRunesDuplicatedInTheSymbolAreaUseTheHanCode(t *testing.T) {
 		}
 	}
 }
+
+// 加粗不能吃掉字與字之間的留白：字模的最後一欄是那道留白，讓加粗擴進去的話
+// 相鄰兩個字會黏成一團。
+func TestBoldKeepsTheTrailingColumnClear(t *testing.T) {
+	// 一列裡把字身欄（0..14）全部點亮，最後一欄（15）留空。
+	raw := make([]byte, 30)
+	for y := 0; y < 15; y++ {
+		raw[y*2] = 0xFF   // x 0..7
+		raw[y*2+1] = 0xFE // x 8..14，第 15 欄留空
+	}
+	for _, bold := range []bool{false, true} {
+		mask := rasterGlyph(raw, 16, 2, bold)
+		if got := mask.AlphaAt(15, 7).A; got != 0 {
+			t.Errorf("bold=%v 時最後一欄被點亮了（%d），那是字與字之間的留白", bold, got)
+		}
+		if got := mask.AlphaAt(14, 7).A; got == 0 {
+			t.Errorf("bold=%v 時字身最後一欄不見了", bold)
+		}
+	}
+}

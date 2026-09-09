@@ -43,7 +43,7 @@ run=$HOME/run
 mkdir -p "$HOME" "$WINEPREFIX" "$run"
 cp -r /release/. "$run/"
 cp /assets/game.zip "$run/Pool of Radiance (1988).zip"
-Xvfb :99 -screen 0 1200x800x24 >/tmp/xvfb.log 2>&1 &
+Xvfb :99 -screen 0 1400x900x24 >/tmp/xvfb.log 2>&1 &
 xvfb=$!
 game=
 finish() {

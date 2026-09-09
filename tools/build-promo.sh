@@ -47,7 +47,7 @@ docker run --rm --network none --memory 4g --cpus 2 --pids-limit 384 \
 set -eu
 export HOME=/tmp/pool-promo-home APPIMAGE_EXTRACT_AND_RUN=1 DISPLAY=:99
 mkdir -p "$HOME"
-Xvfb :99 -screen 0 960x600x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
+Xvfb :99 -screen 0 1280x800x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
 xvfb=$!
 game=""; grab=""
 finish() {
@@ -71,7 +71,7 @@ xdotool windowfocus "$window"
 eval "$(xdotool getwindowgeometry --shell "$window")"
 # 游標挪到角落。錄影本身用 -draw_mouse 0 不畫它——Xvfb 的螢幕就是視窗大小，
 # 沒有「視窗外面」可以放，所以只能不畫。逐拍比對的抓圖也一樣。
-xdotool mousemove 959 599
+xdotool mousemove 1279 799
 sleep 1
 
 # 一次連續錄影，中途逐拍記下時間戳；字幕在後製用 drawtext 依時間戳套上去。

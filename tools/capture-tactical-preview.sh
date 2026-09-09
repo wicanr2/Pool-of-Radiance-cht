@@ -17,7 +17,7 @@ docker run --rm --network none --memory 2g --cpus 2 --pids-limit 256 \
   wasteland-go:1.24-x11-record-r1 bash -c '
 set -eu
 mkdir -p "$HOME" docs/screenshots
-Xvfb :99 -screen 0 1200x800x24 >/tmp/xvfb.log 2>&1 &
+Xvfb :99 -screen 0 1400x900x24 >/tmp/xvfb.log 2>&1 &
 xvfb_pid=$!
 game_pid=
 finish() {
@@ -43,7 +43,9 @@ until test -n "$window"; do
 done
 xdotool windowfocus "$window"
 eval "$(xdotool getwindowgeometry --shell "$window")"
-xdotool mousemove 1190 790
+# 滑鼠移到螢幕右下角，**要在遊戲視窗外面**：視窗現在是 1280x800，
+# 舊的 (1190,790) 會落在視窗裡。
+xdotool mousemove 1390 890
 pulse() {
   xdotool keydown "$1"
   sleep 0.18

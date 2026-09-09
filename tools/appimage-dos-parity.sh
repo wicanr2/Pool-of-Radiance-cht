@@ -10,8 +10,12 @@
 # dosgolem 直接吐 320x200 的色號陣列，走位靠程式自己的訊號；DOSBox 只能從
 # 外面看畫面，送鍵靠 xdotool、等畫面靠 sleep，而猜對與猜錯在截圖上長得一樣。
 #
-# 尺度：remake 的邏輯畫布是 640x400、視窗 960x600（3 倍）。截圖用**最近鄰**
-# 降回 320x200 再比；平滑縮放會把差異抹掉。
+# 尺度：remake 的邏輯畫布是 640x400、視窗 1280x800（原版 320x200 的 4 倍）。
+# 截圖用**最近鄰**降回 320x200 再比；平滑縮放會把差異抹掉。
+#
+# 視窗一定要是邏輯畫布的**整數倍**：原版的字是 8x15／16x15 的點陣，1.5 倍
+# 放大會把某些像素行複製、某些丟掉，筆畫密的漢字看起來就像糊在一起，而降
+# 取樣取到的也不是同一組邏輯像素。
 #
 # 逐格相同是**只對兩張**宣稱的：`title`（同一份 TITLE.DAX，位置與縮放都一樣）
 # 與 `first-person`（spec 047／126，玩家整趟冒險看最久的一塊）。
@@ -69,7 +73,7 @@ mkdir -p "$HOME" /tmp/run
 cd /tmp/run
 cp /game.AppImage ./game.AppImage
 ./game.AppImage --appimage-extract >/tmp/extract.log 2>&1
-Xvfb :99 -screen 0 1200x800x24 >/tmp/xvfb.log 2>&1 &
+Xvfb :99 -screen 0 1400x900x24 >/tmp/xvfb.log 2>&1 &
 xvfb=$!
 game=
 finish() { test -z "$game" || kill "$game" 2>/dev/null || true; kill "$xvfb" 2>/dev/null || true; }
@@ -95,7 +99,9 @@ until test -n "$window"; do
 done
 xdotool windowfocus "$window"
 eval "$(xdotool getwindowgeometry --shell "$window")"
-xdotool mousemove 1190 790
+# 滑鼠移到螢幕右下角，**要在遊戲視窗外面**：視窗現在是 1280x800，
+# 舊的 (1190,790) 會落在視窗裡。
+xdotool mousemove 1390 890
 
 screen() { cat "$STATE" 2>/dev/null | tr -d "\n"; }
 die() { echo "$1" >&2; echo "目前畫面：$(screen)" >&2; tail -20 /tmp/game.log >&2 || true; exit 1; }
