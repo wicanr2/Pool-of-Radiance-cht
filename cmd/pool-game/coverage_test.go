@@ -1431,7 +1431,9 @@ walk:
 		*hardFailures = append(*hardFailures, failures...)
 	}
 	if flags != nil && application.eventMachine != nil {
-		for _, address := range []uint16{0x4A21, 0x4AC4, 0x6E12, 0x4A01, 0x4AC5} {
+		// 4AC8h 是「身上帶著卡德納的箱子」：`ecl4/2` 的 `TAKE IT UNOPENED`
+		// 寫 1、`OPEN IT` 寫 128，而 `ecl3/0 AB17` 只認 1（槽 18，spec 041）。
+		for _, address := range []uint16{0x4A21, 0x4AC4, 0x6E12, 0x4A01, 0x4AC5, 0x4AC8} {
 			flags[address] = application.eventMachine.Memory[address]
 		}
 		// 二十六個委任槽（spec 041）也一起帶出來：它們是「玩家真的走到那個
@@ -1913,6 +1915,7 @@ func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
 	var hardFailures []string
 	ok := false
 	var carry map[uint16]uint16
+	chestInHand := false
 	incrementsProgress := progressIncrementSlots(t, zipPath)
 	// 兩個階段。第一階段從乾淨的開場走；第二階段從「把第一階段打出來的委任
 	// 交差完」那個狀態走。
@@ -1946,6 +1949,16 @@ func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
 					completed[address] = true
 				}
 			}
+			// 箱子完好就帶著它進下一趟。它是隊伍身上的東西，與委任狀態
+			// 同一類，跨趟不該憑空消失。卡德納那一條要的是「先在 GEO4/2
+			// 拿到完好的箱子，再帶著它站上城區 (0,4) 的 gateway」——兩步
+			// 隔著整張地圖，湊在同一趟的機率不高，而每一趟的起點正是 (0,4)。
+			if flags[0x4AC8] == 1 {
+				chestInHand = true
+				if carry != nil {
+					carry[0x4AC8] = 1
+				}
+			}
 		}
 		if stage != 0 {
 			continue
@@ -1959,6 +1972,9 @@ func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
 			}
 		}
 		carry[0x4AC1] = progress
+		if chestInHand {
+			carry[0x4AC8] = 1
+		}
 		t.Logf("第一階段打完 %d 條，交差之後 4AC1h = %d", len(completed), progress)
 	}
 	if !ok {
