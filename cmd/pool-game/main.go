@@ -3093,7 +3093,10 @@ func (a *app) showDialogue(screen *ebiten.Image, message, label string, foregrou
 	drawDialogue(screen, message, label, foreground, accent)
 }
 
-func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
+// drawDialogueFrame 只畫那個框。探索施法的選單也用它——原版在開清單之前
+// 呼叫 `sub_1500`／`sub_1638` 開一個框（spec 119 的 `0497h`），冒險畫面
+// 留在框外面，不是換成整頁選單。
+func drawDialogueFrame(screen *ebiten.Image, accent color.Color) {
 	panel := ebiten.NewImage(560, dialogueBottom-dialogueTop)
 	panel.Fill(color.RGBA{0, 0, 0, 255})
 	screen.DrawImage(panel, &ebiten.DrawImageOptions{GeoM: translated(40, dialogueTop)})
@@ -3105,6 +3108,10 @@ func drawDialogue(screen *ebiten.Image, message, label string, foreground, accen
 		screen.Set(40, y, accent)
 		screen.Set(599, y, accent)
 	}
+}
+
+func drawDialogue(screen *ebiten.Image, message, label string, foreground, accent color.Color) {
+	drawDialogueFrame(screen, accent)
 	for index, line := range wrapDisplay(message, 68) {
 		if index >= dialogueLines {
 			break

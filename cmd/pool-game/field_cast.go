@@ -29,10 +29,20 @@ const (
 	fieldCastPickTarget
 )
 
+// 版面：**選單畫在冒險畫面下方那個框裡，不是整頁**。
+//
+// 原版在開清單之前呼叫 `sub_1500(0, 16h, 26h, 11h, 1)` 與
+// `sub_1638(16h, 26h, 11h, 1)` 開一個框（spec 119 的 `0497h`），冒險畫面
+// 留在框外面。先前這一頁鋪滿整個畫面，一個六人隊伍只填得滿六行，
+// 其餘九成是黑的；而且玩家看不到自己站在哪裡。
+//
+// 框是 `dialogueTop`..`dialogueBottom`（264..370），行距 16，放得下六行——
+// 隊伍上限正好是六人。法術比六條多時照游標捲動。
 const (
-	fieldCastLeft  = 48
-	fieldCastTop   = 96
-	fieldCastPitch = 20
+	fieldCastLeft     = 52
+	fieldCastFirstRow = 282
+	fieldCastPitch    = 16
+	fieldCastLines    = 6
 )
 
 // openFieldCast 開始探索施法。
@@ -205,13 +215,73 @@ func applyFieldEffect(member *poolsave.Character, effect gamepack.CastEffect) bo
 	return applied
 }
 
-// drawFieldCast 畫這一頁：一列選項加一行訊息。
-func drawFieldCast(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
-	panel := ebiten.NewImage(logicalWidth-2*guidePanelInset, guidePanelBottom-guidePanelTop)
-	panel.Fill(background)
-	screen.DrawImage(panel, &ebiten.DrawImageOptions{
-		GeoM: translated(guidePanelInset, guidePanelTop)})
+// fieldCastRows 是這一步要列的東西。挑法術時是法術，其餘兩步是隊伍。
+func (a *app) fieldCastRows() []string {
+	if a.fieldCastStage == fieldCastPickSpell {
+		rows := make([]string, 0, len(a.fieldCastOptions))
+		for _, option := range a.fieldCastOptions {
+			rows = append(rows, option.Label)
+		}
+		return rows
+	}
+	return a.partyPickerRows()
+}
 
+// fieldCastWindow 是列表捲動之後的起點：游標永遠留在看得見的範圍裡。
+func fieldCastWindow(cursor, count, lines int) int {
+	if count <= lines {
+		return 0
+	}
+	top := cursor - lines/2
+	if top < 0 {
+		top = 0
+	}
+	if top > count-lines {
+		top = count - lines
+	}
+	return top
+}
+
+// drawPickerInFrame 在下方那個框裡列一份選單。挑施法者、挑法術、`V` 挑人
+// 走的是同一支——三處都是「冒險畫面上疊一個小選單」，不是換一頁。
+func drawPickerInFrame(screen *ebiten.Image, a *app, rows []string, cursor int,
+	message, title string, foreground, accent color.Color) {
+	drawDialogueFrame(screen, accent)
+	lines := fieldCastLines
+	// 有話要說就讓出最後一行——訊息比第六個選項重要（「這名角色沒有記憶
+	// 法術」正是玩家按下去之後最需要看到的那一句）。
+	if message != "" {
+		lines--
+	}
+	top := fieldCastWindow(cursor, len(rows), lines)
+	for offset := 0; offset < lines && top+offset < len(rows); offset++ {
+		index := top + offset
+		mark, ink := "  ", foreground
+		if index == cursor {
+			mark, ink = "> ", accent
+		}
+		drawText(screen, mark+rows[index], fieldCastLeft,
+			fieldCastFirstRow+offset*fieldCastPitch, ink)
+	}
+	if message != "" {
+		drawText(screen, message, fieldCastLeft,
+			fieldCastFirstRow+(fieldCastLines-1)*fieldCastPitch, foreground)
+	}
+	drawText(screen, title+"　"+a.text(msgFieldCastFooter), fieldCastLeft, footerBaseline, accent)
+}
+
+// partyPickerRows 是隊伍清單那幾行：名字加現有／最大生命值。
+func (a *app) partyPickerRows() []string {
+	rows := make([]string, 0, len(a.state.Party))
+	for _, member := range a.state.Party {
+		rows = append(rows, fmt.Sprintf("%s  %d/%d",
+			strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP))
+	}
+	return rows
+}
+
+// drawFieldCast 畫下方那個框：框內是選項，框外那一列是標題與鍵位。
+func drawFieldCast(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
 	title := a.text(msgFieldCastPickCaster)
 	switch a.fieldCastStage {
 	case fieldCastPickSpell:
@@ -219,32 +289,6 @@ func drawFieldCast(screen *ebiten.Image, a *app, background, foreground, accent 
 	case fieldCastPickTarget:
 		title = a.text(msgFieldCastPickTarget)
 	}
-	drawText(screen, title, fieldCastLeft, 78, accent)
-
-	line := fieldCastTop
-	if a.fieldCastStage == fieldCastPickSpell {
-		for index, option := range a.fieldCastOptions {
-			mark, ink := "  ", foreground
-			if index == a.fieldCastCursor {
-				mark, ink = "> ", accent
-			}
-			drawText(screen, mark+option.Label, fieldCastLeft, line, ink)
-			line += fieldCastPitch
-		}
-	} else {
-		for index, member := range a.state.Party {
-			mark, ink := "  ", foreground
-			if index == a.fieldCastCursor {
-				mark, ink = "> ", accent
-			}
-			drawText(screen, fmt.Sprintf("%s%s  %d/%d", mark,
-				strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP),
-				fieldCastLeft, line, ink)
-			line += fieldCastPitch
-		}
-	}
-	if a.fieldCastMessage != "" {
-		drawText(screen, a.fieldCastMessage, fieldCastLeft, guidePanelBottom-24, foreground)
-	}
-	drawText(screen, a.text(msgFieldCastFooter), 0, footerBaseline, accent)
+	drawPickerInFrame(screen, a, a.fieldCastRows(), a.fieldCastCursor,
+		a.fieldCastMessage, title, foreground, accent)
 }

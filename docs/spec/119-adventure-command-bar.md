@@ -1,9 +1,11 @@
 # Spec 119：冒險畫面的指令列與平面全圖
 
 狀態：READY（兩條指令列的字串、六個鍵的分派、`A)REA` 的開關與平面圖畫法、
-`S)EARCH`／`L)OOK` 的旗標位、`C)AST` 那一支的流程與它呼叫的兩顆 overlay）；
-DRAFT（`+594h` 兩個旗標在搜尋裡改變什麼、`V)IEW` 那一頁的版面）。
-日期：2026-09-08。
+`S)EARCH`／`L)OOK` 的旗標位、`C)AST` 那一支的流程與它呼叫的兩顆 overlay、
+前置檢查的五條訊息與「不挑人」這件事、清單介面的七個句尾）；
+DRAFT（`+594h` 兩個旗標在搜尋裡改變什麼、角色記錄 `+10Ch`／`+10Dh` 的語意、
+`sub_1500`／`sub_1638` 那個框的幾何）。
+日期：2026-09-09。
 
 ## 兩條字串（exact）
 
@@ -74,6 +76,61 @@ stub 位移 `2Ah` 是它的 **entry 2**，code offset `0497h`。
    Pascal 長度 23）。那不是錯誤訊息，是正常回應。
 `24h COMBAT` 的處理常式（overlay-03 `186Ch` 內的 `19A1h`）也會寫這個欄位。
 
+## `C)AST` 不挑人（exact，2026-09-09）
+
+`0497h` 一進去就呼叫 `sub_35D(1)` 做前置檢查，而那一支**直接讀
+`ds:5CF0h`／`5CF2h` 指到的「目前角色」**（spec 003／008／021／090 已定案的
+active far pointer），沒有任何挑人步驟。往下的 `00C9h:005Ch`（overlay-19
+entry 12）也是印同一個角色的名字。**原版的探索施法對「目前角色」施法。**
+
+### 前置檢查 `035Dh`（overlay-15）
+
+證據：`docs/audit/ida-overlay15-cast-precheck.json`
+（`overlay-15.bin` SHA-256 `470de2bf…`，`035Dh..0497h`，128 條指令）。
+
+```
+0368  [bp+6] == 1 且 ds:4933h 的 +1CAh > 0  → 訊息 2F3h
+0390  ds:5CF0h 的 +10Ch == 1 且 +10Dh == 0 → 訊息 313h ＋ 依 [bp+6] 接上
+      32Ah／33Ah／34Ah，否則跳過（可以施法）
+044E  訊息空 → 回 1（可以施法）
+045A  訊息非空 → 回 0，並把「角色名 ＋ 訊息」交給 010Ah:0084h 印出來
+```
+
+五條訊息（Pascal 字串，逐位元組讀自 `overlay-15.bin`）：
+
+| 位址 | 長度 | 內容 |
+|---|---|---|
+| `02F3h` | 31 | `cannot cast spells in this area` |
+| `0313h` | 22 | `is in no condition to ` |
+| `032Ah` | 15 | `cast any spells` |
+| `033Ah` | 15 | `memorize spells` |
+| `034Ah` | 18 | `scribe any scrolls` |
+| `047Fh` | 23 | `has no spells memorized` |
+
+`[bp+6]` 是用途：1 施法、2 記憶、3 抄卷軸——三者共用同一支檢查，只有句尾
+那一段不同。`+10Ch`／`+10Dh` 的欄位語意還沒讀（DRAFT）。
+
+### 清單介面 `0297Bh`（overlay-19 entry 12）
+
+證據：`docs/audit/ida-overlay19-spell-picker.json`
+（`overlay-19.bin` SHA-256 `4694cb51…`，`0297Bh..2AFCh`，170 條指令）。
+
+前半照 `[bp+10h]`（0..6）挑一個**句尾**接到標題上：
+
+| 值 | 位址 | 內容 |
+|---|---|---|
+| 0 | `2918h` | `in Memory` |
+| 1 | `2922h` | `in Spell Book` |
+| 2 | `2930h` | `on Scroll` |
+| 3 | `293Ah` | `on Scrolls` |
+| 4 | `2945h` | `to choose from` |
+| 5 | `2954h` | `to be memorized` |
+| 6 | `2964h` | （同表最後一筆）|
+
+後半：`00E2h:002Ah` 取出可選的法術數（0 就直接回 0），`[bp+0Ah]` 指到的
+記憶槽位為負時印一次標題（`ds:5CF0h` 的名字 ＋ 句尾），最後把選擇交給
+`00E2h:0025h`。**挑人不在這條路上。**
+
 ## 平面全圖
 
 說明書 p.21：「圖上僅顯示牆而不顯示門」，隊伍「以一個箭號表示，箭頭所指的
@@ -104,8 +161,15 @@ stub 位移 `2Ah` 是它的 **entry 2**，code offset `0497h`。
 - **`+594h` 那兩位在搜尋裡改變什麼還沒讀**。remake 目前只做得出可見的部分：
   狀態列的字樣、`L` 重跑一次 entry 1。真正的差別（搜得到什麼）要等讀出
   消費端。
-- `C)AST` 與 `V)IEW` 現在開的是 remake 自己的法術清單與裝備頁，不是原版的
-  施法流程與角色資料頁（`ITEMS SPELLS DROP EXIT`）。不宣稱與原版一致。
+- **`C)AST` 的挑人那一步是 remake 加的。** 原版對「目前角色」施法（見上一節）；
+  remake 沒有把「目前角色」暴露在冒險畫面上，所以按 `C` 先讓玩家選人。
+  這一步**畫在冒險畫面下方那個框裡**，冒險畫面留在框外——原版在開清單前
+  呼叫 `sub_1500(0, 16h, 26h, 11h, 1)` 與 `sub_1638(16h, 26h, 11h, 1)` 開的
+  也是一個框，不是換一頁。那五個參數的幾何還沒解，所以框的位置沿用 remake
+  自己的對話框（`dialogueTop`..`dialogueBottom`），標為 `layout-reconstructed`。
+  `V)IEW` 的挑人步驟走同一支（`drawPickerInFrame`）。
+- `C)AST` 選完之後開的是 remake 自己的法術清單，不是原版
+  `00E2h:0025h` 那個介面；`V)IEW` 的資料頁已照 spec 130 重做。
 - **門的第一人稱美術沒有畫**：`(0,4)` 朝西正前方是城門，
   `TraverseWallViewWrapped` 對它送出 `wallType=1`，而 `BuildWallLayout`
   一片圖章都產不出來，對拍因此只有 60.4%

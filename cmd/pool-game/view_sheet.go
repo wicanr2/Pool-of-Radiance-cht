@@ -63,28 +63,21 @@ func (a *app) viewSheetInput() (bool, error) {
 
 // drawViewSheet 畫這一頁：先是隊員清單，選完之後是那個人的資料頁。
 func drawViewSheet(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
-	panel := ebiten.NewImage(logicalWidth-2*guidePanelInset, guidePanelBottom-guidePanelTop)
-	panel.Fill(background)
-	screen.DrawImage(panel, &ebiten.DrawImageOptions{
-		GeoM: translated(guidePanelInset, guidePanelTop)})
-
+	// **挑人那一步不換頁**：它是冒險畫面上疊一個小選單，與 `C` 的施法選單
+	// 同一支（`drawPickerInFrame`）。資料頁本身才是整頁——那一頁原版就是
+	// 整頁（spec 130）。
 	if !a.viewSheetShown {
-		drawText(screen, a.text(msgViewSheetPick), fieldCastLeft, 78, accent)
-		for index, member := range a.state.Party {
-			mark, ink := "  ", foreground
-			if index == a.viewSheetCursor {
-				mark, ink = "> ", accent
-			}
-			drawText(screen, fmt.Sprintf("%s%s  %d/%d", mark,
-				strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP),
-				fieldCastLeft, fieldCastTop+index*fieldCastPitch, ink)
-		}
-		drawText(screen, a.text(msgFieldCastFooter), 0, footerBaseline, accent)
+		drawPickerInFrame(screen, a, a.partyPickerRows(), a.viewSheetCursor,
+			"", a.text(msgViewSheetPick), foreground, accent)
 		return
 	}
 	if a.viewSheetCursor >= len(a.state.Party) {
 		return
 	}
+	panel := ebiten.NewImage(logicalWidth-2*guidePanelInset, guidePanelBottom-guidePanelTop)
+	panel.Fill(background)
+	screen.DrawImage(panel, &ebiten.DrawImageOptions{
+		GeoM: translated(guidePanelInset, guidePanelTop)})
 	member := a.state.Party[a.viewSheetCursor]
 	// **名字不畫在頁面裡。** 原版那一頁沒有名字那一行（建角當下還沒命名），
 	// 硬加一行會壓到外框上緣的標題。名字放在框外那一列。

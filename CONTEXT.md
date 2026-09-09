@@ -30,6 +30,32 @@
 核對各一份。只改一份的症狀是交叉核對從 100% 掉到 59.89%，而那看起來像
 remake 退步了。現在收斂成 `REMAKE_VIEW_TOP`。
 
+## 2026-09-09 原版的 `C)AST` 不挑人
+
+追 `C` 那一頁為什麼是整頁空白，反組譯到兩件事：
+
+- **前置檢查 `035Dh`（overlay-15）直接讀 `ds:5CF0h` 的「目前角色」**，
+  沒有挑人步驟；`00C9h:005Ch`（overlay-19 entry 12）印的也是同一個角色。
+  所以**原版的探索施法對「目前角色」施法**。五條訊息也解出來了：
+  `cannot cast spells in this area`、`is in no condition to ` ＋
+  `cast any spells`／`memorize spells`／`scribe any scrolls`、
+  `has no spells memorized`。三種用途（施法／記憶／抄卷軸）共用同一支檢查。
+- 清單介面照 `[bp+10h]` 挑七個句尾之一：`in Memory`、`in Spell Book`、
+  `on Scroll`、`on Scrolls`、`to choose from`、`to be memorized`。
+
+remake 沒有把「目前角色」暴露在冒險畫面上，所以按 `C` 仍先讓玩家選人——
+但那一步**不再換一頁**：原版在開清單前呼叫 `sub_1500`／`sub_1638` 開的是一個
+框，冒險畫面留在框外。remake 照這個關係畫在自己的對話框裡（六行，隊伍上限
+正好六人），`V` 的挑人步驟走同一支。先前那一頁鋪滿整個畫面，一個六人隊伍
+只填得滿六行，其餘九成是黑的，而且玩家看不到自己站在哪裡。
+
+證據進 `docs/audit/ida-overlay15-cast-precheck.json` 與
+`ida-overlay19-spell-picker.json`，契約寫進 spec 119。
+
+**dosgolem 送方向鍵到建角選單沒有作用**（種族清單按五次 `Down` 反白仍在
+`DWARF`），所以拍不到「施法職業按 C」的原版畫面。冒險畫面的 `Up` 是有效的，
+差別還沒查。這條路先擱著，版面改用反組譯的證據。
+
 ## 2026-09-09 折行不猜空白；畫面上不留 remake 對自己的說明
 
 **`wrapDisplay` 在全形／半形交界處把空白吃掉。** 它靠「兩個半形詞相鄰」推斷

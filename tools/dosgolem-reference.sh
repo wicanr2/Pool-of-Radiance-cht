@@ -22,7 +22,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOSGOLEM="${DOSGOLEM_DIR:-$(cd "$ROOT/workplace/dosgolem" 2>/dev/null && pwd || true)}"
 SOURCE="$ROOT/workplace/oracle/dos"
-OUT="$ROOT/workplace/dosgolem-ref"
+# 輸出目錄可以換：追某一個畫面時要拍另一組鍵序，而主基準
+# （`workplace/dosgolem-ref`）不該被那種一次性的探索蓋掉。
+OUT="${POOL_DOSGOLEM_OUT:-$ROOT/workplace/dosgolem-ref}"
 
 test -n "$DOSGOLEM" || { echo "找不到 dosgolem 工作區；設 DOSGOLEM_DIR" >&2; exit 2; }
 test -f "$DOSGOLEM/cmd/shots/main.go" || {
