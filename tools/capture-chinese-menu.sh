@@ -238,9 +238,25 @@ shot docs/screenshots/pool-remake-chinese-memorise.png
 step k adventure-move
 # 紮營。原版按 `E` 不彈選單：視野換成營火、指令列換成
 # `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`（spec 135）。
+# **營火是兩張的動畫**（每三個影格換一張），所以這幾張截圖每次拍到的火焰
+# 形狀不一定一樣——那是原版的行為，不是不穩定。
 step e camp
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-camp.png
+# `A` 進調整那一層（`Alter: ORDER DROP SPEED ICON PICS EXIT`），再往下拍
+# 速度與圖片兩層——那三層原版都只換最下面那一列，畫面其餘部分不動。
+step a camp-alter
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-camp-alter.png
+step s camp-speed
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-camp-speed.png
+step e camp-alter
+step p camp-pics
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-camp-pics.png
+step e camp-alter
+step e camp
 # `R` 進排時間那一層，指令列再換成 `REST DAYS HOURS MINS INC DEC EXIT`。
 step r camp-rest
 sleep 0.4
@@ -392,6 +408,9 @@ screens = [
     ("pool-remake-chinese-spells.png", "spell list, magic-user level 1"),
     ("pool-remake-chinese-memorise.png", "spell list, cleric level 1, after M memorises Bless"),
     ("pool-remake-chinese-camp.png", "camp: the view becomes a fire, the command bar becomes CAMP:"),
+    ("pool-remake-chinese-camp-alter.png", "camp, ALTER: order/drop/speed/icon/pics"),
+    ("pool-remake-chinese-camp-speed.png", "camp, ALTER, SPEED: the game-speed row"),
+    ("pool-remake-chinese-camp-pics.png", "camp, ALTER, PICS: the two picture switches"),
     ("pool-remake-chinese-camp-rest.png", "camp, REST: the rest-time row"),
     ("pool-remake-chinese-field-cast.png", "casting outside combat (C on the command bar)"),
     ("pool-remake-chinese-spell-page.png", "the full-page memorised-spell list the caster picks from (spec 134)"),

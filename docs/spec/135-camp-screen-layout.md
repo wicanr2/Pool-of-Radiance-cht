@@ -1,7 +1,7 @@
 # Spec 135：原版紮營畫面的版面
 
-狀態：READY（幾何、營火圖來源、四條指令列字串都定位了）；
-OPEN（`SAVE`／`VIEW`／`ALTER` 三項按下去做什麼）。
+狀態：READY（幾何、營火圖與動畫時序、整棵選單樹、每一層的字串位址）；
+OPEN（`ICON` 那一項、`Breathes A sigh of relief` 的條件）。
 日期：2026-09-09。
 
 ## 輸入
@@ -66,6 +66,72 @@ Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:18:Return,e,H,I,I,R
 相同——營火不分區，但原版仍是照現行區號（`DS:52D4h`）組檔名載入的
 （spec 117 的同一條路）。基準幀拍到的是第 1 張。
 
+## 選單樹（overlay-15 entry 1，`1E45h`）
+
+紮營的主迴圈是 **overlay-15 entry 1**。它進場時把 `ds:4954h` 設成 2、離場還原
+——時鐘行後面接 `CAMPING` 就是看這個。每一層都只換最下面那一列，畫面其餘
+部分不動；離開一層就回上一層。
+
+```
+CAMP: SAVE VIEW MAGIC REST ALTER EXIT          前綴 overlay-15 1E31h，那一列 DS:051Bh
+  1..6  換「目前角色」（ds:5CF0h/5CF2h）        overlay-19 entry 10
+  S     存檔（overlay-17 entry 11）
+        存完問 `Quit TO DOS `（overlay-15 1E38h），Y → far 26Bh:0（回 DOS）
+  V     人物資料頁（overlay-19 entry 5，spec 130）
+  M     MAGIC 層（overlay-15 13ECh ＝ entry 16），那一列 DS:0544h
+        `Cast Memorize Scribe Display Rest Exit`
+  R     排時間層（overlay-15 76Ch ＝ entry 10），那一列 overlay-20 0698h
+  A     ALTER 層（overlay-15 1C29h）
+  E     離開
+```
+
+```
+Alter: ORDER DROP SPEED ICON PICS EXIT         前綴 overlay-15 1BE0h，那一列 DS:056Eh
+  O   Party Order（overlay-15 174Eh ＝ entry 19）
+      前綴 overlay-15 170Eh，兩步的字串是 DS:0598h `Select Exit` 與
+      DS:05C1h `Place Exit`（每筆 41 bytes，索引就是第幾步）
+  D   Drop（overlay-15 18B6h）——丟的是**目前角色**，不另外挑人
+      隊伍只剩他一個時改問 `quit TO DOS: `（18 48h）
+      否則印 `<名字> will be gone`（1856h）再問 ` Drop from party? `（1863h）
+      丟完依角色記錄 `+10Dh` 換收尾：非 0 是 ` bids you farewell`（1875h），
+      0 是 ` is dumped in a ditch`（1887h）
+  S   Game Speed（overlay-15 1A67h）
+      上面一行是 `Game Speed = ` ＋ 值 ＋ ` (0=fastest 9=slowest)`（1A00h／1A0Eh），
+      值在 ds:4943h；那一列是組出來的——**值是 0 就不列 ` Faster`、是 9 就不列
+      ` Slower`**（1AD9h／1AF1h 的兩個比較），最後接 ` Exit`
+      前綴 1A3Bh `Game Speed:`
+  I   Icon（overlay-16 entry 4）——對目前角色開戰鬥造形編輯器
+  P   PICS 層（overlay-15 1CD2h），沒有前綴
+      兩個開關直接畫成那一列：`Monsters on `／`Monsters off `（1BE8h／1BF6h）
+      與 `Portraits on `／`Portraits off `（1C05h／1C14h），再接 `Exit`（1C24h）
+      按 M 翻 ds:4957h、按 P 翻 ds:4956h
+  E   回上一層
+```
+
+**每一層都用同一個選單元件**（overlay-26 entry 3 ＝ `00E4h`，spec 133）。
+`Exit` 不在呼叫端的分派裡：元件按到它時回 `#0`，呼叫端用
+`Pos(#0, <結束集合>)` 判斷要不要離開這一層——結束集合就是一個 `#0`
+（overlay-15 `1E11h`／`1BC0h`）。
+
+## 營火的動畫時序
+
+選單元件等鍵的那個迴圈同時在推動畫（overlay-26 `02A0h` 一帶）：
+
+```
+畫第 ds:6A1Dh 張 → 算門檻 = 那一張的延遲 ÷ 7 → 目前計時 − 上次換張 > 門檻？
+→ 是就 inc ds:6A1Dh，超過 ds:6A1Ch（張數）就繞回 1 → 沒按鍵就回頭
+```
+
+**張號是 1-based，而且繞回 1，不是 0。** 計時來自 overlay-37 entry 10 的
+32-bit 值（BIOS tick）。
+
+「那一張的延遲」就是 PIC 每張前面那 **4 bytes 前綴**——spec 117 只說有這四個
+位元組，沒說是什麼。營火（區塊 29）兩張都是 **2**，`2 ÷ 7 = 0`，所以是
+**每過一個 BIOS tick 就換**（18.2 Hz）。
+
+除法而不是乘法是從值反推的：同一個容器裡的船（`PIC3.DAX` 區塊 41）延遲是
+20／15，除以 7 是兩個 tick（0.11 秒，船在晃），乘以 7 會變成七秒一格。
+
 ## 四條指令列字串在哪裡
 
 長度 byte 的位址（Turbo Pascal 字串，字串本體在下一個位元組）：
@@ -108,7 +174,8 @@ Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:18:Return,e,H,I,I,R
 ## 契約
 
 1. `assets.ReadCampFire(zip, 區號)` 讀 `PIC<區號>.DAX` 區塊 29 的兩張，
-   畫在第一人稱視野的內框 `(24,24)`（logical `(48,70)`）。
+   畫在第一人稱視野的內框 `(24,24)`（logical `(48,70)`），**每三個影格換一張**
+   （60 fps 下的 50 ms，最接近原版那一個 BIOS tick 的 54.9 ms）。
 2. 紮營時時鐘行接上 `CAMPING`（繁中另譯）。
 3. 指令列換成 `CAMP:` ＋ `SAVE VIEW MAGIC REST ALTER EXIT`，按 `R` 之後換成
    `REST  DAYS HOURS MINS  INC DEC  EXIT`，畫法與冒險畫面同一支
@@ -117,12 +184,16 @@ Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:18:Return,e,H,I,I,R
    `REST TIME:  00:00:00`。
 5. **拿掉直排選單**與壓在視野框上的那三行。
 
-## OPEN
+## remake 現況
 
-**營火兩張怎麼交替、多久換一次還沒讀出來。** remake 目前只畫第 0 張——
-猜一個閃動速度會讓畫面每一格都不一樣，而那是編的。
+整棵樹接好了，除了兩項：
 
-`SAVE`／`VIEW`／`ALTER` 三項按下去做什麼還沒讀。`VIEW` 大概是人物資料頁
-（remake 的 `V` 已經有），`SAVE` 是存檔，`ALTER` 未知。在讀出來之前這三項
-**照原版列在指令列上**，按下去給一句「還沒接」——列都不列的話，玩家看到的
-指令列就與原版不同，而那正是這一份要修的東西。
+- **`ALTER → ICON` 還沒接。** remake 的戰鬥造形編輯器綁在建角流程上
+  （`a.flow`），要對一個已經在隊伍裡的人開它得先有「把角色的造形選擇載回
+  flow」那條反向路徑。照原版列在那一列上，按下去給一句「還沒接」。
+- **`ALTER → SPEED` 的值存了、也照原版顯示與夾限，但還沒有作用。**
+  原版那個值管的是文字捲動速度，而 remake 的對話框是整頁一次顯示。
+
+`ALTER → DROP` 的第三句 ` Breathes A sigh of relief`（overlay-15 `189Ch`）
+在哪個條件下印還沒讀到——remake 目前只用前兩句。角色記錄 `+10Dh` 讀成
+「還活著」是**推論**，還沒逐位元組確認。

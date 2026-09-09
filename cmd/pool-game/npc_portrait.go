@@ -19,6 +19,10 @@ func (a *app) approachPortrait() *ebiten.Image {
 	if !a.introWaiting || a.tourActive || a.initialEvent == nil {
 		return nil
 	}
+	// `CAMP → ALTER → PICS` 的 `Portraits off`（原版 `ds:4956h`）。
+	if a.portraitsHidden {
+		return nil
+	}
 	if a.npcPortrait != nil {
 		return a.npcPortrait
 	}

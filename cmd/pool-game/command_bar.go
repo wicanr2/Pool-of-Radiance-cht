@@ -194,15 +194,37 @@ var commandMessages = map[string]messageID{
 	"MINS":   msgCampCommandMins,
 	"INC":    msgCampCommandInc,
 	"DEC":    msgCampCommandDec,
+
+	"ORDER":         msgCampCommandOrder,
+	"DROP":          msgCampCommandDrop,
+	"SPEED":         msgCampCommandSpeed,
+	"ICON":          msgCampCommandIcon,
+	"PICS":          msgCampCommandPics,
+	"SELECT":        msgCampCommandSelect,
+	"PLACE":         msgCampCommandPlace,
+	"FASTER":        msgCampCommandFaster,
+	"SLOWER":        msgCampCommandSlower,
+	"MONSTERS-ON":   msgCampCommandMonstersOn,
+	"MONSTERS-OFF":  msgCampCommandMonstersOff,
+	"PORTRAITS-ON":  msgCampCommandPortraitsOn,
+	"PORTRAITS-OFF": msgCampCommandPortraitsOff,
 }
 
-// 紮營的兩列指令（spec 135）。原版的字串是 `DS:051Bh` 的
-// `Save View Magic Rest Alter Exit` 與 overlay-20 `0698h` 的
-// `Rest   daYs Hours Mins   Inc Dec   Exit`，前綴 `Camp: ` 在
-// overlay-15 `1E31h`。
+// 紮營的每一列指令（spec 135）。原版的字串分別是：
+//
+//	`Save View Magic Rest Alter Exit`          `DS:051Bh`
+//	`Rest   daYs Hours Mins   Inc Dec   Exit`  overlay-20 `0698h`
+//	`Order Drop Speed Icon Pics Exit`          `DS:056Eh`
+//	`Select Exit` ／ `Place Exit`              `DS:0598h`／`DS:05C1h`
+//	` Faster` ` Slower` ` Exit`                overlay-15 `1A25h`…
+//	`Monsters on/off` `Portraits on/off` `Exit` overlay-15 `1BE8h`…
+//
+// 前綴分別在 overlay-15 `1E31h`（`Camp: `）、`1BE0h`（`Alter: `）、
+// `170Eh`（`Party Order: `）、`1A3Bh`（`Game Speed:`）。
 var (
-	campCommands     = []string{"SAVE", "VIEW", "MAGIC", "REST", "ALTER", "EXIT"}
-	campRestCommands = []string{"REST", "DAYS", "HOURS", "MINS", "INC", "DEC", "EXIT"}
+	campCommands      = []string{"SAVE", "VIEW", "MAGIC", "REST", "ALTER", "EXIT"}
+	campRestCommands  = []string{"REST", "DAYS", "HOURS", "MINS", "INC", "DEC", "EXIT"}
+	campAlterCommands = []string{"ORDER", "DROP", "SPEED", "ICON", "PICS", "EXIT"}
 )
 
 // commandBarList 是現在該畫哪一列。
@@ -210,19 +232,59 @@ func (a *app) commandBarList() []string {
 	if !a.campOpen {
 		return a.adventureCommandList()
 	}
-	if a.campStage == campStageRest {
+	switch a.campStage {
+	case campStageRest:
 		return campRestCommands
+	case campStageAlter:
+		return campAlterCommands
+	case campStageOrderSelect:
+		return []string{"SELECT", "EXIT"}
+	case campStageOrderPlace:
+		return []string{"PLACE", "EXIT"}
+	case campStageSpeed:
+		// 原版把這一列組出來：值是 0 就不列 `Faster`、是 9 就不列 `Slower`
+		//（overlay-15 `1AD9h`／`1AF1h` 的兩個比較）。
+		row := make([]string, 0, 3)
+		if a.gameSpeed > campSpeedFastest {
+			row = append(row, "FASTER")
+		}
+		if a.gameSpeed < campSpeedSlowest {
+			row = append(row, "SLOWER")
+		}
+		return append(row, "EXIT")
+	case campStagePics:
+		monsters, portraits := "MONSTERS-ON", "PORTRAITS-ON"
+		if a.monsterPicsHidden {
+			monsters = "MONSTERS-OFF"
+		}
+		if a.portraitsHidden {
+			portraits = "PORTRAITS-OFF"
+		}
+		return []string{monsters, portraits, "EXIT"}
+	case campStageQuitConfirm, campStageDropConfirm:
+		// 問句那兩層原版沒有指令列，只有對話框裡的問句。
+		return nil
 	}
 	return campCommands
 }
 
-// commandBarPrefix 是那一列前面的字。只有紮營的第一層有（`Camp: `）；
-// 排時間那一層原版是從畫面最左邊直接排 `Rest`，沒有前綴。
+// commandBarPrefix 是那一列前面的字。排時間與 PICS 兩層原版沒有前綴——
+// `Rest` 與 `Monsters` 都是從畫面最左邊直接排起。
 func (a *app) commandBarPrefix() string {
-	if !a.campOpen || a.campStage == campStageRest {
+	if !a.campOpen {
 		return ""
 	}
-	return a.text(msgCampCommandPrefix)
+	switch a.campStage {
+	case campStageMenu:
+		return a.text(msgCampCommandPrefix)
+	case campStageAlter:
+		return a.text(msgCampAlterPrefix)
+	case campStageOrderSelect, campStageOrderPlace:
+		return a.text(msgCampOrderPrefix)
+	case campStageSpeed:
+		return a.text(msgCampSpeedPrefix)
+	}
+	return ""
 }
 
 // commandPrefixInk 是前綴的顏色。原版用第三種色（色號 13），與可按的字母

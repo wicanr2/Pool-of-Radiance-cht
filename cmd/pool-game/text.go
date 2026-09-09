@@ -624,6 +624,38 @@ const (
 	msgEquipmentFooter
 )
 
+// 紮營那幾層的字串（spec 135）。**另開一段 `iota + 900`**：`+400` 那一段
+// 已經排到 490 附近，再加下去會撞上 `+500` 開頭的商店那一段，而症狀是
+// `text_keys.go` 的 map 出現 duplicate key——編譯期擋得住，但要花時間才看得出
+// 原因是「兩個不相干的常數剛好同值」。
+const (
+	msgCampCommandOrder messageID = iota + 900
+	msgCampCommandDrop
+	msgCampCommandSpeed
+	msgCampCommandIcon
+	msgCampCommandPics
+	msgCampCommandSelect
+	msgCampCommandPlace
+	msgCampCommandFaster
+	msgCampCommandSlower
+	msgCampCommandMonstersOn
+	msgCampCommandMonstersOff
+	msgCampCommandPortraitsOn
+	msgCampCommandPortraitsOff
+	msgCampAlterPrefix
+	msgCampOrderPrefix
+	msgCampSpeedPrefix
+	msgCampSpeedLine
+	msgCampOrderPicked
+	msgCampOrderMoved
+	msgCampCurrentMember
+	msgCampQuitToDOS
+	msgCampSaved
+	msgCampDropWillBeGone
+	msgCampDropFarewell
+	msgCampDropDitch
+)
+
 const (
 	msgTacticalTitle messageID = iota + 200
 	msgTacticalNoMap

@@ -221,10 +221,25 @@ type app struct {
 	// 那不是彈出選單，是把視野換成營火、指令列換成另一列。
 	campOpen  bool
 	campStage campStage
+	// campMember 是紮營的「目前角色」（原版 `ds:5CF0h`），數字鍵 1..6 換他，
+	// `VIEW`／`DROP`／`ICON` 都對他生效。
+	campMember int
+	// campOrderPick 是 `Party Order` 選好、還沒放下的那一個；-1 是還沒選。
+	campOrderPick int
+	// gameSpeed 是 `ALTER → SPEED` 的值（原版 `ds:4943h`，0 最快 9 最慢）。
+	// **remake 目前沒有逐字顯示，所以這個值還沒有作用**（spec 135 的 OPEN）。
+	gameSpeed uint8
+	// monsterPicsHidden／portraitsHidden 是 `ALTER → PICS` 的兩個開關
+	//（原版 `ds:4957h`／`ds:4956h`）。**存的是「關掉了沒有」**，因為兩個
+	// 開關預設都是開的，而零值要對應預設——存成 `showX` 的話每一份測試用的
+	// `app{}` 都會變成「圖片關掉」，而那不是任何人選的。
+	monsterPicsHidden bool
+	portraitsHidden   bool
 	// campMessage 是對話框那一行（`The party makes camp...`）。
 	campMessage string
 	// campFire 是營火動畫的兩張（`PIC<區號>.DAX` 區塊 29）。
 	campFire     []*ebiten.Image
+	campFireTick int
 	loadCampFire func(archive uint8) ([]*ebiten.Image, error)
 	// 紮營要玩家挑的休息時間（spec 114）。原版的欄位是天／時／分，
 	// 分鐘一次五分；`restField` 是目前選中的那一欄。
@@ -360,6 +375,7 @@ func newApp(zipPath, statePath string) (*app, error) {
 		roller: diceRoller{random: rand.New(rand.NewSource(time.Now().UnixNano()))},
 		keys:   ebitenKeys{},
 		state:  poolsave.NewState(),
+		campOrderPick: -1,
 	}
 	catalog, err := gamepack.ReadDOSGeometryCatalog(zipPath)
 	if err != nil {
@@ -702,6 +718,9 @@ func (a *app) Update() error {
 		return nil
 	}
 	if a.campOpen {
+		// 營火是動畫，由這裡推著走——原版是選單元件的等鍵迴圈在推
+		//（overlay-26 `02A0h`）。
+		a.campFireTick++
 		if err := a.campInput(); err != nil {
 			return err
 		}
@@ -3005,10 +3024,16 @@ func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 		return
 	}
 	drawDialogueFrame(screen, accent)
-	if a.campStage == campStageRest {
+	switch a.campStage {
+	case campStageRest:
 		// 原版那一層只有這一行（native 136..142）。第二行是空的——
 		// 「還要休息幾小時才記得完」原版沒有印，玩家自己算。
 		drawText(screen, a.campRestTimeLine(), dialogueLeft, dialogueFirstRow, accent)
+		return
+	case campStageSpeed:
+		// `Game Speed = <n> (0=fastest 9=slowest)`（overlay-15 `1A00h` ＋ 值
+		// ＋ `1A0Eh`），與那一列指令是分開的兩塊。
+		drawText(screen, a.campSpeedLine(), dialogueLeft, dialogueFirstRow, accent)
 		return
 	}
 	if a.campMessage != "" {
@@ -3017,16 +3042,25 @@ func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	}
 }
 
-// campFireImage 是紮營時蓋在視野那一框上的營火（spec 135）。
+// campFireTicksPerFrame 是營火多久換一張。
 //
-// 原版有兩張（`PIC<區號>.DAX` 區塊 29 是動畫），**換張的時序還沒讀出來**，
-// 所以這裡只畫第一張——猜一個閃動速度會讓畫面每一格都不一樣，而那是編的。
+// 原版的換張門檻在選單元件的等鍵迴圈裡算（overlay-26 `02A0h` 一帶）：
+// `門檻 = 那一張的延遲 ÷ 7` 個 BIOS tick，而延遲就是 PIC 每張前面那 4 bytes
+// （spec 117 只說「4 bytes 前綴」，沒說是什麼）。**營火兩張的延遲都是 2**，
+// 2÷7 ＝ 0，所以是「每過一個 BIOS tick 就換」——18.2 Hz。remake 跑 60 fps，
+// 三個影格 50 ms 最接近那一個 tick 的 54.9 ms。
+//
+// 除法而不是乘法是從值反推的：同一個容器裡的船（`PIC3.DAX` 區塊 41）延遲是
+// 20／15，除以 7 是兩個 tick（0.11 秒，船在晃），乘以 7 會變成七秒一格。
+const campFireTicksPerFrame = 3
+
+// campFireImage 是紮營時蓋在視野那一框上的營火（spec 135）。
 func (a *app) campFireImage() *ebiten.Image {
 	if !a.campOpen {
 		return nil
 	}
 	if len(a.campFire) != 0 {
-		return a.campFire[0]
+		return a.campFire[a.campFireTick/campFireTicksPerFrame%len(a.campFire)]
 	}
 	if a.loadCampFire == nil {
 		return nil
@@ -3038,7 +3072,7 @@ func (a *app) campFireImage() *ebiten.Image {
 		return nil
 	}
 	a.campFire = frames
-	return a.campFire[0]
+	return a.campFire[a.campFireTick/campFireTicksPerFrame%len(a.campFire)]
 }
 
 // clearCampFire 換主題時要重畫一次（配色是換主題換的）。

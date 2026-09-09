@@ -121,8 +121,23 @@ func (a *app) screenName() string {
 		// `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`，`camp-rest` 是按下
 		// `REST` 之後那一列。換層只換最下面那一列，不報的話截圖腳本
 		// 只能盲按。
-		if a.campStage == campStageRest {
+		switch a.campStage {
+		case campStageRest:
 			return "camp-rest"
+		case campStageAlter:
+			return "camp-alter"
+		case campStageOrderSelect:
+			return "camp-order-select"
+		case campStageOrderPlace:
+			return "camp-order-place"
+		case campStageSpeed:
+			return "camp-speed"
+		case campStagePics:
+			return "camp-pics"
+		case campStageQuitConfirm:
+			return "camp-quit"
+		case campStageDropConfirm:
+			return "camp-drop"
 		}
 		return "camp"
 	case a.templeActive:
