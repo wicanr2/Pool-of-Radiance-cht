@@ -138,6 +138,8 @@ func (a *app) screenName() string {
 			return "camp-quit"
 		case campStageDropConfirm:
 			return "camp-drop"
+		case campStageIcon:
+			return "camp-icon"
 		}
 		return "camp"
 	case a.templeActive:

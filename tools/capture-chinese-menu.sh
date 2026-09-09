@@ -178,7 +178,9 @@ sleep 0.6
 shot docs/screenshots/pool-remake-chinese-tour.png
 # 導覽是 34 步腳本移動加七頁文字；只有文字那幾頁在等 Return，其餘自己走。
 # 走完才是自由移動，指令列那時才會出現。
-step Return adventure-move 60
+# **一步要等一拍**：原版的一拍是 `Delay(GameSpeed × 225)` 毫秒，預設速度 4
+# 就是 0.9 秒（spec 135），34 步走完要半分鐘——輪數要夠，不然這裡會逾時。
+step Return adventure-move 500
 sleep 0.6
 shot docs/screenshots/pool-remake-chinese-movement.png
 
@@ -255,6 +257,12 @@ step e camp-alter
 step p camp-pics
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-camp-pics.png
+step e camp-alter
+# ICON 對**目前角色**開戰鬥造形編輯器（原版 overlay-16 entry 4，與建角走到
+# 那一步是同一頁）。它是整頁，自己帶選單，所以底下那一列指令不畫。
+step i camp-icon
+sleep 0.5
+shot docs/screenshots/pool-remake-chinese-camp-icon.png
 step e camp-alter
 step e camp
 # `R` 進排時間那一層，指令列再換成 `REST DAYS HOURS MINS INC DEC EXIT`。
@@ -411,6 +419,7 @@ screens = [
     ("pool-remake-chinese-camp-alter.png", "camp, ALTER: order/drop/speed/icon/pics"),
     ("pool-remake-chinese-camp-speed.png", "camp, ALTER, SPEED: the game-speed row"),
     ("pool-remake-chinese-camp-pics.png", "camp, ALTER, PICS: the two picture switches"),
+    ("pool-remake-chinese-camp-icon.png", "camp, ALTER, ICON: the combat-icon editor on a party member"),
     ("pool-remake-chinese-camp-rest.png", "camp, REST: the rest-time row"),
     ("pool-remake-chinese-field-cast.png", "casting outside combat (C on the command bar)"),
     ("pool-remake-chinese-spell-page.png", "the full-page memorised-spell list the caster picks from (spec 134)"),

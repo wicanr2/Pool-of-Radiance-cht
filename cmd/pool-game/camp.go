@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
@@ -51,6 +52,9 @@ const (
 	campStageQuitConfirm
 	// campStageDropConfirm 是 ALTER→DROP 的 ` Drop from party? `。
 	campStageDropConfirm
+	// campStageIcon 是 ALTER→ICON：對目前角色開戰鬥造形編輯器
+	//（原版 overlay-16 entry 4，與建角走到那一步是同一支）。
+	campStageIcon
 )
 
 // campSpeedFastest／campSpeedSlowest 是遊戲速度的兩端。原版把值放在
@@ -131,6 +135,8 @@ func (a *app) campInput() error {
 		return a.campQuitConfirmInput()
 	case campStageDropConfirm:
 		return a.campDropConfirmInput()
+	case campStageIcon:
+		return a.iconMenuInput()
 	}
 	if a.campSelectMember() {
 		return nil
@@ -202,11 +208,60 @@ func (a *app) campAlterInput() error {
 		a.campStage = campStagePics
 		a.campMessage = ""
 	case a.justPressed(ebiten.KeyI):
-		// 原版走 overlay-16 entry 4，對目前角色開戰鬥造形編輯器。
-		// remake 的那一支還綁在建角流程上，還沒接（spec 135 的 OPEN）。
-		a.campMessage = a.text(msgCampCommandUnread)
+		return a.beginCampIconEdit()
 	}
 	return nil
+}
+
+// beginCampIconEdit 對目前角色開戰鬥造形編輯器（原版 overlay-16 entry 4）。
+//
+// 編輯器本身讀寫的是 `creation.Flow`，因為建角那一步就是這樣接的。這裡把
+// 角色身上的四個欄位**載回 flow**、編完再寫回去，離開時把 flow 還原成進來
+// 之前的樣子——冒險途中的 flow 本來就不該有內容，借用它不能留下痕跡。
+//
+// 種族也要一起載回去：`UsesIconSizeMenu` 看的是 flow 的種族，載錯的話
+// 小種族的 `SIZE` 那一項會消失（或反過來冒出來）。
+func (a *app) beginCampIconEdit() error {
+	if a.campMember < 0 || a.campMember >= len(a.state.Party) {
+		return nil
+	}
+	member := a.state.Party[a.campMember]
+	a.campFlowBackup = a.flow
+	a.flow = creation.NewFlow()
+	if _, index, ok := findRaceIndex(member.RaceID); ok {
+		a.flow.RaceIndex = index
+	}
+	a.flow.IconHead, a.flow.IconWeapon = member.IconHead, member.IconWeapon
+	a.flow.IconSize, a.flow.IconColors = member.IconSize, member.IconColors
+	a.flow.Stage = creation.StageIcon
+	a.resetIconMenu()
+	a.campStage = campStageIcon
+	a.campMessage = ""
+	// 載不出造形的圖就只是右邊那兩格空著，選單照樣能用——不要因為缺一張圖
+	// 就讓玩家進不了這一層。
+	if err := a.reloadIcons(); err != nil {
+		a.statusLine = err.Error()
+	}
+	return nil
+}
+
+// finishCampIconEdit 把編好的造形寫回角色，並還原 flow。
+func (a *app) finishCampIconEdit() error {
+	if a.campMember >= 0 && a.campMember < len(a.state.Party) {
+		member := &a.state.Party[a.campMember]
+		member.IconHead, member.IconWeapon = a.flow.IconHead, a.flow.IconWeapon
+		member.IconSize, member.IconColors = a.flow.IconSize, a.flow.IconColors
+		syncTrainedLibraryCharacter(&a.state, *member)
+	}
+	a.flow = a.campFlowBackup
+	a.campFlowBackup = creation.Flow{}
+	a.resetIconMenu()
+	a.campStage = campStageAlter
+	a.campMessage = ""
+	if err := a.reloadIcons(); err != nil {
+		a.statusLine = err.Error()
+	}
+	return a.persistState(a.text(msgCampIconSaved))
 }
 
 // campDropConfirmInput 是 ` Drop from party? `（overlay-15 `1863h`）。

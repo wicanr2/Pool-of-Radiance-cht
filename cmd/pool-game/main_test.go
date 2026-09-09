@@ -734,7 +734,7 @@ func TestBeginAdventureRequiresPartyAndRunsSpec010FirstEvent(t *testing.T) {
 	if err := application.Update(); err != nil || application.tourStep != 0 || application.spawn != event.Tour[0].Position {
 		t.Fatalf("first tour frame step=%d spawn=%+v err=%v", application.tourStep, application.spawn, err)
 	}
-	for tick := 0; tick <= tourStepDelayTicks; tick++ {
+	for tick := 0; tick <= application.speedDelayTicks(); tick++ {
 		if err := application.Update(); err != nil {
 			t.Fatal(err)
 		}

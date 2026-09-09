@@ -40,10 +40,24 @@ import (
 const (
 	logicalWidth  = 640
 	logicalHeight = 400
-	// Spec 011 permits a deterministic approximation for the original DELAY.
-	// Nine 60 Hz updates make each non-dialogue tour frame visible (~150 ms).
-	tourStepDelayTicks = 9
+	// campSpeedDelayMilliseconds 是原版一拍的長度：`Delay(GameSpeed × 225)`
+	//（overlay-37 entry 13 `0C83h` 把 `ds:4943h` 乘上 0E1h 再交給 resident 的
+	// 延遲常式）。ECL 分派器、戰鬥、法術效果、休息都呼叫同一支，所以那就是
+	// 遊戲裡「等一下」的統一單位（spec 135）。
+	//
+	// 這一條取代了原本寫死的九個影格——那時原版的 DELAY 還沒讀出來，
+	// 註解自承是 approximation。現在讀出來了，就照它算。
+	campSpeedDelayMilliseconds = 225
+	// campSpeedDefault 是遊戲速度的初始值，原版在 overlay-11 `03BEh`
+	// 寫 `mov byte ptr ds:4943h, 4`。
+	campSpeedDefault = 4
 )
+
+// speedDelayTicks 是目前速度下「等一拍」有幾個 60 Hz 影格。
+// 速度 0（最快）就是不等。
+func (a *app) speedDelayTicks() int {
+	return int(a.gameSpeed) * campSpeedDelayMilliseconds * 60 / 1000
+}
 
 type screenMode uint8
 
@@ -226,6 +240,8 @@ type app struct {
 	campMember int
 	// campOrderPick 是 `Party Order` 選好、還沒放下的那一個；-1 是還沒選。
 	campOrderPick int
+	// campFlowBackup 是 `ALTER → ICON` 借用 `flow` 之前的樣子。
+	campFlowBackup creation.Flow
 	// gameSpeed 是 `ALTER → SPEED` 的值（原版 `ds:4943h`，0 最快 9 最慢）。
 	// **remake 目前沒有逐字顯示，所以這個值還沒有作用**（spec 135 的 OPEN）。
 	gameSpeed uint8
@@ -376,6 +392,7 @@ func newApp(zipPath, statePath string) (*app, error) {
 		keys:   ebitenKeys{},
 		state:  poolsave.NewState(),
 		campOrderPick: -1,
+		gameSpeed:     campSpeedDefault,
 	}
 	catalog, err := gamepack.ReadDOSGeometryCatalog(zipPath)
 	if err != nil {
@@ -914,7 +931,7 @@ func (a *app) Update() error {
 			}
 			step := a.initialEvent.Tour[a.tourStep]
 			a.spawn = step.Position
-			a.tourDelay = tourStepDelayTicks
+			a.tourDelay = a.speedDelayTicks()
 			if len(step.Messages) != 0 {
 				a.tourPage = 0
 			}
@@ -2481,7 +2498,7 @@ func (a *app) applyECLResult(result eclvm.Result) {
 		}
 		if event.Opcode == 0x3A {
 			a.tourStep++
-			a.tourDelay = tourStepDelayTicks
+			a.tourDelay = a.speedDelayTicks()
 		}
 	}
 	if result.WaitingForMenu {
@@ -2887,6 +2904,15 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.spriteOpen {
 		drawSpriteOverview(screen, a, background, foreground, accent)
 	}
+	if a.campOpen && a.campStage == campStageIcon {
+		// 原版的造形編輯器是整頁（overlay-16 entry 4），不是疊在紮營畫面上的
+		// 小框——與建角走到那一步看到的是同一頁（spec 135）。
+		panel := ebiten.NewImage(logicalWidth-2*guidePanelInset, guidePanelBottom-spellPagePanelTop)
+		panel.Fill(background)
+		screen.DrawImage(panel, &ebiten.DrawImageOptions{
+			GeoM: translated(guidePanelInset, spellPagePanelTop)})
+		drawIconEditor(screen, a, foreground, accent)
+	}
 	// 攻略疊在最上層：它是覆蓋層，不是另一個模式。
 	if a.guideOpen {
 		drawGuide(screen, a, background, foreground, accent)
@@ -3019,6 +3045,38 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 // 選中的那一欄在原版是換色（`05D8h` 把顏色從 0Ah 改成 0Fh），這裡用強調色。
 //
 // 原版的兩行在 native 136..142 與 144..150，也就是對話框的第一、二行。
+// drawIconEditor 畫戰鬥造形編輯器那一頁。建角走到那一步用它，紮營的
+// `ALTER → ICON` 也用它——原版兩處都是 overlay-16 entry 4 同一支（spec 135）。
+func drawIconEditor(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	drawText(screen, a.text(msgIconTitle), 216, 52, accent)
+	drawText(screen, a.iconMenuPath(), 48, 84, accent)
+	for index, option := range a.iconMenuOptions() {
+		prefix, ink := "  ", foreground
+		if index == a.iconMenu.cursor {
+			prefix, ink = "> ", accent
+		}
+		drawText(screen, prefix+a.iconOptionLabel(option.label), 48, 116+index*22, ink)
+	}
+	drawText(screen, a.text(msgIconReady), 356, 88, accent)
+	drawText(screen, a.text(msgIconAction), 472, 88, accent)
+	for index, icon := range []*ebiten.Image{a.iconReady, a.iconAction} {
+		if icon == nil {
+			continue
+		}
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(4, 4)
+		op.GeoM.Translate(float64(340+index*116), 112)
+		screen.DrawImage(icon, op)
+	}
+	size := a.iconOptionLabel("LARGE")
+	if a.flow.IconSize == 1 {
+		size = a.iconOptionLabel("SMALL")
+	}
+	drawText(screen, fmt.Sprintf(a.text(msgIconSummary),
+		a.flow.IconHead, a.flow.IconWeapon, size), 340, 268, foreground)
+	drawText(screen, a.hint("icon"), 48, 332, foreground)
+}
+
 func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	if !a.campOpen {
 		return
@@ -3292,33 +3350,7 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		return
 	}
 	if a.flow.Stage == creation.StageIcon {
-		drawText(screen, a.text(msgIconTitle), 216, 52, accent)
-		drawText(screen, a.iconMenuPath(), 48, 84, accent)
-		for index, option := range a.iconMenuOptions() {
-			prefix, ink := "  ", foreground
-			if index == a.iconMenu.cursor {
-				prefix, ink = "> ", accent
-			}
-			drawText(screen, prefix+a.iconOptionLabel(option.label), 48, 116+index*22, ink)
-		}
-		drawText(screen, a.text(msgIconReady), 356, 88, accent)
-		drawText(screen, a.text(msgIconAction), 472, 88, accent)
-		for index, icon := range []*ebiten.Image{a.iconReady, a.iconAction} {
-			if icon == nil {
-				continue
-			}
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Scale(4, 4)
-			op.GeoM.Translate(float64(340+index*116), 112)
-			screen.DrawImage(icon, op)
-		}
-		size := a.iconOptionLabel("LARGE")
-		if a.flow.IconSize == 1 {
-			size = a.iconOptionLabel("SMALL")
-		}
-		drawText(screen, fmt.Sprintf(a.text(msgIconSummary),
-			a.flow.IconHead, a.flow.IconWeapon, size), 340, 268, foreground)
-		drawText(screen, a.hint("icon"), 48, 332, foreground)
+		drawIconEditor(screen, a, foreground, accent)
 		return
 	}
 	if a.flow.Stage == creation.StageIconConfirm {

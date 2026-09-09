@@ -1,7 +1,7 @@
 # Spec 135：原版紮營畫面的版面
 
-狀態：READY（幾何、營火圖與動畫時序、整棵選單樹、每一層的字串位址）；
-OPEN（`ICON` 那一項、`Breathes A sigh of relief` 的條件）。
+狀態：READY（幾何、營火圖與動畫時序、整棵選單樹、每一層的字串位址、
+`Game Speed` 的公式）；OPEN（`Breathes A sigh of relief` 的條件）。
 日期：2026-09-09。
 
 ## 輸入
@@ -113,6 +113,30 @@ Alter: ORDER DROP SPEED ICON PICS EXIT         前綴 overlay-15 1BE0h，那一�
 `Pos(#0, <結束集合>)` 判斷要不要離開這一層——結束集合就是一個 `#0`
 （overlay-15 `1E11h`／`1BC0h`）。
 
+## `Game Speed` 是遊戲裡「等一拍」的統一單位
+
+`ds:4943h` 不只是紮營畫面上的一個數字——**它是全遊戲延遲的來源**。
+overlay-37 entry 13（`0C83h`）就是那一支：
+
+```
+mov al, ds:4943h    ; 遊戲速度
+xor ah, ah
+mov cx, 0E1h        ; 225
+imul cx
+push ax
+call far 512h:29Eh  ; resident 的 Delay（參數是毫秒）
+```
+
+呼叫它的有 overlay-03（**ECL 分派器**）、overlay-10、12、13（戰鬥）、18（結局）、
+19、20（休息）、22（法術效果）、24、25、32——**導覽每走一步的等待也是它**。
+
+初始值是 **4**（overlay-11 `03BEh` 的 `mov byte ptr ds:4943h, 4`），所以預設
+一拍是 `4 × 225 = 900 ms`。玩家嫌慢就是用 `CAMP → ALTER → SPEED` 調——那正是
+這個選項存在的理由。
+
+另有一支 `× 10`（overlay-37 `059Ch`，條件是 `ds:4961h != 0`），那是更短的一種
+等待，還沒查是哪裡在用。
+
 ## 營火的動畫時序
 
 選單元件等鍵的那個迴圈同時在推動畫（overlay-26 `02A0h` 一帶）：
@@ -186,14 +210,25 @@ Alter: ORDER DROP SPEED ICON PICS EXIT         前綴 overlay-15 1BE0h，那一�
 
 ## remake 現況
 
-整棵樹接好了，除了兩項：
+整棵樹都接好了。
 
-- **`ALTER → ICON` 還沒接。** remake 的戰鬥造形編輯器綁在建角流程上
-  （`a.flow`），要對一個已經在隊伍裡的人開它得先有「把角色的造形選擇載回
-  flow」那條反向路徑。照原版列在那一列上，按下去給一句「還沒接」。
-- **`ALTER → SPEED` 的值存了、也照原版顯示與夾限，但還沒有作用。**
-  原版那個值管的是文字捲動速度，而 remake 的對話框是整頁一次顯示。
+**`ALTER → ICON`** 對目前角色開的就是建角那一頁——原版兩處也是同一支
+（overlay-16 entry 4）。編輯器本身讀寫 `creation.Flow`，所以進去時把角色的
+四個造形欄位**連同種族**載回 flow（`UsesIconSizeMenu` 看的是 flow 的種族，
+載錯的話小種族的 `SIZE` 那一項會消失），離開時寫回角色並把 flow 還原成
+借用之前的樣子。頂層的 `EXIT` 在紮營裡不進「這個造形可以嗎」那一頁——
+那一頁是建角流程的最後一步。
+
+**`ALTER → SPEED`** 現在真的有作用：`speedDelayTicks()` 就是
+`速度 × 225 ms` 換算成 60 Hz 的影格數，導覽每走一步等的就是它。先前那個寫死
+的 `tourStepDelayTicks = 9` 註解自承是 approximation——原版的 DELAY 讀出來
+之後就不需要近似了。**預設 4 是 900 ms，導覽因此比先前慢六倍**，那是原版的
+速度；截圖腳本等導覽走完的輪數要跟著放大。
+
+## OPEN
 
 `ALTER → DROP` 的第三句 ` Breathes A sigh of relief`（overlay-15 `189Ch`）
 在哪個條件下印還沒讀到——remake 目前只用前兩句。角色記錄 `+10Dh` 讀成
 「還活著」是**推論**，還沒逐位元組確認。
+
+overlay-37 `059Ch` 那一支 `速度 × 10` 的短等待是誰在用還沒查。

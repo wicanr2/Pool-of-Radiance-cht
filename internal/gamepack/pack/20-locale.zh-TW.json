@@ -39,6 +39,7 @@
       "ui.campDropWillBeGone": " 就要離隊了",
       "ui.campHealedBy": "全隊回復了：每人 +%d 點生命力。",
       "ui.campHealedOnly": "整隊都治好了。",
+      "ui.campIconSaved": "戰鬥造形改好了。",
       "ui.campIndicator": "紮營中",
       "ui.campMakesCamp": "隊伍紮下營來……",
       "ui.campNeedsParty": "先有隊伍才紮得了營。",

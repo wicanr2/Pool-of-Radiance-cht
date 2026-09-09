@@ -39,6 +39,7 @@
       "ui.campDropWillBeGone": " will be gone",
       "ui.campHealedBy": "The whole party is healed: +%d HP each.",
       "ui.campHealedOnly": "The whole party is healed.",
+      "ui.campIconSaved": "The combat icon has been changed.",
       "ui.campIndicator": "CAMPING",
       "ui.campMakesCamp": "The party makes camp...",
       "ui.campNeedsParty": "Make camp with a party first.",

@@ -164,6 +164,11 @@ func (a *app) chooseIconMenu(label string) error {
 		case "SIZE":
 			state.level, state.cursor, state.restore = iconMenuSize, 0, a.flow.IconSize
 		case "EXIT":
+			// 紮營裡編的話沒有「這個造形可以嗎」那一頁——那一頁是建角流程
+			// 的最後一步。這裡直接把改好的寫回角色（spec 135）。
+			if a.campOpen && a.campStage == campStageIcon {
+				return a.finishCampIconEdit()
+			}
 			return a.flow.RequestIconConfirmation()
 		}
 		return nil

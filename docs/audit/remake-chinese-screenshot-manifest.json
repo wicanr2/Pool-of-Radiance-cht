@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
   "captured_at": "2026-09-09",
-  "source_commit": "2a946f93b13a4d3abcc1de63a4ede5b329c3f100",
+  "source_commit": "2ee4dd4a14d0b114de733c0423e8b11229171c12",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
   "state_relation": "normal-remake-player-path with -lang zh, stepped by the game's own -screen-state identifiers: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "12506da252575383cee07bcedb06de50577614ce1690076307e1270f881275b6",
+      "sha256": "cde1f21bcecf70ca6c80a860dee42af7baed4cf131222a0cd19fe060f59bced3",
       "width": 960,
       "height": 600,
       "screen": "character sheet, keep-or-reroll prompt"
@@ -82,21 +82,21 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tour.png",
-      "sha256": "0dba8dd81d4254a3d68410160d2968a9970461bc6cb9b203c93ed97eaf531806",
+      "sha256": "b800ba0e7d4679362f3e9e10fd445c84c1520649f66d53ad2864b045d776fa32",
       "width": 960,
       "height": 600,
       "screen": "first page of the Rolf guided tour"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-movement.png",
-      "sha256": "250229588de08a1b1454ff9dcc6aa6e43b0a961dcebd1ba3a646a0294b3dee0d",
+      "sha256": "7aa6b9e4227825cc20a1ec371906fe1a53ada9cac7f4d7e027ac1a3be3df4c2b",
       "width": 960,
       "height": 600,
       "screen": "free movement after the tour reaches its ECL exit"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-map.png",
-      "sha256": "85d1f2196bc7b14e120d82a7534dfd5bd13d7ec6e546307e41c6e59493a76906",
+      "sha256": "c32388cdea3746b4a1f8497d0d3b3a8ea5e469223bc42065745e56b47e573008",
       "width": 960,
       "height": 600,
       "screen": "area map"
@@ -145,42 +145,49 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-camp.png",
-      "sha256": "99f74f3ef49d0f691a1226a84f237938cf22d9320d0258bc78cbf08bc7f64f1f",
+      "sha256": "77e05ead963c41375ed402f45ad8bed9747841d1856526dd34c5248fcd9dd2dd",
       "width": 960,
       "height": 600,
       "screen": "camp: the view becomes a fire, the command bar becomes CAMP:"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-camp-alter.png",
-      "sha256": "f0e3423b45f8e5c1fa581dab807eccdc5610cffdb4246b34be1a4fc922e7c548",
+      "sha256": "af133fc3a6ed7ad6ad8422a83a35129324abff6bf7b471303d1c38528e618d2d",
       "width": 960,
       "height": 600,
       "screen": "camp, ALTER: order/drop/speed/icon/pics"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-camp-speed.png",
-      "sha256": "f00deb92e8f0b112c5f5593f33788409b9c3ee37a75e2611e532885e321734bd",
+      "sha256": "092269e6fc2dc79c0a9656aa875830a951deadbc39596e6903bafe0e623b92b3",
       "width": 960,
       "height": 600,
       "screen": "camp, ALTER, SPEED: the game-speed row"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-camp-pics.png",
-      "sha256": "712c7ab3b2c09074c944e8fb6d8f55c5b72779c5a03a6cd00d40d0d28af9ef53",
+      "sha256": "333833ad3665755fd0fd3e9536fe1230deabb12d6fec8d2cdcb7955e1936458a",
       "width": 960,
       "height": 600,
       "screen": "camp, ALTER, PICS: the two picture switches"
     },
     {
+      "path": "docs/screenshots/pool-remake-chinese-camp-icon.png",
+      "sha256": "16599ea0df7d78ffda67ff366a120d5ce83ccb39a963cb6e1e7a8d4e7d01b945",
+      "width": 960,
+      "height": 600,
+      "screen": "camp, ALTER, ICON: the combat-icon editor on a party member"
+    },
+    {
       "path": "docs/screenshots/pool-remake-chinese-camp-rest.png",
-      "sha256": "f6823332bc1c6c85b5c9748335e9cc65913f312dfdd533d4237b8f58afefb0f6",
+      "sha256": "d94cc100840131c83d060ebd6105b2909c32a95ac2e54bc301a5e87284a6846a",
       "width": 960,
       "height": 600,
       "screen": "camp, REST: the rest-time row"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-field-cast.png",
-      "sha256": "e4a4a08d6613e002888cd3c8848dc0f8b8bee9331c03d68f9605f8bde16a33cc",
+      "sha256": "95a9e6550d0de71bc9bf0554254d2ff91207d6ce792dc67db61fdb96b56ec54c",
       "width": 960,
       "height": 600,
       "screen": "casting outside combat (C on the command bar)"
@@ -194,7 +201,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-view-sheet.png",
-      "sha256": "c6c60fe3d40e95ee6ff5dc7ff83f9e7f9ad42031158afc73edfce6f027e86572",
+      "sha256": "33959e25b539f2baec283410d51a15cd57fe402ed99c5c03761fc161c62f17d5",
       "width": 960,
       "height": 600,
       "screen": "a party member's sheet from the command bar (V)"
@@ -208,21 +215,21 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-monsters.png",
-      "sha256": "b5907a5708e06fff8a0d0975cd1542fad1a09bdc4729dcdd697dcb1c4339d1f1",
+      "sha256": "8a12de2c635acdbc96f87e2bb2459d195082e87f2ec5a21857b3f0dee5a0ed8e",
       "width": 960,
       "height": 600,
       "screen": "board icons (F4, TAB): the 32 bodies monsters and characters share"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-effects.png",
-      "sha256": "e7c076763f2dceeafb6bf14c349a0f999bda376d4ff5ecb30ef847b19b4dfb4d",
+      "sha256": "a8a312df79b7c7153821eb58be06d24ddc40582a0b685d980cfc8f3de6f2497a",
       "width": 960,
       "height": 600,
       "screen": "combat effects (F4, TAB twice): missiles and blasts from COMSPR.DAX"
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-terrain.png",
-      "sha256": "d237cadc082872d9a4a946850d3f38686ea27b1909d34368c971f32917ab1322",
+      "sha256": "1cf9f12156f575f8f6456b2dffc202448a25d0da4944d7cc3a48937b1d9e6b74",
       "width": 960,
       "height": 600,
       "screen": "combat terrain tiles (F4, TAB three times): DUNGCOM/WILDCOM/RANDCOM"
@@ -243,7 +250,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-journal-cue.png",
-      "sha256": "afe483f0812338b9bb4c176f44a491b13d7b97ec0ae580529b9737ebd7ac7772",
+      "sha256": "562aa85f31a994a028b941247b780faf8f89d52a68a2d058a7ab04e557113742",
       "width": 960,
       "height": 600,
       "screen": "the City Hall wall cites four proclamations; ENTER opens the journal there"
@@ -257,7 +264,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-tactical.png",
-      "sha256": "e8f2e0f26e5ee9a2b12b300ff73de672d2531bb5d7b2ab672c5c0240d6d3d131",
+      "sha256": "4e794c30b722ef3f3246d121815e6273e7c7003393e3e674c288e07da0d1a047",
       "width": 960,
       "height": 600,
       "screen": "tactical board (F5)"

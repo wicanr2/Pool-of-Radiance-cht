@@ -210,6 +210,17 @@ func findRace(id string) (creation.Race, bool) {
 	return creation.Race{}, false
 }
 
+// findRaceIndex 另外回傳它在 `creation.Races` 裡的位置——`Flow.RaceIndex`
+// 要的是索引，而角色記錄存的是 ID。
+func findRaceIndex(id string) (creation.Race, int, bool) {
+	for index, race := range creation.Races {
+		if race.ID == id {
+			return race, index, true
+		}
+	}
+	return creation.Race{}, 0, false
+}
+
 func findGender(id string) (creation.Gender, bool) {
 	for _, gender := range creation.Genders {
 		if gender.ID == id {

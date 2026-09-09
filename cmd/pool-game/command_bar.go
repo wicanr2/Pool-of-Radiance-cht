@@ -264,6 +264,9 @@ func (a *app) commandBarList() []string {
 	case campStageQuitConfirm, campStageDropConfirm:
 		// 問句那兩層原版沒有指令列，只有對話框裡的問句。
 		return nil
+	case campStageIcon:
+		// 造形編輯器是整頁，自己帶選單。
+		return nil
 	}
 	return campCommands
 }

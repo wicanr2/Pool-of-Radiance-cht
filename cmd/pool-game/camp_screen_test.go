@@ -181,3 +181,63 @@ func TestCampStageNames(t *testing.T) {
 		}
 	}
 }
+
+// 遊戲速度是原版的一拍：`Delay(GameSpeed × 225)` 毫秒
+//（overlay-37 entry 13，spec 135）。預設 4 是 overlay-11 `03BEh` 寫的。
+func TestSpeedDelayFollowsTheOriginalFormula(t *testing.T) {
+	if campSpeedDefault != 4 {
+		t.Errorf("預設速度是 %d，原版寫的是 4", campSpeedDefault)
+	}
+	if campSpeedDelayMilliseconds != 225 {
+		t.Errorf("一拍是 %d ms，原版乘的是 0E1h ＝ 225", campSpeedDelayMilliseconds)
+	}
+	application := &app{}
+	for speed, want := range map[uint8]int{0: 0, 1: 13, 4: 54, 9: 121} {
+		application.gameSpeed = speed
+		if got := application.speedDelayTicks(); got != want {
+			t.Errorf("速度 %d 等 %d 個影格，%d ms 換算是 %d",
+				speed, got, int(speed)*225, want)
+		}
+	}
+}
+
+// `ALTER → ICON` 把角色的造形載回 flow、編完寫回去，而且不留痕跡。
+func TestCampIconEditRoundTrips(t *testing.T) {
+	application := &app{mode: modeAdventure, campOpen: true, campStage: campStageAlter}
+	application.state.Party = []poolsave.Character{{
+		Name: "HERO", RaceID: "human",
+		IconHead: 3, IconWeapon: 5, IconSize: 2,
+		IconColors: [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}},
+	}}
+	application.state.CharacterLibrary = append(application.state.CharacterLibrary,
+		application.state.Party[0])
+	before := application.flow
+	if err := application.beginCampIconEdit(); err != nil {
+		t.Fatalf("開造形編輯器：%v", err)
+	}
+	if application.campStage != campStageIcon {
+		t.Fatal("沒有進造形那一層")
+	}
+	if application.flow.IconHead != 3 || application.flow.IconWeapon != 5 {
+		t.Errorf("載回 flow 的是 head=%d weapon=%d，角色身上是 3／5",
+			application.flow.IconHead, application.flow.IconWeapon)
+	}
+	// 種族也要載回去，`SIZE` 那一項看的是它。
+	if application.flow.SelectedRace().ID != "human" {
+		t.Errorf("flow 的種族是 %s，角色是 human", application.flow.SelectedRace().ID)
+	}
+	application.flow.IconHead, application.flow.IconWeapon = 7, 9
+	if err := application.finishCampIconEdit(); err != nil {
+		t.Fatalf("收掉造形編輯器：%v", err)
+	}
+	if application.campStage != campStageAlter {
+		t.Error("收掉之後應該回到 ALTER 那一層")
+	}
+	if got := application.state.Party[0]; got.IconHead != 7 || got.IconWeapon != 9 {
+		t.Errorf("寫回角色的是 head=%d weapon=%d，改成的是 7／9",
+			got.IconHead, got.IconWeapon)
+	}
+	if application.flow != before {
+		t.Error("借用完的 flow 沒有還原")
+	}
+}
