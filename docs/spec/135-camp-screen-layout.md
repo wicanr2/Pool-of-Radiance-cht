@@ -1,7 +1,7 @@
 # Spec 135：原版紮營畫面的版面
 
 狀態：READY（幾何、營火圖與動畫時序、整棵選單樹、每一層的字串位址、
-`Game Speed` 的公式）；OPEN（`Breathes A sigh of relief` 的條件）。
+`Game Speed` 的公式）。
 日期：2026-09-09。
 
 ## 輸入
@@ -95,6 +95,7 @@ Alter: ORDER DROP SPEED ICON PICS EXIT         前綴 overlay-15 1BE0h，那一�
       否則印 `<名字> will be gone`（1856h）再問 ` Drop from party? `（1863h）
       丟完依角色記錄 `+10Dh` 換收尾：非 0 是 ` bids you farewell`（1875h），
       0 是 ` is dumped in a ditch`（1887h）
+      **答否**（`19DAh`）印的是第三句 ` Breathes A sigh of relief`（189Ch）
   S   Game Speed（overlay-15 1A67h）
       上面一行是 `Game Speed = ` ＋ 值 ＋ ` (0=fastest 9=slowest)`（1A00h／1A0Eh），
       值在 ds:4943h；那一列是組出來的——**值是 0 就不列 ` Faster`、是 9 就不列
@@ -227,8 +228,7 @@ call far 512h:29Eh  ; resident 的 Delay（參數是毫秒）
 
 ## OPEN
 
-`ALTER → DROP` 的第三句 ` Breathes A sigh of relief`（overlay-15 `189Ch`）
-在哪個條件下印還沒讀到——remake 目前只用前兩句。角色記錄 `+10Dh` 讀成
-「還活著」是**推論**，還沒逐位元組確認。
+角色記錄 `+10Dh`（換 ` bids you farewell` 還是 ` is dumped in a ditch`）
+讀成「還活著」是**推論**，還沒逐位元組確認。
 
 overlay-37 `059Ch` 那一支 `速度 × 10` 的短等待是誰在用還沒查。

@@ -654,6 +654,7 @@ const (
 	msgCampDropWillBeGone
 	msgCampDropFarewell
 	msgCampDropDitch
+	msgCampDropRelief
 	msgCampIconSaved
 )
 

@@ -53,6 +53,7 @@ var messageKeys = map[messageID]string{
 	msgCampDropWillBeGone: "ui.campDropWillBeGone",
 	msgCampDropFarewell: "ui.campDropFarewell",
 	msgCampDropDitch: "ui.campDropDitch",
+	msgCampDropRelief: "ui.campDropRelief",
 	msgCampIconSaved: "ui.campIconSaved",
 	msgCampRestTime: "ui.campRestTime",
 	msgCampRestTooShort: "ui.campRestTooShort",

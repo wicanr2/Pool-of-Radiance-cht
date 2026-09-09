@@ -291,8 +291,10 @@ func (a *app) campDropConfirmInput() error {
 		}
 	case a.justPressed(ebiten.KeyN), a.justPressed(ebiten.KeyEscape),
 		a.justPressed(ebiten.KeyEnter):
+		// 答否是第三句：`<名字> Breathes A sigh of relief`
+		//（overlay-15 `189Ch`，`19DAh` 那一支就是 `cmp al, 'Y'` 沒中時跳去的）。
 		a.campStage = campStageAlter
-		a.campMessage = ""
+		a.campMessage = a.campMemberName() + a.text(msgCampDropRelief)
 	}
 	return nil
 }

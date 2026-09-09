@@ -36,6 +36,7 @@
       "ui.campCurrentMember": "目前角色：%s",
       "ui.campDropDitch": " 被丟進了溝裡",
       "ui.campDropFarewell": " 向你們道別",
+      "ui.campDropRelief": " 鬆了一口氣",
       "ui.campDropWillBeGone": " 就要離隊了",
       "ui.campHealedBy": "全隊回復了：每人 +%d 點生命力。",
       "ui.campHealedOnly": "整隊都治好了。",

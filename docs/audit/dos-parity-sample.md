@@ -155,6 +155,39 @@ remake 先前從邏輯 20 起。
 判讀時要分開看：那三張只在**差十個像素以上**時才值得追，其餘十一張差一個
 像素就要查。
 
+## 市政廳外那一格（2026-09-09 走到的）
+
+鍵序（`tools/dosgolem-reference.sh` 的 `POOL_DOSGOLEM_KEYS`，輸出用
+`POOL_DOSGOLEM_OUT` 另外指一個目錄）：
+
+```
+rep:9:Space,Return,Return,c,rep:5:End,Return,Return,Return,Return,Return,
+Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:18:Return,
+Right,Right,Up,Up,Up,rep:6:Return
+```
+
+導覽結束在 `(0,4)` 朝西，右轉兩次朝東再往前三步就是 `(3,4)`。原版在那裡
+分兩段：
+
+1. `YOU ARE OUTSIDE THE CITY HALL. THE CITY CLERK WAITS INSIDE TO AWARD
+   COMMISSIONS.`，底下是 `PRESS <ENTER>/<RETURN> TO CONTINUE`。
+2. 按 Return 之後換成 `PROCLAMATIONS ARE POSTED ON THE WALLS. IN YOUR
+   JOURNAL YOU NOTE PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX.`，
+   **底下換成指令列 `AREA CAST VIEW ENCAMP SEARCH LOOK`**。
+
+remake 的第一段一致；第二段的**底下那一列不是指令列**，而是 spec 132 的
+「ENTER 翻到議會公告」提示。差異有兩層：
+
+- 提示畫在框外那一列（`footerBaseline`），把指令列擠掉了。
+- 更根本的是**事件在第二段就已經結束了**：原版底下是指令列，表示玩家那時
+  已經可以直接走開；remake 仍停在 `cellEventPending`，要再按一次 Return。
+
+第一段兩邊都等 Return，所以不是「remake 多等一次」而是「remake 少結束一次」。
+那一格的 ECL 結構還沒讀，先記在 `WORKLIST.md`。
+
+**四個公告字號 remake 是對的**：低解析度縮圖上最後一個看起來像 `CXX`，
+把原版那一塊放大六倍看是 `LIX.`——縮圖不能拿來讀字。
+
 ## 下一步
 
 dosgolem 的鍵序再往下走到商店、神殿與結局，把那幾張加進抽樣。

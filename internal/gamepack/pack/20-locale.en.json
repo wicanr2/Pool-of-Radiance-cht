@@ -36,6 +36,7 @@
       "ui.campCurrentMember": "Current character: %s",
       "ui.campDropDitch": " is dumped in a ditch",
       "ui.campDropFarewell": " bids you farewell",
+      "ui.campDropRelief": " Breathes A sigh of relief",
       "ui.campDropWillBeGone": " will be gone",
       "ui.campHealedBy": "The whole party is healed: +%d HP each.",
       "ui.campHealedOnly": "The whole party is healed.",
