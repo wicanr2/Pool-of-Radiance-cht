@@ -236,16 +236,22 @@ shot docs/screenshots/pool-remake-chinese-memorise.png
 # 再按兩次 V 攤開（第一次只出警告）拍完整的那一張。
 # C 是探索畫面的施法（spec 119）：挑人 → 挑法術 → 挑目標。
 step k adventure-move
-# 紮營休息兩小時。祝福術是第 1 級，記完要一小時（overlay-20 entry 15 每小時
+# 紮營。原版按 `E` 不彈選單：視野換成營火、指令列換成
+# `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`（spec 135）。
+step e camp
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-camp.png
+# `R` 進排時間那一層，指令列再換成 `REST DAYS HOURS MINS INC DEC EXIT`。
+step r camp-rest
+sleep 0.4
+shot docs/screenshots/pool-remake-chinese-camp-rest.png
+# 休息兩小時。祝福術是第 1 級，記完要一小時（overlay-20 entry 15 每小時
 # 把記錄 `+2Ch` 減一，spec 114）；多排一小時是留餘裕，不是規則。
 # `H` 選到小時欄、`I` 加一、`R` 開始休息——休息完自己回到自由移動。
-step e camp
-sleep 0.3
 pulse h
 pulse i
 pulse i
 sleep 0.3
-shot docs/screenshots/pool-remake-chinese-camp.png
 pulse r
 await adventure-move 60
 sleep 0.4
@@ -385,7 +391,8 @@ screens = [
     ("pool-remake-chinese-equipment.png", "equipment screen, empty pack"),
     ("pool-remake-chinese-spells.png", "spell list, magic-user level 1"),
     ("pool-remake-chinese-memorise.png", "spell list, cleric level 1, after M memorises Bless"),
-    ("pool-remake-chinese-camp.png", "camp menu with two hours of rest queued"),
+    ("pool-remake-chinese-camp.png", "camp: the view becomes a fire, the command bar becomes CAMP:"),
+    ("pool-remake-chinese-camp-rest.png", "camp, REST: the rest-time row"),
     ("pool-remake-chinese-field-cast.png", "casting outside combat (C on the command bar)"),
     ("pool-remake-chinese-spell-page.png", "the full-page memorised-spell list the caster picks from (spec 134)"),
     ("pool-remake-chinese-view-sheet.png", "a party member's sheet from the command bar (V)"),

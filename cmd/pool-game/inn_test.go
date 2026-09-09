@@ -90,6 +90,13 @@ func TestTheInnChargesAPlatinumAndOpensCamp(t *testing.T) {
 	// 休息：說明書 p.31 對旅店的保證是「絕對安全而且不會有人中途打擾」與
 	// 「你高興休息到什麼時候就待到什麼時候」——**不是自動回滿**。回血一樣是
 	// 每二十四小時一點（spec 114），所以要挑夠長的時間。
+	// 紮營有兩層（spec 135）：`R` 先進排時間那一層。
+	if err := press(application, ebiten.KeyR); err != nil {
+		t.Fatalf("進排時間那一層：%v", err)
+	}
+	if application.campStage != campStageRest {
+		t.Fatal("按 R 沒有進排時間那一層")
+	}
 	missing := application.state.Party[0].MaxHP - application.state.Party[0].CurrentHP
 	for day := 0; day < missing; day++ {
 		if err := press(application, ebiten.KeyY); err != nil {

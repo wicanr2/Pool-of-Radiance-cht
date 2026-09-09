@@ -583,21 +583,31 @@ const (
 	msgAimOutOfRange
 	msgAimBlocked
 	msgCampNeedsParty
-	msgCampRest
-	msgCampMemorise
-	msgCampExit
-	msgCampTitle
-	msgCampHint
 	msgCampRested
 	msgCampHealedOnly
-	msgCampPending
-	msgCampNothingPending
 	// 紮營的休息時間（spec 114）。原版的選單列是
 	// `Rest   daYs Hours Mins   Inc Dec   Exit`（overlay-20 `069Fh`）。
 	msgCampRestTime
-	msgCampRestKeys
 	msgCampRestTooShort
 	msgCampHealedBy
+	// 紮營那兩列指令與對話框那一行（spec 135）。原版的字串是
+	// `DS:051Bh` 的 `Save View Magic Rest Alter Exit`、overlay-20 `0698h` 的
+	// `Rest   daYs Hours Mins   Inc Dec   Exit`、overlay-15 `1E31h` 的
+	// `Camp: ` 與 `1E03h` 的 `The party makes camp...`。
+	msgCampCommandPrefix
+	msgCampCommandSave
+	msgCampCommandMagic
+	msgCampCommandRest
+	msgCampCommandAlter
+	msgCampCommandExit
+	msgCampCommandDays
+	msgCampCommandHours
+	msgCampCommandMins
+	msgCampCommandInc
+	msgCampCommandDec
+	msgCampCommandUnread
+	msgCampMakesCamp
+	msgCampIndicator
 	msgDamageHit
 	msgDamageDies
 	msgDamageSaved

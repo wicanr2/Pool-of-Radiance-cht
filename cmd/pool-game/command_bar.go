@@ -40,7 +40,13 @@ func (a *app) adventureCommandList() []string {
 
 // searchIndicator 是狀態列後面那一段。說明書 p.20 的狀態列範例是
 // `15,4 N 12:33 SEARCH`——邊走邊搜開著的時候才有。
+//
+// 紮營的時候接的是另一個字：原版在 overlay-25 `2931h`／`2939h` 放著
+// ` camping` 與 ` search` 兩個（spec 135），時鐘行後面接哪一個看狀態。
 func (a *app) searchIndicator() string {
+	if a.campOpen {
+		return " " + a.text(msgCampIndicator)
+	}
 	if a.searchFlags&SearchWhileWalkingBit == 0 {
 		return ""
 	}
@@ -97,29 +103,61 @@ func (a *app) adventureCommandInput() (bool, error) {
 	return false, nil
 }
 
-// drawCommandBar 畫那一列，每個字的首字母用強調色——原版就是這樣標可按的鍵。
+// drawCommandBar 畫那一列，可按的那個字母用強調色。
+//
+// **高亮的是「大寫的那個字母」，不是第一個字母。** 原版的字型只有大寫字模，
+// 所以字串本身是混合大小寫、顯示出來全大寫，而大小寫決定顏色：
+// `Area Cast View Encamp Search Look` 的大寫剛好都在字首，但紮營那一列的
+// `Rest   daYs Hours Mins   Inc Dec   Exit` 不是——`daYs` 高亮的是第三個字母
+//（原版 native 量到的就是格 7、8 綠、格 9 白、格 10 綠，spec 135）。
 func drawCommandBar(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	// 基線是 `footerBaseline`：外框下緣那一列 tile（邏輯 y 368..383，
 	// spec 123）**下面**那一條，與原版同一個位置。
 	// 從畫面最左邊起，跟原版一樣（量到的起點是 native x 0..1，
 	// 也就是邏輯 0..2）。那一列在框外面，不受框的內縮限制。
 	x := 0
-	for _, command := range a.adventureCommandList() {
+	if prefix := a.commandBarPrefix(); prefix != "" {
+		drawText(screen, prefix, x, footerBaseline, a.commandPrefixInk(accent))
+		x += font.MeasureString(uiFace, displayText(prefix)).Ceil()
+	}
+	for _, command := range a.commandBarList() {
 		label := a.commandLabel(command)
-		// **按 rune 切，不是按位元組。** 中文標籤第一個 byte 切下去會切在
-		// UTF-8 的中間，畫出來是亂碼。原版那一列本來就是「首字母選擇」
-		// （說明書 p.21），所以第一個字元用強調色，其餘用前景色。
-		key := []rune(label)
-		if len(key) == 0 {
+		if label == "" {
 			continue
 		}
-		head, rest := string(key[:1]), string(key[1:])
-		drawText(screen, head, x, footerBaseline, accent)
-		headWidth := font.MeasureString(uiFace, displayText(head)).Ceil()
-		drawText(screen, rest, x+headWidth, footerBaseline, foreground)
+		before, key, after := splitCommandKey(label)
+		// **推進用整串的寬度，不是三段各自 Ceil 的和。** 每一段各自向上取整
+		// 會多出一兩個像素，一列六個指令累積起來就把整列往右推——對拍上是
+		// 十個像素的無聲退步。
+		beforeWidth := font.MeasureString(uiFace, displayText(before)).Ceil()
+		keyWidth := font.MeasureString(uiFace, displayText(key)).Ceil()
+		if before != "" {
+			drawText(screen, before, x, footerBaseline, foreground)
+		}
+		drawText(screen, key, x+beforeWidth, footerBaseline, accent)
+		if after != "" {
+			drawText(screen, after, x+beforeWidth+keyWidth, footerBaseline, foreground)
+		}
 		// 間距一格。寬度要量出來——中文字是兩格寬，用 len() 會算錯。
 		x += font.MeasureString(uiFace, displayText(label)).Ceil() + commandGlyphWidth
 	}
+}
+
+// splitCommandKey 把一個標籤切成「鍵之前／鍵／鍵之後」三段。
+//
+// **按 rune 切，不是按位元組**：中文標籤從位元組中間切下去會切在 UTF-8 的
+// 中間，畫出來是亂碼。找的是第一個大寫 ASCII 字母；沒有（純中文標籤）就退回
+// 第一個字元，那與舊行為相同。
+func splitCommandKey(label string) (before, key, after string) {
+	runes := []rune(label)
+	index := 0
+	for position, value := range runes {
+		if value >= 'A' && value <= 'Z' {
+			index = position
+			break
+		}
+	}
+	return string(runes[:index]), string(runes[index : index+1]), string(runes[index+1:])
 }
 
 // commandLabel 取這一個指令在目前語言下的字樣。
@@ -146,7 +184,50 @@ var commandMessages = map[string]messageID{
 	"ENCAMP": msgCommandEncamp,
 	"SEARCH": msgCommandSearch,
 	"LOOK":   msgCommandLook,
+	"SAVE":   msgCampCommandSave,
+	"MAGIC":  msgCampCommandMagic,
+	"REST":   msgCampCommandRest,
+	"ALTER":  msgCampCommandAlter,
+	"EXIT":   msgCampCommandExit,
+	"DAYS":   msgCampCommandDays,
+	"HOURS":  msgCampCommandHours,
+	"MINS":   msgCampCommandMins,
+	"INC":    msgCampCommandInc,
+	"DEC":    msgCampCommandDec,
 }
+
+// 紮營的兩列指令（spec 135）。原版的字串是 `DS:051Bh` 的
+// `Save View Magic Rest Alter Exit` 與 overlay-20 `0698h` 的
+// `Rest   daYs Hours Mins   Inc Dec   Exit`，前綴 `Camp: ` 在
+// overlay-15 `1E31h`。
+var (
+	campCommands     = []string{"SAVE", "VIEW", "MAGIC", "REST", "ALTER", "EXIT"}
+	campRestCommands = []string{"REST", "DAYS", "HOURS", "MINS", "INC", "DEC", "EXIT"}
+)
+
+// commandBarList 是現在該畫哪一列。
+func (a *app) commandBarList() []string {
+	if !a.campOpen {
+		return a.adventureCommandList()
+	}
+	if a.campStage == campStageRest {
+		return campRestCommands
+	}
+	return campCommands
+}
+
+// commandBarPrefix 是那一列前面的字。只有紮營的第一層有（`Camp: `）；
+// 排時間那一層原版是從畫面最左邊直接排 `Rest`，沒有前綴。
+func (a *app) commandBarPrefix() string {
+	if !a.campOpen || a.campStage == campStageRest {
+		return ""
+	}
+	return a.text(msgCampCommandPrefix)
+}
+
+// commandPrefixInk 是前綴的顏色。原版用第三種色（色號 13），與可按的字母
+//（15）和其餘（10）都不同；remake 沒有第三個語意色，用強調色。
+func (a *app) commandPrefixInk(accent color.Color) color.Color { return accent }
 
 // commandGlyphWidth 是等寬字的一格。倚天與退路字型的半形都是這個寬度。
 const commandGlyphWidth = 8

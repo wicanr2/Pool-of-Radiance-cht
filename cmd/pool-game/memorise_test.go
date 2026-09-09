@@ -312,7 +312,13 @@ func TestMemorisedSpellsNeedRestBeforeCasting(t *testing.T) {
 	application.mode = modeAdventure
 	press(application, ebiten.KeyE)
 	if !application.campOpen {
-		t.Fatalf("按 E 沒有開出紮營選單（狀態列 %q）", application.statusLine)
+		t.Fatalf("按 E 沒有進紮營（狀態列 %q）", application.statusLine)
+	}
+	// 紮營有兩層（spec 135）：第一層是 `CAMP: SAVE VIEW MAGIC REST ALTER
+	// EXIT`，`R` 進第二層才排得了時間。
+	press(application, ebiten.KeyR)
+	if application.campStage != campStageRest {
+		t.Fatal("按 R 沒有進排時間那一層")
 	}
 	missing := application.state.Party[0].MaxHP - application.state.Party[0].CurrentHP
 	for day := 0; day < missing; day++ {
@@ -321,7 +327,7 @@ func TestMemorisedSpellsNeedRestBeforeCasting(t *testing.T) {
 	}
 	press(application, ebiten.KeyR) // R）EST
 	if application.campOpen {
-		t.Fatal("休息完應該關掉紮營選單")
+		t.Fatal("休息完應該離開紮營")
 	}
 	rested := application.state.Party[0]
 	if !gamepack.MemorisedSpellIsReady(rested.Memorised[0]) {

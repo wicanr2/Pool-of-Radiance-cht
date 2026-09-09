@@ -217,9 +217,15 @@ type app struct {
 	menuDropPending bool
 	// spellMember 是法術畫面上選中的成員，記憶指令對他生效。
 	spellMember int
-	// 紮營選單（原版 overlay-20）。
-	campOpen   bool
-	campCursor int
+	// 紮營（原版 overlay-15 的畫面 ＋ overlay-20 的時間，spec 135）。
+	// 那不是彈出選單，是把視野換成營火、指令列換成另一列。
+	campOpen  bool
+	campStage campStage
+	// campMessage 是對話框那一行（`The party makes camp...`）。
+	campMessage string
+	// campFire 是營火動畫的兩張（`PIC<區號>.DAX` 區塊 29）。
+	campFire     []*ebiten.Image
+	loadCampFire func(archive uint8) ([]*ebiten.Image, error)
 	// 紮營要玩家挑的休息時間（spec 114）。原版的欄位是天／時／分，
 	// 分鐘一次五分；`restField` 是目前選中的那一欄。
 	restDuration gamepack.RestDuration
@@ -529,6 +535,21 @@ func newApp(zipPath, statePath string) (*app, error) {
 			return nil, err
 		}
 		return ebiten.NewImageFromImage(rendered), nil
+	}
+	application.loadCampFire = func(archive uint8) ([]*ebiten.Image, error) {
+		frames, err := assets.ReadCampFire(zipPath, archive)
+		if err != nil {
+			return nil, err
+		}
+		result := make([]*ebiten.Image, 0, len(frames))
+		for _, frame := range frames {
+			rendered, err := frame.RGBA(0, application.artPalette())
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, ebiten.NewImageFromImage(rendered))
+		}
+		return result, nil
 	}
 	application.loadNPCPortrait = func(archive, head, body uint8) (*ebiten.Image, error) {
 		picture, err := assets.ReadNPCPortrait(zipPath, archive, head, body)
@@ -2882,6 +2903,17 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		a.showDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
 		return
 	}
+	// 紮營的時候原版把那一框換成營火（spec 135）。與 APPROACH 一樣只換左邊
+	// 那一框，右邊的隊伍面板與時鐘照畫。
+	if fire := a.campFireImage(); fire != nil {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(2, 2)
+		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
+		screen.DrawImage(fire, op)
+		drawPartyPanel(screen, a, foreground, accent)
+		drawCamp(screen, a, foreground, accent)
+		return
+	}
 	// APPROACH 的時候原版把半身像整個蓋在那一框上，不是畫視野（spec 117）。
 	if portrait := a.approachPortrait(); portrait != nil {
 		op := &ebiten.DrawImageOptions{}
@@ -2959,25 +2991,58 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	drawCamp(screen, a, foreground, accent)
 }
 
-// drawCamp 畫紮營選單。原版的選單列是 `Rest daYs Hours Mins Inc Dec Exit`
-//（overlay-20 `069Fh`），時間那一列則是 `Rest Time:`（`05A0h`）。
-// 選中的那一欄在原版是換色（`05D8h` 把顏色從 0Ah 改成 0Fh），這裡也用強調色。
+// drawCamp 畫紮營時對話框那一區的字（spec 135）。
+//
+// **紮營不再是彈出選單**：視野那一框換成營火、指令列換成
+// `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`，這裡只剩對話框裡的兩行——
+// 第一層是 `The party makes camp...`（overlay-15 `1E03h`），
+// 排時間那一層是 `Rest Time:`（overlay-20 `05A0h`）。
+// 選中的那一欄在原版是換色（`05D8h` 把顏色從 0Ah 改成 0Fh），這裡用強調色。
+//
+// 原版的兩行在 native 136..142 與 144..150，也就是對話框的第一、二行。
 func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	if !a.campOpen {
 		return
 	}
-	drawText(screen, a.text(msgCampTitle), 260, 120, accent)
-	for index, label := range a.campOptionLabels() {
-		cursor, ink := " ", foreground
-		if index == a.campCursor {
-			cursor, ink = ">", accent
-		}
-		drawText(screen, cursor+label, 244, 150+index*18, ink)
+	drawDialogueFrame(screen, accent)
+	if a.campStage == campStageRest {
+		// 原版那一層只有這一行（native 136..142）。第二行是空的——
+		// 「還要休息幾小時才記得完」原版沒有印，玩家自己算。
+		drawText(screen, a.campRestTimeLine(), dialogueLeft, dialogueFirstRow, accent)
+		return
 	}
-	drawText(screen, a.campRestTimeLine(), 100, 212, accent)
-	drawText(screen, a.text(msgCampRestKeys), 100, 230, foreground)
-	drawText(screen, a.campPendingLine(), 100, 248, foreground)
+	if a.campMessage != "" {
+		// `The party makes camp...` 在原版是第二行（native 144..150）。
+		drawText(screen, a.campMessage, dialogueLeft, dialogueFirstRow+dialoguePitch, foreground)
+	}
 }
+
+// campFireImage 是紮營時蓋在視野那一框上的營火（spec 135）。
+//
+// 原版有兩張（`PIC<區號>.DAX` 區塊 29 是動畫），**換張的時序還沒讀出來**，
+// 所以這裡只畫第一張——猜一個閃動速度會讓畫面每一格都不一樣，而那是編的。
+func (a *app) campFireImage() *ebiten.Image {
+	if !a.campOpen {
+		return nil
+	}
+	if len(a.campFire) != 0 {
+		return a.campFire[0]
+	}
+	if a.loadCampFire == nil {
+		return nil
+	}
+	frames, err := a.loadCampFire(uint8(a.spawn.Map.Archive))
+	if err != nil || len(frames) == 0 {
+		// 載不出來就留著視野；不要因為缺一張圖就讓紮營進不去。
+		a.loadCampFire = nil
+		return nil
+	}
+	a.campFire = frames
+	return a.campFire[0]
+}
+
+// clearCampFire 換主題時要重畫一次（配色是換主題換的）。
+func (a *app) clearCampFire() { a.campFire = nil }
 
 // poolFirstPersonStageFill 是第一人稱視野的三段背景。
 //
@@ -3052,6 +3117,8 @@ const (
 	dialogueBottom   = 370
 	dialogueLines    = 5
 	dialogueFirstRow = 282
+	dialogueLeft     = 52
+	dialoguePitch    = 16
 )
 
 // dialogueVisible 說這一格會不會畫出對話框。
@@ -3064,7 +3131,7 @@ const (
 // 提早返回，所以指令列那一列的鍵此時按不到。
 func (a *app) panelOpen() bool {
 	return a.journalOpen || a.equipmentOpen || a.spellsOpen || a.shopActive ||
-		a.campOpen || a.guideOpen || a.fieldCastOpen || a.viewSheetOpen ||
+		a.guideOpen || a.fieldCastOpen || a.viewSheetOpen ||
 		a.spriteOpen
 }
 
@@ -3116,13 +3183,13 @@ func drawDialogue(screen *ebiten.Image, message, label string, foreground, accen
 		if index >= dialogueLines {
 			break
 		}
-		drawText(screen, line, 52, dialogueFirstRow+index*16, foreground)
+		drawText(screen, line, dialogueLeft, dialogueFirstRow+index*dialoguePitch, foreground)
 	}
 	// 提示畫在**繩索框外面**那一列，跟原版同一個位置——原版導覽那一幕
 	// （`docs/audit/dos-parity-sample.md` 的 31-b）文字框裡只有台詞，
 	// `PRESS <ENTER>/<RETURN> TO CONTINUE` 在框下緣底下那一條。
 	// 畫在框裡的話，中文台詞只有兩行時框內會空一大塊，而框外整條是空的。
-	drawText(screen, label, 52, footerBaseline, accent)
+	drawText(screen, label, dialogueLeft, footerBaseline, accent)
 }
 
 func translated(x, y float64) ebiten.GeoM {

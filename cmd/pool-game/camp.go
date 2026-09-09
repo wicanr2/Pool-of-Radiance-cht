@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
@@ -27,40 +26,75 @@ import (
 // overlay-20 自己印的 `The Party is rudely interrupted!` 只是其中一條路。
 // 缺的是判定用的那兩個參數從哪裡來，見 spec 114 的 OPEN。
 
-// openCamp 開紮營選單。
+// 紮營有兩層，原版就是兩列指令（spec 135）。
+type campStage int
+
+const (
+	// campStageMenu 是 `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`。
+	campStageMenu campStage = iota
+	// campStageRest 是按下 `REST` 之後的
+	// `REST  DAYS HOURS MINS  INC DEC  EXIT`。
+	campStageRest
+)
+
+// openCamp 進紮營。
 func (a *app) openCamp() {
 	if len(a.state.Party) == 0 {
 		a.statusLine = a.text(msgCampNeedsParty)
 		return
 	}
-	a.campOpen, a.campCursor = true, 0
+	a.campOpen, a.campStage = true, campStageMenu
+	a.campMessage = a.text(msgCampMakesCamp)
 }
 
-// campOptions 是紮營選單的項目，順序照原版的 `Rest ... Exit`。
-func (a *app) campOptionLabels() []string {
-	return []string{a.text(msgCampRest), a.text(msgCampMemorise), a.text(msgCampExit)}
+// closeCamp 離開紮營。
+func (a *app) closeCamp() {
+	a.campOpen, a.campStage, a.campMessage = false, campStageMenu, ""
 }
 
-// campInput 處理紮營選單的按鍵。
+// campInput 處理紮營那兩列的按鍵。
 //
-// 原版的選單列是 `Rest daYs Hours Mins Inc Dec Exit`（overlay-20 `069Fh`），
-// 而 `06E0h` 的迴圈把方向鍵也對應過去：上＝I、下＝D、左右換欄。這裡照它接，
-// 另外保留 remake 自己的上下選單游標——原版的「記憶法術」是紮營選單的另一項，
-// 不是這一列的按鍵。
+// **兩層的字母是分開的**：第一層的 `M` 是 MAGIC，第二層的 `M` 是 MINS——
+// 原版就是靠分層讓同一個鍵在兩處有不同意思。排時間那一層另外照
+// overlay-20 `06E0h` 把方向鍵對應過去：上＝I、下＝D、左右換欄。
 func (a *app) campInput() error {
-	options := a.campOptionLabels()
+	if a.campStage == campStageRest {
+		return a.campRestInput()
+	}
 	switch {
 	case a.justPressed(ebiten.KeyEscape), a.justPressed(ebiten.KeyE):
-		a.campOpen = false
+		a.closeCamp()
+	case a.justPressed(ebiten.KeyR):
+		a.campStage = campStageRest
+		a.campMessage = ""
+	case a.justPressed(ebiten.KeyV):
+		a.openViewSheet()
+	case a.justPressed(ebiten.KeyM):
+		return a.openSpells()
+	case a.justPressed(ebiten.KeyS), a.justPressed(ebiten.KeyA):
+		// `SAVE` 與 `ALTER` 按下去做什麼還沒讀出來（spec 135 的 OPEN）。
+		// **仍然列在那一列上**——不列的話玩家看到的指令列就與原版不同，
+		// 而那正是這一頁要修的東西。
+		a.campMessage = a.text(msgCampCommandUnread)
+	}
+	return nil
+}
+
+// campRestInput 是排時間那一層。
+func (a *app) campRestInput() error {
+	switch {
+	case a.justPressed(ebiten.KeyEscape), a.justPressed(ebiten.KeyE):
+		a.campStage = campStageMenu
+		a.campMessage = a.text(msgCampMakesCamp)
 	case a.justPressed(ebiten.KeyY):
 		a.restField = gamepack.RestFieldDays
 	case a.justPressed(ebiten.KeyH):
 		a.restField = gamepack.RestFieldHours
 	case a.justPressed(ebiten.KeyM):
 		a.restField = gamepack.RestFieldMinutes
-	case a.justPressed(ebiten.KeyI):
+	case a.justPressed(ebiten.KeyI), a.justPressed(ebiten.KeyArrowUp):
 		a.restDuration = a.restDuration.Increase(a.restField)
-	case a.justPressed(ebiten.KeyD):
+	case a.justPressed(ebiten.KeyD), a.justPressed(ebiten.KeyArrowDown):
 		a.restDuration = a.restDuration.Decrease(a.restField)
 	case a.justPressed(ebiten.KeyArrowLeft):
 		a.restField = a.restField.PreviousField()
@@ -68,20 +102,6 @@ func (a *app) campInput() error {
 		a.restField = a.restField.NextField()
 	case a.justPressed(ebiten.KeyR):
 		a.restParty()
-	case a.justPressed(ebiten.KeyArrowUp):
-		a.campCursor = (a.campCursor + len(options) - 1) % len(options)
-	case a.justPressed(ebiten.KeyArrowDown):
-		a.campCursor = (a.campCursor + 1) % len(options)
-	case a.justPressed(ebiten.KeyEnter), a.justPressed(ebiten.KeySpace):
-		switch a.campCursor {
-		case 0:
-			a.restParty()
-		case 1:
-			a.campOpen = false
-			return a.openSpells()
-		default:
-			a.campOpen = false
-		}
 	}
 	return nil
 }
@@ -129,7 +149,7 @@ func (a *app) restParty() {
 		}
 		syncTrainedLibraryCharacter(&a.state, *member)
 	}
-	a.campOpen = false
+	a.closeCamp()
 	switch {
 	case memorised > 0:
 		a.statusLine = fmt.Sprintf(a.text(msgCampRested), memorised, restedHours)
@@ -142,25 +162,6 @@ func (a *app) restParty() {
 	}
 }
 
-// campPendingLine 是給玩家看的一行：誰還有幾條沒記完。
-func (a *app) campPendingLine() string {
-	parts := make([]string, 0, len(a.state.Party))
-	for _, member := range a.state.Party {
-		pending := 0
-		for _, value := range member.Memorised {
-			if value != 0 && !gamepack.MemorisedSpellIsReady(value) {
-				pending++
-			}
-		}
-		if pending > 0 {
-			parts = append(parts, fmt.Sprintf("%s %d", strings.TrimSpace(member.Name), pending))
-		}
-	}
-	if len(parts) == 0 {
-		return a.text(msgCampNothingPending)
-	}
-	return fmt.Sprintf(a.text(msgCampPending), strings.Join(parts, "  "))
-}
 
 // 讓 poolsave 這個 import 在只用到型別時也成立。
 var _ poolsave.Character

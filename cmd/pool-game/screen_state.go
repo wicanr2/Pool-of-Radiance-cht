@@ -117,6 +117,13 @@ func (a *app) screenName() string {
 	case a.shopActive:
 		return "shop"
 	case a.campOpen:
+		// 兩層要分得出來（spec 135）：`camp` 是
+		// `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`，`camp-rest` 是按下
+		// `REST` 之後那一列。換層只換最下面那一列，不報的話截圖腳本
+		// 只能盲按。
+		if a.campStage == campStageRest {
+			return "camp-rest"
+		}
 		return "camp"
 	case a.templeActive:
 		return "temple"

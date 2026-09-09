@@ -1,6 +1,7 @@
 # Spec 135：原版紮營畫面的版面
 
-狀態：DRAFT（幾何量自原版畫面；營火那張圖的來源還沒定位，選單模型已確定）。
+狀態：READY（幾何、營火圖來源、四條指令列字串都定位了）；
+OPEN（`SAVE`／`VIEW`／`ALTER` 三項按下去做什麼）。
 日期：2026-09-09。
 
 ## 輸入
@@ -51,22 +52,77 @@ Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:18:Return,e,H,I,I,R
 
 營火那張圖畫在框內，與第一人稱視野同一塊：`(24,24)` 起 88×88（spec 047）。
 
-## remake 現況與差距
+## 營火那張圖：`PIC<區號>.DAX` 區塊 29，兩張的動畫
 
-remake 的 `E` 開的是一個**直排選單**（`休息／記憶法術／離開`）疊在冒險畫面
-右側，休息時間與按鍵提示那三行印在 `(150,300)` 一帶——**壓在第一人稱視野
-框上面**。畫面見 `docs/screenshots/pool-remake-chinese-camp.png`。
+拿 `58-I.idx` 的 `(24,24)` 88×88 與八個 `pic*.dax` 的每一張逐格比對
+（`workplace/campscan`，PIC 容器的版面見 spec 117）：
 
-要照原版做，缺的是：
+| 檔 | 區塊 | 張 | 相同 |
+|---|---|---|---|
+| `PIC1..8.DAX` | 29 | 0 | 91.27% |
+| `PIC1..8.DAX` | 29 | **1** | **100.00%** |
 
-1. **營火那張圖的來源。** `PIC*.DAX` 的區塊是一段動畫（1 byte 張數＋每張
-   4 byte 前綴＋17 byte 圖片頭，第二張以後與第一張 XOR，見 spec 117），
-   營火會閃動正好是這個形狀，但還沒有比對過是哪一個檔的哪一個區塊。
-   **驗收**：拿 `58-I.idx` 的 `(24,24)` 88×88 與八個 `pic*.dax`／`cpic*.dax`
-   的每一張逐格比對，找到 100% 的那一張。
-2. **指令列的兩組字串**在 overlay-20 的哪個位移。`Rest daYs Hours Mins Inc
-   Dec Exit`（`069Fh`）已經在 spec 114 記過，`CAMP: SAVE VIEW MAGIC REST
-   ALTER EXIT` 還沒定位。
-3. remake 的紮營要從「彈出選單」改成「換指令列」——`campInput` 的按鍵已經
-   照原版接了（`Y`／`H`／`M`／`I`／`D`／`R`／`E`），改的是畫法與 `SAVE`／
-   `VIEW`／`ALTER` 三項還沒有。
+區塊 29 只有兩張，差的 8.73% 就是火焰跳動的那幾格。八個檔的區塊 29 內容
+相同——營火不分區，但原版仍是照現行區號（`DS:52D4h`）組檔名載入的
+（spec 117 的同一條路）。基準幀拍到的是第 1 張。
+
+## 四條指令列字串在哪裡
+
+長度 byte 的位址（Turbo Pascal 字串，字串本體在下一個位元組）：
+
+| 字串 | 位址 |
+|---|---|
+| `Camp:` | overlay-15 `1E31h` |
+| `The party makes camp...` | overlay-15 `1E03h` |
+| `Save View Magic Rest Alter Exit` | `DS:051Bh` |
+| `Cast Memorize Scribe Display Rest Exit` | `DS:0544h` |
+| `Rest Time` | overlay-20 `05A0h` |
+| `Rest daYs Hours Mins Inc Dec Exit` | overlay-20 `069Fh`（spec 114 已記）|
+| ` camping` | overlay-25 `2931h` |
+| ` search` | overlay-25 `2939h` |
+
+`DS` 的基準：`Area Cast View Encamp Search Look` 在 `START.EXE` 檔案位移
+31867 而 spec 123 量到它是 `DS:04CAh`，所以 `DS` 段從檔案 30641 起；
+`Cast View Encamp Search Look` 在 31908 ＝ `DS:04F3h`，對得上。
+
+時鐘行後面接的那個字來自 overlay-25——休息主迴圈的 `0DB4 call far 10Ah:89h`
+就是 overlay-25 entry 21（spec 109 的 stub 表：`010Ah` ＝ overlay-25），
+` camping` 與 ` search` 是同一組的兩個。
+
+## remake 現況：照這一份改好了
+
+`docs/screenshots/pool-remake-chinese-camp.png` 與 `-camp-rest.png` 是實拍。
+`E` 之後視野換成營火、時鐘行接上「紮營中」、指令列換成
+`紮營：S 存檔 V 檢視 M 法術 R 休息 A 調整 E 離開`，對話框印
+「隊伍紮下營來……」；`R` 再換成 `R 休息 Y 天 H 時 M 分 I 增 D 減 E 離開`
+與「休息時間」那一行。**直排選單與壓在視野框上的那三行都拿掉了。**
+
+改動連帶修好了指令列的高亮規則：原版**高亮的是大寫的那個字母，不是第一個
+字母**——原版字型只有大寫字模，所以 `daYs` 顯示成 `DAYS` 而白色的是 `Y`
+（native 量到格 7、8 綠、格 9 白、格 10 綠）。冒險畫面那一列的大寫剛好都在
+字首，所以先前的「首字母高亮」在那裡看不出錯。
+
+`M`（MAGIC）現在是紮營的**子層**，不再是「關掉紮營再開法術一覽」——
+關掉法術一覽會回到紮營，與原版同一個形狀。
+
+## 契約
+
+1. `assets.ReadCampFire(zip, 區號)` 讀 `PIC<區號>.DAX` 區塊 29 的兩張，
+   畫在第一人稱視野的內框 `(24,24)`（logical `(48,70)`）。
+2. 紮營時時鐘行接上 `CAMPING`（繁中另譯）。
+3. 指令列換成 `CAMP:` ＋ `SAVE VIEW MAGIC REST ALTER EXIT`，按 `R` 之後換成
+   `REST  DAYS HOURS MINS  INC DEC  EXIT`，畫法與冒險畫面同一支
+   （前綴一色、首字母一色、其餘一色）。
+4. 對話框印 `THE PARTY MAKES CAMP...`；`REST` 之後第一行是
+   `REST TIME:  00:00:00`。
+5. **拿掉直排選單**與壓在視野框上的那三行。
+
+## OPEN
+
+**營火兩張怎麼交替、多久換一次還沒讀出來。** remake 目前只畫第 0 張——
+猜一個閃動速度會讓畫面每一格都不一樣，而那是編的。
+
+`SAVE`／`VIEW`／`ALTER` 三項按下去做什麼還沒讀。`VIEW` 大概是人物資料頁
+（remake 的 `V` 已經有），`SAVE` 是存檔，`ALTER` 未知。在讀出來之前這三項
+**照原版列在指令列上**，按下去給一句「還沒接」——列都不列的話，玩家看到的
+指令列就與原版不同，而那正是這一份要修的東西。
