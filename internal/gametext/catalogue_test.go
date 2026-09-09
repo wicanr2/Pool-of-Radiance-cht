@@ -92,6 +92,14 @@ func TestEverySourceExistsInTheOriginalInventory(t *testing.T) {
 			known[segment.Text] = true
 		}
 	}
+	// 「按鍵繼續」那一列也是 overlay 內嵌字串（overlay-03，spec 082）。
+	// 選項數是 1 的選單原版畫的是它，不是腳本給的那一條，所以譯文表要有它。
+	if prompts, err := gamepack.ReadDOSContinuePrompts(
+		filepath.Join("..", "..", "Pool of Radiance (1988).zip")); err == nil {
+		for _, prompt := range prompts {
+			known[prompt.Text] = true
+		}
+	}
 	for _, source := range catalogue.Sources() {
 		if !known[source] {
 			t.Fatalf("catalogue source is not in the original data: %q", source)

@@ -1,7 +1,7 @@
 # Spec 082：文字框的四條 opcode（`11h`、`12h`、`33h`、`3Dh`）
 
 狀態：READY（四條都接上；分頁的分隔字元仍未讀，見「還沒讀」）。
-日期：2026-09-04（原 2026-09-03，本輪加入 `11h`／`12h` 的區分）。
+日期：2026-09-09（原 2026-09-03；`11h`／`12h` 的區分於 09-04 加入，本輪讀出停頓點由腳本的單選項選單決定）。
 
 ## `33h PRINT RETURN`（overlay-03 `2E44h`，0 個運算元）
 
@@ -80,6 +80,47 @@ ecl3/0   AC22 PRINTCLEAR "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL
 `consumeInitialSearch` 套過的 result 交給 `pauseAppliedCellResult`，
 那一份不再套。
 
+### 哪一則會停下來等玩家
+
+**往文字框寫字不是停頓點。** `11h PRINT` 與 `12h PRINTCLEAR` 都只是把字送
+進框裡（前者接續、後者換頁），兩者之間沒有等待指令，所以 remake 拿到這種
+result 直接往下跑。
+
+**要玩家按一下的時候，腳本自己會放一個只有一個選項的 `HORIZONTAL MENU`。**
+市政廳外那一格（ECL3/block0）的序列是：
+
+```
+ABD2 PRINTCLEAR  「YOU ARE OUTSIDE THE CITY HALL. …」
+AC1E GOSUB AF1C  → HORIZONTAL MENU，唯一的選項是字串
+                    「PRESS <RETURN> OR BUTTON TO CONTINUE」
+AC22 PRINTCLEAR  「PROCLAMATIONS ARE POSTED ON THE WALLS, …」
+AC9B PRINT       「PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX.」
+ACBE EXIT
+```
+
+overlay-03 `11B1h` 在選項數是 1 的時候，把那個選項換成
+`PRESS <ENTER>/<RETURN> TO CONTINUE` 再畫（字串在 overlay-03 `1165h`／
+`118Ah`，只被 `120Ch`／`1218h` 引用）。**所以「這一頁要不要等」是腳本決定
+的，不是繪製端按頁數自動加的。** 玩家因此在市政廳外只按一次 Return，而
+文書官辦公室裡每一則委託都要按一次——那裡每一頁後面都跟著一個同樣的單選項
+選單。
+
+同一則文字也可以帶著自己的選單：蘇恩神殿的
+`12h 問候` → `11h 「DO YOU SEEK HEALING?」` → `YES NO` 是三個相鄰邊界，
+中間沒有等待指令，所以走進那一格就同時看到整段問話與選項。
+
+**兩條路徑共用同一個判準。** 每走一步跑的入口 0（`RunInitialSessionCellEntry`）
+與 `SearchLocation` 都會拿到這種 result，remake 用同一個 `presentationBoundary`
+判斷：`11h`、`12h` 與同屬純顯示的 `0Dh APPROACH`、`0Eh PICTURE`（spec 117：
+兩者都是重畫，overlay-03 `07E1h`／`0822h` 做完就返回）算純顯示；帶著選單、
+開戰、寶物、換區塊或挑角色的那一則不算，那些要前端接手。分成兩份寫過一次，
+結果只有 `SearchLocation` 那條改對，走路那條照樣每則停一次。
+
+**腳本跑完（`00h EXIT`）時文字要留在框裡。** 原版那時底下換回指令列、方向鍵
+走得動，而那幾行字還在（dosgolem 實測：市政廳外第一段時按方向鍵一格都不動，
+按 Return 換到第二段之後就走得動）。remake 的 `finishCellBlockKeepingText`
+就是這個狀態，畫面識別字是 `adventure-cell-done`。
+
 ## 還沒讀
 
 - **`11h` 兩段之間原版怎麼分隔**。原始文字前後都不帶空白，所以分隔一定由
@@ -87,6 +128,7 @@ ecl3/0   AC22 PRINTCLEAR "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL
   要定案需要那兩格的原版畫面，`layout-reconstructed`。
 - 兩頁之間是誰清的框。`11h` 已經排除——它是接續，不是清框。剩下的候選是
   `1Ah` 那一族或選單常式自己清。
-- `5D82h`／`5D83h`／`82A4h`／`82A5h` 的讀取端：換行計數器被誰用來決定
-  「印滿一框要不要停下來等按鍵」。
+- `5D82h`／`5D83h`／`82A4h`／`82A5h` 這組換行計數器的讀取端。停頓已經確定
+  由腳本的單選項選單決定，所以它們不是停頓判準；剩下的用途候選是捲動與
+  「印滿一框自動換頁」。
 - `0198h:0066h` 的實際繪製行為（remake 的文字框沒有畫素級對拍）。

@@ -341,6 +341,9 @@ type app struct {
 	// combatCommands 是戰鬥指令列那六段原版字串（spec 129）。哪幾段接上去
 	// 由 `combatCommandBar` 依角色算。
 	combatCommands []gamepack.CombatCommandSegment
+	// continuePrompt 是「按鍵繼續」那一列的原文（overlay-03 `118Ah`）。
+	// 選項數是 1 的選單，原版畫的是它，不是腳本給的那一條（spec 082）。
+	continuePrompt string
 	// eclSessionArchive 是 ECL session 目前握著哪一份 archive 的區塊。
 	// 與 `eclArchive` 分開：後者是地圖與素材命名用的鏡像，會先一步更新。
 	eclSessionArchive uint8
@@ -474,6 +477,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 	// 八項頂替：頂替出來的畫面看起來是對的，而玩家按下去沒有反應。
 	if segments, err := gamepack.ReadDOSCombatCommands(zipPath); err == nil {
 		application.combatCommands = segments
+	}
+	// 「按鍵繼續」那一列。讀不到就留空，顯示端退回腳本給的那一條——
+	// 寫法會與原版不同，但玩家至少看得到提示。
+	if prompt, err := gamepack.DOSContinuePrompt(zipPath, gamepack.ContinuePromptKeyboard); err == nil {
+		application.continuePrompt = prompt
 	}
 	endingScript, err := gamepack.ReadDOSEndingScript(zipPath)
 	if err != nil {
@@ -1135,7 +1143,36 @@ func (a *app) moveInitialDungeonForward() error {
 		if err != nil {
 			return err
 		}
-		if !result.Exited || result.WaitingForMenu || len(result.Events) != 0 {
+		// **往文字框寫字不是停頓點**（spec 082）。每走一步跑的入口 0 與
+		// SearchLocation 走的是同一套：`12h PRINTCLEAR` 換頁、`11h PRINT`
+		// 接著印，兩者之間沒有等待指令，要玩家按一下的是腳本自己放的單選項
+		// 選單。這條路徑先前每一則都停一次，同一段話因此被切成好幾幀，而且
+		// 每停一次就多吃一個按鍵。
+		for boundaries := 0; boundaries < 64 && presentationBoundary(result); boundaries++ {
+			if result.Events[0].Opcode == gamepack.PrintClearOpcode && result.Events[0].Text == "" {
+				a.eventText = ""
+			}
+			a.applyCellECLResult(result)
+			if result.Exited {
+				// 印完就結束的那一種：字留在框裡，這一步照走。停在這裡的話，
+				// 空的 `12h PRINTCLEAR` 會變成一個沒有內容的 pending——畫面
+				// 上什麼都沒有，方向鍵卻按不動。
+				a.cellTextSticky = a.eventText != ""
+				break
+			}
+			var err error
+			result, err = a.eventSession.RunUntilEvent(4096, nil, true)
+			if err != nil {
+				return fmt.Errorf("continue Pool cell entry presentation: %w", err)
+			}
+			// 換區塊會帶著要載入的資源，每一輪都要收——只在進迴圈前收一次的話，
+			// 迴圈裡換過去的那一份就漏了（`consumeInitialSearch` 是每一輪收）。
+			if result, err = a.consumeInitialTransitionResources(result); err != nil {
+				return err
+			}
+		}
+		if !result.Exited || result.WaitingForMenu ||
+			(len(result.Events) != 0 && !presentationBoundary(result)) {
 			return a.pauseInitialCellResult(result)
 		}
 		if wilderness {
@@ -1461,22 +1498,26 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		// `12h PRINTCLEAR` ＋ `11h PRINT` 一次顯示成四行——remake 先前在
 		// 每一個 `11h` 都停一次，玩家因此要多按幾次 Return，而中間那一幀
 		// 是原版沒有的（`docs/audit/dos-parity-sample.md` 的市政廳那一段）。
-		// **`11h PRINT` 不是停頓點**：它接著印、不清框，與前面那一頁是同一頁
-		// （spec 082）。原版走到市政廳外的第二段就是 `12h PRINTCLEAR` ＋
-		// `11h PRINT` 一次顯示成四行——remake 先前在每一個 `11h` 都停一次，
-		// 中間那一幀是原版沒有的。
+		// **往文字框寫字不是停頓點。** `12h PRINTCLEAR` 換一頁、`11h PRINT`
+		// 接著印，兩者之間都沒有等待指令（spec 082）。
 		//
-		// `12h PRINTCLEAR` 仍然停：它換的是新的一頁，不停的話前一頁玩家
-		// 沒機會看。（原版連 `12h` 也不停，只在 `00h EXIT` 停一次——但照那樣
-		// 改，交任務、船運那幾條長腳本會整段跑掉，六個玩家路徑測試當場紅，
-		// 所以那一步還缺證據，記在 `WORKLIST.md`。）
-		presentationOnly := len(result.Events) == 1 &&
-			(result.Events[0].Opcode == gamepack.PrintOpcode ||
-				(result.Events[0].Opcode == 0x12 && result.Events[0].Text == "") ||
-				result.Events[0].Opcode == 0x0E)
-		if presentationOnly {
+		// 原版要玩家按一下的時候，**腳本自己會放一個單選項的選單**：市政廳外
+		// 第一段之後的 `GOSUB 0xAF1C` 就是 `HORIZONTAL MENU`，唯一的選項是
+		// 字串 `PRESS <RETURN> OR BUTTON TO CONTINUE`（overlay-03 `11B1h` 在
+		// 選項數是 1 時把它換成 `PRESS <ENTER>/<RETURN> TO CONTINUE` 再畫）。
+		// 所以「要不要等」是腳本決定的，不是每一頁自動加的——remake 先前在
+		// 每一則文字都停一次，同一段話因此被切成好幾幀。
+		// 但**同一則文字可以帶著它的選單**：蘇恩神殿的 `DO YOU SEEK HEALING?`
+		// 就是 `11h PRINT` 與 `YES NO` 一起回來的。這種要停——不停的話這裡
+		// 會用 `nil` 選擇繼續跑，等於替玩家按了第一個選項。
+		if presentationBoundary(result) {
 			if result.Events[0].Opcode == 0x12 && result.Events[0].Text == "" {
 				a.eventText = ""
+			}
+			if result.Exited {
+				// 印完就結束的那一種：字留在框裡，回自由移動。
+				a.finishCellBlockKeepingText()
+				return nil
 			}
 			next, err := a.eventSession.RunUntilEvent(4096, nil, true)
 			if err != nil {
@@ -1544,6 +1585,39 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 	return fmt.Errorf("Pool SearchLocation exceeded presentation boundary limit")
 }
 
+// presentationBoundary 說這一次停頓只是往文字框寫字（spec 082）。
+//
+// `11h PRINT` 接續、`12h PRINTCLEAR` 換頁、`0Eh` 清框，三者與前後之間都沒有
+// 等待指令，所以拿到這種 result 要接著跑，不要停下來等玩家——原版要玩家按
+// 一下的地方，腳本自己會放一個只有一個選項的 `HORIZONTAL MENU`。
+//
+// **帶著選單的那一則不算**：蘇恩神殿的 `DO YOU SEEK HEALING?` 就是 `11h`
+// 與 `YES NO` 一起回來的，接著跑等於用 `nil` 選擇替玩家按了第一個選項。
+//
+// 每走一步的入口 0 與 SearchLocation 兩條路徑共用這個判準。分成兩份寫過，
+// 結果只有一條改對，另一條照樣每則停一次。
+func presentationBoundary(result eclvm.Result) bool {
+	if result.WaitingForMenu || len(result.Events) != 1 {
+		return false
+	}
+	// 帶著要前端接手的請求就不是「只寫字」：開戰、怪物設定與寶物都得停下來
+	// 交出去，接著跑等於把它們靜靜跳過。
+	//
+	// **換區塊與挑角色不在這一列**：`NEWECL` 由 session 自己 `switchTo` 完成，
+	// `CharacterSelections`／`PartyStrengthRequests` 由 VM 的 resolver 當場答完，
+	// 到前端時都只是紀錄。把它們也當成「要接手」的話，市政廳那一帶的空
+	// `12h PRINTCLEAR` 會變成沒有內容的 pending，方向鍵按不動。
+	if result.CombatRequested || result.MonsterSetup != nil || len(result.TreasureRequests) != 0 {
+		return false
+	}
+	switch result.Events[0].Opcode {
+	case gamepack.PrintOpcode, gamepack.PrintClearOpcode,
+		gamepack.PictureOpcode, gamepack.ApproachOpcode:
+		return true
+	}
+	return false
+}
+
 func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 	if a.loadMonster == nil {
 		return fmt.Errorf("Pool monster loader is not configured")
@@ -1593,6 +1667,14 @@ func (a *app) isSuneTempleBoundary(result eclvm.Result) bool {
 	}
 	for _, event := range result.Events {
 		if event.Opcode == 0x24 {
+			// **原版比較完就把它清成 0。** overlay-03 的 `24h` handler
+			// `18A2h..18B4h` 比較 runtime state `es:[di+5C4h] == 1`、清成 0，
+			// 才呼叫 overlay-04 entry 1（spec 017，IDA 逐值分派的 exact 證據）。
+			// 那是一次性的服務票，不是「來過神殿」的長期標記——不清的話，
+			// 進過一次神殿之後，**每一個怪物已清空的 `24h COMBAT` 都會被當成
+			// 神殿**：ECL3/block 0 有八個 `24h`，實測城區 (8,4)、(1,1)、(3,1)
+			// 都會把玩家拉進神殿介面，而那三格沒有神殿。
+			a.eventMachine.Memory[0x6DE2] = 0
 			return true
 		}
 	}
@@ -2271,6 +2353,13 @@ func (a *app) pauseAppliedCellResult(result eclvm.Result) error {
 	a.cellWaitedOnce = true
 	a.templeActive = false
 	a.cellEventPending = true
+	// **新的一則事件不是上一格留在框裡的字。** `cellTextSticky` 是
+	// 「腳本跑完了但文字還留著」的狀態（`finishCellBlockKeepingText`），
+	// 那時 ENTER 拿去翻手冊。忘了清的話，下一格的選單開起來時它還亮著，
+	// 而翻手冊那一段在輸入分派的更前面——ENTER 全被它吃掉，選單就永遠
+	// 答不了：實測探索器在市政廳的守衛與索寇要塞的碼頭上各答了上萬次，
+	// 一次都沒送進 VM。
+	a.cellTextSticky = false
 	a.cellWaitingMenu = result.WaitingForMenu
 	if result.WaitingForMenu && len(result.Menus) != 0 {
 		menu := result.Menus[len(result.Menus)-1]
@@ -2296,6 +2385,13 @@ func (a *app) cellMenuLabel() string {
 	if len(a.cellMenuOptions) == 0 {
 		return "RETURN"
 	}
+	// **選項只有一個的時候原版不畫那個選項。** overlay-03 `11B1h` 改畫自己
+	// 那一條「按鍵繼續」（spec 082）——所以市政廳外、文書官辦公室、鬼魂那幾
+	// 段雖然腳本各寫各的（`PRESS <RETURN> OR BUTTON TO CONTINUE`、
+	// `HIT <RETURN> …`、`PRESS BUTTON OR …` 共六種），玩家看到的都是同一句。
+	if len(a.cellMenuOptions) == 1 {
+		return a.gameText.Translate(a.continueLabel(a.cellMenuOptions[0]))
+	}
 	parts := make([]string, len(a.cellMenuOptions))
 	for index, option := range a.cellMenuOptions {
 		// 選項的比對仍以原文進行（見 cellMenuOptions 的使用點），這裡只換顯示。
@@ -2307,6 +2403,18 @@ func (a *app) cellMenuLabel() string {
 		}
 	}
 	return strings.Join(parts, "   ")
+}
+
+// continueLabel 是「按鍵繼續」那一列的原文。讀不到原版字串時退回呼叫端手上
+// 那一條，別讓提示整條消失。
+func (a *app) continueLabel(fallback string) string {
+	if a.continuePrompt != "" {
+		return a.continuePrompt
+	}
+	if fallback != "" {
+		return fallback
+	}
+	return "RETURN"
 }
 
 // mapExitFlagAddress 是「隊伍正要走出這一區」的 ECL 變數（spec 100）。
@@ -3046,7 +3154,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		// 而那是玩家第一次看到的畫面。
 		drawPartyPanel(screen, a, foreground, accent)
 		if a.initialEvent != nil {
-			message, label := a.initialEvent.Message, a.initialEvent.ContinueLabel
+			message, label := a.initialEvent.Message, a.continueLabel(a.initialEvent.ContinueLabel)
 			if a.eventText != "" {
 				message = a.eventText
 			}
@@ -3082,7 +3190,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	drawPartyPanel(screen, a, foreground, accent)
 	dialogueVisible := a.dialogueVisible()
 	if a.introWaiting && a.initialEvent != nil {
-		message, label := a.initialEvent.Message, a.initialEvent.ContinueLabel
+		message, label := a.initialEvent.Message, a.continueLabel(a.initialEvent.ContinueLabel)
 		if a.eventText != "" {
 			message = a.eventText
 		}
@@ -3094,7 +3202,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		step := a.initialEvent.Tour[a.tourStep]
 		if a.tourPage < len(step.Messages) {
 			a.showDialogue(screen, a.gameText.Translate(step.Messages[a.tourPage]),
-				a.gameText.Translate(a.initialEvent.ContinueLabel), foreground, accent)
+				a.gameText.Translate(a.continueLabel(a.initialEvent.ContinueLabel)), foreground, accent)
 		}
 	} else if a.cellEventPending && a.eventText != "" {
 		a.showDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)

@@ -626,6 +626,10 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// 記成硬失敗，不要靜靜地把預算吃掉。
 	stallKey, stall := [3]int{-1, -1, -1}, 0
 	menuStall := 0
+	// 沒有選單的格子事件也要有看門狗。只有 menuStall 的時候，一格只要停在
+	// 「pending 但按 Enter 什麼都不變」，整趟的預算就靜靜地被吃掉，而報表
+	// 只寫「走完預算」——看不出是哪一格，也分不出「走得慢」與「卡住」。
+	eventStallKey, eventStall := [4]int{-1, -1, -1, -1}, 0
 	tries := map[[3]int]int{}
 	// approached 記「這一格從這個方向走進去過了」。見 spec 102。
 	approached := map[[4]int]bool{}
@@ -854,11 +858,38 @@ walk:
 			spin["戰鬥"]++
 		case application.cellEventPending:
 			spin["格子事件"]++
+			eventKey := [4]int{int(application.spawn.Map.Archive),
+				int(application.spawn.Map.BlockID),
+				int(application.spawn.Y)*100 + int(application.spawn.X),
+				len(application.eventText)}
+			if eventKey != eventStallKey {
+				eventStallKey, eventStall = eventKey, 0
+			}
+			eventStall++
+			if eventStall > exploreMaxCombatStall {
+				block := -1
+				if application.eventSession != nil {
+					block = int(application.eventSession.CurrentBlockID())
+				}
+				at := -1
+				if application.eventMachine != nil {
+					at = 0x9900 + application.eventMachine.PC
+				}
+				failures = append(failures, fmt.Sprintf(
+					"格子事件卡住：GEO%d/%d (%d,%d) 標籤 %q 文字 %q 狀態列 %q block %d PC $%04X",
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.spawn.X, application.spawn.Y,
+					application.eventLabel, application.eventText,
+					application.statusLine, block, at))
+				reason = "格子事件卡住"
+				traceApp = application
+				break walk
+			}
 		case application.mode != modeAdventure:
 			spin[fmt.Sprintf("模式 %v", application.mode)]++
 		default:
 			spin["走路"]++
-			menuStall = 0
+			menuStall, eventStall = 0, 0
 		}
 		busy := application.encounter != nil || application.cellWaitingMenu ||
 			application.cellEventPending || application.combatActive ||
@@ -1052,6 +1083,18 @@ walk:
 								application.eventMachine.Memory[0x4A26],
 								application.eventMachine.Memory[0x4AA7])
 						}
+					}
+				}
+				// 帶封印的箱子不要拆。這不是憑感覺挑的：`ecl4/2` 的
+				// `A99C ON GOTO` 兩條分支寫得很清楚——`OPEN IT`（索引 0）走
+				// `A9AF SAVE 128 → 4AC8h`，`TAKE IT UNOPENED`（索引 1）走
+				// `A9A8 SAVE 1 → 4AC8h`；而 `ecl3/0` 的 `AB17 COMPARE 4AC8h, 1`
+				// 才會走到 `AB8A SAVE 254 → 4AB8h`，也就是卡德納那一條委任
+				//（槽 18，spec 041）。拆了箱子那一條就再也交不了差，而輪流選
+				// 會有一半的趟數把它拆掉。
+				for index, option := range application.cellMenuOptions {
+					if strings.EqualFold(option, "TAKE IT UNOPENED") {
+						want = index
 					}
 				}
 				// 在野外地形上遇到「要不要進去」就進去。進區域圖再走出來會把

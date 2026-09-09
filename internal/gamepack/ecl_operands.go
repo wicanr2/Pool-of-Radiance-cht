@@ -116,6 +116,12 @@ const (
 	// PrintClearOpcode 是 `12h PRINTCLEAR`（spec 082）：清框再印，也就是
 	// 新的一頁。
 	PrintClearOpcode = 0x12
+	// ApproachOpcode 是 `0Dh APPROACH`（spec 117）：把接近距離減一再重畫
+	// 那張半身像。**只是重畫，不等玩家**——overlay-03 `07E1h` 做完就返回。
+	ApproachOpcode = 0x0D
+	// PictureOpcode 是 `0Eh PICTURE`（spec 117）：換一張圖，同樣不等玩家
+	// （overlay-03 `0822h`）。
+	PictureOpcode = 0x0E
 )
 
 // EncounterMenuChoices 是選單的四個選項，順序即畫面順序。第四項依情境在

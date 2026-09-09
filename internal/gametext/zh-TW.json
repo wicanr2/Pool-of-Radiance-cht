@@ -4124,6 +4124,11 @@
       "note": "platinum pieces 的縮寫，說明書把 platinum 列為五種幣值之一。"
     },
     {
+      "source": "PRESS <ENTER>/<RETURN> TO CONTINUE",
+      "text": "按 <ENTER>/<RETURN> 繼續",
+      "note": "overlay-03 `118Ah`。選項數是 1 的選單，原版畫的是這一條，不是腳本給的那一條（spec 082）。"
+    },
+    {
       "source": "PRESS <RETURN> OR BUTTON TO CONTINUE",
       "text": "按 <RETURN> 或按鈕繼續",
       "note": "原版的續行提示，四種拼法各自出現，逐一對應。"

@@ -97,6 +97,11 @@ prompt 使用第一位隊員姓名加 `, how can we help you?`；沒有隊員時
 2. opcode `24h` 維持 Pool external service boundary，由 Pool 明確白名單；只有同一個 boundary
    同時具有 `MonstersCleared` 且 `Memory[6DE2h]==1` 時，Pool 才進入 Sune temple。
    其他 `24h` 一律繼續 pending，不得因沿用 CoAB mnemonic 而誤路由或冒稱 combat。
+   **判定成立時要把 `6DE2h` 清成 0**，照 overlay-03 `18A2h..18B4h` 的
+   `比較 == 1 → 清 0 → 呼叫 overlay-04 entry 1`：那是一次性的服務票，不是
+   「來過神殿」的長期標記。只比較不清的話，ECL3/block 0 的八個 `24h` 在進過
+   一次神殿之後全部符合條件，玩家站在城區 (8,4)、(1,1)、(3,1) 這種沒有神殿的
+   格子上也會被拉進神殿介面。
 3. Temple menu 自己消費方向鍵與 Enter，不把其 index 當作下一個 ECL menu selection。
 4. 選 `Exit` 後清除 temple UI，從 COMBAT 的下一條 `AA6Bh` 繼續同一 VM；必須觀察
    `6DE1h=00FFh`、`PICTURE 255`，最後 `EXIT`，且玩家仍位於 `(1,3,0)`。

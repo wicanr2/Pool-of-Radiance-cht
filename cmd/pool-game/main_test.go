@@ -812,15 +812,15 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyArrowUp); err != nil {
 		t.Fatal(err)
 	}
-	if application.spawn.X != 1 || application.spawn.Y != 3 || !application.cellEventPending || !strings.Contains(application.eventText, "PRIESTESS JOY OF SUNE") {
+	// **問候、問句與選單是同一頁。** 蘇恩神殿這一格是三個相鄰邊界：
+	// `12h PRINTCLEAR` 換頁印問候、`11h PRINT` 接著印問句、然後才是
+	// `YES NO` 選單，中間沒有任何等待指令（spec 082）。要玩家按一下的
+	// 是腳本自己放的選單，不是每一則文字，所以走進這一格就同時看到
+	// 兩句話與選項——先前每則文字都停一次，中間那兩幀是原版沒有的。
+	if application.spawn.X != 1 || application.spawn.Y != 3 || !application.cellEventPending ||
+		!strings.Contains(application.eventText, "PRIESTESS JOY OF SUNE") ||
+		!strings.Contains(application.eventText, "DO YOU SEEK HEALING") {
 		t.Fatalf("Sune event spawn=%+v pending=%v text=%q", application.spawn, application.cellEventPending, application.eventText)
-	}
-	// **問句與它的選單是同一頁**：`12h PRINTCLEAR` 之後接著的 `11h PRINT`
-	// 不清框、不換頁（spec 082），所以按一次 Return 就同時看到
-	// `DO YOU SEEK HEALING` 與 `YES NO`——先前每個 `11h` 都停一次，
-	// 中間那一幀是原版沒有的。
-	if err := press(application, ebiten.KeyEnter); err != nil || !strings.Contains(application.eventText, "DO YOU SEEK HEALING") {
-		t.Fatalf("Sune question pending=%v text=%q err=%v", application.cellEventPending, application.eventText, err)
 	}
 	if !application.cellWaitingMenu || !reflect.DeepEqual(application.cellMenuOptions, []string{"YES", "NO"}) || application.cellMenuCursor != 0 {
 		t.Fatalf("Sune menu waiting=%v options=%v cursor=%d label=%q", application.cellWaitingMenu, application.cellMenuOptions, application.cellMenuCursor, application.eventLabel)
@@ -837,8 +837,12 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if !application.templeActive || !application.cellEventPending || !application.cellWaitingMenu || !reflect.DeepEqual(application.cellMenuOptions, []string{"Heal", "View", "Pool", "Appraise", "Exit"}) || !strings.Contains(application.eventText, "HERO, how can we help you?") {
 		t.Fatalf("temple active=%v pending=%v waiting=%v options=%v text=%q", application.templeActive, application.cellEventPending, application.cellWaitingMenu, application.cellMenuOptions, application.eventText)
 	}
-	if application.eventMachine.Memory[0x6DE2] != 1 {
-		t.Fatalf("temple flag=%d, want 1", application.eventMachine.Memory[0x6DE2])
+	// **旗標是一次性的服務票，進來就用掉。** 原版 overlay-03 的 `24h` handler
+	// `18A2h..18B4h` 比較 `+5C4h == 1` 之後清成 0，才呼叫神殿選單（spec 017）。
+	// 留著不清的話，ECL3/block 0 的八個 `24h` 在進過一次神殿之後全部符合條件，
+	// 玩家站在城區沒有神殿的格子上也會被拉進神殿介面。
+	if application.eventMachine.Memory[0x6DE2] != 0 {
+		t.Fatalf("temple flag=%d, want 0", application.eventMachine.Memory[0x6DE2])
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil || application.templeStage != templeHeal || !reflect.DeepEqual(application.cellMenuOptions, templeHealOptions) {
 		t.Fatalf("temple Heal stage=%d options=%v err=%v", application.templeStage, application.cellMenuOptions, err)
@@ -897,25 +901,21 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 			t.Fatalf("City Hall route spawn=%+v want=(%d,4)", application.spawn, wantX)
 		}
 	}
-	if !application.cellEventPending || !strings.Contains(application.eventText, "OUTSIDE THE CITY HALL") {
-		t.Fatalf("City Hall pending=%v text=%q", application.cellEventPending, application.eventText)
+	// 市政廳外是 ECL3/block0 的 `ABD2 PRINTCLEAR` → `AC1E GOSUB AF1C` →
+	// `AC22 PRINTCLEAR` → `AC9B PRINT` → `ACBE EXIT`。那個 `GOSUB` 是一個
+	// **只有一個選項的 HORIZONTAL MENU**（選項就是字串
+	// `PRESS <RETURN> OR BUTTON TO CONTINUE`），它才是原版的停頓點——
+	// 走進這一格就停在這裡，不必先按一次。
+	if !application.cellEventPending || !application.cellWaitingMenu ||
+		!strings.Contains(application.eventText, "OUTSIDE THE CITY HALL") {
+		t.Fatalf("City Hall continue menu pending=%v waiting=%v text=%q", application.cellEventPending, application.cellWaitingMenu, application.eventText)
 	}
-	cityHallText := application.eventText
-	if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || application.eventText != cityHallText {
-		t.Fatalf("City Hall continue menu waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
-	}
-	if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE" {
-		t.Fatalf("City Hall proclamation intro waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
-	}
-	// 布告清單是 `AC9B PRINT`（`11h`），接在 `AC22 PRINTCLEAR` 那一句後面——
-	// 兩者之間沒有任何等待玩家的指令，所以原版是一句話，不是兩頁。
-	// remake 先前把 `11h` 也當成取代，第二段就把第一段蓋掉了（spec 082）。
-	if err := press(application, ebiten.KeyEnter); err != nil ||
+	// 第二段是 `AC22 PRINTCLEAR` ＋ `AC9B PRINT`，中間沒有等待指令，之後直接
+	// `EXIT`——所以一次 Return 就把整段印完並回到自由移動，字留在框裡。
+	// remake 先前在每一則文字都停一次，同一段話被切成三幀（spec 082）。
+	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu ||
 		application.eventText != "PROCLAMATIONS ARE POSTED ON THE WALLS, IN YOUR JOURNAL YOU NOTE PROCLAMATIONS LXIV, LXXVIII, CIX, AND LIX." {
-		t.Fatalf("City Hall proclamation list text=%q err=%v", application.eventText, err)
-	}
-	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu {
-		t.Fatalf("City Hall return to movement pending=%v waiting=%v text=%q err=%v", application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
+		t.Fatalf("City Hall proclamations pending=%v waiting=%v text=%q err=%v", application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
 	}
 	if err := press(application, ebiten.KeyArrowUp); err != nil {
 		t.Fatalf("attempt City Hall doorway: %v", err)
@@ -927,45 +927,41 @@ func TestRealInitialAdventureUsesSharedVMToRolfExit(t *testing.T) {
 	if err := press(application, ebiten.KeyArrowRight); err != nil || application.spawn.Facing != 2 {
 		t.Fatalf("turn toward clerk corridor facing=%d err=%v", application.spawn.Facing, err)
 	}
-	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 4 || application.spawn.Y != 5 || !application.cellEventPending || !strings.Contains(application.eventText, "OUTSIDE THE CLERK'S OFFICE") {
-		t.Fatalf("clerk outside spawn=%+v pending=%v text=%q err=%v", application.spawn, application.cellEventPending, application.eventText, err)
-	}
-	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending {
-		t.Fatalf("leave clerk outside boundary pending=%v text=%q err=%v", application.cellEventPending, application.eventText, err)
+	// 文書官門外那一格只印一句就 `EXIT`，腳本沒有放選單——所以字留在框裡，
+	// 玩家不必按任何鍵就能繼續走（spec 082）。
+	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 4 || application.spawn.Y != 5 ||
+		application.cellEventPending || application.cellWaitingMenu ||
+		!strings.Contains(application.eventText, "OUTSIDE THE CLERK'S OFFICE") {
+		t.Fatalf("clerk outside spawn=%+v pending=%v waiting=%v text=%q err=%v", application.spawn, application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
 	}
 	// 南（2）左轉一次是東（1）。
 	if err := press(application, ebiten.KeyArrowLeft); err != nil || application.spawn.Facing != 1 {
 		t.Fatalf("turn into clerk office facing=%d err=%v", application.spawn.Facing, err)
 	}
-	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 5 || application.spawn.Y != 5 || !application.cellEventPending || !strings.Contains(application.eventText, "COUNCIL CLERK BEGINS LOOKING") {
-		t.Fatalf("clerk entry spawn=%+v pending=%v text=%q err=%v", application.spawn, application.cellEventPending, application.eventText, err)
+	// 辦公室裡相反：每一頁後面都跟著一個單選項的
+	// `PRESS <RETURN> OR BUTTON TO CONTINUE`，所以委託是一頁一頁翻的。
+	// 停頓由腳本決定，這一格自己要停五次。
+	if err := press(application, ebiten.KeyArrowUp); err != nil || application.spawn.X != 5 || application.spawn.Y != 5 ||
+		!application.cellEventPending || !application.cellWaitingMenu ||
+		!strings.Contains(application.eventText, "COUNCIL CLERK BEGINS LOOKING") {
+		t.Fatalf("clerk entry spawn=%+v pending=%v waiting=%v text=%q err=%v", application.spawn, application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
 	}
 	if application.eventMachine.Memory[0x4A01] != 1 || application.eventMachine.Memory[0x4A06] != 1 {
 		t.Fatalf("clerk entry flags 4A01=%d 4A06=%d", application.eventMachine.Memory[0x4A01], application.eventMachine.Memory[0x4A06])
 	}
-	clerkEntryText := application.eventText
-	if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || application.eventText != clerkEntryText {
-		t.Fatalf("clerk entry continue menu waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
-	}
-	if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != "THE CLERK SHUFFLES THROUGH HER PAPERS. 'ON THE MATTER OF COMMISSION,' SHE SAYS, 'I CAN OFFER THE FOLLOWING: '" {
-		t.Fatalf("clerk commission boundary waiting=%v text=%q err=%v", application.cellWaitingMenu, application.eventText, err)
-	}
-	previous := application.eventText
 	for index, want := range []string{
+		"THE CLERK SHUFFLES THROUGH HER PAPERS. 'ON THE MATTER OF COMMISSION,' SHE SAYS, 'I CAN OFFER THE FOLLOWING: '",
 		"THE SLUMS IMMEDIATELY TO OUR WEST NEED TO BE CLEARED OF MONSTERS.'",
 		"SOKAL KEEP ON THORN ISLAND MUST BE CLEARED.'",
 		"THE COUNCIL IS OFFERING A REWARD FOR BOOKS, MAPS, TOMES, ETC. WHICH PROVIDE USEFUL INFORMATION ABOUT PHLAN BEFORE THE FALL.  THE REWARD IS TIED TO THE VALUE OF THE INFORMATION.'",
-		"'THESE ARE ALL OF THE COMMISSIONS CURRENTLY AVAILABLE.'",
 	} {
-		if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || application.eventText != previous {
-			t.Fatalf("clerk commission menu %d waiting=%v text=%q want previous=%q err=%v", index, application.cellWaitingMenu, application.eventText, previous, err)
+		if err := press(application, ebiten.KeyEnter); err != nil || !application.cellWaitingMenu || application.eventText != want {
+			t.Fatalf("clerk commission page %d waiting=%v text=%q want=%q err=%v", index, application.cellWaitingMenu, application.eventText, want, err)
 		}
-		if err := press(application, ebiten.KeyEnter); err != nil || application.cellWaitingMenu || application.eventText != want {
-			t.Fatalf("clerk commission page %d text=%q want=%q err=%v", index, application.eventText, want, err)
-		}
-		previous = want
 	}
-	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu {
+	// 最後一頁後面沒有選單，直接 `EXIT`：翻完就回到自由移動。
+	if err := press(application, ebiten.KeyEnter); err != nil || application.cellEventPending || application.cellWaitingMenu ||
+		application.eventText != "'THESE ARE ALL OF THE COMMISSIONS CURRENTLY AVAILABLE.'" {
 		t.Fatalf("clerk EXIT pending=%v waiting=%v text=%q err=%v", application.cellEventPending, application.cellWaitingMenu, application.eventText, err)
 	}
 	if application.spawn.X != 5 || application.spawn.Y != 5 || application.eventSession.CurrentBlockID() != 8 {
