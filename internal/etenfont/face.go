@@ -42,8 +42,21 @@ type Face struct {
 	ascii    []byte
 	Fallback font.Face
 	Bold     bool
-	mu       sync.Mutex
-	cache    map[rune]cachedGlyph
+	// Shadow 為真時畫的是字身外面加厚的那一圈，不是字身本身。
+	Shadow bool
+	mu     sync.Mutex
+	cache  map[rune]cachedGlyph
+}
+
+// ShadowFace 回傳同一份字模資料的「外圈」面。呼叫端先用同色系暗一階把它畫
+// 出來、再用主色畫字身，字就厚了一格而字內的縫隙還在。
+func (f *Face) ShadowFace() *Face {
+	if f == nil {
+		return nil
+	}
+	return &Face{standard: f.standard, symbols: f.symbols, ascii: f.ascii,
+		Fallback: f.Fallback, Bold: f.Bold, Shadow: true,
+		cache: make(map[rune]cachedGlyph)}
 }
 
 // Load opens an ETen STDFONT.15 and optional SPCFONT.15.
@@ -137,12 +150,12 @@ func (f *Face) glyph(r rune) (cachedGlyph, bool) {
 		return cached, true
 	}
 	if raw, ok := f.standardGlyph(r); ok {
-		glyph := cachedGlyph{mask: rasterGlyph(raw, glyphWidth, glyphBytes/glyphHeight, f.Bold), advance: glyphWidth}
+		glyph := cachedGlyph{mask: rasterGlyph(raw, glyphWidth, glyphBytes/glyphHeight, f.Bold, f.Shadow), advance: glyphWidth}
 		f.cache[r] = glyph
 		return glyph, true
 	}
 	if raw, ok := f.asciiGlyph(r); ok {
-		glyph := cachedGlyph{mask: rasterGlyph(raw, asciiGlyphWidth, 1, f.Bold), advance: asciiGlyphWidth}
+		glyph := cachedGlyph{mask: rasterGlyph(raw, asciiGlyphWidth, 1, f.Bold, f.Shadow), advance: asciiGlyphWidth}
 		f.cache[r] = glyph
 		return glyph, true
 	}
@@ -155,13 +168,31 @@ func (f *Face) glyph(r rune) (cachedGlyph, bool) {
 // 0..14），最後那一欄是字與字之間的留白；讓加粗擴進去的話字模就填滿整個
 // advance，相鄰兩個字會黏成一團——筆畫密的字（「鈕繼」那種）在畫面上看起來
 // 像疊字，而同一個字型不加粗畫出來是清楚的。
-func rasterGlyph(raw []byte, width, bytesPerRow int, bold bool) *image.Alpha {
+// rasterGlyph 把一個字模畫成 alpha 遮罩。
+//
+// **字身本身不加粗。** 倚天的字模是照「筆畫一格、空隙一格」設計的，把亮點
+// 往右膨脹會同時吃掉字與字之間的留白**和字內的空隙**——「鈕」的金字旁、
+// 「繼」的絲字旁那些一格寬的縫全部糊成一塊。
+//
+// 要的厚度改從顏色拿：`shadow` 為真時畫的是「膨脹出來的那一圈」（膨脹減去
+// 字身），呼叫端先用同色系暗一階畫它、再用主色畫字身。亮暗有別，所以字內的
+// 縫隙還讀得出來，字與字之間也還分得開。
+func rasterGlyph(raw []byte, width, bytesPerRow int, bold, shadow bool) *image.Alpha {
 	mask := image.NewAlpha(image.Rect(0, 0, width, glyphHeight))
 	for y := 0; y < glyphHeight; y++ {
 		for x := 0; x < width; x++ {
-			on := raw[y*bytesPerRow+x/8]&(0x80>>uint(x&7)) != 0
-			if bold && x > 0 && x < width-1 {
-				on = on || raw[y*bytesPerRow+(x-1)/8]&(0x80>>uint((x-1)&7)) != 0
+			at := func(column int) bool {
+				if column < 0 || column >= width {
+					return false
+				}
+				return raw[y*bytesPerRow+column/8]&(0x80>>uint(column&7)) != 0
+			}
+			on := at(x)
+			if shadow {
+				// 膨脹一格再減掉字身，剩下的就是外圈。
+				on = (at(x) || at(x-1)) && !at(x)
+			} else if bold && x > 0 && x < width-1 {
+				on = on || at(x-1)
 			}
 			if on {
 				mask.SetAlpha(x, y, color.Alpha{A: 0xff})

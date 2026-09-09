@@ -23,6 +23,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/etenfont"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gametext"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/guide"
@@ -3514,11 +3515,41 @@ func drawHelp(screen *ebiten.Image, a *app, background, foreground, accent color
 // 一次 nil 比較而已。
 var drawnText func(value string, x, y int)
 
+// uiShadowFace 是 `uiFace` 的「外圈」面（見 `drawText`）。載不出倚天字型時
+// 是 nil，那時就只畫字身。
+var uiShadowFace *etenfont.Face
+
 func drawText(screen *ebiten.Image, value string, x, y int, ink color.Color) {
 	if drawnText != nil {
 		drawnText(value, x, y)
 	}
-	text.Draw(screen, strings.ToUpper(displayText(value)), uiFace, x, y, ink)
+	display := strings.ToUpper(displayText(value))
+	// 先把加厚的那一圈用同色系暗一階畫上去，再用主色畫字身。厚度從顏色拿，
+	// 不從解析度拿——直接把字身膨脹一格會同時吃掉字內的縫隙（見
+	// `etenfont.rasterGlyph`）。
+	if uiShadowFace != nil {
+		if dim, ok := dimmerInk(ink); ok {
+			text.Draw(screen, display, uiShadowFace, x, y, dim)
+		}
+	}
+	text.Draw(screen, display, uiFace, x, y, ink)
+}
+
+// dimmerInk 是同一個色相暗一階的那一色。EGA 的十六色就是「暗八色 ＋ 亮八色」，
+// 亮色的索引正好是暗色加八，所以配對是查表得來的，不是調出來的。
+func dimmerInk(ink color.Color) (color.Color, bool) {
+	r, g, b, a := ink.RGBA()
+	if a == 0 {
+		return nil, false
+	}
+	for index := 8; index < len(graphics.EGA16); index++ {
+		candidate := graphics.EGA16[index]
+		cr, cg, cb, _ := candidate.RGBA()
+		if cr == r && cg == g && cb == b {
+			return graphics.EGA16[index-8], true
+		}
+	}
+	return nil, false
 }
 
 // footerBaseline 是畫面最底下那一列文字的基線。
@@ -3564,6 +3595,9 @@ func main() {
 		log.Fatal(err)
 	}
 	uiFace = face
+	if eten, ok := face.(*etenfont.Face); ok {
+		uiShadowFace = eten.ShadowFace()
+	}
 	catalogue, err := gameTextFor(uiLanguage)
 	if err != nil {
 		log.Fatal(err)

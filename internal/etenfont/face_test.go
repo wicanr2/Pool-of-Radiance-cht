@@ -154,12 +154,36 @@ func TestBoldKeepsTheTrailingColumnClear(t *testing.T) {
 		raw[y*2+1] = 0xFE // x 8..14，第 15 欄留空
 	}
 	for _, bold := range []bool{false, true} {
-		mask := rasterGlyph(raw, 16, 2, bold)
+		mask := rasterGlyph(raw, 16, 2, bold, false)
 		if got := mask.AlphaAt(15, 7).A; got != 0 {
 			t.Errorf("bold=%v 時最後一欄被點亮了（%d），那是字與字之間的留白", bold, got)
 		}
 		if got := mask.AlphaAt(14, 7).A; got == 0 {
 			t.Errorf("bold=%v 時字身最後一欄不見了", bold)
 		}
+	}
+}
+
+// **外圈與字身不重疊**：外圈是「膨脹一格減掉字身」，所以字身亮的地方外圈
+// 一定是暗的。兩者疊在一起才會是「字身用主色、外面一圈用暗色」。
+func TestShadowIsTheRingOutsideTheBody(t *testing.T) {
+	// 第 7 列點亮 x=4..6，其餘全空。
+	raw := make([]byte, 30)
+	raw[7*2] = 0x0E // 0000 1110 → x 4,5,6
+	body := rasterGlyph(raw, 16, 2, false, false)
+	ring := rasterGlyph(raw, 16, 2, false, true)
+	for x := 0; x < 16; x++ {
+		bodyOn := body.AlphaAt(x, 7).A != 0
+		ringOn := ring.AlphaAt(x, 7).A != 0
+		if bodyOn && ringOn {
+			t.Errorf("x=%d 同時屬於字身與外圈", x)
+		}
+	}
+	// 外圈就在字身右邊那一格。
+	if ring.AlphaAt(7, 7).A == 0 {
+		t.Error("字身右邊那一格不在外圈裡")
+	}
+	if ring.AlphaAt(3, 7).A != 0 {
+		t.Error("字身左邊那一格不該在外圈裡——加厚只往右")
 	}
 }

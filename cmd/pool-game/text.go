@@ -128,7 +128,10 @@ func resolveUILanguage(langFlag, standardPath, symbolPath, asciiPath string) (la
 	if symbolPath == "" {
 		symbolPath = beside("spcfont.15")
 	}
-	face, err := etenfont.LoadWithASCII(standardPath, symbolPath, asciiPath, basicfont.Face7x13, true)
+	// **字身不加粗。** 倚天的字模是照「筆畫一格、空隙一格」設計的，把亮點往右
+	// 膨脹會同時吃掉字內的縫隙；厚度改由 `drawText` 用同色系暗一階畫一圈外框
+	// 拿（見 `etenfont.rasterGlyph` 與 `drawText`）。
+	face, err := etenfont.LoadWithASCII(standardPath, symbolPath, asciiPath, basicfont.Face7x13, false)
 	if err != nil {
 		return 0, nil, err
 	}
