@@ -85,6 +85,11 @@ func (a *app) screenName() string {
 		}
 		return "view-pick"
 	case a.fieldCastOpen:
+		// 挑法術那一步是整頁（spec 134），與挑人那個小框是兩張畫面；
+		// 不分開報的話截圖腳本只能盲按。
+		if a.fieldCastStage == fieldCastPickSpell {
+			return "field-cast-spell"
+		}
 		return "field-cast"
 	case a.journalOpen:
 		// 章別也報出來。手冊有四章，翻章只換內容不換畫面，不報的話

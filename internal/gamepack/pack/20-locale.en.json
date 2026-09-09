@@ -274,7 +274,11 @@
       "ui.spriteEffects": "COMBAT EFFECTS (MISSILES AND BLASTS)",
       "ui.spriteTerrain": "COMBAT TERRAIN TILES (24x24 PER CELL)",
       "ui.journalCue": "ENTER TO OPEN %s %s",
-      "ui.journalCueMore": "ENTER TO OPEN %s %s (%d MORE)"
+      "ui.journalCueMore": "ENTER TO OPEN %s %s (%d MORE)",
+      "ui.spellPageTitle": "%s'S SPELLS IN MEMORY",
+      "ui.spellPageLevel": "1ST LEVEL",
+      "ui.spellPageCanCast": "CAN CAST:",
+      "ui.spellPageCount": "%d SPELLS"
     }
   }
 }

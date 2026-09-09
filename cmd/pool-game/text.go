@@ -283,6 +283,10 @@ const (
 	msgSpriteTerrain
 	msgJournalCue
 	msgJournalCueMore
+	msgSpellPageTitle
+	msgSpellPageLevel
+	msgSpellPageCanCast
+	msgSpellPageCount
 	// 探索畫面的 `V)IEW`（spec 119）。
 	msgViewSheetPick
 	msgViewSheetFooter

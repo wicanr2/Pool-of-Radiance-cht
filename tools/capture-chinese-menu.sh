@@ -227,6 +227,9 @@ step k adventure-move
 step c field-cast
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-field-cast.png
+# **挑完人那一頁（整頁的法術清單，spec 134）這裡拍不到**：截圖流程建的是
+# 戰士，按下去只會得到「沒有記憶法術」。要拍它得先建施法職業、用 `K` 記一條、
+# 紮營休息讓它生效——那一段還沒接進來。版面由單元測試釘住。
 step Escape adventure-move
 # F4 是素材總覽：肖像、戰鬥造形、牆面圖塊與外框符號各一排。
 step F4 sprites

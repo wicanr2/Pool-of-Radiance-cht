@@ -45,6 +45,29 @@ const (
 	fieldCastLines    = 6
 )
 
+// 挑法術那一步是**整頁**，版面照原版量的（spec 134）。原版 native 座標乘二
+// 就是這裡的邏輯座標；只有標題那一行往下讓，因為 remake 在框上緣有自己的
+// 一行標題（原版沒有），其餘各行的絕對位置與原版相同。
+const (
+	spellPageLeft = 18 // 原版 native 9
+	// 標題：原版在 native 14（logical 28），那裡被 remake 的標題佔著。
+	spellPageTitleRow = 62
+	spellPageRuleTop  = 70
+	// 級別那一行與清單：原版 native 46／54，行距 8。
+	spellPageLevelRow = 92
+	spellPageFirstRow = 108
+	spellPagePitch    = 16
+	spellPageIndent   = 50 // 原版 native 25：清單比級別再縮 16 個像素
+	// 清單塞得下幾條：原版第一條在 native 54、下一條橫條在 129。
+	spellPageLines = 9
+	// 清單與資訊之間那條橫條，以及底下三行：原版 native 129／150／158／166。
+	spellPageRuleBottom  = 262
+	spellPageNameRow     = 300
+	spellPageCanRow      = 316
+	spellPageCountRow    = 332
+	spellPageCountIndent = 82 // 原版 native 41
+)
+
 // openFieldCast 開始探索施法。
 func (a *app) openFieldCast() {
 	if len(a.state.Party) == 0 {
@@ -282,13 +305,66 @@ func (a *app) partyPickerRows() []string {
 
 // drawFieldCast 畫下方那個框：框內是選項，框外那一列是標題與鍵位。
 func drawFieldCast(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
+	if a.fieldCastStage == fieldCastPickSpell {
+		drawSpellPage(screen, a, background, foreground, accent)
+		return
+	}
 	title := a.text(msgFieldCastPickCaster)
-	switch a.fieldCastStage {
-	case fieldCastPickSpell:
-		title = a.text(msgFieldCastPickSpell)
-	case fieldCastPickTarget:
+	if a.fieldCastStage == fieldCastPickTarget {
 		title = a.text(msgFieldCastPickTarget)
 	}
 	drawPickerInFrame(screen, a, a.fieldCastRows(), a.fieldCastCursor,
 		a.fieldCastMessage, title, foreground, accent)
+}
+
+// drawSpellPage 畫挑法術那一頁：標題、一條橫線、縮排的清單、再一條橫線、
+// 底下「還能記幾條」，指令列在框外（spec 134）。
+//
+// **原版這一頁是整頁，不是疊在冒險畫面上的小框**——挑人那一步才是小框，
+// 而挑人本來就是 remake 自己加的（原版對「目前角色」施法，spec 119）。
+func drawSpellPage(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
+	panel := ebiten.NewImage(logicalWidth-2*guidePanelInset, guidePanelBottom-guidePanelTop)
+	panel.Fill(background)
+	screen.DrawImage(panel, &ebiten.DrawImageOptions{
+		GeoM: translated(guidePanelInset, guidePanelTop)})
+
+	caster := ""
+	if a.fieldCastCaster < len(a.state.Party) {
+		caster = strings.TrimSpace(a.state.Party[a.fieldCastCaster].Name)
+	}
+	drawText(screen, fmt.Sprintf(a.text(msgSpellPageTitle), caster),
+		spellPageLeft, spellPageTitleRow, accent)
+	drawSpellPageRule(screen, spellPageRuleTop, accent)
+
+	drawText(screen, a.text(msgSpellPageLevel), spellPageLeft, spellPageLevelRow, foreground)
+	top := fieldCastWindow(a.fieldCastCursor, len(a.fieldCastOptions), spellPageLines)
+	for offset := 0; offset < spellPageLines && top+offset < len(a.fieldCastOptions); offset++ {
+		index := top + offset
+		mark, ink := "  ", foreground
+		if index == a.fieldCastCursor {
+			mark, ink = "> ", accent
+		}
+		drawText(screen, mark+a.fieldCastOptions[index].Label,
+			spellPageIndent, spellPageFirstRow+offset*spellPagePitch, ink)
+	}
+
+	drawSpellPageRule(screen, spellPageRuleBottom, accent)
+	drawText(screen, caster, spellPageLeft, spellPageNameRow, foreground)
+	if a.fieldCastMessage != "" {
+		drawText(screen, a.fieldCastMessage, spellPageLeft, spellPageCanRow, foreground)
+	} else {
+		drawText(screen, a.text(msgSpellPageCanCast), spellPageLeft, spellPageCanRow, foreground)
+		drawText(screen, fmt.Sprintf(a.text(msgSpellPageCount), len(a.fieldCastOptions)),
+			spellPageCountIndent, spellPageCountRow, foreground)
+	}
+	drawText(screen, a.text(msgFieldCastFooter), spellPageLeft, footerBaseline, accent)
+}
+
+// drawSpellPageRule 畫一條橫線。原版那兩條是繩索圖塊，remake 這一頁在面板
+// 上，畫繩索會與外框的繩索重疊成一團，所以用一條線——標為
+// layout-reconstructed，見 spec 134。
+func drawSpellPageRule(screen *ebiten.Image, y int, ink color.Color) {
+	for x := spellPageLeft; x < logicalWidth-spellPageLeft; x++ {
+		screen.Set(x, y, ink)
+	}
 }

@@ -274,7 +274,11 @@
       "ui.spriteEffects": "戰鬥特效（投射物與爆炸）",
       "ui.spriteTerrain": "戰場地形圖塊（每格 24×24）",
       "ui.journalCue": "ENTER 翻到%s %s",
-      "ui.journalCueMore": "ENTER 翻到%s %s（還有 %d 則）"
+      "ui.journalCueMore": "ENTER 翻到%s %s（還有 %d 則）",
+      "ui.spellPageTitle": "%s 記在腦中的法術",
+      "ui.spellPageLevel": "第 1 級",
+      "ui.spellPageCanCast": "還施得出來：",
+      "ui.spellPageCount": "共 %d 條"
     }
   }
 }
