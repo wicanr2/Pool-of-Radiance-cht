@@ -35,10 +35,13 @@ test -f "$SOURCE/start.exe" || {
 # 鍵序：開場動畫 → 防拷提示頁（按 Return 送空字串就過）→ 人物管理選擇項 →
 # 建角一路到人物資料頁 → 存進名單 → 加進隊伍 → 開始冒險 → 導覽。
 #
-# **選單裡要移動反白就送 `1`，不是方向鍵。** 方向鍵送得到（`int 16h AH=00`
-# 回 `AX=5000h`、程式也讀走了），但原版的讀鍵層（`START.EXE` `026B:0048`）
-# 對擴充鍵回 `#0`，選單不處理它——五次 `Down` 之後反白一格都沒動，
-# 五次 `1` 則從第一項走到第六項。原因見 CONTEXT 2026-09-09 那一節。
+# **選單裡要移動反白就送 `1`，不是方向鍵**（spec 133）。方向鍵送得到
+#（`int 16h AH=00` 回 `AX=5000h`、程式也讀走了），但原版的讀鍵層
+#（`START.EXE` `026B:0048`）對擴充鍵回 `#0`，選單那一層不處理它——五次
+# `Down` 之後反白一格都沒動，五次 `1` 則從第一項走到第六項。
+#
+# 要看「鍵被誰讀走、讀到什麼」設 `POOL_DOSGOLEM_KEYTRACE=1`，
+# 它會開 dosgolem 的 `-keytrace`（dosgolem `docs/spec/185`）。
 #
 # 名字**一個字母一個 script 項**：整串一次推進佇列時，原版的輸入欄只收得到
 # 最後一個字（量到的結果是 `O.cha` 不是 `HERO.CHA`）。原因還沒解，
@@ -68,7 +71,8 @@ docker run --rm --network none --memory 4g --cpus "${PARITY_CPUS:-2}" --pids-lim
   -e GOCACHE=/gocache -e GOMODCACHE=/gomodcache -e HOME=/tmp -e GOFLAGS=-mod=mod \
   -w /dosgolem golang:1.24-bookworm \
   go run ./cmd/shots -exe /orig/start.exe -root /orig -scratch /scratch \
-    -out /out -budget 150000000 -idle 3000000 -keys "$KEYS"
+    -out /out -budget 150000000 -idle 3000000 ${POOL_DOSGOLEM_KEYTRACE:+-keytrace} \
+    -keys "$KEYS"
 
 # 產地證明。對拍腳本認這一份：**沒有它、或 generator 不是 dosgolem 就不准跑**
 # （AGENTS.md §7）。基準來自哪裡是對拍結論的前提，靠自律記得換是不夠的——
