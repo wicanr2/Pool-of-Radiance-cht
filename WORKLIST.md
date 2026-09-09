@@ -75,6 +75,16 @@
 肖像編輯器、戰鬥造形設計的 OLD／NEW、遊戲內攻略擴到其餘地圖，以及把抽樣擴到
 商店、神殿與結局——四條連驗收條件列在〈發行〉一節底下，不在這裡複製一份。
 
+- [ ] **紮營畫面的版面與原版不同。** 原版按 `E` 不彈選單：第一人稱視野換成
+      一張營火圖、時鐘行後面接上 `CAMPING`、指令列整列換成
+      `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`，對話框印
+      `THE PARTY MAKES CAMP...`；按 `R` 再換成
+      `REST DAYS HOURS MINS INC DEC EXIT` 與 `REST TIME: 00:00:00`。
+      remake 現在是一個直排選單疊在右側，而且休息時間那三行**壓在第一人稱
+      視野框上**（`docs/screenshots/pool-remake-chinese-camp.png`）。
+      幾何已量（spec 135），缺的是營火圖出自哪一個 `PIC*.DAX` 區塊，以及
+      `SAVE`／`VIEW`／`ALTER` 三項。**驗收**：紮營畫面逐列對得上原版。
+
 已經對齊原版的：戰術盤面（spec 129，外框 9152／9152 ＝ 100%）、
 人物資料頁（spec 130，`sheet` 整張 85.16% → 86.63%）、戰場的地形圖塊與
 造形（spec 131，三個 `*COM.DAX` 的 24×24 圖塊照 `PresentationCode` 鋪）、
