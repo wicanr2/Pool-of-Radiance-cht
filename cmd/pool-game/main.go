@@ -1,3 +1,6 @@
+// pool-game 是 remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用
+// engine 和 game pack 的接線。玩法規則本身不寫在這裡，寫在 internal/ 與
+// JSON game pack 裡。
 package main
 
 import (

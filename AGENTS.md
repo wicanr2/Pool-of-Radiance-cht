@@ -265,6 +265,15 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
 - `docs/spec/`：行為契約；`docs/re/`：查證方法；`docs/playtest/`：實跑證據；
   `docs/audit/`：可重生盤點與發行收據。
 
+**要找「某個東西的規格／實作／測試在哪」先看
+[`docs/spec/000-index.md`](docs/spec/000-index.md)。** 那份由
+`cmd/pool-doc-index` 產生，別手改。對應關係的主鍵是 spec 編號——程式碼註解
+裡的 `spec NNN` 就是那條線，索引只是把它反過來收攏，所以新增註解後重跑一次
+就對了。反過來查也一樣快：`grep -rl 'spec 122' --include='*.go' cmd internal`。
+
+改一份規格的某一節之前**先讀它的檔頭**。狀態行與檔頭的引言會寫明這一份已經
+閉合到哪、被哪一份接手；跳過檔頭直接改中段，會把早就有答案的問題當成待解。
+
 首次工作必須建立「目前狀態表」，分開：
 
 1. remake 已完成；

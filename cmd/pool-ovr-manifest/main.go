@@ -1,3 +1,8 @@
+// pool-ovr-manifest 產生 docs/audit/dos-ovr-manifest.json：38 顆 overlay 的
+// 位置、長度、重定位表與各自的 SHA-256，是所有 overlay 反查的起點。
+//
+// 注意 executable_file_offset 指的是 START.EXE 裡的 stub 位置，不是
+// GAME.OVR 的偏移——要定位 overlay 內的位址請用 cmd/pool-disp-scan。
 package main
 
 import (
