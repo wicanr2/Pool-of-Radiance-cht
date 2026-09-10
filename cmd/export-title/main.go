@@ -1,4 +1,6 @@
 // export-title 把原版的標題畫面從 DAX 解出來寫成 PNG，給對拍與說明文件用。
+//
+// 版面與來源區塊見 spec 001。
 package main
 
 import (

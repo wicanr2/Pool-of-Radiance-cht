@@ -112,3 +112,39 @@ func TestNeedsSpaceOnlySkipsBetweenTwoHanCharacters(t *testing.T) {
 		}
 	}
 }
+
+// 有幾份規格的實作在共用 engine，這個 repo 掃不到。標不出來的話那些會顯示成
+// 「—」，和「真的還沒接」混在一起。
+func TestReadSpecMarksSharedEngineImplementations(t *testing.T) {
+	directory := t.TempDir()
+	write := func(name, body string) string {
+		path := filepath.Join(directory, name)
+		if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		return path
+	}
+
+	shared := write("027-save-table-opcode.md",
+		"# Spec 027：`35h SAVE TABLE`\n\n狀態：CONFORMED。\n日期：2026-09-01。\n\n"+
+			"remake 這一側由共用 engine 實作（`eclvm/machine.go` 的 `case 0x35`）。\n")
+	local := write("122-locked-doors.md",
+		"# Spec 122：鎖住的門\n\n狀態：CONFORMED。\n日期：2026-09-05。\n\n"+
+			"remake 這一側在 internal/gamepack/door.go。\n")
+
+	parsed, err := readSpec(shared)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !parsed.sharedEngine {
+		t.Error("提到 eclvm 的規格該標成共用 engine")
+	}
+
+	parsed, err = readSpec(local)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parsed.sharedEngine {
+		t.Error("沒提到 eclvm 的規格不該標成共用 engine")
+	}
+}

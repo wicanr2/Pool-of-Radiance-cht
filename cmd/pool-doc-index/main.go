@@ -29,6 +29,9 @@ type spec struct {
 	statuses []string
 	code     []string
 	tests    []string
+	// sharedEngine 標記「實作在共用 engine，不在這個 repo」。少了它，
+	// 那幾份的實作欄會是「—」，看起來像沒實作——而索引掃不到別的 repo。
+	sharedEngine bool
 }
 
 type tool struct {
@@ -53,6 +56,9 @@ func readSpec(path string) (spec, error) {
 
 	lines := strings.Split(string(raw), "\n")
 	result := spec{number: match[1], file: name}
+	// eclvm 是共用 engine 的套件名，比「共用 engine」這個詞更明確——
+	// 後者在很多規格裡只是敘述的一部分。
+	result.sharedEngine = strings.Contains(string(raw), "eclvm")
 	if len(lines) > 0 {
 		result.title = strings.TrimSpace(strings.TrimPrefix(lines[0], "#"))
 		result.title = strings.TrimPrefix(result.title, "Spec "+result.number+"：")
@@ -298,18 +304,23 @@ func main() {
 	out.WriteString("> 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，\n")
 	out.WriteString("> 這份只是把它反過來收攏，所以改了註解重跑一次就對了。\n\n")
 
-	var noCode, noTests int
+	var noCode, noTests, shared int
 	for _, item := range specs {
-		if len(item.code) == 0 {
+		switch {
+		case len(item.code) > 0:
+		case item.sharedEngine:
+			shared++
+		default:
 			noCode++
 		}
 		if len(item.tests) == 0 {
 			noTests++
 		}
 	}
-	fmt.Fprintf(&out, "%d 份規格，其中 %d 份還沒有任何檔案的註解指回它、%d 份沒有測試提到它。\n",
-		len(specs), noCode, noTests)
-	out.WriteString("這兩個數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。\n\n")
+	fmt.Fprintf(&out, "%d 份規格，其中 %d 份還沒有任何檔案的註解指回它、%d 份沒有測試提到它；\n"+
+		"另有 %d 份實作在共用 engine（`eclvm`），不在這個 repo。\n",
+		len(specs), noCode, noTests, shared)
+	out.WriteString("這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。\n\n")
 
 	out.WriteString("## 規格\n\n")
 	out.WriteString("| # | 標題 | 狀態 | 實作 | 測試 |\n|---|---|---|---|---|\n")
@@ -318,8 +329,12 @@ func main() {
 		if status == "" {
 			status = "—"
 		}
+		implementation := shorten(item.code)
+		if len(item.code) == 0 && item.sharedEngine {
+			implementation = "共用 engine"
+		}
 		fmt.Fprintf(&out, "| [%s](%s) | %s | %s | %s | %s |\n",
-			item.number, item.file, item.title, status, shorten(item.code), shorten(item.tests))
+			item.number, item.file, item.title, status, implementation, shorten(item.tests))
 	}
 
 	out.WriteString("\n## `cmd/` 底下的工具\n\n")
