@@ -60,11 +60,24 @@ code offset `055Dh`。那支的分工是：
 
 ## Rolf 的 head 區塊（量出來的）
 
-`+5C2h` 的 producer **還沒找到**。38 顆 overlay 與 `START.EXE` 逐位元組掃過
-`5C2h` 這個位移，唯一的寫入是 overlay-7 `0233h` 在 ECL block 初始化時寫
-`0FFh`；沿 `DS:4937h`／`DS:4933h` 兩個遠指標列出的所有結構欄位寫入也只有這一筆。
-所以真正的 producer 一定是用別的定址形式（算出來的偏移，或整塊搬移）寫進去的
-——**這是掃描面的洞，不是「沒有 producer」**。
+`+5C2h` 的 producer **在 ECL 裡**（2026-09-10 找到）。38 顆 overlay 與
+`START.EXE` 逐位元組掃過 `5C2h` 這個位移，唯一的寫入是 overlay-7 `0233h` 在
+ECL block 初始化時寫 `0FFh`——當時的結論「這是掃描面的洞，不是『沒有
+producer』」是對的，洞在於**那種掃描看的是 overlay 的定址形式，而這個位址是
+ECL 變數**。
+
+`DS:4937h` 是 class 1 的基底，換算式 `[4937h] + 2A00h + addr × 2`（spec
+008／106）把 `+5C2h` 換回 ECL 位址 **`6DE1h`**。
+`cmd/pool-ecl-memory-audit -addresses 6DE1` 在八個 ECL 檔裡找到 **212 個
+`SAVE`**。
+
+換算有兩個獨立佐證：同一式子把 `+5C4h` 換成 `6DE2h`，而 remake 的蘇恩神殿
+服務票（spec 017）本來就在讀寫 `Memory[0x6DE2]`；把 class 0 的 `+1CCh` 換成
+`49E6h`，與 spec 074 獨立讀出來的值相同。
+
+**還沒對的是值的語意**：那 212 處各寫什麼、與這裡量出來的 head 區塊 8 對不
+對得上，要把 `SAVE` 的另一個運算元讀出來才知道。下面那段「從畫面量出來」的
+證據不受影響——它本來就是獨立的一條路。
 
 因此 head 是從原版畫面量出來的：`03-rolf-approach.png` 裁下 `(24,24)` 起的
 88×88，上半 88×40 與 `HEAD3.DAX` 區塊 **8** 逐格 100% 相同，下半 88×48 與

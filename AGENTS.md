@@ -130,6 +130,22 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
 - IDA 資料庫、交叉參照與資料流為主，攤平 `.asm` 只作搜尋線索。
   far pointer、段前綴、間接讀寫、overlay entry 與 compiler helper 必須單獨追蹤，
   不得因 direct xref 為零就宣稱沒有 consumer。
+- **overlay 掃不到 ECL 腳本的寫入。** 掃 overlay 找 writer 用的是機器碼的定址
+  形狀（disp16 modrm 之類），而遊戲資料有一大半是 ECL 的 `SAVE` 寫的——那是
+  bytecode，不是機器碼，任何指令層掃描都結構上看不到它。所以**一個位址在
+  overlay 裡找不到 writer 時，先問它是不是 ECL 變數，再說「掃描面有洞」**。
+  判準是落不落在兩個基底的窗內：class 0 是 `[4933h] + 6E00h + addr × 2`，
+  class 1 是 `[4937h] + 2A00h + addr × 2`（皆 mod 10000h，見 spec 008／106）。
+  換回 ECL 位址之後用 `cmd/pool-ecl-memory-audit -addresses <hex>` 列引用。
+- **反過來也一樣：ECL 位址的字面值掃不到引擎的寫入。** 引擎寫的是
+  「基底在暫存器＋位移」（`[4937h] + 5AAh`），位元組序列裡不會出現 ECL 位址的
+  兩位元組字面值，所以掃 `D5 6D` 得到零筆不代表沒有 writer。要掃 overlay 就先
+  把位址反解成位移：class 1 是 `(2A00h + addr × 2) mod 10000h`，
+  class 0 是 `(6E00h + addr × 2) mod 10000h`，拿位移去掃 disp16。
+  **兩條合起來的意思是：ECL 位址與引擎位移是同一個東西的兩種寫法，
+  一邊查不到就換算到另一邊再查，不要停在「掃描面有洞」。**
+  已驗過的換算對：`6DD5h↔5AAh`、`6DD2h↔5A4h`、`6DE1h↔5C2h`、`6DE2h↔5C4h`、
+  class 0 的 `49E6h↔1CCh`。
 - 追 Borland TPOV far call 時保留原始 `segment:offset`，先用 MZ header size 換算
   executable file offset，再與 `docs/audit/dos-ovr-manifest.json` 的
   `executable_file_offset` 精確反查 overlay／entry；每次匯出同時記錄輸入 overlay
