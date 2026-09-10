@@ -216,7 +216,7 @@ def main():
         },
         {
             "name": "first-person", "kind": "pixel-parity",
-            "digest": "f384683d3f49ece193dcb8eff272e5fe79af836a67db866eefc56fa183952642",
+            "digest": "888cc816",
             "remake": "remake-first-person.png",
             "ref_box": [24, 24, 88, 88],
             "remake_box": [REMAKE_VIEW_LEFT, REMAKE_VIEW_TOP, 88, 88],
@@ -235,24 +235,24 @@ def main():
         {"name": "alignment", "kind": "layout",
          "digest": "389c0055", "remake": "remake-alignment.png", "note": "陣營"},
         {"name": "sheet", "kind": "layout",
-         "digest": "f33c0725", "remake": "remake-sheet.png",
+         "digest": "e5de2eab", "remake": "remake-sheet.png",
          "note": "人物資料頁（KEEP THIS CHARACTER?）"},
         {"name": "name", "kind": "layout",
-         "digest": "17fdd284", "remake": "remake-name.png", "note": "姓名輸入"},
+         "digest": "6a477726", "remake": "remake-name.png", "note": "姓名輸入"},
         {"name": "portrait", "kind": "layout",
-         "digest": "9019afcf", "remake": "remake-portrait.png",
+         "digest": "fd43bc28", "remake": "remake-portrait.png",
          "note": "肖像編輯器（原版底下是 HEAD BODY KEEP）"},
         {"name": "icon", "kind": "layout",
          "digest": "60fbf041", "remake": "remake-icon.png",
          "note": "戰鬥造形設計（原版是 OLD／NEW 四格加底部指令列）"},
         {"name": "menu-party", "kind": "layout",
-         "digest": "11c6caa4", "remake": "remake-menu-party.png",
+         "digest": "ca64a624", "remake": "remake-menu-party.png",
          "note": "人物管理選擇項，隊伍裡有人"},
         {"name": "intro", "kind": "layout",
-         "digest": "3717ce93", "remake": "remake-intro.png",
+         "digest": "6d8018e9", "remake": "remake-intro.png",
          "note": "按下 B 之後的第一幕"},
         {"name": "combat", "kind": "layout", "frame": "combat",
-         "digest": "1bcdbd55", "remake": "remake-tactical.png",
+         "digest": "b3719728", "remake": "remake-tactical.png",
          "note": "戰鬥畫面（spec 129）。原版那一側是第一場遭遇，remake 這一側是"
                  " F5 叫出來的同一支繪製——盤面內容本來就不同，這一項看的是版面"},
         # 市政廳外那一格（spec 082）。基準是另一組鍵序產的
@@ -261,12 +261,12 @@ def main():
         # 往西撞遭遇」，不經過市政廳。這兩張守的是「按幾次」——停頓由腳本自己
         # 放的單選項選單決定，不是每一頁自動加的。
         {"name": "city-hall-1", "kind": "layout", "ref": "cityhall",
-         "digest": "af08d174", "remake": "remake-city-hall-first.png",
+         "digest": "1a346eab", "remake": "remake-city-hall-first.png",
          "note": "市政廳外第一段：文字框三行，框外那一列是原版自己的"
                  " PRESS <ENTER>/<RETURN> TO CONTINUE（overlay-03 118Ah），"
                  "不是腳本給的那一條"},
         {"name": "city-hall-2", "kind": "layout", "ref": "cityhall",
-         "digest": "5e87acc8", "remake": "remake-city-hall-second.png",
+         "digest": "78c750a7", "remake": "remake-city-hall-second.png",
          "note": "按一次 Return 之後：四行公告一次顯示，框外換回指令列"
                  " AREA CAST VIEW ENCAMP SEARCH LOOK"},
     ]

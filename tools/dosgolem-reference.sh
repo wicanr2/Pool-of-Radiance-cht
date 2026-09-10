@@ -10,9 +10,13 @@
 # 需要：
 #   - dosgolem 的工作區，預設 `workplace/dosgolem`（gitignore；沒有就
 #     `git clone https://github.com/wicanr2/dosgolem.git workplace/dosgolem`）。
-#     用 `master` 就好——Pool 的 oracle 那一批（`cmd/shots`、
-#     `docs/spec/008-bios-keyboard-injection.md`、`009-scratch-writes.md`）
-#     2026-09-07 已經併進 master。路徑可由 DOSGOLEM_DIR 覆寫。
+#     **用 `main`。** 上游把各分支收成一條 main，Pool 的 oracle 那一批
+#     （`cmd/shots`、`docs/spec/008-bios-keyboard-injection.md`、
+#     `009-scratch-writes.md`）都在裡面；`master` 停在 2026-09-07，
+#     落後兩百多個 commit（含 CPU、VGA 繪圖與 PIT 分頻的修正）。
+#     本 repo 的對拍分支從 main 切：
+#       git -C workplace/dosgolem checkout -b pool-parity origin/main
+#     路徑可由 DOSGOLEM_DIR 覆寫。
 #   - 原版 DOS 檔案解壓在 workplace/oracle/dos（本 repo 不含原版素材）。
 #
 # 輸出 `.idx`（一格一個位元組的色號，320x200）與 `.png`（EGA 調色盤，給人看）。
@@ -47,9 +51,17 @@ test -f "$SOURCE/start.exe" || {
 # 名字**一個字母一個 script 項**：整串一次推進佇列時，原版的輸入欄只收得到
 # 最後一個字（量到的結果是 `O.cha` 不是 `HERO.CHA`）。原因還沒解，
 # 所以照會動的方式送，不要假設它跟一次推一串等價。
-# 導覽結束之後**再往前走三步**就會撞上第一場遭遇（`YOU ARE SURPRISED BY …`），
-# 接著按 Return 進戰鬥畫面——spec 129 的基準就是那一幀。
-KEYS="${POOL_DOSGOLEM_KEYS:-rep:9:Space,Return,Return,c,Return,Return,Return,Return,Return,Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:14:Return,Up,Up,Up,rep:10:Return}"
+# 導覽本身要按十次 Return 才播完（`YOUR TOUR IS ENDED`），**再往前走三步**
+# 就會撞上第一場遭遇，接著按 **`c`** 選 `COMBAT` 進戰鬥畫面——spec 129 的
+# 基準就是那一幀。
+#
+# **選 COMBAT 要按 `c` 不是 Return。** 遭遇有兩種：我方被突襲時沒有選單，
+# 一個 Return 關掉訊息就進戰鬥；我方突襲對方時是水平選單
+# `COMBAT WAIT FLEE PARLAY`，而 Pool 的水平選單一律按首字母選
+# （同 spec 133 那一族）。走哪一種由遭遇當下的骰子決定，而骰子跟著時序走——
+# dosgolem 換版本就可能換一種。按 `c` 兩種都到得了：沒有選單時它被忽略，
+# 後面那幾個 Return 仍然會把訊息關掉。
+KEYS="${POOL_DOSGOLEM_KEYS:-rep:9:Space,Return,Return,c,Return,Return,Return,Return,Return,Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:14:Return,Up,Up,Up,rep:10:Return,Up,Up,Up,c,rep:5:Return}"
 
 rm -rf "$OUT"
 mkdir -p "$OUT" "$ROOT/workplace/dosgolem-scratch"
