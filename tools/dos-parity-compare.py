@@ -260,6 +260,10 @@ def main():
          "note": "平面圖：`A` 把第一人稱那一框換成俯視圖，其餘版面不動。"
                  "主鍵序在導覽結束那一格按兩次 `a`（開、關），所以這一項"
                  "不影響後面的戰鬥那一幀"},
+        {"name": "view-sheet", "kind": "layout",
+         "digest": "856df275", "remake": "remake-view-sheet.png",
+         "note": "檢視人物：整張人物資料頁。原版底下那一列是"
+                 " VIEW: TRADE DROP EXIT，remake 目前是 ESC 返回"},
         {"name": "icon-confirm", "kind": "layout",
          "digest": "d148516e", "remake": "remake-icon-confirm.png",
          "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成"

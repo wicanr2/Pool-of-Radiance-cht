@@ -83,7 +83,8 @@ GATE
 # 的那種按掉（east_step）。它只吃 adventure-cell-text：市政廳第一段是腳本自己
 # 放的單選項選單（adventure-cell-menu），那一張正是要拍的，不能一起清掉。
 #
-# **容器腳本裡不要放多行中文註解**：那一整段是 `bash -c '…'` 的單引號字串，
+# **容器腳本裡不要放多行中文註解，也不要在註解裡放反引號**：那一整段是
+# `bash -c '…'` 的單引號字串，
 # 中文註解在裡面曾經讓主機這一側報 "指令找不到"（對拍照樣跑完、exit 0，
 # 只是尾巴多一行雜訊，看起來像對拍壞了）。註解留在主機端這裡。
 rm -rf "$OUT"; mkdir -p "$OUT"
@@ -142,11 +143,14 @@ await() {
   done
 }
 pulse() { xdotool keydown "$1"; sleep 0.12; xdotool keyup "$1"; sleep 0.12; }
+# 第三個參數是「最多按幾次」。先前它被忽略——簽章只取 $1／$2，而呼叫端寫的
+# 那個 60 沒有生效，上限一直是寫死的 40。導覽那一段要等的時間本來就長，
+# 於是偶爾就在那裡 die 掉。
 step() {
-  key=$1; want=$2; attempt=0
+  key=$1; want=$2; limit=${3:-40}; attempt=0
   while test "$(screen)" != "$want"; do
     attempt=$((attempt+1))
-    test "$attempt" -le 40 || die "按 $key 走不到 $want"
+    test "$attempt" -le "$limit" || die "按 $key 走不到 $want（試了 $limit 次）"
     pulse "$key"
     waited=0
     while test "$(screen)" != "$want" && test "$waited" -lt 15; do
@@ -206,15 +210,34 @@ shot remake-menu-party
 step b adventure-intro
 sleep 0.6
 shot remake-intro
-step Return adventure-move 60
+# 導覽是自己會跑完的：tourActive 底下走的是 ECL，每一步靠 tourDelay 逐幀
+# 遞減推進（Game Speed 是「等一拍」的統一單位）。按 Return 只是推過中間需要
+# 按鍵的地方，所以這個上限量的是「等多久」不是「按幾次」——機器忙的時候
+# Ebiten 的幀率掉下來，同樣的步數要等更久。60 次（約 90 秒）在負載高時不夠，
+# 症狀是「按 Return 走不到 adventure-move、目前畫面 adventure-tour」。
+step Return adventure-move 200
 sleep 0.6
 shot remake-first-person
-# 平面圖：`A` 把第一人稱視野換成俯視圖（原版指令列的 `AREA`）。基準那一側
-# 也是在導覽結束的同一格按 `a` 拍的，所以兩邊站的位置一樣。
+# 平面圖：A 把第一人稱視野換成俯視圖（原版指令列的 AREA）。基準那一側
+# 也是在導覽結束的同一格按 a 拍的，所以兩邊站的位置一樣。
 step a adventure-map
 sleep 0.6
 shot remake-map
 step a adventure-move
+sleep 0.4
+# 檢視人物：原版指令列的 VIEW。**兩邊多了一層**——原版有「選定角色」那個
+# 全域（ds:5CF0h），按 v 直接開資料頁；remake 沒有那個全域，所以先挑人
+# （view-pick）再按 Return 才進資料頁。退出鍵也不同：原版那一頁底下是
+# VIEW: TRADE DROP EXIT（按 e），remake 是 ESC 返回，而且要按兩次
+# （先從資料頁回挑人那一層，再退出去）。
+step v view-pick
+sleep 0.3
+step Return view-sheet
+sleep 0.6
+shot remake-view-sheet
+pulse Escape
+sleep 0.3
+step Escape adventure-move
 sleep 0.4
 # 戰鬥畫面（spec 129）。原版那一側是走到第一場遭遇拍的；remake 這一側用 F5
 # 叫出同一支繪製——盤面內容本來就不同，這一項看的是版面。
