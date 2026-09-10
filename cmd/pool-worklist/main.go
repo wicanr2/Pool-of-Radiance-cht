@@ -217,6 +217,13 @@ func jsonFieldLen(path, field string) (int, error) {
 	return 0, fmt.Errorf("%s 的 %q 既不是物件也不是陣列", path, field)
 }
 
+// indented 讓多行的欄位在 markdown 清單裡續得下去。條目的 `body` 或
+// `blocked_by` 分成兩段時，第二段若頂到最左邊，markdown 會把它讀成另一個
+// 段落——清單項就在那裡斷掉，而 JSON 那邊看起來完全正常。
+func indented(text string) string {
+	return strings.ReplaceAll(text, "\n", "\n      ")
+}
+
 func render(decoded *file) string {
 	var out strings.Builder
 	byLayer := map[string][]item{}
@@ -230,11 +237,11 @@ func render(decoded *file) string {
 		}
 		fmt.Fprintf(&out, "### %s、%s\n\n", []string{"一", "二", "三"}[index], decoded.Layers[layer])
 		for _, one := range list {
-			fmt.Fprintf(&out, "- [ ] **%s。** %s\n", one.Title, one.Body)
+			fmt.Fprintf(&out, "- [ ] **%s。** %s\n", one.Title, indented(one.Body))
 			if one.BlockedBy != "" {
-				fmt.Fprintf(&out, "      **卡在**：%s\n", one.BlockedBy)
+				fmt.Fprintf(&out, "      **卡在**：%s\n", indented(one.BlockedBy))
 			}
-			fmt.Fprintf(&out, "      **驗收**：%s\n", one.Acceptance)
+			fmt.Fprintf(&out, "      **驗收**：%s\n", indented(one.Acceptance))
 		}
 		out.WriteString("\n")
 	}

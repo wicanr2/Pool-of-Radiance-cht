@@ -409,6 +409,19 @@ type tacticalState struct {
 	// 呼叫端用，等於第一種有骰子的那一形態。
 	AttackForms [][gamepack.MonsterAttackSlots]combat.DamageDice
 	AttackRates [][gamepack.MonsterAttackSlots]uint8
+	// AttackRange 是每一格「武器搆得到幾格」（spec 065／096）。原版 overlay-13
+	// `358Dh` 拿手上武器（記錄 `+0CCh`）的型別去查 `DS:54ECh + 型別×10h` 的
+	// `+0Ch` 再減一，而 overlay-09 entry 5 的 `0C3Eh` 用同一個值當「搆不搆
+	// 得到」的預算。
+	//
+	// **怪物一律是 1。** 原版怪物的射程也走 `+0CCh`，但 remake 的怪物只載
+	// 285-byte 記錄、沒有物品鏈（物品在另外的 `.itm`），`+0CCh` 讀不到東西；
+	// 原版在 `+0CCh` 為 0 時算出來也是 1，所以近戰怪物兩邊一致，**拿武器的
+	// 怪物還不對**。要修得先把怪物的物品鏈載進來。
+	//
+	// 被魅惑的隊員走的是敵方 AI（`AIDriven`）卻帶著自己的裝備，所以這一欄
+	// 按格記而不是按陣營記。
+	AttackRange []int
 	// AttackPhase 是半回合相位（spec 051）：戰鬥開始是 0，每個回合邊界加一，
 	// `AttacksThisPhase` 只看它的最低位。編碼 3（每兩回合三次）就靠它交替。
 	AttackPhase uint8
@@ -677,6 +690,11 @@ func (a *app) enterTacticalPreview() error {
 	state.Damage = make([]combat.DamageDice, size)
 	state.AttackForms = make([][gamepack.MonsterAttackSlots]combat.DamageDice, size)
 	state.AttackRates = make([][gamepack.MonsterAttackSlots]uint8, size)
+	state.AttackRange = make([]int, size)
+	for index := range state.AttackRange {
+		// 沒有武器就是相鄰一格——原版把 `+0Ch` 的 0 與 FFh 都當成 1。
+		state.AttackRange[index] = 1
+	}
 	state.HitDice = make([]uint8, size)
 	state.SleepFlag = make([]uint8, size)
 	state.Effects = make([]gamepack.EffectList, size)
@@ -761,6 +779,7 @@ func (a *app) enterTacticalPreview() error {
 				state.setSingleAttackForm(index, combat.DamageDice{
 					Count: stats.DamageCount, Sides: stats.DamageSides, Bonus: stats.DamageBonus,
 				})
+				state.AttackRange[index] = a.weaponAttackRange(weapon)
 			}
 			continue
 		}
@@ -840,11 +859,19 @@ const foeSearchBudget = 128
 // 這個上限只是防止未來改動把它變成不會停的迴圈。
 const foeMaxStepsPerTurn = 32
 
-// foeReachBudget 是「武器搆不搆得到」的成本預算。原版 overlay-09 entry 5
-// （`0D4Bh`）先用武器射程問一次搆得到誰，搆得到就打、搆不到才走；射程取自
-// 手上武器型別的 `+0Ch` 減一，近戰武器就是一格（spec 096）。這裡只做近戰，
-// 長柄與投射武器的射程還沒接進來。
-const foeReachBudget = 1
+
+// attackRangeOf 是那一格搆得到幾格。原版 overlay-09 entry 5 的 `0C3Eh` 每一
+// 輪都重算一次，所以走出去之後換武器也會跟著變；這裡的來源是建 roster 時填
+// 的 `AttackRange`。超出範圍或沒填就是相鄰一格。
+func (state *tacticalState) attackRangeOf(index uint8) int {
+	if int(index) >= len(state.AttackRange) {
+		return 1
+	}
+	if reach := state.AttackRange[index]; reach > 0 {
+		return reach
+	}
+	return 1
+}
 
 // foeTurn 讓敵方的行動者走完一回合，骨架照 overlay-09 entry 5（`0B3Ch`）與
 // 它呼叫的移動子程式 `07E8h`（spec 096）：每一步先問武器搆不搆得到人，搆得到
@@ -918,7 +945,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 
 		// 先問武器搆得到誰（原版 `0D4Bh`）。搆得到就打，這一隻的回合結束。
 		reachable, err := combat.OpposingNearbyAt(snapshot, mover,
-			here.X, here.Y, foeReachBudget, 1-side, state.sideOf)
+			here.X, here.Y, uint16(state.attackRangeOf(mover)), 1-side, state.sideOf)
 		if err != nil {
 			return err
 		}

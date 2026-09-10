@@ -556,3 +556,54 @@ func TestCombatScreenMatchesTheOriginalLayout(t *testing.T) {
 		t.Errorf("指令列的字底 %d 掉出畫布（%d）", bottom, logicalHeight)
 	}
 }
+
+// 拿長柄或投射武器的一方搆得到就站著打，不用先走過去。原版 overlay-09
+// entry 5 的 `0C3Eh` 每一輪重算射程（手上武器型別的 `+0Ch` 減一，spec 065）
+// 再拿它當「搆不搆得到」的預算——先前 remake 把那個預算寫死成 1，所以只做
+// 得出近戰。
+func TestFoeTurnUsesTheWeaponRangeNotJustAdjacency(t *testing.T) {
+	// 相距四格，近戰：搆不到，要先走過去。**兩種情形最後都會打到人**
+	// （走到旁邊就打），所以分辨的是「走了沒」，不是「打了沒」。
+	state := newFoeTurnState(14, 10, 10, 10, 6)
+	a := &app{roller: fixedRoller{20}, tactical: state}
+	if err := a.foeTurn(state); err != nil {
+		t.Fatal(err)
+	}
+	if state.Roster[2].X == 14 {
+		t.Fatalf("近戰卻站在四格外沒動：%s", state.FoeLog)
+	}
+
+	// 同一個距離，換一把搆得到四格的武器：站著打，一步都不走。
+	state = newFoeTurnState(14, 10, 10, 10, 6)
+	state.AttackRange = []int{0, 1, 4}
+	a = &app{roller: fixedRoller{20}, tactical: state}
+	if err := a.foeTurn(state); err != nil {
+		t.Fatal(err)
+	}
+	if state.HitPoints[1] == 10 {
+		t.Fatalf("射程四格卻沒有打：%s", state.FoeLog)
+	}
+	if state.Roster[2].X != 14 {
+		t.Fatalf("搆得到卻走到 x=%d：%s", state.Roster[2].X, state.FoeLog)
+	}
+}
+
+// 沒填、填 0 或索引越界都當成相鄰一格——原版把型別表 `+0Ch` 的 0 與 FFh
+// 都當 1，而怪物那一側 remake 還沒有物品鏈可讀。
+func TestAttackRangeOfFallsBackToAdjacent(t *testing.T) {
+	state := newFoeTurnState(11, 10, 10, 10, 6)
+	if got := state.attackRangeOf(2); got != 1 {
+		t.Fatalf("沒填射程時回 %d，預期 1", got)
+	}
+	state.AttackRange = []int{0, 0, 0}
+	if got := state.attackRangeOf(2); got != 1 {
+		t.Fatalf("射程填 0 時回 %d，預期 1", got)
+	}
+	state.AttackRange = []int{0, 1, 6}
+	if got := state.attackRangeOf(9); got != 1 {
+		t.Fatalf("索引越界時回 %d，預期 1", got)
+	}
+	if got := state.attackRangeOf(2); got != 6 {
+		t.Fatalf("填了 6 卻回 %d", got)
+	}
+}

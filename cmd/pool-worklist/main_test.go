@@ -213,3 +213,29 @@ func TestRenderKeepsLayerOrder(t *testing.T) {
 		}
 	}
 }
+
+// 多行的欄位要在清單項底下續得下去。頂到最左邊的第二段會被 markdown 讀成
+// 另一個段落，清單就在那裡斷掉——而 JSON 那一側看起來完全正常。
+func TestRenderIndentsContinuationLines(t *testing.T) {
+	decoded := &file{
+		Schema: "pool-worklist/1",
+		Layers: map[string]string{"feature": "功能"},
+		Items: []item{{
+			ID: "x", Layer: "feature", Title: "t",
+			Body:       "第一段。\n第二段。",
+			BlockedBy:  "卡住的第一段。\n卡住的第二段。",
+			Acceptance: "a",
+			Verify:     verify{Kind: "manual"},
+		}},
+	}
+	out := render(decoded)
+	if strings.Contains(out, "\n第二段。") {
+		t.Error("body 的續行頂到最左邊了")
+	}
+	if strings.Contains(out, "\n卡住的第二段。") {
+		t.Error("blocked_by 的續行頂到最左邊了")
+	}
+	if !strings.Contains(out, "      第二段。") {
+		t.Error("body 的續行沒有縮排")
+	}
+}

@@ -38,8 +38,10 @@
       **驗收**：照原版的遭遇表與觸發條件接，並在戰術盤面上以 `encounterStartDistance` 的距離開場；接上之後截圖腳本要拍得到 `pool-remake-chinese-combat.png`。
 - [ ] **賊技能沒有產生端。** 記錄 `+79h` 的找／解陷阱（spec 095）在 `checkparty.go` 與 `internal/save` 都自承是 0。
       **驗收**：建角與升級時算得出來，存檔欄位不再是常數 0。
-- [ ] **戰鬥還缺三件。** 戰士的多次攻擊（記錄 `+A1h`，spec 051）、長柄與投射武器的射程、記錄 `+13h` 那一項都還沒接進 `tactical.go`。
-      **驗收**：三件各自帶一條逐回合的單元測試，且與戰鬥數值對拍那一項同源。
+- [ ] **戰鬥還缺兩件。** 原本三件，**長柄與投射武器的射程 2026-09-10 接完了**：`tacticalState.AttackRange` 按格記射程，建 roster 時從武器型別的 `+0Ch` 減一填（spec 065），`foeTurn` 拿它當「搆不搆得到」的預算（spec 096 的 `0C3Eh`）取代先前寫死的 1，玩家那一側的 `moverAttackRange` 也改讀同一欄。剩下兩件：戰士的多次攻擊（記錄 `+A1h`）與怪物的 DEX（285-byte 記錄的 `+13h`）。
+      **卡在**：多次攻擊卡在 spec 051 的 DRAFT——「玩家角色的攻擊次數來源」還沒讀出來，照 SDD 不能猜著寫。`+13h` 沒有阻礙，只是還沒接。
+      另外**拿武器的怪物射程仍然不對**：原版走怪物記錄的 `+0CCh`，而 remake 的怪物只載 285-byte 記錄、沒有物品鏈，所以一律算成近戰一格（原版在 `+0CCh` 為 0 時也是 1，所以近戰怪物兩邊一致）。
+      **驗收**：兩件各自帶一條逐回合的單元測試，且與戰鬥數值對拍那一項同源。
 - [ ] **休息不會被打斷。** `camp.go` 自承 `Stop Resting?  The Party is rudely interrupted!` 還沒接。**這一條有實跑證據**：原版在貧民區排兩小時，第五分鐘就被城衛隊趕起來（`YOU ARE ROUSTED BY THE CITY WATCH…`／`GO STAY`），那一段是 ECL3／block 0 的 **entry 3**，不是 overlay-20 自己印的 `rudely interrupted`。順序是「打斷 → 回傳 1 → 呼叫端跑 ECL 的紮營入口」。**這也推翻了 spec 114 原本的推論**——先前說 `RestInterruption` 用 0／0「不是近似而是還沒有哪一區設起來」，但貧民區明明會打斷，所以 `+5A4h`／`+5A6h` 一定有第三個 writer。
       **驗收**：找到那個 writer，接上打斷判定，並讓打斷之後跑 ECL entry 3（remake 目前只跑 entry 0 與 1）；走到貧民區紮營要看得到城衛隊。
 - [ ] **能量吸取沒有來源。** `internal/save/state.go` 的欠等級一律 0，`spell_cast.go` 說 overlay-12 `21C4h` 還沒接。

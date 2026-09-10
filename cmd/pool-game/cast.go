@@ -150,17 +150,10 @@ func (a *app) beginAimedAttack() bool {
 	return true
 }
 
-// moverAttackRange 是現在這個角色打得到幾格。沒有裝備武器就是相鄰。
-func (a *app) moverAttackRange() int {
-	index, ok := a.moverPartyIndex(a.tactical.Mover)
-	if !ok {
-		return 1
-	}
-	weapon, ok := a.readiedWeapon(a.state.Party[index])
-	if !ok || a.itemTypes == nil {
-		return 1
-	}
-	if len(weapon.Raw) <= itemTypeOffset {
+// weaponAttackRange 是這件武器搆得到幾格（spec 065）。沒有型別表、型別查不到
+// 或記錄短了一截都當成相鄰一格——原版把型別表 `+0Ch` 的 0 與 FFh 都當 1。
+func (a *app) weaponAttackRange(weapon poolsave.Item) int {
+	if a.itemTypes == nil || len(weapon.Raw) <= itemTypeOffset {
 		return 1
 	}
 	entry, err := a.itemTypes.Entry(weapon.Raw[itemTypeOffset])
@@ -168,6 +161,16 @@ func (a *app) moverAttackRange() int {
 		return 1
 	}
 	return entry.AttackRange()
+}
+
+// moverAttackRange 是現在這個角色打得到幾格。**它與敵方 AI 讀同一欄**
+// （`tacticalState.AttackRange`，建 roster 時填）：兩份真相會讓「玩家瞄得到
+// 但同一把武器在 AI 手上搆不到」這種不對稱悄悄出現，而那在畫面上看不出來。
+func (a *app) moverAttackRange() int {
+	if a.tactical == nil {
+		return 1
+	}
+	return a.tactical.attackRangeOf(a.tactical.Mover)
 }
 
 // resolveAimedAttack 對挑中的目標打一次。超出射程就不打，也不消耗回合。
