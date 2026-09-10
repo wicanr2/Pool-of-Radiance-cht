@@ -20,15 +20,21 @@ import (
 )
 
 type verify struct {
-	Kind    string   `json:"kind"` // present | absent | json_len | manual
+	Kind    string   `json:"kind"` // present | absent | json_len | json_gap | manual
 	Paths   []string `json:"paths,omitempty"`
 	Pattern string   `json:"pattern,omitempty"`
 	// json_len 用：讀 Path 那份 JSON 的 Field，長度 <= Max 代表這一條仍然
 	// 未完成。用在「還沒擴充到第幾張／第幾項」這種進度型的條目上，比 grep
 	// 註解準——註解會被順手改掉，數量不會。
+	//
+	// json_gap 是同一份資料的另一個方向：Field 的長度 >= Min 代表缺口還在。
+	// 兩個方向不能共用一個 kind——進度型的欄位是「越多越好」（涵蓋幾張圖），
+	// 缺口型是「越少越好」（幾份規格沒人指回去）。共用一個名字，遲早有人把
+	// max 當成 min 填，而填反了的 verify 會一直說好消息。
 	Path  string `json:"path,omitempty"`
 	Field string `json:"field,omitempty"`
 	Max   int    `json:"max,omitempty"`
+	Min   int    `json:"min,omitempty"`
 	Note  string `json:"note,omitempty"`
 }
 
@@ -88,6 +94,10 @@ func load(path string) (*file, error) {
 		case "json_len":
 			if one.Verify.Path == "" || one.Verify.Field == "" || one.Verify.Max <= 0 {
 				return nil, fmt.Errorf("條目 %q 的 verify 缺 path／field／max", one.ID)
+			}
+		case "json_gap":
+			if one.Verify.Path == "" || one.Verify.Field == "" || one.Verify.Min <= 0 {
+				return nil, fmt.Errorf("條目 %q 的 verify 缺 path／field／min", one.ID)
 			}
 		case "manual":
 		default:
@@ -188,6 +198,15 @@ func stillOpen(root string, one item) (bool, string, error) {
 			return true, fmt.Sprintf("%s 的 %s 有 %d 項（<= %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Max), nil
 		}
 		return false, fmt.Sprintf("%s 的 %s 已經有 %d 項（> %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Max), nil
+	case "json_gap":
+		count, err := jsonFieldLen(filepath.Join(root, one.Verify.Path), one.Verify.Field)
+		if err != nil {
+			return false, "", err
+		}
+		if count >= one.Verify.Min {
+			return true, fmt.Sprintf("%s 的 %s 還有 %d 項（>= %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Min), nil
+		}
+		return false, fmt.Sprintf("%s 的 %s 只剩 %d 項（< %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Min), nil
 	}
 	return false, "", fmt.Errorf("verify.kind %q 不認得", one.Verify.Kind)
 }
@@ -248,10 +267,49 @@ func render(decoded *file) string {
 	return out.String()
 }
 
+// WORKLIST.md 那一節的邊界。用註解標記而不是靠節標題文字定位——標題會被改，
+// 而定位錯了不會報錯，只會把手寫的段落一起蓋掉。
+const (
+	beginMarker = "<!-- worklist:begin"
+	endMarker   = "<!-- worklist:end -->"
+)
+
+// writeInto 把 render 的結果寫回兩個標記之間。
+//
+// 沒有這一步，render 的輸出要靠人貼回 markdown，而那一步會出錯：
+// 2026-09-10 發現 WORKLIST.md 裡「平面圖的畫法」那一條貼成了六份，
+// 而 worklist.json 從頭到尾只有一條。
+func writeInto(path, body string) error {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	text := string(raw)
+
+	begin := strings.Index(text, beginMarker)
+	if begin < 0 {
+		return fmt.Errorf("%s 裡找不到 %s 標記", path, beginMarker)
+	}
+	offset := strings.Index(text[begin:], "\n")
+	if offset < 0 {
+		return fmt.Errorf("%s 的 %s 標記後面沒有換行", path, beginMarker)
+	}
+	end := strings.Index(text, endMarker)
+	if end < 0 {
+		return fmt.Errorf("%s 裡找不到 %s 標記", path, endMarker)
+	}
+	if end < begin {
+		return fmt.Errorf("%s 的兩個標記順序反了", path)
+	}
+
+	return os.WriteFile(path, []byte(text[:begin+offset+1]+"\n"+body+text[end:]), 0o644)
+}
+
 func main() {
 	root := flag.String("root", ".", "repository root")
 	source := flag.String("json", "docs/worklist.json", "未完成項的權威資料")
 	mode := flag.String("mode", "verify", "verify｜render｜list")
+	write := flag.String("write", "", "render 時寫回這份 markdown 的 worklist 標記之間；留空就印到 stdout")
 	flag.Parse()
 
 	decoded, err := load(filepath.Join(*root, *source))
@@ -262,7 +320,17 @@ func main() {
 
 	switch *mode {
 	case "render":
-		fmt.Print(render(decoded))
+		body := render(decoded)
+		if *write == "" {
+			fmt.Print(body)
+			break
+		}
+		target := filepath.Join(*root, *write)
+		if err := writeInto(target, body); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		fmt.Printf("寫回 %s：%d 條\n", target, len(decoded.Items))
 	case "list":
 		for _, one := range decoded.Items {
 			fmt.Printf("%-28s %-12s %s\n", one.ID, one.Layer, one.Title)

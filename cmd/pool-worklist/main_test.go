@@ -177,9 +177,9 @@ func TestManualStaysOpenAndSaysSo(t *testing.T) {
 
 func TestLoadRejectsBrokenData(t *testing.T) {
 	for name, raw := range map[string]string{
-		"重複 id":    `{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"manual"}},{"id":"a","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"manual"}}]}`,
-		"未知 layer": `{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"nope","title":"t","acceptance":"a","verify":{"kind":"manual"}}]}`,
-		"缺驗收":      `{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"feature","title":"t","verify":{"kind":"manual"}}]}`,
+		"重複 id":     `{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"manual"}},{"id":"a","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"manual"}}]}`,
+		"未知 layer":  `{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"nope","title":"t","acceptance":"a","verify":{"kind":"manual"}}]}`,
+		"缺驗收":       `{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"feature","title":"t","verify":{"kind":"manual"}}]}`,
 		"verify 缺料": `{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"present"}}]}`,
 		"schema 不對": `{"schema":"other/1","layers":{},"items":[]}`,
 	} {
@@ -237,5 +237,114 @@ func TestRenderIndentsContinuationLines(t *testing.T) {
 	}
 	if !strings.Contains(out, "      第二段。") {
 		t.Error("body 的續行沒有縮排")
+	}
+}
+
+// json_gap 是 json_len 的另一個方向：缺口清單「歸零」才算完成。正反對照要
+// 驗的是它在清單清空的那一刻真的開口，不是一直說未完成。
+func TestVerifyJSONGapClosesWhenTheListEmpties(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "doc-index.json")
+	write := func(names ...string) {
+		quoted := make([]string, len(names))
+		for i, name := range names {
+			quoted[i] = `"` + name + `"`
+		}
+		body := `{"tools_without_tests":[` + strings.Join(quoted, ",") + `]}`
+		if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	one := item{ID: "t", Layer: "verification", Title: "t", Acceptance: "a",
+		Verify: verify{Kind: "json_gap", Path: "doc-index.json", Field: "tools_without_tests", Min: 1}}
+
+	write("export-title", "pool-geo-audit")
+	if open, why, err := stillOpen(root, one); err != nil || !open {
+		t.Fatalf("清單還有兩項就該是未完成：open=%v why=%q err=%v", open, why, err)
+	}
+	write("export-title")
+	if open, _, err := stillOpen(root, one); err != nil || !open {
+		t.Fatalf("剩一項仍然是未完成：open=%v err=%v", open, err)
+	}
+	write()
+	open, why, err := stillOpen(root, one)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if open {
+		t.Fatalf("清單空了卻還說未完成：why=%q", why)
+	}
+}
+
+// 兩個方向不能混用。json_gap 填 max、json_len 填 min 都要在載入時就擋下來——
+// 填反了的 verify 會一直說好消息，那比沒有 verify 更糟。
+func TestLoadRejectsGapWithoutMin(t *testing.T) {
+	root := t.TempDir()
+	body := `{"schema":"pool-worklist/1","layers":{"verification":"v"},"items":[
+	  {"id":"x","layer":"verification","title":"t","acceptance":"a",
+	   "verify":{"kind":"json_gap","path":"d.json","field":"f","max":3}}]}`
+	path := filepath.Join(root, "worklist.json")
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := load(path); err == nil {
+		t.Fatal("json_gap 沒有 min 卻載入成功了")
+	}
+}
+
+// render 寫回 markdown 只能動兩個標記之間。標記外的手寫段落被蓋掉不會報錯，
+// 只會安靜消失——所以正反兩個方向都要驗。
+func TestWriteIntoOnlyReplacesBetweenTheMarkers(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "WORKLIST.md")
+	original := "# 標題\n\n前言不能動。\n\n" +
+		"<!-- worklist:begin 產生的，不要手改 -->\n\n舊的清單\n\n<!-- worklist:end -->\n\n" +
+		"後面的手寫段落也不能動。\n"
+	if err := os.WriteFile(path, []byte(original), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := writeInto(path, "### 一、新的\n\n- [ ] **一條。**\n\n"); err != nil {
+		t.Fatal(err)
+	}
+	updated, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(updated)
+
+	for _, keep := range []string{"前言不能動。", "後面的手寫段落也不能動。",
+		"<!-- worklist:begin", "<!-- worklist:end -->"} {
+		if !strings.Contains(text, keep) {
+			t.Errorf("標記外的 %q 不見了", keep)
+		}
+	}
+	if strings.Contains(text, "舊的清單") {
+		t.Error("標記之間的舊內容沒有被換掉")
+	}
+	if !strings.Contains(text, "- [ ] **一條。**") {
+		t.Error("新內容沒有寫進去")
+	}
+}
+
+// 找不到標記時要報錯，不能猜位置——猜錯的那一次會把整份文件的別處蓋掉。
+func TestWriteIntoRefusesWhenTheMarkersAreMissingOrSwapped(t *testing.T) {
+	root := t.TempDir()
+	for _, testCase := range []struct {
+		name string
+		body string
+	}{
+		{"兩個標記都沒有", "# 標題\n\n只有內文。\n"},
+		{"只有開頭標記", "# 標題\n\n<!-- worklist:begin -->\n\n清單\n"},
+		{"只有結尾標記", "# 標題\n\n<!-- worklist:end -->\n"},
+		{"標記順序反了", "<!-- worklist:end -->\n\n<!-- worklist:begin -->\n"},
+	} {
+		path := filepath.Join(root, testCase.name+".md")
+		if err := os.WriteFile(path, []byte(testCase.body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if err := writeInto(path, "新內容"); err == nil {
+			t.Errorf("%s：該報錯卻寫進去了", testCase.name)
+		}
 	}
 }

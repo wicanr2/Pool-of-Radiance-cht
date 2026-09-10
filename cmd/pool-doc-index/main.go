@@ -5,9 +5,13 @@
 // 註解裡的 `spec NNN` 就是那條線，本工具只是把它反過來收攏。所以索引不會過期：
 // 改了註解重跑一次就對了，不需要有人記得同步。手改 000-index.md 會在下一次
 // 執行時被蓋掉。
+//
+// 同時寫一份 docs/audit/doc-index.json 給機器讀：缺口在那裡是清單不是數字，
+// 因為要看得出是哪幾份。worklist 的 json_gap 綁它的長度。
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -32,6 +36,19 @@ type spec struct {
 	// sharedEngine 標記「實作在共用 engine，不在這個 repo」。少了它，
 	// 那幾份的實作欄會是「—」，看起來像沒實作——而索引掃不到別的 repo。
 	sharedEngine bool
+}
+
+// gapReport 是給機器讀的那一份：缺口不是數字而是清單，因為要看得出是哪幾份。
+// worklist 的 verify 綁這份 JSON 的長度——註解會被順手改掉，項數不會。
+type gapReport struct {
+	Schema                     string   `json:"schema"`
+	SpecCount                  int      `json:"spec_count"`
+	ToolCount                  int      `json:"tool_count"`
+	SpecsWithoutImplementation []string `json:"specs_without_implementation"`
+	SpecsWithoutTests          []string `json:"specs_without_tests"`
+	SpecsInSharedEngine        []string `json:"specs_in_shared_engine"`
+	ToolsWithoutDoc            []string `json:"tools_without_doc"`
+	ToolsWithoutTests          []string `json:"tools_without_tests"`
 }
 
 type tool struct {
@@ -260,6 +277,7 @@ func shorten(paths []string) string {
 func main() {
 	specDirectory := "docs/spec"
 	outputPath := filepath.Join(specDirectory, "000-index.md")
+	reportPath := filepath.Join("docs", "audit", "doc-index.json")
 
 	entries, err := os.ReadDir(specDirectory)
 	if err != nil {
@@ -364,5 +382,50 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	report := gapReport{
+		Schema:                     "pool-doc-index/1",
+		SpecCount:                  len(specs),
+		ToolCount:                  len(tools),
+		SpecsWithoutImplementation: []string{},
+		SpecsWithoutTests:          []string{},
+		SpecsInSharedEngine:        []string{},
+		ToolsWithoutDoc:            []string{},
+		ToolsWithoutTests:          []string{},
+	}
+	for _, item := range specs {
+		switch {
+		case len(item.code) > 0:
+		case item.sharedEngine:
+			report.SpecsInSharedEngine = append(report.SpecsInSharedEngine, item.number)
+		default:
+			report.SpecsWithoutImplementation = append(report.SpecsWithoutImplementation, item.number)
+		}
+		if len(item.tests) == 0 {
+			report.SpecsWithoutTests = append(report.SpecsWithoutTests, item.number)
+		}
+	}
+	for _, item := range tools {
+		if item.summary == "" {
+			report.ToolsWithoutDoc = append(report.ToolsWithoutDoc, item.name)
+		}
+		if !item.hasTests {
+			report.ToolsWithoutTests = append(report.ToolsWithoutTests, item.name)
+		}
+	}
+
+	encoded, err := json.MarshalIndent(report, "", "  ")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	if err := os.WriteFile(reportPath, append(encoded, '\n'), 0o644); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	fmt.Printf("寫出 %s：%d 份規格、%d 支工具\n", outputPath, len(specs), len(tools))
+	fmt.Printf("寫出 %s：%d 份沒有實作引用、%d 份沒有測試、%d 支工具沒有測試\n",
+		reportPath, len(report.SpecsWithoutImplementation),
+		len(report.SpecsWithoutTests), len(report.ToolsWithoutTests))
 }

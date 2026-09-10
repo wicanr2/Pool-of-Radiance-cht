@@ -1,6 +1,6 @@
 {
   "schema": "pool-worklist/1",
-  "note": "未完成項的權威在這一份。WORKLIST.md 的〈還沒完成的〉一節由 cmd/pool-worklist render 產生，不要手改那一節。每一項的 verify 跑起來為真代表『這一條仍然未完成』——為假就是東西做好了而清單沒改，也就是過期斷言。",
+  "note": "未完成項的權威在這一份。WORKLIST.md 兩個 `worklist:begin`／`worklist:end` 標記之間那一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改；標記外的段落是手寫的，工具不會動。每一項的 verify 跑起來為真代表『這一條仍然未完成』——為假就是東西做好了而清單沒改，也就是過期斷言。`json_len` 與 `json_gap` 是同一份資料的兩個方向：前者「≤ max 才算未完成」給進度型用（涵蓋幾張圖，越多越好），後者「≥ min 就算未完成」給缺口型用（幾份規格沒人指回去，越少越好）。",
   "layers": {
     "feature": "玩家會撞到的功能缺口",
     "verification": "驗證缺口：接了，但沒拿原版當裁判驗過",
@@ -177,6 +177,35 @@
         ],
         "pattern": "Party\\[[^]]*\\]\\.Effects = ",
         "note": "戰鬥結束把串列寫回隊伍的那一行還沒出現。**方向是 absent**：這一條問的是「有沒有人寫回去」，現在三處 `.Effects = ` 都是移除，所以綁的是「指派給 Party[i].Effects」這個形狀"
+      }
+    },
+    {
+      "id": "tool-test-coverage",
+      "layer": "verification",
+      "title": "九支工具沒有測試",
+      "body": "`cmd/` 底下有九支工具一個測試都沒有（清單在 `docs/audit/doc-index.json` 的 `tools_without_tests`）。這不是形式問題——本輪 `pool-disp-scan` 的測試**一寫就抓到假陽性**：`0x90`（nop）的高兩位也是 `10`，被當成 modrm，於是掃描會憑空生出記憶體存取。產生證據的工具算錯，錯的是下游所有引用它的規格，而且錯得很安靜。",
+      "acceptance": "每一支工具至少釘住它自己的判讀規則（換算表、解析格式、分類邏輯），並且測試要有正反對照——訊號在時報命中、訊號拿掉時真的開口。`doc-index.json` 的 `tools_without_tests` 歸零。",
+      "verify": {
+        "kind": "json_gap",
+        "path": "docs/audit/doc-index.json",
+        "field": "tools_without_tests",
+        "min": 1,
+        "note": "綁數量不綁註解。`min` 是 1 不是現況值——這一條要的是歸零，不是「別再變多」。清單由 `cmd/pool-doc-index` 重算，補一支就少一項"
+      }
+    },
+    {
+      "id": "spec-implementation-backlinks",
+      "layer": "verification",
+      "title": "三十份規格沒有任何檔案指回它",
+      "body": "`docs/audit/doc-index.json` 的 `specs_without_implementation` 有三十份。對應關係的主鍵是程式碼註解裡的 `spec NNN`，沒有反向引用就查不到「這份規格由誰實作」，只能靠關鍵字猜——而猜出來的對應寫進索引比空著更糟。**這不等於沒實作**：本輪查證的八份純 CONFORMED 裡，三份自己就指名了實作檔（001、005、064，已補），六份的實作在共用 engine（已另外分類）。剩下的要逐份查證。",
+      "blocked_by": "有些規格可能真的還沒實作，那要的是實作不是註解。逐份查證之前分不出來。",
+      "acceptance": "每一份要嘛有檔案的註解指回它，要嘛在規格自己的檔頭寫明為什麼沒有（還沒實作／在別的 repo／純 RE 文件）。不准為了讓數字下降而加沒查證過的註解。",
+      "verify": {
+        "kind": "json_gap",
+        "path": "docs/audit/doc-index.json",
+        "field": "specs_without_implementation",
+        "min": 1,
+        "note": "綁 `cmd/pool-doc-index` 算出來的清單長度。純 RE 文件那一類將來若確認不需要反向引用，處置是在規格檔頭寫明並讓索引認得，不是把這一條刪掉"
       }
     }
   ]
