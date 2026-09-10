@@ -119,8 +119,26 @@ full-local zh` 產，機器可讀的同一份在 `docs/audit/dos-parity-sample.j
 
 ## 還沒進抽樣的
 
-- **商店、神殿、結局**：dosgolem 的鍵序還沒走到。要納入就照市政廳那一節的
-  做法——另產一組基準、compare 的 plan 加一項。
+原版也有、remake 也做了，但對拍還沒走到的畫面。要納入就照市政廳那一節的
+做法：另產一組基準（或延長主鍵序）、compare 的 plan 加一項。
+
+| 畫面 | remake 的狀態識別字 | 備註 |
+|---|---|---|
+| 紮營（整棵選單樹）| `camp`、`camp-rest`、`camp-alter`、`camp-order-select`、`camp-order-place`、`camp-speed`、`camp-pics`、`camp-icon`、`camp-quit`、`camp-drop` | spec 135 已實作；十層都沒對拍 |
+| 商店 | `shop` | dosgolem 的鍵序還沒走到 |
+| 神殿 | `temple` | 同上 |
+| 結局 | — | 同上 |
+| 挑法術那一頁 | `spells` | spec 134 已實作 |
+| 裝備 | `equipment` | |
+| 檢視人物 | `view-sheet`、`view-pick` | |
+| 地圖上施法 | `field-cast`、`field-cast-spell` | |
+| 平面圖 | `adventure-map` | |
+| 隊伍管理的丟棄確認 | `menu-drop-confirm` | |
+| 戰鬥造形設計・確認 | `creation-icon-confirm` | **對拍腳本已經在拍 `remake-icon-confirm`，但 compare 的 plan 沒有這一項**——拍了沒人看 |
+
+**remake 自己的畫面不列入**（原版沒有，沒有可對的基準）：遊戲內攻略
+（`guide`、`guide-full`、`guide-warned`）、素材檢視（`sprites` 那一族）、
+說明頁（`help`）、手冊（`journal`）。
 
 ## 「整張」那一欄怎麼讀
 
