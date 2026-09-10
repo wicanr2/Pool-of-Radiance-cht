@@ -135,13 +135,13 @@
       "id": "parity-sampling-gaps",
       "layer": "presentation",
       "title": "抽樣擴到還沒對拍的畫面",
-      "body": "現況表有十七項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、檢視人物、地圖上施法、平面圖。",
+      "body": "現況表有十八項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、檢視人物、地圖上施法、平面圖。",
       "acceptance": "每加一項都照市政廳那一節的做法（另產一組基準或延長主鍵序、compare 的 plan 加一項），`docs/audit/dos-parity-sample.json` 跟著多一項。",
       "verify": {
         "kind": "json_len",
         "path": "docs/audit/dos-parity-sample.json",
         "field": "screens",
-        "max": 17,
+        "max": 18,
         "note": "抽樣只有十六項時這一條仍未完成。綁數量而不是綁註解：註解會被順手改掉，項數不會"
       }
     },
@@ -167,6 +167,18 @@
       "verify": {
         "kind": "manual",
         "note": "沒有機器可判的訊號——耗時要實測。壓下去之後改成綁一條會在超時時失敗的斷言"
+      }
+    },
+    {
+      "id": "area-map-drawing",
+      "layer": "presentation",
+      "title": "平面圖的畫法與原版不同",
+      "body": "`A` 切出來的俯視圖，原版畫的是**灰色實心區塊**，remake 畫的是**青色線條輪廓**。2026-09-10 把這一張納入對拍時量到整張 74.34%、外框 97.58%——十八項裡最低的一項，差距主要就來自這個畫法。",
+      "blocked_by": "原版那一張怎麼畫的還沒讀：實心塊代表的是通道還是牆、一格幾個像素、哪些格子算「已探索」都要對回原版。",
+      "acceptance": "把畫法對回原版並寫進 spec，對拍那一項的整張比例要跟著上去。",
+      "verify": {
+        "kind": "manual",
+        "note": "沒有機器可判的訊號——要看圖。對拍的 `adventure-map` 那一項是量度，但它同時受別的差異影響，不能單獨當這一條的訊號"
       }
     }
   ]

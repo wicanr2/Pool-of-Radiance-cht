@@ -209,6 +209,13 @@ shot remake-intro
 step Return adventure-move 60
 sleep 0.6
 shot remake-first-person
+# 平面圖：`A` 把第一人稱視野換成俯視圖（原版指令列的 `AREA`）。基準那一側
+# 也是在導覽結束的同一格按 `a` 拍的，所以兩邊站的位置一樣。
+step a adventure-map
+sleep 0.6
+shot remake-map
+step a adventure-move
+sleep 0.4
 # 戰鬥畫面（spec 129）。原版那一側是走到第一場遭遇拍的；remake 這一側用 F5
 # 叫出同一支繪製——盤面內容本來就不同，這一項看的是版面。
 # 市政廳外那一格：見主機端那一段註解。

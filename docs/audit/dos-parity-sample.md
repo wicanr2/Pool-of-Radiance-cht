@@ -25,7 +25,7 @@ remake 那一側是 Xvfb 裡的真視窗截圖（960×600），用**最近鄰**�
 **抽樣，不是全程。** 取的是十六張走得到、又說明得了問題的畫面；還沒走到的
 列在〈還沒進抽樣的〉。
 
-## 現況（中文模式，十七項）
+## 現況（中文模式，十八項）
 
 **這一張表是唯一的現況斷言**，由 `tools/appimage-dos-parity.sh <版本>
 full-local zh` 產，機器可讀的同一份在 `docs/audit/dos-parity-sample.json`。
@@ -48,6 +48,7 @@ full-local zh` 產，機器可讀的同一份在 `docs/audit/dos-parity-sample.j
 | 人物管理選擇項（有隊伍）| 89.98% | 100.00% |
 | 按下 B 的第一幕 | 78.80% | 94.04% |
 | 戰鬥畫面 | 77.40% | 100.00% |
+| 平面圖 | 74.34% | 97.58% |
 | 戰鬥造形設計・確認 | 91.89% | 100.00% |
 | 市政廳外・第一段 | 78.61% | 94.04% |
 | 市政廳外・第二段 | 77.32% | 94.04% |
@@ -133,7 +134,6 @@ full-local zh` 產，機器可讀的同一份在 `docs/audit/dos-parity-sample.j
 | 裝備 | `equipment` | |
 | 檢視人物 | `view-sheet`、`view-pick` | |
 | 地圖上施法 | `field-cast`、`field-cast-spell` | |
-| 平面圖 | `adventure-map` | |
 | 隊伍管理的丟棄確認 | `menu-drop-confirm` | |
 
 **remake 自己的畫面不列入**（原版沒有，沒有可對的基準）：遊戲內攻略
