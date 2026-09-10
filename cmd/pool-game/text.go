@@ -586,6 +586,7 @@ const (
 	msgAimBlocked
 	msgCampNeedsParty
 	msgCampRested
+	msgCampInterrupted
 	msgCampHealedOnly
 	// 紮營的休息時間（spec 114）。原版的選單列是
 	// `Rest   daYs Hours Mins   Inc Dec   Exit`（overlay-20 `069Fh`）。

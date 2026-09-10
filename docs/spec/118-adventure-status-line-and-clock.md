@@ -40,7 +40,8 @@ DRAFT（換圖那一步為什麼不加、指令列 `AREA CAST VIEW ENCAMP SEARCH
 **為什麼不加還沒讀**，目前只有這一個樣本，所以列在 DRAFT。
 
 **指令列**：自由移動時畫面最下面是
-`AREA CAST VIEW ENCAMP SEARCH LOOK`。remake 還沒有這一列。
+`AREA CAST VIEW ENCAMP SEARCH LOOK`。remake 這一列由 `drawCommandBar` 畫
+（`adventureCommandList` 決定內容，spec 119）。
 
 ## 進位
 

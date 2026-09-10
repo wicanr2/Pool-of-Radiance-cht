@@ -423,13 +423,25 @@ func (a *app) campRestTimeLine() string {
 //   - **生命力**：每滿二十四小時每人回一點（`0830h` 的 288 刻，
 //     說明書 p.29 也是這樣寫）。原版的 `The Whole Party Is Healed`
 //     就印在那一刻。
+// restInterruption 是這一區的打斷設定（spec 114）。**兩個值由 ECL 腳本寫**：
+// `+5A4h`／`+5A6h` 換算回 ECL 位址是 `6DD2h`／`6DD3h`，而 ECL1／2／3 共 117 個
+// `SAVE` 指向它們。先前找不到那個 writer，是因為掃的是 overlay 的 disp16
+// 形狀——那看不到 ECL 的寫入。
+//
+// 沒有事件機器時回 0／0，那也是原版的初值（overlay-07 `0244h` 清成 0），
+// 意思是「這一區不會被打擾」。
+func (a *app) restInterruption() gamepack.RestInterruption {
+	if a.eventMachine == nil {
+		return gamepack.RestInterruption{}
+	}
+	return gamepack.RestInterruption{
+		Period:    int(a.eventMachine.Memory[gamepack.RestInterruptionPeriodAddress]),
+		Threshold: int(a.eventMachine.Memory[gamepack.RestInterruptionThresholdAddress]),
+	}
+}
+
 func (a *app) restParty() {
-	// 打斷的兩個參數目前是 0／0，也就是**永遠不會被打斷**——這是已知缺口，
-	// 不是與原版一致。原版在貧民區排兩小時，第五分鐘就被城市守衛趕起來
-	//（`YOU ARE ROUSTED BY THE CITY WATCH…`，ECL3／block 0 entry 3）。
-	// 全 36 顆 overlay 裡只有 overlay-07 `0244h` 寫這兩個欄位，而且是清成 0，
-	// 所以一定還有第三個 writer 沒找到（spec 114 的 OPEN）。
-	outcome := gamepack.SimulateRest(a.restDuration, gamepack.RestInterruption{}, a.rollDice)
+	outcome := gamepack.SimulateRest(a.restDuration, a.restInterruption(), a.rollDice)
 	ticks := outcome.Ticks
 	restedHours := ticks / gamepack.RestTicksPerHour
 	healed := gamepack.RestHealing(ticks)
@@ -453,6 +465,15 @@ func (a *app) restParty() {
 		syncTrainedLibraryCharacter(&a.state, *member)
 	}
 	a.closeCamp()
+	if outcome.Interrupted {
+		// 原版 `0DD3h` 印的那一句（spec 114）。**打斷要說出來**——不然玩家
+		// 只看到「睡得比排的短」，看不出發生了什麼。
+		//
+		// 原版接著還會跑 ECL 的紮營入口（貧民區是城衛隊那一問，ECL3／
+		// block 0 的 entry 3），那一段 remake 還沒接。
+		a.statusLine = a.text(msgCampInterrupted)
+		return
+	}
 	switch {
 	case memorised > 0:
 		a.statusLine = fmt.Sprintf(a.text(msgCampRested), memorised, restedHours)

@@ -241,6 +241,22 @@ type RestInterruption struct {
 	Threshold int
 }
 
+const (
+	// RestInterruptionPeriodAddress／RestInterruptionThresholdAddress 是那兩個
+	// 欄位的 **ECL 位址**：`+5A4h`／`+5A6h` 換算回去是 `6DD2h`／`6DD3h`。
+	//
+	// 換算式是 class 1 的 `[4937h] + 2A00h + addr × 2`（mod 10000h，
+	// spec 008／106）。同一式子在 class 0 上把 `+1CCh` 換回 `49E6h`，與
+	// spec 074 獨立讀出來的值相同，所以式子是對的。
+	//
+	// **值由 ECL 腳本寫**：ECL1／2／3 共 117 個 `SAVE` 指向這兩個位址
+	// （`cmd/pool-ecl-memory-audit -addresses 6DD2,6DD3`）。先前遍尋不著第三個
+	// writer，是因為掃的是 overlay 的 disp16 modrm 形狀——那種掃描結構上看不到
+	// ECL 的寫入（spec 114 原本的 OPEN）。
+	RestInterruptionPeriodAddress    = 0x6DD2
+	RestInterruptionThresholdAddress = 0x6DD3
+)
+
 // RestOutcome 是一段休息實際發生了什麼。
 type RestOutcome struct {
 	// Ticks 是真的睡到的刻數；被打斷時會少於原本挑的。

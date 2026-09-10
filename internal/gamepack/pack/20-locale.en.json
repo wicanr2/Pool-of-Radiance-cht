@@ -51,6 +51,7 @@
       "ui.campRestTime": "REST TIME  %02d DAYS  %02d:%02d",
       "ui.campRestTooShort": "The party rests, but not long enough to memorise anything.",
       "ui.campRested": "%d spells memorised; the rest took %d hours.",
+      "ui.campInterrupted": "The Party is rudely interrupted!",
       "ui.campSaved": "The game has been saved.",
       "ui.campSpeedLine": "Game Speed = %d (0=fastest 9=slowest)",
       "ui.campSpeedPrefix": "Game Speed: ",

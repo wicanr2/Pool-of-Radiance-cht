@@ -542,8 +542,9 @@ remake 目前做的是這個介面的最小版本：N／P 或方向鍵換人、E
 | 戰士（`+98h`）| 1d8 |
 
 判斷是由上往下覆蓋的，所以多職業取最後一個成立的。與 AD&D 逐項相同。
-`internal/gamepack.StrengthSpellDie` 就是這條規則；**還沒接進施法**，
-因為 `CastSpell` 目前只拿得到施法者的等級，而這一條看的是目標的職業。
+`internal/gamepack.StrengthSpellDie` 就是這條規則，包在 `StrengthSpellResult`
+裡由 `cast.go` 呼叫——**目標的職業與目前力量由呼叫端傳進去**，因為 `CastSpell`
+本身只拿得到施法者的等級。
 
 **變大術**（`128Dh`）依施法者等級寫進 `DS:47A7h` 的值：
 

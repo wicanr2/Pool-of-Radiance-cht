@@ -3,7 +3,9 @@ package main
 import (
 	"testing"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 )
 
 // 紮營那兩列指令照原版（spec 135）。
@@ -239,5 +241,38 @@ func TestCampIconEditRoundTrips(t *testing.T) {
 	}
 	if application.flow != before {
 		t.Error("借用完的 flow 沒有還原")
+	}
+}
+
+// 休息會不會被打斷，由**ECL 腳本寫進那兩個位址**的值決定（spec 114）。
+// 先前 remake 一律傳 0／0（永遠不被打斷），因為找不到 writer——而找不到是
+// 因為掃的是 overlay 的 disp16 形狀，看不到 ECL 的 SAVE。
+func TestRestInterruptionComesFromTheECLAddresses(t *testing.T) {
+	a := &app{}
+	// 沒有事件機器：回 0／0，那也是原版的初值（overlay-07 清成 0）。
+	if got := a.restInterruption(); got.Period != 0 || got.Threshold != 0 {
+		t.Fatalf("沒有事件機器卻得到 %+v，預期兩個都是 0", got)
+	}
+
+	a.eventMachine = &eclvm.Machine{Memory: map[uint16]uint16{}}
+	if got := a.restInterruption(); got.Period != 0 || got.Threshold != 0 {
+		t.Fatalf("ECL 還沒寫就得到 %+v，預期兩個都是 0", got)
+	}
+
+	// ECL 寫進去之後就讀得到——`6DD2h` 是每幾刻檢查一次，`6DD3h` 是 1d100
+	// 的門檻。
+	a.eventMachine.Memory[gamepack.RestInterruptionPeriodAddress] = 6
+	a.eventMachine.Memory[gamepack.RestInterruptionThresholdAddress] = 50
+	got := a.restInterruption()
+	if got.Period != 6 || got.Threshold != 50 {
+		t.Fatalf("讀到 %+v，預期 Period 6、Threshold 50", got)
+	}
+
+	// **兩個位址不能相互搞混**：差一個 byte 的錯誤會讓「多久檢查一次」與
+	// 「擲到多少算遇上」對調，而兩者都是小數字，症狀只是休息偶爾怪怪的。
+	a.eventMachine.Memory[gamepack.RestInterruptionPeriodAddress] = 1
+	a.eventMachine.Memory[gamepack.RestInterruptionThresholdAddress] = 100
+	if got := a.restInterruption(); got.Period != 1 || got.Threshold != 100 {
+		t.Fatalf("讀到 %+v，預期 Period 1、Threshold 100", got)
 	}
 }

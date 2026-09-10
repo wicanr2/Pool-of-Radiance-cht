@@ -51,6 +51,7 @@
       "ui.campRestTime": "休息時間　%02d 天　%02d：%02d",
       "ui.campRestTooShort": "休息了，但時間不夠把法術記起來。",
       "ui.campRested": "記完 %d 條法術，休息了 %d 小時。",
+      "ui.campInterrupted": "隊伍被粗暴地打斷了！",
       "ui.campSaved": "存好了。",
       "ui.campSpeedLine": "遊戲速度 ＝ %d（0 最快　9 最慢）",
       "ui.campSpeedPrefix": "遊戲速度：",

@@ -2,11 +2,14 @@
 
 狀態：CONFORMED；日期：2026-09-01。
 
-## 玩家阻塞點
+## 為什麼需要這一支
 
-正常玩家已從 City Hall 外走到 clerk 第一頁；第二次 Return 後，原始
-`ECL3/block8 9C9Eh` 停在尚未實作的 opcode `35h`。這是 clerk reward table 的回寫，
-不能以 passthrough 略過，否則後續 reward／commission 狀態會與原版分岔。
+正常玩家從 City Hall 外走到 clerk 第一頁，第二次 Return 之後
+`ECL3/block8 9C9Eh` 就會執行 `35h`。這是 clerk reward table 的回寫，
+**不能以 passthrough 略過**，否則後續 reward／commission 狀態會與原版分岔。
+
+remake 這一側由共用 engine 實作（`eclvm/machine.go` 的 `case 0x35`），
+不在 Pool 的指令表覆蓋清單裡。
 
 ## 固定證據
 
