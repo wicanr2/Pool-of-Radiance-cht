@@ -148,3 +148,69 @@ func TestReadSpecMarksSharedEngineImplementations(t *testing.T) {
 		t.Error("沒提到 eclvm 的規格不該標成共用 engine")
 	}
 }
+
+// 交叉判準要抓的是「同一件事兩個來源說法不同」，而不是「有沒有測試」本身。
+// 兩個方向都要抓——只抓一邊等於只有一個判準。
+func TestCrossCheckToolsCatchesBothDirections(t *testing.T) {
+	for _, testCase := range []struct {
+		name    string
+		tools   []tool
+		passed  bool
+		mention string
+	}{
+		{
+			name: "兩邊都說有、兩邊都說沒有，都算一致",
+			tools: []tool{
+				{name: "alpha", hasTests: true, hasTestFuncs: true},
+				{name: "beta", hasTests: false, hasTestFuncs: false},
+			},
+			passed: true,
+		},
+		{
+			name:    "檔名對但裡面沒有 func Test",
+			tools:   []tool{{name: "gamma", hasTests: true, hasTestFuncs: false}},
+			passed:  false,
+			mention: "沒有 func Test",
+		},
+		{
+			name:    "有 func Test 但檔名不對",
+			tools:   []tool{{name: "delta", hasTests: false, hasTestFuncs: true}},
+			passed:  false,
+			mention: "go test 不會跑它",
+		},
+	} {
+		check := crossCheckTools(testCase.tools)
+		if check.Passed != testCase.passed {
+			t.Errorf("%s：passed=%v，該是 %v（%v）", testCase.name, check.Passed, testCase.passed, check.Mismatches)
+			continue
+		}
+		if testCase.mention == "" {
+			continue
+		}
+		if len(check.Mismatches) != 1 || !strings.Contains(check.Mismatches[0], testCase.mention) {
+			t.Errorf("%s：理由是 %v，該提到 %q", testCase.name, check.Mismatches, testCase.mention)
+		}
+	}
+}
+
+// 判準 B 認的是 go test 真的會跑的那些函式。認太寬就跟判準 A 一樣寬，
+// 交叉判準也就失去意義了。
+func TestTestFunctionMatchesWhatGoTestActuallyRuns(t *testing.T) {
+	for _, testCase := range []struct {
+		source string
+		want   bool
+	}{
+		{"func TestThing(t *testing.T) {}", true},
+		{"func FuzzThing(f *testing.F) {}", true},
+		{"func TestX(t *testing.T) {}\n", true},
+		{"func BenchmarkThing(b *testing.B) {}", false},
+		{"func Testing() {}", false},
+		{"// func TestCommentedOut(t *testing.T) {}", false},
+		{"\tfunc TestIndented(t *testing.T) {}", false},
+		{"func testLower(t *testing.T) {}", false},
+	} {
+		if got := testFunction.MatchString(testCase.source); got != testCase.want {
+			t.Errorf("%q → %v，該是 %v", testCase.source, got, testCase.want)
+		}
+	}
+}

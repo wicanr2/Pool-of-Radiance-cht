@@ -348,3 +348,63 @@ func TestWriteIntoRefusesWhenTheMarkersAreMissingOrSwapped(t *testing.T) {
 		}
 	}
 }
+
+// 上游說自己算錯的時候，缺口清單就算是空的也不能宣告完成——那個 0 可能是
+// 判準錯出來的，不是真的沒缺口。這一條釘的是演習裡實際發生的情況。
+func TestVerifyRefusesToTrustAnUpstreamThatFailedItsOwnCrossCheck(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "gaps.json")
+	one := item{ID: "t", Layer: "verification", Title: "t", Acceptance: "a",
+		Verify: verify{Kind: "json_gap", Path: "gaps.json", Field: "tools_without_tests", Min: 1}}
+
+	// 清單空的，而且上游自己說交叉判準不一致。
+	body := `{"cross_check":{"passed":false,"mismatches":["alpha：有 func Test 但檔名不對"]},
+	          "tools_without_tests":[]}`
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	open, why, err := stillOpen(root, one)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !open {
+		t.Fatalf("上游自檢沒過卻宣告完成了：why=%q", why)
+	}
+	if !strings.Contains(why, "交叉判準") {
+		t.Errorf("理由沒說是上游的問題：%q", why)
+	}
+
+	// 同一份數字，上游自檢過了——這時候空清單就是真的空。
+	body = `{"cross_check":{"passed":true,"mismatches":[]},"tools_without_tests":[]}`
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	open, why, err = stillOpen(root, one)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if open {
+		t.Fatalf("上游自檢過了、清單也空了，卻還說未完成：why=%q", why)
+	}
+}
+
+// 不是每一份輸入都有自檢戳記。沒有的照舊，不能因為缺欄位就整批判成不可信。
+func TestVerifyStillWorksWithoutACrossCheckStamp(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "guide.json")
+	if err := os.WriteFile(path, []byte(`{"maps":{"3/00":{}}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	one := item{ID: "g", Layer: "presentation", Title: "t", Acceptance: "a",
+		Verify: verify{Kind: "json_len", Path: "guide.json", Field: "maps", Max: 1}}
+	open, why, err := stillOpen(root, one)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !open {
+		t.Fatalf("沒有戳記的輸入該照舊判斷：why=%q", why)
+	}
+	if strings.Contains(why, "交叉判準") {
+		t.Errorf("沒有戳記卻報成上游問題：%q", why)
+	}
+}

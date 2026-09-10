@@ -1,5 +1,10 @@
 {
   "schema": "pool-doc-index/1",
+  "cross_check": {
+    "passed": true,
+    "criteria": "檔名是 *_test.go｜內容有 func TestXxx",
+    "mismatches": []
+  },
   "spec_count": 135,
   "tool_count": 28,
   "specs_without_implementation": [

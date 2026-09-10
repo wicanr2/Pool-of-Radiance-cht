@@ -23,7 +23,11 @@ import (
 var (
 	specReference = regexp.MustCompile(`(?i)spec\s+(\d{3})`)
 	specFileName  = regexp.MustCompile(`^(\d{3})-(.+)\.md$`)
-	statusWords   = []string{"CONFORMED", "READY", "DRAFT", "OPEN"}
+	// 第二個判準：檔案裡真的有 go test 會跑的函式。
+	// 和「檔名是 _test.go」問的是同一件事，但資訊來源不同——
+	// 一個看檔名，一個看內容，所以同一個錯誤不容易讓兩邊一起錯。
+	testFunction = regexp.MustCompile(`(?m)^func (Test|Fuzz)[A-Z_]`)
+	statusWords  = []string{"CONFORMED", "READY", "DRAFT", "OPEN"}
 )
 
 type spec struct {
@@ -40,22 +44,36 @@ type spec struct {
 
 // gapReport 是給機器讀的那一份：缺口不是數字而是清單，因為要看得出是哪幾份。
 // worklist 的 verify 綁這份 JSON 的長度——註解會被順手改掉，項數不會。
+// crossCheck 是這份報告自己的體檢結果。
+//
+// 缺口清單的問題在於「算錯」和「真的沒缺口」在數字上長得一模一樣——下游只看
+// 得到 0，看不到那個 0 是怎麼來的。所以同一個問題用兩個資訊來源各算一次，
+// 不一致就記在這裡，並且 passed 轉 false。讀這份 JSON 的人要先看它。
+type crossCheck struct {
+	Passed     bool     `json:"passed"`
+	Criteria   string   `json:"criteria"`
+	Mismatches []string `json:"mismatches"`
+}
+
 type gapReport struct {
-	Schema                     string   `json:"schema"`
-	SpecCount                  int      `json:"spec_count"`
-	ToolCount                  int      `json:"tool_count"`
-	SpecsWithoutImplementation []string `json:"specs_without_implementation"`
-	SpecsWithoutTests          []string `json:"specs_without_tests"`
-	SpecsInSharedEngine        []string `json:"specs_in_shared_engine"`
-	ToolsWithoutDoc            []string `json:"tools_without_doc"`
-	ToolsWithoutTests          []string `json:"tools_without_tests"`
+	Schema                     string     `json:"schema"`
+	CrossCheck                 crossCheck `json:"cross_check"`
+	SpecCount                  int        `json:"spec_count"`
+	ToolCount                  int        `json:"tool_count"`
+	SpecsWithoutImplementation []string   `json:"specs_without_implementation"`
+	SpecsWithoutTests          []string   `json:"specs_without_tests"`
+	SpecsInSharedEngine        []string   `json:"specs_in_shared_engine"`
+	ToolsWithoutDoc            []string   `json:"tools_without_doc"`
+	ToolsWithoutTests          []string   `json:"tools_without_tests"`
 }
 
 type tool struct {
-	name     string
-	summary  string
-	hasTests bool
-	specs    []string
+	name    string
+	summary string
+	// 兩個判準各記各的，不要在這裡就合併——合併掉就看不出它們何時不一致了。
+	hasTests     bool // 判準 A：檔名是 *_test.go
+	hasTestFuncs bool // 判準 B：內容有 func TestXxx
+	specs        []string
 }
 
 // readSpec 讀檔頭：第一行是標題，「狀態：」到「日期：」之間是狀態段。
@@ -178,6 +196,9 @@ func readTools(root string) ([]tool, error) {
 			if err != nil {
 				return nil, err
 			}
+			if testFunction.Match(raw) {
+				current.hasTestFuncs = true
+			}
 			for _, match := range specReference.FindAllStringSubmatch(string(raw), -1) {
 				if !seen[match[1]] {
 					seen[match[1]] = true
@@ -272,6 +293,31 @@ func shorten(paths []string) string {
 		return strings.Join(trimmed[:3], "、") + fmt.Sprintf(" 等 %d 個", len(trimmed))
 	}
 	return strings.Join(trimmed, "、")
+}
+
+// crossCheckTools 讓兩個判準對每一支工具各答一次。
+//
+// 不一致就是這份報告不可信的證據，兩個方向都是真的問題：檔名對但裡面沒有
+// func Test（空的測試檔），或者有 func Test 卻不在 _test.go 裡（go test 根本
+// 不會跑它）。單一判準看不出這兩種，因為它們在數字上和「真的有測試」一樣。
+func crossCheckTools(tools []tool) crossCheck {
+	check := crossCheck{
+		Passed:     true,
+		Criteria:   "檔名是 *_test.go｜內容有 func TestXxx",
+		Mismatches: []string{},
+	}
+	for _, item := range tools {
+		if item.hasTests == item.hasTestFuncs {
+			continue
+		}
+		reason := "有 func Test 但檔名不是 *_test.go，go test 不會跑它"
+		if item.hasTests {
+			reason = "有 *_test.go 但裡面沒有 func Test"
+		}
+		check.Passed = false
+		check.Mismatches = append(check.Mismatches, item.name+"："+reason)
+	}
+	return check
 }
 
 func main() {
@@ -383,8 +429,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	check := crossCheckTools(tools)
+
 	report := gapReport{
 		Schema:                     "pool-doc-index/1",
+		CrossCheck:                 check,
 		SpecCount:                  len(specs),
 		ToolCount:                  len(tools),
 		SpecsWithoutImplementation: []string{},
@@ -428,4 +477,14 @@ func main() {
 	fmt.Printf("寫出 %s：%d 份沒有實作引用、%d 份沒有測試、%d 支工具沒有測試\n",
 		reportPath, len(report.SpecsWithoutImplementation),
 		len(report.SpecsWithoutTests), len(report.ToolsWithoutTests))
+
+	// 交叉判準沒過就大聲講，並且用非零離開碼——這份報告的數字下游會拿去當
+	// 「還剩多少」的依據，不可信的時候要擋在那之前。
+	if !check.Passed {
+		fmt.Fprintf(os.Stderr, "\n交叉判準不一致 %d 處，這份報告的數字先不要用：\n", len(check.Mismatches))
+		for _, line := range check.Mismatches {
+			fmt.Fprintln(os.Stderr, "  "+line)
+		}
+		os.Exit(1)
+	}
 }

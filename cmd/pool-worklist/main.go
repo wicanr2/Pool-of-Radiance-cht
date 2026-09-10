@@ -214,6 +214,13 @@ func stillOpen(root string, one item) (bool, string, error) {
 		}
 		return true, "還沒出現", nil
 	case "json_len":
+		distrust, err := upstreamDistrusted(filepath.Join(root, one.Verify.Path))
+		if err != nil {
+			return false, "", err
+		}
+		if distrust != "" {
+			return true, distrust + "，這份數字不能拿來下結論", nil
+		}
 		count, err := jsonFieldLen(filepath.Join(root, one.Verify.Path), one.Verify.Field)
 		if err != nil {
 			return false, "", err
@@ -223,6 +230,15 @@ func stillOpen(root string, one item) (bool, string, error) {
 		}
 		return false, fmt.Sprintf("%s 的 %s 已經有 %d 項（> %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Max), nil
 	case "json_gap":
+		distrust, err := upstreamDistrusted(filepath.Join(root, one.Verify.Path))
+		if err != nil {
+			return false, "", err
+		}
+		if distrust != "" {
+			// 不可信的時候一律回「仍未完成」——沉默不等於通過，
+			// 而「不知道」比「可能已完成」更接近實情。
+			return true, distrust + "，這份數字不能拿來下結論", nil
+		}
 		count, err := jsonFieldLen(filepath.Join(root, one.Verify.Path), one.Verify.Field)
 		if err != nil {
 			return false, "", err
@@ -233,6 +249,35 @@ func stillOpen(root string, one item) (bool, string, error) {
 		return false, fmt.Sprintf("%s 的 %s 只剩 %d 項（< %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Min), nil
 	}
 	return false, "", fmt.Errorf("verify.kind %q 不認得", one.Verify.Kind)
+}
+
+// upstreamDistrusted 問那份 JSON「你自己信不信你自己」。
+//
+// json_len／json_gap 讀的是別的工具算出來的數字，而「算錯」和「真的沒缺口」
+// 在數字上長得一模一樣。所以約定：產生資料的工具可以在頂層放一個
+// `cross_check` 物件，用第二個資訊來源驗自己一次，`passed` 為 false 就表示
+// 這份數字不能拿來下結論。
+//
+// 沒有這個欄位時回空字串——不是每一份輸入都有自檢，強制要求會讓既有的條目
+// 一起壞掉。這是漸進的：有戳記的就檢查，沒有的照舊。
+func upstreamDistrusted(path string) (string, error) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	var decoded struct {
+		CrossCheck *struct {
+			Passed     bool     `json:"passed"`
+			Mismatches []string `json:"mismatches"`
+		} `json:"cross_check"`
+	}
+	if err := json.Unmarshal(raw, &decoded); err != nil {
+		return "", fmt.Errorf("%s: %w", path, err)
+	}
+	if decoded.CrossCheck == nil || decoded.CrossCheck.Passed {
+		return "", nil
+	}
+	return fmt.Sprintf("上游的交叉判準不一致 %d 處", len(decoded.CrossCheck.Mismatches)), nil
 }
 
 // jsonFieldLen 讀一份 JSON 的某個頂層欄位有幾項。物件數鍵、陣列數元素。
