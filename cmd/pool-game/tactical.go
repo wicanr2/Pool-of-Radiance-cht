@@ -642,8 +642,8 @@ const (
 )
 
 // dexterityAbilityIndex 是能力值陣列裡的 DEX，順序為 STR／INT／WIS／DEX／CON／CHA。
-// placeholderDexterity 給沒有能力值的一方用；怪物的 DEX 在 285-byte record 的
-// `+13h`，還沒接上來。
+// placeholderDexterity 是**沒有記錄可讀時**的退路（例如 staging 沒把那一隻的
+// 記錄找出來）；怪物的 DEX 讀 285-byte 記錄的 `+13h`（spec 052／065／097）。
 const (
 	dexterityAbilityIndex = 3
 	placeholderDexterity  = 12
@@ -785,6 +785,8 @@ func (a *app) enterTacticalPreview() error {
 		}
 		if record, ok := a.stagedRecordFor(index, friendly); ok {
 			state.BaseMovement[index] = record.Movement()
+			// 先攻修正讀這一格（overlay-25 entry 11，spec 052）。
+			state.Dexterity[index] = record.Dexterity()
 			state.HitDice[index] = record.Raw[0x73]
 			state.SleepFlag[index] = record.Raw[0x2e]
 			state.CreatureType[index] = record.CreatureType()

@@ -200,3 +200,39 @@ func TestMonstersWithTheFirstDamageSlotAreUnchanged(t *testing.T) {
 			record.Name, record.DamageDiceCount(), record.DamageDieSides())
 	}
 }
+
+// 怪物的敏捷在記錄 `+13h`。三個互相獨立的使用點把語意釘住——先攻修正
+// （overlay-25 entry 11，spec 052 引 spec 004）、投射武器的命中修正
+// （`1173h`，spec 065）與賊的技能份額（`+13h > 15`，spec 097）。
+//
+// **原版的值本身就是第四個對照**：殭屍與山丘巨人是 0（先攻修正 −4，AD&D 的
+// 殭屍總是最後出手），快靈是 18（+3，牠以速度著稱），賊也是 18。四份證據
+// 指向同一個語意，所以這一格不是樣板殘留。
+//
+// 接上這一格之前 remake 給每一隻怪物一律用 placeholder 12，先攻修正永遠是 0。
+func TestMonsterDexterityMatchesTheOriginal(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	for _, want := range []struct {
+		archive uint8
+		block   uint8
+		name    string
+		dex     uint8
+	}{
+		{2, 4, "ORC", 10},
+		{6, 10, "QUICKLINGS", 18},
+		{3, 45, "1ST LVL THIEF", 18},
+		{4, 35, "ZOMBIE", 0},
+		{2, 55, "HILL GIANT", 0},
+	} {
+		record, err := ReadDOSMonsterRecord(zipPath, want.archive, want.block)
+		if err != nil {
+			t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+		}
+		if record.Name != want.name {
+			t.Fatalf("MON%dCHA block %d 是 %q，預期 %q", want.archive, want.block, record.Name, want.name)
+		}
+		if got := record.Dexterity(); got != want.dex {
+			t.Errorf("%s 的 DEX 是 %d，預期 %d", want.name, got, want.dex)
+		}
+	}
+}

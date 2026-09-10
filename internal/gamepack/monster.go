@@ -13,6 +13,11 @@ const monsterRecordSize = 285
 const (
 	MonsterBodySizeOffset     = 0x6C
 	MonsterCreatureTypeOffset = 0x9F
+	// MonsterDexterityOffset 是記錄 `+13h`：敏捷。三個互相獨立的使用點把
+	// 語意釘住——先攻修正（overlay-25 entry 11，spec 052）、投射武器的命中
+	// 修正（`1173h`，spec 065）與賊的技能份額（`+13h > 15`，spec 097）
+	// 讀的都是這一格。
+	MonsterDexterityOffset = 0x13
 )
 
 type MonsterRecord struct {
@@ -42,6 +47,10 @@ func (record MonsterRecord) CreatureType() uint8 { return record.Raw[MonsterCrea
 // 巨蜥）。魅惑人類與定身術要求整個 byte 不大於 1，所以只有「正好是 1」的
 // 才算得上「人」。
 func (record MonsterRecord) BodySize() uint8 { return record.Raw[MonsterBodySizeOffset] }
+
+// Dexterity 是記錄 `+13h`。怪物與角色共用同一份 285-byte 版面，所以這一格
+// 對兩邊是同一件事。
+func (record MonsterRecord) Dexterity() uint8 { return record.Raw[MonsterDexterityOffset] }
 
 func (record MonsterRecord) MaxHitPoints() uint8     { return record.Raw[0x32] }
 func (record MonsterRecord) CurrentHitPoints() uint8 { return record.Raw[0x11B] }
