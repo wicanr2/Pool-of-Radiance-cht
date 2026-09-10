@@ -242,6 +242,7 @@ func (a *app) beginCampIconEdit() error {
 	if err := a.reloadIcons(); err != nil {
 		a.statusLine = err.Error()
 	}
+	a.rememberOldIcons()
 	return nil
 }
 

@@ -210,11 +210,10 @@ const (
 // `iconOptionLabel`。指令列（spec 119）用的是同一個作法。
 const (
 	msgPortraitTitle messageID = iota + 700
-	msgPortraitHead
-	msgPortraitBody
-	msgPortraitKeep
 	msgPortraitAccepted
 	msgIconTitle
+	msgIconOld
+	msgIconNew
 	msgIconReady
 	msgIconAction
 	msgIconSummary

@@ -57,13 +57,12 @@
       **驗收**：一次不中斷的實跑，每一個必經 block 都留下經過紀錄；中途卡住的地方寫成可重跑的測試。
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
+- [ ] **ECL 還有一處運算元數讀錯。** `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 的隨機探索在 2026-09-10 撞到一次 `continue Pool SearchLocation: unknown opcode 0x9D at payload offset 1085`（seed 142，第 21526 步）。**`9Dh` 不是 opcode**——那是 PC 停在資料上，症狀與 spec 093 修掉的 `34h ECL CLOCK` 同一族：某一條指令的運算元數讀多了，後面整段錯位。同一份測試重跑一次沒有再現，所以是特定路徑才走得到。
+      **卡在**：要先定位是哪一個 block 的哪一條指令。`payload offset 1085` 是線索，但那一趟走過 22 張地圖，哪一張的哪一個 block 還沒對出來；重現要靠同一組 seed 與同一條路徑。
+      **驗收**：定位那一條指令、對回原版的運算元數、寫進 spec，並讓那個 seed 重跑不再硬失敗。
 
 ### 三、版面與資料的差距
 
-- [ ] **肖像編輯器補上人物資料。** 原版是在整張人物資料頁上換頭與身體，remake 目前是一張只有三行字的獨立畫面。
-      **驗收**：編輯器背景是人物資料頁本身，底下 `HEAD BODY KEEP` 那一列在框外。
-- [ ] **戰鬥造形設計補上 OLD／NEW 對照。** 原版同時畫舊造形與新造形各一組 `READY`／`ACTION`，共四格，底部是橫向指令列；remake 是一組兩格加左側直式選單。
-      **驗收**：四格都在，且 OLD 那一組是進編輯器時的值。
 - [ ] **遊戲內攻略擴到其餘地圖。** `F3` 的機制與資料格式做好了（[`docs/guide/README.md`](docs/guide/README.md)），目前只有 `3/00` 費蘭的文明區建了 48 個點。
       **驗收**：每一張新地圖的點都由原始 GEO／ECL 推出來、每一個點帶 `source`，且 `internal/guide` 的三個測試全綠——**不可以抄第三方攻略的座標**，那種錯的症狀是「測試綠、玩家走不到」。
 - [ ] **抽樣擴到還沒對拍的畫面。** 現況表有十六項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、檢視人物、地圖上施法、平面圖，以及一張**拍了卻沒比對**的 `remake-icon-confirm`。

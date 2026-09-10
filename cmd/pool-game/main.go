@@ -158,6 +158,11 @@ type app struct {
 	portrait        *ebiten.Image
 	iconReady       *ebiten.Image
 	iconAction      *ebiten.Image
+	// iconReadyOld／iconActionOld 是**進編輯器那一刻**的造形。原版的編輯器
+	// 同時畫 OLD 與 NEW 兩組 `READY`／`ACTION`（基準畫面 `25-k`），改了什麼
+	// 一眼就比得出來；沒有 OLD 那一組就只剩「現在長這樣」，看不出改了什麼。
+	iconReadyOld    *ebiten.Image
+	iconActionOld   *ebiten.Image
 	loadPortrait    func(head, body uint8) (*ebiten.Image, error)
 	loadIcon        func(head, body, size uint8, action bool, colors [6][2]uint8) (*ebiten.Image, error)
 	loadCombatTiles func(name string) ([]*ebiten.Image, error)
@@ -660,6 +665,13 @@ func (a *app) reloadIcons() error {
 	}
 	a.iconReady, a.iconAction = ready, action
 	return nil
+}
+
+// rememberOldIcons 把現在這一組記成 OLD。**要在 reloadIcons 之後叫**：
+// 進編輯器那一步會先把 flow 的造形欄位設好再重載，那個結果才是「進來時的
+// 樣子」。編輯途中不會再叫，所以 OLD 整段編輯期間都不動。
+func (a *app) rememberOldIcons() {
+	a.iconReadyOld, a.iconActionOld = a.iconReady, a.iconAction
 }
 
 func (a *app) Update() error {
@@ -2802,7 +2814,11 @@ func (a *app) updateCreation() error {
 			}
 			a.statusLine = a.text(msgPortraitAccepted)
 			a.resetIconMenu()
-			return a.reloadIcons()
+			if err := a.reloadIcons(); err != nil {
+				return err
+			}
+			a.rememberOldIcons()
+			return nil
 		}
 		return nil
 	}
@@ -3042,9 +3058,12 @@ func (a *app) Draw(screen *ebiten.Image) {
 		// 標題那一張是原版的整幅美術，底下那條藍帶裡就是原版的版權文字。
 		// 再疊一列 F-key 提示會直接壓在上面——標題畫面也按不到那幾個鍵，
 		// 畫它只是把原版的畫面弄髒。`msgTitleHint` 那一句留著，那是要按的。
-	case a.mode == modeCreation && a.flow.Stage == creation.StageRoll:
-		// 人物資料頁最下面那一列是原版的 `KEEP THIS CHARACTER? YES NO`
-		// （spec 130），由 `drawCreation` 自己畫。兩邊都畫會疊成一團。
+	case a.mode == modeCreation &&
+		(a.flow.Stage == creation.StageRoll || a.flow.Stage == creation.StagePortrait):
+		// 這兩頁最下面那一列都是原版自己的：資料頁是
+		// `KEEP THIS CHARACTER? YES NO`（spec 130），肖像編輯器是
+		// `HEAD BODY KEEP`（基準畫面 `24-Return`）——兩者都由 `drawCreation`
+		// 畫。兩邊都畫會疊成一團。
 	case a.panelOpen():
 		// 手冊、裝備、法術、商店、紮營那幾頁自己有一列鍵盤提示，而且它們
 		// 開著的時候 `Update` 提早返回、指令列的鍵按不到。畫它只會從面板
@@ -3244,24 +3263,43 @@ func drawIconEditor(screen *ebiten.Image, a *app, foreground, accent color.Color
 		}
 		drawText(screen, prefix+a.iconOptionLabel(option.label), 48, 116+index*22, ink)
 	}
-	drawText(screen, a.text(msgIconReady), 356, 88, accent)
-	drawText(screen, a.text(msgIconAction), 472, 88, accent)
-	for index, icon := range []*ebiten.Image{a.iconReady, a.iconAction} {
-		if icon == nil {
-			continue
+	// 原版是**兩組四格**：上面 OLD（進編輯器時的樣子）、下面 NEW（現在的
+	// 樣子），每一組各有 `READY` 與 `ACTION`，改了什麼一眼就比得出來
+	//（基準畫面 `25-k`）。
+	for row, group := range [2]struct {
+		label string
+		icons [2]*ebiten.Image
+	}{
+		{a.text(msgIconOld), [2]*ebiten.Image{a.iconReadyOld, a.iconActionOld}},
+		{a.text(msgIconNew), [2]*ebiten.Image{a.iconReady, a.iconAction}},
+	} {
+		// 放大倍率從 4 降到 3：原版的造形在 320×200 上約佔畫面高度的一成，
+		// 640×400 等比是 2 倍，4 倍等於放大成兩倍大而兩組排不下。3 倍是
+		// 「排得開」與「看得清楚」之間的折衷。
+		//
+		// 行距 132 與底下那些偏移都是量出來的：造形 3 倍放大之後約 68 像素
+		// 高，而 `drawText` 的 y 是**基線**、字往上長約 16 像素——所以下一組
+		// 的標籤基線要比上一組的圖底再低 16 以上，否則字會壓在腳上。
+		top := 40 + row*132
+		drawText(screen, group.label, 404, top, accent)
+		drawText(screen, a.text(msgIconReady), 356, top+22, accent)
+		drawText(screen, a.text(msgIconAction), 472, top+22, accent)
+		for index, icon := range group.icons {
+			if icon == nil {
+				continue
+			}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(3, 3)
+			op.GeoM.Translate(float64(348+index*116), float64(top+42))
+			screen.DrawImage(icon, op)
 		}
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Scale(4, 4)
-		op.GeoM.Translate(float64(340+index*116), 112)
-		screen.DrawImage(icon, op)
 	}
 	size := a.iconOptionLabel("LARGE")
 	if a.flow.IconSize == 1 {
 		size = a.iconOptionLabel("SMALL")
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgIconSummary),
-		a.flow.IconHead, a.flow.IconWeapon, size), 340, 268, foreground)
-	drawText(screen, a.hint("icon"), 48, 332, foreground)
+		a.flow.IconHead, a.flow.IconWeapon, size), 340, 300, foreground)
 }
 
 func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
@@ -3537,16 +3575,12 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		return
 	}
 	if a.flow.Stage == creation.StagePortrait {
-		drawText(screen, a.text(msgPortraitTitle), 48, 72, accent)
-		drawText(screen, fmt.Sprintf(a.text(msgPortraitHead), a.flow.PortraitHead), 48, 118, foreground)
-		drawText(screen, fmt.Sprintf(a.text(msgPortraitBody), a.flow.PortraitBody), 48, 150, foreground)
-		drawText(screen, a.text(msgPortraitKeep), 48, 182, foreground)
-		if a.portrait != nil {
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Scale(2, 2)
-			op.GeoM.Translate(448, 16)
-			screen.DrawImage(a.portrait, op)
-		}
+		// 原版是**在整張人物資料頁上**換頭與身體，不是另開一頁：底下框外那一
+		// 列是 `HEAD BODY KEEP`，右上角的肖像跟著選擇換（基準畫面
+		// `24-Return`）。`drawCharacterSheet` 畫的肖像取自 `a.portrait`，
+		// 而換頭換身體改的就是它，所以這裡不必自己再貼一張。
+		drawCharacterSheet(screen, a, foreground, accent)
+		drawText(screen, a.text(msgPortraitTitle), 0, footerBaseline, accent)
 		return
 	}
 	if a.flow.Stage == creation.StageIcon {

@@ -118,28 +118,6 @@
       }
     },
     {
-      "id": "portrait-editor-sheet",
-      "layer": "presentation",
-      "title": "肖像編輯器補上人物資料",
-      "body": "原版是在整張人物資料頁上換頭與身體，remake 目前是一張只有三行字的獨立畫面。",
-      "acceptance": "編輯器背景是人物資料頁本身，底下 `HEAD BODY KEEP` 那一列在框外。",
-      "verify": {
-        "kind": "manual",
-        "note": "沒有機器可判的訊號。改好之後那一頁的背景會是人物資料頁本身，獨立畫面的三行字（msgPortraitTitle／Head／Body）會消失——接上時把這一條改成綁那個"
-      }
-    },
-    {
-      "id": "combat-icon-old-new",
-      "layer": "presentation",
-      "title": "戰鬥造形設計補上 OLD／NEW 對照",
-      "body": "原版同時畫舊造形與新造形各一組 `READY`／`ACTION`，共四格，底部是橫向指令列；remake 是一組兩格加左側直式選單。",
-      "acceptance": "四格都在，且 OLD 那一組是進編輯器時的值。",
-      "verify": {
-        "kind": "manual",
-        "note": "沒有機器可判的訊號。改好之後盤面上會有兩組 READY／ACTION——接上時把這一條改成綁那個"
-      }
-    },
-    {
       "id": "guide-other-maps",
       "layer": "presentation",
       "title": "遊戲內攻略擴到其餘地圖",
@@ -165,6 +143,18 @@
         "field": "screens",
         "max": 16,
         "note": "抽樣只有十六項時這一條仍未完成。綁數量而不是綁註解：註解會被順手改掉，項數不會"
+      }
+    },
+    {
+      "id": "ecl-operand-count-misread",
+      "layer": "verification",
+      "title": "ECL 還有一處運算元數讀錯",
+      "body": "`TestPlayingTheWorldCompletesCommissionsOnItsOwn` 的隨機探索在 2026-09-10 撞到一次 `continue Pool SearchLocation: unknown opcode 0x9D at payload offset 1085`（seed 142，第 21526 步）。**`9Dh` 不是 opcode**——那是 PC 停在資料上，症狀與 spec 093 修掉的 `34h ECL CLOCK` 同一族：某一條指令的運算元數讀多了，後面整段錯位。同一份測試重跑一次沒有再現，所以是特定路徑才走得到。",
+      "blocked_by": "要先定位是哪一個 block 的哪一條指令。`payload offset 1085` 是線索，但那一趟走過 22 張地圖，哪一張的哪一個 block 還沒對出來；重現要靠同一組 seed 與同一條路徑。",
+      "acceptance": "定位那一條指令、對回原版的運算元數、寫進 spec，並讓那個 seed 重跑不再硬失敗。",
+      "verify": {
+        "kind": "manual",
+        "note": "沒有穩定訊號——隨機探索才撞得到，重跑會消失。**不要因為重跑是綠的就當它不存在**：門檻「硬失敗 0 次」在隨機探索下量到的是這一次走了哪條路，不是缺口在不在。定位到之後改成綁那個 block 的靜態走訪"
       }
     }
   ]
