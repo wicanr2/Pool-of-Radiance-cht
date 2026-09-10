@@ -298,12 +298,32 @@ func (a *app) commandPrefixInk(accent color.Color) color.Color { return accent }
 // commandGlyphWidth 是等寬字的一格。倚天與退路字型的半形都是這個寬度。
 const commandGlyphWidth = 8
 
-// areaMapCell 是平面圖一格的邊長，`areaMapSize` 是那一框的邊長。
-// remake 的框在邏輯畫布上是 176（原版 native 88 的兩倍）。
+// 平面圖的幾何（overlay-30 offset 0，2026-09-10 反組譯出來的，見 spec 119）。
+//
+// 原版一次只顯示 11×11 格，不是整張 16×16：視窗原點是
+// `clamp(隊伍座標 - 5, 0, 5)`——盡量把隊伍擺中間，但不讓視窗掉出地圖外。
+// 上限 5 是因為 5+10 剛好是最後一格，所以 11 格正好涵蓋到底。
 const (
-	areaMapSize = 176
-	areaMapCell = areaMapSize / geometry.Width
+	areaMapSize   = 176
+	areaMapWindow = 11
+	areaMapCell   = areaMapSize / areaMapWindow
+	areaMapMargin = areaMapWindow / 2
 )
+
+// areaMapOrigin 是視窗左上角那一格，`clamp(pos - 5, 0, 5)`。
+//
+// 原版那段是先減再夾兩次（`sub ax,5` 後 `jge`／`jle` 各夾一次），
+// 這裡照同一個順序寫，語意才對得上：先往回退五格，退過頭就貼邊。
+func areaMapOrigin(position, span int) int {
+	origin := position - areaMapMargin
+	if origin < 0 {
+		origin = 0
+	}
+	if limit := span - areaMapWindow; origin > limit {
+		origin = limit
+	}
+	return origin
+}
 
 // drawAreaMap 畫 `A)REA` 的平面全圖：可走區填滿，牆是另一層灰，隊伍是箭頭。
 //
@@ -316,9 +336,8 @@ const (
 // 對應格。先前用介面前景色畫線，畫出來的是 `(170,255,255)`——那個顏色根本
 // 不在 EGA 十六色裡。
 //
-// **格數還沒對上**：原版一格 8 個 native 像素、88 的框只裝得下 11 格，
-// 而這裡是 16 格各 11 個邏輯像素。原版那 11 格對到 GEO 的哪 11 格還沒讀出來
-// （worklist 的 `area-map-drawing`），所以這一支先只把配色與填法對齊。
+// 格數與視窗規則照原版：11×11 格、一格 16 個邏輯像素（原版 native 8 的兩倍），
+// 視窗原點見 `areaMapOrigin`。
 func drawAreaMap(screen *ebiten.Image, a *app, viewLeft, viewTop int) {
 	palette := a.artPalette()
 	floor, wall, marker := palette[8], palette[7], palette[15]
@@ -326,10 +345,12 @@ func drawAreaMap(screen *ebiten.Image, a *app, viewLeft, viewTop int) {
 	area := image.Rect(viewLeft, viewTop, viewLeft+areaMapSize, viewTop+areaMapSize)
 	screen.SubImage(area).(*ebiten.Image).Fill(floor)
 
-	for y := 0; y < geometry.Height; y++ {
-		for x := 0; x < geometry.Width; x++ {
-			grid := a.initialMap.Grid.CellWrapped(x, y)
-			left, top := viewLeft+x*areaMapCell, viewTop+y*areaMapCell
+	originX := areaMapOrigin(int(a.spawn.X), geometry.Width)
+	originY := areaMapOrigin(int(a.spawn.Y), geometry.Height)
+	for row := 0; row < areaMapWindow; row++ {
+		for column := 0; column < areaMapWindow; column++ {
+			grid := a.initialMap.Grid.CellWrapped(originX+column, originY+row)
+			left, top := viewLeft+column*areaMapCell, viewTop+row*areaMapCell
 			for index, direction := range []int{0, 2, 4, 6} {
 				if grid.WallDirections[index] == 0 {
 					continue
@@ -338,8 +359,8 @@ func drawAreaMap(screen *ebiten.Image, a *app, viewLeft, viewTop int) {
 			}
 		}
 	}
-	drawPartyArrow(screen, viewLeft+int(a.spawn.X)*areaMapCell,
-		viewTop+int(a.spawn.Y)*areaMapCell, areaMapCell, a.spawn.Facing, marker)
+	drawPartyArrow(screen, viewLeft+(int(a.spawn.X)-originX)*areaMapCell,
+		viewTop+(int(a.spawn.Y)-originY)*areaMapCell, areaMapCell, a.spawn.Facing, marker)
 }
 
 // drawMapEdge 畫一格的一條邊。方向是原版的 0 北 2 東 4 南 6 西。

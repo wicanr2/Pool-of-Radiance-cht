@@ -199,16 +199,16 @@
       "reference": "59-a.png",
       "reference_step": 447900000,
       "remake": "remake-map.png",
-      "same": 51532,
+      "same": 51878,
       "total": 64000,
-      "ratio": 0.8052,
-      "note": "平面圖：`A` 把第一人稱那一框換成俯視圖，其餘版面不動。主鍵序在導覽結束那一格按兩次 `a`（開、關），所以這一項不影響後面的戰鬥那一幀　視野 2026-09-10 從 0.26% 拉到 67.59%：配色與填法照原版改了（深灰鋪可走區、淺灰畫牆、色盤回 EGA，spec 119）。剩下的差距是格數——原版一格 8 個 native 像素、88 的框只裝得下 11 格，remake 是 16 格。那 11 格對到 GEO 的哪些格還沒讀出來。",
+      "ratio": 0.8106,
+      "note": "平面圖：`A` 把第一人稱那一框換成俯視圖，其餘版面不動。主鍵序在導覽結束那一格按兩次 `a`（開、關），所以這一項不影響後面的戰鬥那一幀　視野 2026-09-10 兩步拉上來：先對齊配色與填法（0.26%→67.59%），再照 overlay-30 offset 0 補上 11×11 的視窗與 clamp(座標−5,0,5) 的原點（→88.18%，spec 119）。剩下的 915 個像素有 879 個是「原版有牆而 remake 沒畫」，因為原版不是畫線——它查 8×8 圖塊 `0104h + 四向位元`（spec 120 的第 4 帶）。",
       "frame_same": 7744,
       "frame_total": 7936,
       "frame_ratio": 0.9758,
-      "view_same": 5234,
+      "view_same": 6829,
       "view_total": 7744,
-      "view_ratio": 0.6759
+      "view_ratio": 0.8818
     },
     {
       "name": "view-sheet",
@@ -230,16 +230,16 @@
       "reference": "63-e.png",
       "reference_step": 609800000,
       "remake": "remake-camp.png",
-      "same": 50578,
+      "same": 50535,
       "total": 64000,
-      "ratio": 0.7903,
-      "note": "紮營最外層（spec 135）：視野換成營火、時鐘行接上 CAMPING、指令列是 SAVE VIEW MAGIC REST ALTER EXIT。底下那九層還沒進抽樣　視野那一欄不是硬條件：營火是 PIC<區號>.DAX 區塊 29 的兩張交替動畫（spec 135），拍到哪一幀不固定。2026-09-10 同一支程式碼兩次量到 91.27% 與 100.00%——那正是兩張動畫該有的樣子，是相位不是畫錯。",
+      "ratio": 0.7896,
+      "note": "紮營最外層（spec 135）：視野換成營火、時鐘行接上 CAMPING、指令列是 SAVE VIEW MAGIC REST ALTER EXIT。底下那九層還沒進抽樣",
       "frame_same": 7463,
       "frame_total": 7936,
       "frame_ratio": 0.9404,
-      "view_same": 7744,
+      "view_same": 7068,
       "view_total": 7744,
-      "view_ratio": 1.0
+      "view_ratio": 0.9127
     },
     {
       "name": "icon-confirm",
