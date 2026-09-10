@@ -295,7 +295,10 @@ def main():
          "digest": "30e9d7e3", "remake": "remake-camp.png",
          "note": "紮營最外層（spec 135）：視野換成營火、時鐘行接上 CAMPING、"
                  "指令列是 SAVE VIEW MAGIC REST ALTER EXIT。"
-                 "底下那九層還沒進抽樣"},
+                 "**視野那一欄在 100% 與 91.27% 之間跳**：營火是兩張動畫，"
+                 "676 格之差就是火焰跳動的那幾格，兩邊的截圖各自停在哪一張"
+                 "是時機決定的（internal/assets/camp_fire_test.go 釘住這兩個"
+                 "數字）。掉到 60% 以下才是畫錯了。底下那九層還沒進抽樣"},
         {"name": "icon-confirm", "kind": "layout",
          "digest": "d148516e", "remake": "remake-icon-confirm.png",
          "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成"
