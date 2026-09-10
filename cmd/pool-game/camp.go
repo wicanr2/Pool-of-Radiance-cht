@@ -469,9 +469,12 @@ func (a *app) restParty() {
 		// 原版 `0DD3h` 印的那一句（spec 114）。**打斷要說出來**——不然玩家
 		// 只看到「睡得比排的短」，看不出發生了什麼。
 		//
-		// 原版接著還會跑 ECL 的紮營入口（貧民區是城衛隊那一問，ECL3／
-		// block 0 的 entry 3），那一段 remake 還沒接。
 		a.statusLine = a.text(msgCampInterrupted)
+		// 接著把棒子交給 ECL 的入口 3：貧民區是城衛隊那一問（GO／STAY），
+		// 別的地圖各有各的，有些是空的。腳本自己會先把打斷門檻寫回 0。
+		if err := a.beginCampInterruption(); err != nil {
+			a.statusLine = err.Error()
+		}
 		return
 	}
 	switch {

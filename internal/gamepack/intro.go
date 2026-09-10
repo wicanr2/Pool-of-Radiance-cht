@@ -568,6 +568,31 @@ func RunInitialSessionSearchEntry(session *eclvm.BlockSession, grid geometry.Gri
 	return session.RunUntilEvent(4096, nil, true)
 }
 
+// RunInitialSessionCampEntry 跑目前區塊的命令集入口 3——紮營被打斷之後原版
+// 交棒過去的那一支（spec 114）。
+//
+// 貧民區那一份（ECL3／block 0，`9A93h` 起）第一條就是把 `6DD3h` 寫回 0，
+// 也就是把這一區的打斷門檻關掉，接著才 `PRINTCLEAR` 城衛隊那句、開
+// `HORIZONTAL MENU` 讓玩家選 GO 或 STAY。所以「清門檻」是腳本自己做的，
+// remake 這一側不要另外去碰那兩個位址。
+//
+// 每一張地圖的入口 3 是它自己的紮營處理，有些地圖那一格是空的、跑起來直接
+// 返回——那也是原版行為，不是缺口。
+func RunInitialSessionCampEntry(session *eclvm.BlockSession, grid geometry.Grid, position Spawn) (eclvm.Result, error) {
+	if session == nil || session.Machine() == nil {
+		return eclvm.Result{}, fmt.Errorf("initial ECL session is nil")
+	}
+	projectInitialPosition(session.Machine(), grid, position)
+	if err := session.SetEntry(campEntryIndex); err != nil {
+		return eclvm.Result{}, err
+	}
+	return session.RunUntilEvent(4096, nil, true)
+}
+
+// campEntryIndex 是紮營被打斷之後跑的命令集入口（spec 114）。
+// 入口 0 是每格、入口 1 是搜尋，這是第三個。
+const campEntryIndex = 3
+
 // RunInitialCellEntry projects the live first-person registers and executes
 // ECL3/block0 lifecycle entry zero in the same session used by the Rolf event.
 func RunInitialCellEntry(machine *eclvm.Machine, grid geometry.Grid, position Spawn) (eclvm.Result, error) {

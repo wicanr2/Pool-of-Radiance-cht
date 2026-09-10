@@ -39,18 +39,6 @@
       "blocked_by": "spec 095 的 DRAFT：**原版沒有任何 overlay 寫這八格**，所以值從哪來還沒解出來。\n下一步不是反組譯而是實測——用 dosgolem 跑原版建一個賊，把存檔的 `+77h` 起八格讀出來比對規則書的表；值若跟著等級與種族動，產生端就在建角那條路上。"
     },
     {
-      "id": "rest-interruption-ecl-entry",
-      "layer": "feature",
-      "title": "休息被打斷之後沒有跑 ECL 的紮營入口",
-      "body": "**打斷本身 2026-09-10 接上了**：那兩個參數是 ECL 變數（`+5A4h`／`+5A6h` 換算回 ECL 位址是 `6DD2h`／`6DD3h`），ECL1／2／3 共 117 個 `SAVE` 寫它們，`camp.go` 的 `restInterruption()` 從 `eventMachine.Memory` 讀，spec 114 已閉合。\n剩下的是打斷之後那一段：原版的順序是**打斷 → 回傳 1 → 呼叫端跑 ECL 的紮營入口**，貧民區的城衛隊（`YOU ARE ROUSTED BY THE CITY WATCH…`／`GO STAY`）在 ECL3／block 0 的 **entry 3**，而 remake 目前只跑 entry 0（每格）與 entry 1（搜尋）。",
-      "acceptance": "打斷之後跑 ECL entry 3；走到貧民區紮營要看得到城衛隊那一問。",
-      "verify": {
-        "kind": "manual",
-        "note": "沒有現成的訊號可綁——「有沒有跑 entry 3」要看呼叫端，而那個入口還沒有名字。接上之後改成綁那個函式名，或綁一條走到貧民區紮營看得到城衛隊的測試"
-      },
-      "blocked_by": ""
-    },
-    {
       "id": "level-drain-source",
       "layer": "feature",
       "title": "能量吸取沒有來源（缺的是特殊攻擊那一批）",

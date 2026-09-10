@@ -1479,6 +1479,22 @@ func (a *app) beginInitialSearch() error {
 	return a.consumeInitialSearch(result)
 }
 
+// beginCampInterruption 把紮營被打斷之後那一棒交給 ECL 的入口 3（spec 114）。
+//
+// 走的是搜尋那條路的同一套消費流程——入口 3 產生的事件（印字、水平選單）
+// 和搜尋一模一樣，所以文字框、等待與選擇都不必另外寫一份。
+func (a *app) beginCampInterruption() error {
+	if a.eventSession == nil {
+		return nil
+	}
+	a.cellWaitedOnce, a.cellTextSticky = false, false
+	result, err := gamepack.RunInitialSessionCampEntry(a.eventSession, a.initialMap.Grid, a.spawn)
+	if err != nil {
+		return fmt.Errorf("start Pool camp interruption: %w", err)
+	}
+	return a.consumeInitialSearch(result)
+}
+
 func (a *app) continueInitialSearch(selection *uint16) error {
 	var selections []uint16
 	if selection != nil {
