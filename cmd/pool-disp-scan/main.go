@@ -75,6 +75,31 @@ func member(reader *zip.ReadCloser, name string) ([]byte, error) {
 	return nil, fmt.Errorf("封存檔裡沒有 %s", name)
 }
 
+// hasModrm 回答某個 opcode 後面跟不跟著 modrm。
+//
+// 沒有這一道，任何值落在 80h..BFh 的位元組都會被當成 mod=10 的 modrm，
+// 於是 90h（nop）後面兩個資料位元組會被讀成一次記憶體存取。判準是前面那個
+// opcode 帶不帶 modrm，不是位元組本身的值域。
+func hasModrm(opcode byte) bool {
+	switch {
+	case opcode <= 0x3F && opcode&7 <= 3: // ALU 的 r/m,r 與 r,r/m 八組
+		return true
+	case opcode >= 0x80 && opcode <= 0x8F: // ALU imm、test、xchg、mov、lea、pop
+		return true
+	case opcode >= 0xC0 && opcode <= 0xC1: // 位移 imm8
+		return true
+	case opcode >= 0xC4 && opcode <= 0xC7: // les、lds、mov r/m,imm
+		return true
+	case opcode >= 0xD0 && opcode <= 0xD3: // 位移
+		return true
+	case opcode == 0xF6 || opcode == 0xF7: // test、not、neg、mul、div
+		return true
+	case opcode == 0xFE || opcode == 0xFF: // inc、dec、call、jmp、push
+		return true
+	}
+	return false
+}
+
 type hit struct {
 	where string
 	kind  string
@@ -99,9 +124,9 @@ func scan(data []byte, value int, where func(int) string) []hit {
 			kind = "[disp16] 絕對" // moffs：mov ax/al ←→ [disp16]
 		case lead >= 0xB8 && lead <= 0xBF:
 			kind = "imm16 常數" // mov reg,imm16——位址被當常數傳出去
-		case lead>>6 == 2:
+		case hasModrm(data[i-2]) && lead>>6 == 2:
 			kind = "[基底+disp16]"
-		case lead&0xC7 == 0x06:
+		case hasModrm(data[i-2]) && lead&0xC7 == 0x06:
 			kind = "[disp16] 絕對"
 		default:
 			continue
