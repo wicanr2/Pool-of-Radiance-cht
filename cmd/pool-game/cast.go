@@ -286,8 +286,8 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	// `0100h:006Bh`，中了就直接返回）。記憶那一格照樣用掉。
 	if effect.BlockedByEffect != 0 && chosen && int(target) < len(state.Roster) {
 		if slot, ok := a.moverPartyIndex(target); ok {
-			for _, value := range a.state.Party[slot].Effects {
-				if value == effect.BlockedByEffect {
+			for _, node := range a.state.Party[slot].Effects {
+				if node.Code == effect.BlockedByEffect {
 					member.Memorised[option.Slot] = 0
 					syncTrainedLibraryCharacter(&a.state, *member)
 					a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
@@ -307,8 +307,8 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		has := false
 		if chosen && int(target) < len(state.Roster) {
 			if slot, ok := a.moverPartyIndex(target); ok {
-				for _, value := range a.state.Party[slot].Effects {
-					if value == effect.RequiresEffect {
+				for _, node := range a.state.Party[slot].Effects {
+					if node.Code == effect.RequiresEffect {
 						has = true
 					}
 				}
@@ -359,8 +359,8 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		}
 		removed := 0
 		for _, code := range effect.RemoveEffects {
-			for index, value := range subject.Effects {
-				if value == code {
+			for index, node := range subject.Effects {
+				if node.Code == code {
 					subject.Effects = append(subject.Effects[:index], subject.Effects[index+1:]...)
 					removed++
 					break

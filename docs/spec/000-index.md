@@ -73,14 +73,14 @@
 | [059](059-reaction-attack-gate.md) | 離開威脅區的反應攻擊閘門 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/character/export.go`、`internal/combat/nearby.go` 等 5 個 | `internal/gamepack/effect_list_test.go` |
 | [060](060-tactical-map-generation.md) | 戰術地圖的生成 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/assets/combat_terrain.go`、`internal/combat/indoormap.go` 等 4 個 | `cmd/pool-game/playthrough_test.go` |
 | [061](061-deployment-and-occupancy.md) | 戰鬥部署與佔用格重建 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/deployment.go` | — |
-| [062](062-combat-round-loop.md) | 戰鬥回合迴圈與結束條件 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/round.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/playthrough_test.go`、`cmd/pool-game/tactical_test.go` |
+| [062](062-combat-round-loop.md) | 戰鬥回合迴圈與結束條件 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/round.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/playthrough_test.go` 等 4 個 |
 | [063](063-character-base-combat-stats.md) | 角色的基礎 AC、THAC0、移動與武器攻擊數值 | READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/dos_export.go`、`cmd/pool-game/tactical.go` 等 12 個 | `cmd/pool-game/dos_export_test.go`、`cmd/pool-game/tactical_test.go`、`internal/gamepack/experience_test.go` 等 5 個 |
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | — |
 | [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
 | [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | — | — |
 | [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go` | `cmd/pool-game/shop_walk_test.go` |
 | [068](068-spell-name-table.md) | 法術名稱表 | CONFORMED＋DRAFT | `cmd/pool-game/spells.go`、`internal/gamepack/spell_dispatch.go`、`internal/gamepack/spell_table.go` | — |
-| [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `internal/character/export.go`、`internal/gamepack/checkparty.go`、`internal/gamepack/effect_names.go` 等 6 個 | `internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` |
+| [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/tactical.go`、`internal/character/export.go` 等 9 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
 | [070](070-memorised-spells.md) | 記憶法術陣列與 1-based 法術編號 | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/spells.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/inn_test.go`、`internal/gamepack/memorisation_test.go` |
 | [071](071-experience-and-level-caps.md) | 經驗值門檻表與等級上限 | CONFORMED | `cmd/pool-game/main.go`、`internal/gamepack/spell_slots.go` | `internal/journal/manual_tables_test.go` |
 | [072](072-spell-slots-and-wisdom-bonus.md) | 可記憶法術數與睿智加成 | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/spells.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/memorise_test.go`、`internal/gamepack/memorisation_test.go`、`internal/gamepack/saving_throw_table_test.go` |
@@ -113,7 +113,7 @@
 | [099](099-boat-travel-and-quest-gate.md) | 搭船旅行與它的進度閘門 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/coverage_test.go` |
 | [100](100-the-6dd5-map-exit-gate.md) | `DS:6DD5h` — 擋住整個世界的那一個變數 | CONFORMED | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/main.go`、`cmd/pool-game/training_gate.go` | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/playthrough_test.go` |
 | [101](101-world-transition-graph.md) | 世界怎麼接起來——NEWECL 圖與邊界出口 | READY | — | `cmd/pool-game/stojanow_gate_test.go`、`cmd/pool-game/wilderness_explore_test.go`、`cmd/pool-world-graph/main_test.go` |
-| [102](102-city-location-dispatch.md) | 城區的地點是 terrain 索引分派的，而且有些要面對它 | READY | `cmd/pool-game/main.go`、`cmd/pool-map-names/main.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/harbour_walk_test.go`、`cmd/pool-game/inn_test.go` 等 4 個 |
+| [102](102-city-location-dispatch.md) | 城區的地點是 terrain 索引分派的，而且有些要面對它 | READY | `cmd/pool-game/main.go`、`cmd/pool-map-names/main.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/harbour_walk_test.go` 等 5 個 |
 | [103](103-world-cell-sweep.md) | 整包格子入口掃描 | READY | — | `cmd/pool-game/coverage_test.go` |
 | [104](104-script-call-selectors.md) | `2Dh CALL` 的選擇子只有五個有動作 | READY | — | — |
 | [105](105-wilderness-map.md) | 野外地圖——座標、三張圖怎麼接、地點表 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-wilderness-map/main.go`、`internal/gamepack/wilderness.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/harbour_walk_test.go`、`cmd/pool-game/wilderness_cave_test.go` 等 4 個 |
@@ -129,7 +129,7 @@
 | [115](115-temple-services.md) | 神殿的九項服務（overlay-04） | READY | `cmd/pool-game/main.go`、`internal/save/state.go` | `cmd/pool-game/main_test.go` |
 | [116](116-appraise-and-sell.md) | 估價與販賣寶石珠寶（overlay-21 entry 19） | READY＋OPEN | `cmd/pool-game/appraise.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/text.go` | `cmd/pool-game/camp_test.go` |
 | [117](117-npc-approach-portrait.md) | APPROACH 的 NPC 半身像 | READY＋DRAFT | `cmd/pool-game/main.go`、`internal/assets/camp_fire.go`、`internal/assets/npc_portrait.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`internal/gamepack/intro_test.go` |
-| [118](118-adventure-status-line-and-clock.md) | 冒險畫面的狀態列與遊戲時鐘 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go`、`internal/save/state.go` | `cmd/pool-game/party_panel_test.go` |
+| [118](118-adventure-status-line-and-clock.md) | 冒險畫面的狀態列與遊戲時鐘 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go`、`internal/save/state.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/party_panel_test.go`、`internal/gamepack/effect_time_test.go` |
 | [119](119-adventure-command-bar.md) | 冒險畫面的指令列與平面全圖 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go` 等 8 個 | `cmd/pool-game/area_map_test.go`、`cmd/pool-game/field_cast_test.go` |
 | [120](120-wall-symbol-bands.md) | 8×8 符號的五帶 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` 等 5 個 | `cmd/pool-game/first_person_inset_test.go` |
 | [121](121-cloud-objects.md) | 盤面上的雲團物件 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/cloud.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/cloud_test.go`、`internal/gamepack/cloud_test.go`、`internal/gamepack/spell_cast_test.go` |
@@ -164,7 +164,7 @@
 | `pool-ecl-opcodes` | 把 overlay-03 的 ECL 派發鏈 dump 成 JSON：每條 opcode 的處理常式位移與運算元個數，並標出與共用 engine 那張二手 arity 表的差異 | — | — |
 | `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | — |
 | `pool-font-coverage` | 報出遊戲要顯示、但倚天字型畫不出來的字 | — | — |
-| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、015、016 等 88 份 |
+| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、015、016 等 89 份 |
 | `pool-geo-audit` | decodes every Pool GEO block through the shared engine and records only structural map evidence | — | — |
 | `pool-initial-cell-sweep` | executes the original initial-map cell lifecycle entry against isolated copies of the post-Rolf VM state | 有 | — |
 | `pool-input-manifest` | inventories the fixed DOS source ZIP without extracting or modifying its contents | 有 | — |

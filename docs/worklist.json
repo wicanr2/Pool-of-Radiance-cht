@@ -140,22 +140,6 @@
       }
     },
     {
-      "id": "combat-effects-not-persisted",
-      "layer": "feature",
-      "title": "戰鬥的效果串列和隊伍的是兩份",
-      "body": "**問題的形狀 2026-09-11 查清楚了，和原本寫的不一樣。** 原版沒有「戰鬥用的串列」——overlay-24 entry 10（`0E54h`）掛節點是 `GetMem(9)` 接在**角色記錄 `+7Fh`** 串列的尾端（spec 112），所以戰鬥中掛的效果天然就在持久記錄上，怪物的則隨怪物記錄消失。remake 卻有兩份：戰術盤面的 `tacticalState.Effects []gamepack.EffectList`（完整的 9-byte 節點）與存檔的 `poolsave.Character.Effects []uint8`（只有效果碼）。\n\n**而且缺口是雙向的，原本只寫了一半。** `state.Effects = make(...)` 建的是全新的空串列，沒有從 `Party[i].Effects` 帶入——所以**帶著詛咒進戰鬥，那個詛咒在盤面上不存在、不生效**；戰鬥結束時也沒有任何一處寫回去。盤面槽對到隊伍第幾人的對應（`partySlot`）已經有了。",
-      "blocked_by": "存檔那份只存效果碼，建不回 9-byte 節點。**「永久」的表示法找到一半**（spec 069）：持續欄是 `0` 的節點不會被有限持續的新效果取代（overlay-24 `16D3h`），那正是詛咒要的行為。**但持續會不會每回合倒數還沒確定**——掃遞減點在 38 顆 overlay 零命中，而那個零不算數：正對照顯示 `dec WORD PTR` 這個形式整包都沒有，Borland 產的是「載入暫存器、遞減、寫回」，pattern 從一開始就抓不到。要換形狀重掃並先做正對照。在那之前 `+1` 同時相容於「剩餘回合數」與「強度／施法者等級」兩種讀法，不要挑一個來實作。",
-      "acceptance": "把原版表示永久效果的方式讀出來寫進 spec 069，接上之後：帶著詛咒進戰鬥那個效果在盤面上生效、打完架身上該留的留得住、神殿那九項服務拿得掉。兩個方向各要一條走玩家路徑的測試。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "cmd/pool-game"
-        ],
-        "pattern": "Party\\[[^]]*\\]\\.Effects = ",
-        "note": "戰鬥結束把串列寫回隊伍的那一行還沒出現。**方向是 absent**：這一條問的是「有沒有人寫回去」，現在三處 `.Effects = ` 都是移除，所以綁的是「指派給 Party[i].Effects」這個形狀"
-      }
-    },
-    {
       "id": "tool-test-coverage",
       "layer": "verification",
       "title": "九支工具沒有測試",
@@ -194,6 +178,22 @@
       "verify": {
         "kind": "manual",
         "note": "沒有現成訊號可綁——要跑三次對拍才知道穩不穩。接上之後改成綁一支跑三次比雜湊的腳本，或在 `parity.json` 裡記下重跑的雜湊一致與否"
+      }
+    },
+    {
+      "id": "effect-expiry-teardown",
+      "layer": "feature",
+      "title": "效果在地圖上到期時沒有跑收尾",
+      "body": "效果串列已經會隨時間遞減了（走一步一分、休息一刻五分，`advanceGameTime` → `AdvanceEffects`，spec 069）。**缺的是到期那一刻該做什麼**：原版在 overlay-20 `01B8h` 呼叫 `0100:002A`，傳（角色遠指標、效果碼、節點遠指標），那一支還沒讀。remake 目前只把節點摘掉。\n\n戰場上有一份對應的收尾（`tacticalState.effectTeardown`，目前只處理代碼 `28h` 的雲），地圖上這一條路完全沒有。所以像變形、隱形這一類「結束時要把某個狀態改回去」的效果，時間到了會留下改過的狀態。",
+      "blocked_by": "`0100:002A` 是哪一支還沒定位——那是 `0100h` 那個 far call 表的 entry，要先對回 overlay 與 offset 才知道它做什麼。在那之前不要照猜的行為補，`effectTeardown` 那個 switch 現在只有一個代碼有來源。",
+      "acceptance": "讀出 `0100:002A` 的內容寫進 spec 069，地圖上的到期走同一套收尾；至少一個代碼要有走玩家路徑的測試（掛上、時間過去、狀態真的回復）。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game/combat_effects.go"
+        ],
+        "pattern": "Teardown",
+        "note": "地圖上的時間推進還沒有任何收尾呼叫。接上之後這個檔案一定會提到既有的 `effectTeardown`，所以綁這個字"
       }
     }
   ]

@@ -234,8 +234,8 @@ func applyFieldEffect(member *poolsave.Character, effect gamepack.CastEffect) bo
 		applied = true
 	}
 	for _, code := range effect.RemoveEffects {
-		for index, value := range member.Effects {
-			if value == code {
+		for index, node := range member.Effects {
+			if node.Code == code {
 				member.Effects = append(member.Effects[:index], member.Effects[index+1:]...)
 				applied = true
 				break

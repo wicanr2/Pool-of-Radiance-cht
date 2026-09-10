@@ -1,6 +1,7 @@
 package character_test
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"os"
@@ -243,18 +244,25 @@ func TestExportDOSEffectsMatchesTheOriginalNodeCodes(t *testing.T) {
 	if len(raw)%character.EffectNodeSize != 0 {
 		t.Fatalf("chrdatd4.spc 有 %d bytes，不是 %d 的倍數", len(raw), character.EffectNodeSize)
 	}
-	var codes []uint8
+	var nodes []poolsave.EffectNode
 	for offset := 0; offset < len(raw); offset += character.EffectNodeSize {
-		codes = append(codes, raw[offset])
+		node := poolsave.EffectNode{Code: raw[offset]}
+		copy(node.Payload[:], raw[offset+1:offset+5])
+		nodes = append(nodes, node)
 	}
-	written := character.ExportDOSEffects(codes)
+	written := character.ExportDOSEffects(nodes)
 	if len(written) != len(raw) {
 		t.Fatalf("寫出 %d bytes，原檔 %d bytes", len(written), len(raw))
 	}
-	for index := range codes {
-		if written[index*character.EffectNodeSize] != codes[index] {
-			t.Fatalf("節點 %d 的效果碼寫成 %02X，預期 %02X",
-				index, written[index*character.EffectNodeSize], codes[index])
+	// 前五個 byte 要與原檔一模一樣：`+0` 是碼，`+1..+4` 是持續、等級與收尾
+	// 旗標。只比對碼的話，schema 8 帶回來的那四個 byte 掉了也看不出來。
+	for index := range nodes {
+		at := index * character.EffectNodeSize
+		if got, want := written[at:at+5], raw[at:at+5]; !bytes.Equal(got, want) {
+			t.Fatalf("節點 %d 寫成 % X，預期 % X", index, got, want)
+		}
+		if got := written[at+5 : at+character.EffectNodeSize]; !bytes.Equal(got, []byte{0, 0, 0, 0}) {
+			t.Fatalf("節點 %d 的遠指標寫成 % X，預期全 0", index, got)
 		}
 	}
 	if len(character.ExportDOSEffects(nil)) != 0 {

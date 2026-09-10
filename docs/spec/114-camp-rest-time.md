@@ -95,6 +95,7 @@ INCREASE 增加，DECREASE 減少，當時間調整好了之後，按下 R 鍵�
 | entry 10 的欄位與按鍵 | `gamepack.RestField` ＋ `(*app).campInput` |
 | entry 9 的那一列 | `(*app).campRestTimeLine`、`drawCamp` |
 | entry 11 的回血 | `gamepack.RestHealing`、`(*app).restParty` |
+| 休息迴圈 `0D5Eh` 的 entry 2 | `restParty` 裡逐刻 `advanceGameTime(RestMinutesPerTick)`——世界時鐘往前走，身上的效果跟著遞減（spec 069）|
 | entry 15 的記憶完成 | `restParty` 裡「休息時數 ≥ 各法術等級的總和」才記完 |
 
 旅店不再自動回滿。說明書 p.31 對旅店的保證是「絕對安全而且不會有人中途打擾」
@@ -140,6 +141,13 @@ INCREASE 增加，DECREASE 減少，當時間調整好了之後，按下 R 鍵�
 YOU ARE ROUSTED BY THE CITY WATCH AND TOLD TO MOVE ALONG. WHAT DO YOU DO?
 GO   STAY
 ```
+
+**休息把世界時鐘推進了五分鐘**：紮營前狀態列是 `0, 4 W 00:00`，按下 `R` 之後
+是 `0, 4 W 00:05`，也就是被打斷的那一刻正好睡了一刻（一刻五分鐘）。基準畫面在
+[`docs/reference/original-dos/camp/`](../reference/original-dos/camp/)
+（`00-rest-started-clock-00-05.png` 與 `01-city-watch-interruption.png`；
+dosgolem `d351681ba86d`、`start.exe` `12811cbc8166`、2026-09-11，
+鍵序尾端是 `…,e,r,h,i,r`——`E)NCAMP`、`R)EST`、選小時欄、加一小時、開始休息）。
 
 那一段是 **ECL3／block 0 的 entry 3**（`0x9A93` 起：`SAVE 0 → @6DD3`、
 `GOSUB 0xAF40`、`PRINTCLEAR` 那句話、`HORIZONTAL MENU GO／STAY`、`ON GOTO`），
@@ -203,10 +211,24 @@ remake 這一側：`gamepack.RunInitialSessionCampEntry` 起跑，
 真的按鍵推進，畫面上要出現城衛隊那一句與 `GO`／`STAY`；負對照是這一區不打擾
 時（`Period` 為 0，也是原版初值）不該有人來問話。
 
+## entry 14（`0AC0h`）是 `DS:6CC3h` 的另一個 writer（2026-09-11）
+
+休息迴圈每一刻叫一次，形狀是走整條隊伍串列（`DS:5CF4h` 起，`+104h` 接下一位）：
+
+```
+0ae8  dec BYTE PTR [i + 6CC3h]         ; 每人一 byte 的計數往下減
+0af3  減到 0 而且角色記錄 +2Ch 是 0 →
+0b14    呼叫 CS:09A2h（角色遠指標、一個 byte 的輸出參數）
+0b1a    回傳 0 → 再呼叫 CS:08E0h（同樣的參數）
+0b3a    [i + 6CC3h] = 回傳值 × 3
+```
+
+所以 `6CC3h` 有兩個 writer（entry 14 與 entry 15），兩邊都寫 `結果 × 3`；
+`+2Ch` 非 0 的人整段跳過。**這一格是什麼仍然未定**——形狀讀出來了，語意沒有。
+
 ## 還沒讀
-- `DS:6CC3h` 那個每人一 byte 的顯示格（entry 15 寫 `結果 × 3`）是什麼。
-  writer 已知是 entry 15，缺的是語意；順帶記一筆——
-  `cmd/pool-ecl-memory-audit -addresses 6CC3` 是零引用，**ECL 完全不碰它**，
-  所以它是引擎內部的顯示狀態，不是腳本看得到的旗標。
+- `DS:6CC3h` 那個每人一 byte 的格子是什麼。writer 是 entry 14 與 entry 15，
+  缺的是語意；順帶記一筆——`cmd/pool-ecl-memory-audit -addresses 6CC3` 是零
+  引用，**ECL 完全不碰它**，所以它是引擎內部的狀態，不是腳本看得到的旗標。
+- `CS:09A2h`／`CS:08E0h` 這兩支算出來的是什麼，以及角色記錄 `+2Ch` 是什麼。
 - 索引 0 那一位（上限 10）代表多細的一格；紮營碰不到它。
-- entry 14（`0AC0h`）在休息迴圈裡做什麼。

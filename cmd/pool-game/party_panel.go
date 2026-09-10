@@ -143,6 +143,17 @@ func (a *app) adventureProvenanceLines() []string {
 //
 // 進位用原版的逐位上限表（`DS:35D4h`），與紮營共用同一份。
 func (a *app) advanceGameMinute() {
-	a.gameTime[gamepack.TimeDigitMinuteOnes]++
+	a.advanceGameTime(1)
+}
+
+// advanceGameTime 是 **overlay-20 entry 2**（offset `0`）：世界時鐘往前走，
+// 身上的效果跟著往到期靠近。原版把兩件事寫在同一支裡，所以這裡也不拆成
+// 兩條路——拆開的話，任何一個推時鐘的地方漏掉遞減，效果就會永遠不過期。
+//
+// 一次只推一格（走路一分、休息一刻五分）：`Normalise` 照原版每一位只進位
+// 一次，靠的就是「每加一次就正規化一次」。
+func (a *app) advanceGameTime(minutes int) {
+	a.gameTime[gamepack.TimeDigitMinuteOnes] += minutes
 	a.gameTime, _ = a.gameTime.Normalise(a.timeRadix)
+	a.advancePartyEffects(minutes)
 }

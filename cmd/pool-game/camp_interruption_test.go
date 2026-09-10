@@ -36,6 +36,11 @@ func TestCampInterruptionHandsOffToTheCityWatchScript(t *testing.T) {
 		}
 	}
 
+	// 原版量到的是 `0, 4 W 00:05`：被打斷的那一刻正好睡了一刻（spec 114 的
+	// 基準畫面）。時鐘沒走就代表休息沒有推進時間，效果也不會跟著到期。
+	if got := application.gameTime.Minutes(); got != gamepack.RestMinutesPerTick {
+		t.Fatalf("被打斷之後時鐘走了 %d 分，原版是 %d", got, gamepack.RestMinutesPerTick)
+	}
 	if !strings.Contains(strings.ToUpper(application.eventText), "CITY WATCH") {
 		t.Fatalf("打斷之後的文字是 %q，該是城衛隊那一句", application.eventText)
 	}

@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	Schema         = "pool-remake-state/7"
+	Schema         = "pool-remake-state/8"
+	EffectSchema   = "pool-remake-state/7"
 	FacingSchema   = "pool-remake-state/6"
 	PreviousSchema = "pool-remake-state/5"
 	EarlierSchema  = "pool-remake-state/4"
@@ -92,11 +93,67 @@ type Character struct {
 	// 答案，不是佔位**。
 	DrainedLevels    int `json:"drained_levels,omitempty"`
 	DrainedHitPoints int `json:"drained_hit_points,omitempty"`
-	// Effects 是掛在身上的效果碼（spec 069 的串列，記錄 `+7Fh` 起）。
+	// Effects 是掛在身上的效果串列（spec 069 的節點，記錄 `+7Fh` 起）。
 	// `1Eh CHECKPARTY` 的效果模式與神殿的失明／疾病／中毒／詛咒
-	//（spec 115）問的都是這一串。法術還沒接上來，所以目前一律是空的
-	// ——空的是正確答案，不是佔位。
-	Effects []uint8 `json:"effects,omitempty"`
+	//（spec 115）問的都是這一串。
+	//
+	// schema 7 以前只存效果碼，存不下持續與等級；原版的 `.spc` 是完整的
+	// 9-byte 節點，所以 schema 8 換成節點本身。舊檔遷移時持續填 0——那在
+	// 原版就是「永久」（overlay-20 `0165h` 不遞減也不到期），而舊檔存得下的
+	// 本來就只有詛咒那一類永久狀態。
+	Effects []EffectNode `json:"effects,omitempty"`
+}
+
+// EffectNode 是效果串列的一個節點，與 `gamepack.EffectNode` 同形：
+// `Code` 是節點 `+0`，`Payload` 是 `+1`..`+4`（持續 word、等級、收尾旗標）。
+// 這裡另外定義一份，是為了不讓資料層反過來依賴規則層。
+//
+// **語意只在 `gamepack.EffectNode` 上**（持續怎麼讀、等級那個 byte 打包了
+// 什麼、解除魔法解不解得掉）。這一份只搬 bytes：多寫一份讀法，兩邊就會漂移。
+type EffectNode struct {
+	Code    uint8   `json:"code"`
+	Payload [4]byte `json:"payload"`
+}
+
+// PermanentEffects 造一串持續 0 的節點。**0 是永久**（spec 069：overlay-20
+// `0165h` 對持續 0 的節點不遞減也不到期），所以失明、疾病、詛咒這一類要靠
+// 神殿或法術才解得掉的狀態就是這個形狀。
+//
+// 有時限的效果不要走這裡——那要帶施法者等級與持續，用 `gamepack.NewEffectNode`。
+func PermanentEffects(codes ...uint8) []EffectNode {
+	if len(codes) == 0 {
+		return nil
+	}
+	nodes := make([]EffectNode, 0, len(codes))
+	for _, code := range codes {
+		nodes = append(nodes, EffectNode{Code: code})
+	}
+	return nodes
+}
+
+// UnmarshalJSON 同時認得兩種寫法：schema 8 的物件，以及 schema 7 只有效果碼
+// 的那個數字。
+//
+// 讓型別自己認得舊格式，比另外複製一份 schema 7 的影子結構乾淨——`Character`
+// 欄位很多，複製一份等於多一個會跟著漂移的定義。舊檔的碼轉成持續 0 的節點，
+// 而 0 在原版就是永久（spec 069），舊檔存得下的本來也只有那一類。
+func (node *EffectNode) UnmarshalJSON(raw []byte) error {
+	var code uint8
+	if err := json.Unmarshal(raw, &code); err == nil {
+		*node = EffectNode{Code: code}
+		return nil
+	}
+	var shadow struct {
+		Code    uint8   `json:"code"`
+		Payload [4]byte `json:"payload"`
+	}
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&shadow); err != nil {
+		return fmt.Errorf("decode effect node: %w", err)
+	}
+	*node = EffectNode{Code: shadow.Code, Payload: shadow.Payload}
+	return nil
 }
 
 type Campaign struct {
@@ -333,6 +390,11 @@ func Read(path string) (State, error) {
 	if header.Schema == LegacySchema {
 		return readLegacyState(raw)
 	}
+	if header.Schema == EffectSchema {
+		// schema 7 只差在 `effects` 是效果碼的陣列，而 `EffectNode`
+		// 自己認得那種寫法，所以照常解就好，只要把版本標成新的。
+		return readSameShapeState(raw, EffectSchema)
+	}
 	if header.Schema == FacingSchema {
 		return readFacingSchemaState(raw)
 	}
@@ -357,6 +419,25 @@ func Read(path string) (State, error) {
 
 // readFacingSchemaState 讀 schema 6。那個版本把隊伍朝向存成共用 engine 的
 // 0/2/4/6，除以 2 就回到原版的 0..3（spec 076）。
+// readSameShapeState 讀「欄位形狀相同、只有內容需要升級」的舊版本。
+func readSameShapeState(raw []byte, from string) (State, error) {
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	var state State
+	if err := decoder.Decode(&state); err != nil {
+		return State{}, fmt.Errorf("decode %s Pool save: %w", from, err)
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		return State{}, fmt.Errorf("%s Pool save has trailing JSON", from)
+	}
+	state.Schema = Schema
+	if err := state.Validate(); err != nil {
+		return State{}, err
+	}
+	return state, nil
+}
+
 func readFacingSchemaState(raw []byte) (State, error) {
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()

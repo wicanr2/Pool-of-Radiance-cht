@@ -728,6 +728,9 @@ func (a *app) enterTacticalPreview() error {
 		state.setSingleAttackForm(index, combat.DamageDice{Count: 1, Sides: 8})
 		if party := partySlot[index]; party >= 0 && party < len(a.state.Party) {
 			member := a.state.Party[party]
+			// 身上的效果串列跟著人進戰場。原版根本不必搬——那條串列長在角色
+			// 記錄的 `+7Fh`，戰場上讀的就是同一條（spec 069）。
+			state.Effects[index] = combatEffects(member.Effects)
 			// NPC 沒有走過建角，戰鬥數值直接讀它帶著的原版記錄。
 			if member.NPC {
 				if err := applyNPCCombatStats(state, index, member); err != nil {
@@ -1660,6 +1663,9 @@ func (a *app) attackSwingsThisPhase(state *tacticalState, mover uint8) ([]combat
 // 續跑戰後腳本；戰敗不得續跑，也不得用自動勝利代替戰鬥結果。
 func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	staged := a.combatActive
+	// 先把效果寫回隊伍，再把盤面丟掉——`a.tactical` 下一行就被清成 nil。
+	// 勝敗都寫：串列在原版長在角色記錄上，不會因為戰鬥收場而清空。
+	a.storeCombatEffects(a.tactical)
 	a.tacticalPreview, a.tactical = false, nil
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0

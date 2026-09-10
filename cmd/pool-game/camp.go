@@ -446,6 +446,12 @@ func (a *app) restParty() {
 	restedHours := ticks / gamepack.RestTicksPerHour
 	healed := gamepack.RestHealing(ticks)
 
+	// 睡掉的時間要走到世界時鐘上，一刻五分鐘（原版休息迴圈的 `0D5Eh`
+	// 每一刻叫一次 entry 2）。逐刻叫是照原版，也讓效果照同樣的節奏遞減。
+	for tick := 0; tick < ticks; tick++ {
+		a.advanceGameTime(gamepack.RestMinutesPerTick)
+	}
+
 	memorised, needed := 0, 0
 	for index := range a.state.Party {
 		member := &a.state.Party[index]

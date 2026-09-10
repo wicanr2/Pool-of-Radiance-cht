@@ -46,7 +46,11 @@ func (a *app) applyCheckParty(event eclvm.Event) error {
 		}
 		effects := make([][]uint8, 0, len(a.state.Party))
 		for _, member := range a.state.Party {
-			effects = append(effects, member.Effects)
+			codes := make([]uint8, 0, len(member.Effects))
+			for _, node := range member.Effects {
+				codes = append(codes, node.Code)
+			}
+			effects = append(effects, codes)
 		}
 		stats = gamepack.CheckPartyStats{Minimum: gamepack.CheckPartyInitialMinimum}
 		stats.Flag = gamepack.CheckPartyEffectPresent(effects, uint8(wanted))

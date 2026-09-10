@@ -113,8 +113,19 @@ func (s Service) Applies(character poolsave.Character) bool {
 	return false
 }
 
-func hasEffect(effects []uint8, code uint8) bool {
-	for _, value := range effects {
+func hasEffect(effects []poolsave.EffectNode, code uint8) bool {
+	for _, node := range effects {
+		if node.Code == code {
+			return true
+		}
+	}
+	return false
+}
+
+// hasCode 問一組效果碼裡有沒有某一個。神殿那份「這項服務拿掉哪些」是碼的清單，
+// 不是節點。
+func hasCode(codes []uint8, code uint8) bool {
+	for _, value := range codes {
 		if value == code {
 			return true
 		}
@@ -180,14 +191,14 @@ func Serve(state *poolsave.State, partyIndex int, id string, roller Roller) (Res
 	return result, nil
 }
 
-func withoutEffects(effects, remove []uint8) []uint8 {
+func withoutEffects(effects []poolsave.EffectNode, remove []uint8) []poolsave.EffectNode {
 	if len(effects) == 0 || len(remove) == 0 {
 		return effects
 	}
 	kept := effects[:0:0]
-	for _, value := range effects {
-		if !hasEffect(remove, value) {
-			kept = append(kept, value)
+	for _, node := range effects {
+		if !hasCode(remove, node.Code) {
+			kept = append(kept, node)
 		}
 	}
 	return kept

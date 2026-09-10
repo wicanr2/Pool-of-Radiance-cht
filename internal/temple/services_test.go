@@ -80,7 +80,7 @@ func TestServiceRefusesWhenThereIsNothingToCure(t *testing.T) {
 		t.Errorf("治不了卻扣了錢，剩 %d", got)
 	}
 	// 正對照：真的瞎了就治得了，而且代碼被拿掉。
-	state.Party[0].Effects = []uint8{0x21, 0x24}
+	state.Party[0].Effects = poolsave.PermanentEffects(0x21, 0x24)
 	result, err := temple.Serve(state, 0, "cure-blindness", fixedRoll(1))
 	if err != nil {
 		t.Fatalf("治療失明：%v", err)
@@ -88,7 +88,7 @@ func TestServiceRefusesWhenThereIsNothingToCure(t *testing.T) {
 	if result.Cost != 1000 || state.Party[0].Money[3] != 8999 {
 		t.Errorf("收了 %d，剩 %d", result.Cost, state.Party[0].Money[3])
 	}
-	if len(state.Party[0].Effects) != 1 || state.Party[0].Effects[0] != 0x24 {
+	if len(state.Party[0].Effects) != 1 || state.Party[0].Effects[0].Code != 0x24 {
 		t.Errorf("效果剩 %v，應該只拿掉 21h", state.Party[0].Effects)
 	}
 }
@@ -96,11 +96,11 @@ func TestServiceRefusesWhenThereIsNothingToCure(t *testing.T) {
 // 中毒一次拿掉三個代碼（`07C9h`／`07DFh`／`07F5h`）。
 func TestNeutralizePoisonRemovesThreeCodes(t *testing.T) {
 	state := partyState(poolsave.Character{Name: "A", MaxHP: 10, CurrentHP: 10,
-		Money: [7]uint16{3: 2000}, Effects: []uint8{0x37, 0x16, 0x0F, 0x21}})
+		Money: [7]uint16{3: 2000}, Effects: poolsave.PermanentEffects(0x37, 0x16, 0x0F, 0x21)})
 	if _, err := temple.Serve(state, 0, "neutralize-poison", fixedRoll(1)); err != nil {
 		t.Fatalf("解毒：%v", err)
 	}
-	if len(state.Party[0].Effects) != 1 || state.Party[0].Effects[0] != 0x21 {
+	if len(state.Party[0].Effects) != 1 || state.Party[0].Effects[0].Code != 0x21 {
 		t.Errorf("效果剩 %v，應該只留 21h", state.Party[0].Effects)
 	}
 }

@@ -259,3 +259,65 @@ func TestReadRejectsSchemaSixOddFacing(t *testing.T) {
 		t.Fatal("schema 6 odd facing accepted")
 	}
 }
+
+// schema 7 的效果欄只存得下效果碼（一串數字）。schema 8 換成完整的 9-byte
+// 節點，舊檔的碼要讀成**持續 0** 的節點——0 在原版就是永久（spec 069），
+// 而舊檔存得下的本來也只有詛咒那一類永久狀態。
+func TestReadMigratesSchemaSevenEffectCodesIntoPermanentNodes(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	member := `{"name":"A","race_id":"dwarf","gender_id":"male","class_id":"fighter",` +
+		`"alignment_id":"lawful-good","max_hp":8,"current_hp":8,"portrait_head":1,` +
+		`"portrait_body":1,"icon_size":1,"effects":[33,55]}`
+	raw := []byte(`{"schema":"` + EffectSchema + `","character_library":[` + member +
+		`],"party":[` + member + `]}`)
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Schema != Schema {
+		t.Fatalf("schema 讀成 %q", got.Schema)
+	}
+	effects := got.Party[0].Effects
+	if len(effects) != 2 {
+		t.Fatalf("效果讀成 %v", effects)
+	}
+	for index, want := range []uint8{33, 55} {
+		if effects[index].Code != want {
+			t.Fatalf("第 %d 個碼是 %d，該是 %d", index, effects[index].Code, want)
+		}
+		if effects[index].Payload != [4]byte{} {
+			t.Fatalf("第 %d 個節點的 payload 是 %v，舊檔沒有這四個 byte，該是全 0",
+				index, effects[index].Payload)
+		}
+	}
+}
+
+// schema 8 自己的節點要原樣讀回來——持續與等級不能在往返之後掉了。
+func TestStateRoundTripsFullEffectNodes(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "pool.json")
+	character := validCharacter("A")
+	character.Effects = []EffectNode{{Code: 0x3B, Payload: [4]byte{0x2C, 0x01, 0x05, 0x01}}}
+	state := State{Schema: Schema, CharacterLibrary: []Character{character},
+		Party: []Character{character}}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.Party[0].Effects) != 1 {
+		t.Fatalf("效果讀成 %v", got.Party[0].Effects)
+	}
+	if node := got.Party[0].Effects[0]; node.Code != 0x3B ||
+		node.Payload != [4]byte{0x2C, 0x01, 0x05, 0x01} {
+		t.Fatalf("節點往返之後是 %+v", node)
+	}
+}

@@ -303,8 +303,8 @@ func TestCureDiseaseWorksOnTheChosenTarget(t *testing.T) {
 	}
 	// 第二個人身上有致病術的效果碼；施法者身上也放一個，用來證明
 	// 拿掉的是目標那一份，不是順手把自己也治了。
-	party[0].Effects = []uint8{gamepack.CureDiseaseEffectCodes[2]}
-	party[1].Effects = []uint8{gamepack.CureDiseaseEffectCodes[2]}
+	party[0].Effects = poolsave.PermanentEffects(gamepack.CureDiseaseEffectCodes[2])
+	party[1].Effects = poolsave.PermanentEffects(gamepack.CureDiseaseEffectCodes[2])
 	state := &tacticalState{
 		Roster:      make([]combat.CombatantCell, 3),
 		Friendly:    []bool{false, true, true},

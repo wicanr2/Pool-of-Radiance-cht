@@ -182,10 +182,17 @@ func ExportDOSItems(items []poolsave.Item) ([]byte, error) {
 // 所以這裡一律寫 0。`+1`..`+4`（持續、下效果者等級、收尾旗標）在 spec 069
 // 仍是 DRAFT，而且 remake 的存檔模型沒有存它們——寫 0 是**已知的缺口**，
 // 不是查證過的預設值。
-func ExportDOSEffects(codes []uint8) []byte {
-	out := make([]byte, len(codes)*EffectNodeSize)
-	for index, code := range codes {
-		out[index*EffectNodeSize] = code
+// ExportDOSEffects 把效果串列寫成原版 `.spc` 的位元組。
+//
+// 一個節點 9 bytes：`+0` 效果碼、`+1..+4` 持續（word）／等級／收尾旗標、
+// `+5..+8` 是下一個節點的遠指標。**指標留 0**：原版存進去的是上次執行時的
+// 位址，重新載入沒有意義（spec 069），所以寫出去不必假造一個。
+func ExportDOSEffects(effects []poolsave.EffectNode) []byte {
+	out := make([]byte, len(effects)*EffectNodeSize)
+	for index, node := range effects {
+		base := index * EffectNodeSize
+		out[base] = node.Code
+		copy(out[base+1:base+5], node.Payload[:])
 	}
 	return out
 }
