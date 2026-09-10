@@ -2287,12 +2287,12 @@ SearchLocation 共用同一個判準）、
 
 ### 對原版的抽樣對拍（2026-09-07 起）
 
-`v1.1.1-20260907` 的第一輪結果與方法在
-[`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md)：
-標題整張 99.79%（差的是 remake 自己加的按鍵提示），第一人稱框 88×88 100%。
-**原版那一側改用 [dosgolem](https://github.com/wicanr2/dosgolem) 跑真的
-`START.EXE`，不再用 DOSBox**（使用者 2026-09-07 指定；DOSBox 只作 dosgolem
-的參考）。重生：`tools/dosgolem-reference.sh` → `tools/appimage-dos-parity.sh`。
+方法與**唯一一份現況數字**在
+[`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md)
+的現況表（機器可讀的同一份是同名的 `.json`）——這裡不複製一份。
+**原版那一側由 [dosgolem](https://github.com/wicanr2/dosgolem) 跑真的
+`START.EXE`**；dosbox-x 是它的參考來源，畫面不進報表（AGENTS.md §7）。
+重生：`tools/dosgolem-reference.sh` → `tools/appimage-dos-parity.sh`。
 
 - [x] **第一人稱那一框已經改成對 dosgolem 比**（2026-09-07 當天收掉）。
       原本卡在 dosgolem 少了 EGA 圖形控制器（`3CE`／`3CF`），第一人稱框在它

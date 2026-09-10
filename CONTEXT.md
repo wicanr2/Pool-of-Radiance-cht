@@ -352,9 +352,10 @@ dosgolem 的 master 併進十條分支之後畫得出第一人稱視野了，於
 3. **第一人稱那一框的 100% 只是單元測試裡的合成圖。** 現在改成對打包好的
    AppImage 在真視窗裡的截圖比（`tools/appimage-dos-parity.sh`），
    原版那一側由 dosgolem 跑真的 `START.EXE` 產生，不再用 DOSBox。
-   標題整張 99.79%（差的 134 格是 remake 自己加的按鍵提示），
-   第一人稱框 88×88 100%。方法與兩個數字的來源在
-   [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md)。
+   標題那一張差的只有 remake 自己加的按鍵提示，第一人稱框逐格相同。
+   **逐項比例只寫在**
+   [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md)
+   的現況表與同名的 `.json`，別處引用不複製。
 
 介面譯文補完的是肖像編輯器、戰鬥造形設計、人物管理的回應與隊伍面板的欄名；
 識別字（`PARTS`、`COLOR-1`）同時是分派鍵，所以只在畫的時候查表翻。
