@@ -476,7 +476,10 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		} else if picked, ok := state.nearestReachableOpposing(state.Mover); ok {
 			centreX, centreY = int(state.Roster[picked].X), int(state.Roster[picked].Y)
 		}
-		if !state.placeCloud(index, centreX, centreY) {
+		// 雲記在施法者的**戰鬥員序號**上，不是隊伍欄位——原版節點 `+0..+3`
+		// 記的是施法者的記錄，而效果串列也是按戰鬥員索引的。兩邊用同一把尺，
+		// 節點到期時才找得回那一團雲（spec 121）。
+		if !state.placeCloud(int(state.Mover), centreX, centreY, casterLevel) {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
 			break
 		}

@@ -67,7 +67,7 @@ func (state *tacticalState) standingInCloud(index int) bool {
 // **`Covered` 這裡取「在盤面上」**：原版節點 `+0Ch`..`+0Fh` 是逐格決定的，
 // 但決定的規則還沒讀出來（spec 121）。取得寬一點的後果是雲蓋得比原版多，
 // 取窄了則是玩家看不到效果；這裡先取寬，等那一段讀出來再收。
-func (state *tacticalState) placeCloud(caster, x, y int) bool {
+func (state *tacticalState) placeCloud(caster, x, y, casterLevel int) bool {
 	cloud := gamepack.Cloud{
 		Caster:  caster,
 		Index:   state.Clouds.CountFor(caster) + 1,
@@ -94,7 +94,35 @@ func (state *tacticalState) placeCloud(caster, x, y int) bool {
 		return false
 	}
 	state.Clouds = state.Clouds.Append(cloud)
+	state.addCloudObjectEffect(caster, cloud.Index, casterLevel)
 	return true
+}
+
+// addCloudObjectEffect 在**施法者**身上掛雲物件節點——原版走 overlay-24
+// entry 10（`010Ah:0052h`），實參逐位元組讀出來是
+// `(1, 等級 + 雲數 × 16, 等級, 28h, 施法者)`，反序對回
+// `f(記錄, 代碼, 持續, 等級, 有收尾)` 就是**持續＝施法者等級、`+3`＝等級加
+// 雲序號乘 16、`+4`＝1**（spec 121）。
+//
+// 雲的壽命就記在這裡：這個節點在回合邊界減到 0 時被摘掉，收尾那一下才去收雲。
+//
+// `+3` 的低四位只放得下 15，等級照 `EffectLevelMask` 夾；**持續不夾**——
+// 那一格原版是 word，高等級施法者的雲本來就該撐比較久。
+func (state *tacticalState) addCloudObjectEffect(caster, cloudIndex, casterLevel int) {
+	if caster < 0 || caster >= len(state.Effects) {
+		return
+	}
+	if casterLevel < 0 {
+		casterLevel = 0
+	}
+	level := casterLevel
+	if level > gamepack.EffectLevelMask {
+		level = gamepack.EffectLevelMask
+	}
+	packed := uint8(level) | uint8(cloudIndex&0x0F)<<4
+	state.Effects[caster] = state.Effects[caster].Append(
+		gamepack.NewEffectNode(gamepack.CloudObjectEffectCode,
+			uint16(casterLevel), packed, true))
 }
 
 // stinkingCloudTurn 是原版群組 15 在「輪到這個人行動」時對代碼 `1Eh` 做的事

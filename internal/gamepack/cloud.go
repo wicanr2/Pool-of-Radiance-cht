@@ -23,6 +23,11 @@ const (
 	// （spec 112 也提醒過同一件事）。留成兩個常數就是為了不讓人以為
 	// 改一個另一個會跟著對。
 	StinkingCloudEffectCode = 0x1E
+	// CloudObjectEffectCode 是**雲團物件自己**的效果碼（`28h`）。它掛在
+	// **施法者**身上而不是被燻的人身上，持續就是雲的壽命——所以雲不是被誰
+	// 每回合輪詢收掉的，是這個節點到期摘掉時順手帶走的（spec 121）。
+	// 那一刻叫的處理常式是 overlay-12 `0CDEh`，收雲四步就在那裡。
+	CloudObjectEffectCode = 0x28
 	// StinkingCloudArmourClassFloor 是臭雲把 AC 拖到最差的那個內部值
 	// （`32h` ＝ 顯示 AC 10）。
 	StinkingCloudArmourClassFloor = 0x32

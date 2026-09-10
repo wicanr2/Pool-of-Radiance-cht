@@ -112,6 +112,15 @@ func (node EffectNode) CasterLevel() uint8 {
 	return node.Payload[effectNodeLevelOffset] & EffectLevelMask
 }
 
+// CloudIndex 是節點 `+3` 的高四位：這是這個施法者的第幾團雲。
+// `0CDEh` 一進來做的就是 `es:[di+3] ÷ 10h`（spec 121）。
+//
+// **只有代碼 `28h` 該叫這一支。** 同一個 byte 在別的代碼上是別的意思——
+// 魅惑拿位元 6／7 記兩邊的陣營（spec 112），照這裡讀會讀出一個假的雲序號。
+func (node EffectNode) CloudIndex() int {
+	return int(node.Payload[effectNodeLevelOffset] >> 4)
+}
+
 // Undispellable 回答解除魔法解不解得掉。
 func (node EffectNode) Undispellable() bool {
 	return node.Payload[effectNodeLevelOffset] == EffectUndispellable

@@ -1904,12 +1904,47 @@ func (state *tacticalState) tickEffects(index int) {
 		}
 		duration--
 		if duration == 0 {
+			state.effectTeardown(index, node)
 			continue
 		}
 		node.SetDuration(duration)
 		kept = append(kept, node)
 	}
 	state.Effects[index] = kept
+}
+
+// effectTeardown 是原版 overlay-24 entry 2（`0100h:002Ah`）摘節點前的那一下：
+// 節點 `+4` 立著就以模式 1 叫一次那個代碼的處理常式（spec 112）。需要收尾的
+// 代碼列在這裡，其餘摘掉就摘掉。
+//
+// 魅惑（`0Bh`）不在這張表裡是**故意的**：它的持續是 0（沒有回合計時），
+// 走不到這條路；它的收尾掛在解除魔法那一支（`releaseCharmFrom`）。
+func (state *tacticalState) effectTeardown(index int, node gamepack.EffectNode) {
+	if !node.NeedsTeardown() {
+		return
+	}
+	switch node.Code {
+	case gamepack.CloudObjectEffectCode:
+		state.disperseCloud(index, node.CloudIndex())
+	}
+}
+
+// disperseCloud 是代碼 `28h` 的處理常式（overlay-12 `0CDEh`）：拿節點 `+3`
+// 的高四位當雲序號，沿串列找這個施法者的那一團，收掉——還原四格地形、
+// 把節點摘掉、再把剩下的雲重蓋一遍（`CloudList.RemoveAt` 就是那四步）。
+//
+// 找不到那一團就什麼都不做，與原版 `0D4Ah` 的「找不到 → 直接結束」相同。
+func (state *tacticalState) disperseCloud(caster, cloudIndex int) bool {
+	position := state.Clouds.IndexOf(caster, cloudIndex)
+	if position < 0 {
+		return false
+	}
+	list, err := state.Clouds.RemoveAt(position, tacticalBoard{state})
+	if err != nil {
+		return false
+	}
+	state.Clouds = list
+	return true
 }
 
 // dispelEffects 對一格身上的效果串列逐個擲解除（overlay-22 `2356h`）。

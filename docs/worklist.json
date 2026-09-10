@@ -8,22 +8,6 @@
   },
   "items": [
     {
-      "id": "stinking-cloud-never-disperses",
-      "layer": "feature",
-      "title": "臭雲術的雲放下去就不會散",
-      "body": "法術到人這一整條已經接上了：`cast.go` 呼叫 `placeCloud` 蓋出雲、`tactical.go` 每回合呼叫 `stinkingCloudTurn`、`standingInCloud` 判腳下，八個測試綠的。缺的是另一端——`CloudList.RemoveAt` 只有測試在呼叫，戰鬥迴圈沒有任何地方收雲，所以雲一旦放下就永遠留在盤面上蓋著地形 `1Eh`。",
-      "blocked_by": "spec 121「仍未閉合」第一條：每回合誰來呼叫收雲那一支還沒讀出來。節點版面裡沒看到明顯的回合計數欄位，收的時機也可能不在回合結算那一支上，照 SDD 現在還不能猜著寫。",
-      "acceptance": "把收雲的觸發從 overlay 讀出來寫進 spec 121 並把那一條移出「仍未閉合」，再讓戰鬥迴圈實際呼叫 `Clouds.RemoveAt`。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "cmd/pool-game"
-        ],
-        "pattern": "Clouds\\.RemoveAt\\(",
-        "note": "戰鬥迴圈還沒有收雲的觸發。pattern 綁 `Clouds.` 而不是只綁 `.RemoveAt(`——`EffectList` 有同名方法，`tactical.go` 已經在呼叫它，只寫 `\\.RemoveAt\\(` 會被那一行誤中而判成「已經做了」。定義處在 `internal/gamepack/cloud.go`，所以 paths 不放 `internal/gamepack`。"
-      }
-    },
-    {
       "id": "wandering-monsters",
       "layer": "feature",
       "title": "地圖上沒有怪物群",
