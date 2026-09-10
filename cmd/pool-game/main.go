@@ -3208,6 +3208,19 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		return
 	}
 	if a.areaMapOpen {
+		// 平面圖走第一人稱那一條的同一套路：組成 88×88 的索引圖，過主題色盤，
+		// 再放大兩倍貼上去。圖塊有色盤索引，直接畫到畫面上會繞過那一層。
+		if area, err := a.areaMapImage(); err == nil {
+			if rendered, err := area.RGBA(0, a.artPalette()); err == nil {
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Scale(2, 2)
+				op.GeoM.Translate(float64(viewLeft), float64(viewTop))
+				screen.DrawImage(ebiten.NewImageFromImage(rendered), op)
+				drawPartyPanel(screen, a, foreground, accent)
+				return
+			}
+		}
+		// 圖塊沒載到就退回畫線那一版，總比整框空白好。
 		drawAreaMap(screen, a, viewLeft, viewTop)
 		drawPartyPanel(screen, a, foreground, accent)
 		return

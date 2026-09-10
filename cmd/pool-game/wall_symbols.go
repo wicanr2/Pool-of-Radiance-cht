@@ -33,20 +33,26 @@ func wallSymbolBand(id uint8) int {
 }
 
 // resolveWallStamps 把一次視野走訪的所有 call 展成畫得出來的圖章。
+// wallSymbolPicture 取某一帶的 8×8 圖塊集。第 0 帶另外傳進來——它與第 4 帶
+// 一樣是開機時載的，不跟著 `37h LOAD PIECES` 換（spec 120）。
+func wallSymbolPicture(piece graphics.PieceSet, band int, band0 graphics.Picture) (graphics.Picture, bool) {
+	if band == 0 {
+		return band0, band0.ItemCount > 0
+	}
+	for record, id := range piece.SymbolSetIDs {
+		if int(id) != band || record >= len(piece.SymbolBlockIDs) {
+			continue
+		}
+		picture, ok := piece.Symbols[piece.SymbolBlockIDs[record]]
+		return picture, ok
+	}
+	return graphics.Picture{}, false
+}
+
 func resolveWallStamps(piece graphics.PieceSet, view viewport.WallView,
 	band0 graphics.Picture) []graphics.WallStamp {
 	pictureFor := func(band int) (graphics.Picture, bool) {
-		if band == 0 {
-			return band0, band0.ItemCount > 0
-		}
-		for record, id := range piece.SymbolSetIDs {
-			if int(id) != band || record >= len(piece.SymbolBlockIDs) {
-				continue
-			}
-			picture, ok := piece.Symbols[piece.SymbolBlockIDs[record]]
-			return picture, ok
-		}
-		return graphics.Picture{}, false
+		return wallSymbolPicture(piece, band, band0)
 	}
 	var result []graphics.WallStamp
 	for _, call := range view.Calls {

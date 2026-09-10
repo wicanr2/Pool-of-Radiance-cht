@@ -87,7 +87,7 @@
 | [073](073-spell-effect-dispatch-table.md) | 法術效果的派發表 | CONFORMED＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/spells.go`、`cmd/pool-spell-dispatch/main.go` 等 5 個 | `internal/gamepack/spell_parameters_test.go` |
 | [074](074-spell-parameters-and-messages.md) | 法術參數表與效果訊息 | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/spells.go`、`internal/gamepack/game_clock.go` 等 6 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/cast_test.go`、`cmd/pool-game/spells_test.go` 等 6 個 |
 | [075](075-saving-throws.md) | 豁免判定 | CONFORMED＋DRAFT | `cmd/pool-game/damage.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 8 個 | — |
-| [076](076-party-facing-convention.md) | 隊伍朝向的座標系 | CONFORMED | `cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go`、`cmd/pool-world-graph/main.go` 等 5 個 | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/party_panel_test.go`、`internal/gamepack/facing_test.go` 等 4 個 |
+| [076](076-party-facing-convention.md) | 隊伍朝向的座標系 | CONFORMED | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 6 個 | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/party_panel_test.go`、`internal/gamepack/facing_test.go` 等 4 個 |
 | [077](077-ecl-opcode-dispatch.md) | ECL 指令的派發鏈與運算元個數 | CONFORMED＋DRAFT | — | — |
 | [078](078-encounter-menu-opcode.md) | `29h ENCOUNTER MENU` | CONFORMED＋DRAFT | `cmd/pool-game/encounter.go`、`internal/gamepack/ecl_operands.go`、`internal/gamepack/encounter.go` 等 6 個 | `internal/gamepack/encounter_test.go` |
 | [079](079-movement-rate.md) | 移動力 | CONFORMED | `cmd/pool-game/checkparty.go`、`cmd/pool-game/encounter.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/equipment_test.go` |
@@ -125,13 +125,13 @@
 | [111](111-turn-undead.md) | 轉變不死生物 | READY | `internal/gamepack/turn_undead_resolve.go` | `internal/journal/manual_tables_test.go` |
 | [112](112-effect-code-dispatch.md) | 效果代碼的分派（overlay-24 entry 3／entry 1 與 `014Dh`） | READY | `cmd/pool-game/tactical.go`、`internal/gamepack/cloud.go`、`internal/gamepack/effect_list.go` 等 4 個 | `cmd/pool-game/cast_test.go`、`internal/gamepack/effect_list_test.go` |
 | [113](113-game-pack.md) | Pool 的 game pack 與 adapter | READY | — | — |
-| [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go` 等 4 個 |
+| [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_interruption_test.go`、`cmd/pool-game/camp_screen_test.go` 等 5 個 |
 | [115](115-temple-services.md) | 神殿的九項服務（overlay-04） | READY | `cmd/pool-game/main.go`、`internal/save/state.go` | `cmd/pool-game/main_test.go` |
 | [116](116-appraise-and-sell.md) | 估價與販賣寶石珠寶（overlay-21 entry 19） | READY＋OPEN | `cmd/pool-game/appraise.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/text.go` | `cmd/pool-game/camp_test.go` |
 | [117](117-npc-approach-portrait.md) | APPROACH 的 NPC 半身像 | READY＋DRAFT | `cmd/pool-game/main.go`、`internal/assets/camp_fire.go`、`internal/assets/npc_portrait.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`internal/gamepack/intro_test.go` |
 | [118](118-adventure-status-line-and-clock.md) | 冒險畫面的狀態列與遊戲時鐘 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go`、`internal/save/state.go` | `cmd/pool-game/party_panel_test.go` |
-| [119](119-adventure-command-bar.md) | 冒險畫面的指令列與平面全圖 | READY＋DRAFT | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/field_cast.go` 等 7 個 | `cmd/pool-game/field_cast_test.go` |
-| [120](120-wall-symbol-bands.md) | 8×8 符號的五帶 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go`、`cmd/pool-game/wall_symbols.go` 等 4 個 | `cmd/pool-game/first_person_inset_test.go` |
+| [119](119-adventure-command-bar.md) | 冒險畫面的指令列與平面全圖 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go` 等 8 個 | `cmd/pool-game/area_map_test.go`、`cmd/pool-game/field_cast_test.go` |
+| [120](120-wall-symbol-bands.md) | 8×8 符號的五帶 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` 等 5 個 | `cmd/pool-game/first_person_inset_test.go` |
 | [121](121-cloud-objects.md) | 盤面上的雲團物件 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/cloud.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/cloud_test.go`、`internal/gamepack/cloud_test.go`、`internal/gamepack/spell_cast_test.go` |
 | [122](122-locked-doors.md) | 鎖住的門（`Bash`／`Pick`／`Knock`） | CONFORMED＋DRAFT | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-doc-index/main_test.go`、`internal/gamepack/door_test.go` |
 | [123](123-screen-frame.md) | 畫面外框的繩索花紋 | CONFORMED＋DRAFT | `cmd/pool-game/command_bar.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` | `cmd/pool-game/screen_frame_test.go`、`cmd/pool-game/tactical_test.go` |
