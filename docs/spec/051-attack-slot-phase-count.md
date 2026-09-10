@@ -2,7 +2,8 @@
 
 狀態：CONFORMED（兩槽 base source、phase counter 初始化／遞增、phase rounding
 primitive、傷害骰的來源欄位、remake 的攻擊區段）；
-DRAFT（裝備覆寫、effect code 12、玩家角色的攻擊次數來源與完整 initiative）。
+DRAFT（裝備覆寫、effect code 12、完整 initiative）。玩家角色的攻擊次數來源
+2026-09-10 補上，見下面〈玩家角色的攻擊次數〉。
 日期：2026-09-04（原 2026-09-01）。
 
 ## 證據
@@ -119,8 +120,24 @@ combat setup 的初值固定為 0；只有戰術 runtime 抵達上述回合邊�
 不揮，每一形態揮幾下由 `AttacksThisPhase(編碼, 相位 & 1)` 給。相位存在
 `tacticalState.AttackPhase`，戰鬥開始是 0，`startRound` 從第二回合起每回合加一。
 
-**玩家角色的攻擊次數還沒讀**（原版由職業等級表給），先用編碼 2＝一回合一次，
-所以玩家這一側的行為與先前相同。
+## 玩家角色的攻擊次數（2026-09-10）
+
+**產生端在 overlay-23，不在這一支。** 那是「依職業等級重算衍生數值」的函式，
+`007Ch..009Dh` 這一段寫 `+A1h`：**戰士 7 級以上是 3，其餘一律 2**
+（spec 072 的表，該規格是 CONFORMED）。同一支函式還算 THAC0（`+2Dh`）、
+最高職業等級（`+73h`）與兩種法術格數，建角與升級都會跑。
+
+建角那一頭另有佐證：overlay-16 `1C02h` 連著寫下 `+0AAh = 1`、`+11Bh = +32h`、
+**`+0A1h = 2`**、`+0A3h = 1`、`+0A5h = 2`、`+72h = 0Ch`（spec 065），也就是
+新角色一律一回合一次。兩份證據不衝突——建角先寫 2，overlay-23 再依等級改。
+
+編碼 3 在這裡的意思正是 AD&D 戰士 7 級的 3/2 攻擊：靠相位的最低位交替出
+兩下與一下，而那個交替早就由 `AttacksThisPhase` 實作並被
+`TestAttacksThisPhaseOriginalRoundingAndWrap` 釘住。
+
+remake 這一側是 `gamepack.PlayerAttackRate`，建 roster 時填進
+`tacticalState.AttackRates`——**要放在 `setSingleAttackForm` 之後**，那一支對
+每個人預設編碼 2。
 
 ## 驗收
 

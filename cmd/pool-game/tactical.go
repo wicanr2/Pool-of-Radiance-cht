@@ -781,6 +781,11 @@ func (a *app) enterTacticalPreview() error {
 				})
 				state.AttackRange[index] = a.weaponAttackRange(weapon)
 			}
+			// `+A1h` 要放在 `setSingleAttackForm` 之後：那一支對每個人預設
+			// 一回合一次（編碼 2），而戰士 7 級以上是 3
+			//（overlay-23 `007Ch..009Dh`，spec 072）。
+			state.AttackRates[index] = [gamepack.MonsterAttackSlots]uint8{
+				gamepack.PlayerAttackRate(levels), 0}
 			continue
 		}
 		if record, ok := a.stagedRecordFor(index, friendly); ok {
@@ -1519,8 +1524,8 @@ func (a *app) tacticalInput() error {
 			// 回到 `036Ch` 再問下一個指令；敵方回合（`foeTurn`）打完也是直接
 			// `endTurn`。少了這一步，同一個角色可以對同一個目標無限連打。
 			//
-			// 待證：戰士的多次攻擊（記錄 `+A1h`，spec 051）還沒接，接上之後
-			// 這裡要改成「打完所有攻擊次數才結束」。
+			// 這一相位該揮的每一下都在 `resolveTacticalAttack` 裡打完了
+			// （`attackSwingsThisPhase` 給次數），所以這裡結束回合是對的。
 			state.endTurn(a.rollDice, false)
 			if state.Finished {
 				return a.finishCombat(state.Outcome)

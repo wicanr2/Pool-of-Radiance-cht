@@ -69,3 +69,39 @@ func TestSavingThrowTableMatchesTheRulebook(t *testing.T) {
 		}
 	}
 }
+
+// 玩家角色的攻擊次數編碼：戰士 7 級以上是 3（每兩回合三次），其餘一律 2
+// （每回合一次）。出處 overlay-23 `007Ch..009Dh`（spec 072）。
+func TestPlayerAttackRateTurnsOverAtFighterSeven(t *testing.T) {
+	rate := func(fighter, cleric, mage, thief uint8) uint8 {
+		var levels [gamepack.ClassThac0ClassCount]uint8
+		levels[gamepack.ClassSlotFighter] = fighter
+		levels[gamepack.ClassSlotCleric] = cleric
+		levels[gamepack.ClassSlotMagicUser] = mage
+		levels[gamepack.ClassSlotThief] = thief
+		return gamepack.PlayerAttackRate(levels)
+	}
+	for _, one := range []struct {
+		fighter uint8
+		want    uint8
+		why     string
+	}{
+		{0, 2, "非戰士"},
+		{1, 2, "戰士一級"},
+		{6, 2, "戰士六級還沒到"},
+		{7, 3, "戰士七級開始 3/2"},
+		{9, 3, "更高等級維持 3"},
+	} {
+		if got := rate(one.fighter, 0, 0, 0); got != one.want {
+			t.Errorf("%s（戰士 %d 級）得到 %d，預期 %d", one.why, one.fighter, got, one.want)
+		}
+	}
+	// **只看戰士那一格**：別的職業再高也不會多打一下。
+	if got := rate(0, 12, 12, 12); got != 2 {
+		t.Errorf("牧師／法師／賊各 12 級卻得到 %d，預期 2", got)
+	}
+	// 多職業裡只要戰士那一格到 7 就算。
+	if got := rate(7, 9, 0, 0); got != 3 {
+		t.Errorf("戰士七級兼牧師九級得到 %d，預期 3", got)
+	}
+}

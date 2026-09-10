@@ -39,22 +39,6 @@
       "blocked_by": "spec 095 的 DRAFT：**原版沒有任何 overlay 寫這八格**，所以值從哪來還沒解出來。\n下一步不是反組譯而是實測——用 dosgolem 跑原版建一個賊，把存檔的 `+77h` 起八格讀出來比對規則書的表；值若跟著等級與種族動，產生端就在建角那條路上。"
     },
     {
-      "id": "fighter-multiple-attacks",
-      "layer": "feature",
-      "title": "戰士的多次攻擊還沒接",
-      "body": "原本三件，兩件在 2026-09-10 接完了：**射程**（`tacticalState.AttackRange` 按格記，建 roster 時從武器型別的 `+0Ch` 減一填，`foeTurn` 拿它當「搆不搆得到」的預算）與**怪物的敏捷**（記錄 `+13h`，先攻修正讀它）。剩下戰士的多次攻擊（記錄 `+A1h`）：`tactical.go` 打完一次就 `endTurn`，接上之後要改成「打完所有攻擊次數才結束」。",
-      "acceptance": "帶一條逐回合的單元測試，且與戰鬥數值對拍那一項同源。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "cmd/pool-game/tactical.go"
-        ],
-        "pattern": "多次攻擊（記錄 `\\+A1h`，spec 051）還沒接",
-        "note": "程式裡的待證註解還在"
-      },
-      "blocked_by": "spec 051 的 DRAFT——「玩家角色的攻擊次數來源」還沒讀出來，照 SDD 不能猜著寫。\n另外**拿武器的怪物射程仍然不對**：原版走怪物記錄的 `+0CCh`，而 remake 的怪物只載 285-byte 記錄、沒有物品鏈，所以一律算成近戰一格（原版在 `+0CCh` 為 0 時也是 1，所以近戰怪物兩邊一致）。"
-    },
-    {
       "id": "rest-interruption",
       "layer": "feature",
       "title": "休息不會被打斷",
@@ -72,9 +56,9 @@
     {
       "id": "level-drain-source",
       "layer": "feature",
-      "title": "能量吸取沒有來源",
-      "body": "`internal/save/state.go` 的欠等級一律 0，`spell_cast.go` 說 overlay-12 `21C4h` 還沒接。",
-      "acceptance": "吸取扣得動等級，復原走神殿那條路。",
+      "title": "能量吸取沒有來源（缺的是特殊攻擊那一批）",
+      "body": "欠帳那對欄位（記錄 `+74h`／`+75h`）與還帳（恢復術走 `gamepack.Restore`）**都接好了**，spec 097 是 CONFORMED、`21C4h..2286h` 逐行讀完了。缺的是**誰來扣**：原版由怪物的特殊攻擊呼叫 `21C4h`，而 remake 還沒有特殊攻擊那一批。所以 `DrainedLevels` 一律是 0——**空的是正確答案不是佔位**（沒欠帳時原版的 `2C16h` 也是直接返回），程式裡的註解已經這樣寫。",
+      "acceptance": "把特殊攻擊的分派讀出來寫進 spec 並標 READY，接上之後吸取扣得動等級，復原走神殿那條路。",
       "verify": {
         "kind": "present",
         "paths": [
@@ -82,7 +66,8 @@
         ],
         "pattern": "remake 還沒有吸取的來源",
         "note": "程式裡的自承還在"
-      }
+      },
+      "blocked_by": "特殊攻擊的分派還沒讀。線索在 spec 065：「第一形態空的那六隻怪物，牠們的第一形態是特殊攻擊」——所以怪物記錄的兩個攻擊槽裡，空骰子的那一格代表走特殊攻擊，但走去哪一支、怎麼挑，都還沒定位。"
     },
     {
       "id": "combat-numbers-vs-original",

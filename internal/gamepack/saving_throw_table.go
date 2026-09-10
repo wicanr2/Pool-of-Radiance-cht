@@ -45,6 +45,22 @@ const (
 	ClassSlotThief      = 6
 )
 
+// PlayerAttackRate 是玩家角色的 `+A1h`：**戰士 7 級以上是 3，其餘一律 2**。
+//
+// 出處是 overlay-23 的 `007Ch..009Dh`（spec 072）——那一支是「依職業等級重算
+// 衍生數值」，建角與升級都會跑，同一支還算 THAC0、最高職業等級與兩種法術
+// 格數。建角那一頭另有佐證：overlay-16 `1C02h` 連著寫下 `+0A1h = 2`
+// （spec 065），也就是新角色一律一回合一次。
+//
+// 編碼是「每回合次數 × 2」（spec 051）：2 代表一回合一次，3 代表每兩回合
+// 三次——AD&D 的戰士 7 級 3/2 攻擊，靠相位的最低位交替出 1 或 2 下。
+func PlayerAttackRate(levels [ClassThac0ClassCount]uint8) uint8 {
+	if levels[ClassSlotFighter] >= 7 {
+		return 3
+	}
+	return 2
+}
+
 // SavingThrowTable 是那 365 個位元組。
 type SavingThrowTable struct {
 	Raw []byte
