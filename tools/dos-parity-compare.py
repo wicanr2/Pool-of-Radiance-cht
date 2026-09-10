@@ -282,7 +282,7 @@ def main():
          "digest": "b3719728", "remake": "remake-tactical.png",
          "note": "戰鬥畫面（spec 129）。原版那一側是第一場遭遇，remake 這一側是"
                  " F5 叫出來的同一支繪製——盤面內容本來就不同，這一項看的是版面"},
-        {"name": "adventure-map", "kind": "layout",
+        {"name": "adventure-map", "kind": "layout", "view": True,
          "digest": "f01a23c4", "remake": "remake-map.png",
          "note": "平面圖：`A` 把第一人稱那一框換成俯視圖，其餘版面不動。"
                  "主鍵序在導覽結束那一格按兩次 `a`（開、關），所以這一項"
