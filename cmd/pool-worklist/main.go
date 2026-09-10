@@ -119,6 +119,12 @@ func matches(root string, one verify) (bool, string, error) {
 			default:
 				return nil
 			}
+			// **測試檔不算。** 條目問的是「產品程式碼做了這件事沒有」，
+			// 而測試本來就會提到還沒接上的東西——把 `_test.go` 算進來，
+			// `absent` 會因為測試裡有一行呼叫就判成「已經做了」。
+			if strings.HasSuffix(path, "_test.go") || strings.HasSuffix(path, "_test.py") {
+				return nil
+			}
 			raw, err := os.ReadFile(path)
 			if err != nil {
 				return err

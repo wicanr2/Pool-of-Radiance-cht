@@ -134,6 +134,38 @@ func TestVerifyJSONLenCountsObjectKeys(t *testing.T) {
 	}
 }
 
+// **測試檔裡出現不算數。** 測試本來就會提到還沒接上的東西（為了釘住將來的
+// 行為，或為了測那個資料結構本身）；把 `_test.go` 算進來，absent 會因為測試
+// 裡有一行呼叫就判成「已經做了」，於是真缺口被蓋掉。
+func TestVerifyIgnoresTestFiles(t *testing.T) {
+	root := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(root, "pkg"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	testOnly := "package pkg\n\nfunc TestX() { list.RemoveAt(0) }\n"
+	if err := os.WriteFile(filepath.Join(root, "pkg", "thing_test.go"), []byte(testOnly), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	one := item{ID: "t", Layer: "feature", Title: "t", Acceptance: "a",
+		Verify: verify{Kind: "absent", Paths: []string{"pkg"}, Pattern: `\.RemoveAt\(`}}
+	open, why, err := stillOpen(root, one)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !open {
+		t.Fatalf("只有測試檔提到就判成做完了：why=%q", why)
+	}
+
+	// 產品程式碼裡出現才算。
+	product := "package pkg\n\nfunc run() { list.RemoveAt(0) }\n"
+	if err := os.WriteFile(filepath.Join(root, "pkg", "thing.go"), []byte(product), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if open, why, _ = stillOpen(root, one); open {
+		t.Fatalf("產品程式碼裡有了卻還說未完成：why=%q", why)
+	}
+}
+
 // manual 沒有機器可判的訊號，一律回「仍未完成」並標出來——**沉默不等於通過**。
 func TestManualStaysOpenAndSaysSo(t *testing.T) {
 	open, why, err := stillOpen(t.TempDir(),

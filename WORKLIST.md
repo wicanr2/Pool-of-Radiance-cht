@@ -33,9 +33,9 @@
 
 ### 一、玩家會撞到的功能缺口
 
-- [ ] **臭雲術（`22h`）缺的是盤面上的雲團物件，不是派發。** 派發那一格已經接上（`SpellIDStinkingCloud` 走 `effect.Cloud = true`，算在 `TestImplementedSpellCount` 釘的 42／25／67 裡）。缺的是「留在盤面上、每回合結算」的東西：原版生一個 19-byte 節點掛在 `DS:6CAFh` 的串列上，形狀是雲心加東、東南、南四格，效果掛在**站進去的人**身上而不是施法當下的目標。
-      **卡在**：overlay-12 `0CDEh` 從 `0DCEh` 起「雲對站在裡面的人做什麼」那一段還沒讀完，照 SDD 現在還不能動手。
-      **驗收**：先把那一段讀完寫進 spec 098 並標 READY，再接雲團物件。
+- [ ] **臭雲術的雲放下去就不會散。** 法術到人這一整條已經接上了：`cast.go` 呼叫 `placeCloud` 蓋出雲、`tactical.go` 每回合呼叫 `stinkingCloudTurn`、`standingInCloud` 判腳下，八個測試綠的。缺的是另一端——`CloudList.RemoveAt` 只有測試在呼叫，戰鬥迴圈沒有任何地方收雲，所以雲一旦放下就永遠留在盤面上蓋著地形 `1Eh`。
+      **卡在**：spec 121「仍未閉合」第一條：每回合誰來呼叫收雲那一支還沒讀出來。節點版面裡沒看到明顯的回合計數欄位，收的時機也可能不在回合結算那一支上，照 SDD 現在還不能猜著寫。
+      **驗收**：把收雲的觸發從 overlay 讀出來寫進 spec 121 並把那一條移出「仍未閉合」，再讓戰鬥迴圈實際呼叫 `Clouds.RemoveAt`。
 - [ ] **地圖上沒有怪物群。** `encounter.go` 自承 remake 沒有遊蕩遭遇，目前的戰鬥全部掛在格子事件底下。**這一條有數字**：起始地圖 GEO3／0 的 1024 個「座標×朝向」樣本各跑一次格子生命週期，沒有任何一格走到 `24h COMBAT`（`docs/audit/pool-initial-cell-sweep.json`，boundary 全部是 `exit` 或 `event`）。所以在斯倫特貧民區怎麼走都撞不到架——截圖腳本走四百步拍不到實戰畫面，是這條缺口造成的，不是腳本走錯。
       **驗收**：照原版的遭遇表與觸發條件接，並在戰術盤面上以 `encounterStartDistance` 的距離開場；接上之後截圖腳本要拍得到 `pool-remake-chinese-combat.png`。
 - [ ] **賊技能沒有產生端。** 記錄 `+79h` 的找／解陷阱（spec 095）在 `checkparty.go` 與 `internal/save` 都自承是 0。
