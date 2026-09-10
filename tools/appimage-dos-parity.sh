@@ -32,11 +32,28 @@ FLAVOUR="${2:-full-local}"
 LANG_MODE="${3:-zh}"
 FONT_DIR="${ETEN_FONT_DIR:-/home/anr2/cht/etan_font}"
 APPIMAGE="$ROOT/dist-all/$VERSION/$FLAVOUR/pool-of-radiance-remake-$VERSION-x86_64.AppImage"
+ENGINE_DIR="${GOLDEN_BOX_REMAKE_ENGINE_DIR:-$ROOT/../golden-box-remake-engine}"
 REF="$ROOT/workplace/dosgolem-ref"
+# 市政廳那一格的基準是另一條鍵序產的（主基準走的是「導覽完往西撞遭遇」，
+# 不經過市政廳）。缺了就少那兩項，不擋整份對拍——重生的方式：
+#   POOL_DOSGOLEM_OUT=workplace/dosgolem-ref-cityhall \
+#   POOL_DOSGOLEM_KEYS=<主鍵序把結尾換成 Left,Left,Up,Up,Up,Return,Up> \
+#   tools/dosgolem-reference.sh
+REF_CITYHALL="$ROOT/workplace/dosgolem-ref-cityhall"
+test -d "$REF_CITYHALL" || REF_CITYHALL="$REF"
 OUT="$ROOT/workplace/dos-parity-$LANG_MODE"
 
 [[ -n "$VERSION" ]] || { echo "用法：tools/appimage-dos-parity.sh <版本> [patch|full-local] [zh|en]" >&2; exit 2; }
 test -f "$APPIMAGE"
+# **發行包要是當前原始碼建的。** 這一支比的是打包好的 AppImage，而它是現成的
+# 檔案——改完程式碼直接跑對拍，量到的是上一版，數字看起來正常，結論整份是空的。
+# 基準那一側早就有產地證明閘門（下面那段），這一側先前沒有：2026-09-10 因此
+# 拿 9/9 建的包量了一整輪，還把別的 commit 的升幅記到這一輪頭上。
+STALE_SOURCE="$(find "$ROOT/cmd" "$ROOT/internal" "$ENGINE_DIR" \
+  -name '*.go' -newer "$APPIMAGE" -print -quit 2>/dev/null || true)"
+[[ -z "$STALE_SOURCE" ]] || {
+  echo "發行包比原始碼舊（$STALE_SOURCE 改過之後沒有重新打包）。" >&2
+  echo "先跑 tools/package-release.sh $VERSION 再對拍。" >&2; exit 2; }
 test -f "$ROOT/Pool of Radiance (1988).zip"
 test -f "$REF/shots.json" || {
   echo "沒有基準畫面：先跑 tools/dosgolem-reference.sh" >&2; exit 2; }
@@ -58,6 +75,17 @@ print(f"基準：dosgolem {record.get('generator_revision', '')[:12]} "
 GATE
 [[ "$LANG_MODE" != zh ]] || test -f "$FONT_DIR/stdfont.15"
 
+# 容器裡那段鍵序走到市政廳外那一格（spec 082）：導覽結束在 (0,4) 朝西，
+# 左轉兩次朝東再走三步就到 (3,4)。轉向與移動不會改變畫面識別字，所以那一段用
+# pulse 直接按，不能用 step——step 會因為識別字早就符合而一次都不按。
+#
+# 路上的格子會印字，而事件 pending 的時候方向鍵按不動，所以每走一步要把純文字
+# 的那種按掉（east_step）。它只吃 adventure-cell-text：市政廳第一段是腳本自己
+# 放的單選項選單（adventure-cell-menu），那一張正是要拍的，不能一起清掉。
+#
+# **容器腳本裡不要放多行中文註解**：那一整段是 `bash -c '…'` 的單引號字串，
+# 中文註解在裡面曾經讓主機這一側報 "指令找不到"（對拍照樣跑完、exit 0，
+# 只是尾巴多一行雜訊，看起來像對拍壞了）。註解留在主機端這裡。
 rm -rf "$OUT"; mkdir -p "$OUT"
 docker run --rm --network none --memory 3g --cpus "${PARITY_CPUS:-2}" --pids-limit 384 \
   --log-opt max-size=10m --log-opt max-file=3 \
@@ -65,7 +93,8 @@ docker run --rm --network none --memory 3g --cpus "${PARITY_CPUS:-2}" --pids-lim
   -e HOME=/tmp/home -e LANG_MODE="$LANG_MODE" \
   -v "$APPIMAGE:/game.AppImage:ro" -v "$FONT_DIR:/fonts:ro" \
   -v "$ROOT/Pool of Radiance (1988).zip:/zip/pool.zip:ro" \
-  -v "$REF:/ref:ro" -v "$OUT:/out" -v "$ROOT/tools:/tools:ro" \
+  -v "$REF:/ref:ro" -v "$REF_CITYHALL:/ref-cityhall:ro" \
+  -v "$OUT:/out" -v "$ROOT/tools:/tools:ro" \
   -v "$ROOT/docs/reference/original-dos/adventure:/ref-dosbox:ro" -w /tmp \
   wasteland-go:1.24-x11-record-r1 bash -c '
 set -eu
@@ -182,10 +211,35 @@ sleep 0.6
 shot remake-first-person
 # 戰鬥畫面（spec 129）。原版那一側是走到第一場遭遇拍的；remake 這一側用 F5
 # 叫出同一支繪製——盤面內容本來就不同，這一項看的是版面。
+# 市政廳外那一格：見主機端那一段註解。
+east_step() {
+  pulse Up
+  sleep 0.3
+  n=0
+  while test "$(screen)" = "adventure-cell-text"; do
+    pulse Return
+    sleep 0.2
+    n=$((n+1))
+    test "$n" -lt 20 || die "走到市政廳的路上清不掉格子事件"
+  done
+}
+pulse Left
+pulse Left
+east_step
+east_step
+east_step
+await adventure-cell-menu
+sleep 0.6
+shot remake-city-hall-first
+pulse Return
+await adventure-cell-done
+sleep 0.6
+shot remake-city-hall-second
+
 step F5 tactical
 sleep 0.6
 shot remake-tactical
 
-python3 /tools/dos-parity-compare.py /ref /out /ref-dosbox
+python3 /tools/dos-parity-compare.py /ref /out /ref-dosbox /ref-cityhall
 '
 echo "報告 → $OUT"

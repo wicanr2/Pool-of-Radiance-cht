@@ -255,21 +255,47 @@ def main():
          "digest": "1bcdbd55", "remake": "remake-tactical.png",
          "note": "戰鬥畫面（spec 129）。原版那一側是第一場遭遇，remake 這一側是"
                  " F5 叫出來的同一支繪製——盤面內容本來就不同，這一項看的是版面"},
+        # 市政廳外那一格（spec 082）。基準是另一組鍵序產的
+        # （`workplace/dosgolem-ref-cityhall`，見 tools/dosgolem-reference.sh 的
+        # POOL_DOSGOLEM_OUT／POOL_DOSGOLEM_KEYS）：主基準那條走的是「導覽完
+        # 往西撞遭遇」，不經過市政廳。這兩張守的是「按幾次」——停頓由腳本自己
+        # 放的單選項選單決定，不是每一頁自動加的。
+        {"name": "city-hall-1", "kind": "layout", "ref": "cityhall",
+         "digest": "af08d174", "remake": "remake-city-hall-first.png",
+         "note": "市政廳外第一段：文字框三行，框外那一列是原版自己的"
+                 " PRESS <ENTER>/<RETURN> TO CONTINUE（overlay-03 118Ah），"
+                 "不是腳本給的那一條"},
+        {"name": "city-hall-2", "kind": "layout", "ref": "cityhall",
+         "digest": "5e87acc8", "remake": "remake-city-hall-second.png",
+         "note": "按一次 Return 之後：四行公告一次顯示，框外換回指令列"
+                 " AREA CAST VIEW ENCAMP SEARCH LOOK"},
     ]
 
     report = {"screens": []}
     failed = False
     dosbox_dir = sys.argv[3] if len(sys.argv) > 3 else None
+    # 第二組基準：同一支 dosgolem、另一條鍵序。**缺了就跳過那幾項**，
+    # 不當成失敗——主基準那條路線本來就走不到市政廳，兩者是互補不是替代。
+    sources = {"main": (ref_dir, shots)}
+    cityhall_dir = sys.argv[4] if len(sys.argv) > 4 else None
+    if cityhall_dir and os.path.exists(os.path.join(cityhall_dir, "shots.json")):
+        sources["cityhall"] = (
+            cityhall_dir, json.load(open(os.path.join(cityhall_dir, "shots.json"))))
     for item in plan:
+        source = item.get("ref", "main")
+        if source not in sources:
+            print(f"跳過 {item['name']}：沒有 {source} 那一組基準", file=sys.stderr)
+            continue
+        item_dir, item_shots = sources[source]
         digest = item["digest"]
-        matches = [s for s in shots if s["sha256"].startswith(digest)]
+        matches = [s for s in item_shots if s["sha256"].startswith(digest)]
         if not matches:
             print(f"基準裡找不到 {item['name']} 的畫面（雜湊 {digest[:8]}）"
                   f"——鍵序或 dosgolem 版本改過了，先重生基準再更新對照表", file=sys.stderr)
             failed = True
             continue
         info = matches[0]
-        raw = open(os.path.join(ref_dir, info["path"].replace(".png", ".idx")), "rb").read()
+        raw = open(os.path.join(item_dir, info["path"].replace(".png", ".idx")), "rb").read()
         reference = bytes(v & 0x0F for v in raw)
         actual = load_remake(os.path.join(out_dir, item["remake"]))
 

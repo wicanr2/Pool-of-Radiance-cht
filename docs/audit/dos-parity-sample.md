@@ -194,6 +194,23 @@ remake 現在對得上了（`docs/screenshots/pool-remake-chinese-journal-cue.pn
 **四個公告字號 remake 是對的**：低解析度縮圖上最後一個看起來像 `CXX`，
 把原版那一塊放大六倍看是 `LIX.`——縮圖不能拿來讀字。
 
+**這一格現在進了對拍抽樣**（2026-09-10），不再只是手動比對：
+`city-hall-1` 整張 78.6%、`city-hall-2` 整張 77.3%（與 `sheet`、`intro`、`combat` 一樣，逐次會差幾個像素），外框兩張都是
+7463／7936 ＝ 94.04%（與 `intro` 同一個框，差在 remake 的框比原版低 11 列）。
+整張的差距主要來自中文與英文的字形本身，不是版面。
+
+基準是**另一組鍵序**產的：主基準那條走「導覽完往西撞遭遇」，不經過市政廳，
+而改它會讓 `combat` 那一項的基準幀失效。重生的方式是
+
+```
+POOL_DOSGOLEM_OUT=workplace/dosgolem-ref-cityhall \
+POOL_DOSGOLEM_KEYS='<主鍵序，結尾換成 Left,Left,Up,Up,Up,Return,Up>' \
+tools/dosgolem-reference.sh
+```
+
+`dos-parity-compare.py` 吃第四個參數當第二組基準，plan 用 `"ref": "cityhall"`
+指定來源；那一組不在就跳過那兩項，不擋整份對拍。
+
 ## 兩件在截圖上才看得出來的事（2026-09-09）
 
 走到市政廳那一趟順手發現的，兩件都與「畫面怎麼被放大」有關。
