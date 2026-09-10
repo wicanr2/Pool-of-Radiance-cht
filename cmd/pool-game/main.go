@@ -3059,7 +3059,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 		// 再疊一列 F-key 提示會直接壓在上面——標題畫面也按不到那幾個鍵，
 		// 畫它只是把原版的畫面弄髒。`msgTitleHint` 那一句留著，那是要按的。
 	case a.mode == modeCreation &&
-		(a.flow.Stage == creation.StageRoll || a.flow.Stage == creation.StagePortrait):
+		(a.flow.Stage == creation.StageRoll ||
+			a.flow.Stage == creation.StagePortrait ||
+			a.flow.Stage == creation.StageIconConfirm):
 		// 這兩頁最下面那一列都是原版自己的：資料頁是
 		// `KEEP THIS CHARACTER? YES NO`（spec 130），肖像編輯器是
 		// `HEAD BODY KEEP`（基準畫面 `24-Return`）——兩者都由 `drawCreation`
@@ -3263,9 +3265,21 @@ func drawIconEditor(screen *ebiten.Image, a *app, foreground, accent color.Color
 		}
 		drawText(screen, prefix+a.iconOptionLabel(option.label), 48, 116+index*22, ink)
 	}
-	// 原版是**兩組四格**：上面 OLD（進編輯器時的樣子）、下面 NEW（現在的
-	// 樣子），每一組各有 `READY` 與 `ACTION`，改了什麼一眼就比得出來
-	//（基準畫面 `25-k`）。
+	drawIconPreviews(screen, a, accent)
+	size := a.iconOptionLabel("LARGE")
+	if a.flow.IconSize == 1 {
+		size = a.iconOptionLabel("SMALL")
+	}
+	drawText(screen, fmt.Sprintf(a.text(msgIconSummary),
+		a.flow.IconHead, a.flow.IconWeapon, size), 340, 300, foreground)
+}
+
+// drawIconPreviews 畫**兩組四格**：上面 OLD（進編輯器時的樣子）、下面 NEW
+// （現在的樣子），每一組各有 `READY` 與 `ACTION`，改了什麼一眼就比得出來。
+//
+// 編輯器（基準 `25-k`）與確認那一頁（基準 `26-e`）畫的是同一組四格，差別
+// 只在框外那一列——所以這一段抽出來共用，兩邊各自畫自己的底下那一行。
+func drawIconPreviews(screen *ebiten.Image, a *app, accent color.Color) {
 	for row, group := range [2]struct {
 		label string
 		icons [2]*ebiten.Image
@@ -3294,12 +3308,6 @@ func drawIconEditor(screen *ebiten.Image, a *app, foreground, accent color.Color
 			screen.DrawImage(icon, op)
 		}
 	}
-	size := a.iconOptionLabel("LARGE")
-	if a.flow.IconSize == 1 {
-		size = a.iconOptionLabel("SMALL")
-	}
-	drawText(screen, fmt.Sprintf(a.text(msgIconSummary),
-		a.flow.IconHead, a.flow.IconWeapon, size), 340, 300, foreground)
 }
 
 func drawCamp(screen *ebiten.Image, a *app, foreground, accent color.Color) {
@@ -3588,9 +3596,11 @@ func drawCreation(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		return
 	}
 	if a.flow.Stage == creation.StageIconConfirm {
-		drawText(screen, a.text(msgIconConfirm), 230, 138, accent)
-		drawText(screen, a.text(msgIconConfirmYes), 230, 190, foreground)
-		drawText(screen, a.text(msgIconConfirmNo), 230, 222, foreground)
+		// 原版**保留那四格**，只把框外那一列換成問句（基準畫面 `26-e`：
+		// `IS THIS ICON OK? YES NO`）。先前這一頁只有問句，四格整組不見。
+		drawIconPreviews(screen, a, accent)
+		drawText(screen, a.text(msgIconConfirm)+"  "+a.text(msgIconConfirmYes)+
+			"  "+a.text(msgIconConfirmNo), 0, footerBaseline, accent)
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 72, 310, foreground)
 		}

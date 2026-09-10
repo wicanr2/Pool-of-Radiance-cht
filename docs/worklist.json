@@ -135,13 +135,13 @@
       "id": "parity-sampling-gaps",
       "layer": "presentation",
       "title": "抽樣擴到還沒對拍的畫面",
-      "body": "現況表有十六項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、檢視人物、地圖上施法、平面圖，以及一張**拍了卻沒比對**的 `remake-icon-confirm`。",
+      "body": "現況表有十七項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、檢視人物、地圖上施法、平面圖。",
       "acceptance": "每加一項都照市政廳那一節的做法（另產一組基準或延長主鍵序、compare 的 plan 加一項），`docs/audit/dos-parity-sample.json` 跟著多一項。",
       "verify": {
         "kind": "json_len",
         "path": "docs/audit/dos-parity-sample.json",
         "field": "screens",
-        "max": 16,
+        "max": 17,
         "note": "抽樣只有十六項時這一條仍未完成。綁數量而不是綁註解：註解會被順手改掉，項數不會"
       }
     },
@@ -155,6 +155,18 @@
       "verify": {
         "kind": "manual",
         "note": "沒有穩定訊號——隨機探索才撞得到，重跑會消失。**不要因為重跑是綠的就當它不存在**：門檻「硬失敗 0 次」在隨機探索下量到的是這一次走了哪條路，不是缺口在不在。定位到之後改成綁那個 block 的靜態走訪"
+      }
+    },
+    {
+      "id": "castle-test-runtime",
+      "layer": "verification",
+      "title": "城堡那條探索測試要七分半",
+      "body": "`TestTheCastleBehindStojanowGateHasContent` 單獨跑量到 458 秒，而整個 `cmd/pool-game` 在 380..600 秒之間浮動。go 的預設 timeout 是 10 分鐘，所以這個套件長期在邊緣——2026-09-10 撞上一次，症狀是 `panic: test timed out`，**看起來像當掉而不是慢**。`tools/go.sh` 已經改成預設 `-timeout 25m` 讓它不再被誤砍，但那只是不再誤判，沒有變快。",
+      "blocked_by": "",
+      "acceptance": "把它壓到兩分鐘以內，做法照 Sokal 那條的前例（縮小探索面、去掉重複走訪），而不是放寬它檢查的東西。",
+      "verify": {
+        "kind": "manual",
+        "note": "沒有機器可判的訊號——耗時要實測。壓下去之後改成綁一條會在超時時失敗的斷言"
       }
     }
   ]

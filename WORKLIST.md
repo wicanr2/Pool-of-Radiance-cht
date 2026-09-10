@@ -60,12 +60,14 @@
 - [ ] **ECL 還有一處運算元數讀錯。** `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 的隨機探索在 2026-09-10 撞到一次 `continue Pool SearchLocation: unknown opcode 0x9D at payload offset 1085`（seed 142，第 21526 步）。**`9Dh` 不是 opcode**——那是 PC 停在資料上，症狀與 spec 093 修掉的 `34h ECL CLOCK` 同一族：某一條指令的運算元數讀多了，後面整段錯位。同一份測試重跑一次沒有再現，所以是特定路徑才走得到。
       **卡在**：要先定位是哪一個 block 的哪一條指令。`payload offset 1085` 是線索，但那一趟走過 22 張地圖，哪一張的哪一個 block 還沒對出來；重現要靠同一組 seed 與同一條路徑。
       **驗收**：定位那一條指令、對回原版的運算元數、寫進 spec，並讓那個 seed 重跑不再硬失敗。
+- [ ] **城堡那條探索測試要七分半。** `TestTheCastleBehindStojanowGateHasContent` 單獨跑量到 458 秒，而整個 `cmd/pool-game` 在 380..600 秒之間浮動。go 的預設 timeout 是 10 分鐘，所以這個套件長期在邊緣——2026-09-10 撞上一次，症狀是 `panic: test timed out`，**看起來像當掉而不是慢**。`tools/go.sh` 已經改成預設 `-timeout 25m` 讓它不再被誤砍，但那只是不再誤判，沒有變快。
+      **驗收**：把它壓到兩分鐘以內，做法照 Sokal 那條的前例（縮小探索面、去掉重複走訪），而不是放寬它檢查的東西。
 
 ### 三、版面與資料的差距
 
 - [ ] **遊戲內攻略擴到其餘地圖。** `F3` 的機制與資料格式做好了（[`docs/guide/README.md`](docs/guide/README.md)），目前只有 `3/00` 費蘭的文明區建了 48 個點。
       **驗收**：每一張新地圖的點都由原始 GEO／ECL 推出來、每一個點帶 `source`，且 `internal/guide` 的三個測試全綠——**不可以抄第三方攻略的座標**，那種錯的症狀是「測試綠、玩家走不到」。
-- [ ] **抽樣擴到還沒對拍的畫面。** 現況表有十六項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、檢視人物、地圖上施法、平面圖，以及一張**拍了卻沒比對**的 `remake-icon-confirm`。
+- [ ] **抽樣擴到還沒對拍的畫面。** 現況表有十七項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、檢視人物、地圖上施法、平面圖。
       **驗收**：每加一項都照市政廳那一節的做法（另產一組基準或延長主鍵序、compare 的 plan 加一項），`docs/audit/dos-parity-sample.json` 跟著多一項。
 
 已經對齊原版的：戰術盤面（spec 129，外框 9152／9152 ＝ 100%）、

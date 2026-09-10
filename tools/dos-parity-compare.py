@@ -255,6 +255,11 @@ def main():
          "digest": "b3719728", "remake": "remake-tactical.png",
          "note": "戰鬥畫面（spec 129）。原版那一側是第一場遭遇，remake 這一側是"
                  " F5 叫出來的同一支繪製——盤面內容本來就不同，這一項看的是版面"},
+        {"name": "icon-confirm", "kind": "layout",
+         "digest": "d148516e", "remake": "remake-icon-confirm.png",
+         "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成"
+                 " IS THIS ICON OK? YES NO。截圖腳本一直有拍這一張，"
+                 "2026-09-10 之前 plan 沒有這一項——拍了沒人看"},
         # 市政廳外那一格（spec 082）。基準是另一組鍵序產的
         # （`workplace/dosgolem-ref-cityhall`，見 tools/dosgolem-reference.sh 的
         # POOL_DOSGOLEM_OUT／POOL_DOSGOLEM_KEYS）：主基準那條走的是「導覽完
