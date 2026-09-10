@@ -72,12 +72,7 @@ func run(zipPath, outPath string) error {
 	if err != nil {
 		return err
 	}
-	nameOf := func(id int) string {
-		if id < 1 || id > len(names) {
-			return ""
-		}
-		return names[id-1]
-	}
+	nameOf := func(id int) string { return spellName(names, id) }
 	r := report{
 		Schema:       "pool-spell-dispatch-v1",
 		Overlay:      gamepack.SpellDispatchOverlay,
@@ -131,6 +126,15 @@ func run(zipPath, outPath string) error {
 		return err
 	}
 	return os.WriteFile(outPath, encoded, 0o644)
+}
+
+// spellName 查名字。**法術編號是 1-based**（spec 070），所以要減一；
+// 超出範圍回空字串，不回一個看起來合理的鄰居——差一格的名字比沒有名字更糟。
+func spellName(names []string, id int) string {
+	if id < 1 || id > len(names) {
+		return ""
+	}
+	return names[id-1]
 }
 
 // hexBytes 把整筆記錄印成十六進位，讓還沒解讀的欄位也留在證據裡。

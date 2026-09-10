@@ -3,6 +3,7 @@
 狀態：CONFORMED（Linux AppImage、Windows ZIP、macOS 雙架構 ZIP 可重生，
 AppImage 已在容器裡實際啟動並截圖）；DRAFT（Windows 與 macOS 尚未在真機驗收）。
 日期：2026-09-03。
+實作：`tools/package-release.sh`（Docker 工具鏈與 shell，不是 Go——索引掃的是 `.go` 註解裡的 `spec NNN`，這一份永遠不會出現在那裡）。
 
 ## 產出
 

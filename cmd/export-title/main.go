@@ -27,21 +27,48 @@ func main() {
 	if err := os.MkdirAll(*out, 0o755); err != nil {
 		fail(err)
 	}
-	atlas := image.NewRGBA(image.Rect(0, 0, 640, 200))
-	for index, id := range []uint8{1, 2} {
-		rendered, err := pictures[id].RGBA(0, graphics.EGA16)
-		if err != nil {
-			fail(err)
-		}
+	atlas, rendered, err := composeTitleAtlas(pictures)
+	if err != nil {
+		fail(err)
+	}
+	for index, id := range titleBlocks {
 		path := filepath.Join(*out, fmt.Sprintf("title-block-%02x.png", id))
-		if err := writePNG(path, rendered); err != nil {
+		if err := writePNG(path, rendered[index]); err != nil {
 			fail(err)
 		}
-		draw.Draw(atlas, image.Rect(index*320, 0, (index+1)*320, 200), rendered, image.Point{}, draw.Src)
 	}
 	if err := writePNG(filepath.Join(*out, "title-atlas.png"), atlas); err != nil {
 		fail(err)
 	}
+}
+
+// 標題畫面是 `TITLE.DAX` 的**兩個區塊左右並排**，各 320×200（spec 001）。
+// 順序有意義：`1` 在左、`2` 在右，反過來畫面就是左右顛倒的。
+var titleBlocks = []uint8{1, 2}
+
+const (
+	titleBlockWidth  = 320
+	titleBlockHeight = 200
+)
+
+// composeTitleAtlas 把兩個區塊拼成一整張，同時回傳各自那一張。
+func composeTitleAtlas(pictures map[uint8]graphics.Picture) (*image.RGBA, []*image.RGBA, error) {
+	atlas := image.NewRGBA(image.Rect(0, 0, titleBlockWidth*len(titleBlocks), titleBlockHeight))
+	rendered := make([]*image.RGBA, 0, len(titleBlocks))
+	for index, id := range titleBlocks {
+		picture, ok := pictures[id]
+		if !ok {
+			return nil, nil, fmt.Errorf("TITLE.DAX 沒有區塊 %d", id)
+		}
+		block, err := picture.RGBA(0, graphics.EGA16)
+		if err != nil {
+			return nil, nil, fmt.Errorf("區塊 %d：%w", id, err)
+		}
+		rendered = append(rendered, block)
+		draw.Draw(atlas, image.Rect(index*titleBlockWidth, 0,
+			(index+1)*titleBlockWidth, titleBlockHeight), block, image.Point{}, draw.Src)
+	}
+	return atlas, rendered, nil
 }
 
 func writePNG(path string, source image.Image) error {

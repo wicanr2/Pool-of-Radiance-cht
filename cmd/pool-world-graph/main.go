@@ -1,6 +1,8 @@
 // Command pool-world-graph 把「世界怎麼接起來」從原始資料量出來：每一個 ECL
 // 區塊會 NEWECL 到哪些區塊、載入哪些檔案，以及每一張 GEO 地圖的邊界上哪些
 // 格子往外沒有牆。它只報資料，不指派劇情語意。
+//
+// 量出來的那張圖與它的判讀在 spec 101。
 package main
 
 import (

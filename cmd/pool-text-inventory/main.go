@@ -77,7 +77,21 @@ func addCoverage(result *report) error {
 	for _, source := range catalogue.Sources() {
 		translated[source] = true
 	}
-	summary := coverageReport{Locale: catalogue.Locale()}
+	summary, err := coverageOf(catalogue.Locale(), translated, result)
+	if err != nil {
+		return err
+	}
+	result.Coverage = &summary
+	return nil
+}
+
+// coverageOf 算兩個尺度的翻譯覆蓋率。**translated 會被改動**（對到一條就
+// 刪一條），剩下的就是「譯文表有、盤點檔沒有」的原文。
+//
+// 那種剩餘一定要讓整支失敗：它代表兩邊其中一個是舊的，而繼續算下去會得到一個
+// 看起來合理的錯數字——分母是這一份盤點，分子卻混著上一份的原文。
+func coverageOf(locale string, translated map[string]bool, result *report) (coverageReport, error) {
+	summary := coverageReport{Locale: locale}
 	for _, item := range result.Entries {
 		if !translated[item.Source] {
 			continue
@@ -87,7 +101,8 @@ func addCoverage(result *report) error {
 		delete(translated, item.Source)
 	}
 	if len(translated) != 0 {
-		return fmt.Errorf("Pool game text catalogue has %d sources the inventory does not contain", len(translated))
+		return coverageReport{}, fmt.Errorf(
+			"Pool game text catalogue has %d sources the inventory does not contain", len(translated))
 	}
 	if result.Unique > 0 {
 		summary.StringPercent = float64(summary.TranslatedStrings) * 100 / float64(result.Unique)
@@ -95,8 +110,7 @@ func addCoverage(result *report) error {
 	if result.Characters > 0 {
 		summary.CharacterPercent = float64(summary.TranslatedCharacters) * 100 / float64(result.Characters)
 	}
-	result.Coverage = &summary
-	return nil
+	return summary, nil
 }
 
 func main() {

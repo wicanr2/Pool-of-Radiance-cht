@@ -40,6 +40,13 @@ type spec struct {
 	// sharedEngine 標記「實作在共用 engine，不在這個 repo」。少了它，
 	// 那幾份的實作欄會是「—」，看起來像沒實作——而索引掃不到別的 repo。
 	sharedEngine bool
+	// outsideGo 是規格自己寫的那一行 `實作：…`，用在**實作根本不是 Go** 的
+	// 那幾份：發行包是 shell 腳本、送鍵規則給的是 dosgolem。這一類永遠掃不到
+	// `spec NNN` 的反向引用，混在「還沒接」裡就變成永遠清不掉的雜訊。
+	//
+	// 這一行是**規格作者手寫的斷言**，不是猜的：關鍵字命中不算數（那正是
+	// spec 124 的教訓），所以只認這個明確的形狀。
+	outsideGo string
 }
 
 // gapReport 是給機器讀的那一份：缺口不是數字而是清單，因為要看得出是哪幾份。
@@ -63,6 +70,10 @@ type gapReport struct {
 	SpecsWithoutImplementation []string   `json:"specs_without_implementation"`
 	SpecsWithoutTests          []string   `json:"specs_without_tests"`
 	SpecsInSharedEngine        []string   `json:"specs_in_shared_engine"`
+	// SpecsOutsideGo 是實作不是 Go 的那幾份（發行腳本、送鍵規則）。
+	// 它們永遠掃不到 `spec NNN`，混在 without_implementation 裡就是永遠
+	// 清不掉的雜訊，會讓那個數字失去「還剩多少沒接」的意思。
+	SpecsOutsideGo             []string   `json:"specs_implemented_outside_go"`
 	ToolsWithoutDoc            []string   `json:"tools_without_doc"`
 	ToolsWithoutTests          []string   `json:"tools_without_tests"`
 }
@@ -94,6 +105,12 @@ func readSpec(path string) (spec, error) {
 	// eclvm 是共用 engine 的套件名，比「共用 engine」這個詞更明確——
 	// 後者在很多規格裡只是敘述的一部分。
 	result.sharedEngine = strings.Contains(string(raw), "eclvm")
+	for _, line := range lines {
+		if note, ok := strings.CutPrefix(strings.TrimSpace(line), "實作："); ok {
+			result.outsideGo = strings.TrimSpace(note)
+			break
+		}
+	}
 	if len(lines) > 0 {
 		result.title = strings.TrimSpace(strings.TrimPrefix(lines[0], "#"))
 		result.title = strings.TrimPrefix(result.title, "Spec "+result.number+"：")
@@ -368,12 +385,14 @@ func main() {
 	out.WriteString("> 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，\n")
 	out.WriteString("> 這份只是把它反過來收攏，所以改了註解重跑一次就對了。\n\n")
 
-	var noCode, noTests, shared int
+	var noCode, noTests, shared, outside int
 	for _, item := range specs {
 		switch {
 		case len(item.code) > 0:
 		case item.sharedEngine:
 			shared++
+		case item.outsideGo != "":
+			outside++
 		default:
 			noCode++
 		}
@@ -382,8 +401,8 @@ func main() {
 		}
 	}
 	fmt.Fprintf(&out, "%d 份規格，其中 %d 份還沒有任何檔案的註解指回它、%d 份沒有測試提到它；\n"+
-		"另有 %d 份實作在共用 engine（`eclvm`），不在這個 repo。\n",
-		len(specs), noCode, noTests, shared)
+		"另有 %d 份實作在共用 engine（`eclvm`）、%d 份的實作不是 Go（規格自己寫的那行 `實作：`）。\n",
+		len(specs), noCode, noTests, shared, outside)
 	out.WriteString("這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。\n\n")
 
 	out.WriteString("## 規格\n\n")
@@ -394,8 +413,13 @@ func main() {
 			status = "—"
 		}
 		implementation := shorten(item.code)
-		if len(item.code) == 0 && item.sharedEngine {
-			implementation = "共用 engine"
+		if len(item.code) == 0 {
+			switch {
+			case item.sharedEngine:
+				implementation = "共用 engine"
+			case item.outsideGo != "":
+				implementation = item.outsideGo
+			}
 		}
 		fmt.Fprintf(&out, "| [%s](%s) | %s | %s | %s | %s |\n",
 			item.number, item.file, item.title, status, implementation, shorten(item.tests))
@@ -439,6 +463,7 @@ func main() {
 		SpecsWithoutImplementation: []string{},
 		SpecsWithoutTests:          []string{},
 		SpecsInSharedEngine:        []string{},
+		SpecsOutsideGo:             []string{},
 		ToolsWithoutDoc:            []string{},
 		ToolsWithoutTests:          []string{},
 	}
@@ -447,6 +472,8 @@ func main() {
 		case len(item.code) > 0:
 		case item.sharedEngine:
 			report.SpecsInSharedEngine = append(report.SpecsInSharedEngine, item.number)
+		case item.outsideGo != "":
+			report.SpecsOutsideGo = append(report.SpecsOutsideGo, item.number)
 		default:
 			report.SpecsWithoutImplementation = append(report.SpecsWithoutImplementation, item.number)
 		}

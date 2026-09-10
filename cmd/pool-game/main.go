@@ -1232,6 +1232,10 @@ func wildernessFacingIndex(facing uint8) uint16 {
 	return uint16(facing%4) * 2
 }
 
+// consumeInitialTransitionResources 把腳本停下來的那些邊界一個一個吃掉。
+//
+// `2Dh CALL` 的五個有動作的選擇子與其餘「沒有動作、直接繼續」的那些，
+// 由 spec 104 逐條讀出來——沒有動作不代表可以停在那裡，仍然要續跑。
 func (a *app) consumeInitialTransitionResources(result eclvm.Result) (eclvm.Result, error) {
 	// 上限只是防呆。`2Dh CALL` 也走這條路之後，一次移動可以連續吃掉十幾個
 	// 邊界（樞紐那幾張圖每一格都有 CALL），8 太小會誤報成硬失敗。

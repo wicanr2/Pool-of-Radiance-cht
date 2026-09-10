@@ -55,13 +55,7 @@ func main() {
 	note := func(text, label string) {
 		// 與畫面走同一條替換：稽核的是「實際會畫出來的字」。
 		for _, r := range etenfont.ReplaceUnavailable(text) {
-			// 空白字元本來就該是空的。
-			if r == ' ' || r == '\t' || r == '\u3000' {
-				continue
-			}
-			// 控制字元不會被畫成字模（`drawText` 也不畫），拿它去問字型
-			// 只會得到假的缺字。
-			if r < 0x20 || r == 0x7F {
+			if skipRune(r) {
 				continue
 			}
 			// 判準是「畫出來有東西」，不是「取得到字模格」。
@@ -89,7 +83,7 @@ func main() {
 	}
 	// 畫面上的字不只來自那兩份資料檔：UI 的字串直接寫在程式碼裡。
 	// 只掃字串常值（不掃註解），因為只有它們會被畫出來。
-	if err := noteSourceStrings(note); err != nil {
+	if err := noteSourceStrings(".", note); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -153,8 +147,23 @@ func main() {
 }
 
 // noteSourceStrings 走過 repo 裡每個 .go 檔的字串常值。
-func noteSourceStrings(note func(text, label string)) error {
-	return filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+// skipRune 是「這個碼位不必問字型」的規則。
+//
+// 空白字元本來就該畫成空的；控制字元 `drawText` 根本不畫，拿它去問字型只會
+// 得到假的缺字。**這兩類與真正的缺字在報表上長得一樣**，所以要先擋掉。
+func skipRune(r rune) bool {
+	if r == ' ' || r == '\t' || r == '\u3000' {
+		return true
+	}
+	return r < 0x20 || r == 0x7F
+}
+
+// noteSourceStrings 掃 root 底下每一個 `.go` 的**字串常值**。
+//
+// 只掃常值、不掃註解：畫出來的只有常值，而註解裡的字（例如這一段）如果也算
+// 進去，報表就會說「缺字」，而那個字玩家一輩子看不到。
+func noteSourceStrings(root string, note func(text, label string)) error {
+	return filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}

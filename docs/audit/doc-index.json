@@ -29,18 +29,9 @@
     "044",
     "045",
     "048",
-    "054",
-    "066",
-    "077",
-    "101",
-    "103",
-    "104",
-    "113",
-    "124",
-    "133"
+    "113"
   ],
   "specs_without_tests": [
-    "001",
     "002",
     "005",
     "006",
@@ -108,16 +99,10 @@
     "037",
     "107"
   ],
+  "specs_implemented_outside_go": [
+    "066",
+    "133"
+  ],
   "tools_without_doc": [],
-  "tools_without_tests": [
-    "export-title",
-    "pool-combat-icon-audit",
-    "pool-ecl-opcodes",
-    "pool-font-coverage",
-    "pool-geo-audit",
-    "pool-inventory",
-    "pool-journal-corpus",
-    "pool-spell-dispatch",
-    "pool-text-inventory"
-  ]
+  "tools_without_tests": []
 }

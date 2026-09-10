@@ -42,11 +42,17 @@ func main() {
 	}
 }
 
-func run(zipPath, outPath string) error {
-	table, err := gamepack.ReadDOSECLOpcodeTable(zipPath)
-	if err != nil {
-		return err
-	}
+// buildReport 把掃出來的表對上共用 engine 那張**二手** arity 表。
+//
+// 判準只有一條：`Disagrees = 不是可變長度 && 兩邊的運算元個數不同`。
+// 可變長度那四條（`VERTICAL MENU`、`ON GOTO`、`ON GOSUB`、`HORIZONTAL MENU`）
+// 的 arity 本來就對不起來——它們的尾巴長度由資料決定，拿固定值去比一定不同，
+// 那個「不同」沒有意義，報出來只會把真正的分歧淹掉。
+//
+// engine 表裡沒有的 opcode 不比：沒有第二個來源可以對，`Disagrees` 留 false
+// 不是「一致」，是「沒得比」——那兩件事在 JSON 裡由 `engine_arity` 在不在
+// 分辨。
+func buildReport(table []gamepack.ECLOpcode) report {
 	r := report{
 		Schema:        "pool-ecl-opcode-operands-v1",
 		Overlay:       gamepack.ECLDispatchOverlay,
@@ -66,6 +72,15 @@ func run(zipPath, outPath string) error {
 		}
 		r.Opcodes = append(r.Opcodes, row)
 	}
+	return r
+}
+
+func run(zipPath, outPath string) error {
+	table, err := gamepack.ReadDOSECLOpcodeTable(zipPath)
+	if err != nil {
+		return err
+	}
+	r := buildReport(table)
 	encoded, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
 		return err

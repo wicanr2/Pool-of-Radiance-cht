@@ -9,7 +9,7 @@ import (
 	"github.com/wicanr2/golden-box-remake-engine/tpov"
 )
 
-// ECL 直譯器的 opcode 派發鏈與運算元個數，直接從 overlay-03 量出來。
+// ECL 直譯器的 opcode 派發鏈與運算元個數，直接從 overlay-03 量出來（spec 077）。
 //
 // 派發鏈是一長串 `cmp ax, opcode / jne 下一個 / push cs / call handler`；
 // 兩個 opcode 共用一支常式時前面多一個 `je`。每支常式開頭都用同一個樣式取
