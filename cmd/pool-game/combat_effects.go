@@ -63,9 +63,8 @@ func (a *app) storeCombatEffects(state *tacticalState) {
 // advancePartyEffects 把整隊的效果往前推 minutes 分鐘（overlay-20 offset `0`）。
 // 走一步一分、休息一刻五分，兩個呼叫點推的是同一支。
 //
-// **到期的節點目前只是摘掉**：原版在 `01B8h` 會呼叫 `0100:002A` 跑收尾
-//（spec 069），那一支還沒讀，所以這裡不猜它做什麼——摘掉是收尾一定包含的
-// 部分，多做的部分寧可缺著也不要發明。
+// 到期的節點先跑收尾再摘掉，與原版的順序相同（`01B8h` 呼叫的
+// `0100h:002Ah` 就是 overlay-24 entry 2，spec 112）。
 func (a *app) advancePartyEffects(minutes int) {
 	if minutes <= 0 {
 		return
@@ -75,8 +74,30 @@ func (a *app) advancePartyEffects(minutes int) {
 		if len(member.Effects) == 0 {
 			continue
 		}
-		list, _ := combatEffects(member.Effects).AdvanceEffects(minutes)
+		list, expired := combatEffects(member.Effects).AdvanceEffects(minutes)
+		for _, node := range expired {
+			a.expiredEffectTeardown(index, node)
+		}
 		member.Effects = storedEffects(list)
 		syncTrainedLibraryCharacter(&a.state, *member)
+	}
+}
+
+// expiredEffectTeardown 是 **overlay-24 entry 2（`0028h`）** 摘節點之前那一
+// 步：`+4`（有收尾）非 0 的節點，先用**模式 1** 叫一次自己代碼的處理常式，
+// 再摘掉（spec 112）。模式 0 是套用、模式 1 是收尾，同一支常式兩個入口。
+//
+// **地圖上目前一個代碼都不需要動作。** remake 實作過收尾的只有 `28h`——
+// 雲團是盤面上的物件，走出戰場就不存在了，所以在這裡摘掉節點就是全部。
+// 這一支留著是為了讓兩條路（戰場的 `tickEffects`、地圖的 `AdvanceEffects`）
+// 有同一個收尾入口：下一個代碼接上來時不會只接到一邊。
+func (a *app) expiredEffectTeardown(party int, node gamepack.EffectNode) {
+	if !node.NeedsTeardown() {
+		return
+	}
+	if node.Code == gamepack.CloudObjectEffectCode {
+		// 雲團在盤面上，地圖上沒有東西可以收——戰場那一側是
+		// `tacticalState.effectTeardown` → `disperseCloud`。
+		return
 	}
 }

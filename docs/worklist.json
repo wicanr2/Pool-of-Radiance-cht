@@ -183,17 +183,17 @@
     {
       "id": "effect-expiry-teardown",
       "layer": "feature",
-      "title": "效果在地圖上到期時沒有跑收尾",
-      "body": "效果串列已經會隨時間遞減了（走一步一分、休息一刻五分，`advanceGameTime` → `AdvanceEffects`，spec 069）。**缺的是到期那一刻該做什麼**：原版在 overlay-20 `01B8h` 呼叫 `0100:002A`，傳（角色遠指標、效果碼、節點遠指標），那一支還沒讀。remake 目前只把節點摘掉。\n\n戰場上有一份對應的收尾（`tacticalState.effectTeardown`，目前只處理代碼 `28h` 的雲），地圖上這一條路完全沒有。所以像變形、隱形這一類「結束時要把某個狀態改回去」的效果，時間到了會留下改過的狀態。",
-      "blocked_by": "`0100:002A` 是哪一支還沒定位——那是 `0100h` 那個 far call 表的 entry，要先對回 overlay 與 offset 才知道它做什麼。在那之前不要照猜的行為補，`effectTeardown` 那個 switch 現在只有一個代碼有來源。",
-      "acceptance": "讀出 `0100:002A` 的內容寫進 spec 069，地圖上的到期走同一套收尾；至少一個代碼要有走玩家路徑的測試（掛上、時間過去、狀態真的回復）。",
+      "title": "效果代碼的處理常式只接了一個",
+      "body": "到期那一刻的入口**已經接上了**：原版 `01B8h` 呼叫的 `0100h:002Ah` 就是 **overlay-24 entry 2**（`0100h` 是 overlay-24 的 stub 段，`(offset − 20h) ÷ 5` 換回進入點，spec 109／112）——`+4` 非 0 的節點先用**模式 1** 叫一次自己代碼的處理常式，再摘掉。remake 這一側是 `(*app).expiredEffectTeardown`，戰場那一側是 `tacticalState.effectTeardown`，兩條路同一個入口。\n\n**缺的是代碼本身。** 原版填了 138 格（代碼 1..139，136 個落在 overlay-12、2 個在 overlay-13，spec 112），remake 有具名常數的只有十個，真正實作過收尾的只有 `28h`（雲團）。所以現在地圖上到期就只是摘掉節點——**這對已實作的代碼是對的**，對還沒實作的代碼則是「還沒接」與「不必接」分不出來。",
+      "blocked_by": "138 個代碼不是一次做完的工作，要按玩家碰得到的順序挑。挑之前缺一份盤點：哪些代碼玩家在這一版走得到、哪些已經由別的機制涵蓋（例如神殿那九項服務直接改`Effects`，不走處理常式）。",
+      "acceptance": "先產出代碼覆蓋盤點（原版 138 格 vs remake 實作），再按玩家可見度接。每接一個代碼要有走玩家路徑的測試：掛上、時間過去、狀態真的回復。",
       "verify": {
-        "kind": "absent",
+        "kind": "present",
         "paths": [
           "cmd/pool-game/combat_effects.go"
         ],
-        "pattern": "Teardown",
-        "note": "地圖上的時間推進還沒有任何收尾呼叫。接上之後這個檔案一定會提到既有的 `effectTeardown`，所以綁這個字"
+        "pattern": "地圖上目前一個代碼都不需要動作",
+        "note": "綁在 `expiredEffectTeardown` 的自承註解上：第一個在地圖上有動作的代碼接上來時，那句話就得拿掉"
       }
     }
   ]

@@ -122,3 +122,27 @@ func TestRestingAdvancesTheClockAndAgesTheEffects(t *testing.T) {
 		t.Fatalf("永久效果的持續被動成 %d", got[index].Duration())
 	}
 }
+
+// 睡得夠久，有時限的效果就該不見——這是「時間會讓效果到期」的正對照，
+// 上面那條只驗到持續變小。永久的那一個同時當負對照：它不該跟著消失。
+func TestRestingLongEnoughExpiresTheEffect(t *testing.T) {
+	application := bootCityParty(t, dosZIPForTests)
+	application.eventMachine.Memory[gamepack.RestInterruptionPeriodAddress] = 0
+	application.state.Party[0].Effects = storedEffects(gamepack.EffectList{
+		gamepack.NewEffectNode(0x3B, 30, 5, false),
+		{Code: 0x21},
+	})
+	application.restDuration = application.restDuration.Increase(gamepack.RestFieldHours)
+
+	application.restParty()
+
+	got := combatEffects(application.state.Party[0].Effects)
+	if len(got) != 1 || got[0].Code != 0x21 {
+		t.Fatalf("睡了一小時之後身上是 %v，30 分鐘那個該到期、永久那個該留著", got)
+	}
+	// 角色庫那一份要跟著走，不然離隊再入隊會把到期的效果帶回來。
+	library := combatEffects(application.state.CharacterLibrary[0].Effects)
+	if len(library) != 1 || library[0].Code != 0x21 {
+		t.Fatalf("角色庫那一份是 %v", library)
+	}
+}
