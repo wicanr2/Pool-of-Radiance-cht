@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -277,5 +278,68 @@ func TestTheTwoCriteriaReadDifferentSources(t *testing.T) {
 	}
 	if len(check.Mismatches) != 2 {
 		t.Errorf("抓到 %d 處不一致，該是 2 處：%v", len(check.Mismatches), check.Mismatches)
+	}
+}
+
+// 監控：對真實的 cmd/ 跑一次交叉判準。
+//
+// 合成樣本證明的是邏輯對，這一條問的是「這棵樹現在健康嗎」——有人加了
+// *_test.go 卻沒寫 func Test、或把測試函式寫在一般檔案裡，這裡會紅。
+// 掛在測試裡而不是 CI 的額外步驟，是因為 go test 每次都會跑它。
+func TestTheRealToolsPassTheCrossCheck(t *testing.T) {
+	tools, err := readTools("..")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(tools) == 0 {
+		t.Fatal("一支工具都沒掃到——路徑不對的話這一條會變成永遠通過")
+	}
+	if check := crossCheckTools(tools); !check.Passed {
+		for _, line := range check.Mismatches {
+			t.Errorf("交叉判準不一致：%s", line)
+		}
+	}
+}
+
+// 監控：簽進去的 doc-index.json 有沒有跟樹脫節。
+//
+// 那份 JSON 是快照，worklist 的 json_gap 拿它的數字下結論。新增了工具或規格
+// 卻沒重跑 pool-doc-index 的話，verify 讀的是舊數字——而舊數字和「真的沒缺口」
+// 在報表上長得一模一樣。這裡只比對總數，成本低、抓得到最常見的那種脫節。
+func TestTheCheckedInReportIsNotStale(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("..", "..", "docs", "audit", "doc-index.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var report struct {
+		SpecCount int `json:"spec_count"`
+		ToolCount int `json:"tool_count"`
+	}
+	if err := json.Unmarshal(raw, &report); err != nil {
+		t.Fatal(err)
+	}
+
+	tools, err := readTools("..")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.ToolCount != len(tools) {
+		t.Errorf("報告記著 %d 支工具，樹上有 %d 支——重跑 pool-doc-index",
+			report.ToolCount, len(tools))
+	}
+
+	entries, err := os.ReadDir(filepath.Join("..", "..", "docs", "spec"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	specs := 0
+	for _, entry := range entries {
+		if !entry.IsDir() && specFileName.MatchString(entry.Name()) && entry.Name() != "000-index.md" {
+			specs++
+		}
+	}
+	if report.SpecCount != specs {
+		t.Errorf("報告記著 %d 份規格，樹上有 %d 份——重跑 pool-doc-index",
+			report.SpecCount, specs)
 	}
 }
