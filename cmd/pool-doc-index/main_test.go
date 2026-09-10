@@ -214,3 +214,68 @@ func TestTestFunctionMatchesWhatGoTestActuallyRuns(t *testing.T) {
 		}
 	}
 }
+
+// 交叉判準只有在兩個判準真的來自不同來源時才有意義。
+//
+// 這一條釘的是那個獨立性本身：把判準 B 改成判準 A（或直接拿掉它）之後，
+// 交叉判準會永遠通過、閘門形同不存在，而 crossCheckTools 自己的測試仍然全綠
+// ——它測的是合併邏輯，不是判準。所以要從真實目錄結構這一端釘。
+func TestTheTwoCriteriaReadDifferentSources(t *testing.T) {
+	root := t.TempDir()
+	write := func(directory, name, body string) {
+		if err := os.MkdirAll(filepath.Join(root, directory), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(root, directory, name), []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// 檔名不是 _test.go，但裡面有 go test 認得的函式：判準 A 說沒有、B 說有。
+	write("misplaced", "main.go", "package main\n\nfunc main() {}\n")
+	write("misplaced", "helper.go", "package main\n\nfunc TestSomething(t *testing.T) {}\n")
+
+	// 檔名對，但裡面一個測試函式都沒有：判準 A 說有、B 說沒有。
+	write("hollow", "main.go", "package main\n\nfunc main() {}\n")
+	write("hollow", "hollow_test.go", "package main\n\nimport \"testing\"\n\nvar _ = testing.Short\n")
+
+	// 兩邊都說有，這一支是對照組。
+	write("healthy", "main.go", "package main\n\nfunc main() {}\n")
+	write("healthy", "healthy_test.go", "package main\n\nfunc TestHealthy(t *testing.T) {}\n")
+
+	tools, err := readTools(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byName := map[string]tool{}
+	for _, item := range tools {
+		byName[item.name] = item
+	}
+
+	for _, testCase := range []struct {
+		name                   string
+		hasTests, hasTestFuncs bool
+	}{
+		{"misplaced", false, true},
+		{"hollow", true, false},
+		{"healthy", true, true},
+	} {
+		got, ok := byName[testCase.name]
+		if !ok {
+			t.Errorf("%s 沒被掃到", testCase.name)
+			continue
+		}
+		if got.hasTests != testCase.hasTests || got.hasTestFuncs != testCase.hasTestFuncs {
+			t.Errorf("%s：檔名判準=%v 內容判準=%v，該是 %v／%v——兩個判準讀的來源不再獨立了",
+				testCase.name, got.hasTests, got.hasTestFuncs, testCase.hasTests, testCase.hasTestFuncs)
+		}
+	}
+
+	check := crossCheckTools(tools)
+	if check.Passed {
+		t.Error("misplaced 與 hollow 兩支都不一致，交叉判準卻通過了")
+	}
+	if len(check.Mismatches) != 2 {
+		t.Errorf("抓到 %d 處不一致，該是 2 處：%v", len(check.Mismatches), check.Mismatches)
+	}
+}

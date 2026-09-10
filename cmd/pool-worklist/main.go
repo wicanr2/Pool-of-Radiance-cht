@@ -277,7 +277,15 @@ func upstreamDistrusted(path string) (string, error) {
 	if decoded.CrossCheck == nil || decoded.CrossCheck.Passed {
 		return "", nil
 	}
-	return fmt.Sprintf("上游的交叉判準不一致 %d 處", len(decoded.CrossCheck.Mismatches)), nil
+	// 把 mismatches 的內容帶出來，不要只報數量——那幾行本身常常就指名了是誰
+	// 出問題，短路掉等於把手上最有用的線索丟掉，只留一句「不知道」。
+	detail := decoded.CrossCheck.Mismatches
+	if len(detail) > 2 {
+		detail = append(append([]string{}, detail[:2]...),
+			fmt.Sprintf("…另外 %d 處", len(decoded.CrossCheck.Mismatches)-2))
+	}
+	return fmt.Sprintf("上游的交叉判準不一致 %d 處（%s）",
+		len(decoded.CrossCheck.Mismatches), strings.Join(detail, "；")), nil
 }
 
 // jsonFieldLen 讀一份 JSON 的某個頂層欄位有幾項。物件數鍵、陣列數元素。
@@ -418,6 +426,8 @@ func main() {
 			}
 			fmt.Printf("%-28s %-14s %s\n", one.ID, mark, why)
 		}
+		// 離開碼問的是「有沒有過期斷言」，不是「還剩多少沒做」。
+		// 全部仍未完成時它是 0——那代表清單誠實，不代表東西做完了。
 		if stale != 0 {
 			fmt.Fprintf(os.Stderr, "\n%d 條的 verify 不再成立——回頭看那幾條是不是已經做完了。\n", stale)
 			os.Exit(1)
