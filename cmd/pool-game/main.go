@@ -3208,7 +3208,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		return
 	}
 	if a.areaMapOpen {
-		drawAreaMap(screen, a, foreground, accent, viewLeft, viewTop)
+		drawAreaMap(screen, a, viewLeft, viewTop)
 		drawPartyPanel(screen, a, foreground, accent)
 		return
 	}

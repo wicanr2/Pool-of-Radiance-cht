@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image"
 	"image/color"
 	"strings"
 
@@ -297,27 +298,48 @@ func (a *app) commandPrefixInk(accent color.Color) color.Color { return accent }
 // commandGlyphWidth 是等寬字的一格。倚天與退路字型的半形都是這個寬度。
 const commandGlyphWidth = 8
 
-// drawAreaMap 畫 `A)REA` 的平面全圖：只畫牆，隊伍是一個箭頭。
+// areaMapCell 是平面圖一格的邊長，`areaMapSize` 是那一框的邊長。
+// remake 的框在邏輯畫布上是 176（原版 native 88 的兩倍）。
+const (
+	areaMapSize = 176
+	areaMapCell = areaMapSize / geometry.Width
+)
+
+// drawAreaMap 畫 `A)REA` 的平面全圖：可走區填滿，牆是另一層灰，隊伍是箭頭。
 //
-// 說明書 p.21：「圖上僅顯示牆而不顯示門」，隊伍「以一個箭號表示，箭頭所指的
-// 方向就是隊伍前進的方向」。格線用 GEO 的四個方向牆位元組，非零就畫一條邊。
-func drawAreaMap(screen *ebiten.Image, a *app, foreground, accent color.Color,
-	viewLeft, viewTop int) {
-	const cell = 11 // 176 ÷ 16
+// 說明書 p.21 說「圖上僅顯示牆而不顯示門」，讀起來像線稿——**但原版畫的是
+// 實心的兩層灰**（spec 119，逐像素量的）：深灰（EGA 8）鋪可走的地方佔
+// 75.04%、淺灰（EGA 7）畫牆佔 24.47%，整框填滿沒有黑底，隊伍那個箭頭是白的。
+//
+// 顏色走 `artPalette` 而不是介面的 foreground／accent：平面圖是原版的索引像素
+// 畫面，classic 主題拿到的就是真正的 EGA 灰，modern 主題拿到它自己那一套的
+// 對應格。先前用介面前景色畫線，畫出來的是 `(170,255,255)`——那個顏色根本
+// 不在 EGA 十六色裡。
+//
+// **格數還沒對上**：原版一格 8 個 native 像素、88 的框只裝得下 11 格，
+// 而這裡是 16 格各 11 個邏輯像素。原版那 11 格對到 GEO 的哪 11 格還沒讀出來
+// （worklist 的 `area-map-drawing`），所以這一支先只把配色與填法對齊。
+func drawAreaMap(screen *ebiten.Image, a *app, viewLeft, viewTop int) {
+	palette := a.artPalette()
+	floor, wall, marker := palette[8], palette[7], palette[15]
+
+	area := image.Rect(viewLeft, viewTop, viewLeft+areaMapSize, viewTop+areaMapSize)
+	screen.SubImage(area).(*ebiten.Image).Fill(floor)
+
 	for y := 0; y < geometry.Height; y++ {
 		for x := 0; x < geometry.Width; x++ {
 			grid := a.initialMap.Grid.CellWrapped(x, y)
-			left, top := viewLeft+x*cell, viewTop+y*cell
+			left, top := viewLeft+x*areaMapCell, viewTop+y*areaMapCell
 			for index, direction := range []int{0, 2, 4, 6} {
 				if grid.WallDirections[index] == 0 {
 					continue
 				}
-				drawMapEdge(screen, left, top, cell, direction, foreground)
+				drawMapEdge(screen, left, top, areaMapCell, direction, wall)
 			}
 		}
 	}
-	drawPartyArrow(screen, viewLeft+int(a.spawn.X)*cell, viewTop+int(a.spawn.Y)*cell,
-		cell, a.spawn.Facing, accent)
+	drawPartyArrow(screen, viewLeft+int(a.spawn.X)*areaMapCell,
+		viewTop+int(a.spawn.Y)*areaMapCell, areaMapCell, a.spawn.Facing, marker)
 }
 
 // drawMapEdge 畫一格的一條邊。方向是原版的 0 北 2 東 4 南 6 西。
