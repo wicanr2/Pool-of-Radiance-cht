@@ -160,6 +160,17 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   不用強化隊伍或 forced-win 強求通關。
 - direct-entry、座標注入與快照可作診斷，不可取代從標題開始的正常按鍵路徑。
 
+- **[HARD] 未完成項的權威是 [`docs/worklist.json`](docs/worklist.json)，
+  不是 WORKLIST.md。** 那一節由 `go run ./cmd/pool-worklist -mode render`
+  產生，手改會在下一次 render 被蓋掉。每一項掛一個 `verify`：**跑
+  `-mode verify` 為真代表這一條仍然未完成**，為假就是東西做好了而條目沒改
+  ——也就是過期斷言。多數條目綁在程式碼的自承註解上，註解一旦被拿掉 verify
+  就會開口；沒有機器可判訊號的標 `manual`，它一律回「仍未完成」並標出來，
+  **沉默不等於通過**。
+  > 清單是假斷言長得最好的地方：東西接上了，而沒有人回頭改那一條。
+  > 2026-09-10 抓到臭雲術寫著「派發表六十七格裡只剩這一支」，實際上派發
+  > 那一格早就接上，缺的只是盤面上的雲團物件。
+
 ## 7. 原版對拍與截圖契約
 
 - **[HARD] 基準畫面一律由 dosgolem 產，對拍一律走

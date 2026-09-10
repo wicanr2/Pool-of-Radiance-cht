@@ -1,0 +1,279 @@
+// pool-worklist 管未完成項。
+//
+// **權威是 `docs/worklist.json`，不是 WORKLIST.md。** markdown 那一節由這支
+// 的 `render` 產生——手改會在下一次 render 時被蓋掉。
+//
+// 這支存在的理由是「過期斷言」：東西做好了而清單沒有人回頭改，於是清單上
+// 留著一條假的「還沒接」。2026-09-10 抓到的臭雲術就是那樣——派發那一格早就
+// 接上，條目卻還寫著「派發表六十七格裡只剩這一支」。所以每一項都掛一個
+// `verify`：**跑起來為真代表「這一條仍然未完成」**，為假就是該回頭改條目了。
+package main
+
+import (
+	"encoding/json"
+	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+)
+
+type verify struct {
+	Kind    string   `json:"kind"` // present | absent | json_len | manual
+	Paths   []string `json:"paths,omitempty"`
+	Pattern string   `json:"pattern,omitempty"`
+	// json_len 用：讀 Path 那份 JSON 的 Field，長度 <= Max 代表這一條仍然
+	// 未完成。用在「還沒擴充到第幾張／第幾項」這種進度型的條目上，比 grep
+	// 註解準——註解會被順手改掉，數量不會。
+	Path  string `json:"path,omitempty"`
+	Field string `json:"field,omitempty"`
+	Max   int    `json:"max,omitempty"`
+	Note  string `json:"note,omitempty"`
+}
+
+type item struct {
+	ID         string `json:"id"`
+	Layer      string `json:"layer"`
+	Title      string `json:"title"`
+	Body       string `json:"body"`
+	BlockedBy  string `json:"blocked_by,omitempty"`
+	Acceptance string `json:"acceptance"`
+	Verify     verify `json:"verify"`
+}
+
+type file struct {
+	Schema string            `json:"schema"`
+	Note   string            `json:"note"`
+	Layers map[string]string `json:"layers"`
+	Items  []item            `json:"items"`
+}
+
+// layerOrder 是三層的固定順序。用 map 的走訪順序會讓 render 每次吐不同的
+// 排列，diff 於是看起來像內容變了。
+//
+// 層**之內**照 JSON 裡的先後，不另外排序：那個順序是人排的重要性，
+// 按 id 字母序會把它洗掉。
+var layerOrder = []string{"feature", "verification", "presentation"}
+
+func load(path string) (*file, error) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var decoded file
+	if err := json.Unmarshal(raw, &decoded); err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
+	}
+	if decoded.Schema != "pool-worklist/1" {
+		return nil, fmt.Errorf("%s 的 schema 是 %q，不是 pool-worklist/1", path, decoded.Schema)
+	}
+	seen := map[string]bool{}
+	for _, one := range decoded.Items {
+		if one.ID == "" || one.Title == "" || one.Acceptance == "" {
+			return nil, fmt.Errorf("條目 %q 缺 id／title／acceptance", one.ID)
+		}
+		if seen[one.ID] {
+			return nil, fmt.Errorf("條目 id %q 重複", one.ID)
+		}
+		seen[one.ID] = true
+		if _, ok := decoded.Layers[one.Layer]; !ok {
+			return nil, fmt.Errorf("條目 %q 的 layer %q 不在 layers 裡", one.ID, one.Layer)
+		}
+		switch one.Verify.Kind {
+		case "present", "absent":
+			if one.Verify.Pattern == "" || len(one.Verify.Paths) == 0 {
+				return nil, fmt.Errorf("條目 %q 的 verify 缺 pattern／paths", one.ID)
+			}
+		case "json_len":
+			if one.Verify.Path == "" || one.Verify.Field == "" || one.Verify.Max <= 0 {
+				return nil, fmt.Errorf("條目 %q 的 verify 缺 path／field／max", one.ID)
+			}
+		case "manual":
+		default:
+			return nil, fmt.Errorf("條目 %q 的 verify.kind %q 不認得", one.ID, one.Verify.Kind)
+		}
+	}
+	return &decoded, nil
+}
+
+// matches 說 pattern 在 paths 底下的 .go／.py／.sh 裡找不找得到。
+func matches(root string, one verify) (bool, string, error) {
+	expression, err := regexp.Compile(one.Pattern)
+	if err != nil {
+		return false, "", fmt.Errorf("pattern %q: %w", one.Pattern, err)
+	}
+	for _, target := range one.Paths {
+		full := filepath.Join(root, target)
+		info, err := os.Stat(full)
+		if err != nil {
+			return false, "", err
+		}
+		var found string
+		walk := func(path string, entry os.DirEntry, err error) error {
+			if err != nil || entry.IsDir() || found != "" {
+				return err
+			}
+			switch filepath.Ext(path) {
+			case ".go", ".py", ".sh", ".json", ".md":
+			default:
+				return nil
+			}
+			raw, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			if expression.Match(raw) {
+				rel, _ := filepath.Rel(root, path)
+				found = rel
+			}
+			return nil
+		}
+		if info.IsDir() {
+			if err := filepath.WalkDir(full, walk); err != nil {
+				return false, "", err
+			}
+		} else {
+			raw, err := os.ReadFile(full)
+			if err != nil {
+				return false, "", err
+			}
+			if expression.Match(raw) {
+				found = target
+			}
+		}
+		if found != "" {
+			return true, found, nil
+		}
+	}
+	return false, "", nil
+}
+
+// stillOpen 回答「這一條仍然未完成嗎」。manual 沒有機器可判的訊號，回 true
+// 並在報告裡標出來——**沉默不等於通過**，那幾條要人自己去看。
+func stillOpen(root string, one item) (bool, string, error) {
+	switch one.Verify.Kind {
+	case "manual":
+		return true, "要人判", nil
+	case "present":
+		hit, where, err := matches(root, one.Verify)
+		if err != nil {
+			return false, "", err
+		}
+		if hit {
+			return true, "自承還在 " + where, nil
+		}
+		return false, "找不到 " + one.Verify.Pattern, nil
+	case "absent":
+		hit, where, err := matches(root, one.Verify)
+		if err != nil {
+			return false, "", err
+		}
+		if hit {
+			return false, "已經出現在 " + where, nil
+		}
+		return true, "還沒出現", nil
+	case "json_len":
+		count, err := jsonFieldLen(filepath.Join(root, one.Verify.Path), one.Verify.Field)
+		if err != nil {
+			return false, "", err
+		}
+		if count <= one.Verify.Max {
+			return true, fmt.Sprintf("%s 的 %s 有 %d 項（<= %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Max), nil
+		}
+		return false, fmt.Sprintf("%s 的 %s 已經有 %d 項（> %d）", one.Verify.Path, one.Verify.Field, count, one.Verify.Max), nil
+	}
+	return false, "", fmt.Errorf("verify.kind %q 不認得", one.Verify.Kind)
+}
+
+// jsonFieldLen 讀一份 JSON 的某個頂層欄位有幾項。物件數鍵、陣列數元素。
+func jsonFieldLen(path, field string) (int, error) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return 0, err
+	}
+	var decoded map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &decoded); err != nil {
+		return 0, fmt.Errorf("%s: %w", path, err)
+	}
+	value, ok := decoded[field]
+	if !ok {
+		return 0, fmt.Errorf("%s 沒有欄位 %q", path, field)
+	}
+	var asObject map[string]json.RawMessage
+	if err := json.Unmarshal(value, &asObject); err == nil {
+		return len(asObject), nil
+	}
+	var asArray []json.RawMessage
+	if err := json.Unmarshal(value, &asArray); err == nil {
+		return len(asArray), nil
+	}
+	return 0, fmt.Errorf("%s 的 %q 既不是物件也不是陣列", path, field)
+}
+
+func render(decoded *file) string {
+	var out strings.Builder
+	byLayer := map[string][]item{}
+	for _, one := range decoded.Items {
+		byLayer[one.Layer] = append(byLayer[one.Layer], one)
+	}
+	for index, layer := range layerOrder {
+		list := byLayer[layer]
+		if len(list) == 0 {
+			continue
+		}
+		fmt.Fprintf(&out, "### %s、%s\n\n", []string{"一", "二", "三"}[index], decoded.Layers[layer])
+		for _, one := range list {
+			fmt.Fprintf(&out, "- [ ] **%s。** %s\n", one.Title, one.Body)
+			if one.BlockedBy != "" {
+				fmt.Fprintf(&out, "      **卡在**：%s\n", one.BlockedBy)
+			}
+			fmt.Fprintf(&out, "      **驗收**：%s\n", one.Acceptance)
+		}
+		out.WriteString("\n")
+	}
+	return out.String()
+}
+
+func main() {
+	root := flag.String("root", ".", "repository root")
+	source := flag.String("json", "docs/worklist.json", "未完成項的權威資料")
+	mode := flag.String("mode", "verify", "verify｜render｜list")
+	flag.Parse()
+
+	decoded, err := load(filepath.Join(*root, *source))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+
+	switch *mode {
+	case "render":
+		fmt.Print(render(decoded))
+	case "list":
+		for _, one := range decoded.Items {
+			fmt.Printf("%-28s %-12s %s\n", one.ID, one.Layer, one.Title)
+		}
+	case "verify":
+		stale := 0
+		for _, one := range decoded.Items {
+			open, why, err := stillOpen(*root, one)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s: %v\n", one.ID, err)
+				os.Exit(2)
+			}
+			mark := "仍未完成"
+			if !open {
+				mark, stale = "**可能已完成**", stale+1
+			}
+			fmt.Printf("%-28s %-14s %s\n", one.ID, mark, why)
+		}
+		if stale != 0 {
+			fmt.Fprintf(os.Stderr, "\n%d 條的 verify 不再成立——回頭看那幾條是不是已經做完了。\n", stale)
+			os.Exit(1)
+		}
+	default:
+		fmt.Fprintf(os.Stderr, "mode %q 不認得\n", *mode)
+		os.Exit(2)
+	}
+}
