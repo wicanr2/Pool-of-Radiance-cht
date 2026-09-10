@@ -77,6 +77,17 @@ X 是 0 往西走得到 −1，夾回 0——本來就是 0；X 是 15 往東走
 `1A89h` 之後還把 `0131:003Eh`（overlay-30 entry 6）的結果存進 `ds:6A0Fh`
 ——那是新位置的牆位元組（spec 015 的 `C04F` 那一組）。
 
+## 還沒讀：overlay-03 也碰 `[4937h] + 5AAh`
+
+`cmd/pool-disp-scan -addresses 5AA` 掃出六處，其中五處在 overlay-14
+（`06C1h` 一處、`0700h`／`0716h`／`072Ch`／`0742h` 就是上面那四條寫 1 的），
+**第六處在 overlay-03 `362Dh`**，形狀同樣是 `89 85 AA 05`
+（`mov [di+5AAh], ax`）。
+
+本節整支只讀了 overlay-14，所以 overlay-03 那一處在做什麼、它的 `di` 是不是
+也指向 `[4937h]`，都還沒確認。**在確認之前不要把「只有 overlay-14 寫這個
+旗標」當成定論**——那是這一份的掃描面決定的，不是原版決定的。
+
 ## 對 remake 的意思
 
 **現況是對的，不要改。** `moveInitialDungeonForward` 用 `WrapCoordinate`

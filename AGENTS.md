@@ -146,6 +146,14 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   一邊查不到就換算到另一邊再查，不要停在「掃描面有洞」。**
   已驗過的換算對：`6DD5h↔5AAh`、`6DD2h↔5A4h`、`6DE1h↔5C2h`、`6DE2h↔5C4h`、
   class 0 的 `49E6h↔1CCh`。
+- **但數值落在窗內不等於它就是 ECL 變數。** 引擎自己的 DS 段全域變數數值範圍
+  和 class 1 的窗重疊，`6CD2h`／`6CD3h`／`6CD4h` 就是——它們一筆 ECL 引用都
+  沒有，overlay 用的是 `mod=00 rm=110` 的 `[disp16]` 絕對定址。**判準是
+  overlay 怎麼定址它，不是數值範圍**：`[基底+disp16]`（`mod=10`）才是 ECL
+  變數的形狀，`[disp16]` 是 DS 全域。兩種一起掃用
+  `cmd/pool-disp-scan -addresses <逗號分隔>`，**呼叫時一定要多帶一個已知答案當正
+  對照**（`5AAh` 必須掃出 overlay-14 那四條 `mov word [di+5AA], 1`），否則
+  「零筆」什麼也證明不了。
 - 追 Borland TPOV far call 時保留原始 `segment:offset`，先用 MZ header size 換算
   executable file offset，再與 `docs/audit/dos-ovr-manifest.json` 的
   `executable_file_offset` 精確反查 overlay／entry；每次匯出同時記錄輸入 overlay
