@@ -25,7 +25,7 @@ remake 那一側是 Xvfb 裡的真視窗截圖（960×600），用**最近鄰**�
 **抽樣，不是全程。** 取的是十六張走得到、又說明得了問題的畫面；還沒走到的
 列在〈還沒進抽樣的〉。
 
-## 現況（中文模式，十九項）
+## 現況（中文模式，二十項）
 
 **這一張表是唯一的現況斷言**，由 `tools/appimage-dos-parity.sh <版本>
 full-local zh` 產，機器可讀的同一份在 `docs/audit/dos-parity-sample.json`。
@@ -49,7 +49,8 @@ full-local zh` 產，機器可讀的同一份在 `docs/audit/dos-parity-sample.j
 | 按下 B 的第一幕 | 78.80% | 94.04% |
 | 戰鬥畫面 | 77.40% | 100.00% |
 | 平面圖 | 74.33% | 97.58% |
-| 檢視人物 | 86.25% | 98.39% |
+| 檢視人物 | 86.26% | 98.39% |
+| 紮營・最外層 | 78.96% | 94.04% |
 | 戰鬥造形設計・確認 | 91.89% | 100.00% |
 | 市政廳外・第一段 | 78.61% | 94.04% |
 | 市政廳外・第二段 | 77.32% | 94.04% |
@@ -127,7 +128,7 @@ full-local zh` 產，機器可讀的同一份在 `docs/audit/dos-parity-sample.j
 
 | 畫面 | remake 的狀態識別字 | 備註 |
 |---|---|---|
-| 紮營（整棵選單樹）| `camp`、`camp-rest`、`camp-alter`、`camp-order-select`、`camp-order-place`、`camp-speed`、`camp-pics`、`camp-icon`、`camp-quit`、`camp-drop` | spec 135 已實作；十層都沒對拍 |
+| 紮營（最外層以下的九層）| `camp-rest`、`camp-alter`、`camp-order-select`、`camp-order-place`、`camp-speed`、`camp-pics`、`camp-icon`、`camp-quit`、`camp-drop` | spec 135 已實作；最外層 2026-09-10 進了抽樣，底下九層還沒 |
 | 商店 | `shop` | dosgolem 的鍵序還沒走到 |
 | 神殿 | `temple` | 同上 |
 | 結局 | — | 同上 |

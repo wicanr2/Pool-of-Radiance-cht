@@ -264,6 +264,11 @@ def main():
          "digest": "856df275", "remake": "remake-view-sheet.png",
          "note": "檢視人物：整張人物資料頁。原版底下那一列是"
                  " VIEW: TRADE DROP EXIT，remake 目前是 ESC 返回"},
+        {"name": "camp", "kind": "layout",
+         "digest": "30e9d7e3", "remake": "remake-camp.png",
+         "note": "紮營最外層（spec 135）：視野換成營火、時鐘行接上 CAMPING、"
+                 "指令列是 SAVE VIEW MAGIC REST ALTER EXIT。"
+                 "底下那九層還沒進抽樣"},
         {"name": "icon-confirm", "kind": "layout",
          "digest": "d148516e", "remake": "remake-icon-confirm.png",
          "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成"

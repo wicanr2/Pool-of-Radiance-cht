@@ -266,6 +266,17 @@ await adventure-cell-done
 sleep 0.6
 shot remake-city-hall-second
 
+# 紮營（spec 135）：原版指令列的 ENCAMP，兩邊的指令列一樣
+# SAVE VIEW MAGIC REST ALTER EXIT，都按 e 退出。
+# **放在市政廳之後**：紮營會推進遊戲時間，擺在前面會讓市政廳那幾格的事件
+# 狀態變掉，症狀是「等不到畫面 adventure-cell-menu」。兩邊只要各自走到同一
+# 個畫面就好，先後順序不必跟基準那一側一致。
+step e camp
+sleep 0.6
+shot remake-camp
+step e adventure-cell-done
+sleep 0.4
+
 step F5 tactical
 sleep 0.6
 shot remake-tactical

@@ -135,13 +135,13 @@
       "id": "parity-sampling-gaps",
       "layer": "presentation",
       "title": "抽樣擴到還沒對拍的畫面",
-      "body": "現況表有十九項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營那一整棵樹、商店、神殿、挑法術頁、裝備、地圖上施法、平面圖。",
+      "body": "現況表有二十項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營底下那九層、商店、神殿、挑法術頁、裝備、地圖上施法、平面圖。",
       "acceptance": "每加一項都照市政廳那一節的做法（另產一組基準或延長主鍵序、compare 的 plan 加一項），`docs/audit/dos-parity-sample.json` 跟著多一項。",
       "verify": {
         "kind": "json_len",
         "path": "docs/audit/dos-parity-sample.json",
         "field": "screens",
-        "max": 19,
+        "max": 20,
         "note": "抽樣只有十六項時這一條仍未完成。綁數量而不是綁註解：註解會被順手改掉，項數不會"
       }
     },

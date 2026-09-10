@@ -61,7 +61,7 @@ test -f "$SOURCE/start.exe" || {
 # （同 spec 133 那一族）。走哪一種由遭遇當下的骰子決定，而骰子跟著時序走——
 # dosgolem 換版本就可能換一種。按 `c` 兩種都到得了：沒有選單時它被忽略，
 # 後面那幾個 Return 仍然會把訊息關掉。
-KEYS="${POOL_DOSGOLEM_KEYS:-rep:9:Space,Return,Return,c,Return,Return,Return,Return,Return,Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:14:Return,Up,Up,Up,rep:10:Return,a,a,v,e,Up,Up,Up,c,rep:5:Return}"
+KEYS="${POOL_DOSGOLEM_KEYS:-rep:9:Space,Return,Return,c,Return,Return,Return,Return,Return,Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:14:Return,Up,Up,Up,rep:10:Return,a,a,v,e,e,e,Up,Up,Up,c,rep:5:Return}"
 
 rm -rf "$OUT"
 mkdir -p "$OUT" "$ROOT/workplace/dosgolem-scratch"
