@@ -5,6 +5,13 @@
 最近鄰降回 320x200 之後再對回 16 色。平滑縮放會把差異抹掉，所以一律最近鄰。
 
 輸出一份 JSON 報告，逐個區域給「相同格數／總格數」。抽樣，不是全程：
+有第一人稱視野的那幾張（intro、camp、city-hall）另外報一欄**視野**，
+用的是 first-person 那同一框。「整張」裡中文與英文的差異佔掉大半，圖像
+對不對齊被埋在裡面看不出來——remake 的框位置差幾列，整張照樣是七八成。
+視野那一欄把文字全部排除，剩下的差異就是圖像本身的，而且它比整張穩：
+2026-09-10 連跑兩次，intro 的整張是 78.79% 與 78.81%（時鐘在跳），
+視野兩次都是 100.00%。
+
 `title` 比整張，`first-person` 只比第一人稱那一框的 88x88——那是唯一宣稱過
 逐格相同的東西（spec 047／126）。
 """
@@ -20,6 +27,10 @@ WIDTH, HEIGHT = 320, 200
 # `remake_box` 與底下的 DOSBox 交叉核對），先前寫死了兩份，改了一份之後
 # 交叉核對從 100% 掉到 59.89%，而那看起來像 remake 退步了。
 REMAKE_VIEW_LEFT, REMAKE_VIEW_TOP = 24, 35
+# 原版那一側的同一框，以及它的邊長。first-person 那一項本來把這三個數字
+# 寫死在 ref_box 裡，等於同一個座標的第三份——照上面那條教訓改成共用常數。
+REF_VIEW_LEFT, REF_VIEW_TOP = 24, 24
+VIEW_SIZE = 88
 
 # 標準 EGA 十六色。dosgolem 的 PNG 與 remake 的畫面用的是同一張表。
 EGA = [
@@ -174,6 +185,22 @@ def compare_frame(reference, actual, cells=None):
     return same, len(cells)
 
 
+def compare_view(reference, actual):
+    """只比第一人稱那一框的 88x88，兩邊各自的座標。
+
+    「整張」那一欄裡中文與英文的差異佔掉大半，圖像對不對齊被埋在裡面——
+    remake 的框只要位置差幾列，整張的數字照樣是七八成，看不出來。
+    這一欄把文字全部排除掉，剩下的差異就是圖像本身的：位置、縮放、色盤。
+    """
+    same = 0
+    for y in range(VIEW_SIZE):
+        for x in range(VIEW_SIZE):
+            if (reference[(REF_VIEW_TOP + y) * WIDTH + REF_VIEW_LEFT + x]
+                    == actual[(REMAKE_VIEW_TOP + y) * WIDTH + REMAKE_VIEW_LEFT + x]):
+                same += 1
+    return same, VIEW_SIZE * VIEW_SIZE
+
+
 def compare(reference, actual, box):
     left, top, width, height = box
     same = total = 0
@@ -218,8 +245,8 @@ def main():
             "name": "first-person", "kind": "pixel-parity",
             "digest": "888cc816",
             "remake": "remake-first-person.png",
-            "ref_box": [24, 24, 88, 88],
-            "remake_box": [REMAKE_VIEW_LEFT, REMAKE_VIEW_TOP, 88, 88],
+            "ref_box": [REF_VIEW_LEFT, REF_VIEW_TOP, VIEW_SIZE, VIEW_SIZE],
+            "remake_box": [REMAKE_VIEW_LEFT, REMAKE_VIEW_TOP, VIEW_SIZE, VIEW_SIZE],
             "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 11 列。",
         },
         # 建隊到進城。這幾張比的是版面，所以另外報外框那一圈。
@@ -248,7 +275,7 @@ def main():
         {"name": "menu-party", "kind": "layout",
          "digest": "ca64a624", "remake": "remake-menu-party.png",
          "note": "人物管理選擇項，隊伍裡有人"},
-        {"name": "intro", "kind": "layout",
+        {"name": "intro", "kind": "layout", "view": True,
          "digest": "6d8018e9", "remake": "remake-intro.png",
          "note": "按下 B 之後的第一幕"},
         {"name": "combat", "kind": "layout", "frame": "combat",
@@ -264,7 +291,7 @@ def main():
          "digest": "856df275", "remake": "remake-view-sheet.png",
          "note": "檢視人物：整張人物資料頁。原版底下那一列是"
                  " VIEW: TRADE DROP EXIT，remake 目前是 ESC 返回"},
-        {"name": "camp", "kind": "layout",
+        {"name": "camp", "kind": "layout", "view": True,
          "digest": "30e9d7e3", "remake": "remake-camp.png",
          "note": "紮營最外層（spec 135）：視野換成營火、時鐘行接上 CAMPING、"
                  "指令列是 SAVE VIEW MAGIC REST ALTER EXIT。"
@@ -279,12 +306,12 @@ def main():
         # POOL_DOSGOLEM_OUT／POOL_DOSGOLEM_KEYS）：主基準那條走的是「導覽完
         # 往西撞遭遇」，不經過市政廳。這兩張守的是「按幾次」——停頓由腳本自己
         # 放的單選項選單決定，不是每一頁自動加的。
-        {"name": "city-hall-1", "kind": "layout", "ref": "cityhall",
+        {"name": "city-hall-1", "kind": "layout", "view": True, "ref": "cityhall",
          "digest": "1a346eab", "remake": "remake-city-hall-first.png",
          "note": "市政廳外第一段：文字框三行，框外那一列是原版自己的"
                  " PRESS <ENTER>/<RETURN> TO CONTINUE（overlay-03 118Ah），"
                  "不是腳本給的那一條"},
-        {"name": "city-hall-2", "kind": "layout", "ref": "cityhall",
+        {"name": "city-hall-2", "kind": "layout", "view": True, "ref": "cityhall",
          "digest": "78c750a7", "remake": "remake-city-hall-second.png",
          "note": "按一次 Return 之後：四行公告一次顯示，框外換回指令列"
                  " AREA CAST VIEW ENCAMP SEARCH LOOK"},
@@ -344,6 +371,11 @@ def main():
             entry["frame_same"], entry["frame_total"] = fs, ft
             entry["frame_ratio"] = round(fs / ft, 4)
             line += f"   外框 {fs:5d}/{ft:5d} = {fs / ft:6.2%}"
+            if item.get("view"):
+                vs, vt = compare_view(reference, actual)
+                entry["view_same"], entry["view_total"] = vs, vt
+                entry["view_ratio"] = round(vs / vt, 4)
+                line += f"   視野 {vs:5d}/{vt:5d} = {vs / vt:6.2%}"
         report["screens"].append(entry)
         print(line)
 
