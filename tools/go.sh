@@ -41,6 +41,19 @@ if test "${1:-}" = fmt; then
   printf '格式化這 %d 個新檔（新檔沒有既有格式要保，直接排乾淨）：\n' "${#fresh[@]}"
   printf '  %s\n' "${fresh[@]}"
   set -- gofmt -w "${fresh[@]}"
+elif test "${1:-}" = gofmt; then
+  # gofmt -d／-l 是規則叫人用的（讀 diff、只手改自己那幾行），放行。
+  # gofmt -w 不行：它一樣會把整個既有檔案重排，只是繞過了上面那一段。
+  # 這條路是實作 fmt 時順手開的，2026-09-10 的演習裡有人正好走它——
+  # 那次用的是 -d 所以沒事，但那是規則引導對了，不是這裡擋住了。
+  for argument in "${@:2}"; do
+    if test "$argument" = -w; then
+      printf 'gofmt -w 會把整個檔案重排，包含你沒碰過的行。\n' >&2
+      printf '既有檔案請用 gofmt -d 讀 diff 再手改自己那幾行；\n' >&2
+      printf '新檔用 tools/go.sh fmt；真的要整包重排用 tools/go.sh fmt-all <package>。\n' >&2
+      exit 2
+    fi
+  done
 elif test "${1:-}" = fmt-all; then
   if test "$#" -lt 2; then
     echo 'fmt-all 要指定 package，例如 tools/go.sh fmt-all ./cmd/pool-game' >&2
