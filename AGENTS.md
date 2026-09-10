@@ -170,9 +170,15 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   `tools/dosgolem-reference.sh` 產基準時會寫下
   `workplace/dosgolem-ref/provenance.json`（generator、dosgolem 的 commit、
   原版 `start.exe` 的 SHA-256、鍵序、幀數）；**對拍腳本檢查這一份，
-  generator 不是 dosgolem 就拒絕跑**。報告裡那條 `first-person-vs-dosbox`
-  是 repo 裡早就存著的一張 DOSBox 圖，只作第二個意見，**不是基準，
-  也不重跑 DOSBox**。
+  generator 不是 dosgolem 就拒絕跑**。
+- **[HARD] 一個畫面只留一組斷言，來源是 dosgolem。** 報表裡不放第二個
+  oracle 的交叉核對：兩組數字擺在一起，讀的人分不出哪一個是誰說的，
+  而「兩邊互相同意」在其中一邊悄悄退步時反而不會開口——一組會動的斷言，
+  勝過兩組互相背書的。
+- **dosbox-x 是 dosgolem 的參考來源，不是第二個基準。** dosgolem 缺功能、
+  行為對不上或要追某一段時，可以啟動 dosbox-x 比對、據以擴增 dosgolem
+  或替它除錯——那是**擴增 dosgolem 的手段**。它產的畫面不進對拍報表，
+  結論一律以 dosgolem 為準。
 - **[HARD] 動到任何玩家看得到的畫面就要跑對拍，不能只看截圖。** 截圖證明
   「這一版長這樣」，對拍才證明「與原版的距離變近還是變遠」。數字（含變好、
   變差與不變的那幾項）寫進 commit message。
@@ -183,9 +189,9 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   舊，舊了就拒跑**——現成的發行包看不出它是哪一版建的，改完程式碼直接對拍
   只會量到上一版：數字照樣印得出來、看起來也正常，而整份結論是空的，還會把
   別的 commit 的升幅記到這一輪頭上。基準那一側的產地證明擋的是同一件事。
-- **同一個座標不要寫死兩份。** 對拍腳本裡 remake 的視野原點曾經在版面比對與
-  DOSBox 交叉核對各寫一次；只改一份的症狀是交叉核對從 100% 掉到 59.89%，
-  而那看起來像 remake 退步了。現在收斂成 `REMAKE_VIEW_TOP`。
+- **同一個座標不要寫死兩份。** remake 的視野原點在對拍腳本裡只有
+  `REMAKE_VIEW_TOP` 一處。寫死兩份時，只改一份的症狀是比對率整段掉下來，
+  而那看起來像 remake 退步了——查的人會去翻繪圖程式碼，不會想到是量尺。
 - 對拍前固定 DOS 輸入雜湊、存檔、地圖、座標、朝向、隊伍、旗標、
   RNG／動畫相位、畫布、色盤與輸入序列。狀態不同時只可標為
   `nearby`、`material-exact/layout-reconstructed` 或 `layout-only`。

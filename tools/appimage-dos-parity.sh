@@ -95,7 +95,7 @@ docker run --rm --network none --memory 3g --cpus "${PARITY_CPUS:-2}" --pids-lim
   -v "$ROOT/Pool of Radiance (1988).zip:/zip/pool.zip:ro" \
   -v "$REF:/ref:ro" -v "$REF_CITYHALL:/ref-cityhall:ro" \
   -v "$OUT:/out" -v "$ROOT/tools:/tools:ro" \
-  -v "$ROOT/docs/reference/original-dos/adventure:/ref-dosbox:ro" -w /tmp \
+  -w /tmp \
   wasteland-go:1.24-x11-record-r1 bash -c '
 set -eu
 mkdir -p "$HOME" /tmp/run
@@ -240,6 +240,6 @@ step F5 tactical
 sleep 0.6
 shot remake-tactical
 
-python3 /tools/dos-parity-compare.py /ref /out /ref-dosbox /ref-cityhall
+python3 /tools/dos-parity-compare.py /ref /out /ref-cityhall
 '
 echo "報告 → $OUT"

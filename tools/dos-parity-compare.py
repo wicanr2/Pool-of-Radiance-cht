@@ -273,11 +273,15 @@ def main():
 
     report = {"screens": []}
     failed = False
-    dosbox_dir = sys.argv[3] if len(sys.argv) > 3 else None
     # 第二組基準：同一支 dosgolem、另一條鍵序。**缺了就跳過那幾項**，
     # 不當成失敗——主基準那條路線本來就走不到市政廳，兩者是互補不是替代。
+    #
+    # **一個畫面只留一組斷言，來源是 dosgolem。** 不放第二個 oracle 的交叉
+    # 核對：兩組數字擺在一起，讀的人分不出哪一個是誰說的，而「兩邊互相同意」
+    # 在其中一邊悄悄退步時反而不會開口。dosbox-x 是 dosgolem 的參考來源
+    # （缺功能或行為對不上時拿它比對、據以擴增 dosgolem），不進報表。
     sources = {"main": (ref_dir, shots)}
-    cityhall_dir = sys.argv[4] if len(sys.argv) > 4 else None
+    cityhall_dir = sys.argv[3] if len(sys.argv) > 3 else None
     if cityhall_dir and os.path.exists(os.path.join(cityhall_dir, "shots.json")):
         sources["cityhall"] = (
             cityhall_dir, json.load(open(os.path.join(cityhall_dir, "shots.json"))))
@@ -323,36 +327,6 @@ def main():
             line += f"   外框 {fs:5d}/{ft:5d} = {fs / ft:6.2%}"
         report["screens"].append(entry)
         print(line)
-
-    # 交叉核對：同一框對 repo 裡**早就存著的** DOSBox 基準圖。
-    # **沒有重跑 DOSBox**（使用者 2026-09-07 指定它只作 dosgolem 的參考）；
-    # 那張圖是之前留下來的產物，這裡只是拿它當第二個意見。
-    #
-    # **兩個 oracle 現在互相同意**（各自對 remake 都是 7744/7744）。留著它是
-    # 因為「兩個獨立來源說同一件事」比任何一個單獨的數字都強——哪一邊之後
-    # 退步了，這一項會先開口。
-    if dosbox_dir:
-        path = os.path.join(dosbox_dir, "06-free-move-0-4-west.png")
-        if os.path.exists(path):
-            w, h, rgb = read_png_rgb(path)
-            dosbox = to_indices(downsample_nearest(w, h, rgb))
-            actual = load_remake(os.path.join(out_dir, "remake-first-person.png"))
-            same = total = 0
-            for y in range(88):
-                for x in range(88):
-                    total += 1
-                    if dosbox[(24 + y) * WIDTH + 24 + x] == \
-                            actual[(REMAKE_VIEW_TOP + y) * WIDTH + REMAKE_VIEW_LEFT + x]:
-                        same += 1
-            report["screens"].append({
-                "name": "first-person-vs-dosbox", "kind": "cross-check",
-                "reference": "docs/reference/original-dos/adventure/06-free-move-0-4-west.png",
-                "remake": "remake-first-person.png",
-                "same": same, "total": total, "ratio": round(same / total, 4),
-                "note": "既有的 DOSBox 基準圖，沒有重跑 DOSBox。兩個 oracle 互相同意，"
-                        "哪一邊之後退步了這一項會先開口。",
-            })
-            print(f"first-person-vs-dosbox: {same}/{total} = {same / total:.2%} （交叉核對）")
 
     with open(os.path.join(out_dir, "parity.json"), "w", encoding="utf-8") as handle:
         json.dump(report, handle, ensure_ascii=False, indent=2)
