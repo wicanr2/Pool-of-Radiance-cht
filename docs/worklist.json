@@ -183,7 +183,7 @@
       "id": "tool-test-coverage",
       "layer": "verification",
       "title": "九支工具沒有測試",
-      "body": "`cmd/` 底下有九支工具一個測試都沒有（清單在 `docs/audit/doc-index.json` 的 `tools_without_tests`）。這不是形式問題——本輪 `pool-disp-scan` 的測試**一寫就抓到假陽性**：`0x90`（nop）的高兩位也是 `10`，被當成 modrm，於是掃描會憑空生出記憶體存取。產生證據的工具算錯，錯的是下游所有引用它的規格，而且錯得很安靜。",
+      "body": "`cmd/` 底下有九支工具一個測試都沒有（清單在 `docs/audit/doc-index.json` 的 `tools_without_tests`）。這不是形式問題——本輪 `pool-disp-scan` 的測試**一寫就抓到假陽性**：`0x90`（nop）的高兩位也是 `10`，被當成 modrm，於是掃描會憑空生出記憶體存取。產生證據的工具算錯，錯的是下游所有引用它的規格，而且錯得很安靜。 **而且這一條是 worklist 機制自己的單點失效**：`json_len`／`json_gap` 讀的是別的工具算出來的 JSON，上游算錯時 verify 會照樣印好消息。2026-09-10 用一個小場景驗過——盤點工具拿「目錄裡多於一個 .py」當「有測試」的代理指標，兩支沒測試的工具被判成有，清單變空，verify 宣告「可能已完成」；條目、verify、JSON 格式全都沒問題，錯的是上游。",
       "acceptance": "每一支工具至少釘住它自己的判讀規則（換算表、解析格式、分類邏輯），並且測試要有正反對照——訊號在時報命中、訊號拿掉時真的開口。`doc-index.json` 的 `tools_without_tests` 歸零。",
       "verify": {
         "kind": "json_gap",
