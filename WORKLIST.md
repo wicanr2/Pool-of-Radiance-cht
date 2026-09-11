@@ -71,16 +71,13 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **驗收**：一次不中斷的實跑，每一個必經 block 都留下經過紀錄；中途卡住的地方寫成可重跑的測試。
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
-- [ ] **ECL 還有一處運算元數讀錯。** `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 的隨機探索在 2026-09-10 撞到一次 `continue Pool SearchLocation: unknown opcode 0x9D at payload offset 1085`（seed 142，第 21526 步）。**`9Dh` 不是 opcode**——那是 PC 停在資料上，症狀與 spec 093 修掉的 `34h ECL CLOCK` 同一族：某一條指令的運算元數讀多了，後面整段錯位。同一份測試重跑一次沒有再現，所以是特定路徑才走得到。
-      **卡在**：要先定位是哪一個 block 的哪一條指令。`payload offset 1085` 是線索，但那一趟走過 22 張地圖，哪一張的哪一個 block 還沒對出來；重現要靠同一組 seed 與同一條路徑。
-      **驗收**：定位那一條指令、對回原版的運算元數、寫進 spec，並讓那個 seed 重跑不再硬失敗。
-- [ ] **遭遇選單會卡住不前進。** `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 的隨機探索在 2026-09-11 跑全套時硬失敗一次：**格子選單卡住**——GEO5/4 `(13,3)`、block 25、游標 0、選項 `[COMBAT WAIT FLEE PARLAY]`、文字 `The monsters are 0 squares away.`、狀態列 `Locked. BASH EXIT`，而且「這一格答過 0 次」（seed 142，`C04F` 0、`4A10` 0、`9802` 0、PC `$A1B5`）。單獨重跑同一條沒有再現（173 秒綠）。
+- [ ] **探索測試不試著開門，門後沒有覆蓋。** `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 撞到鎖住的門時**一律選 EXIT**，不 BASH、不 PICK、不 KNOCK。所以門後的區域這條測試一格都沒踩過，而那不是「原版沒有內容」——`CanMoveDungeonWrapped` 照旗標擋人（spec 122），門後是走得到的。
       
-      與 `ecl-operand-count-misread` 是**同一份測試的不同症狀**：那一條是 PC 停在資料上，這一條是選單送了選擇卻不前進。兩條都只有隨機探索撞得到，所以先分開記——根因可能相同也可能無關，現在沒有證據合併。
+      **這是刻意的**：2026-09-11 修門選單的輸入分派時，治具必須開始處理門（門選單變成 modal 的），而撞開門會把門後的區域納進覆蓋——那是覆蓋的改變，要單獨評估，不該混在一次輸入修正裡。
       
-      **怪物 0 格遠**加上狀態列停在上一格的 `Locked. BASH EXIT`，比較像是遭遇選單在「已經貼身」時少了一條出路，而不是選單本身壞掉。
-      **卡在**：要先重現。隨機探索的路徑由 seed 加上每一步的狀態決定，而狀態會被沿途的ECL 變數改變——同一個 seed 不保證走同一條路，這次單獨重跑就走掉了。下一步是把那一格的情境靜態擺出來（GEO5/4 block 25、怪物貼身、上一格是上鎖的門），不靠隨機走到它。
-      **驗收**：把 GEO5/4 block 25 那一格的遭遇選單寫成不靠隨機的測試：擺好「怪物 0 格遠」的狀態，四個選項各送一次，每一次都要走得出去（進戰鬥、等、逃、交涉），不准停在原地。
+      門選單本身已經可以按了：方向鍵移游標、ENTER 選定、游標標 `>`（`door_test.go` 兩條測試從 `Update()` 送按鍵進去）。
+      **卡在**：要先決定 BASH 之後的預期：撞開門會讓這一趟走得更遠、更久，而這條測試已經是整個套件裡最慢的一條（castle-test-runtime 那一條在講同一件事）。先量一趟帶 BASH 的耗時與覆蓋，再決定要不要換。
+      **驗收**：治具撞到鎖住的門時先試 BASH／PICK／KNOCK，開不了才 EXIT；量出這一趟的地圖數、ECL block 數與耗時，與現在的數字並列寫進 `docs/audit/`。**耗時不可以超過既有上限**，超過就要先解決 castle-test-runtime 那一條。
 - [ ] **城堡那條探索測試要七分半。** `TestTheCastleBehindStojanowGateHasContent` 單獨跑量到 458 秒，而整個 `cmd/pool-game` 在 380..600 秒之間浮動。go 的預設 timeout 是 10 分鐘，所以這個套件長期在邊緣——2026-09-10 撞上一次，症狀是 `panic: test timed out`，**看起來像當掉而不是慢**。`tools/go.sh` 已經改成預設 `-timeout 25m` 讓它不再被誤砍，但那只是不再誤判，沒有變快。
       **驗收**：把它壓到兩分鐘以內，做法照 Sokal 那條的前例（縮小探索面、去掉重複走訪），而不是放寬它檢查的東西。
 - [ ] **對拍跑兩次結果不一樣。** 2026-09-10 連跑三次同一個 AppImage 對同一組基準：**兩次走位失敗**（卡在市政廳那一段的 `await adventure-cell-menu`，停在 `adventure-move`），成功那兩次的截圖**逐像素比對有六張不同**。差異分兩組，各自跨三張同類畫面：狀態列右側那一格（邏輯座標 x=526..597、y=119..127，時鐘）差 284 個像素；人物資料頁主體（x=69..565、y=51..295，擲出來的數值與肖像）差 1896 個像素。所以 `dos-parity-sample.json` 的數字每次跑都會浮動十個像素上下——**小幅變動不代表回歸，也不代表沒有回歸**，那一欄現在分不出來。
@@ -93,6 +90,13 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **這不等於沒測**：測試可能存在，只是註解裡沒寫 `spec NNN`，那條線就接不起來。所以逐份要分三種處置——補註解（測試已經在測它）、補測試（真的沒測）、或在檔頭寫明為什麼不需要（純 RE 文件、實作在別的 repo）。
       **卡在**：分不出「沒測」與「測了但沒標」之前不能動手：前者要寫測試，後者只要一行註解，而兩者在這個數字上長得一樣。
       **驗收**：`specs_without_tests` 歸零，而且每一份的處置要看得出是哪一種。不准為了讓數字下降而在無關的測試裡加 `spec NNN`。
+- [ ] **測試治具的按鍵會被消費，真實的不會。** `scriptedKeys.JustPressed`（`cmd/pool-game/main_test.go`）查一次就 `delete`，而 ebiten 的 `IsKeyJustPressed` **不消費**：同一個 tick 裡不同的分派點各自查一次，每一次都看到同一個答案。
+      
+      **這個差異會藏住真的缺陷。** 產品程式碼裡「查了某個鍵、但沒有處理它也沒有return」的路徑，在治具下會把鍵吃掉（後面的分派點看不到），在真實遊戲裡卻不會——後面的分派點照樣會處理它，也就是**按一下推進不只一步**。
+      
+      2026-09-11 實測過：把 `JustPressed` 改成不消費，`TestNormalKeysReachTheFirstDungeonStep` 與 `TestNormalKeysBuyAndEquipFromTheWeaponShop` 立刻紅（建角走完人物名單 0 人）。所以建角與商店那條路上**至少有一處**依賴這個差異，而那一處在真實遊戲裡的行為還沒有人看過。
+      **卡在**：要先逐一找出「查了鍵卻沒 return」的分派點，判斷每一處在真實 ebiten 下會發生什麼。直接把治具改成不消費會讓那兩條測試紅，而紅的原因是產品行為，不是測試寫錯——先查清楚再改，不要為了讓測試綠而把治具改回去。
+      **驗收**：`scriptedKeys.JustPressed` 改成不消費（與 ebiten 一致），而且整套測試綠。每一個為此改動的產品分派點都要有註解說明為什麼那一下按鍵只該被處理一次。
 
 ### 三、版面與資料的差距
 
@@ -118,6 +122,20 @@ SearchLocation 共用同一個判準）、
 `ICON` 與兩個問句；指令列的高亮改成「大寫的那個字母」，`daYs` 的鍵才標得對）。
 **`Game Speed` 也接上了**：它是全遊戲「等一拍」的統一單位
 （`速度 × 225 ms`，overlay-37 entry 13），導覽每走一步等的就是它。
+
+**`ECL7/17` 那一處 `unknown opcode` 找到了**（spec 093）：`34h ECL CLOCK` 是
+passthrough，而 VM 算「下一條在哪」的那一步用的是共用 engine 的二手指令表，
+不是 Pool 自己量出來的——同一條指令因此有兩套長度（內容一個運算元、位址兩個），
+PC 多跳三個位元組停在指令中間。**症狀延後發作**：這一條照樣執行完，要等到走到
+下一條才報錯，所以報出來的位置離成因很遠。engine 改成 `RecordEndWithCommands`
+並由 VM 傳自己的表；Pool 這一側 `NewDOSECLArchiveSession`（讀檔那條路）補上
+`SetCommands`，engine 的 `RestoreSnapshot` 補上漏搬的 `commands`。
+
+**鎖住的門按得動了**（spec 122 的〈兩種選單的輸入優先權〉）：門選單的按鍵分派
+原本埋在 `cellEventPending` 區塊裡，而撞門的當下那個旗標是 false——選單畫得
+出來、狀態列也印著 `Locked. BASH EXIT`，但方向鍵與 ENTER 全都走到轉向與前進
+去了，門根本開不了；門留著的時候又反過來把遭遇選單的按鍵吃掉。現在的順序是
+`cellEventPending` → 門 → 轉向與前進，游標也標得出來。
 
 戰場還差的：**怪物的配色**。原版把哥布林那一類畫成紅色是換了配色，
 配色從哪來還沒定位——目前戰場上的敵方造形一律用玩家的預設六組。

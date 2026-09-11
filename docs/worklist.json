@@ -117,27 +117,19 @@
       }
     },
     {
-      "id": "ecl-operand-count-misread",
+      "id": "explorer-never-opens-doors",
       "layer": "verification",
-      "title": "ECL 還有一處運算元數讀錯",
-      "body": "`TestPlayingTheWorldCompletesCommissionsOnItsOwn` 的隨機探索在 2026-09-10 撞到一次 `continue Pool SearchLocation: unknown opcode 0x9D at payload offset 1085`（seed 142，第 21526 步）。**`9Dh` 不是 opcode**——那是 PC 停在資料上，症狀與 spec 093 修掉的 `34h ECL CLOCK` 同一族：某一條指令的運算元數讀多了，後面整段錯位。同一份測試重跑一次沒有再現，所以是特定路徑才走得到。",
-      "blocked_by": "要先定位是哪一個 block 的哪一條指令。`payload offset 1085` 是線索，但那一趟走過 22 張地圖，哪一張的哪一個 block 還沒對出來；重現要靠同一組 seed 與同一條路徑。",
-      "acceptance": "定位那一條指令、對回原版的運算元數、寫進 spec，並讓那個 seed 重跑不再硬失敗。",
+      "title": "探索測試不試著開門，門後沒有覆蓋",
+      "body": "`TestPlayingTheWorldCompletesCommissionsOnItsOwn` 撞到鎖住的門時**一律選 EXIT**，不 BASH、不 PICK、不 KNOCK。所以門後的區域這條測試一格都沒踩過，而那不是「原版沒有內容」——`CanMoveDungeonWrapped` 照旗標擋人（spec 122），門後是走得到的。\n\n**這是刻意的**：2026-09-11 修門選單的輸入分派時，治具必須開始處理門（門選單變成 modal 的），而撞開門會把門後的區域納進覆蓋——那是覆蓋的改變，要單獨評估，不該混在一次輸入修正裡。\n\n門選單本身已經可以按了：方向鍵移游標、ENTER 選定、游標標 `>`（`door_test.go` 兩條測試從 `Update()` 送按鍵進去）。",
+      "blocked_by": "要先決定 BASH 之後的預期：撞開門會讓這一趟走得更遠、更久，而這條測試已經是整個套件裡最慢的一條（castle-test-runtime 那一條在講同一件事）。先量一趟帶 BASH 的耗時與覆蓋，再決定要不要換。",
+      "acceptance": "治具撞到鎖住的門時先試 BASH／PICK／KNOCK，開不了才 EXIT；量出這一趟的地圖數、ECL block 數與耗時，與現在的數字並列寫進 `docs/audit/`。**耗時不可以超過既有上限**，超過就要先解決 castle-test-runtime 那一條。",
       "verify": {
-        "kind": "manual",
-        "note": "沒有穩定訊號——隨機探索才撞得到，重跑會消失。**不要因為重跑是綠的就當它不存在**：門檻「硬失敗 0 次」在隨機探索下量到的是這一次走了哪條路，不是缺口在不在。定位到之後改成綁那個 block 的靜態走訪"
-      }
-    },
-    {
-      "id": "encounter-menu-stall",
-      "layer": "verification",
-      "title": "遭遇選單會卡住不前進",
-      "body": "`TestPlayingTheWorldCompletesCommissionsOnItsOwn` 的隨機探索在 2026-09-11 跑全套時硬失敗一次：**格子選單卡住**——GEO5/4 `(13,3)`、block 25、游標 0、選項 `[COMBAT WAIT FLEE PARLAY]`、文字 `The monsters are 0 squares away.`、狀態列 `Locked. BASH EXIT`，而且「這一格答過 0 次」（seed 142，`C04F` 0、`4A10` 0、`9802` 0、PC `$A1B5`）。單獨重跑同一條沒有再現（173 秒綠）。\n\n與 `ecl-operand-count-misread` 是**同一份測試的不同症狀**：那一條是 PC 停在資料上，這一條是選單送了選擇卻不前進。兩條都只有隨機探索撞得到，所以先分開記——根因可能相同也可能無關，現在沒有證據合併。\n\n**怪物 0 格遠**加上狀態列停在上一格的 `Locked. BASH EXIT`，比較像是遭遇選單在「已經貼身」時少了一條出路，而不是選單本身壞掉。",
-      "blocked_by": "要先重現。隨機探索的路徑由 seed 加上每一步的狀態決定，而狀態會被沿途的ECL 變數改變——同一個 seed 不保證走同一條路，這次單獨重跑就走掉了。下一步是把那一格的情境靜態擺出來（GEO5/4 block 25、怪物貼身、上一格是上鎖的門），不靠隨機走到它。",
-      "acceptance": "把 GEO5/4 block 25 那一格的遭遇選單寫成不靠隨機的測試：擺好「怪物 0 格遠」的狀態，四個選項各送一次，每一次都要走得出去（進戰鬥、等、逃、交涉），不准停在原地。",
-      "verify": {
-        "kind": "manual",
-        "note": "沒有穩定訊號——隨機探索才撞得到，重跑會消失。**重跑是綠的不代表它不存在**（同 ecl-operand-count-misread）。做成靜態測試之後改綁那條測試"
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/coverage_test.go"
+        ],
+        "pattern": "一律選 EXIT，不 BASH",
+        "note": "治具裡的自承還在"
       }
     },
     {
@@ -193,6 +185,22 @@
         "field": "specs_without_tests",
         "min": 1,
         "note": "綁 `cmd/pool-doc-index` 算出來的清單長度。`min` 是 1 不是現況值——這一條要的是歸零"
+      }
+    },
+    {
+      "id": "test-keys-consume-input",
+      "layer": "verification",
+      "title": "測試治具的按鍵會被消費，真實的不會",
+      "body": "`scriptedKeys.JustPressed`（`cmd/pool-game/main_test.go`）查一次就 `delete`，而 ebiten 的 `IsKeyJustPressed` **不消費**：同一個 tick 裡不同的分派點各自查一次，每一次都看到同一個答案。\n\n**這個差異會藏住真的缺陷。** 產品程式碼裡「查了某個鍵、但沒有處理它也沒有return」的路徑，在治具下會把鍵吃掉（後面的分派點看不到），在真實遊戲裡卻不會——後面的分派點照樣會處理它，也就是**按一下推進不只一步**。\n\n2026-09-11 實測過：把 `JustPressed` 改成不消費，`TestNormalKeysReachTheFirstDungeonStep` 與 `TestNormalKeysBuyAndEquipFromTheWeaponShop` 立刻紅（建角走完人物名單 0 人）。所以建角與商店那條路上**至少有一處**依賴這個差異，而那一處在真實遊戲裡的行為還沒有人看過。",
+      "blocked_by": "要先逐一找出「查了鍵卻沒 return」的分派點，判斷每一處在真實 ebiten 下會發生什麼。直接把治具改成不消費會讓那兩條測試紅，而紅的原因是產品行為，不是測試寫錯——先查清楚再改，不要為了讓測試綠而把治具改回去。",
+      "acceptance": "`scriptedKeys.JustPressed` 改成不消費（與 ebiten 一致），而且整套測試綠。每一個為此改動的產品分派點都要有註解說明為什麼那一下按鍵只該被處理一次。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/main_test.go"
+        ],
+        "pattern": "查一次就消費掉",
+        "note": "治具還在消費按鍵"
       }
     }
   ]
