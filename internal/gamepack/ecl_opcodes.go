@@ -206,8 +206,10 @@ func PoolCommandTable() map[byte]ecl.Command {
 // 算的，序言取幾個運算元不等於整條指令有多長。
 //
 // 目前只有一條不一致：`34h ECL CLOCK`，overlay-03 `2E1Ah` 的序言取**一個**
-// 運算元，底稿寫兩個。差這一個運算元，`ECL7/block 17` 的靜態走訪就會從
-// `9D37h` 之後整段錯位（spec 093）。
+// 運算元，底稿寫兩個。差這一個運算元，`ECL7/block 17` 就會從 `9D37h` 之後
+// 整段錯位（spec 093）——**靜態走訪與執行期都會**。`34h` 是 passthrough，
+// 所以 VM 算「下一條在哪」那一步（`ecl.RecordEndWithCommands`）也要帶這張表，
+// 而不是只有解碼指令內容的時候帶。
 func ECLCommandTable(opcodes []ECLOpcode) map[byte]ecl.Command {
 	table := make(map[byte]ecl.Command, len(ecl.KnownCommands))
 	for opcode, command := range ecl.KnownCommands {

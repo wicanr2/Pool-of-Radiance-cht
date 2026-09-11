@@ -56,3 +56,29 @@ Pool 這一側的指令表由 `gamepack.PoolCommandTable()` 提供：底稿是�
 時鐘存在 app 裡（七個 word），`34h` 對第 1 格加 count 次一。
 **進位沒做**：`02B1h` 還沒讀，而時鐘目前沒有任何取用點，
 所以進位錯了也看不出來、影響不到玩家路徑。接上取用點之前不要靠它。
+
+## 指令表要一路帶到「下一條在哪」那一步
+
+`34h` 是 **passthrough**（引擎沒有核心處理常式，由前端接），而 VM 的
+passthrough 分支原本用 `ecl.RecordEnd` 算下一條指令的位址——那一支沒有指令表
+參數，一律用共用 engine 那張二手的。於是同一條指令出現兩套長度：**內容用
+Pool 的表解（一個運算元）、位址用二手表算（兩個運算元）**，PC 多跳三個位元組。
+
+症狀延後發作，這是它難查的地方：這一條照樣執行完、事件照樣送出去，PC 卻停在
+指令中間，要等到走到下一條才冒出 `unknown opcode`。實際撞到的是
+`ECL7/block 17` 的 `9D37h`（payload offset 1079）：
+
+```
+payload 1075..1090   01 FF 9C 13 34 00 01 02 01 A7 9D 03 01 82 6E 00
+                                 ^1079 34h
+Pool 的表    1079 → 下一條在 1082（02h GOSUB）
+二手表       1079 → 下一條在 1085（9Dh，不是 opcode）
+```
+
+engine 那一側現在是 `ecl.RecordEndWithCommands`，VM 傳自己的 `commands`
+（`TestPassthroughAdvancesWithTheSessionCommandTable`）。Pool 這一側每一個建
+session 的入口都要 `SetCommands(PoolCommandTable())`——`NewDOSECLArchiveSession`
+（讀檔那條路）原本漏了。
+
+**可重用的規則：解碼用的表要跟著走完整條路徑。** 只要有一個地方退回預設，
+出錯的就不是那一條指令，而是**它之後的每一條**——而報出來的位置離成因很遠。

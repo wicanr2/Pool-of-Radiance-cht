@@ -157,13 +157,18 @@ func trace(zipPath string, archiveNumber, blockID, entryIndex int) (report, erro
 		starts = []int{starts[entryIndex]}
 		entryAddresses = []string{entryAddresses[entryIndex]}
 	}
-	graph, err := ecl.TraceGraphAtBaseWithCommands(selected, starts, codeBase, len(selected)*8, gamepack.PoolCommandTable())
+	commands := gamepack.PoolCommandTable()
+	graph, err := ecl.TraceGraphAtBaseWithCommands(selected, starts, codeBase, len(selected)*8, commands)
 	if err != nil {
 		return report{}, err
 	}
 	rows := make([]instructionRow, 0, len(graph.Instructions))
 	for _, ins := range graph.Instructions {
-		end, err := ecl.RecordEnd(selected, ins.Offset)
+		// **這裡也要帶 Pool 的表。** 走訪用對的表、而 `record_end` 用二手表的
+		// 話，同一份報告裡兩個欄位會互相矛盾：`34h ECL CLOCK` 的下一條指令
+		// 明明接在 1082，`record_end` 卻寫 1085。查 `ECL7/17` 那一處
+		// `unknown opcode` 時，這個欄位先把人帶去懷疑走訪本身（spec 093）。
+		end, err := ecl.RecordEndWithCommands(selected, ins.Offset, commands)
 		if err != nil {
 			return report{}, err
 		}

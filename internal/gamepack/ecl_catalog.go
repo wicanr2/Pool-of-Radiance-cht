@@ -111,6 +111,10 @@ func NewDOSECLArchiveSession(archive ECLArchive, blockID uint16, startAddress ui
 	if err := session.SetTransitionEntries(0, 4); err != nil {
 		return nil, err
 	}
+	// 解碼用 Pool 自己量出來的指令表，不是共用 engine 那張二手的（spec 093）。
+	// **讀檔這條路也要設**：`Restore` 會換掉 machine，而 engine 那一側搬的是
+	// 這一份，沒設就整個 session 都在用二手表。
+	session.Machine().SetCommands(PoolCommandTable())
 	session.Machine().SetCharacterProjector(initialCharacterProjector(characters))
 	session.Machine().SetPartyStrengthResolver(initialPartyStrengthResolver(characters))
 	return session, nil

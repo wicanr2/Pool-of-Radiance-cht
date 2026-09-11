@@ -89,7 +89,7 @@
 | [075](075-saving-throws.md) | 豁免判定 | CONFORMED＋DRAFT | `cmd/pool-game/damage.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 8 個 | — |
 | [076](076-party-facing-convention.md) | 隊伍朝向的座標系 | CONFORMED | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 6 個 | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/party_panel_test.go`、`internal/gamepack/facing_test.go` 等 4 個 |
 | [077](077-ecl-opcode-dispatch.md) | ECL 指令的派發鏈與運算元個數 | CONFORMED＋DRAFT | `internal/gamepack/ecl_opcodes.go` | — |
-| [078](078-encounter-menu-opcode.md) | `29h ENCOUNTER MENU` | CONFORMED＋DRAFT | `cmd/pool-game/encounter.go`、`internal/gamepack/ecl_operands.go`、`internal/gamepack/encounter.go` 等 6 個 | `internal/gamepack/encounter_test.go` |
+| [078](078-encounter-menu-opcode.md) | `29h ENCOUNTER MENU` | CONFORMED＋DRAFT | `cmd/pool-game/encounter.go`、`internal/gamepack/ecl_operands.go`、`internal/gamepack/encounter.go` 等 6 個 | `cmd/pool-game/door_test.go`、`internal/gamepack/encounter_test.go` |
 | [079](079-movement-rate.md) | 移動力 | CONFORMED | `cmd/pool-game/checkparty.go`、`cmd/pool-game/encounter.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/equipment_test.go` |
 | [080](080-armour-class-from-equipment.md) | 裝備算出來的護甲等級 | READY | `cmd/pool-game/party_panel.go`、`internal/gamepack/armour_class.go`、`internal/gamepack/record_recompute.go` | — |
 | [081](081-ecl-program-opcode.md) | `38h PROGRAM` | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/program.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/playthrough_test.go` |
@@ -104,7 +104,7 @@
 | [090](090-ecl-who-opcode.md) | `39h WHO` 與「目前角色」 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go` |
 | [091](091-ecl-add-npc-opcode.md) | `36h ADD NPC` | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/main_test.go` |
 | [092](092-ecl-checkparty-opcode.md) | `1Eh CHECKPARTY` | READY | `cmd/pool-game/checkparty.go`、`internal/gamepack/checkparty.go`、`internal/gamepack/intro.go` | — |
-| [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-game/ecl_clock.go`、`cmd/pool-game/main.go`、`internal/gamepack/ecl_clock.go` 等 5 個 | `cmd/pool-ecl-audit/main_test.go` |
+| [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-ecl-trace/main.go`、`cmd/pool-game/ecl_clock.go`、`cmd/pool-game/main.go` 等 7 個 | `cmd/pool-ecl-audit/main_test.go` |
 | [094](094-ecl-spell-search-opcode.md) | `3Bh SPELL` | READY＋DRAFT | `cmd/pool-game/spell_search.go`、`internal/gamepack/intro.go`、`internal/gamepack/memorised_spells.go` | — |
 | [095](095-thief-skills.md) | 角色記錄的八個賊技能 | READY | `cmd/pool-game/checkparty.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 10 個 | `cmd/pool-game/thief_skills_test.go`、`internal/gamepack/thief_skills_build_test.go` |
 | [096](096-monster-ai-structure.md) | 怪物 AI 的骨架（overlay-09） | READY | `cmd/pool-game/tactical.go`、`internal/gamepack/tactic_offsets.go`、`internal/gamepack/turn_undead_resolve.go` | `internal/gamepack/tactic_offsets_test.go` |
@@ -133,7 +133,7 @@
 | [119](119-adventure-command-bar.md) | 冒險畫面的指令列與平面全圖 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go` 等 8 個 | `cmd/pool-game/area_map_test.go`、`cmd/pool-game/field_cast_test.go` |
 | [120](120-wall-symbol-bands.md) | 8×8 符號的五帶 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` 等 5 個 | `cmd/pool-game/first_person_inset_test.go` |
 | [121](121-cloud-objects.md) | 盤面上的雲團物件 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/cloud.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/cloud_test.go`、`internal/gamepack/cloud_test.go`、`internal/gamepack/spell_cast_test.go` |
-| [122](122-locked-doors.md) | 鎖住的門（`Bash`／`Pick`／`Knock`） | CONFORMED＋DRAFT | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-doc-index/main_test.go`、`internal/gamepack/door_test.go` |
+| [122](122-locked-doors.md) | 鎖住的門（`Bash`／`Pick`／`Knock`） | CONFORMED＋DRAFT | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/door_test.go`、`cmd/pool-game/stojanow_gate_test.go` 等 4 個 |
 | [123](123-screen-frame.md) | 畫面外框的繩索花紋 | CONFORMED＋DRAFT | `cmd/pool-game/command_bar.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/screen_frame_test.go`、`cmd/pool-game/tactical_test.go` |
 | [124](124-map-names-from-the-original.md) | 地圖的名字要從原版自己的文字取 | READY＋DRAFT | `cmd/pool-doc-index/main.go`、`cmd/pool-map-names/main.go` | — |
 | [125](125-map-boundary-and-the-exit-flag.md) | 走到地圖邊界會怎樣——`@6DD5` 是誰寫的 | CONFORMED | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/main.go` | `cmd/pool-disp-scan/main_test.go` |
@@ -163,7 +163,7 @@
 | `pool-ecl-frontier` | lists the ECL opcodes that appear in Pool blocks but have neither a core VM handler nor an adapter passthrough, with every call site | 有 | 002 |
 | `pool-ecl-memory-audit` | inventories raw ECL operand references to selected runtime addresses across every Pool ECL archive | 有 | 038、039 |
 | `pool-ecl-opcodes` | 把 overlay-03 的 ECL 派發鏈 dump 成 JSON：每條 opcode 的處理常式位移與運算元個數，並標出與共用 engine 那張二手 arity 表的差異 | 有 | — |
-| `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | — |
+| `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | 093 |
 | `pool-font-coverage` | 報出遊戲要顯示、但倚天字型畫不出來的字 | 有 | — |
 | `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 97 份 |
 | `pool-geo-audit` | decodes every Pool GEO block through the shared engine and records only structural map evidence | 有 | — |
