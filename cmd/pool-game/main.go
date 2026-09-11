@@ -793,7 +793,13 @@ func (a *app) Update() error {
 	// 腳本跑完、文字留在框裡時，那一下 ENTER 還是要能翻手冊（spec 132）：
 	// 引用就寫在框裡，玩家看得到才按得下去。指令列的字母鍵在這時已經回來了，
 	// 所以這一段只吃 ENTER。
-	if a.cellTextSticky && (a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
+	//
+	// **門選單開著的時候不插隊**：那一下 ENTER 是玩家在回答門的 `BASH`／
+	// `EXIT`，不是在翻頁。下面那一段翻手冊的入口早就有同樣的守衛（遭遇、
+	// 神殿、交涉、`WHO`、格子選單都要讓路），這裡漏了門——而門是 modal 的
+	// （spec 122），漏掉的症狀是玩家按 ENTER 門沒反應。
+	if a.cellTextSticky && a.door == nil &&
+		(a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
 		if cue, ok := a.takeJournalCue(); ok {
 			return a.openJournalAt(cue)
 		}
@@ -1048,12 +1054,6 @@ func (a *app) Update() error {
 						}
 					}
 				}
-				if a.door != nil {
-					return a.doorMenuInput(
-						a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp),
-						a.justPressed(ebiten.KeyArrowRight) || a.justPressed(ebiten.KeyArrowDown),
-						a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace))
-				}
 				if a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
 					if a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp) {
 						a.cellMenuCursor = (a.cellMenuCursor + len(a.cellMenuOptions) - 1) % len(a.cellMenuOptions)
@@ -1099,6 +1099,25 @@ func (a *app) Update() error {
 				}
 				a.statusLine = "A Pool cell event is active; press ENTER to continue."
 				return nil
+			}
+			// 撞到鎖住的門之後，那個選單要吃得到按鍵（spec 122）。
+			//
+			// **這一段的位置就是修正本身。** 原本它在上面 `cellEventPending`
+			// 那個區塊**裡面**，而撞門的時候 `cellEventPending` 是 false
+			// ——選單畫得出來、狀態列也印著 `Locked. BASH EXIT`，但方向鍵與
+			// ENTER 全都走到下面的轉向與前進去了，門根本開不了。既有的門測試
+			// 都直接呼叫 `resolveDoorMenu`，繞過輸入層，所以那一排綠燈證明的
+			// 是規則對，不是玩家按得動。
+			//
+			// 排在 `cellEventPending` **後面**也是修正的一部分：`a.door` 是
+			// 持久狀態（同一道門再撞一次要接續 BASH／PICK 額度），撞不開的時候
+			// 它留著。放在前面的話，門還在而腳本排出遭遇時，`[COMBAT WAIT FLEE
+			// PARLAY]` 的方向鍵會被門吃掉、ENTER 又跑回去撞門，兩層選單一起卡死。
+			if a.door != nil {
+				return a.doorMenuInput(
+					a.justPressed(ebiten.KeyArrowLeft) || a.justPressed(ebiten.KeyArrowUp),
+					a.justPressed(ebiten.KeyArrowRight) || a.justPressed(ebiten.KeyArrowDown),
+					a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace))
 			}
 			if a.justPressed(ebiten.KeyArrowLeft) {
 				a.spawn.Facing = uint8((int(a.spawn.Facing) + 3) % 4)
@@ -1163,6 +1182,14 @@ func (a *app) moveInitialDungeonForward() error {
 		a.statusLine = "A wall blocks the way."
 		return nil
 	}
+	// **走得過去，上一道門的選單就過期了。**
+	//
+	// `a.door` 是持久狀態（同一道門再撞一次要接續 BASH／PICK 額度），但那個
+	// 「同一道門」的前提是**中間沒有走成任何一步**。少了這一行，門會跟著隊伍
+	// 跨到別的格：玩家在那裡觸發腳本事件，而門選單還開著吃掉方向鍵與 ENTER，
+	// 於是兩個 UI 疊在一起誰都動不了。原版沒有這個狀態——撞門是當下的一次性
+	// 互動，走成了就結束（spec 122）。
+	a.door = nil
 	if a.eventMachine != nil {
 		a.cellMovedByScript = false
 		a.setMapExitFlag(dx, dy)

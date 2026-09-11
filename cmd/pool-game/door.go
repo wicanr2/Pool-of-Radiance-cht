@@ -59,8 +59,29 @@ func (a *app) beginDoorMenu(x, y, direction int) bool {
 		a.door = &doorMenu{X: x, Y: y, Direction: direction, State: flags, Bash: true, Pick: true}
 	}
 	a.refreshDoorOptions()
-	a.statusLine = "Locked. " + strings.Join(a.door.Options, " ")
+	a.statusLine = a.doorMenuLine("Locked. ")
 	return true
+}
+
+// doorMenuLine 是門選單那一行，游標那一項標 `>`。
+//
+// **游標要看得見。** 原本五處都是 `strings.Join(Options, " ")`，移動游標之後
+// 字串一模一樣——玩家按了方向鍵，畫面上什麼都沒變，等於選不到 BASH 以外的
+// 東西。這件事一直沒被發現，是因為門選單的按鍵分派本來就走不到
+//（`main.go` 把它埋在 `cellEventPending` 裡面），按了根本沒反應。
+func (a *app) doorMenuLine(prefix string) string {
+	if a.door == nil || len(a.door.Options) == 0 {
+		return prefix
+	}
+	parts := make([]string, len(a.door.Options))
+	for index, option := range a.door.Options {
+		if index == a.door.Cursor {
+			parts[index] = "> " + option
+		} else {
+			parts[index] = "  " + option
+		}
+	}
+	return prefix + strings.Join(parts, " ")
 }
 
 // refreshDoorOptions 重算選單。原版 `0E06h`..`0EBFh` 的三道閘門：
@@ -140,11 +161,11 @@ func (a *app) doorMenuInput(left, right, confirm bool) error {
 	switch {
 	case left:
 		a.door.Cursor = (a.door.Cursor + len(a.door.Options) - 1) % len(a.door.Options)
-		a.statusLine = "Locked. " + strings.Join(a.door.Options, " ")
+		a.statusLine = a.doorMenuLine("Locked. ")
 		return nil
 	case right:
 		a.door.Cursor = (a.door.Cursor + 1) % len(a.door.Options)
-		a.statusLine = "Locked. " + strings.Join(a.door.Options, " ")
+		a.statusLine = a.doorMenuLine("Locked. ")
 		return nil
 	case !confirm:
 		return nil
@@ -163,7 +184,7 @@ func (a *app) resolveDoorMenu(option string) error {
 			return a.openDoor("The door bursts open.")
 		}
 		a.refreshDoorOptions()
-		a.statusLine = "The door holds. " + strings.Join(door.Options, " ")
+		a.statusLine = a.doorMenuLine("The door holds. ")
 	case doorOptionPick:
 		// **不論成敗都掉**：原版 `056Bh` 在迴圈外無條件清掉 `DS:6CD3h`。
 		door.Pick = false
@@ -181,7 +202,7 @@ func (a *app) resolveDoorMenu(option string) error {
 			return a.openDoor("The lock gives way.")
 		}
 		a.refreshDoorOptions()
-		a.statusLine = "The lock will not turn. " + strings.Join(door.Options, " ")
+		a.statusLine = a.doorMenuLine("The lock will not turn. ")
 	case doorOptionKnock:
 		caster := a.knockCaster()
 		if caster < 0 {

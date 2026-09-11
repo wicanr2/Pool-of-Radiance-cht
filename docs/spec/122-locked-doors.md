@@ -232,3 +232,75 @@ overlay 怎麼定址它，不是數值範圍。**
 
 門的旗標本身仍然存在 GEO 裡，所以開過的門會**跟著存檔走**——`UnlockDoorWrapped`
 改的是載入的 `Grid`，和原版改 `DS:69BAh` 指到的那張圖是同一件事。
+
+## 兩種選單的輸入優先權
+
+分派的順序是 **`cellEventPending` → 門 → 轉向與前進**：
+
+- 有格子事件（遭遇、對話、寶物、商店）時，門**不吃**按鍵。`a.door` 是持久
+  狀態——撞不開的門留著，好接續 `Bash`／`Pick` 的額度——所以它非 nil 不代表
+  門選單正在等玩家回答。
+- 沒有格子事件時，門是 **modal** 的：方向鍵移游標、ENTER 選定，其他什麼都
+  不做。關得掉，因為 `refreshDoorOptions` 無條件補上 `EXIT`。
+
+游標走 `doorMenuLine`，選到的那一項標 `>`。五處狀態列都用它。
+
+**這一節存在的理由是一條可重用的規則：一份狀態同時表示「記憶」與「正在等
+輸入」的時候，輸入分派會用錯它。** 門的狀態要跨多次撞門留著，而選單只在
+最上層時該吃鍵——兩件事共用 `a.door != nil` 這個條件，於是兩個方向都會錯：
+排在格子選單前面就把遭遇選單的鍵吃掉，排在 `cellEventPending` 裡面就在撞門
+的當下走不到（`beginDoorMenu` 不設 `cellEventPending`）。
+
+**這種缺陷單元測試抓不到。** 門那幾條測試都直接呼叫 `resolveDoorMenu`，
+繞過輸入層——規則對，而玩家按不動，報表上兩者長得一樣。要抓它得從
+`Update()` 送按鍵進去（`door_test.go` 的 `TestTheDoorMenuTakesTheArrowKeys`
+與 `TestALingeringDoorDoesNotSwallowTheCellMenuKeys`）。
+
+### modal 讓治具裡的無界迴圈變成死迴圈
+
+門變 modal 之後，測試治具裡每一個「一直按到某個狀態成立」的迴圈都要先確認門
+沒開著。`stojanow_gate_test.go` 有七處、`wilderness_explore_test.go` 有兩處
+`for spawn.Facing != 目標 { press(右) }`——門開著的時候那個右鍵移的是門選單的
+游標，`spawn.Facing` 一個都不會動，迴圈就轉不出來。
+
+**症狀是整條測試逾時，看起來像變慢而不是卡住**：`go test` 只報
+`panic: test timed out`，而那條測試本來就是整個套件裡最慢的一條，所以第一眼會
+以為是「門讓它多走了幾步」。分辨的方法是看 `running tests:` 那一行的耗時——
+19 分 25 秒對上原本的 7 分半，差的不是倍率而是「沒有終點」。
+
+現在那九處走 `faceTowards`（先 `dismissDoorMenu` 再轉，而且帶 guard），
+`answerCellMenus` 的 `busy` 也把 `a.door != nil` 算進去。
+**新增這種迴圈時要帶 guard**：沒有終點的迴圈報出來的是逾時，而逾時不會告訴
+任何人是哪一個條件永遠不成立。
+
+### 門在走成一步之後過期
+
+`a.door` 持久是為了接續 `Bash`／`Pick` 的額度，但「同一道門」的前提是**中間
+沒有走成任何一步**。所以 `moveInitialDungeonForward` 一旦真的走過去，就把它
+清掉。少了這一步，門會跟著隊伍跨到別的格，在那裡與腳本事件疊在一起。
+
+### 翻手冊的入口要讓路給門
+
+`cellTextSticky` 那一段（腳本跑完、字留在框裡時，ENTER 翻到引用的手冊條目，
+spec 132）**只檢查 ENTER／SPACE**，而且原本沒有任何守衛。門是 modal 的，
+所以它也要讓路：門選單開著時那一下 ENTER 是玩家在回答 `BASH`／`EXIT`。
+
+下面那個翻手冊的入口早就有完整守衛（遭遇、神殿、交涉、`WHO`、格子選單都要
+讓路），這一段漏了門。漏掉的症狀是**門的游標移得動、ENTER 沒反應**——
+因為那一段不檢查方向鍵。
+
+順帶記一筆治具的技術債：`scriptedKeys.JustPressed`（測試治具）查一次就
+消費，而 ebiten 的 `IsKeyJustPressed` 不消費。換成不消費之後建角與商店那兩條
+`TestNormalKeys*` 立刻紅——也就是說**真實遊戲裡按一下可能推進不只一步**，
+只是被治具藏住了。worklist 的 `test-keys-consume-input`。
+
+### 還差的：門選單開著時指令列仍然活著
+
+`freeMovementActive()` 不看 `a.door`，所以門選單開著的時候指令列照樣畫、
+`A`／`C`／`V` 那幾個鍵照樣吃得到——原版那時候整列換成
+`Bash`／`Pick`／`Knock`／`Exit`，其他指令按不到。方向鍵與 ENTER 已經歸門了，
+指令鍵還沒，所以現在是半個 modal。
+
+改它要連帶動到畫面識別字：`freeMovementActive()` 同時決定 `adventure-move`
+那個名字（`screen_state.go`），而對拍腳本靠它等畫面。所以這一項要跟對拍的
+鍵序一起改，不是單獨把條件補上去就好。
