@@ -228,6 +228,12 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   > 清單是假斷言長得最好的地方：東西接上了，而沒有人回頭改那一條。
   > 2026-09-10 抓到臭雲術寫著「派發表六十七格裡只剩這一支」，實際上派發
   > 那一格早就接上，缺的只是盤面上的雲團物件。
+- **每一條在 GitHub 上有一個對應的 issue**（`github_issue` 欄位就是編號，
+  <https://github.com/wicanr2/Pool-of-Radiance-cht/issues>），`render` 會把連結
+  帶進 WORKLIST.md。issue 給人看、給人討論；**權威仍然是 JSON**，因為 GitHub
+  的清單不會自己發現「東西做好了但沒人回來改」，`-mode verify` 會。
+  所以順序是**先改 JSON，再把 issue 更新成一樣**——反過來做，verify 就對不上
+  真正的台帳了。開新條目時一併開 issue 並把編號寫回 `github_issue`。
 
 ## 7. 原版對拍與截圖契約
 

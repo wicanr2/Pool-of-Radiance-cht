@@ -1,6 +1,6 @@
 {
   "schema": "pool-worklist/1",
-  "note": "未完成項的權威在這一份。WORKLIST.md 兩個 `worklist:begin`／`worklist:end` 標記之間那一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改；標記外的段落是手寫的，工具不會動。每一項的 verify 跑起來為真代表『這一條仍然未完成』——為假就是東西做好了而清單沒改，也就是過期斷言。`json_len` 與 `json_gap` 是同一份資料的兩個方向：前者「≤ max 才算未完成」給進度型用（涵蓋幾張圖，越多越好），後者「≥ min 就算未完成」給缺口型用（幾份規格沒人指回去，越少越好）。",
+  "note": "未完成項的權威在這一份。WORKLIST.md 兩個 `worklist:begin`／`worklist:end` 標記之間那一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改；標記外的段落是手寫的，工具不會動。每一項的 verify 跑起來為真代表『這一條仍然未完成』——為假就是東西做好了而清單沒改，也就是過期斷言。`json_len` 與 `json_gap` 是同一份資料的兩個方向：前者「≤ max 才算未完成」給進度型用（涵蓋幾張圖，越多越好），後者「≥ min 就算未完成」給缺口型用（幾份規格沒人指回去，越少越好）。　每一條在 GitHub 上有一個對應的 issue（`github_issue` 欄位就是編號，<https://github.com/wicanr2/Pool-of-Radiance-cht/issues>）：issue 那邊給人看、給人討論，這一份留著是因為 verify 要跑得起來——GitHub 的清單不會自己發現「東西做好了但沒人回來改」，`cmd/pool-worklist` 會。兩邊的內容以這一份為準，改完這裡要把 issue 一起更新。",
   "layers": {
     "feature": "玩家會撞到的功能缺口",
     "verification": "驗證缺口：接了，但沒拿原版當裁判驗過",
@@ -11,13 +11,14 @@
       "id": "wandering-monsters",
       "layer": "feature",
       "title": "走路遭遇還沒接上（規則已讀完）",
-      "body": "`encounter.go` 自承 remake 沒有遊蕩遭遇，目前的戰鬥全部掛在格子事件底下。**這一條有數字**：起始地圖 GEO3／0 的 1024 個「座標×朝向」樣本各跑一次格子生命週期，沒有任何一格走到 `24h COMBAT`（`docs/audit/pool-initial-cell-sweep.json`）。\n\n**2026-09-11 規則讀完了**（spec 136）：擲骰在**入口 1**——overlay-03 主迴圈走一步之後 `3750h` 跑的那一支。貧民窟這一份在 ECL2 block 20 的 `9975h`，先 `AND 7Fh` 取本格事件碼再 `ON GOTO` 分派 21 個處理常式；事件碼 0（普通格子）落在 `9AA5h`，那裡三道否決之後 `RANDOM 13`、兩個旗標各加 4 與 5、`> 12` 才遭遇。擲中之後 `9B68h` 起的編組碼**與入口 3（紮營被打斷）共用**，但入口 3 是 `GOTO @9B68` 直接跳進來的，不擲骰。\n\n所以缺的是 remake 這一側：走一步之後要跑入口 1，並讓 `@C04F`（本格值）、`@C04B`／`@C04C`／`@C04D`（x／y／朝向）這組玩家狀態變數對得上。\n\n**2026-09-11 再查**：接線其實早就在了——`cmd/pool-game/main.go` 走完一步呼叫 `beginInitialSearch`，它跑的就是入口 1；`projectInitialPosition` 也已經把本格值與座標投影進去；`24h COMBAT` 接到 `enterCombatStaging`。`internal/gamepack/slum_wandering_test.go` 一步一步跑入口 1，確實擲得出遭遇、三群的編號都在 `B6E6h` 那張表裡。\n\n所以**剩下的是遊戲層的端到端**：從新遊戲走進貧民窟，證明玩家真的遇得到、選單四個出口（打／等／逃／談）各自走到該去的地方。\n\n舊的 verify 抓的是 `encounterStartDistance` 的註解，而那句講的是**遭遇起始距離**沒有地圖上的怪物實體，跟走路遭遇不是同一件事——抓錯自承了。",
+      "body": "規則已經讀完（spec 136），接線也在了，缺的是**遊戲層的端到端**。\n\n擲骰在**入口 1**——overlay-03 主迴圈走一步之後 `3750h` 跑的那一支。貧民窟這一份在 ECL2 block 20 的 `9975h`：先 `AND 7Fh` 取本格事件碼再 `ON GOTO` 分派 21 個處理常式；事件碼 0（普通格子）落在 `9AA5h`，三道否決之後 `RANDOM 13`、`> 12` 才遭遇。擲中之後 `9B68h` 起的編組碼與入口 3（紮營被打斷）共用，但入口 3 是 `GOTO @9B68` 直接跳進來的，不擲。\n\nremake 這一側：`cmd/pool-game/main.go` 走完一步呼叫 `beginInitialSearch`，跑的就是入口 1；`projectInitialPosition` 投影本格值與座標；搜尋旗標投影進 `@6DCA`；`24h COMBAT` 接到 `enterCombatStaging`。`internal/gamepack/slum_wandering_test.go` 一步一步跑入口 1，擲得出遭遇、三群的編號都在 `B6E6h` 那張表裡，而且邊走邊搜的遭遇率明顯較高（300 步 12 比 45）。\n\n**所以剩下的是走一遍給人看**：從新遊戲走進貧民窟，證明玩家真的遇得到、遭遇選單四個出口（打／等／逃／談）各自走到該去的地方。",
       "acceptance": "remake 走同一條路線（從 `(0,4)` 往西進貧民窟往前走），要在合理步數內排出遭遇、停在遭遇選單，選 COMBAT 進戰鬥、選 FLEE 被丟到 spec 136 那五個落點之一。遭遇機率要跟著 spec 136 的那張表走，不是自己訂一個數字。",
       "verify": {
         "kind": "manual",
         "note": "要玩家路徑：從新遊戲走進貧民窟，遇到怪並走完遭遇選單的四個出口。"
       },
-      "blocked_by": "只剩 `@6DCA`（== 1 時遭遇機率 +4）。另外三個旗標 2026-09-11 讀出來了：`@4A80`／`@4ABB` 是清區進度（打贏才加，滿 15 或滿 25 就不再遭遇），`@4A0B` 是老太婆那條任務的狀態機（完成後機率 +5、怪物 +5、清區進度歸零）。`@6DCA` 跨八個封存 64 筆引用，是全域的東西。"
+      "blocked_by": "",
+      "github_issue": 1
     },
     {
       "id": "thief-skill-source",
@@ -33,7 +34,8 @@
         "pattern": "升級／訓練那條路徑還沒接",
         "note": "程式裡的自承還在"
       },
-      "blocked_by": ""
+      "blocked_by": "",
+      "github_issue": 2
     },
     {
       "id": "level-drain-source",
@@ -49,7 +51,8 @@
         "pattern": "remake 還沒有吸取的來源",
         "note": "程式裡的自承還在"
       },
-      "blocked_by": "特殊攻擊的分派還沒讀。線索在 spec 065：「第一形態空的那六隻怪物，牠們的第一形態是特殊攻擊」——所以怪物記錄的兩個攻擊槽裡，空骰子的那一格代表走特殊攻擊，但走去哪一支、怎麼挑，都還沒定位。"
+      "blocked_by": "特殊攻擊的分派還沒讀。線索在 spec 065：「第一形態空的那六隻怪物，牠們的第一形態是特殊攻擊」——所以怪物記錄的兩個攻擊槽裡，空骰子的那一格代表走特殊攻擊，但走去哪一支、怎麼挑，都還沒定位。",
+      "github_issue": 3
     },
     {
       "id": "combat-numbers-vs-original",
@@ -60,7 +63,8 @@
       "verify": {
         "kind": "manual",
         "note": "沒有機器可判的訊號。接上逐回合比對的測試之後，把這一條改成綁那條測試存不存在"
-      }
+      },
+      "github_issue": 4
     },
     {
       "id": "main-line-end-to-end",
@@ -71,7 +75,8 @@
       "verify": {
         "kind": "manual",
         "note": "沒有機器可判的訊號。寫成可重跑的實跑測試之後，把這一條改成綁那條測試"
-      }
+      },
+      "github_issue": 5
     },
     {
       "id": "real-machine-startup",
@@ -82,7 +87,8 @@
       "verify": {
         "kind": "manual",
         "note": "要別人在真機上跑完回填。checklist 目前沒有結構化的結果欄位，所以沒得驗"
-      }
+      },
+      "github_issue": 6
     },
     {
       "id": "guide-other-maps",
@@ -96,7 +102,8 @@
         "field": "maps",
         "max": 1,
         "note": "攻略只涵蓋 1 張圖（3/00）時這一條仍未完成；多一張這裡就會開口"
-      }
+      },
+      "github_issue": 7
     },
     {
       "id": "parity-sampling-gaps",
@@ -110,7 +117,8 @@
         "field": "screens",
         "max": 20,
         "note": "綁數量而不是綁註解：註解會被順手改掉，項數不會。**`max` 要跟著現況走**——每加一項就把它加一，這樣條目在清單還沒清空之前一直有效。"
-      }
+      },
+      "github_issue": 8
     },
     {
       "id": "explorer-never-opens-doors",
@@ -126,7 +134,8 @@
         ],
         "pattern": "一律選 EXIT，不 BASH",
         "note": "治具裡的自承還在"
-      }
+      },
+      "github_issue": 9
     },
     {
       "id": "castle-test-runtime",
@@ -138,7 +147,8 @@
       "verify": {
         "kind": "manual",
         "note": "沒有機器可判的訊號——耗時要實測。壓下去之後改成綁一條會在超時時失敗的斷言"
-      }
+      },
+      "github_issue": 10
     },
     {
       "id": "parity-not-reproducible",
@@ -150,7 +160,8 @@
       "verify": {
         "kind": "manual",
         "note": "沒有現成訊號可綁——要跑三次對拍才知道穩不穩。接上之後改成綁一支跑三次比雜湊的腳本，或在 `parity.json` 裡記下重跑的雜湊一致與否"
-      }
+      },
+      "github_issue": 11
     },
     {
       "id": "effect-expiry-teardown",
@@ -166,7 +177,8 @@
         ],
         "pattern": "地圖上目前一個代碼都不需要動作",
         "note": "綁在 `expiredEffectTeardown` 的自承註解上：第一個在地圖上有動作的代碼接上來時，那句話就得拿掉"
-      }
+      },
+      "github_issue": 12
     },
     {
       "id": "spec-test-backlinks",
@@ -181,7 +193,8 @@
         "field": "specs_without_tests",
         "min": 1,
         "note": "綁 `cmd/pool-doc-index` 算出來的清單長度。`min` 是 1 不是現況值——這一條要的是歸零"
-      }
+      },
+      "github_issue": 13
     },
     {
       "id": "test-keys-consume-input",
@@ -197,7 +210,8 @@
         ],
         "pattern": "查一次就消費掉",
         "note": "治具還在消費按鍵"
-      }
+      },
+      "github_issue": 14
     },
     {
       "id": "ecl-random-seed-fixed",
@@ -212,7 +226,8 @@
         ],
         "pattern": "目前這一局的隨機流每一局都一樣",
         "note": "遊戲本體那一個建立點還寫死 seed 1"
-      }
+      },
+      "github_issue": 15
     }
   ]
 }

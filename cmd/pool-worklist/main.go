@@ -70,7 +70,13 @@ type item struct {
 	BlockedBy  string `json:"blocked_by,omitempty"`
 	Acceptance string `json:"acceptance"`
 	Verify     verify `json:"verify"`
+	// GitHubIssue 是這一條在 GitHub 上對應的 issue 編號。0 代表還沒開。
+	// 兩邊並存：issue 給人討論，這一份留著是因為 verify 要跑得起來。
+	GitHubIssue int `json:"github_issue,omitempty"`
 }
+
+// issueBase 是 issue 連結的前綴。render 會把編號接在後面。
+const issueBase = "https://github.com/wicanr2/Pool-of-Radiance-cht/issues/"
 
 type file struct {
 	Schema string            `json:"schema"`
@@ -338,6 +344,10 @@ func render(decoded *file) string {
 				fmt.Fprintf(&out, "      **卡在**：%s\n", indented(one.BlockedBy))
 			}
 			fmt.Fprintf(&out, "      **驗收**：%s\n", indented(one.Acceptance))
+			if one.GitHubIssue != 0 {
+				fmt.Fprintf(&out, "      **討論**：[#%d](%s%d)\n",
+					one.GitHubIssue, issueBase, one.GitHubIssue)
+			}
 		}
 		out.WriteString("\n")
 	}
