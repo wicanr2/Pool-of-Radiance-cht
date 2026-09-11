@@ -1,5 +1,7 @@
 // Command pool-portrait-audit measures Pool's HEAD/BODY archives through the
 // reusable engine picture decoder. It does not export or rewrite source art.
+//
+// 量出來的形狀（哪幾個容器、每個幾張、selector 的組合）在 spec 006。
 package main
 
 import (

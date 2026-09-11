@@ -343,3 +343,42 @@ func TestTheCheckedInReportIsNotStale(t *testing.T) {
 			report.SpecCount, specs)
 	}
 }
+
+// `實作：` 那一行是規格作者**手寫的斷言**：實作根本不是 Go 的那幾份
+//（發行腳本、送鍵規則）永遠掃不到 `spec NNN`，混在「還沒接」裡就是永遠清不掉
+// 的雜訊。只認這個明確的形狀，不做關鍵字猜測。
+func TestReadSpecPicksUpTheOutsideGoNote(t *testing.T) {
+	directory := t.TempDir()
+	write := func(name, body string) string {
+		path := filepath.Join(directory, name)
+		if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		return path
+	}
+
+	outside := write("066-three-platform-release.md",
+		"# Spec 066：三平台發行包\n\n狀態：CONFORMED。\n日期：2026-09-03。\n"+
+			"實作：`tools/package-release.sh`（shell，不是 Go）。\n"+
+			"索引掃的是 .go 註解，所以這一份永遠不會出現在那裡。\n")
+	plain := write("123-something-else.md",
+		"# Spec 123：別的東西\n\n狀態：READY。\n日期：2026-09-05。\n\n"+
+			"內文裡提到實作：這樣寫不算，因為它不在行首。\n")
+
+	parsed, err := readSpec(outside)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// **只取第一句**：這一行會整個塞進索引表的一格，寫長了表格就散了。
+	if parsed.outsideGo != "`tools/package-release.sh`（shell，不是 Go）。" {
+		t.Fatalf("讀成 %q", parsed.outsideGo)
+	}
+
+	parsed, err = readSpec(plain)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parsed.outsideGo != "" {
+		t.Fatalf("不在行首的「實作：」被當成標記：%q", parsed.outsideGo)
+	}
+}

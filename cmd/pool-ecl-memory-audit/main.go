@@ -1,6 +1,9 @@
 // Command pool-ecl-memory-audit inventories raw ECL operand references to
 // selected runtime addresses across every Pool ECL archive. It deliberately
 // reports operand positions and opcodes without assigning story semantics.
+//
+// 兩份用它產的清冊：spec 038（墓園委託旗標的 producer）與 spec 039（七種
+// 戰利品的累積池）。位址的語意在那兩份裡定，不在這支工具裡。
 package main
 
 import (

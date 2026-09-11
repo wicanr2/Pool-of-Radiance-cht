@@ -12,6 +12,8 @@ import (
 
 // Pool 的 game pack。共用 engine 是作品中立的，所以**內容一律留在這一側**：
 // engine 只認 `engine.Pack` 這個結構，不認識菲蘭、不認識任何一條 Pool 的字串。
+//
+// 分檔、合併順序與 adapter 的邊界在 spec 113。
 // 反過來也成立——這個 pack 不得抄 CoAB 的地名、位址或劇情資料。
 //
 //go:embed pack/*.json

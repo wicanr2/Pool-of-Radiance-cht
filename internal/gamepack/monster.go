@@ -9,6 +9,7 @@ const monsterRecordSize = 285
 
 // MonsterRecord preserves one Pool MON*CHA block without assigning semantics
 // to fields whose original consumers have not yet been closed.
+// 記錄怎麼找、戰鬥前怎麼 staging 在 spec 048。
 // 285-byte 記錄裡兩個決定「這一隻是不是人」的欄位。
 const (
 	MonsterBodySizeOffset     = 0x6C

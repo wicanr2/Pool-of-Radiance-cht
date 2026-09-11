@@ -4,8 +4,8 @@
 > 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，
 > 這份只是把它反過來收攏，所以改了註解重跑一次就對了。
 
-135 份規格，其中 22 份還沒有任何檔案的註解指回它、58 份沒有測試提到它；
-另有 6 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go（規格自己寫的那行 `實作：`）。
+135 份規格，其中 0 份還沒有任何檔案的註解指回它、58 份沒有測試提到它；
+另有 10 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go（規格自己寫的那行 `實作：`）。
 這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。
 
 ## 規格
@@ -15,51 +15,51 @@
 | [001](001-dos-title-picture.md) | DOS TITLE DAX 圖像 | CONFORMED | `cmd/export-title/main.go` | `cmd/export-title/main_test.go` |
 | [002](002-dos-ecl-code-base-and-parser-gap.md) | DOS ECL 位址基準與 parser 缺口 | DRAFT | `cmd/pool-ecl-audit/main.go`、`cmd/pool-ecl-frontier/main.go`、`cmd/pool-text-inventory/main.go` 等 5 個 | — |
 | [003](003-dos-character-creation-flow.md) | DOS 建角流程 | READY | `cmd/pool-game/dos_export.go`、`cmd/pool-game/icon_menu.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-game/icon_menu_test.go`、`cmd/pool-game/main_test.go`、`internal/gamepack/weapon_stats_test.go` |
-| [004](004-dos-character-roll-fields.md) | DOS 角色擲值與持久欄位 | READY | — | `internal/gamepack/monster_test.go` |
+| [004](004-dos-character-roll-fields.md) | DOS 角色擲值與持久欄位 | READY | `internal/creation/rolls.go` | `internal/gamepack/monster_test.go` |
 | [005](005-first-remake-executable.md) | 第一支 remake executable | CONFORMED | `cmd/pool-game/main.go` | — |
-| [006](006-dos-portrait-archives.md) | DOS 建角 portrait archive 形狀 | READY | — | — |
+| [006](006-dos-portrait-archives.md) | DOS 建角 portrait archive 形狀 | READY | `cmd/pool-portrait-audit/main.go` | — |
 | [007](007-dos-combat-icons.md) | DOS 戰鬥圖示 | READY | `cmd/pool-game/icon_menu.go` | — |
 | [008](008-character-library-and-party-menu.md) | 建角完成、角色庫與 Party Creation Menu | CONFORMED＋READY | `cmd/pool-game/party_menu.go`、`cmd/pool-game/training.go`、`cmd/pool-game/training_gate.go` 等 4 個 | `cmd/pool-game/party_menu_test.go` |
 | [009](009-dos-geo-map-inventory.md) | DOS GEO 地圖盤點與 Phlan 入口 | CONFORMED＋READY＋DRAFT | `internal/gamepack/geometry.go` | — |
 | [010](010-dos-initial-rolf-event.md) | DOS 初始 Rolf 導覽事件 | READY＋DRAFT | `internal/gamepack/intro.go` | — |
 | [011](011-dos-rolf-guided-tour.md) | DOS Rolf 34-step 導覽與結束交接 | READY＋DRAFT | `internal/gamepack/intro.go` | — |
-| [012](012-dos-cardinal-coordinate-wrapper.md) | DOS cardinal coordinate wrapper 與 401Fh dispatch | READY＋DRAFT | — | — |
+| [012](012-dos-cardinal-coordinate-wrapper.md) | DOS cardinal coordinate wrapper 與 401Fh dispatch | READY＋DRAFT | `cmd/pool-game/main.go` | — |
 | [013](013-shared-ecl-vm-rolf-path.md) | 共用 ECL VM 與 Rolf 真實 bytecode 路徑 | CONFORMED＋DRAFT | 共用 engine | — |
-| [014](014-initial-map-basic-geo-walk.md) | 第一張地圖基本 GEO walk | DRAFT | — | — |
+| [014](014-initial-map-basic-geo-walk.md) | 第一張地圖基本 GEO walk | DRAFT | `cmd/pool-game/main.go` | — |
 | [015](015-initial-map-cell-lifecycle.md) | 第一張地圖 cell lifecycle 接線 | CONFORMED | `cmd/pool-game/main.go` | — |
 | [016](016-initial-search-location-and-sune.md) | 初始地圖 SearchLocation 與 Sune 第一個事件 | CONFORMED | `cmd/pool-game/command_bar.go` | — |
 | [017](017-sune-temple-service-entry.md) | Sune 神殿服務入口與離開續行 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/main_test.go` |
-| [018](018-save-hp-status-and-temple-wounds.md) | 存檔生命值／狀態與神殿傷勢治療 | CONFORMED＋DRAFT | — | — |
+| [018](018-save-hp-status-and-temple-wounds.md) | 存檔生命值／狀態與神殿傷勢治療 | CONFORMED＋DRAFT | `internal/save/state.go`、`internal/temple/services.go` | — |
 | [019](019-pool-ecl-dialect-newecl.md) | Pool ECL dialect 與 `20h` 跨 block 交接 | CONFORMED＋DRAFT | 共用 engine | — |
 | [020](020-compare-and.md) | `14h COMPARE AND` 四 operand 比較 | CONFORMED | 共用 engine | — |
 | [021](021-load-character-selection.md) | `0Ah LOAD CHARACTER` 選定角色與 Pool 記憶體投影 | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/harbour_walk_test.go` |
-| [022](022-dos-cell-entry-order.md) | DOS 自由移動的 ECL 入口順序 | CONFORMED | — | — |
-| [023](023-city-hall-proclamations.md) | City Hall 公告與選單目的位址 | CONFORMED＋READY | — | — |
-| [024](024-city-hall-commission-proclamations.md) | City Hall commission 公告分派 | CONFORMED | — | `cmd/pool-game/coverage_test.go` |
+| [022](022-dos-cell-entry-order.md) | DOS 自由移動的 ECL 入口順序 | CONFORMED | `cmd/pool-game/main.go` | — |
+| [023](023-city-hall-proclamations.md) | City Hall 公告與選單目的位址 | CONFORMED＋READY | 共用 engine | — |
+| [024](024-city-hall-commission-proclamations.md) | City Hall commission 公告分派 | CONFORMED | 共用 engine | `cmd/pool-game/coverage_test.go` |
 | [025](025-newecl-transition-lifecycle.md) | `NEWECL` 後的 command-set lifecycle | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/playthrough_test.go` |
-| [026](026-city-hall-clerk-entry.md) | City Hall clerk office 正常入口 | CONFORMED | — | — |
+| [026](026-city-hall-clerk-entry.md) | City Hall clerk office 正常入口 | CONFORMED | 共用 engine | — |
 | [027](027-save-table-opcode.md) | Pool ECL opcode `35h SAVE TABLE` | CONFORMED | 共用 engine | `cmd/pool-doc-index/main_test.go` |
-| [028](028-city-hall-reward-commission-loop.md) | City Hall reward／commission 迴圈 | DRAFT | — | — |
-| [029](029-city-hall-fresh-party-commission-exit.md) | 全新隊伍 City Hall 委託列舉與離場 | READY＋DRAFT | — | — |
-| [030](030-party-strength-vm-contract.md) | `1Dh PARTYSTRENGTH` VM 契約 | CONFORMED＋DRAFT | `internal/character/dos.go` | `internal/character/export_test.go` |
-| [031](031-level-one-party-strength-projection.md) | 一級新角色的 `PARTYSTRENGTH` 投影 | CONFORMED＋DRAFT | — | — |
-| [032](032-treasure-vm-contract.md) | `27h TREASURE` 八欄請求與墓園順序 | CONFORMED＋DRAFT | — | — |
+| [028](028-city-hall-reward-commission-loop.md) | City Hall reward／commission 迴圈 | DRAFT | `cmd/pool-city-hall-audit/main.go` | — |
+| [029](029-city-hall-fresh-party-commission-exit.md) | 全新隊伍 City Hall 委託列舉與離場 | READY＋DRAFT | 共用 engine | — |
+| [030](030-party-strength-vm-contract.md) | `1Dh PARTYSTRENGTH` VM 契約 | CONFORMED＋DRAFT | `internal/character/dos.go`、`internal/gamepack/intro.go` | `internal/character/export_test.go` |
+| [031](031-level-one-party-strength-projection.md) | 一級新角色的 `PARTYSTRENGTH` 投影 | CONFORMED＋DRAFT | `internal/gamepack/intro.go` | — |
+| [032](032-treasure-vm-contract.md) | `27h TREASURE` 八欄請求與墓園順序 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | — |
 | [033](033-item3-block33-record-shape.md) | `ITEM3.DAX/33h` 五筆 63-byte 物品紀錄 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/gamepack/shop.go` | — |
-| [034](034-postcombat-treasure-menu-boundary.md) | 戰後戰利品選單與物品鏈移除邊界 | READY＋DRAFT | — | — |
+| [034](034-postcombat-treasure-menu-boundary.md) | 戰後戰利品選單與物品鏈移除邊界 | READY＋DRAFT | `cmd/pool-game/main.go` | — |
 | [035](035-character-item-receive-and-carry.md) | 角色接收物品、16 格上限與力量負重 | CONFORMED＋DRAFT | `internal/character/carry.go`、`internal/gamepack/weapon_stats.go` | — |
-| [036](036-combat-postcombat-treasure-dispatch.md) | `24h COMBAT` 的戰鬥／神殿／戰後服務分派 | CONFORMED＋DRAFT | — | — |
+| [036](036-combat-postcombat-treasure-dispatch.md) | `24h COMBAT` 的戰鬥／神殿／戰後服務分派 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | — |
 | [037](037-campaign-save-and-ecl-session.md) | 戰役存檔、地圖位置與 ECL session 續點 | CONFORMED＋DRAFT | 共用 engine | — |
-| [038](038-graveyard-commission-state-producers.md) | 墓園委託旗標 producer 清冊 | CONFORMED＋DRAFT | — | — |
-| [039](039-graveyard-seven-pool-treasure.md) | 墓園七種戰利品累積池 | READY | — | — |
+| [038](038-graveyard-commission-state-producers.md) | 墓園委託旗標 producer 清冊 | CONFORMED＋DRAFT | `cmd/pool-ecl-memory-audit/main.go` | — |
+| [039](039-graveyard-seven-pool-treasure.md) | 墓園七種戰利品累積池 | READY | `cmd/pool-ecl-memory-audit/main.go` | — |
 | [040](040-seven-currency-pool-take-share.md) | 七種貨幣的 View／Take／Pool／Share | READY | `cmd/pool-game/appraise.go`、`internal/character/export.go`、`internal/gamepack/movement.go` 等 4 個 | — |
 | [041](041-city-hall-completion-notification-table.md) | City Hall 完成通知狀態表 | READY＋DRAFT | `internal/gamepack/cityhall.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/playthrough_test.go`、`internal/gamepack/cityhall_test.go` |
-| [042](042-dos-ecl-archive-catalog-and-slums-counter.md) | DOS ECL archive catalog 與 Slums 完成計數 | READY＋DRAFT | — | — |
+| [042](042-dos-ecl-archive-catalog-and-slums-counter.md) | DOS ECL archive catalog 與 Slums 完成計數 | READY＋DRAFT | `internal/gamepack/intro.go` | — |
 | [043](043-load-files-and-three-wall-slots.md) | LOAD FILES 與三個 WALLDEF slot | READY | `cmd/pool-game/main.go`、`cmd/pool-world-cell-sweep/main.go`、`internal/gamepack/geometry.go` 等 4 個 | `cmd/pool-game/main_test.go`、`internal/gamepack/walls_test.go` |
-| [044](044-ecl-archive-campaign-save.md) | ECL archive campaign 存檔 | CONFORMED＋READY | — | — |
-| [045](045-cross-archive-newecl.md) | 跨 archive NEWECL 與 New Phlan→Slums | READY＋DRAFT | — | — |
+| [044](044-ecl-archive-campaign-save.md) | ECL archive campaign 存檔 | CONFORMED＋READY | `internal/save/state.go` | — |
+| [045](045-cross-archive-newecl.md) | 跨 archive NEWECL 與 New Phlan→Slums | READY＋DRAFT | `internal/gamepack/intro.go` | — |
 | [046](046-encounter-roster-and-combat-continuation.md) | 遭遇名冊與 COMBAT 續跑契約 | READY＋DRAFT | `cmd/pool-game/tactical.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/tactical_test.go` |
 | [047](047-shared-first-person-inset-fill.md) | 共用第一人稱內框填滿 | READY | `cmd/pool-game/first_person_inset.go`、`cmd/pool-game/main.go`、`internal/assets/camp_fire.go` 等 4 個 | `cmd/pool-game/main_test.go` |
-| [048](048-monster-record-and-precombat-staging.md) | 怪物角色記錄與戰鬥前 staging | CONFORMED＋DRAFT | — | — |
+| [048](048-monster-record-and-precombat-staging.md) | 怪物角色記錄與戰鬥前 staging | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`internal/gamepack/monster.go` | — |
 | [049](049-pool-character-combat-fields.md) | Pool 285-byte 角色／怪物戰鬥欄位 | READY＋DRAFT | `internal/gamepack/class_thac0.go`、`internal/gamepack/cloud.go` | `internal/gamepack/cloud_test.go` |
 | [050](050-basic-attack-and-damage-roll.md) | Pool 基礎命中與傷害骰 primitive | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go` | — |
 | [051](051-attack-slot-phase-count.md) | Pool 雙攻擊槽與半回合攻擊次數 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/gamepack/monster.go`、`internal/gamepack/saving_throw_table.go` | `cmd/pool-game/attack_forms_test.go`、`cmd/pool-game/main_test.go`、`internal/gamepack/monster_test.go` |
@@ -77,7 +77,7 @@
 | [063](063-character-base-combat-stats.md) | 角色的基礎 AC、THAC0、移動與武器攻擊數值 | READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/dos_export.go`、`cmd/pool-game/tactical.go` 等 12 個 | `cmd/pool-game/dos_export_test.go`、`cmd/pool-game/tactical_test.go`、`internal/gamepack/experience_test.go` 等 5 個 |
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | — |
 | [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
-| [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（Docker 工具鏈與 shell，不是 Go——索引掃的是 `.go` 註解裡的 `spec NNN`，這一份永遠不會出現在那裡）。 | — |
+| [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | — |
 | [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go` | `cmd/pool-game/shop_walk_test.go` |
 | [068](068-spell-name-table.md) | 法術名稱表 | CONFORMED＋DRAFT | `cmd/pool-game/spells.go`、`internal/gamepack/spell_dispatch.go`、`internal/gamepack/spell_table.go` | — |
 | [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/tactical.go`、`internal/character/export.go` 等 9 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
@@ -124,7 +124,7 @@
 | [110](110-spellbook.md) | 法術書（角色記錄 `+32h + 編號`） | CONFORMED＋DRAFT | `cmd/pool-game/spellbook.go`、`cmd/pool-game/spells.go`、`internal/gamepack/spellbook.go` 等 4 個 | `cmd/pool-game/memorise_test.go`、`cmd/pool-game/spellbook_test.go`、`internal/gamepack/spellbook_test.go` |
 | [111](111-turn-undead.md) | 轉變不死生物 | READY | `internal/gamepack/turn_undead_resolve.go` | `internal/journal/manual_tables_test.go` |
 | [112](112-effect-code-dispatch.md) | 效果代碼的分派（overlay-24 entry 3／entry 1 與 `014Dh`） | READY | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/cloud.go` 等 5 個 | `cmd/pool-game/cast_test.go`、`internal/gamepack/effect_list_test.go` |
-| [113](113-game-pack.md) | Pool 的 game pack 與 adapter | READY | — | — |
+| [113](113-game-pack.md) | Pool 的 game pack 與 adapter | READY | `internal/gamepack/pack.go` | — |
 | [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_interruption_test.go`、`cmd/pool-game/camp_screen_test.go` 等 5 個 |
 | [115](115-temple-services.md) | 神殿的九項服務（overlay-04） | READY | `cmd/pool-game/main.go`、`internal/save/state.go` | `cmd/pool-game/main_test.go` |
 | [116](116-appraise-and-sell.md) | 估價與販賣寶石珠寶（overlay-21 entry 19） | READY＋OPEN | `cmd/pool-game/appraise.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/text.go` | `cmd/pool-game/camp_test.go` |
@@ -144,7 +144,7 @@
 | [130](130-character-sheet-layout.md) | 人物資料頁的版面 | READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/main.go` 等 5 個 | `cmd/pool-game/field_cast_test.go` |
 | [131](131-combat-terrain-tiles.md) | 戰場的地形圖塊 | READY＋DRAFT | `cmd/pool-game/combat_screen.go`、`cmd/pool-game/sprite_overview.go`、`internal/assets/combat_terrain.go` | — |
 | [132](132-journal-citations-open-in-place.md) | 文字報了手冊編號就直接翻過去 | READY | `cmd/pool-game/journal_link.go`、`cmd/pool-game/main.go` | — |
-| [133](133-original-keyboard-shape.md) | 原版怎麼讀鍵盤 | READY＋DRAFT | dosgolem 的送鍵（`tools/dosgolem-reference.sh` 的鍵序）。**remake 這一側不重現 BIOS 讀鍵**——Ebiten 自己收鍵盤，原版那條路只用來決定自動化要送哪些鍵。 | — |
+| [133](133-original-keyboard-shape.md) | 原版怎麼讀鍵盤 | READY＋DRAFT | dosgolem 的送鍵鍵序（`tools/dosgolem-reference.sh`）。 | — |
 | [134](134-spell-list-layout.md) | 原版的法術清單版面 | READY＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/spell_page_test.go` |
 | [135](135-camp-screen-layout.md) | 原版紮營畫面的版面 | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/icon_menu.go` 等 7 個 | `cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go`、`cmd/pool-game/memorise_test.go` 等 4 個 |
 
@@ -154,17 +154,17 @@
 |---|---|---|---|
 | `dos-screen-text` | reads an unscaled 320x200 DOS text grid captured at an integer nearest-neighbour scale | 有 | — |
 | `export-title` | 把原版的標題畫面從 DAX 解出來寫成 PNG，給對拍與說明文件用 | 有 | 001 |
-| `pool-city-hall-audit` | derives a reproducible structural inventory of the City Hall reward and commission loops from the original block-8 trace | 有 | — |
+| `pool-city-hall-audit` | derives a reproducible structural inventory of the City Hall reward and commission loops from the original block-8 trace | 有 | 028 |
 | `pool-combat-icon-audit` | inventories Pool's complete combat-icon archives through the reusable engine decoder | 有 | — |
 | `pool-disp-scan` | 找 overlay 與 START.EXE 裡對某個位址／位移的記憶體存取 | 有 | 017、074、100、106、114、117 等 8 份 |
 | `pool-doc-index` | 產生 docs/spec/000-index.md：每份規格的狀態、實作它的檔案、釘住它的測試，以及 cmd/ 底下每一支工具在做什麼 | 有 | 027、100、122、124 |
 | `pool-ecl-audit` | measures the reusable ECL decoder against every Pool ECL block | 有 | 002、093 |
 | `pool-ecl-frontier` | lists the ECL opcodes that appear in Pool blocks but have neither a core VM handler nor an adapter passthrough, with every call site | 有 | 002 |
-| `pool-ecl-memory-audit` | inventories raw ECL operand references to selected runtime addresses across every Pool ECL archive | 有 | — |
+| `pool-ecl-memory-audit` | inventories raw ECL operand references to selected runtime addresses across every Pool ECL archive | 有 | 038、039 |
 | `pool-ecl-opcodes` | 把 overlay-03 的 ECL 派發鏈 dump 成 JSON：每條 opcode 的處理常式位移與運算元個數，並標出與共用 engine 那張二手 arity 表的差異 | 有 | — |
 | `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | — |
 | `pool-font-coverage` | 報出遊戲要顯示、但倚天字型畫不出來的字 | 有 | — |
-| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、015、016 等 90 份 |
+| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 97 份 |
 | `pool-geo-audit` | decodes every Pool GEO block through the shared engine and records only structural map evidence | 有 | — |
 | `pool-initial-cell-sweep` | executes the original initial-map cell lifecycle entry against isolated copies of the post-Rolf VM state | 有 | — |
 | `pool-input-manifest` | inventories the fixed DOS source ZIP without extracting or modifying its contents | 有 | — |
@@ -173,7 +173,7 @@
 | `pool-map-names` | 把「換圖的目的地區塊」與「同一段腳本剛印出來的字」配成對，用來替每一張地圖找出**原版自己給的名字** | 有 | 055、102、124 |
 | `pool-name-audit` | 把說明書定案的專有名詞回對原版資料自己的字串 | 有 | — |
 | `pool-ovr-manifest` | 產生 docs/audit/dos-ovr-manifest.json：38 顆 overlay 的位置、長度、重定位表與各自的 SHA-256，是所有 overlay 反查的起點 | 有 | — |
-| `pool-portrait-audit` | measures Pool's HEAD/BODY archives through the reusable engine picture decoder | 有 | — |
+| `pool-portrait-audit` | measures Pool's HEAD/BODY archives through the reusable engine picture decoder | 有 | 006 |
 | `pool-spell-dispatch` | 把 overlay-22 的法術效果派發表 dump 成 JSON，供 spec 073 引用，也當作後續逐支解讀處理常式的工作清單 | 有 | 070、073 |
 | `pool-text-inventory` | 盤點原版 ECL 裡所有玩家看得到的敘述文字 | 有 | 002 |
 | `pool-wilderness-map` | 解出野外地圖上「哪一格有東西」的表 | 有 | 105 |

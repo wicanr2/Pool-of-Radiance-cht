@@ -1,5 +1,7 @@
 // Command pool-city-hall-audit derives a reproducible structural inventory of
 // the City Hall reward and commission loops from the original block-8 trace.
+//
+// 這份盤點與它的判讀在 spec 028（委託與獎賞的迴圈）。
 package main
 
 import (

@@ -47,6 +47,9 @@ type Character struct {
 	ExceptionalStrength int         `json:"exceptional_strength"`
 	Money               [7]uint16   `json:"money"`
 	Gold                int         `json:"gold,omitempty"` // schema 1..4 read-only migration field
+	// 生命力分三欄是 spec 018 的結論：一個 HP 欄位表達不了「受傷」，
+	// 而神殿的治療只加 `CurrentHP` 並以 `MaxHP` 封頂；`RawHP` 是還沒套體質
+	// 加成的骰值，重算上限時要用它。
 	MaxHP               int         `json:"max_hp"`
 	CurrentHP           int         `json:"current_hp"`
 	Status              uint8       `json:"status"`
@@ -156,6 +159,8 @@ func (node *EffectNode) UnmarshalJSON(raw []byte) error {
 	return nil
 }
 
+// Campaign 是「隊伍現在在世界的哪裡」：地圖、ECL archive、座標、朝向與
+// VM 的快照。跨 archive 之後要存哪些欄位才回得去，在 spec 044。
 type Campaign struct {
 	MapArchive uint8                      `json:"map_archive"`
 	MapBlock   uint8                      `json:"map_block"`

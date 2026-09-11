@@ -429,6 +429,9 @@ func initialEventPassthrough() map[byte]bool {
 
 // NewInitialEventSession owns all ECL3 blocks and follows original NEWECL
 // transitions without resetting shared memory or the random stream.
+//
+// 跨 archive 的 `NEWECL`（菲蘭 → 貧民窟那一步）與它不重置什麼，在 spec 045；
+// 哪一個 archive 有哪些區塊由 spec 042 的目錄決定。
 func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) (*eclvm.BlockSession, error) {
 	blocks := event.ScriptBlocks
 	if len(blocks) == 0 && len(event.ScriptBlock) != 0 {
@@ -450,6 +453,9 @@ func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) 
 	return session, nil
 }
 
+// initialPartyStrengthResolver 把隊伍投影成 `PARTYSTRENGTH` 的五欄（spec 030
+// 的公式、spec 031 的一級角色投影）。**這是暫時的**：訓練與裝備接上之後要改
+// 由持久的角色狀態算，不能永遠把所有人當成一級。
 func initialPartyStrengthResolver(characters []InitialCharacter) eclvm.PartyStrengthResolver {
 	snapshot := append([]InitialCharacter(nil), characters...)
 	return func() (uint8, error) {

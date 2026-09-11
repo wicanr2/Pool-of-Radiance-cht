@@ -1,6 +1,7 @@
 # Spec 023：City Hall 公告與選單目的位址
 
 狀態：READY／CONFORMED；日期：2026-08-31。
+實作：ECL 腳本本身，由共用 engine 的 `eclvm` 直接跑——**remake 這一側沒有市政廳專屬的程式碼**，前端只提供文字框與選單（`cmd/pool-game` 的事件消費）。玩家路徑的驗證在 `cmd/pool-game/coverage_test.go`。
 
 ## 範圍與固定證據
 

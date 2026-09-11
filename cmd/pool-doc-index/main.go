@@ -106,10 +106,17 @@ func readSpec(path string) (spec, error) {
 	// 後者在很多規格裡只是敘述的一部分。
 	result.sharedEngine = strings.Contains(string(raw), "eclvm")
 	for _, line := range lines {
-		if note, ok := strings.CutPrefix(strings.TrimSpace(line), "實作："); ok {
-			result.outsideGo = strings.TrimSpace(note)
-			break
+		note, ok := strings.CutPrefix(strings.TrimSpace(line), "實作：")
+		if !ok {
+			continue
 		}
+		// 只取第一句：這一行會整個塞進索引表的一格，寫長了表格就散了。
+		// 完整的理由留在規格自己那裡，索引只指路。
+		if head, _, found := strings.Cut(note, "。"); found {
+			note = head + "。"
+		}
+		result.outsideGo = strings.TrimSpace(note)
+		break
 	}
 	if len(lines) > 0 {
 		result.title = strings.TrimSpace(strings.TrimPrefix(lines[0], "#"))

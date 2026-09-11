@@ -1111,6 +1111,13 @@ func (a *app) Update() error {
 	return nil
 }
 
+// moveInitialDungeonForward 往面對的方向走一格。
+//
+// 三份規格在這一條路上交會：座標的 16×16 繞回是 spec 012（原版 overlay-07
+// entry 27 的 cardinal wrapper，remake 這一側是 `geometry.WrapCoordinate`）、
+// 「走得過去嗎」是 spec 014 的 GEO walk（牆與門的細節由共用 engine 的
+// `CanMoveDungeonWrapped` 判），走完之後跑哪一個 ECL 入口是 spec 022
+// （入口 0 每格、入口 1 搜尋，順序由 `DS:4944`..`494C` 那五個 header 決定）。
 func (a *app) moveInitialDungeonForward() error {
 	if a.initialMap == nil {
 		return fmt.Errorf("Pool initial map is not configured")
@@ -1655,6 +1662,9 @@ func presentationBoundary(result eclvm.Result) bool {
 	return false
 }
 
+// enterCombatStaging 接 `24h COMBAT` 排出來的遭遇：把每一群怪物的 285-byte
+// 記錄讀進來（spec 048 的 MON*CHA 與 staging），而那條指令同時分派戰鬥、
+// 神殿與戰後服務三種去向（spec 036）。
 func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 	if a.loadMonster == nil {
 		return fmt.Errorf("Pool monster loader is not configured")
@@ -1718,6 +1728,8 @@ func (a *app) isSuneTempleBoundary(result eclvm.Result) bool {
 	return false
 }
 
+// enterTreasure 接 `27h TREASURE`：八欄的請求（七種幣別加物品）由 spec 032
+// 讀出來，而戰後那張選單與「拿走一件就要從物品鏈摘掉」的邊界在 spec 034。
 func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 	if a.loadTreasure == nil {
 		return fmt.Errorf("Pool treasure loader is not configured")

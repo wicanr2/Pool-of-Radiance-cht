@@ -1,5 +1,7 @@
 package creation
 
+// 建角的擲值與年齡、金錢、生命力那幾張原版表（spec 004）。
+//
 // Roller isolates the original game's dice helper so character generation can
 // be replayed deterministically in tests and oracle comparisons.
 type Roller interface {

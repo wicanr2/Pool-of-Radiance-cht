@@ -140,21 +140,6 @@
       }
     },
     {
-      "id": "spec-implementation-backlinks",
-      "layer": "verification",
-      "title": "三十份規格沒有任何檔案指回它",
-      "body": "`docs/audit/doc-index.json` 的 `specs_without_implementation` 有三十份。對應關係的主鍵是程式碼註解裡的 `spec NNN`，沒有反向引用就查不到「這份規格由誰實作」，只能靠關鍵字猜——而猜出來的對應寫進索引比空著更糟。**這不等於沒實作**：本輪查證的八份純 CONFORMED 裡，三份自己就指名了實作檔（001、005、064，已補），六份的實作在共用 engine（已另外分類）。剩下的要逐份查證。",
-      "blocked_by": "有些規格可能真的還沒實作，那要的是實作不是註解。逐份查證之前分不出來。",
-      "acceptance": "每一份要嘛有檔案的註解指回它，要嘛在規格自己的檔頭寫明為什麼沒有（還沒實作／在別的 repo／純 RE 文件）。不准為了讓數字下降而加沒查證過的註解。",
-      "verify": {
-        "kind": "json_gap",
-        "path": "docs/audit/doc-index.json",
-        "field": "specs_without_implementation",
-        "min": 1,
-        "note": "綁 `cmd/pool-doc-index` 算出來的清單長度。純 RE 文件那一類將來若確認不需要反向引用，處置是在規格檔頭寫明並讓索引認得，不是把這一條刪掉"
-      }
-    },
-    {
       "id": "parity-not-reproducible",
       "layer": "verification",
       "title": "對拍跑兩次結果不一樣",
@@ -180,6 +165,21 @@
         ],
         "pattern": "地圖上目前一個代碼都不需要動作",
         "note": "綁在 `expiredEffectTeardown` 的自承註解上：第一個在地圖上有動作的代碼接上來時，那句話就得拿掉"
+      }
+    },
+    {
+      "id": "spec-test-backlinks",
+      "layer": "verification",
+      "title": "五十八份規格沒有任何測試指回它",
+      "body": "`docs/audit/doc-index.json` 的 `specs_without_tests` 有 58 份。實作那一欄剛剛清完（每一份要嘛有檔案的註解指回它，要嘛在檔頭寫明實作不是 Go），測試這一欄還沒。\\n\\n**這不等於沒測**：測試可能存在，只是註解裡沒寫 `spec NNN`，那條線就接不起來。所以逐份要分三種處置——補註解（測試已經在測它）、補測試（真的沒測）、或在檔頭寫明為什麼不需要（純 RE 文件、實作在別的 repo）。",
+      "blocked_by": "分不出「沒測」與「測了但沒標」之前不能動手：前者要寫測試，後者只要一行註解，而兩者在這個數字上長得一樣。",
+      "acceptance": "`specs_without_tests` 歸零，而且每一份的處置要看得出是哪一種。不准為了讓數字下降而在無關的測試裡加 `spec NNN`。",
+      "verify": {
+        "kind": "json_gap",
+        "path": "docs/audit/doc-index.json",
+        "field": "specs_without_tests",
+        "min": 1,
+        "note": "綁 `cmd/pool-doc-index` 算出來的清單長度。`min` 是 1 不是現況值——這一條要的是歸零"
       }
     }
   ]

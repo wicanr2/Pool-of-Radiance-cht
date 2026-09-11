@@ -6,7 +6,11 @@ import (
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
-// 神殿的服務（overlay-04）。原版的選單列是
+// 神殿的服務（overlay-04）。三種傷勢治療（Cure Light／Serious／Critical）
+// 與它們的付款順序（先個人、不足才動公款）在 spec 018；那一份同時是存檔
+// 分出「目前生命力／上限／未加成的骰值」三欄的理由——一個 HP 欄位表達不了受傷。
+//
+// 原版的選單列是
 // `Heal View Take Pool Share Appraise Exit`（`0C1Ah`），H）EAL 底下是這九項。
 //
 // 每一項的形狀都一樣：先問「這個人有沒有那個毛病」，沒有就印一句
