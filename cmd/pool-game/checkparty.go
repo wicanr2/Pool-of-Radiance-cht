@@ -71,8 +71,9 @@ func (a *app) applyCheckParty(event eclvm.Event) error {
 		}
 		stats = gamepack.CheckPartySummary(values)
 	case gamepack.CheckPartyFieldFindTraps:
-		// 記錄 `+79h` 是賊技能的「找／解陷阱」（spec 095）。remake 還沒有
-		// 賊技能的產生端，所以非賊一律 0——那是正確答案，不是佔位。
+		// 記錄 `+79h` 是賊技能的「找／解陷阱」（spec 095）。建角會照
+		// overlay-23 entry 4 那三張表填進去；非賊一律 0，那是正確答案不是佔位。
+		// **升級／訓練那條路徑還沒接**，所以賊練到二級技能不會跟著長。
 		values := make([]uint8, 0, len(a.state.Party))
 		for _, member := range a.state.Party {
 			skill := uint8(0)

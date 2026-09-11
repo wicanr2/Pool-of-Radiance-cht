@@ -295,6 +295,8 @@ type app struct {
 	castPending         castOption
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
+	// thiefSkillTables 是賊技能的基礎、種族與敏捷三張表（spec 095），建角要用。
+	thiefSkillTables gamepack.ThiefSkillTables
 	// experienceTable 是昇級門檻（spec 071）。
 	experienceTable gamepack.ExperienceTable
 	// spellSlotTables 是牧師與法師的可記憶數表（spec 072），記憶法術要用。
@@ -468,6 +470,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.levelUpTables = levelUpTables
+	thiefSkillTables, err := gamepack.ReadDOSThiefSkillTables(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.thiefSkillTables = thiefSkillTables
 	experienceTable, err := gamepack.ReadDOSExperienceTable(zipPath)
 	if err != nil {
 		return nil, err
@@ -2986,6 +2993,11 @@ func (a *app) finishCharacter() error {
 	// 法師會寫死的四條。少了這一步，一級法師記得起火球術。
 	character.Spellbook = gamepack.NewCharacterSpellbook(memberClassLevels(character),
 		character.Abilities[gamepack.AbilityWisdom], a.spellSlotTables, a.spellParameters)
+	// 賊技能照原版的建角規則填（spec 095）：三張表加一條算式，敏捷那一段
+	// 套的是第 0 列——建角那一刻記錄裡還沒有能力值，原版讀到的就是 0。
+	if err := a.fillThiefSkills(&character); err != nil {
+		return err
+	}
 	a.state.CharacterLibrary = append(a.state.CharacterLibrary, character)
 	if a.saveState != nil {
 		if err := a.saveState(a.state); err != nil {

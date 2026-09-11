@@ -4,7 +4,7 @@
 > 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，
 > 這份只是把它反過來收攏，所以改了註解重跑一次就對了。
 
-136 份規格，其中 0 份還沒有任何檔案的註解指回它、57 份沒有測試提到它；
+136 份規格，其中 0 份還沒有任何檔案的註解指回它、56 份沒有測試提到它；
 另有 11 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go（規格自己寫的那行 `實作：`）。
 這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。
 
@@ -106,7 +106,7 @@
 | [092](092-ecl-checkparty-opcode.md) | `1Eh CHECKPARTY` | READY | `cmd/pool-game/checkparty.go`、`internal/gamepack/checkparty.go`、`internal/gamepack/intro.go` | — |
 | [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-game/ecl_clock.go`、`cmd/pool-game/main.go`、`internal/gamepack/ecl_clock.go` 等 5 個 | `cmd/pool-ecl-audit/main_test.go` |
 | [094](094-ecl-spell-search-opcode.md) | `3Bh SPELL` | READY＋DRAFT | `cmd/pool-game/spell_search.go`、`internal/gamepack/intro.go`、`internal/gamepack/memorised_spells.go` | — |
-| [095](095-thief-skills.md) | 角色記錄的八個賊技能 | READY＋DRAFT | `cmd/pool-game/checkparty.go`、`cmd/pool-game/door.go`、`internal/character/export.go` 等 7 個 | — |
+| [095](095-thief-skills.md) | 角色記錄的八個賊技能 | READY | `cmd/pool-game/checkparty.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 10 個 | `cmd/pool-game/thief_skills_test.go`、`internal/gamepack/thief_skills_build_test.go` |
 | [096](096-monster-ai-structure.md) | 怪物 AI 的骨架（overlay-09） | READY | `cmd/pool-game/tactical.go`、`internal/gamepack/tactic_offsets.go`、`internal/gamepack/turn_undead_resolve.go` | `internal/gamepack/tactic_offsets_test.go` |
 | [097](097-training-level-up-and-energy-drain.md) | 經驗值、訓練所昇級、生命骰與能量吸取 | CONFORMED＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 13 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/door_test.go`、`cmd/pool-game/experience_test.go` 等 6 個 |
 | [098](098-spell-casting-machinery.md) | 施法的共用機制（擲骰、施法者等級、處理常式的呼叫慣例） | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/main.go`、`cmd/pool-game/spells.go` 等 9 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/memorise_test.go`、`internal/gamepack/spell_cast_test.go` |

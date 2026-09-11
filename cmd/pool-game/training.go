@@ -83,3 +83,26 @@ func syncTrainedLibraryCharacter(state *poolsave.State, character poolsave.Chara
 		}
 	}
 }
+
+// fillThiefSkills 照 overlay-23 entry 4 算出八格賊技能（spec 095）。
+//
+// 只有賊等級大於 0 才寫。非賊的八格本來就是 0，但這裡刻意不寫進去——
+// `internal/character` 匯出 `.CHA` 時把「空的」與「全部 0」分開看：空的
+// 代表 remake 沒有這份資料，記錄裡原本的位元組不動。NPC 帶著自己的記錄
+// 進來，硬塞八個 0 會把他們原本的技能抹掉。
+func (a *app) fillThiefSkills(character *poolsave.Character) error {
+	thiefLevel := int(memberClassLevels(*character)[gamepack.ThiefLevelIndex])
+	if thiefLevel <= 0 {
+		return nil
+	}
+	race, ok := findRace(character.RaceID)
+	if !ok {
+		return fmt.Errorf("Pool race %q is not in the catalog", character.RaceID)
+	}
+	skills, err := a.thiefSkillTables.Build(thiefLevel, int(race.DOSCode), gamepack.ThiefSkillBuildDexterity)
+	if err != nil {
+		return err
+	}
+	character.ThiefSkills = append([]uint8(nil), skills[:]...)
+	return nil
+}
