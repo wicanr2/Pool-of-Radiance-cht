@@ -95,7 +95,7 @@ INCREASE 增加，DECREASE 減少，當時間調整好了之後，按下 R 鍵�
 | entry 10 的欄位與按鍵 | `gamepack.RestField` ＋ `(*app).campInput` |
 | entry 9 的那一列 | `(*app).campRestTimeLine`、`drawCamp` |
 | entry 11 的回血 | `gamepack.RestHealing`、`(*app).restParty` |
-| 休息迴圈 `0D5Eh` 的 entry 2 | `restParty` 裡逐刻 `advanceGameTime(RestMinutesPerTick)`——世界時鐘往前走，身上的效果跟著遞減（spec 069）|
+| 休息迴圈 `0D5Eh` 的 entry 2 | `restParty` 裡逐刻 `advanceGameTime(RestMinutesPerTick)`——世界時鐘往前走，身上的效果跟著遞減。**遞減本身是 entry 4**（`0000h`），由 entry 2 在 `042Eh` 用 near call 叫（spec 069）|
 | entry 15 的記憶完成 | `restParty` 裡「休息時數 ≥ 各法術等級的總和」才記完 |
 
 旅店不再自動回滿。說明書 p.31 對旅店的保證是「絕對安全而且不會有人中途打擾」

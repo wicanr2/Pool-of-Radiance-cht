@@ -95,12 +95,24 @@ remake 這一側存檔與戰場用兩個型別存同一條串列（`poolsave.Eff
 > 兩筆 `sub` 就在裡面。**教訓是掃描前先問「這個運算在這個編譯器手裡長什麼
 > 樣」，而不是先假設一個指令再去找。**
 
-## 時間推進：overlay-20 entry 2（offset `0`）
+## 時間推進：overlay-20 entry 4（offset `0`），由 entry 2 叫
 
-世界時鐘往前走與效果往到期靠近是**同一支**。休息迴圈的 `0D5Eh` 叫的就是它
-（`entry 2(索引 1, 5)` ＝ 加五分鐘），走一步也是。
+世界時鐘往前走與效果往到期靠近是**同一條路**，但是兩個進入點：
 
-參數是（欄位索引, 數量）。函式開頭用 `DS:35D4h` 的進位表把它換算成分：
+| 進入點 | code offset | 做什麼 |
+|---|---|---|
+| entry 2 | `0392h` | 把時間加到 ECL 那七個時鐘變數（`49C6h`..`49CCh`，讀法是 `[4933h] + 6E00h + addr×2`）|
+| entry 4 | `0000h` | 換算成分、切批、遞減效果 |
+
+**entry 2 在 `042Eh` 用一個 near call 叫 entry 4**——同一個 overlay 已經載入，
+所以不走 stub。休息迴圈的 `0D5Eh` 叫的是 entry 2（`entry 2(索引 1, 5)` ＝
+加五分鐘），效果的遞減就跟在它後面；走一步也是同一條。
+
+> 進入點編號別用 offset 順序猜：overlay-20 的 code offset 是
+> `entry 6 = 035Eh < entry 2 = 0392h < entry 7 = 0437h`，編號與位址無關。
+> 對照表由 `tpov.Decode` 的 `Entries` 給。
+
+entry 4 的參數是（欄位索引, 數量）。函式開頭用 `DS:35D4h` 的進位表把它換算成分：
 
 ```
 006a  while 欄位 > 1 { 數量 *= radix[欄位-1]; 欄位-- }
@@ -133,7 +145,7 @@ remake 這一側存檔與戰場用兩個型別存同一條串列（`poolsave.Eff
 
 | 原版 | remake |
 |---|---|
-| entry 2 的換算與批次 | `gamepack.EffectList.AdvanceEffects`（單位是分）|
+| entry 4 的換算與批次 | `gamepack.EffectList.AdvanceEffects`（單位是分）|
 | `0165h` 的三條規則 | 同上，見上一節 |
 | 走一步加一分 | `(*app).advanceGameMinute` → `advanceGameTime(1)` |
 | 休息迴圈每刻的 `0D5Eh` | `restParty` 裡逐刻 `advanceGameTime(RestMinutesPerTick)` |

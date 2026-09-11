@@ -85,11 +85,36 @@ ECL 的位址空間只有一個，腳本的位元組與變數在裡面並排。
 接著停在 `29h ENCOUNTER MENU`（spec 078），也就是原版那張
 `COMBAT WAIT FLEE PARLAY`。
 
+## 原版走路會遇到怪（dosgolem，2026-09-11）
+
+拿 dosgolem 從導覽結束的 `(0,4)` 往西走進貧民窟再繼續前進，**第二步之後就撞上**：
+
+```
+14, 4 W 00:01
+YOU HAVE SURPRISED A PARTY OF GOBLINS.
+COMBAT  WAIT  FLEE  PARLAY
+```
+
+基準畫面在 [`docs/reference/original-dos/slums/`](../reference/original-dos/slums/)
+（`00-slums-14-4-after-one-step.png` 是走完一步的正常畫面，
+`01-wandering-goblins-encounter.png` 是下一步的遭遇；dosgolem `d351681ba86d`）。
+
+`GOBLINS.` 正是 `9B90h` 那三支 `ON GOTO` 的第二支——**走路的遭遇跑的是同一段**。
+所以入口 3 不是「紮營專用」，它是**這一區的遭遇入口**：紮營被打斷會叫它，
+走路擲中也會叫它。
+
 ## 還沒讀
 
-- **走路時由誰擲遭遇。** 入口 0（每格）整張圖掃過去沒有任何一格走到
-  `24h COMBAT`（spec 100 的 1024 個樣本），所以走路的遊蕩遭遇不在 ECL 的每格
-  入口裡——要嘛在引擎（overlay）擲完再呼叫某個入口，要嘛貧民窟本來就只有
-  紮營會被打擾。這一條沒查之前，「地圖上遇不到怪」不能斷定是 remake 的缺口。
+- **走路時誰擲那一次。** 還沒找到。已經排除的：
+
+  | 查過的地方 | 結果 |
+  |---|---|
+  | ECL 入口 0（每格）| 整張圖 1024 個樣本沒有一格走到 `24h COMBAT`（spec 100）；實跑也只停在 `2Dh CALL` 就結束 |
+  | overlay-03 `312Ah` | 它跑入口 2 → 問 `00ACh:0025h` → 非零才跑入口 3。但 `00ACh` 是 **overlay-15**（spec 109），entry 1（`1E45h`）開頭設 `DS:4954h = 2`、清 `DS:6CB6h` 那七格、再畫面等鍵——那是**紮營畫面**，不是走路擲骰 |
+  | `6DD2h`／`6DD3h`（休息的週期與門檻）| 只有 overlay-07 寫、overlay-20 的休息迴圈讀（`cmd/pool-disp-scan -ecl-class 1`）|
+  | `6DC7h`／`6DC8h` | 只有 overlay-05 碰，而 overlay-05 是戰後服務（spec 034／036）——那兩格是上一場的結果碼，`B118h` 讀它決定要不要再打一場 |
+
+  下一步是掃**移動**那一側：走一步的引擎路徑（overlay-07 的座標更新之後）
+  有沒有擲骰再呼叫入口 3。
 - `@9805`／`@9806`／`@9827` 是什麼（造形、等級或別的）。
 - `@4A16` 那 0／5／15 的意思。

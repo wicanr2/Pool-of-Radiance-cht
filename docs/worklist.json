@@ -11,8 +11,8 @@
       "id": "wandering-monsters",
       "layer": "feature",
       "title": "走路時沒有人擲遭遇",
-      "body": "`encounter.go` 自承 remake 沒有遊蕩遭遇，目前的戰鬥全部掛在格子事件底下。**這一條有數字**：起始地圖 GEO3／0 的 1024 個「座標×朝向」樣本各跑一次格子生命週期，沒有任何一格走到 `24h COMBAT`（`docs/audit/pool-initial-cell-sweep.json`）。\\n\\n**2026-09-11 查清楚了一半**：貧民窟的遭遇**排得出來**——由那一區的入口 3（紮營被打斷）跑，隊伍強度決定數量與分幾群，怪物編號從腳本自己的五張三格表查（spec 136，`slum_encounter_test.go` 實跑排出三群）。所以缺的不是「遭遇表沒接」，是**走路時沒有人去擲那一次**：入口 0 從頭到尾不碰 `24h COMBAT`。",
-      "acceptance": "先確認原版走路到底會不會遇到怪（dosgolem 實跑，走固定步數看有沒有遭遇）。會的話把觸發點讀出來寫進 spec 136 再接上，並在戰術盤面以 `encounterStartDistance` 的距離開場；不會的話把這一條關掉並在 spec 136 寫明。",
+      "body": "`encounter.go` 自承 remake 沒有遊蕩遭遇，目前的戰鬥全部掛在格子事件底下。**這一條有數字**：起始地圖 GEO3／0 的 1024 個「座標×朝向」樣本各跑一次格子生命週期，沒有任何一格走到 `24h COMBAT`（`docs/audit/pool-initial-cell-sweep.json`）。\\n\\n**2026-09-11 查清楚了一半**：貧民窟的遭遇**排得出來**——由那一區的入口 3（紮營被打斷）跑，隊伍強度決定數量與分幾群，怪物編號從腳本自己的五張三格表查（spec 136，`slum_encounter_test.go` 實跑排出三群）。所以缺的不是「遭遇表沒接」，是**走路時沒有人去擲那一次**：入口 0 從頭到尾不碰 `24h COMBAT`。\n\n**原版走路確實會遇到怪（2026-09-11 實跑）**：dosgolem 從 `(0,4)` 往西走進貧民窟，第二步就撞上 `YOU HAVE SURPRISED A PARTY OF GOBLINS.`，畫面在 `docs/reference/original-dos/slums/`。而且 `GOBLINS.` 正是入口 3 那三支 `ON GOTO` 的第二支——**走路的遭遇跑的是同一段**，入口 3 是這一區的遭遇入口，不是紮營專用。所以 remake 只差引擎那一側的「走一步擲一次」。",
+      "acceptance": "把走路那一次擲骰的條件與參數讀出來寫進 spec 136，接上之後**走幾步就要遇得到**——拿 remake 走同一條路線（進貧民窟往前走），要在合理步數內排出遭遇並停在遭遇選單，然後才是戰鬥。",
       "verify": {
         "kind": "present",
         "paths": [
@@ -21,7 +21,7 @@
         "pattern": "remake 還沒有地圖上的怪物群",
         "note": "程式裡的自承還在"
       },
-      "blocked_by": "走路的遭遇由誰擲還沒讀。兩種可能要先分開：引擎（overlay）擲完再呼叫某個入口，或者貧民窟本來就只有紮營會被打擾。**沒分開之前不能斷定這是 remake 的缺口**——照攻略貧民窟走路會遇到怪，但那要用 dosgolem 實跑確認，不是拿印象當證據。"
+      "blocked_by": "擲骰在引擎那一側，還沒找到。**已經排除四條**（spec 136 的表）：ECL 入口 0、overlay-03 `312Ah`（那是紮營畫面那條路，`00ACh` 是 overlay-15 不是 overlay-20）、休息的 `6DD2h`／`6DD3h`、以及 `6DC7h`／`6DC8h`（戰後結果碼）。下一步掃移動那一側：overlay-07 更新座標之後有沒有擲骰再呼叫入口 3。"
     },
     {
       "id": "thief-skill-source",
