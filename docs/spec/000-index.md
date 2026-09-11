@@ -4,8 +4,8 @@
 > 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，
 > 這份只是把它反過來收攏，所以改了註解重跑一次就對了。
 
-135 份規格，其中 0 份還沒有任何檔案的註解指回它、58 份沒有測試提到它；
-另有 10 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go（規格自己寫的那行 `實作：`）。
+136 份規格，其中 0 份還沒有任何檔案的註解指回它、57 份沒有測試提到它；
+另有 11 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go（規格自己寫的那行 `實作：`）。
 這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。
 
 ## 規格
@@ -77,7 +77,7 @@
 | [063](063-character-base-combat-stats.md) | 角色的基礎 AC、THAC0、移動與武器攻擊數值 | READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/dos_export.go`、`cmd/pool-game/tactical.go` 等 12 個 | `cmd/pool-game/dos_export_test.go`、`cmd/pool-game/tactical_test.go`、`internal/gamepack/experience_test.go` 等 5 個 |
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | — |
 | [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
-| [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | — |
+| [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | `cmd/pool-doc-index/main_test.go` |
 | [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go` | `cmd/pool-game/shop_walk_test.go` |
 | [068](068-spell-name-table.md) | 法術名稱表 | CONFORMED＋DRAFT | `cmd/pool-game/spells.go`、`internal/gamepack/spell_dispatch.go`、`internal/gamepack/spell_table.go` | — |
 | [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/tactical.go`、`internal/character/export.go` 等 9 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
@@ -134,7 +134,7 @@
 | [120](120-wall-symbol-bands.md) | 8×8 符號的五帶 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` 等 5 個 | `cmd/pool-game/first_person_inset_test.go` |
 | [121](121-cloud-objects.md) | 盤面上的雲團物件 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/cloud.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/cloud_test.go`、`internal/gamepack/cloud_test.go`、`internal/gamepack/spell_cast_test.go` |
 | [122](122-locked-doors.md) | 鎖住的門（`Bash`／`Pick`／`Knock`） | CONFORMED＋DRAFT | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-doc-index/main_test.go`、`internal/gamepack/door_test.go` |
-| [123](123-screen-frame.md) | 畫面外框的繩索花紋 | CONFORMED＋DRAFT | `cmd/pool-game/command_bar.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` | `cmd/pool-game/screen_frame_test.go`、`cmd/pool-game/tactical_test.go` |
+| [123](123-screen-frame.md) | 畫面外框的繩索花紋 | CONFORMED＋DRAFT | `cmd/pool-game/command_bar.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/screen_frame_test.go`、`cmd/pool-game/tactical_test.go` |
 | [124](124-map-names-from-the-original.md) | 地圖的名字要從原版自己的文字取 | READY＋DRAFT | `cmd/pool-doc-index/main.go`、`cmd/pool-map-names/main.go` | — |
 | [125](125-map-boundary-and-the-exit-flag.md) | 走到地圖邊界會怎樣——`@6DD5` 是誰寫的 | CONFORMED | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/main.go` | `cmd/pool-disp-scan/main_test.go` |
 | [126](126-first-person-inset-pixel-parity.md) | 第一人稱內框逐格對上原版 | CONFORMED＋DRAFT | `cmd/pool-game/first_person_inset.go` | `cmd/pool-game/first_person_inset_test.go` |
@@ -147,6 +147,7 @@
 | [133](133-original-keyboard-shape.md) | 原版怎麼讀鍵盤 | READY＋DRAFT | dosgolem 的送鍵鍵序（`tools/dosgolem-reference.sh`）。 | — |
 | [134](134-spell-list-layout.md) | 原版的法術清單版面 | READY＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/spell_page_test.go` |
 | [135](135-camp-screen-layout.md) | 原版紮營畫面的版面 | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/icon_menu.go` 等 7 個 | `cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go`、`cmd/pool-game/memorise_test.go` 等 4 個 |
+| [136](136-slum-encounter-staging.md) | 貧民窟的遭遇是怎麼排出來的 | READY＋DRAFT | 共用 engine | `internal/gamepack/slum_encounter_test.go` |
 
 ## `cmd/` 底下的工具
 
@@ -157,7 +158,7 @@
 | `pool-city-hall-audit` | derives a reproducible structural inventory of the City Hall reward and commission loops from the original block-8 trace | 有 | 028 |
 | `pool-combat-icon-audit` | inventories Pool's complete combat-icon archives through the reusable engine decoder | 有 | — |
 | `pool-disp-scan` | 找 overlay 與 START.EXE 裡對某個位址／位移的記憶體存取 | 有 | 017、074、100、106、114、117 等 8 份 |
-| `pool-doc-index` | 產生 docs/spec/000-index.md：每份規格的狀態、實作它的檔案、釘住它的測試，以及 cmd/ 底下每一支工具在做什麼 | 有 | 027、100、122、124 |
+| `pool-doc-index` | 產生 docs/spec/000-index.md：每份規格的狀態、實作它的檔案、釘住它的測試，以及 cmd/ 底下每一支工具在做什麼 | 有 | 027、066、100、122、123、124 |
 | `pool-ecl-audit` | measures the reusable ECL decoder against every Pool ECL block | 有 | 002、093 |
 | `pool-ecl-frontier` | lists the ECL opcodes that appear in Pool blocks but have neither a core VM handler nor an adapter passthrough, with every call site | 有 | 002 |
 | `pool-ecl-memory-audit` | inventories raw ECL operand references to selected runtime addresses across every Pool ECL archive | 有 | 038、039 |

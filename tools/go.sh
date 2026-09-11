@@ -5,7 +5,10 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENGINE="${GOLDEN_BOX_REMAKE_ENGINE_DIR:-$ROOT/../golden-box-remake-engine}"
 IMAGE="coab-go-test:20260729"
 
-test -d "$ENGINE/.git"
+# `-e` 不是 `-d`：git worktree 的 `.git` 是一個**檔案**（裡面寫著主 repo 的
+# 路徑），拿 `-d` 檢查會在 worktree 上直接失敗，而且因為 `set -e` 是靜默退出
+# ——症狀是「離開碼 1、什麼都沒印」，看起來像測試壞了。
+test -e "$ENGINE/.git"
 mkdir -p "$ROOT/workplace/go-build-cache" "$ROOT/workplace/go-mod-cache"
 
 # `go fmt` 的操作單位是 package，所以 `go fmt ./cmd/pool-game` 會把那個目錄裡

@@ -5,7 +5,7 @@
     "criteria": "檔名是 *_test.go｜內容有 func TestXxx",
     "mismatches": []
   },
-  "spec_count": 135,
+  "spec_count": 136,
   "tool_count": 28,
   "specs_without_implementation": [],
   "specs_without_tests": [
@@ -48,7 +48,6 @@
     "058",
     "061",
     "064",
-    "066",
     "068",
     "075",
     "077",
@@ -78,7 +77,8 @@
     "027",
     "029",
     "037",
-    "107"
+    "107",
+    "136"
   ],
   "specs_implemented_outside_go": [
     "066",
