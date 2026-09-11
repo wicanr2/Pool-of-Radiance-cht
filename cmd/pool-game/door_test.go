@@ -235,8 +235,8 @@ func TestTheDoorMenuTakesTheArrowKeys(t *testing.T) {
 	}
 	// 游標要看得見。移到 EXIT 之後那一行必須跟著變——不然玩家按了方向鍵
 	// 畫面什麼都沒動，等於選不到 BASH 以外的東西。
-	if got := application.statusLine; got != "Locked.   BASH > EXIT" {
-		t.Errorf("狀態列是 %q，游標沒有標在 EXIT 上", got)
+	if got := application.statusLine; got != "Locked.   BASH > EXIT　←→ 選　ENTER 確定" {
+		t.Errorf("狀態列是 %q，游標沒有標在 EXIT 上、或少了操作提示", got)
 	}
 }
 

@@ -34,14 +34,14 @@
 
 不是例外：市政廳外牆一次報四則公告，另有兩處卷宗一次報兩則線索報導
 （「成為線索報導 23 與 14」「38 與 51」）。所以引用是**佇列**不是單一值：
-按一次 ENTER 翻一則，翻完才輪到「繼續」，框外那一列同時顯示還剩幾則。
+按一次 `J` 翻一則，框裡那一行同時顯示還剩幾則。
 
 分隔符是 `、`、`，`、`和`、`與`、`及` 與空白。羅馬字號只在公告那一種收，
 否則譯文裡的英文專有名詞（`Sahuagin` 那類）會被讀成字號。
 
 ## 提示畫在框裡
 
-- 有待翻的條目時，**文字框裡**最後一行印「ENTER 翻到議會公告 LXIV（還有 3
+- 有待翻的條目時，**文字框裡**最後一行印「J 翻到議會公告 LXIV（還有 3
   則）」。
 - **不能畫在框外那一列。** 那一列是原版的指令列與「按 RETURN 繼續」的位置：
   原版走到市政廳外的第二段，底下印的是 `AREA CAST VIEW ENCAMP SEARCH LOOK`
@@ -49,16 +49,27 @@
   原版有的東西擠掉。
 - **面板蓋上來時對話框整段不畫**（`showDialogue`），提示在框裡，跟著一起不畫。
 
-## 腳本跑完之後提示還要在
+## 翻手冊的鍵是 `J`，不是 ENTER
 
-原版那一格的第二段是「事件已經結束、字還留在框裡」（`cellTextSticky`）：
-底下換回指令列、方向鍵走得動。引用就寫在那幾行字裡，所以**那個狀態下按
-ENTER 仍然要翻得到**——`finishCellBlockKeepingText` 保留 `journalCues`，
-冒險畫面的輸入在 sticky 時另外收一次 ENTER。
+**一個鍵不要有三種意思。** 這一段原本接在「按繼續那一下」上，於是同一個
+ENTER 同時是：翻到引用、回答門選單的 `BASH`／`EXIT`、把格子事件按過去。
+玩家按下去會發生什麼取決於看不見的狀態，而分派順序決定誰先拿到——鎖住的門
+就是這樣變成「按了沒反應」（spec 122）。
+
+現在 `J` 統一負責手冊：**有引用就翻到那一則，沒有就開在上次停的地方**，
+兩者同一個入口。ENTER 一下都不碰手冊。
+
+腳本跑完、字還留在框裡的那個狀態（`cellTextSticky`）不必再另外收一次按鍵：
+`J` 本來就在冒險畫面收得到，而 `finishCellBlockKeepingText` 保留 `journalCues`
+讓提示與佇列留著。
+
+手冊裡的按鍵也一併寫進畫面最下面那一行，玩家不必試出來：
+**PgUp／PgDn 或左右換條目、↑↓ 捲動、TAB 換章、打編號後 ENTER 跳到該條、
+ESC 關閉**。
 
 ## 記過就不再彈
 
-玩家讀完關掉手冊會回到同一個文字框，再按一次 ENTER 應該是下一則，全部翻完
+玩家讀完關掉手冊會回到同一個文字框，再按一次 `J` 應該是下一則，全部翻完
 就沒有提示了。所以翻過的記進 `journalCueDone`；這一格的腳本跑完**而且文字也
 換掉**（`finishCellBlock`）才忘掉——腳本跑完但字留著的那一種
 （`finishCellBlockKeepingText`）要保留佇列，字還在畫面上就得翻得到。
@@ -67,7 +78,7 @@ ENTER 仍然要翻得到**——`finishCellBlockKeepingText` 保留 `journalCues
 ## 英文模式不做
 
 手冊是軟體世界的中譯本，`openJournal` 在英文模式會拒絕。那裡不設引用，
-否則 ENTER 會被吃掉卻什麼都不發生。
+否則提示會叫玩家按一個什麼都不會發生的鍵。
 
 ## 驗證
 
@@ -76,7 +87,9 @@ ENTER 仍然要翻得到**——`finishCellBlockKeepingText` 保留 `journalCues
   引用寫錯還是手冊漏轉錄。
 - `TestJournalCitationsReadWholeLists`：四則公告、兩則線索報導、酒館傳言、
   章名不算引用、英文專有名詞不被讀成字號。
-- `TestEnterOpensTheJournalBeforeContinuing`：走 `Update` 的按鍵接線，
-  四則逐一翻開再關上，第五下才輪到繼續。
+- `TestJKeyOpensTheJournalAndEnterNeverDoes`：走 `Update` 的按鍵接線，
+  `J` 四則逐一翻開再關上，翻完再按 `J` 是開在上次停的地方；**同一個狀態下
+  按 ENTER 一次都不會翻開手冊**。後半是這一條真正要釘的東西——ENTER 要留給
+  門與繼續。
 - 實拍：`docs/screenshots/pool-remake-chinese-journal-cue.png`（市政廳外牆的
   提示）與 `pool-remake-chinese-journal-proclamation.png`（手冊停在 LXIV）。

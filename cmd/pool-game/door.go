@@ -81,7 +81,10 @@ func (a *app) doorMenuLine(prefix string) string {
 			parts[index] = "  " + option
 		}
 	}
-	return prefix + strings.Join(parts, " ")
+	// **操作提示要寫在訊息上。** 門是 modal 的（spec 122）：方向鍵移游標、
+	// ENTER 確定，其他鍵什麼都不做。玩家沒有理由知道這件事，而「按了沒反應」
+	// 與「這個鍵不是這樣用」在畫面上長得一樣。
+	return prefix + strings.Join(parts, " ") + "　←→ 選　ENTER 確定"
 }
 
 // refreshDoorOptions 重算選單。原版 `0E06h`..`0EBFh` 的三道閘門：

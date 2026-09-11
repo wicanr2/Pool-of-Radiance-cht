@@ -790,20 +790,6 @@ func (a *app) Update() error {
 		a.campFromProgram = false
 		return a.closeProgramCamp()
 	}
-	// 腳本跑完、文字留在框裡時，那一下 ENTER 還是要能翻手冊（spec 132）：
-	// 引用就寫在框裡，玩家看得到才按得下去。指令列的字母鍵在這時已經回來了，
-	// 所以這一段只吃 ENTER。
-	//
-	// **門選單開著的時候不插隊**：那一下 ENTER 是玩家在回答門的 `BASH`／
-	// `EXIT`，不是在翻頁。下面那一段翻手冊的入口早就有同樣的守衛（遭遇、
-	// 神殿、交涉、`WHO`、格子選單都要讓路），這裡漏了門——而門是 modal 的
-	// （spec 122），漏掉的症狀是玩家按 ENTER 門沒反應。
-	if a.cellTextSticky && a.door == nil &&
-		(a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace)) {
-		if cue, ok := a.takeJournalCue(); ok {
-			return a.openJournalAt(cue)
-		}
-	}
 	if handled, err := a.adventureCommandInput(); handled {
 		return err
 	}
@@ -825,7 +811,20 @@ func (a *app) Update() error {
 		a.openEquipment()
 		return nil
 	}
-	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.justPressed(ebiten.KeyJ) {
+	// 手冊統一由 `J` 開，**ENTER 一下都不碰它**。
+	//
+	// 原本是「文字報了手冊編號，按繼續那一下就翻過去」——而那一下 ENTER 同時
+	// 是門選單的確定鍵、格子事件的繼續鍵。一個鍵三種意思，玩家按下去會發生
+	// 什麼取決於看不見的狀態；鎖住的門就是這樣變成按了沒反應（spec 122／132）。
+	//
+	// 文字框裡的提示跟著改寫成 `J`（`journalCuePrompt`），所以玩家看得到按哪一個。
+	// 門選單開著時不開手冊：門是 modal 的，那時候每一個鍵都歸它。
+	if a.mode == modeAdventure && !a.help && a.tactical == nil && a.door == nil &&
+		a.justPressed(ebiten.KeyJ) {
+		// 有引用就直接翻到那一則，沒有才開在上次停的地方。
+		if cue, ok := a.takeJournalCue(); ok {
+			return a.openJournalAt(cue)
+		}
 		if err := a.openJournal(); err != nil {
 			a.statusLine = err.Error()
 		}
@@ -1067,15 +1066,9 @@ func (a *app) Update() error {
 					}
 				}
 				if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
-					// 文字報了手冊編號就先翻過去（`journal_link.go`）。
-					// 有選單或有其他子系統在等答案時不插隊——那一下 ENTER
-					// 是玩家在回答問題，不是在翻頁。
-					if a.encounter == nil && !a.templeActive && a.parlay == nil &&
-						!a.whoPending && !a.cellWaitingMenu {
-						if cue, ok := a.takeJournalCue(); ok {
-							return a.openJournalAt(cue)
-						}
-					}
+					// **這一下 ENTER 只用來回答眼前的問題**：遭遇、神殿、交涉、
+					// `WHO`、格子選單、或是把事件按過去。翻手冊改由 `J` 負責
+					// （上面那一段），所以這裡不必再排除它們。
 					if a.encounter != nil {
 						return a.selectEncounterOption()
 					}

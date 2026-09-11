@@ -261,7 +261,10 @@ func drawJournal(screen *ebiten.Image, a *app, background, foreground, accent co
 			journalFirstLine+offset*journalLineHeight, foreground)
 	}
 
-	footer := "TAB 換章　左右換條目　上下捲動　打編號後 ENTER 跳到該條　J／ESC 關閉"
+	// 提示要把**實際按得到的鍵**都寫出來，而且照玩家會用的順序排。
+	// 換條目左右鍵與 PgUp／PgDn 等價，兩個都列——手冊是拿來查的，
+	// 玩家不會想試出來。
+	footer := "PgUp／PgDn 或左右 換條目　↑↓ 捲動　TAB 換章　打編號後 ENTER 跳到該條　ESC 關閉"
 	if state.typed != "" {
 		footer = fmt.Sprintf("跳到 %s %s_", journalKindNames[state.currentKind()], state.typed)
 	}

@@ -255,7 +255,12 @@ func TestJournalCuesQueueUpInOrder(t *testing.T) {
 // 按鍵接線：文字框有引用時那一下 ENTER 要翻手冊，翻完才輪到「繼續」。
 // 直接走 `Update` 而不是只叫 `takeJournalCue`——會壞的是「哪一個 case 先攔截」，
 // 不是取佇列本身。
-func TestEnterOpensTheJournalBeforeContinuing(t *testing.T) {
+// `J` 一則一則翻完引用，而 **ENTER 一下都不碰手冊**——它留給門與「繼續」。
+//
+// 原本是「按繼續那一下就翻過去」，於是同一個 ENTER 有三種意思（翻頁、回答門的
+// BASH／EXIT、把事件按過去），玩家按下去會發生什麼取決於看不見的狀態。鎖住的門
+// 就是這樣變成按了沒反應（spec 122／132）。
+func TestJKeyOpensTheJournalAndEnterNeverDoes(t *testing.T) {
 	a := &app{
 		mode:      modeAdventure,
 		introDone: true,
@@ -268,7 +273,7 @@ func TestEnterOpensTheJournalBeforeContinuing(t *testing.T) {
 		t.Fatalf("待翻 %d 則，要四則", len(a.journalCues))
 	}
 	for index, want := range []string{"LXIV", "LXXVIII", "CIX", "LIX"} {
-		if err := press(a, ebiten.KeyEnter); err != nil {
+		if err := press(a, ebiten.KeyJ); err != nil {
 			t.Fatalf("第 %d 則：%v", index+1, err)
 		}
 		if !a.journalOpen {
@@ -289,10 +294,28 @@ func TestEnterOpensTheJournalBeforeContinuing(t *testing.T) {
 			t.Fatalf("第 %d 則之後文字框不見了", index+1)
 		}
 	}
-	// 四則翻完，這一下 ENTER 才是「繼續」——沒有 ECL session 時會走到
-	// 錯誤路徑，重點是它不再開手冊。
+	// 四則翻完，再按 `J` 就是開在上次停的地方（沒有引用可跳了）。
+	if err := press(a, ebiten.KeyJ); err != nil {
+		t.Fatal(err)
+	}
+	if !a.journalOpen {
+		t.Fatal("引用翻完之後 J 應該照樣開得了手冊")
+	}
+	if err := press(a, ebiten.KeyEscape); err != nil {
+		t.Fatal(err)
+	}
+
+	// **ENTER 從頭到尾都不開手冊。** 重新灌一批引用，按 ENTER 要走「繼續」
+	// 那條路（沒有 ECL session 時會走到錯誤路徑，重點是手冊沒被翻開）。
+	// 翻過的不會再記一次（`journalCueDone`），所以先把那份紀錄清掉。
+	a.journalCueDone = nil
+	a.eventText = "牆上貼著公告，你們把編號記進手冊： 公告字號 LXIV。"
+	a.updateJournalCue()
+	if len(a.journalCues) == 0 {
+		t.Fatal("第二批引用沒有記下來")
+	}
 	_ = press(a, ebiten.KeyEnter)
 	if a.journalOpen {
-		t.Fatal("四則都翻完了還開手冊")
+		t.Fatal("ENTER 把手冊翻開了——那一下要留給門與繼續")
 	}
 }
