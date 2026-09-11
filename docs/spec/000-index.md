@@ -5,7 +5,7 @@
 > 這份只是把它反過來收攏，所以改了註解重跑一次就對了。
 
 136 份規格，其中 0 份還沒有任何檔案的註解指回它、56 份沒有測試提到它；
-另有 11 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go（規格自己寫的那行 `實作：`）。
+另有 10 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go（規格自己寫的那行 `實作：`）。
 這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。
 
 ## 規格
@@ -147,7 +147,7 @@
 | [133](133-original-keyboard-shape.md) | 原版怎麼讀鍵盤 | READY＋DRAFT | dosgolem 的送鍵鍵序（`tools/dosgolem-reference.sh`）。 | — |
 | [134](134-spell-list-layout.md) | 原版的法術清單版面 | READY＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/spell_page_test.go` |
 | [135](135-camp-screen-layout.md) | 原版紮營畫面的版面 | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/icon_menu.go` 等 7 個 | `cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go`、`cmd/pool-game/memorise_test.go` 等 4 個 |
-| [136](136-slum-encounter-staging.md) | 貧民窟的遭遇是怎麼排出來的 | READY＋DRAFT | 共用 engine | `internal/gamepack/slum_encounter_test.go` |
+| [136](136-slum-encounter-staging.md) | 貧民窟走一步會遇到什麼 | READY＋DRAFT | `cmd/pool-game/main.go` | `internal/gamepack/slum_encounter_test.go`、`internal/gamepack/slum_wandering_test.go` |
 
 ## `cmd/` 底下的工具
 
@@ -165,7 +165,7 @@
 | `pool-ecl-opcodes` | 把 overlay-03 的 ECL 派發鏈 dump 成 JSON：每條 opcode 的處理常式位移與運算元個數，並標出與共用 engine 那張二手 arity 表的差異 | 有 | — |
 | `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | 093 |
 | `pool-font-coverage` | 報出遊戲要顯示、但倚天字型畫不出來的字 | 有 | — |
-| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 97 份 |
+| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 98 份 |
 | `pool-geo-audit` | decodes every Pool GEO block through the shared engine and records only structural map evidence | 有 | — |
 | `pool-initial-cell-sweep` | executes the original initial-map cell lifecycle entry against isolated copies of the post-Rolf VM state | 有 | — |
 | `pool-input-manifest` | inventories the fixed DOS source ZIP without extracting or modifying its contents | 有 | — |

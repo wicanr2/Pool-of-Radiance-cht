@@ -104,6 +104,8 @@ func NewDOSECLArchiveSession(archive ECLArchive, blockID uint16, startAddress ui
 	if startAddress < 0x9900 {
 		return nil, fmt.Errorf("Pool ECL start 0x%04X precedes code base", startAddress)
 	}
+	// 最後那個 1 是 `RANDOM` 的 seed。目前這一局的隨機流每一局都一樣，
+	// 原版的來自 DOS 計時器 tick——對拍與測試要決定性，正常遊玩不該有。
 	session, err := eclvm.NewBlockSession(archive.Blocks, blockID, 0x9900, int(startAddress)-0x9900, 5, initialEventPassthrough(), 1)
 	if err != nil {
 		return nil, err

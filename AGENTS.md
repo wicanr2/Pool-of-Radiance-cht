@@ -166,6 +166,21 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   `cmd/pool-disp-scan -addresses <逗號分隔>`，**呼叫時一定要多帶一個已知答案當正
   對照**（`5AAh` 必須掃出 overlay-14 那四條 `mov word [di+5AA], 1`），否則
   「零筆」什麼也證明不了。
+- **ECL 的文字也掃不到——它是 6-bit packed 的 `80h` 運算元。** 拿一句原版臺詞去
+  grep payload 或 overlay 的 ASCII，**結構上一定零命中**，而那個零長得跟「原版
+  沒有這句話」一模一樣。找字串一律走 `cmd/pool-text-inventory`（它跑指令圖、解
+  `80h` 運算元與選單記錄，一次吐 1800 句，含每句的 `ecl?.dax#block@位址`）。
+  正對照的做法是先確認**整個 ECL payload 連一段像樣的明文都沒有**——
+  ECL2 的三個 block 各只有一段長度 ≥ 8 的可印位元組，內容是亂碼。
+  掃到一段明文反而表示自己讀錯了層。
+
+- **讀 ECL 內嵌資料表之前先拿已知指令對一次位址基準。** `GETTABLE` 指到的是
+  腳本自己 payload 裡的位元組，位址基準偏一格不會報錯，只會安靜地給出一張
+  看起來合理的表——而那張表會一路寫進 spec。正對照的做法是拿一條**反組譯器
+  已經解出來的指令**去讀同一個位址：`workplace/eclbytes -addr 0x9BCF` 要回
+  `2A 01 E3 B6 01 7F 6E 01 C1 6D`，逐位元組對上 `GETTABLE @B6E3 @6E7F → @6DC1`。
+  對得上基準才算驗過。（spec 136 的五張表曾整張錯一格。）
+
 - 追 Borland TPOV far call 時保留原始 `segment:offset`，先用 MZ header size 換算
   executable file offset，再與 `docs/audit/dos-ovr-manifest.json` 的
   `executable_file_offset` 精確反查 overlay／entry；每次匯出同時記錄輸入 overlay

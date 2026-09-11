@@ -1510,6 +1510,12 @@ func (a *app) syncArchiveFromEventMachine() error {
 func (a *app) beginInitialSearch() error {
 	// 新的一格，等待次數從頭算（見 `pauseAppliedCellResult`）。
 	a.cellWaitedOnce, a.cellTextSticky = false, false
+	// 命令列的兩個搜尋旗標是 ECL 變數，腳本自己會讀（spec 136）。
+	if a.eventSession != nil {
+		if machine := a.eventSession.Machine(); machine != nil {
+			machine.Memory[searchFlagsAddress] = a.searchFlags
+		}
+	}
 	result, err := gamepack.RunInitialSessionSearchEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 	if err != nil {
 		return fmt.Errorf("start Pool SearchLocation: %w", err)
@@ -1704,9 +1710,10 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 	labels := make([]string, 0, len(spawns))
 	for _, spawn := range spawns {
 		// 數量 0 的先跳過。貧民窟的隨機遭遇把數量放在 `DS:9808h`，那個值由
-		// 區塊的入口 4 算出來（`1Dh PARTYSTRENGTH` 之後 ÷3 ×2 +5），而換區
-		// 時原版是**先跑入口 0 再跑入口 4**（spec 025，有反組譯證據），
-		// 所以入口 0 讀到的還是 0。報錯會讓玩家從起點往西走一步就掛掉。
+		// **入口 1**（走一步之後跑的那一支）在 `9AA5h` 用 `1Dh PARTYSTRENGTH`
+		// 之後 ÷3 ×2 +5 算出來，紮營被打斷的入口 3 則是 `GOTO @9B68` 跳進
+		// 同一段（spec 136）。換區時原版先跑入口 0（spec 025），而入口 0 不碰
+		// 這個值，所以那一步讀到的還是 0。報錯會讓玩家從起點往西走一步就掛掉。
 		//
 		// OPEN：原版的 `0Bh LOAD MONSTER` 對數量 0 到底怎麼處置還沒讀，
 		// 這裡先取「不放這種怪」——那是唯一不會比崩潰更糟的選擇。
@@ -2528,6 +2535,11 @@ const (
 	// wildernessRefuse 由 ECL 寫 255 表示「這一步不給走」。三處都是這個
 	// 意思：撞到不可通行表、Y 到北緣、跨圖的例外座標。
 	wildernessRefuse = 0x6DC9
+	// searchFlagsAddress 是 `[4937h]+594h` 的 ECL 位址，也就是命令列那兩個
+	// 搜尋旗標（`command_bar.go` 的 `searchFlags`）。腳本會讀它——貧民窟走路
+	// 遭遇在 `9B40h` 比對 `@6DCA == 1`，相等就把那一擲加四（spec 136）。
+	// 所以這個值不投影進去，邊走邊搜就不會像原版那樣把怪引出來。
+	searchFlagsAddress = 0x6DCA
 	// wildernessArea 是 255 就代表隊伍在**區域圖**裡，不在野外地形上。
 	//
 	// 野外那三個區塊各有兩種身分：`LOAD FILES 4,4,0` 載的是地形（在上面走，

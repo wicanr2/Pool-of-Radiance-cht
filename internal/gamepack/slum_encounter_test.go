@@ -56,9 +56,11 @@ func TestSlumCampEncounterStagesRealMonsters(t *testing.T) {
 	for index, spawn := range result.MonsterSpawns {
 		t.Logf("第 %d 群：怪物 %d、數量 %d、造形 %d",
 			index, spawn.MonsterID, spawn.Count, spawn.IconBlock)
-		if spawn.MonsterID == 0 && spawn.IconBlock == 0 {
-			t.Fatalf("第 %d 群的編號與造形都是 0——那五張表沒查到（spec 136）", index)
-		}
+		// **不要拿「編號 0」當失敗判準**——`B6E6h` 那張表是 `00 02 04`，
+		// KOBOLDS 的編號本來就是 0（spec 136）。擲到 KOBOLDS 才會踩到，
+		// 所以那種斷言平常都是綠的。編號對不對由
+		// `TestSlumWalkingRollsAnEncounter` 釘。
+		_ = index
 		if spawn.Count == 0 {
 			t.Fatalf("第 %d 群的數量是 0——隊伍強度那一段沒算出來", index)
 		}
