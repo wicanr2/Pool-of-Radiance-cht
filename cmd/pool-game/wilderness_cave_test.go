@@ -35,7 +35,7 @@ func caveSettle(a *app, prefer ...string) {
 					}
 				}
 			}
-			for a.cellMenuCursor != pick {
+			for guard := 0; a.cellMenuCursor != pick && guard < 256; guard++ {
 				press(a, ebiten.KeyArrowDown)
 			}
 		}
@@ -136,9 +136,7 @@ func TestTheWildernessCaveRerollReachesTheEasternOutpost(t *testing.T) {
 						if len(route) == 0 {
 							break
 						}
-						for application.spawn.Facing != route[0] {
-							press(application, ebiten.KeyArrowRight)
-						}
+						faceTowards(application, route[0])
 						press(application, ebiten.KeyArrowUp)
 						caveSettle(application, "YES", "ENTER")
 					}
@@ -196,9 +194,7 @@ func TestTheNomadCampOnTheMiddleWildernessSheet(t *testing.T) {
 			if len(route) == 0 {
 				return false
 			}
-			for application.spawn.Facing != route[0] {
-				press(application, ebiten.KeyArrowRight)
-			}
+			faceTowards(application, route[0])
 			press(application, ebiten.KeyArrowUp)
 			if enter {
 				caveSettle(application, "ENTER", "ENTER IT", "YES")
@@ -326,9 +322,7 @@ func TestTheOutpostOnTheWesternWildernessSheet(t *testing.T) {
 			if len(route) == 0 {
 				return false
 			}
-			for application.spawn.Facing != route[0] {
-				press(application, ebiten.KeyArrowRight)
-			}
+			faceTowards(application, route[0])
 			press(application, ebiten.KeyArrowUp)
 			settle(application)
 		}
@@ -402,7 +396,7 @@ func TestTheOutpostOnTheWesternWildernessSheet(t *testing.T) {
 								pick = index
 							}
 						}
-						for a.cellMenuCursor != pick {
+						for guard := 0; a.cellMenuCursor != pick && guard < 256; guard++ {
 							press(a, ebiten.KeyArrowDown)
 						}
 					}

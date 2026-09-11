@@ -43,9 +43,7 @@ func enterStojanowGate(t *testing.T) *app {
 		if len(route) == 0 {
 			t.Fatalf("從 (%d,%d) 走不到 (11,28)", here[0], here[1])
 		}
-		for application.spawn.Facing != route[0] {
-			press(application, ebiten.KeyArrowRight)
-		}
+		faceTowards(application, route[0])
 		press(application, ebiten.KeyArrowUp)
 		for tick := 0; tick < 200 &&
 			(application.cellEventPending || application.cellWaitingMenu); tick++ {
@@ -63,9 +61,7 @@ func enterStojanowGate(t *testing.T) *app {
 			continue
 		}
 		for _, step := range plan {
-			for application.spawn.Facing != step.facing {
-				press(application, ebiten.KeyArrowRight)
-			}
+			faceTowards(application, step.facing)
 			press(application, ebiten.KeyArrowUp)
 			drainWildernessEvents(application)
 		}
@@ -87,13 +83,73 @@ func enterStojanowGate(t *testing.T) *app {
 // castlePilot 是這一組測試共用的戰術地圖駕駛。
 var castlePilot = &tacticalPilot{}
 
+// dismissDoorMenu 把鎖住的門那個選單關掉（選 `EXIT`）。
+//
+// **門選單是 modal 的**（spec 122）：`a.door != nil` 的時候方向鍵與 ENTER 都歸
+// 它，`spawn.Facing` 與 `cellMenuCursor` 一個都不會動。治具裡那些「轉到某個
+// 朝向」「移到某一項」的迴圈因此永遠轉不出來——**症狀是整條測試逾時，看起來
+// 像變慢而不是卡住**，所以走一步之後要先確認門沒開著。
+//
+// `EXIT` 一定在最後一格（`refreshDoorOptions` 無條件補上它），而游標是環狀的，
+// 往左一下就到；四個選項最多兩下就關得掉，guard 給八下。
+func dismissDoorMenu(a *app) {
+	if a.door != nil && !a.cellEventPending {
+		doorMenusDismissed++
+	}
+	// **`!a.cellEventPending` 是必要條件，不是防禦性的。** 門的分派排在
+	// `cellEventPending` **後面**（`main.go`，理由見 spec 122），所以有格子
+	// 事件在等的時候按鍵全歸事件，門的游標一下都不會動。少了這個條件，
+	// 這支就在原地空轉，而症狀取決於 guard 給多少：給得小是「門沒關掉、
+	// 朝向與事件狀態被打亂」（測試走不到該走到的區塊），給得大是「每個
+	// tick 空轉幾十次 press」（整條測試逾時）。**兩種都不會說是順序錯了。**
+	for guard := 0; a.door != nil && !a.cellEventPending && guard < 32; guard++ {
+		if want := len(a.door.Options) - 1; a.door.Cursor != want {
+			press(a, ebiten.KeyArrowLeft)
+			continue
+		}
+		press(a, ebiten.KeyEnter)
+	}
+}
+
+// doorMenusDismissed／faceTowardsMaxTurns 是這一批治具的診斷計數（**只在測試裡用**）。
+// 門到底有沒有被撞到、轉向到底用掉幾下，都要用數字回答——2026-09-11 查
+// 「城堡走不到區塊 7」的時候，靠推論排過三輪假設都是錯的。
+var (
+	doorMenusDismissed int
+	faceTowardsMaxTurns int
+)
+
+// faceTowards 轉到指定朝向。先關掉門選單，理由見 dismissDoorMenu。
+//
+// guard 的用意是**讓迴圈有終點**，不是限制轉幾次。正常轉向最多三下，但這一支
+// 也會在「有格子事件擋著」的時候被呼叫——那時右鍵不轉向，要先把事件按過去，
+// 次數沒有上限可推。給得太緊的話迴圈會在朝向還沒轉到的時候就走人，接著那一步
+// 就往錯的方向走，症狀是覆蓋少了一塊（實測 guard 8 會讓城堡那條測試走不到
+// ECL 區塊 7），而不是任何一條斷言直接指出朝向錯了。
+func faceTowards(a *app, facing uint8) {
+	dismissDoorMenu(a)
+	turns := 0
+	for ; a.spawn.Facing != facing && turns < 256; turns++ {
+		press(a, ebiten.KeyArrowRight)
+	}
+	if turns > faceTowardsMaxTurns {
+		faceTowardsMaxTurns = turns
+	}
+}
+
 // answerCellMenus 把等待中的事件按完，選單挑 want 裡認得的那一項。
 func answerCellMenus(a *app, want ...string) {
 	for tick := 0; tick < 3000; tick++ {
-		busy := a.cellWaitingMenu || a.cellEventPending || a.encounter != nil ||
+		busy := a.door != nil || a.cellWaitingMenu || a.cellEventPending || a.encounter != nil ||
 			a.treasureActive || a.tactical != nil
 		if !busy {
 			return
+		}
+		// 門排在格子事件**後面**，與 `main.go` 的分派同一個順序。順序反過來
+		// 的話，有事件在等的時候這裡會一直試著關門而事件永遠按不完。
+		if a.door != nil && !a.cellEventPending {
+			dismissDoorMenu(a)
+			continue
 		}
 		if a.tactical != nil {
 			// 只按 Enter 的話全隊都不出手，那一場永遠結束不了——用探索器
@@ -110,12 +166,17 @@ func answerCellMenus(a *app, want ...string) {
 					}
 				}
 			}
-			for a.cellMenuCursor != pick {
+			for guard := 0; a.cellMenuCursor != pick && guard < 256; guard++ {
 				press(a, ebiten.KeyArrowDown)
 			}
 		}
 		press(a, ebiten.KeyEnter)
 	}
+	// 上限用完就放棄這一次，不是錯誤：像神殿那種「選了也買不到」的選單
+	// （`want` 裡沒有它認得的項，於是一直選第一項）本來就不會收斂，而外層
+	// 的輪替會帶著隊伍走開。**診斷期間可以把這裡換成帶狀態的 panic**，
+	// 2026-09-11 查門選單就是那樣把卡住的狀態問出來的——但收工要換回來，
+	// 否則既有的容忍會變成硬失敗。
 }
 
 // 付過路費過斯托亞諾夫城門，然後走北緣進城堡。
@@ -146,9 +207,7 @@ func TestPayingTheTollAtStojanowGateOpensTheCastle(t *testing.T) {
 				application.spawn.X, application.spawn.Y)
 		}
 		for _, step := range plan {
-			for application.spawn.Facing != step.facing {
-				press(application, ebiten.KeyArrowRight)
-			}
+			faceTowards(application, step.facing)
 			press(application, ebiten.KeyArrowUp)
 			answerCellMenus(application, "YES")
 		}
@@ -173,9 +232,7 @@ func TestPayingTheTollAtStojanowGateOpensTheCastle(t *testing.T) {
 			continue
 		}
 		for _, step := range plan {
-			for application.spawn.Facing != step.facing {
-				press(application, ebiten.KeyArrowRight)
-			}
+			faceTowards(application, step.facing)
 			press(application, ebiten.KeyArrowUp)
 			answerCellMenus(application, "YES")
 		}
@@ -222,9 +279,7 @@ func walkStojanowGateIntoTheCastle(t *testing.T) *app {
 			return false
 		}
 		for _, step := range plan {
-			for application.spawn.Facing != step.facing {
-				press(application, ebiten.KeyArrowRight)
-			}
+			faceTowards(application, step.facing)
 			press(application, ebiten.KeyArrowUp)
 			answerCellMenus(application, "YES")
 		}
@@ -298,9 +353,7 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 				break
 			}
 			for _, step := range plan {
-				for application.spawn.Facing != step.facing {
-					press(application, ebiten.KeyArrowRight)
-				}
+				faceTowards(application, step.facing)
 				press(application, ebiten.KeyArrowUp)
 				answerCellMenus(application, "YES")
 			}
@@ -321,9 +374,7 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 	application := walkStojanowGateIntoTheCastle(t)
 	plan := planToCells(application, 0, func(x, y int) bool { return x == 11 && y == 15 })
 	for _, step := range plan {
-		for application.spawn.Facing != step.facing {
-			press(application, ebiten.KeyArrowRight)
-		}
+		faceTowards(application, step.facing)
 		press(application, ebiten.KeyArrowUp)
 		answerCellMenus(application, "YES")
 	}
@@ -349,6 +400,8 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 	sort.Ints(ids)
 	t.Logf("城門後面走到的地圖 %d 張：%v", len(names), names)
 	t.Logf("城門後面走到的 ECL block %d 個：%v", len(ids), ids)
+	t.Logf("診斷：關掉門選單 %d 次、轉向最多用掉 %d 下",
+		doorMenusDismissed, faceTowardsMaxTurns)
 	for _, want := range []int{3, 4, 5, 6, 7} {
 		if !blocks[want] {
 			t.Errorf("沒走到區塊 %d（只有 %v）", want, ids)

@@ -26,6 +26,13 @@ type fixedTempleRoller int
 
 func (value fixedTempleRoller) Roll(count, sides int) int { return int(value) }
 
+// JustPressed 查一次就消費掉。
+//
+// **這與 ebiten 的 `IsKeyJustPressed` 不一致**（那一支不消費，同一個 tick 裡
+// 每個分派點查到的都是同一個答案），而整個建角與商店流程目前依賴這個差異。
+// 換成不消費之後，那兩條 `TestNormalKeys*` 立刻紅——也就是說**真實遊戲裡按
+// 一下可能推進不只一步**，只是被治具藏住了。技術債記在 worklist 的
+// `test-keys-consume-input`，不在修門那一輪處理。
 func (keys scriptedKeys) JustPressed(key ebiten.Key) bool {
 	pressed := keys[key]
 	delete(keys, key)

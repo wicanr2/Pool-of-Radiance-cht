@@ -535,6 +535,14 @@ const exploreMaxTransitionHops = 60
 // 動」的上限。一場架正常會一直換行動者，停住就是卡住了。
 const exploreMaxCombatStall = 4000
 
+// exploreMaxDoorTurns 是**連續**按門選單的上限；走到路上那一步就歸零。
+// 一道門最多五下就關掉（游標移到 EXIT 再 ENTER，選項最多四項），所以連續
+// 四十下還關不掉一定是壞了。
+//
+// 計連續不計總數：一趟兩千步可能撞上幾十道門，用總數當門檻會在正常的一趟
+// 裡誤判，而那種誤判看起來會像「門關不掉」——剛好蓋掉真正要抓的東西。
+const exploreMaxDoorTurns = 40
+
 // exploreMaxTargetTries 是同一格被規劃成目標幾次還沒踩到就放棄。
 const exploreMaxTargetTries = 12
 
@@ -626,6 +634,8 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// 記成硬失敗，不要靜靜地把預算吃掉。
 	stallKey, stall := [3]int{-1, -1, -1}, 0
 	menuStall := 0
+	// doorTurns 是**連續**按了幾下門選單，走到路上那一步就歸零。
+	doorTurns := 0
 	// 沒有選單的格子事件也要有看門狗。只有 menuStall 的時候，一格只要停在
 	// 「pending 但按 Enter 什麼都不變」，整趟的預算就靜靜地被吃掉，而報表
 	// 只寫「走完預算」——看不出是哪一格，也分不出「走得慢」與「卡住」。
@@ -773,6 +783,44 @@ walk:
 				}
 			}
 		}
+		// 撞到鎖住的門要把那個選單處理掉。**門選單是 modal 的**：
+		// `a.door != nil` 的時候方向鍵與 ENTER 都歸它（`main.go` 的分派排在
+		// `cellEventPending` 之後、轉向與前進之前），治具不處理就會在原地
+		// 一直按方向鍵移門選單的游標，位置永遠不動。
+		//
+		// 一律選 EXIT，不 BASH。這條測試量的是「走得到哪裡」，而撞開門會把
+		// 門後的區域也納進來——那是覆蓋的改變，要單獨評估，不該混在一次
+		// 輸入修正裡。門後的區域目前因此沒有覆蓋，記在 worklist。
+		if application.door != nil && !application.cellEventPending {
+			spin["門"]++
+			doorTurns++
+			if doorTurns > exploreMaxDoorTurns {
+				failures = append(failures, fmt.Sprintf(
+					"門選單關不掉：GEO%d/%d (%d,%d) 選項 %v 游標 %d 狀態列 %q",
+					application.spawn.Map.Archive, application.spawn.Map.BlockID,
+					application.spawn.X, application.spawn.Y,
+					application.door.Options, application.door.Cursor,
+					application.statusLine))
+				reason = "門選單關不掉"
+				break walk
+			}
+			// EXIT 一定在最後一格（`refreshDoorOptions` 無條件補上它），而
+			// 游標是環狀的——**從 0 往左一下就到最後一格**，不必往右按滿。
+			// 差別不是美觀：探索器一趟會反覆撞上同一道門，每撞一次多按四下，
+			// 整包的耗時就是這樣從十分鐘漲上去的。
+			if want := len(application.door.Options) - 1; application.door.Cursor != want {
+				if err := press(application, ebiten.KeyArrowLeft); err != nil {
+					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+					break walk
+				}
+				continue
+			}
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
+				break walk
+			}
+			continue
+		}
 		switch {
 		case application.programManaging:
 			spin["隊伍管理"]++
@@ -889,7 +937,7 @@ walk:
 			spin[fmt.Sprintf("模式 %v", application.mode)]++
 		default:
 			spin["走路"]++
-			menuStall, eventStall = 0, 0
+			menuStall, eventStall, doorTurns = 0, 0, 0
 		}
 		busy := application.encounter != nil || application.cellWaitingMenu ||
 			application.cellEventPending || application.combatActive ||

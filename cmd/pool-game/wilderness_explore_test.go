@@ -568,9 +568,7 @@ func TestTheNorthEdgeOfBlockEighteenLeadsToBlockNine(t *testing.T) {
 		if len(route) == 0 {
 			t.Fatalf("從 (%d,%d) 走不到 (11,28)", here[0], here[1])
 		}
-		for application.spawn.Facing != route[0] {
-			press(application, ebiten.KeyArrowRight)
-		}
+		faceTowards(application, route[0])
 		press(application, ebiten.KeyArrowUp)
 		for tick := 0; tick < 200 &&
 			(application.cellEventPending || application.cellWaitingMenu); tick++ {
@@ -590,9 +588,7 @@ func TestTheNorthEdgeOfBlockEighteenLeadsToBlockNine(t *testing.T) {
 			continue
 		}
 		for _, step := range plan {
-			for application.spawn.Facing != step.facing {
-				press(application, ebiten.KeyArrowRight)
-			}
+			faceTowards(application, step.facing)
 			press(application, ebiten.KeyArrowUp)
 			drainWildernessEvents(application)
 		}
