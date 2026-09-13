@@ -232,3 +232,5 @@
   `docs/audit/appimage-parity-reproducibility.json`。
 - 回歸：捕捉相位／正常動畫／固定 ECL seed 的精準測試通過；`./cmd/pool-game`
   全套 211.092 秒通過；shell 語法與 `git diff --check` 通過。
+- GitHub：證據回覆後關閉 issue #11，才同步移除 `docs/worklist.json` 的輔助條目
+  並重生 `WORKLIST.md`。

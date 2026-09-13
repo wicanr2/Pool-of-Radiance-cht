@@ -13,6 +13,8 @@ remake PNG 的 SHA-256。`v.1.1.5-20260914` patch AppImage（SHA-256
 `9823d30e228b38dd68888dcdadde1fe83fbf1920018f0125134ad4684deac0eb`。
 收據在 `docs/audit/appimage-parity-reproducibility.json`。
 
+驗證證據已回覆 GitHub，issue #11 隨後關閉；本地輔助工作清單才依序移除該條目。
+
 同輪也修正兩個容器 Python here-doc 漏掉 `docker run -i` 的假綠：先前 dosgolem
 產地閘門與新雜湊器其實收到空 stdin。修正後六組基準均實際解析為 dosgolem
 `d351681ba86d`、同一原版 `START.EXE` SHA-256 前綴 `12811cbc8166`。
