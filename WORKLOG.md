@@ -171,3 +171,22 @@
   完成 Journal 翻譯 corpus，再進行 UI 接線。
 - 提交／推送：本輪文件、manifest 與工作歷程提交至 `main`，並推送 `origin/main`。
 - Docker 清理：所有一次性 Xvfb／Go／檢查容器皆以 `--rm` 結束，無專案容器殘留。
+
+## 2026-09-13：#8 的 35 項發行包對拍
+
+- 目標：完成不需要真人判讀的對拍缺口：紮營九層、商店、神殿、挑法術、
+  裝備、地圖施法與平面圖。
+- 原版：以 dosgolem 正常建角／導覽鍵序重生 camp-quit、神殿、商店與人類
+  牧師法術頁的隔離基準。所有來源都寫 `provenance.json`；比較腳本逐一驗
+  generator、dosgolem revision 與同一份 `start.exe` 雜湊。
+- remake：從本機未發布的 `v.1.1.4-20260913` full-local AppImage 跑兩個
+  正常玩家流程。第一局走地圖進設施；第二局建立人類牧師、記憶祝福術、
+  紮營兩小時，再由地圖 C 鍵施法。沒有 direct-entry、座標注入或 ready
+  法術注入。
+- 收據：`docs/audit/dos-parity-sample.json` 共 35 項；標題 99.79%，
+  第一人稱視野 100%，新增法術頁／裝備／地圖施法法術頁外框分別為
+  94.23%／96.57%／99.27%。神殿、商店、裝備與施法挑人均明標
+  `layout-only`，不把不同資產或 remake 額外畫面冒稱 exact-state。
+- 台帳：先從 `docs/worklist.json` 移除 #8，再由
+  `cmd/pool-worklist -mode render -write WORKLIST.md` 重生 `WORKLIST.md`。結局留給人工
+  issue #5；原版沒有的 `view-pick`／`menu-drop-confirm` 不列為漏抽。

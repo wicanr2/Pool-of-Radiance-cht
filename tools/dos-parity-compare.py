@@ -324,6 +324,27 @@ def main():
         {"name": "camp-drop", "kind": "layout", "view": True,
          "digest": "a2dff92a", "remake": "remake-camp-drop.png",
          "note": "紮營 ALTER／DROP 確認（spec 135）"},
+        {"name": "camp-quit", "kind": "layout", "view": True,
+         "ref": "campquit", "digest": "52241f69", "remake": "remake-camp-quit.png",
+         "note": "紮營存入 A 槽後的 Quit TO DOS 確認（spec 135）"},
+        {"name": "temple", "kind": "layout", "view": True,
+         "ref": "temple", "digest": "82170586", "remake": "remake-temple.png",
+         "note": "正常走進 Sune 神殿後的服務選單（spec 017／115；layout-only）"},
+        {"name": "shop", "kind": "layout", "view": True,
+         "ref": "shop", "digest": "02d78f41", "remake": "remake-shop.png",
+         "note": "正常走進菲蘭武具店後的服務選單（spec 067／102；layout-only）"},
+        {"name": "spells", "kind": "layout", "ref": "spells",
+         "digest": "af17c89f", "remake": "remake-spells.png",
+         "note": "人類牧師的神術一級清單，對原版 MAGIC／MEMORIZE 法術書頁（spec 134）"},
+        {"name": "equipment", "kind": "layout",
+         "digest": "856df275", "remake": "remake-equipment.png",
+         "note": "remake 裝備頁對原版 VIEW CHARACTER 的版面參考；spec 008 明訂不宣稱一致"},
+        {"name": "field-cast", "kind": "layout", "ref": "spells",
+         "digest": "af17c89f", "remake": "remake-field-cast.png",
+         "note": "地圖施法的挑人層是 remake 額外畫面；只以原版法術頁作 layout-only 參考"},
+        {"name": "field-cast-spell", "kind": "layout", "ref": "spells",
+         "digest": "af17c89f", "remake": "remake-field-cast-spell.png",
+         "note": "地圖施法的法術頁；原版 C)AST 與 MEMORIZE 共用版面（spec 134）"},
         {"name": "icon-confirm", "kind": "layout",
          "digest": "d148516e", "remake": "remake-icon-confirm.png",
          "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成"
@@ -359,6 +380,22 @@ def main():
     if cityhall_dir and os.path.exists(os.path.join(cityhall_dir, "shots.json")):
         sources["cityhall"] = (
             cityhall_dir, json.load(open(os.path.join(cityhall_dir, "shots.json"))))
+    campquit_dir = sys.argv[4] if len(sys.argv) > 4 else None
+    if campquit_dir and os.path.exists(os.path.join(campquit_dir, "shots.json")):
+        sources["campquit"] = (
+            campquit_dir, json.load(open(os.path.join(campquit_dir, "shots.json"))))
+    temple_dir = sys.argv[5] if len(sys.argv) > 5 else None
+    if temple_dir and os.path.exists(os.path.join(temple_dir, "shots.json")):
+        sources["temple"] = (
+            temple_dir, json.load(open(os.path.join(temple_dir, "shots.json"))))
+    shop_dir = sys.argv[6] if len(sys.argv) > 6 else None
+    if shop_dir and os.path.exists(os.path.join(shop_dir, "shots.json")):
+        sources["shop"] = (
+            shop_dir, json.load(open(os.path.join(shop_dir, "shots.json"))))
+    spells_dir = sys.argv[7] if len(sys.argv) > 7 else None
+    if spells_dir and os.path.exists(os.path.join(spells_dir, "shots.json")):
+        sources["spells"] = (
+            spells_dir, json.load(open(os.path.join(spells_dir, "shots.json"))))
     for item in plan:
         source = item.get("ref", "main")
         if source not in sources:

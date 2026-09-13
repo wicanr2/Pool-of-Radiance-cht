@@ -184,6 +184,14 @@ func TestCampStageNames(t *testing.T) {
 	}
 }
 
+// 神殿有自己的正常玩家畫面識別字，發行包對拍才能等到服務選單再抓圖。
+func TestTempleScreenName(t *testing.T) {
+	application := &app{mode: modeAdventure, templeActive: true}
+	if got := application.screenName(); got != "temple" {
+		t.Errorf("神殿回報 %q，應該是 temple", got)
+	}
+}
+
 // 遊戲速度是原版的一拍：`Delay(GameSpeed × 225)` 毫秒
 //（overlay-37 entry 13，spec 135）。預設 4 是 overlay-11 `03BEh` 寫的。
 func TestSpeedDelayFollowsTheOriginalFormula(t *testing.T) {

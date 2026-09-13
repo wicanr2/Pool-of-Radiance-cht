@@ -116,6 +116,8 @@ func (a *app) screenName() string {
 		return "spells"
 	case a.shopActive:
 		return "shop"
+	case a.templeActive:
+		return "temple"
 	case a.campOpen:
 		// 兩層要分得出來（spec 135）：`camp` 是
 		// `CAMP: SAVE VIEW MAGIC REST ALTER EXIT`，`camp-rest` 是按下

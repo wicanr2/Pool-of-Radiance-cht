@@ -73,18 +73,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **卡在**：要固定的是兩件事：建角的擲值與肖像（現在跟著時間走）、以及畫面上的時鐘。前者可能要讓 AppImage 吃一個 seed 參數，後者要嘛不入鏡要嘛固定起始時刻——兩個都會動到發行包的介面，不是只改腳本。 營火那一項另外算：它要嘛在截圖前停住動畫，要嘛接受兩個值——後者會讓這一欄失去「掉了就是回歸」的意義，所以先不接受。
       **驗收**：同一個 AppImage 對同一組基準連跑三次：三次都要走完，而且二十張截圖逐位元組相同。做到之後 `dos-parity-sample.json` 的數字才有「掉了就是回歸」的意義。
       **討論**：[#11](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/11)
-- [ ] **五十六份規格沒有任何測試指回它。** `docs/audit/doc-index.json` 的 `specs_without_tests` 有 56 份。實作那一欄剛剛清完（每一份要嘛有檔案的註解指回它，要嘛在檔頭寫明實作不是 Go），測試這一欄還沒。
-      
-      **這不等於沒測**：測試可能存在，只是註解裡沒寫 `spec NNN`，那條線就接不起來。所以逐份要分三種處置——補註解（測試已經在測它）、補測試（真的沒測）、或在檔頭寫明為什麼不需要（純 RE 文件、實作在別的 repo）。
-      **卡在**：分不出「沒測」與「測了但沒標」之前不能動手：前者要寫測試，後者只要一行註解，而兩者在這個數字上長得一樣。
-      **驗收**：`specs_without_tests` 歸零，而且每一份的處置要看得出是哪一種。不准為了讓數字下降而在無關的測試裡加 `spec NNN`。
-      **討論**：[#13](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/13)
-
-### 三、版面與資料的差距
-
-- [ ] **抽樣擴到還沒對拍的畫面。** 現況表有二十項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營底下那九層、商店、神殿、挑法術頁、裝備、地圖上施法、平面圖。
-      **驗收**：每加一項都照市政廳那一節的做法（另產一組基準或延長主鍵序、compare 的 plan 加一項），`docs/audit/dos-parity-sample.json` 跟著多一項。
-      **討論**：[#8](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/8)
 
 <!-- worklist:end -->
 

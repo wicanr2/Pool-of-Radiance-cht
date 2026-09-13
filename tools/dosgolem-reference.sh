@@ -90,7 +90,13 @@ docker run --rm --network none --memory 4g --cpus "${PARITY_CPUS:-2}" --pids-lim
 # 產地證明。對拍腳本認這一份：**沒有它、或 generator 不是 dosgolem 就不准跑**
 # （AGENTS.md §7）。基準來自哪裡是對拍結論的前提，靠自律記得換是不夠的——
 # 一份放了幾天的 `workplace/` 目錄，從外表看不出它是誰產的。
-python3 - "$OUT" "$SOURCE/start.exe" "$DOSGOLEM" "$KEYS" <<'PROVENANCE'
+docker run --rm -i --network none --memory 128m --cpus 1 --pids-limit 64 \
+  -u "$(id -u):$(id -g)" \
+  -v "$OUT:/out" \
+  -v "$SOURCE:/orig:ro" \
+  -v "$DOSGOLEM:/dosgolem:ro" \
+  -w /tmp --entrypoint python3 eob-remake-dev:local \
+  - /out /orig/start.exe /dosgolem "$KEYS" <<'PROVENANCE'
 import hashlib, json, os, subprocess, sys
 
 out, exe, dosgolem, keys = sys.argv[1:5]
