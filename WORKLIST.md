@@ -44,18 +44,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 <!-- worklist:begin 這一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改 -->
 
-### 一、玩家會撞到的功能缺口
-
-- [ ] **走路遭遇還沒接上（規則已讀完）。** 規則已經讀完（spec 136），接線也在了，缺的是**遊戲層的端到端**。
-      
-      擲骰在**入口 1**——overlay-03 主迴圈走一步之後 `3750h` 跑的那一支。貧民窟這一份在 ECL2 block 20 的 `9975h`：先 `AND 7Fh` 取本格事件碼再 `ON GOTO` 分派 21 個處理常式；事件碼 0（普通格子）落在 `9AA5h`，三道否決之後 `RANDOM 13`、`> 12` 才遭遇。擲中之後 `9B68h` 起的編組碼與入口 3（紮營被打斷）共用，但入口 3 是 `GOTO @9B68` 直接跳進來的，不擲。
-      
-      remake 這一側：`cmd/pool-game/main.go` 走完一步呼叫 `beginInitialSearch`，跑的就是入口 1；`projectInitialPosition` 投影本格值與座標；搜尋旗標投影進 `@6DCA`；`24h COMBAT` 接到 `enterCombatStaging`。`internal/gamepack/slum_wandering_test.go` 一步一步跑入口 1，擲得出遭遇、三群的編號都在 `B6E6h` 那張表裡，而且邊走邊搜的遭遇率明顯較高（300 步 12 比 45）。
-      
-      **所以剩下的是走一遍給人看**：從新遊戲走進貧民窟，證明玩家真的遇得到、遭遇選單四個出口（打／等／逃／談）各自走到該去的地方。
-      **驗收**：remake 走同一條路線（從 `(0,4)` 往西進貧民窟往前走），要在合理步數內排出遭遇、停在遭遇選單，選 COMBAT 進戰鬥、選 FLEE 被丟到 spec 136 那五個落點之一。遭遇機率要跟著 spec 136 的那張表走，不是自己訂一個數字。
-      **討論**：[#1](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/1)
-
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
 - [ ] **戰鬥數值對原版。** 敵方 AI 已換成原版的接近規則，命中、傷害、豁免與存活**沒有在同一場戰鬥裡對過原版**。
