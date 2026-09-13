@@ -234,3 +234,12 @@
   全套 211.092 秒通過；shell 語法與 `git diff --check` 通過。
 - GitHub：證據回覆後關閉 issue #11，才同步移除 `docs/worklist.json` 的輔助條目
   並重生 `WORKLIST.md`。
+
+## 2026-09-14：新增 polish 主台帳
+
+- #16：登記人物資料頁半身像外框核對；先用 dosgolem 確認原版外框的存在、幾何與
+  色盤，證實後才實作。
+- #17：登記以 DOS 為構圖基準的全套現代奇幻 sprite 重繪母工作；原版忠實主題
+  保留，現代美術為可切換表現層。依 `grilling` 決策閘門，先做 inventory 與可丟棄
+  prototype，再確認視覺聖經、資產邊界與授權。
+- 兩項都先建立 GitHub issue，再加入 `docs/worklist.json` 輔助鏡像。

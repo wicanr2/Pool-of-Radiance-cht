@@ -68,6 +68,17 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
 
+### 三、版面與資料的差距
+
+- [ ] **人物資料頁半身像核對並補上原版外框。** 使用者指出現行繁中人物資料頁的右上半身像直接落在黑底上，認為 DOS 原版有獨立外框。先以 dosgolem 重生同狀態原版畫面，確認外框存在與精確矩形／色盤；證實後再由 renderer 補框，不把框烘進人物資產。
+      **卡在**：原版外框存在、幾何與色盤尚待 dosgolem 證據確認。
+      **驗收**：dosgolem 原版收據可回查；若原版確有外框，繁中與英文人物頁都補上同幾何外框，至少兩種肖像不裁切、不壓字；版面測試與 AppImage 對拍通過。
+      **討論**：[#16](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/16)
+- [ ] **以 DOS 為構圖基準重繪全套現代奇幻 sprite。** 建立可切換的完整現代奇幻 sprite 表現層，以 DOS 真實資產與 runtime consumer 為 inventory 基準；原版忠實主題完整保留。先盤點 sprite 家族並做少量可丟棄 prototype，再由使用者逐題確認視覺聖經、忠實度、資產邊界與產製／授權流程。
+      **卡在**：先完成 DOS sprite inventory 與三組可丟棄 prototype，再依 grilling 流程逐題確認視覺聖經與資產範圍。
+      **驗收**：完整 inventory 與 DOS archive／consumer 對得上；使用者確認單一視覺聖經；正式 sprite 風格一致且語意可追溯；每張有來源與權利紀錄；原版與現代主題可切換；所有主要正常玩家路徑與發行包抽測無缺圖、越界、裁切或風格混用。
+      **討論**：[#17](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/17)
+
 <!-- worklist:end -->
 
 已經對齊原版的：戰術盤面（spec 129，外框 9152／9152 ＝ 100%）、
