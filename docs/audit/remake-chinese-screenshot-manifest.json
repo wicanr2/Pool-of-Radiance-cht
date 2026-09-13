@@ -1,7 +1,7 @@
 {
   "schema": "pool-remake-screenshot-manifest/1",
-  "captured_at": "2026-09-09",
-  "source_commit": "8f3fab705a386b8a13b4c75489ff5f128690f5ee",
+  "captured_at": "2026-09-14",
+  "source_commit": "7e83cabbe9a63bf8c95a6a3a1ec83295c701f8c3",
   "source_tree_dirty": true,
   "method": "Docker/Xvfb real Ebitengine window; tools/capture-chinese-menu.sh",
   "state_relation": "normal-remake-player-path with -lang zh, stepped by the game's own -screen-state identifiers: title, ENTER, C, the whole creation flow, A, B, the guided tour, free movement, then the J/I/K panels and F5. Not an original-DOS parity claim.",
@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-sheet.png",
-      "sha256": "3d7fda4a9d645524e8157abc9bdfa93db2c9f207873a912a4b95ea6bf770443c",
+      "sha256": "034af83bb2a83864cdf32b025222ca077e744fb430194622f8cb94b190db4162",
       "width": 1280,
       "height": 800,
       "screen": "character sheet, keep-or-reroll prompt"
@@ -201,7 +201,7 @@
     },
     {
       "path": "docs/screenshots/pool-remake-chinese-view-sheet.png",
-      "sha256": "699010cfe7c03805d887035c9aa7d75d4688d6794e906a0000fe31ef79f77da4",
+      "sha256": "d34e9afcf94b32b051bbbbe845b1dc204e955c38981cd383a57c09bf58d6c400",
       "width": 1280,
       "height": 800,
       "screen": "a party member's sheet from the command bar (V)"

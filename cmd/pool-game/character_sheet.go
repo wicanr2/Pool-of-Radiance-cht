@@ -163,8 +163,8 @@ const (
 	sheetMovementValue = 550
 	sheetStatusLine  = 366
 	sheetStatusValue = 130
-	// 肖像的左上角（native 216,8）。
-	sheetPortraitLeft = 432
+	// 肖像內容的左上角（native 224,8）；native x=216..223 是框的左緣。
+	sheetPortraitLeft = 448
 	sheetPortraitTop  = 16
 )
 
@@ -228,8 +228,8 @@ func drawSheetFor(screen *ebiten.Image, a *app, member poolsave.Character,
 	drawText(screen, a.text(msgSheetStatus), sheetLeft, sheetStatusLine, foreground)
 	drawText(screen, sheet.Status, sheetStatusValue, sheetStatusLine, accent)
 
-	// 右上角的肖像。原版那一張佔 native x 216..311、y 8..103，
-	// 兩倍之後從 (432,16) 起。
+	// 右上角的肖像內容是 native x 224..311、y 8..95；框另由
+	// drawSheetPortraitFrame 疊在 x 216..319、y 0..103（spec 130）。
 	if portrait == nil {
 		portrait = a.portrait
 	}
@@ -239,6 +239,7 @@ func drawSheetFor(screen *ebiten.Image, a *app, member poolsave.Character,
 		op.GeoM.Translate(sheetPortraitLeft, sheetPortraitTop)
 		screen.DrawImage(portrait, op)
 	}
+	a.drawSheetPortraitFrame(screen)
 }
 
 // rolledCharacter 把剛擲出來的數值包成一個角色，資料頁的那幾格才算得出來。

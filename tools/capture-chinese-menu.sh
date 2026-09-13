@@ -15,6 +15,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENGINE="$(cd "$ROOT/../golden-box-remake-engine" && pwd)"
 FONT_DIR="${ETEN_FONT_DIR:-/home/anr2/cht/etan_font}"
+CAPTURE_UNTIL="${1:-all}"
+case "$CAPTURE_UNTIL" in
+  all|view-sheet) ;;
+  *) echo "用法：$0 [all|view-sheet]" >&2; exit 2 ;;
+esac
 test -f "$ROOT/Pool of Radiance (1988).zip"
 test -f "$FONT_DIR/stdfont.15"
 
@@ -22,7 +27,7 @@ docker run --rm --network none --memory 2g --cpus 2 --pids-limit 256 \
   --log-opt max-size=10m --log-opt max-file=3 \
   -u "$(id -u):$(id -g)" --tmpfs /tmp/.X11-unix:rw,mode=1777 \
   -e HOME=/tmp/home -e GOCACHE=/src/workplace/go-build-cache \
-  -e GOMODCACHE=/src/workplace/go-mod-cache \
+  -e GOMODCACHE=/src/workplace/go-mod-cache -e CAPTURE_UNTIL="$CAPTURE_UNTIL" \
   -v "$ROOT:/src" -v "$ENGINE:/engine:ro" -v "$FONT_DIR:/fonts:ro" -w /src \
   wasteland-go:1.24-x11-record-r1 bash -c '
 set -eu
@@ -106,8 +111,21 @@ step() {
   done
 }
 shot() {
-  ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
-    -i ":99+${X},${Y}" -frames:v 1 "$1"
+  target=$1
+  attempt=0
+  while test "$attempt" -lt 20; do
+    attempt=$((attempt + 1))
+    ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+      -i ":99+${X},${Y}" -frames:v 1 /tmp/shot-a.png
+    sleep 0.15
+    ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+      -i ":99+${X},${Y}" -frames:v 1 /tmp/shot-b.png
+    if cmp -s /tmp/shot-a.png /tmp/shot-b.png; then
+      cp /tmp/shot-b.png "$target"
+      return
+    fi
+  done
+  die "畫面連拍 20 次仍未穩定：$target"
 }
 # differs <前> <後> <說明>：同一個畫面識別字底下的內容變化（加入隊伍、
 # 翻到某一條線索）只能靠比圖，這一個留給那幾處。
@@ -311,6 +329,7 @@ step v view-pick
 step Return view-sheet
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-view-sheet.png
+test "$CAPTURE_UNTIL" != view-sheet || exit 0
 step Escape view-pick
 step Escape adventure-move
 step F3 guide

@@ -41,6 +41,10 @@ const (
 	// combatBoardRightTileCol 是戰場框右邊那一欄；它右邊到畫面右框之間
 	// 是資訊欄。
 	combatBoardRightTileCol = 22
+	// 人物資料頁右上肖像框的左欄與下列（spec 130）。上緣、右緣沿用外框。
+	sheetPortraitLeftTileCol   = 27
+	sheetPortraitBottomTileRow = 12
+	sheetPortraitRightTileCol  = 39
 )
 
 // drawFrame 畫畫面外框。band 4 沒載進來（測試的假 app、或原版 ZIP 不在）
@@ -66,6 +70,28 @@ func (a *app) drawCombatFrame(screen *ebiten.Image, foreground, accent color.Col
 	}
 	put(frameCornerItem, combatBoardRightTileCol, 0)
 	put(frameCornerItem, combatBoardRightTileCol, combatBottomTileRow)
+}
+
+// drawSheetPortraitFrame 補人物資料頁右上肖像框的左緣與下緣。原版上緣、右緣
+// 就是整頁外框，所以只補三個交點與兩段繩索，不把框烘進肖像資產（spec 130）。
+func (a *app) drawSheetPortraitFrame(screen *ebiten.Image) {
+	if a == nil || a.symbolBand4.ItemCount <= frameHorizontalItem {
+		return
+	}
+	palette := a.artPalette()
+	scale := logicalWidth / 320
+	put := func(item, column, row int) {
+		a.drawSymbol(screen, item, column*frameTileSize*scale, row*frameTileSize*scale, scale, palette)
+	}
+	put(frameCornerItem, sheetPortraitLeftTileCol, 0)
+	for row := 1; row < sheetPortraitBottomTileRow; row++ {
+		put(frameVerticalItem, sheetPortraitLeftTileCol, row)
+	}
+	put(frameCornerItem, sheetPortraitLeftTileCol, sheetPortraitBottomTileRow)
+	for column := sheetPortraitLeftTileCol + 1; column < sheetPortraitRightTileCol; column++ {
+		put(frameHorizontalItem, column, sheetPortraitBottomTileRow)
+	}
+	put(frameCornerItem, sheetPortraitRightTileCol, sheetPortraitBottomTileRow)
 }
 
 func (a *app) drawFrameWithBottom(screen *ebiten.Image, bottomRow int,
@@ -160,4 +186,3 @@ func drawPlainFrame(screen *ebiten.Image, title string, foreground, accent color
 	}
 	drawText(screen, title, 18, 26, foreground)
 }
-

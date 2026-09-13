@@ -1,0 +1,63 @@
+{
+  "schema": "pool-portrait-frame-parity/1",
+  "date": "2026-09-14",
+  "github_issue": 16,
+  "original": {
+    "generator": "dosgolem",
+    "revision": "d351681ba86d97aab571d00b979c36e2336486f3",
+    "start_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+    "screenshot": "docs/reference/original-dos/character-flow/14-character-sheet.png",
+    "screenshot_sha256": "ad26674ff5eacbb6d6cf0872252ade41f0f89fe212cfd2b6325a52c22ff12fb0"
+  },
+  "geometry_native_320x200": {
+    "portrait_content": {"x": 224, "y": 8, "width": 88, "height": 88},
+    "shared_top_frame": {"x": 216, "y": 0, "width": 104, "height": 8},
+    "left_frame": {"x": 216, "y": 0, "width": 8, "height": 104},
+    "bottom_frame": {"x": 216, "y": 96, "width": 104, "height": 8},
+    "shared_right_frame": {"x": 312, "y": 0, "width": 8, "height": 104}
+  },
+  "frame_assets": {
+    "archive": "8X8D1.DAX",
+    "block": 202,
+    "corner_item": 20,
+    "vertical_item": 21,
+    "horizontal_item": 22,
+    "palette": "由 app.artPalette 使用 graphics.EGA16；測試將原始 symbol 與 dosgolem 截圖都換算成 EGA 色盤索引後逐像素比較"
+  },
+  "tests": {
+    "command": "tools/go.sh test ./...",
+    "result": "通過",
+    "pool_game_seconds": 208.214,
+    "coverage": [
+      "七個代表性框 tile 與 dosgolem 截圖逐像素相同",
+      "selector 1/1 的人物內容與 dosgolem 88x88 內部逐像素相同",
+      "selector 1/1 與 14/12 均以英文及繁中 renderer 驗證為 88x88"
+    ],
+    "vet_command": "tools/go.sh vet ./...",
+    "vet_result": "通過"
+  },
+  "release": {
+    "version": "v.1.1.6-20260914",
+    "manifest_sha256": "bb6e96193fddbabb35b46c721bde0a2d31fce60f93b17bed60afa8407e6befb3",
+    "patch_appimage_sha256": "00f031a8e3250c1b1db7f7a50fb52e2e5512ad5e7873c5549a2984e4fbf0f21a"
+  },
+  "appimage_dos_parity": {
+    "command": "tools/appimage-dos-parity.sh v.1.1.6-20260914",
+    "result": "通過",
+    "report": "workplace/dos-parity-zh/parity.json",
+    "sheet": {
+      "before": {"same": 55053, "total": 64000, "ratio": 0.8602, "frame_ratio": 0.9839},
+      "after": {"same": 58954, "total": 64000, "ratio": 0.9212, "frame_ratio": 1.0},
+      "remake_sha256": "45bdfd2008fb5966eee17ea03d746e27b6488defaeb82782ba7e38a0caa1cb70"
+    },
+    "view_sheet": {
+      "before": {"same": 55203, "total": 64000, "ratio": 0.8625, "frame_ratio": 0.9839},
+      "after": {"same": 59104, "total": 64000, "ratio": 0.9235, "frame_ratio": 1.0},
+      "remake_sha256": "a8172330cebd5b3946af597f73f94d336acf2376e39e74575e4f1e7c737a5a06"
+    }
+  },
+  "tracked_remake_screenshots": [
+    {"path": "docs/screenshots/pool-remake-chinese-sheet.png", "sha256": "034af83bb2a83864cdf32b025222ca077e744fb430194622f8cb94b190db4162"},
+    {"path": "docs/screenshots/pool-remake-chinese-view-sheet.png", "sha256": "d34e9afcf94b32b051bbbbe845b1dc204e955c38981cd383a57c09bf58d6c400"}
+  ]
+}
