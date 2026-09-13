@@ -3,7 +3,7 @@
 狀態：CONFORMED（d20 的 1 miss／20→100 score、encoded THAC0／AC 比較、NdS＋signed bonus、零下限）；
 DRAFT（狀態／法術／距離 modifier、initiative、武器選擇、攻擊次數來源、
 特殊攻擊、受傷／死亡狀態與完整戰術回合）。
-日期：2026-09-01。
+日期：2026-09-14。
 
 ## 輸入、工具與位址空間
 
@@ -97,6 +97,29 @@ return；因此現行契約是「20 改成 comparison score 100」。舊結論�
 非法 roll 或超出 signed intermediate 安全範圍必須回錯，不能 clamp 或擲新骰。這個
 primitive 接受 internal encoding，避免先轉成畫面 THAC0／AC 再失去原版比較形狀。
 
+## 正常玩家路徑的同戰鬥數值收據（2026-09-14）
+
+`tools/pool-dos-combat-parity.sh docs/audit/dos-combat-parity.json` 以鎖定版
+dosgolem `d351681ba86d97aab571d00b979c36e2336486f3`，從 SHA-256
+`12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f` 的
+DOS `START.EXE` 重生收據。路徑是正常建角、羅夫導覽、走進第一場遭遇、選
+`COMBAT` 再選 `QUICK`，沒有 direct-entry、座標或 HP 注入。
+
+在戰鬥快照上明確把 Turbo Pascal `Random(word)` 以 `n=20` 前進八次，取得第一個
+戰術行動的固定輸入；remake 使用收據記載的固定骰流 `[20, 2]`，不是假設兩種 RNG
+給同一個 seed 數字就會有相同序列。該行動的逐步結果是：
+
+- HERO 的 internal THAC0 40（畫面值 20），GOBLIN 的 effective internal AC 54
+  （畫面值 6）；
+- d20 為 20，命中；傷害為 `1d2` 擲出 2；
+- HERO HP `6 → 6`，GOBLIN HP `4 → 2`。
+
+`TestDOSFirstCombatControlledTrace` 直接讀取該收據，讓同一組 typed 值走過正式
+`resolveTacticalAttack`，並要求只消耗 d20、d2 兩筆骰值且雙方 HP 完全一致。這是
+第一場遭遇第一個已解決戰術行動的 exact 數值對拍；它不宣稱已逐場覆蓋所有武器、
+效果或整場戰鬥。基礎武器攻擊本身沒有豁免步驟；豁免的原版順序與五格資料表由
+[spec 075](075-saving-throws.md) 及其獨立測試閉合，不把不存在的擲骰塞進本收據。
+
 ### 傷害
 
 輸入：`count`、`sides`、signed `bonus`、每顆已擲出的 1..sides 結果，以及
@@ -125,6 +148,6 @@ primitive 接受 internal encoding，避免先轉成畫面 THAC0／AC 再失去�
 - 命中測試固定 roll 1、roll 20→100 score、一般 roll 的差一 miss／相等 hit，以及
   正負 modifier；另以極端 synthetic AC 證明 20 並非函式層無條件 return。
 - 傷害測試固定 `1d8`、`2d4-1`、負值歸零、倍率、錯誤骰值與長度。
-- 真實 Spec 049 兩筆 ORC typed damage 可直接餵入 primitive，但不以 remake 自測冒充
-  DOS 同 seed 戰鬥對拍。
+- 真實 Spec 049 兩筆 ORC typed damage 可直接餵入 primitive；第一場遭遇的 DOS
+  controlled-random 同戰鬥收據另由上述工具重生並由 remake 測試消費。
 - Pool 全套 `go test ./...`、`go vet ./...`；前端 staging 仍不得越過 `9E6Dh`。

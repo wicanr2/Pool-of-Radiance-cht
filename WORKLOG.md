@@ -260,3 +260,17 @@
   的六人一級隊伍，沒有強化能力值或注入戰鬥結果。
 - 修正 `6ce6104` 推送後已把上述證據回覆 GitHub 並關閉 issue #1；隨後才從
   `docs/worklist.json` 移除輔助條目並重生 `WORKLIST.md`，剩餘五筆為 #4、#5、#6、#16、#17。
+
+## 2026-09-14：#4 第一場戰鬥數值對拍
+
+- 新增 `tools/pool-dos-combat-parity.sh` 與隔離的 Go 探針，鎖定正式截圖基準所用的
+  dosgolem `d351681ba86d97aab571d00b979c36e2336486f3`；原版 `START.EXE` SHA-256
+  不符 `12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f` 即拒絕執行。
+- 正常建角、羅夫導覽、第一場遭遇、`COMBAT`、`QUICK` 後，在戰鬥快照明確前進
+  Turbo Pascal RNG 八次。第一個戰術行動為 HERO（THAC0 20）以 d20=20 命中
+  AC 6 的 GOBLIN，`1d2=2`，雙方 HP 為 `6→6`／`4→2`。
+- `docs/audit/dos-combat-parity.json` 保存產生器版本、輸入雜湊、路徑、亂數控制方式
+  與 typed 結果；`TestDOSFirstCombatControlledTrace` 直接讀收據，讓 remake 正式
+  攻擊路徑消費固定骰流 `[20,2]`，並核對雙方 HP 與骰值消耗筆數。
+- 基礎武器攻擊沒有豁免步驟；沒有為湊欄位捏造一次豁免。豁免鏈仍由 spec 075 的
+  原版反組譯、真實人物表與獨立測試負責。
