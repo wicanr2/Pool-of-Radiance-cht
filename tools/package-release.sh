@@ -15,8 +15,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENGINE="${GOLDEN_BOX_REMAKE_ENGINE_DIR:-$ROOT/../golden-box-remake-engine}"
 VERSION="${1:-}"
-if [[ -z "$VERSION" || ! "$VERSION" =~ ^[0-9A-Za-z._-]+$ ]]; then
-  echo "用法：tools/package-release.sh <版本（僅英數、點、底線、連字號）>" >&2
+if [[ ! "$VERSION" =~ ^v\.[0-9]+\.[0-9]+\.[0-9]+-[0-9]{8}$ ]]; then
+  echo "用法：tools/package-release.sh <v.主版.次版.修訂版-YYYYMMDD>" >&2
   exit 2
 fi
 
@@ -33,8 +33,11 @@ done
 test -d "$ENGINE/.git"
 mkdir -p "$ROOT/workplace/go-build-cache" "$ROOT/workplace/go-mod-cache"
 
-# 圖示是原創的，不用原版標題畫面——那是 SSI 的美術。
-python3 "$ROOT/tools/build-release-icon.py" "$ROOT/packaging/linux/pool-of-radiance-remake.png"
+# 圖示是原創的，不用原版標題畫面——那是 SSI 的美術。產生器也必須在容器內跑，
+# 不能因為它只寫一張 PNG 就繞過 Docker-only 契約。
+docker run --rm --network none --memory 256m --cpus 1 --pids-limit 64 \
+  -u "$UID_NOW:$GID_NOW" -v "$ROOT:/src" -w /src python:3.12-slim \
+  python tools/build-release-icon.py packaging/linux/pool-of-radiance-remake.png
 
 go_mounts=(
   -v "$ROOT:/src" -v "$ENGINE:/engine:ro"
@@ -114,7 +117,7 @@ run_helper "set -eu
   # AppDir 不夾帶任何 .so。這個執行檔只連 X11 那四顆（libX11／libxcb／libXau／
   # libXdmcp）加 glibc，全部屬於系統圖形堆疊，本來就該由主機提供。
   # 從建置 image 複製過去反而會壞：那幾顆是對 glibc 2.38 連結的，搬到 glibc
-  # 較舊的機器上會噴 `version GLIBC_2.38 not found`——而且是在建置階段完全
+  # 較舊的機器上會噴「version GLIBC_2.38 not found」——而且是在建置階段完全
   # 正常、到玩家手上才失敗。tools/linux-release-smoke.sh 就是量這件事的。"
 
 docker run --rm --network none --memory 1g --cpus 1 --pids-limit 128 \

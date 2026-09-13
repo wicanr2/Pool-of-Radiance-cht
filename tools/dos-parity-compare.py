@@ -299,6 +299,10 @@ def main():
                  "676 格之差就是火焰跳動的那幾格，兩邊的截圖各自停在哪一張"
                  "是時機決定的（internal/assets/camp_fire_test.go 釘住這兩個"
                  "數字）。掉到 60% 以下才是畫錯了。底下那九層還沒進抽樣"},
+        {"name": "camp-rest", "kind": "layout", "view": True,
+         "digest": "127e40a3", "remake": "remake-camp-rest.png",
+         "note": "紮營 REST 子畫面（spec 135）：休息時間列與"
+                 " REST DAYS HOURS MINS INC DEC EXIT 指令列"},
         {"name": "icon-confirm", "kind": "layout",
          "digest": "d148516e", "remake": "remake-icon-confirm.png",
          "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成"

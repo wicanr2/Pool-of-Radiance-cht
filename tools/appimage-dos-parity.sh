@@ -55,8 +55,10 @@ test -f "$APPIMAGE"
 # 檔案——改完程式碼直接跑對拍，量到的是上一版，數字看起來正常，結論整份是空的。
 # 基準那一側早就有產地證明閘門（下面那段），這一側先前沒有：2026-09-10 因此
 # 拿 9/9 建的包量了一整輪，還把別的 commit 的升幅記到這一輪頭上。
-STALE_SOURCE="$(find "$ROOT/cmd" "$ROOT/internal" "$ENGINE_DIR" \
-  -name '*.go' -newer "$APPIMAGE" -print -quit 2>/dev/null || true)"
+STALE_SOURCE="$(docker run --rm --network none --memory 128m --cpus 1 --pids-limit 32 \
+  -v "$ROOT:/src:ro" -v "$ENGINE_DIR:/engine:ro" -v "$APPIMAGE:/game.AppImage:ro" \
+  debian:bookworm-slim sh -c \
+  "find /src/cmd /src/internal /engine -name '*.go' -newer /game.AppImage -print -quit 2>/dev/null" || true)"
 [[ -z "$STALE_SOURCE" ]] || {
   echo "發行包比原始碼舊（$STALE_SOURCE 改過之後沒有重新打包）。" >&2
   echo "先跑 tools/package-release.sh $VERSION 再對拍。" >&2; exit 2; }
@@ -66,7 +68,8 @@ test -f "$REF/shots.json" || {
 # **基準一律由 dosgolem 產**（AGENTS.md §7）。這裡不是提醒是閘門：
 # 一份放了幾天的 `workplace/` 目錄從外表看不出它是誰產的，而基準來自哪裡
 # 是整份對拍結論的前提。缺產地證明就重跑 `tools/dosgolem-reference.sh`。
-python3 - "$REF" <<'GATE'
+docker run --rm --network none --memory 128m --cpus 1 --pids-limit 32 \
+  -v "$REF:/ref:ro" python:3.12-slim python - /ref <<'GATE'
 import json, os, sys
 
 path = os.path.join(sys.argv[1], "provenance.json")
@@ -280,6 +283,11 @@ shot remake-city-hall-second
 step e camp
 sleep 0.6
 shot remake-camp
+# REST 是紮營底下最直接的一層；兩側都按 R 進去、E 回到最外層。
+step r camp-rest
+sleep 0.6
+shot remake-camp-rest
+step e camp
 step e adventure-cell-done
 sleep 0.4
 
