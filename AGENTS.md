@@ -218,9 +218,18 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   > 於是「走一步效果減一分」那條測試 skip 掉了自己要測的東西；
   > 把隊伍先站到一格走得動的地方，同一條測試就真的跑起來了。
 
-- **[HARD] 未完成項的權威是 [`docs/worklist.json`](docs/worklist.json)，
-  不是 WORKLIST.md。** 那一節由 `go run ./cmd/pool-worklist -mode render`
-  產生，手改會在下一次 render 被蓋掉。每一項掛一個 `verify`：**跑
+- **[HARD] 未完成工作、狀態與討論的主台帳是遠端 GitHub repository 的
+  [issues](https://github.com/wicanr2/Pool-of-Radiance-cht/issues)。** 所有要執行的
+  工作必須先在 GitHub 建立 issue；issue 關閉才代表主台帳完成。每輪完成工作後，
+  必須用主機已登入的 `/home/anr2/.local/bin/gh` 重新列出 open issues，盤點還有哪些
+  工作要做，並逐一確認本地發現的未完成工作都有對應的 open issue。不得只看本地
+  文件就宣稱「沒有剩餘工作」，也不得讓只存在 `WORKLIST.md`、`CONTEXT.md`、spec、
+  程式註解或口頭交接而未登記 GitHub 的可執行工作留到下一輪。
+- [`docs/worklist.json`](docs/worklist.json) 是 GitHub issue 的**本地輔助紀錄與機器
+  驗證鏡像**，不是主台帳；`WORKLIST.md` 的現行未完成節則由它產生。每個仍需本地
+  `verify` 的 open issue 都要寫入 JSON，並以 `github_issue` 指回 GitHub。那一節由
+  `go run ./cmd/pool-worklist -mode render` 產生，手改會在下一次 render 被蓋掉。
+  每一項掛一個 `verify`：**跑
   `-mode verify` 為真代表這一條仍然未完成**，為假就是東西做好了而條目沒改
   ——也就是過期斷言。多數條目綁在程式碼的自承註解上，註解一旦被拿掉 verify
   就會開口；沒有機器可判訊號的標 `manual`，它一律回「仍未完成」並標出來，
@@ -228,12 +237,12 @@ DOS bytes／runtime／手冊 → DRAFT spec → 證據審查 → READY
   > 清單是假斷言長得最好的地方：東西接上了，而沒有人回頭改那一條。
   > 2026-09-10 抓到臭雲術寫著「派發表六十七格裡只剩這一支」，實際上派發
   > 那一格早就接上，缺的只是盤面上的雲團物件。
-- **每一條在 GitHub 上有一個對應的 issue**（`github_issue` 欄位就是編號，
-  <https://github.com/wicanr2/Pool-of-Radiance-cht/issues>），`render` 會把連結
-  帶進 WORKLIST.md。issue 給人看、給人討論；**權威仍然是 JSON**，因為 GitHub
-  的清單不會自己發現「東西做好了但沒人回來改」，`-mode verify` 會。
-  所以順序是**先改 JSON，再把 issue 更新成一樣**——反過來做，verify 就對不上
-  真正的台帳了。開新條目時一併開 issue 並把編號寫回 `github_issue`。
+- **[HARD] GitHub 與本地輔助紀錄的同步順序固定如下：**新增工作時先建立 GitHub
+  issue，再視需要把編號與 `verify` 寫入 JSON 並重生 `WORKLIST.md`；工作完成時先用
+  證據更新並關閉 GitHub issue，再移除或更新 JSON，重生 `WORKLIST.md`，最後再用
+  `gh issue list --state open` 與 `pool-worklist -mode verify` 雙向核對。兩者不一致時，
+  先查遠端 issue、目前程式與驗證證據，再修正本地鏡像；不得用 JSON 單方面覆蓋
+  GitHub 狀態。GitHub 能管理工作與討論，JSON 的額外職責只在讓過期斷言自己開口。
 
 ## 7. 原版對拍與截圖契約
 

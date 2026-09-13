@@ -1,7 +1,8 @@
 // pool-worklist 管未完成項。
 //
-// **權威是 `docs/worklist.json`，不是 WORKLIST.md。** markdown 那一節由這支
-// 的 `render` 產生——手改會在下一次 render 時被蓋掉。
+// **工作主台帳是遠端 GitHub issues。** `docs/worklist.json` 只是 open issue 的
+// 本地 verify 輔助鏡像；WORKLIST.md 那一節由這支的 `render` 產生，手改會在
+// 下一次 render 時被蓋掉。
 //
 // 這支存在的理由是「過期斷言」：東西做好了而清單沒有人回頭改，於是清單上
 // 留著一條假的「還沒接」。2026-09-10 抓到的臭雲術就是那樣——派發那一格早就
@@ -70,8 +71,8 @@ type item struct {
 	BlockedBy  string `json:"blocked_by,omitempty"`
 	Acceptance string `json:"acceptance"`
 	Verify     verify `json:"verify"`
-	// GitHubIssue 是這一條在 GitHub 上對應的 issue 編號。0 代表還沒開。
-	// 兩邊並存：issue 給人討論，這一份留著是因為 verify 要跑得起來。
+	// GitHubIssue 是這一條在 GitHub 主台帳上對應的 issue 編號；每條都必須有，
+	// 而且同一份鏡像內不能重複。這份 JSON 留著是因為 verify 要跑得起來。
 	GitHubIssue int `json:"github_issue,omitempty"`
 }
 
@@ -105,6 +106,7 @@ func load(path string) (*file, error) {
 		return nil, fmt.Errorf("%s 的 schema 是 %q，不是 pool-worklist/1", path, decoded.Schema)
 	}
 	seen := map[string]bool{}
+	seenIssues := map[int]string{}
 	for _, one := range decoded.Items {
 		if one.ID == "" || one.Title == "" || one.Acceptance == "" {
 			return nil, fmt.Errorf("條目 %q 缺 id／title／acceptance", one.ID)
@@ -113,6 +115,13 @@ func load(path string) (*file, error) {
 			return nil, fmt.Errorf("條目 id %q 重複", one.ID)
 		}
 		seen[one.ID] = true
+		if one.GitHubIssue <= 0 {
+			return nil, fmt.Errorf("條目 %q 沒有有效的 github_issue；工作必須先登記到 GitHub", one.ID)
+		}
+		if previous, ok := seenIssues[one.GitHubIssue]; ok {
+			return nil, fmt.Errorf("條目 %q 與 %q 重複使用 github_issue #%d", one.ID, previous, one.GitHubIssue)
+		}
+		seenIssues[one.GitHubIssue] = one.ID
 		if _, ok := decoded.Layers[one.Layer]; !ok {
 			return nil, fmt.Errorf("條目 %q 的 layer %q 不在 layers 裡", one.ID, one.Layer)
 		}
@@ -394,7 +403,7 @@ func writeInto(path, body string) error {
 
 func main() {
 	root := flag.String("root", ".", "repository root")
-	source := flag.String("json", "docs/worklist.json", "未完成項的權威資料")
+	source := flag.String("json", "docs/worklist.json", "GitHub open issues 的本地 verify 輔助資料")
 	mode := flag.String("mode", "verify", "verify｜render｜list")
 	write := flag.String("write", "", "render 時寫回這份 markdown 的 worklist 標記之間；留空就印到 stdout")
 	flag.Parse()

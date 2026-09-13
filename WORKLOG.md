@@ -190,3 +190,15 @@
 - 台帳：先從 `docs/worklist.json` 移除 #8，再由
   `cmd/pool-worklist -mode render -write WORKLIST.md` 重生 `WORKLIST.md`。結局留給人工
   issue #5；原版沒有的 `view-pick`／`menu-drop-confirm` 不列為漏抽。
+
+## 2026-09-13：GitHub issues 改為工作主台帳
+
+- 目標：依使用者定案，將未完成工作、狀態與討論的權威由本地 JSON 改為遠端
+  GitHub issues；`docs/worklist.json` 只保留 `verify` 輔助鏡像職責。
+- 變更：更新 `AGENTS.md`／`CLAUDE.md`、`CONTEXT.md`、`WORKLIST.md` 與 JSON 說明；
+  `pool-worklist` 現在拒絕缺少、無效或重複的 `github_issue`，避免本地新增未登記工作。
+- 盤點：主機 `gh auth status` 有效；遠端 open issues 為 #1、#4、#5、#6、#10、#11。
+  `WORKLIST.md` 全檔只有同六個未勾選項，JSON 也只有同六筆，沒有孤兒工作或映射缺口。
+- 驗證：`tools/go.sh test ./cmd/pool-worklist` 通過；`gofmt -d` 無輸出；
+  `-mode verify` 只列上述六項；舊「JSON 是權威」現行文字零命中，`git diff --check`
+  通過。一次性容器均以 `--rm` 結束，專案樹無 root-owned 檔案或誤建的 `.md` 目錄。

@@ -2,6 +2,18 @@
 
 更新日期：2026-09-13。
 
+## 2026-09-13 GitHub issues 成為工作主台帳
+
+使用者定案：未完成工作、狀態與討論一律以遠端 GitHub repository 的 issues 為主；
+`docs/worklist.json` 降為 open issue 的本地輔助紀錄與機器驗證鏡像，`WORKLIST.md`
+只保存歷史與由 JSON 產生的現行摘要。新增工作先開 issue，再補本地 `verify`；完成
+工作先以證據更新並關閉 issue，再同步 JSON 與 `WORKLIST.md`。每輪完成後必須重新用
+主機 `gh` 盤點 open issues，並把本地文件、spec 或程式中發現的可執行缺口反查 GitHub，
+不得留下只在本地、沒有 issue 的工作。
+
+本次盤點遠端只有 #1、#4、#5、#6、#10、#11 六個 open issue；`WORKLIST.md` 全檔
+六個未勾選項與 `docs/worklist.json` 六筆完全對應，未發現未登記的現行工作。
+
 ## 2026-09-13 對拍抽樣的自動化缺口清空
 
 issue #8 的發行包抽樣由 28 增為 35 項，使用本機未發布包

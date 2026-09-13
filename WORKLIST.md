@@ -1,7 +1,8 @@
 # Pool of Radiance remake 工作清單
 
-只列尚未完成且有驗收條件的工作。做完的留在原處打勾，因為每一條後面都掛著
-當初的證據與踩過的坑；**要看「還剩什麼」看下面這一節就好**。
+遠端 [GitHub issues](https://github.com/wicanr2/Pool-of-Radiance-cht/issues) 是未完成
+工作、狀態與討論的主台帳；本文件保留歷史證據，現行未完成節則是本地輔助鏡像。
+每輪完成工作後都要重新讀取遠端 open issues，並確認本地發現的工作沒有漏登記。
 
 ## 還沒完成的（2026-09-11 核實）
 
@@ -11,7 +12,9 @@
 第三層是版面與資料的差距。
 
 > **底下三節由 [`docs/worklist.json`](docs/worklist.json) 產生，不要手改。**
-> 改完那一份跑 `go run ./cmd/pool-worklist -mode render` 貼回來。
+> JSON 是 GitHub open issues 的本地 `verify` 輔助鏡像，不是主台帳。新增工作先開
+> GitHub issue，再補 JSON；完成後先以證據更新並關閉 issue，再更新 JSON，最後跑
+> `go run ./cmd/pool-worklist -mode render -write WORKLIST.md` 重生本節。
 >
 > 為什麼把未完成項搬進 JSON：**清單最容易長出過期斷言**——東西做好了而沒有
 > 人回頭改條目，於是清單上留著一條假的「還沒接」。2026-09-10 抓到的臭雲術

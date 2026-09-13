@@ -1,6 +1,6 @@
 {
   "schema": "pool-worklist/1",
-  "note": "未完成項的權威在這一份。WORKLIST.md 兩個 `worklist:begin`／`worklist:end` 標記之間那一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改；標記外的段落是手寫的，工具不會動。每一項的 verify 跑起來為真代表『這一條仍然未完成』——為假就是東西做好了而清單沒改，也就是過期斷言。`json_len` 與 `json_gap` 是同一份資料的兩個方向：前者「≤ max 才算未完成」給進度型用（涵蓋幾張圖，越多越好），後者「≥ min 就算未完成」給缺口型用（幾份規格沒人指回去，越少越好）。　每一條在 GitHub 上有一個對應的 issue（`github_issue` 欄位就是編號，<https://github.com/wicanr2/Pool-of-Radiance-cht/issues>）：issue 那邊給人看、給人討論，這一份留著是因為 verify 要跑得起來——GitHub 的清單不會自己發現「東西做好了但沒人回來改」，`cmd/pool-worklist` 會。兩邊的內容以這一份為準，改完這裡要把 issue 一起更新。",
+  "note": "未完成工作、狀態與討論的主台帳是遠端 GitHub issues（<https://github.com/wicanr2/Pool-of-Radiance-cht/issues>）；這一份只是 open issue 的本地輔助紀錄與機器驗證鏡像，不得取代遠端現況。WORKLIST.md 兩個 `worklist:begin`／`worklist:end` 標記之間那一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改；標記外的段落是手寫的，工具不會動。每一項都必須以非零且不重複的 `github_issue` 指回 GitHub，並掛一個 verify。verify 跑起來為真代表『這一條仍然未完成』；為假只代表本地斷言可能過期，必須回查遠端 issue、目前程式與證據後同步兩邊，不能自行宣告完成。`json_len` 與 `json_gap` 是同一份資料的兩個方向：前者「≤ max 才算未完成」給進度型用（涵蓋幾張圖，越多越好），後者「≥ min 就算未完成」給缺口型用（幾份規格沒人指回去，越少越好）。新增工作先開 GitHub issue，再補這份鏡像；完成後先以證據更新並關閉 issue，再更新鏡像與重生 WORKLIST.md，最後用主機 gh 與本地 verify 雙向盤點。",
   "layers": {
     "feature": "玩家會撞到的功能缺口",
     "verification": "驗證缺口：接了，但沒拿原版當裁判驗過",

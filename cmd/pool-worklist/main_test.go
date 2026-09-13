@@ -193,6 +193,21 @@ func TestLoadRejectsBrokenData(t *testing.T) {
 	}
 }
 
+func TestLoadRequiresUniqueGitHubIssues(t *testing.T) {
+	for _, raw := range []string{
+		`{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"manual"}}]}`,
+		`{"schema":"pool-worklist/1","layers":{"feature":"f"},"items":[{"id":"a","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"manual"},"github_issue":7},{"id":"b","layer":"feature","title":"t","acceptance":"a","verify":{"kind":"manual"},"github_issue":7}]}`,
+	} {
+		path := filepath.Join(t.TempDir(), "worklist.json")
+		if err := os.WriteFile(path, []byte(raw), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := load(path); err == nil {
+			t.Fatal("沒有唯一 GitHub issue 的條目被接受了")
+		}
+	}
+}
+
 // render 的層順序不能跟著 map 的走訪順序跑，否則每次產出的排列都不一樣，
 // diff 看起來像內容變了。
 func TestRenderKeepsLayerOrder(t *testing.T) {
