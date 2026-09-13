@@ -3,6 +3,15 @@
 本檔按日期追加已完成工作的短收據；目前真相見 `CONTEXT.md`，未完成工作與驗收條件
 見 `WORKLIST.md`，逆向證據見 `docs/spec/`、`docs/re/` 與 `docs/audit/`。
 
+## 2026-09-13：探索治具打開門後覆蓋增加
+
+- 目標：完成 GitHub issue #9；門選單不再一律 EXIT。
+- 實作：每道門記住已試動作，透過 `Update()` 依序送
+  BASH／PICK／KNOCK，全部失敗才 EXIT；治具加入賊與 Knock。
+- 驗證：選項順序單元測試通過；同一條世界委任測試由 21 張地圖、19 個 ECL
+  block、五條委任、80.29 秒，變為 22 張、19 個、五條、55.13 秒。
+  收據與環境記錄在 `docs/audit/explorer-door-coverage.json`。
+
 ## 2026-09-13：遊戲內攻略加入第二張地圖
 
 - 目標：完成 GitHub issue #7，把 `F3` 攻略從文明區擴到至少一張其他地圖。

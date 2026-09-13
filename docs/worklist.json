@@ -72,23 +72,6 @@
       "github_issue": 8
     },
     {
-      "id": "explorer-never-opens-doors",
-      "layer": "verification",
-      "title": "探索測試不試著開門，門後沒有覆蓋",
-      "body": "`TestPlayingTheWorldCompletesCommissionsOnItsOwn` 撞到鎖住的門時**一律選 EXIT**，不 BASH、不 PICK、不 KNOCK。所以門後的區域這條測試一格都沒踩過，而那不是「原版沒有內容」——`CanMoveDungeonWrapped` 照旗標擋人（spec 122），門後是走得到的。\n\n**這是刻意的**：2026-09-11 修門選單的輸入分派時，治具必須開始處理門（門選單變成 modal 的），而撞開門會把門後的區域納進覆蓋——那是覆蓋的改變，要單獨評估，不該混在一次輸入修正裡。\n\n門選單本身已經可以按了：方向鍵移游標、ENTER 選定、游標標 `>`（`door_test.go` 兩條測試從 `Update()` 送按鍵進去）。",
-      "blocked_by": "要先決定 BASH 之後的預期：撞開門會讓這一趟走得更遠、更久，而這條測試已經是整個套件裡最慢的一條（castle-test-runtime 那一條在講同一件事）。先量一趟帶 BASH 的耗時與覆蓋，再決定要不要換。",
-      "acceptance": "治具撞到鎖住的門時先試 BASH／PICK／KNOCK，開不了才 EXIT；量出這一趟的地圖數、ECL block 數與耗時，與現在的數字並列寫進 `docs/audit/`。**耗時不可以超過既有上限**，超過就要先解決 castle-test-runtime 那一條。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "cmd/pool-game/coverage_test.go"
-        ],
-        "pattern": "一律選 EXIT，不 BASH",
-        "note": "治具裡的自承還在"
-      },
-      "github_issue": 9
-    },
-    {
       "id": "castle-test-runtime",
       "layer": "verification",
       "title": "城堡那條探索測試要七分半",

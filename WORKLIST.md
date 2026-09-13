@@ -70,14 +70,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **探索測試不試著開門，門後沒有覆蓋。** `TestPlayingTheWorldCompletesCommissionsOnItsOwn` 撞到鎖住的門時**一律選 EXIT**，不 BASH、不 PICK、不 KNOCK。所以門後的區域這條測試一格都沒踩過，而那不是「原版沒有內容」——`CanMoveDungeonWrapped` 照旗標擋人（spec 122），門後是走得到的。
-      
-      **這是刻意的**：2026-09-11 修門選單的輸入分派時，治具必須開始處理門（門選單變成 modal 的），而撞開門會把門後的區域納進覆蓋——那是覆蓋的改變，要單獨評估，不該混在一次輸入修正裡。
-      
-      門選單本身已經可以按了：方向鍵移游標、ENTER 選定、游標標 `>`（`door_test.go` 兩條測試從 `Update()` 送按鍵進去）。
-      **卡在**：要先決定 BASH 之後的預期：撞開門會讓這一趟走得更遠、更久，而這條測試已經是整個套件裡最慢的一條（castle-test-runtime 那一條在講同一件事）。先量一趟帶 BASH 的耗時與覆蓋，再決定要不要換。
-      **驗收**：治具撞到鎖住的門時先試 BASH／PICK／KNOCK，開不了才 EXIT；量出這一趟的地圖數、ECL block 數與耗時，與現在的數字並列寫進 `docs/audit/`。**耗時不可以超過既有上限**，超過就要先解決 castle-test-runtime 那一條。
-      **討論**：[#9](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/9)
 - [ ] **城堡那條探索測試要七分半。** `TestTheCastleBehindStojanowGateHasContent` 單獨跑量到 458 秒，而整個 `cmd/pool-game` 在 380..600 秒之間浮動。go 的預設 timeout 是 10 分鐘，所以這個套件長期在邊緣——2026-09-10 撞上一次，症狀是 `panic: test timed out`，**看起來像當掉而不是慢**。`tools/go.sh` 已經改成預設 `-timeout 25m` 讓它不再被誤砍，但那只是不再誤判，沒有變快。
       **驗收**：把它壓到兩分鐘以內，做法照 Sokal 那條的前例（縮小探索面、去掉重複走訪），而不是放寬它檢查的東西。
       **討論**：[#10](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/10)

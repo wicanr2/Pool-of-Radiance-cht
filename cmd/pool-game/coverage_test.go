@@ -552,6 +552,40 @@ const exploreMaxTargetTries = 12
 // 所以隨機走不會自己停；沒有上限的話一趟就把整包預算花在那裡。
 const exploreMaxWildernessSteps = 800
 
+// explorerDoorKey 是同一趟探索裡一道門的穩定身分。選過的動作要跟著門，
+// 不能只跟著選單游標；BASH 失敗時選項可能仍留在原位。
+func explorerDoorKey(a *app) [5]int {
+	return [5]int{int(a.spawn.Map.Archive), int(a.spawn.Map.BlockID),
+		a.door.X, a.door.Y, a.door.Direction}
+}
+
+// explorerDoorChoice 依原版選單的玩家動作順序挑尚未試過的一項。成功開門時
+// 選單會自己消失；全部可用方法都失敗後才選 EXIT。
+func explorerDoorChoice(options []string, tried map[string]bool) string {
+	for _, candidate := range []string{doorOptionBash, doorOptionPick, doorOptionKnock} {
+		if tried[candidate] {
+			continue
+		}
+		for _, option := range options {
+			if option == candidate {
+				return candidate
+			}
+		}
+	}
+	return doorOptionExit
+}
+
+func TestExplorerTriesDoorActionsBeforeExit(t *testing.T) {
+	options := []string{doorOptionBash, doorOptionPick, doorOptionKnock, doorOptionExit}
+	tried := map[string]bool{}
+	for _, want := range options {
+		if got := explorerDoorChoice(options, tried); got != want {
+			t.Fatalf("已試 %v 時選到 %q，預期 %q", tried, got, want)
+		}
+		tried[want] = true
+	}
+}
+
 // 有目的地走：把每一張圖上「走得到的格子」逐格踩過，換圖就換到新圖上繼續。
 //
 // 隨機走路量的是「不會炸掉」，這一條量的是**世界有多少走得到**——兩個不同的
@@ -604,13 +638,23 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	application.eclSeed = 1
 	party := make([]poolsave.Character, 0, 6)
 	for index := 0; index < 6; index++ {
-		party = append(party, poolsave.Character{Name: string(rune('A' + index)),
+		member := poolsave.Character{Name: string(rune('A' + index)),
 			RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
 			AlignmentID: "lawful-good", Abilities: [6]int{18, 10, 10, 16, 10, 10},
 			// 白金給足：船資是一枚白金（spec 090），身上沒有的話港務長那
 			// 一段永遠停在「你的白金不夠」，探索器就永遠出不了海。
 			MaxHP: 60, CurrentHP: 60, PortraitHead: 1, PortraitBody: 1, IconSize: 1,
-			Money: [7]uint16{4: 20}})
+			Money: [7]uint16{4: 20}}
+		if index == 0 {
+			member.ClassLevels = make([]uint8, gamepack.ClassThac0ClassCount)
+			member.ClassLevels[gamepack.ClassSlotFighter] = 1
+			member.ClassLevels[gamepack.ThiefClassSlotIndex] = 1
+			member.ThiefSkills = make([]uint8, gamepack.ThiefSkillCount)
+		}
+		if index == 1 {
+			member.Memorised = []uint8{gamepack.KnockSpellID}
+		}
+		party = append(party, member)
 	}
 	application.state = poolsave.State{Schema: poolsave.Schema,
 		CharacterLibrary: party, Party: party}
@@ -638,6 +682,9 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	menuStall := 0
 	// doorTurns 是**連續**按了幾下門選單，走到路上那一步就歸零。
 	doorTurns := 0
+	// 每一道門各自記下試過的 BASH／PICK／KNOCK；失敗仍留在選單上的
+	// BASH 不可每一 tick 重試，否則後兩種方法永遠輪不到。
+	doorAttempts := map[[5]int]map[string]bool{}
 	// 沒有選單的格子事件也要有看門狗。只有 menuStall 的時候，一格只要停在
 	// 「pending 但按 Enter 什麼都不變」，整趟的預算就靜靜地被吃掉，而報表
 	// 只寫「走完預算」——看不出是哪一格，也分不出「走得慢」與「卡住」。
@@ -790,9 +837,8 @@ walk:
 		// `cellEventPending` 之後、轉向與前進之前），治具不處理就會在原地
 		// 一直按方向鍵移門選單的游標，位置永遠不動。
 		//
-		// 一律選 EXIT，不 BASH。這條測試量的是「走得到哪裡」，而撞開門會把
-		// 門後的區域也納進來——那是覆蓋的改變，要單獨評估，不該混在一次
-		// 輸入修正裡。門後的區域目前因此沒有覆蓋，記在 worklist。
+		// 每道門依序試 BASH、PICK、KNOCK；缺少的選項跳過，三種都失敗才 EXIT。
+		// 動作仍由 Update() 的真實輸入分派接收，不直接呼叫處理函式。
 		if application.door != nil && !application.cellEventPending {
 			spin["門"]++
 			doorTurns++
@@ -806,17 +852,21 @@ walk:
 				reason = "門選單關不掉"
 				break walk
 			}
-			// EXIT 一定在最後一格（`refreshDoorOptions` 無條件補上它），而
-			// 游標是環狀的——**從 0 往左一下就到最後一格**，不必往右按滿。
-			// 差別不是美觀：探索器一趟會反覆撞上同一道門，每撞一次多按四下，
-			// 整包的耗時就是這樣從十分鐘漲上去的。
-			if want := len(application.door.Options) - 1; application.door.Cursor != want {
-				if err := press(application, ebiten.KeyArrowLeft); err != nil {
+			key := explorerDoorKey(application)
+			tried := doorAttempts[key]
+			if tried == nil {
+				tried = map[string]bool{}
+				doorAttempts[key] = tried
+			}
+			want := explorerDoorChoice(application.door.Options, tried)
+			if application.door.Options[application.door.Cursor] != want {
+				if err := press(application, ebiten.KeyArrowRight); err != nil {
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
 					break walk
 				}
 				continue
 			}
+			tried[want] = true
 			if err := press(application, ebiten.KeyEnter); err != nil {
 				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
 				break walk

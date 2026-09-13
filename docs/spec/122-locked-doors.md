@@ -5,7 +5,7 @@ GEO、力量開門的完整表、那三個 byte 的全部讀寫點）；DRAFT（
 `6CD3h`／`6CD4h` 是誰設回 1 的——範圍已縮到 overlay-11 `0327h`／overlay-14
 `07C2h` 那兩處傳址呼叫、
 `DS:495Bh` 與 `[4937h]+592h` 那兩道前置的語意、`+10Ch` 的語意）。
-日期：2026-09-05。
+日期：2026-09-13（原 2026-09-05）。
 
 ## 為什麼要讀這一支
 
@@ -229,6 +229,18 @@ overlay 怎麼定址它，不是數值範圍。**
 見〈誰寫〉），所以 remake 把它們**綁在那一道門上**
 （座標＋朝向一樣就是同一道門，換一道就是新的一份）。原版是兩個全域 byte，
 真正的重設時機讀出來之前，這是能對得上「一扇門只能撬一次」的最小假設。
+
+### 探索治具會實際嘗試開門（2026-09-13）
+
+`TestPlayingTheWorldCompletesCommissionsOnItsOwn` 遇到門選單時，現在按
+`BASH → PICK → KNOCK → EXIT` 的優先序挑尚未試過且目前存在的選項；每一道門
+各自保存已試集合。BASH 失敗後仍留在選單也不會無限重試，三種方法都不可用或
+失敗才離開。按鍵仍由 `Update()` 接收，沒有直接呼叫 `resolveDoorMenu`。
+
+治具帶一名開鎖率 0 的賊與一格 Knock：一般門可能先被全隊撞開；撞不開的門會
+繼續走 PICK，再由 Knock 保底。修改前後同一條測試的收據在
+[`docs/audit/explorer-door-coverage.json`](../audit/explorer-door-coverage.json)：
+地圖 21→22、ECL block 維持 19、委任維持五條，耗時 80.29→55.13 秒。
 
 門的旗標本身仍然存在 GEO 裡，所以開過的門會**跟著存檔走**——`UnlockDoorWrapped`
 改的是載入的 `Grid`，和原版改 `DS:69BAh` 指到的那張圖是同一件事。

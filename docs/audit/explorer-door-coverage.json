@@ -1,0 +1,29 @@
+{
+  "schema": "pool-explorer-door-coverage/1",
+  "date": "2026-09-13",
+  "issue": 9,
+  "test": "TestPlayingTheWorldCompletesCommissionsOnItsOwn",
+  "environment": {
+    "entry": "tools/go.sh test ./cmd/pool-game",
+    "image": "coab-go-test:20260729",
+    "network": "none",
+    "ecl_seed": 1
+  },
+  "before": {
+    "git_commit": "0391a01",
+    "door_policy": ["EXIT"],
+    "maps": 21,
+    "ecl_blocks": 19,
+    "completed_commissions": [0, 1, 11, 18, 23],
+    "seconds": 80.29
+  },
+  "after": {
+    "source_state": "與本收據同一個 commit",
+    "door_policy": ["BASH", "PICK", "KNOCK", "EXIT"],
+    "maps": 22,
+    "ecl_blocks": 19,
+    "completed_commissions": [0, 1, 11, 18, 23],
+    "seconds": 55.13
+  },
+  "interpretation": "探索器多走到一張地圖，ECL block 與委任覆蓋沒有退步，耗時也低於舊基準。門操作由 app.Update 傳入；無法使用的動作會略過，所有可用開門動作都試過後才選 EXIT。"
+}
