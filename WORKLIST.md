@@ -67,9 +67,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **城堡那條探索測試要七分半。** `TestTheCastleBehindStojanowGateHasContent` 單獨跑量到 458 秒，而整個 `cmd/pool-game` 在 380..600 秒之間浮動。go 的預設 timeout 是 10 分鐘，所以這個套件長期在邊緣——2026-09-10 撞上一次，症狀是 `panic: test timed out`，**看起來像當掉而不是慢**。`tools/go.sh` 已經改成預設 `-timeout 25m` 讓它不再被誤砍，但那只是不再誤判，沒有變快。
-      **驗收**：把它壓到兩分鐘以內，做法照 Sokal 那條的前例（縮小探索面、去掉重複走訪），而不是放寬它檢查的東西。
-      **討論**：[#10](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/10)
 - [ ] **對拍跑兩次結果不一樣。** 2026-09-10 連跑三次同一個 AppImage 對同一組基準：**兩次走位失敗**（卡在市政廳那一段的 `await adventure-cell-menu`，停在 `adventure-move`），成功那兩次的截圖**逐像素比對有六張不同**。差異分兩組，各自跨三張同類畫面：狀態列右側那一格（邏輯座標 x=526..597、y=119..127，時鐘）差 284 個像素；人物資料頁主體（x=69..565、y=51..295，擲出來的數值與肖像）差 1896 個像素。所以 `dos-parity-sample.json` 的數字每次跑都會浮動十個像素上下——**小幅變動不代表回歸，也不代表沒有回歸**，那一欄現在分不出來。
       
       **第三個來源（2026-09-11）**：紮營的營火是兩張動畫，兩邊的截圖各自停在哪一張由時機決定，視野那一欄因此在 100% 與 91.27% 之間跳（676 格）。這一個查清楚了，不是缺陷；剩下要固定的仍是時鐘與建角擲值。

@@ -10,7 +10,8 @@ issue #10 的原命令在目前 Docker 環境量得 199.52 秒，仍超過兩分
 覆蓋的 rotate 0／3，且各自取得其目標 block 後立即停止；院子南緣仍由正常走路
 取得 block 6，原有 block 3、4、5、6、7 斷言未放寬。測試內新增 120 秒效能閘門，
 同一容器三次為 2.08、1.92、2.59 秒。收據在
-`docs/audit/castle-test-runtime.json`。
+`docs/audit/castle-test-runtime.json`。修正已推送為 `8350f28`，驗證證據已回覆
+GitHub，issue #10 隨後關閉；本地輔助工作清單才依序移除該條目。
 
 ## 2026-09-13 GitHub issues 成為工作主台帳
 

@@ -214,3 +214,5 @@
 - 驗證：同一容器連跑三次為 2.08、1.92、2.59 秒，三次都取得 block 3..7；
   相鄰三條正常路徑測試 18.863 秒通過，`./cmd/pool-game` 全套 204.451 秒通過；
   可重生收據在 `docs/audit/castle-test-runtime.json`。
+- GitHub：修正 `8350f28` 已推送；證據回覆後關閉 issue #10，才同步移除
+  `docs/worklist.json` 的輔助條目並重生 `WORKLIST.md`。
