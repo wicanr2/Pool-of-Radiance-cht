@@ -63,7 +63,14 @@ func (a *app) trainMember(index int) (string, error) {
 	if !outcome.Trained {
 		return fmt.Sprintf("%s%s", name, a.text(msgTrainNotYet)), nil
 	}
+	trained := *member
+	trained.ClassLevels = append([]uint8(nil), outcome.Levels[:]...)
+	if err := a.fillThiefSkillsWithDexterity(&trained,
+		trained.Abilities[gamepack.AbilityDexterity]); err != nil {
+		return "", err
+	}
 	member.ClassLevels = outcome.Levels[:]
+	member.ThiefSkills = trained.ThiefSkills
 	member.Experience = outcome.Experience
 	member.MaxHP, member.CurrentHP = gamepack.ApplyLevelUpHitPoints(
 		member.MaxHP, member.CurrentHP, outcome.HitPointGain)
@@ -91,6 +98,12 @@ func syncTrainedLibraryCharacter(state *poolsave.State, character poolsave.Chara
 // 代表 remake 沒有這份資料，記錄裡原本的位元組不動。NPC 帶著自己的記錄
 // 進來，硬塞八個 0 會把他們原本的技能抹掉。
 func (a *app) fillThiefSkills(character *poolsave.Character) error {
+	return a.fillThiefSkillsWithDexterity(character, gamepack.ThiefSkillBuildDexterity)
+}
+
+// fillThiefSkillsWithDexterity 重算指定等級的八格技能。建角傳 0；訓練時
+// 原版 overlay-23 entry 1 直接再呼叫 entry 4，所以傳記錄裡的真實 DEX。
+func (a *app) fillThiefSkillsWithDexterity(character *poolsave.Character, dexterity int) error {
 	thiefLevel := int(memberClassLevels(*character)[gamepack.ThiefLevelIndex])
 	if thiefLevel <= 0 {
 		return nil
@@ -99,7 +112,7 @@ func (a *app) fillThiefSkills(character *poolsave.Character) error {
 	if !ok {
 		return fmt.Errorf("Pool race %q is not in the catalog", character.RaceID)
 	}
-	skills, err := a.thiefSkillTables.Build(thiefLevel, int(race.DOSCode), gamepack.ThiefSkillBuildDexterity)
+	skills, err := a.thiefSkillTables.Build(thiefLevel, int(race.DOSCode), dexterity)
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,24 @@
 本檔按日期追加已完成工作的短收據；目前真相見 `CONTEXT.md`，未完成工作與驗收條件
 見 `WORKLIST.md`，逆向證據見 `docs/spec/`、`docs/re/` 與 `docs/audit/`。
 
+## 2026-09-13：盜賊訓練技能重算接上原版
+
+- 目標：完成 GitHub issue #2；查清訓練是否再算 `+77h..+7Eh`，以及是否使用
+  真實 DEX，補齊 spec 095 與玩家路徑實作。
+- 靜態證據：IDA Pro 9.4 釘住 overlay-16 `2F36h` → overlay-23 entry 1；entry 1
+  在 `018Dh` 查 `+9Ch` 盜賊等級，`01A4h` 呼叫 entry 4（`031Eh`）。因此訓練
+  使用同一張 DEX 表，而且此時讀的是完整角色記錄的真實 DEX。
+- 動態證據：dosgolem commit `d351681`，原版 `start.exe` SHA-256
+  `12811cbc…`。正常建立的 Dwarf thief 只注入 DEX 18、Gold 5000、XP 1251，
+  經正常新遊戲、Rolf 導覽、走路、`ROGUES` 門、TRAIN 與 A 槽存檔後，等級
+  `1 → 2`、技能 `23 2D 28 0F 0A 0A 4B 00 → 2D 36 2D 1F 19 0A 4C 00`。
+  完整按鍵序、雜湊與位址見 `docs/audit/dos-thief-training-skills.json`。
+- 實作：建角仍固定傳 DEX 0；訓練成功後改以角色真實 DEX 重算八格並同步
+  角色庫。新增從 `Update()` 送 1、T 的 DEX 18 樣本測試。
+- 驗證：兩條訓練焦點測試通過。完整 `cmd/pool-game` 跑到 257.404 秒時只有
+  `TestPayingTheTollAtStojanowGateOpensTheCastle` 失敗；單獨重跑仍在馬車旗標
+  `@4A77` 失敗，與本次只涉及訓練／技能的資料流無交集，未冒稱整包全綠。
+
 ## 2026-09-13：正常新遊戲與固定 ECL seed 分流
 
 - 目標：完成 GitHub issue #15；正常遊玩不再每局走同一條 ECL RANDOM 流，

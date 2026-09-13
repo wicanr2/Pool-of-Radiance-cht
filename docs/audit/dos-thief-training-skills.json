@@ -1,0 +1,88 @@
+{
+  "schema": "pool-thief-training-parity/1",
+  "date": "2026-09-13",
+  "conclusion": {
+    "semantic": "訓練所把盜賊升級後，會再次呼叫 overlay-23 entry 4，並以角色記錄 +13h 的真實 DEX 重算 +77h..+7Eh 八個技能位元組。",
+    "confidence": "exact"
+  },
+  "static_evidence": {
+    "tool": "IDA Pro 9.4",
+    "address_space": "各 overlay-local file offset，base 0，16-bit metapc",
+    "overlay_16": {
+      "input": "overlay-16.bin",
+      "sha256": "a142d8a8f3b3c46a7755cf231228e7981c5b9f77721313ce79ab6c0aec105b94",
+      "i64_sha256": "bd804741c5edf420a7c8b0e61f1c2c8e809579ab7983fce2ca4abf3a53f5c994",
+      "instruction": {
+        "address": 12086,
+        "address_hex": "2F36h",
+        "bytes": "9A 25 00 FC 00",
+        "semantic": "訓練常式呼叫 00FCh:0025h；dos-ovr-manifest 將它映射為 overlay-23 entry 1。",
+        "confidence": "exact"
+      }
+    },
+    "overlay_23": {
+      "input": "overlay-23.bin",
+      "sha256": "7ce2992587b64fc751c6de34b6eb54dab5025b098d26a9b6fbd2868f93b2f2d8",
+      "i64_sha256": "54bf2d921732fc8680cd9b7d291485b003057791cc221df6e98175799f40d0ef",
+      "entry": 1,
+      "instructions": [
+        {
+          "address": 405,
+          "address_hex": "018Dh",
+          "bytes": "26 80 BD 9C 00 00",
+          "text": "cmp byte ptr es:[di+9Ch], 0",
+          "semantic": "檢查盜賊等級是否大於 0。",
+          "confidence": "exact"
+        },
+        {
+          "address": 420,
+          "address_hex": "01A4h",
+          "bytes": "E8 77 01",
+          "text": "call near ptr sub_31E",
+          "semantic": "把同一個角色記錄傳給 entry 4（031Eh）重算八格盜賊技能。",
+          "confidence": "exact"
+        }
+      ]
+    }
+  },
+  "dynamic_evidence": {
+    "runner": "dosgolem cmd/shots",
+    "dosgolem_commit": "d351681ba86d97aab571d00b979c36e2336486f3",
+    "executable": "start.exe",
+    "executable_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+    "initial_character_sha256": "238ebd3d1c2b3f509342ebb414cf670af715d21f1d2257cebb3dffbfe6181900",
+    "prestate_injection": {
+      "base": "HUMAN.cha，原版正常建角產物；名稱 HUMAN，種族碼 1（Dwarf），職業碼 6（Thief），盜賊等級 1",
+      "writes": [
+        "+13h = 12h（DEX 18）",
+        "+8Eh = 1388h（Gold 5000，小端序）",
+        "+ACh = 000004E3h（XP 1251，小端序）"
+      ],
+      "note": "只注入前置狀態；訓練、移動、選單與存檔全走正常按鍵路徑。"
+    },
+    "runner_parameters": {
+      "idle": 40000000,
+      "budget_per_key": 200000000
+    },
+    "keys": "rep:9:Space,Return,Return,a,a,e,b,rep:8:Return,Right,Right,Up,Up,Left,Up,Right,Up,Up,Up,Left,Up,Right,Up,Up,Return,n,n,Up,Return,Up,Return,Up,Return,Left,Up,Return,Up,y,t,y,s,a",
+    "before": {
+      "thief_level": 1,
+      "dexterity": 18,
+      "gold": 5000,
+      "experience": 1251,
+      "skills_hex": "23 2D 28 0F 0A 0A 4B 00"
+    },
+    "after": {
+      "saved_character": "CHRDATA1.sav",
+      "saved_character_sha256": "b5de155f39e448a9949551c86835c7f3a37fb1f918974f34952a1bcbd1c221c6",
+      "saved_game": "savgamA.dat",
+      "saved_game_sha256": "4e117f08e9acd97c69d7a386a2acf2f77e906a02a6113abe08ee4a923a8c61cd",
+      "thief_level": 2,
+      "dexterity": 18,
+      "gold": 4000,
+      "experience": 1251,
+      "skills_hex": "2D 36 2D 1F 19 0A 4C 00"
+    },
+    "randomness": "升級 HP 會用亂數；本收據只驗八格不受該骰影響的技能資料，不宣稱跨實作骰序一致。"
+  }
+}

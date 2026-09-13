@@ -1,8 +1,8 @@
 # Spec 095：角色記錄的八個賊技能
 
-狀態：READY（偏移與順序、算它的那一支與三張表的位置與索引式、夾限規則、
-建角時敏捷那一段套第 0 列，三個實測樣本逐格吻合）；升級／訓練那條路徑
-還沒查，見最後一節。日期：2026-09-11。
+狀態：CONFORMED（偏移與順序、entry 4 算式、三張表、夾限規則、建角的
+DEX 0 特例，以及訓練後以真實 DEX 重算，均有原版位元組與 dosgolem 樣本；
+remake 的建角與訓練玩家路徑均有自動測試）。日期：2026-09-13。
 
 ## 位置與順序
 
@@ -158,15 +158,40 @@ DEX ＝ 0 那一列（`3CC6h + 0 × 5 + i`，`i` 從 1 起，檔案 `B477h` 起�
 各自只有零到四筆就是這個原因。同一份掃描對 `+9Ch` 是**零筆**，而 `+9Ch` 大於
 127 必須走 disp16，所以那個零是掃法的洞不是事實（spec 114 記過同一個坑）。
 
-### remake 要照哪一個
+### 建角與訓練各自要照哪一個
 
 **建角照原版：敏捷修正取第 0 列。** 這樣八格與原版逐位元組相同，
 `.CHA` 也對得上。
 
-**升級／訓練那條路徑還沒查。** 那時候記錄裡的 DEX 是有值的，如果訓練也走
-entry 4，算出來的技能會含真正的敏捷修正，與建角當下不一致。要用一個 DEX
-明顯偏離 13 的賊（例如 DEX 18，敏捷那列是 `+10 +15 +5 +10 +10`）練到二級，
-比對升級前後的八格才能定案。在那之前不要把建角的行為推廣到升級。
+**訓練用角色記錄裡的真實 DEX。** overlay-16 訓練常式 `2F36h` 的
+`9A 25 00 FC 00` 呼叫，依 overlay manifest 映射為 overlay-23 entry 1。
+entry 1 在 `018Dh` 檢查 `es:[di+9Ch]` 的盜賊等級；大於 0 就把同一個角色
+記錄傳給 `01A4h` 的 `call sub_31E`，也就是上面完整解出的 entry 4。這時候
+`+13h` 已經是角色的真實 DEX，所以同一條 `DEX × 5 + i` 會讀真實列。
+
+dosgolem 再用正常玩家路徑做了動態正對照：原版正常建立的 Dwarf thief
+（名稱 HUMAN）只注入 DEX 18、Gold 5000、XP 1251，從新遊戲經 Rolf 導覽走到
+`ROGUES` 門，選 TRAIN、確認、再存入 A 槽。盜賊等級 `1 → 2`、Gold
+`5000 → 4000`，八格從
+
+```
+23 2D 28 0F 0A 0A 4B 00
+```
+
+變成
+
+```
+2D 36 2D 1F 19 0A 4C 00
+```
+
+後者逐格等於「第 2 級基礎＋Dwarf 種族修正＋DEX 18 修正」。完整輸入雜湊、
+IDA 位址／bytes、按鍵序、前置寫入與存檔雜湊見
+[`docs/audit/dos-thief-training-skills.json`](../audit/dos-thief-training-skills.json)。
+
+remake 因此保留兩個明確入口：建角固定傳 DEX 0；訓練成功、職業等級更新後，
+以角色的真實 DEX 重算再同步角色庫。`TestFinishingANewThiefWritesTheOriginalSkills`
+守建角特例，`TestTrainingAThiefRecalculatesTheOriginalSkillsWithRealDexterity` 守訓練
+樣本與實際按鍵分派。
 
 ## 三張表逐列對上 AD&D（兩格例外）
 

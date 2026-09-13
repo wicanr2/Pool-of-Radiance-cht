@@ -4,7 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
@@ -63,6 +65,55 @@ func TestFinishingANewThiefWritesTheOriginalSkills(t *testing.T) {
 			if got[index] != want.skills[index] {
 				t.Errorf("%s 第 %d 格是 %d，原版是 %d（整份 %v）",
 					want.name, index, got[index], want.skills[index], got)
+			}
+		}
+	}
+}
+
+// 訓練所升級會用角色記錄裡的真實 DEX 重算八格，而不是沿用建角時的 DEX 0
+//（spec 095）。這組 Dwarf／DEX 18／thief 1→2 的結果逐位元組來自 dosgolem。
+func TestTrainingAThiefRecalculatesTheOriginalSkillsWithRealDexterity(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	thief := poolsave.Character{Name: "HUMAN", RaceID: "dwarf", GenderID: "male",
+		ClassID: "thief", AlignmentID: "chaotic-good",
+		Abilities: [6]int{14, 17, 14, 18, 15, 16}, MaxHP: 10, CurrentHP: 10,
+		Experience: 1251, ThiefSkills: []uint8{35, 45, 40, 15, 10, 10, 75, 0}}
+	application.state = poolsave.State{Schema: poolsave.Schema,
+		CharacterLibrary: []poolsave.Character{thief}, Party: []poolsave.Character{thief}}
+	application.mode, application.programManaging = modeMenu, true
+	if err := press(application, ebiten.KeyDigit1); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyT); err != nil {
+		t.Fatal(err)
+	}
+	want := []uint8{45, 54, 45, 31, 25, 10, 76, 0}
+	got := application.state.Party[0]
+	if len(got.ClassLevels) <= gamepack.ThiefLevelIndex ||
+		got.ClassLevels[gamepack.ThiefLevelIndex] != 2 {
+		t.Fatalf("盜賊應升到第 2 級，職業等級是 %v", got.ClassLevels)
+	}
+	if len(got.ThiefSkills) != len(want) {
+		t.Fatalf("訓練後有 %d 格技能，原版是 %d 格：%v",
+			len(got.ThiefSkills), len(want), got.ThiefSkills)
+	}
+	for index := range want {
+		if got.ThiefSkills[index] != want[index] {
+			t.Errorf("第 %d 格是 %d，原版是 %d（整份 %v）",
+				index, got.ThiefSkills[index], want[index], got.ThiefSkills)
+		}
+	}
+	if library := application.state.CharacterLibrary[0].ThiefSkills; len(library) != len(want) {
+		t.Errorf("角色庫沒有同步訓練後技能：%v", library)
+	} else {
+		for index := range want {
+			if library[index] != want[index] {
+				t.Errorf("角色庫第 %d 格是 %d，訓練後應為 %d（整份 %v）",
+					index, library[index], want[index], library)
 			}
 		}
 	}

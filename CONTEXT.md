@@ -2,6 +2,19 @@
 
 更新日期：2026-09-13。
 
+## 2026-09-13 盜賊訓練後以真實 DEX 重算八格技能
+
+原版訓練常式在 overlay-16 `2F36h` 呼叫 overlay-23 entry 1；entry 1 於
+`018Dh` 確認角色有盜賊等級後，在 `01A4h` 再呼叫 entry 4（`031Eh`）。因此
+建角與訓練確實共用同一條算式，但輸入時機不同：建角時能力區尚未填，DEX
+固定讀到 0；訓練時角色記錄完整，使用 `+13h` 的真實 DEX。
+
+dosgolem 的正常玩家路徑用 Dwarf thief、DEX 18、等級 1、XP 1251 實測，訓練並
+存入 A 槽後為等級 2；`+77h..+7Eh` 從 `23 2D 28 0F 0A 0A 4B 00` 變成
+`2D 36 2D 1F 19 0A 4C 00`。remake 的訓練路徑現在於等級更新後以真實 DEX
+重算，再同步角色庫；建角的 DEX 0 特例不變。完整靜態與動態收據在
+`docs/audit/dos-thief-training-skills.json`，spec 095 已為 CONFORMED。
+
 ## 2026-09-13 正常新遊戲的 ECL RANDOM 不再每局固定為 1
 
 ECL session 建立器現在有明示 seed 入口；既有無參數 API 與掃描工具繼續使用
