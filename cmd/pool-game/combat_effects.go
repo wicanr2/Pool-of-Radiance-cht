@@ -76,7 +76,7 @@ func (a *app) advancePartyEffects(minutes int) {
 		}
 		list, expired := combatEffects(member.Effects).AdvanceEffects(minutes)
 		for _, node := range expired {
-			a.expiredEffectTeardown(index, node)
+			a.expiredEffectTeardown(index, node, list)
 		}
 		member.Effects = storedEffects(list)
 		syncTrainedLibraryCharacter(&a.state, *member)
@@ -87,12 +87,24 @@ func (a *app) advancePartyEffects(minutes int) {
 // 步：`+4`（有收尾）非 0 的節點，先用**模式 1** 叫一次自己代碼的處理常式，
 // 再摘掉（spec 112）。模式 0 是套用、模式 1 是收尾，同一支常式兩個入口。
 //
-// **地圖上目前一個代碼都不需要動作。** remake 實作過收尾的只有 `28h`——
-// 雲團是盤面上的物件，走出戰場就不存在了，所以在這裡摘掉節點就是全部。
-// 這一支留著是為了讓兩條路（戰場的 `tickEffects`、地圖的 `AdvanceEffects`）
-// 有同一個收尾入口：下一個代碼接上來時不會只接到一邊。
-func (a *app) expiredEffectTeardown(party int, node gamepack.EffectNode) {
+// 力量效果 `0Ch`／`26h` 會把角色能力真的改掉，所以到期時要依節點快照還原；
+// 若另一個力量效果仍在，改由其中最強者生效。`28h` 的雲團只在戰場盤面存在。
+func (a *app) expiredEffectTeardown(party int, node gamepack.EffectNode,
+	remaining gamepack.EffectList) {
 	if !node.NeedsTeardown() {
+		return
+	}
+	if party < 0 || party >= len(a.state.Party) {
+		return
+	}
+	if gamepack.IsStrengthEffect(node.Code) {
+		member := &a.state.Party[party]
+		value, percentile := gamepack.ExpireStrengthEffect(remaining, node,
+			uint8(member.Abilities[gamepack.AbilityStrength]),
+			uint8(member.ExceptionalStrength))
+		member.Abilities[gamepack.AbilityStrength] = int(value)
+		member.ExceptionalStrength = int(percentile)
+		syncTrainedLibraryCharacter(&a.state, *member)
 		return
 	}
 	if node.Code == gamepack.CloudObjectEffectCode {

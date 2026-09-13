@@ -436,6 +436,9 @@ type tacticalState struct {
 	// Text 由建立者接上 app.text，讓狀態列的訊息也能翻譯。測試直接建構
 	// tacticalState 時不設它，say 會退回英文，所以測試不必知道語言這件事。
 	Text func(messageID) string
+	// PartyEffectTeardown 把戰場上的隊員效果到期同步回角色記錄。怪物與只改
+	// 戰術盤面的效果不走這一層；測試手工建立 tacticalState 時可留空。
+	PartyEffectTeardown func(index int, node gamepack.EffectNode)
 	// Clouds 是盤面上的雲團物件（spec 121）。臭雲術不是對目標下效果，
 	// 是在盤上生一個活的物件；地形寫在 Grid.Terrain 裡，這條串列記著
 	// 每一團的雲心、蓋過哪幾格與那幾格原本的地形。
@@ -698,6 +701,16 @@ func (a *app) enterTacticalPreview() error {
 	state.HitDice = make([]uint8, size)
 	state.SleepFlag = make([]uint8, size)
 	state.Effects = make([]gamepack.EffectList, size)
+	state.PartyEffectTeardown = func(index int, node gamepack.EffectNode) {
+		if index < 0 || index >= len(state.PartySlot) {
+			return
+		}
+		party := state.PartySlot[index]
+		if party < 0 {
+			return
+		}
+		a.expiredEffectTeardown(party, node, state.Effects[index])
+	}
 	state.Footprint = make([]uint8, size)
 	state.MaxHitPoints = make([]int, size)
 	for index := range roster {
@@ -2002,6 +2015,7 @@ func (state *tacticalState) tickEffects(index int) {
 	}
 	list := state.Effects[index]
 	kept := make(gamepack.EffectList, 0, len(list))
+	expired := make(gamepack.EffectList, 0, len(list))
 	for _, node := range list {
 		duration := node.Duration()
 		if duration == 0 {
@@ -2010,13 +2024,16 @@ func (state *tacticalState) tickEffects(index int) {
 		}
 		duration--
 		if duration == 0 {
-			state.effectTeardown(index, node)
+			expired = append(expired, node)
 			continue
 		}
 		node.SetDuration(duration)
 		kept = append(kept, node)
 	}
 	state.Effects[index] = kept
+	for _, node := range expired {
+		state.effectTeardown(index, node)
+	}
 }
 
 // effectTeardown 是原版 overlay-24 entry 2（`0100h:002Ah`）摘節點前的那一下：
@@ -2032,6 +2049,9 @@ func (state *tacticalState) effectTeardown(index int, node gamepack.EffectNode) 
 	switch node.Code {
 	case gamepack.CloudObjectEffectCode:
 		state.disperseCloud(index, node.CloudIndex())
+	}
+	if state.PartyEffectTeardown != nil {
+		state.PartyEffectTeardown(index, node)
 	}
 }
 

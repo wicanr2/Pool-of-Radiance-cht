@@ -98,23 +98,6 @@
       "github_issue": 11
     },
     {
-      "id": "effect-expiry-teardown",
-      "layer": "feature",
-      "title": "效果代碼的處理常式只接了一個",
-      "body": "到期那一刻的入口**已經接上了**：原版 `01B8h` 呼叫的 `0100h:002Ah` 就是 **overlay-24 entry 2**（`0100h` 是 overlay-24 的 stub 段，`(offset − 20h) ÷ 5` 換回進入點，spec 109／112）——`+4` 非 0 的節點先用**模式 1** 叫一次自己代碼的處理常式，再摘掉。remake 這一側是 `(*app).expiredEffectTeardown`，戰場那一側是 `tacticalState.effectTeardown`，兩條路同一個入口。\n\n**缺的是代碼本身。** 原版填了 138 格（代碼 1..139，136 個落在 overlay-12、2 個在 overlay-13，spec 112），remake 有具名常數的只有十個，真正實作過收尾的只有 `28h`（雲團）。所以現在地圖上到期就只是摘掉節點——**這對已實作的代碼是對的**，對還沒實作的代碼則是「還沒接」與「不必接」分不出來。",
-      "blocked_by": "138 個代碼不是一次做完的工作，要按玩家碰得到的順序挑。挑之前缺一份盤點：哪些代碼玩家在這一版走得到、哪些已經由別的機制涵蓋（例如神殿那九項服務直接改`Effects`，不走處理常式）。",
-      "acceptance": "先產出代碼覆蓋盤點（原版 138 格 vs remake 實作），再按玩家可見度接。每接一個代碼要有走玩家路徑的測試：掛上、時間過去、狀態真的回復。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "cmd/pool-game/combat_effects.go"
-        ],
-        "pattern": "地圖上目前一個代碼都不需要動作",
-        "note": "綁在 `expiredEffectTeardown` 的自承註解上：第一個在地圖上有動作的代碼接上來時，那句話就得拿掉"
-      },
-      "github_issue": 12
-    },
-    {
       "id": "spec-test-backlinks",
       "layer": "verification",
       "title": "五十六份規格沒有任何測試指回它",

@@ -3,8 +3,9 @@
 狀態：READY（三支的簽章、二十組的代碼表、有作用範圍的那四個代碼、
 `DS:6786h` 那張表怎麼填、否決 `DS:677Ch` 的四個代碼，以及群組編號的意思
 ——效果系統就是原版套用命中與豁免修正的機制——都讀出來了；
-115 支處理常式已有機器盤點，逐支讀過十支；怪物命中後的群組 2／3 與
-`55h`／`56h` 能量吸取已接入 remake）。日期：2026-09-13。
+115 支處理常式已有機器盤點；怪物命中後的群組 2／3、`55h`／`56h`
+能量吸取，以及 `0Ch`／`26h` 力量效果的重疊與到期收尾已接入 remake）。
+日期：2026-09-13。
 
 ## 為什麼要讀這一支
 
@@ -305,6 +306,26 @@ overlay-13、`58h` 由 overlay-22 填。每一支記了大小、指令數、寫�
 掛上去是**接在尾端**不是插在頭：`0E98h` 沿 `+5` 走到 NULL 才接。所以效果的
 順序就是掛上去的順序，而 `21DCh`（spec 059）的線性搜尋找到的是**最早掛上**
 的那一個。
+
+### `0Ch`／`26h` 的 `+3` 是可逆力量快照
+
+這兩個代碼共用 overlay-12 entry 15（`04CBh..05E0h`），節點 `+3` 不放一般的
+施法者等級。overlay-24 entry 16／17（`10DEh`／`1107h`）定義其編碼：力量為
+18 時存「百分位＋1」，其他力量存「力量＋100」；最高位代表這個節點目前
+inactive。原始 bytes、輸入雜湊與 IDA 版本見
+[`docs/audit/ida-strength-effect-teardown.json`](../audit/ida-strength-effect-teardown.json)。
+
+entry 18（`1158h`）套用較強的新效果時，會把原 active 節點改存它自己的力量並
+立起最高位，新 active 節點則保存共同基礎值。較弱效果也會掛節點，但一開始就是
+inactive。active 節點到期時，entry 15 先還原基礎值，再掃其餘 `0Ch`／`26h`：
+若還有別的力量效果，就挑最強者、清掉它的 inactive 高位並改由它生效。因此效果
+可按任意順序到期，不會提早丟掉仍有效的較強／較弱增益。
+
+remake 的 `gamepack.ApplyStrengthEffect`／`ExpireStrengthEffect` 保存這份契約；
+地圖 `advancePartyEffects` 與戰場 `tickEffects` 共用 `expiredEffectTeardown` 回寫
+角色與角色庫。玩家路徑測試從 `Update()` 送 `C`、選法術、選自己，確認節點掛上，
+再推完原版參數表的十回合並確認力量由 18 回到 10。整體覆蓋分類見
+[`docs/audit/effect-teardown-coverage.json`](../audit/effect-teardown-coverage.json)。
 
 **21 個代碼會呼叫 entry 10**——那些效果會替自己掛節點；**15 個會呼叫
 entry 2**——那些會把自己（或別的代碼）摘掉。25 個只呼叫 RTL 的字串常式，

@@ -406,12 +406,16 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	case effect.StrengthValue > 0 || effect.StrengthFromTarget:
 		// 力量那一組（變大術、力量術、編號 59）走同一支
 		// overlay-24 entry 18：只往上調，調不動就什麼都不做。
-		slot := index
+		cell := int(state.Mover)
 		if chosen {
-			if party, ok := a.moverPartyIndex(target); ok {
-				slot = party
-			}
+			cell = int(target)
 		}
+		if cell <= 0 || cell >= len(state.PartySlot) || state.PartySlot[cell] < 0 ||
+			state.PartySlot[cell] >= len(a.state.Party) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
+		}
+		slot := state.PartySlot[cell]
 		subject := &a.state.Party[slot]
 		current := uint8(subject.Abilities[gamepack.AbilityStrength])
 		currentPercentile := uint8(subject.ExceptionalStrength)
@@ -420,9 +424,14 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			value, percentile = gamepack.StrengthSpellResult(
 				memberClassLevels(*subject), current, currentPercentile, a.roller)
 		}
-		value, percentile, raised := gamepack.RaiseStrength(
+		duration := a.spellParameters[option.ID].Duration(casterLevel)
+		list, value, percentile, raised := gamepack.ApplyStrengthEffect(
+			state.Effects[cell], effect.EffectCode, duration,
 			current, currentPercentile, value, percentile)
+		state.Effects[cell] = list
+		subject.Effects = storedEffects(list)
 		if !raised {
+			syncTrainedLibraryCharacter(&a.state, *subject)
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
 				option.Label, target))
 			break

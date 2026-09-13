@@ -1,0 +1,60 @@
+{
+  "schema": "pool-effect-teardown-coverage/1",
+  "date": "2026-09-13",
+  "github_issue": 12,
+  "dos": {
+    "dispatch_range": "01h..8Bh",
+    "primary_slots": 138,
+    "overlay_12_codes": 136,
+    "overlay_13_codes": ["49h", "4Ah"],
+    "runtime_supplement": "58h 由 overlay-22 3760h 另填",
+    "distinct_overlay_12_handlers": 115,
+    "source": "docs/audit/dos-effect-handlers.json"
+  },
+  "remake": {
+    "production_effect_nodes": {
+      "player_spell_paths": ["0Bh", "0Ch", "1Eh", "20h", "26h", "28h", "34h", "35h"],
+      "monster_source_nodes": ["55h", "56h"]
+    },
+    "teardown_implemented": {
+      "28h": "戰術盤面移除雲團並還原四格地形",
+      "0Ch": "地圖與戰場共用力量快照，變大術到期後還原",
+      "26h": "地圖與戰場共用力量快照，力量術族到期後還原"
+    },
+    "node_removal_without_extra_teardown": ["0Bh", "1Eh", "20h", "34h", "35h", "55h", "56h"],
+    "alternate_removal_paths": {
+      "temple_services": ["0Fh", "16h", "1Fh", "20h", "21h", "22h", "2Bh", "2Ch", "32h", "37h", "39h"],
+      "note": "神殿服務直接修改角色 Effects／Status，不經到期處理常式。"
+    },
+    "visible_but_not_yet_materialized_as_nodes": {
+      "spell_effect_codes": [
+        "01h", "02h", "04h", "05h", "08h", "09h", "0Ah", "0Dh", "0Eh",
+        "10h", "11h", "13h", "14h", "15h", "16h", "17h", "18h", "19h",
+        "1Ch", "1Dh", "21h", "22h", "24h", "25h", "27h", "29h", "2Ah",
+        "2Dh", "2Eh", "31h", "33h", "47h"
+      ],
+      "classification": "法術已出現在玩家可用清單，但目前 production path 尚未把這些代碼掛成效果節點；必須逐碼先接套用語意，再談到期收尾。"
+    }
+  },
+  "first_closed_slice": {
+    "codes": ["0Ch", "26h"],
+    "why_first": "三支已可施放的力量法術會直接改玩家角色 AbilityStrength／ExceptionalStrength；修正前不掛節點，因此效果永久殘留。",
+    "dos_handler": "overlay-12 04CBh..05E0h（entry 15）",
+    "dos_helpers": [
+      "overlay-24 10DEh..1107h（entry 16，編碼力量快照）",
+      "overlay-24 1107h..1158h（entry 17，解碼力量快照）",
+      "overlay-24 1158h..127Dh（entry 18，較強效果接管、舊效果轉 inactive）"
+    ],
+    "input_sha256": {
+      "overlay-12.bin": "d1b057432515b7daa2b83199d2588c131a120037d30117e664b01e4c6f2bcb7e",
+      "overlay-24.bin": "e878166ef2069fcc2dad3d15915801bd9ee63bee47bba8a581f0f651f22f8714"
+    },
+    "tool": "IDA Pro 9.4，16-bit metapc，overlay-local file offset，base 0",
+    "tests": [
+      "internal/gamepack: TestStrengthEffectsRestoreAndReactivateOverlappingEffects",
+      "internal/gamepack: TestWeakerStrengthEffectExpiresWithoutChangingTheActiveOne",
+      "internal/gamepack: TestInactiveOlderStrengthEffectCanExpireBeforeActiveEffect",
+      "cmd/pool-game: TestCastingEnlargeThroughUpdateRestoresStrengthWhenItExpires"
+    ]
+  }
+}
