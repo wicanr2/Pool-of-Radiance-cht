@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以 Pool 派發表釘住 spec 019 與 spec 020 的 dialect／COMPARE AND framing。
+
 import (
 	"path/filepath"
 	"sort"

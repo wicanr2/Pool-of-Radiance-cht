@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔釘住 spec 092 的 CHECKPARTY 條件與結果。
+
 import (
 	"testing"
 

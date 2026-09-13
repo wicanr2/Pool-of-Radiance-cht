@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以真實 GEO catalog 與初始地圖邊界釘住 spec 014。
+
 import (
 	"archive/zip"
 	"os"

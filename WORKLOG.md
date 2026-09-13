@@ -3,6 +3,17 @@
 本檔按日期追加已完成工作的短收據；目前真相見 `CONTEXT.md`，未完成工作與驗收條件
 見 `WORKLIST.md`，逆向證據見 `docs/spec/`、`docs/re/` 與 `docs/audit/`。
 
+## 2026-09-13：規格測試反向引用清零
+
+- 目標：完成 GitHub issue #13，逐份分類 56 個 `specs_without_tests`，不以
+  無關引用壓低數字。
+- 處置：既有相關測試補 `spec NNN`；spec 038、089、094 補直接回歸測試；
+  spec 133 以檔頭 `測試：` 明列 dosgolem 外部軌跡。索引器新增
+  `specs_tested_outside_go`，不把外部驗證混成 Go 測試。
+- 驗證：重生索引後 136 份規格的 `specs_without_tests` 為 0；
+  `cmd/pool-doc-index`、`cmd/pool-ecl-memory-audit`、`internal/gamepack` 與
+  `cmd/pool-game` 的相關測試全綠。
+
 ## 2026-09-13：力量效果收尾與 138 格覆蓋盤點
 
 - 目標：完成 GitHub issue #12 的「先盤點、再接第一個玩家可見代碼」。

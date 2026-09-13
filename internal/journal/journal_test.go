@@ -1,5 +1,7 @@
 package journal_test
 
+// 本檔釘住 spec 064 的遊戲內 Journal 狀態與內容讀取。
+
 import (
 	"encoding/json"
 	"os"

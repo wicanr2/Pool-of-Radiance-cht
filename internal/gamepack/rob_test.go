@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔釘住 spec 088 的 ROB 扣除與下限。
+
 import (
 	"testing"
 

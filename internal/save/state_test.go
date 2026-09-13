@@ -1,5 +1,7 @@
 package save
 
+// 本檔釘住 spec 037 與 spec 044 的 campaign／archive session round-trip。
+
 import (
 	"encoding/json"
 	"os"

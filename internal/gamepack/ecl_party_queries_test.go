@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔釘住 spec 085 的隊伍查詢 opcode。
+
 import (
 	"testing"
 

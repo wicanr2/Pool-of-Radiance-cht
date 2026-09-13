@@ -382,3 +382,23 @@ func TestReadSpecPicksUpTheOutsideGoNote(t *testing.T) {
 		t.Fatalf("不在行首的「實作：」被當成標記：%q", parsed.outsideGo)
 	}
 }
+
+// `測試：` 不是免測標記；它只替「測試確實在 Go 以外」的規格留下可回查入口。
+func TestReadSpecPicksUpTheOutsideTestNote(t *testing.T) {
+	directory := t.TempDir()
+	path := filepath.Join(directory, "998-external-test.md")
+	content := "# Spec 998：外部測試樣本\n\n狀態：READY。\n日期：2026-09-09。\n" +
+		"實作：dosgolem 的送鍵鍵序。\n" +
+		"測試：dosgolem `cmd/shots -keytrace` 的逐鍵軌跡。\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	parsed, err := readSpec(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parsed.outsideTest != "dosgolem `cmd/shots -keytrace` 的逐鍵軌跡。" {
+		t.Fatalf("測試入口讀成 %q", parsed.outsideTest)
+	}
+}

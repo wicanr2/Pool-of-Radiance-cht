@@ -1,5 +1,7 @@
 package main
 
+// 本檔以真實 corpus 的位址基準釘住 spec 002。
+
 import (
 	"os"
 	"path/filepath"

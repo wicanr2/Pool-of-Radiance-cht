@@ -1,5 +1,7 @@
 package main
 
+// 本檔釘住 spec 006 的肖像 archive 邊界。
+
 import "testing"
 
 func TestPortraitArchiveNameIsFailClosed(t *testing.T) {

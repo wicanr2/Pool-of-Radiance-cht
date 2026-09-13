@@ -1,5 +1,7 @@
 package main
 
+// 本檔以真實 ECL 結構清冊釘住 spec 028。
+
 import (
 	"encoding/json"
 	"os"

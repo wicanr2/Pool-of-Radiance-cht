@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以真實 archive 與 slum counter 釘住 spec 042。
+
 import (
 	"archive/zip"
 	"os"

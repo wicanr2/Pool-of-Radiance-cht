@@ -1,5 +1,7 @@
 package combat
 
+// 本檔與 deployment_test.go 共同釘住 spec 061 的部署與 footprint。
+
 import (
 	"reflect"
 	"testing"

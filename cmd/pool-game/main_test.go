@@ -1,5 +1,8 @@
 package main
 
+// 本檔的正常玩家路徑與存讀檔案例釘住 spec 005、spec 016、spec 022、spec 026、
+// spec 034、spec 036、spec 037、spec 045 與 spec 083。
+
 import (
 	"errors"
 	"image"

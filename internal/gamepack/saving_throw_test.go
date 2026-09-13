@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔與 saving_throw_table_test.go 共同釘住 spec 075 的 saving throw 規則。
+
 import (
 	"os"
 	"testing"

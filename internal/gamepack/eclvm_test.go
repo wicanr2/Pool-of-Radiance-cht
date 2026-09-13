@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以真實 ECL 執行釘住 spec 011、spec 013、spec 031 與 spec 032。
+
 import (
 	"path/filepath"
 	"reflect"

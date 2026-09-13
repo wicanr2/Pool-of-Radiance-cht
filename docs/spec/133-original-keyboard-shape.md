@@ -5,6 +5,7 @@
 由誰決定、旗標為 0 那條路上的 `50h`／`4Eh` 是給哪一種清單用的）。
 日期：2026-09-09。
 實作：dosgolem 的送鍵鍵序（`tools/dosgolem-reference.sh`）。
+測試：dosgolem `cmd/shots -keytrace` 的逐鍵軌跡與本規格「實測對照」表。
 **remake 這一側不重現 BIOS 讀鍵**——Ebiten 自己收鍵盤，原版那條路只用來決定自動化要送哪些鍵。
 
 ## 結論先講

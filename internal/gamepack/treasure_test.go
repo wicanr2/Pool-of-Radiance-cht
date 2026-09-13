@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以真實 ITEM／ECL payload 釘住 spec 033 與 spec 039。
+
 import (
 	"crypto/sha256"
 	"fmt"

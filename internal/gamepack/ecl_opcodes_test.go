@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔以原版 opcode 派發形狀釘住 spec 077。
+
 import (
 	"testing"
 

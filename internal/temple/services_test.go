@@ -1,5 +1,7 @@
 package temple_test
 
+// 本檔釘住 spec 018 的 HP／狀態恢復與神殿服務。
+
 import (
 	"testing"
 

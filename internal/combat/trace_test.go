@@ -1,5 +1,7 @@
 package combat
 
+// 本檔釘住 spec 057 的格線射線與阻擋軌跡。
+
 import (
 	"testing"
 

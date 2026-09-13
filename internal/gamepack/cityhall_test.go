@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔釘住 spec 023 與 spec 029 的市政廳公告、委託與新隊伍狀態。
+
 import (
 	"os"
 	"path/filepath"

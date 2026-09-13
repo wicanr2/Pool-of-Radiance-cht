@@ -1,5 +1,7 @@
 package assets_test
 
+// 本檔以實際資產索引與 fallback 釘住 spec 131。
+
 import (
 	"os"
 	"testing"

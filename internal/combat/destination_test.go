@@ -1,5 +1,7 @@
 package combat
 
+// 本檔釘住 spec 058 的大型單位目的地選擇。
+
 import (
 	"testing"
 

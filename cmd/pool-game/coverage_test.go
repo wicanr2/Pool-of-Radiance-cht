@@ -1,5 +1,7 @@
 package main
 
+// 本檔的跨 archive 世界巡遊釘住 spec 107 的 FF sentinel 交接。
+
 import (
 	"fmt"
 	"math/rand"

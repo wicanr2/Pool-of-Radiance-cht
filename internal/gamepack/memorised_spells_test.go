@@ -108,3 +108,17 @@ func TestMemorisedSpellsRejectAnIDOutsideTheTable(t *testing.T) {
 		t.Fatal("a truncated record was accepted")
 	}
 }
+
+// spec 094：remake 只掃 13 格記憶陣列、濾掉旗標位，回傳原版槽位編號；
+// 找不到時回 FFh，而且不能越過陣列尾端誤命中。
+func TestSpellSearchUsesTheRemakeArrayBoundaryAndOriginalSlotNumber(t *testing.T) {
+	memorised := make([]uint8, gamepack.MemorisedSpellSlots+1)
+	memorised[3] = gamepack.MemorisedSpellFlag | 12
+	memorised[gamepack.MemorisedSpellSlots] = 99
+	if got, want := gamepack.SearchMemorisedSpell(memorised, 12), gamepack.SpellSearchSlot(3); got != want {
+		t.Fatalf("槽位 = %#x，應為 %#x", got, want)
+	}
+	if got := gamepack.SearchMemorisedSpell(memorised, 99); got != gamepack.SpellSearchNotFound {
+		t.Fatalf("越界值被命中在 %#x", got)
+	}
+}

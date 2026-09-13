@@ -47,6 +47,9 @@ type spec struct {
 	// 這一行是**規格作者手寫的斷言**，不是猜的：關鍵字命中不算數（那正是
 	// spec 124 的教訓），所以只認這個明確的形狀。
 	outsideGo string
+	// outsideTest 是規格自己寫的 `測試：…`。只有測試不在這個 repo 的 Go
+	// 測試裡時才使用，例如 dosgolem 自己的鍵盤軌跡；這不是免測標記。
+	outsideTest string
 }
 
 // gapReport 是給機器讀的那一份：缺口不是數字而是清單，因為要看得出是哪幾份。
@@ -74,6 +77,7 @@ type gapReport struct {
 	// 它們永遠掃不到 `spec NNN`，混在 without_implementation 裡就是永遠
 	// 清不掉的雜訊，會讓那個數字失去「還剩多少沒接」的意思。
 	SpecsOutsideGo             []string   `json:"specs_implemented_outside_go"`
+	SpecsTestedOutsideGo       []string   `json:"specs_tested_outside_go"`
 	ToolsWithoutDoc            []string   `json:"tools_without_doc"`
 	ToolsWithoutTests          []string   `json:"tools_without_tests"`
 }
@@ -106,8 +110,12 @@ func readSpec(path string) (spec, error) {
 	// 後者在很多規格裡只是敘述的一部分。
 	result.sharedEngine = strings.Contains(string(raw), "eclvm")
 	for _, line := range lines {
-		note, ok := strings.CutPrefix(strings.TrimSpace(line), "實作：")
-		if !ok {
+		trimmed := strings.TrimSpace(line)
+		note, implementation := strings.CutPrefix(trimmed, "實作：")
+		if !implementation {
+			note, implementation = strings.CutPrefix(trimmed, "測試：")
+		}
+		if !implementation {
 			continue
 		}
 		// 只取第一句：這一行會整個塞進索引表的一格，寫長了表格就散了。
@@ -115,8 +123,11 @@ func readSpec(path string) (spec, error) {
 		if head, _, found := strings.Cut(note, "。"); found {
 			note = head + "。"
 		}
-		result.outsideGo = strings.TrimSpace(note)
-		break
+		if strings.HasPrefix(trimmed, "實作：") {
+			result.outsideGo = strings.TrimSpace(note)
+		} else {
+			result.outsideTest = strings.TrimSpace(note)
+		}
 	}
 	if len(lines) > 0 {
 		result.title = strings.TrimSpace(strings.TrimPrefix(lines[0], "#"))
@@ -392,7 +403,7 @@ func main() {
 	out.WriteString("> 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，\n")
 	out.WriteString("> 這份只是把它反過來收攏，所以改了註解重跑一次就對了。\n\n")
 
-	var noCode, noTests, shared, outside int
+	var noCode, noTests, shared, outside, outsideTests int
 	for _, item := range specs {
 		switch {
 		case len(item.code) > 0:
@@ -403,13 +414,15 @@ func main() {
 		default:
 			noCode++
 		}
-		if len(item.tests) == 0 {
+		if len(item.tests) == 0 && item.outsideTest == "" {
 			noTests++
+		} else if len(item.tests) == 0 {
+			outsideTests++
 		}
 	}
 	fmt.Fprintf(&out, "%d 份規格，其中 %d 份還沒有任何檔案的註解指回它、%d 份沒有測試提到它；\n"+
-		"另有 %d 份實作在共用 engine（`eclvm`）、%d 份的實作不是 Go（規格自己寫的那行 `實作：`）。\n",
-		len(specs), noCode, noTests, shared, outside)
+		"另有 %d 份實作在共用 engine（`eclvm`）、%d 份的實作不是 Go、%d 份由 Go 以外的測試驗證。\n",
+		len(specs), noCode, noTests, shared, outside, outsideTests)
 	out.WriteString("這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。\n\n")
 
 	out.WriteString("## 規格\n\n")
@@ -428,8 +441,12 @@ func main() {
 				implementation = item.outsideGo
 			}
 		}
+		testReference := shorten(item.tests)
+		if len(item.tests) == 0 && item.outsideTest != "" {
+			testReference = item.outsideTest
+		}
 		fmt.Fprintf(&out, "| [%s](%s) | %s | %s | %s | %s |\n",
-			item.number, item.file, item.title, status, implementation, shorten(item.tests))
+			item.number, item.file, item.title, status, implementation, testReference)
 	}
 
 	out.WriteString("\n## `cmd/` 底下的工具\n\n")
@@ -471,6 +488,7 @@ func main() {
 		SpecsWithoutTests:          []string{},
 		SpecsInSharedEngine:        []string{},
 		SpecsOutsideGo:             []string{},
+		SpecsTestedOutsideGo:       []string{},
 		ToolsWithoutDoc:            []string{},
 		ToolsWithoutTests:          []string{},
 	}
@@ -484,8 +502,10 @@ func main() {
 		default:
 			report.SpecsWithoutImplementation = append(report.SpecsWithoutImplementation, item.number)
 		}
-		if len(item.tests) == 0 {
+		if len(item.tests) == 0 && item.outsideTest == "" {
 			report.SpecsWithoutTests = append(report.SpecsWithoutTests, item.number)
+		} else if len(item.tests) == 0 {
+			report.SpecsTestedOutsideGo = append(report.SpecsTestedOutsideGo, item.number)
 		}
 	}
 	for _, item := range tools {

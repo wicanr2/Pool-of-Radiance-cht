@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以真實 monster record 釘住 spec 048。
+
 import (
 	"path/filepath"
 	"testing"

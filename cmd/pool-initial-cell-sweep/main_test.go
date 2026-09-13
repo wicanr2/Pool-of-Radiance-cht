@@ -1,5 +1,7 @@
 package main
 
+// 本檔釘住 spec 015 的 per-turn／SearchLocation 五入口生命週期。
+
 import (
 	"path/filepath"
 	"strings"

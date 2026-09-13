@@ -1,5 +1,7 @@
 package combat
 
+// 本檔釘住 spec 050 的命中、傷害與減傷順序。
+
 import "testing"
 
 func TestDexterityInitiativeModifierOriginalTable(t *testing.T) {

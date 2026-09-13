@@ -1,5 +1,7 @@
 package character
 
+// 本檔釘住 spec 035 的負重與攜行能力規則。
+
 import (
 	"encoding/binary"
 	"testing"

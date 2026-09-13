@@ -39,17 +39,8 @@ func (a *app) applyProtection(event eclvm.Event) error {
 		return fmt.Errorf("Pool PROTECTION operand: %w", err)
 	}
 	memory := a.eventSession.Machine().Memory
-	parts := make([]string, 0, 8)
-	for offset := 0; offset < gamepack.ProtectionMaxEntries; offset++ {
-		value := memory[address+uint16(offset)]
-		if value == 0 {
-			break
-		}
-		// 原版印的是讀到的值加一（`324Fh` 的 `inc ax`）。
-		parts = append(parts, strconv.Itoa(int(value)+1))
-	}
-	if len(parts) != 0 {
-		line := strings.Join(parts, " ")
+	line := formatProtectionRow(func(current uint16) uint16 { return memory[current] }, address)
+	if line != "" {
 		if a.eventText != "" && !strings.HasSuffix(a.eventText, "\n") {
 			a.eventText += "\n"
 		}
@@ -58,4 +49,17 @@ func (a *app) applyProtection(event eclvm.Event) error {
 	// 印完換行（`32BAh` 的 `inc [5D83h]`）。
 	a.eventText += "\n"
 	return a.continueInitialSearch(nil)
+}
+
+func formatProtectionRow(read func(uint16) uint16, address uint16) string {
+	parts := make([]string, 0, 8)
+	for offset := 0; offset < gamepack.ProtectionMaxEntries; offset++ {
+		value := read(address + uint16(offset))
+		if value == 0 {
+			break
+		}
+		// 原版印的是讀到的值加一（`324Fh` 的 `inc ax`）。
+		parts = append(parts, strconv.Itoa(int(value)+1))
+	}
+	return strings.Join(parts, " ")
 }

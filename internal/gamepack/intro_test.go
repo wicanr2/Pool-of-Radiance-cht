@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以真實開場事件釘住 spec 010。
+
 import (
 	"path/filepath"
 	"strings"

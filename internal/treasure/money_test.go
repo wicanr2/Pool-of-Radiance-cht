@@ -1,5 +1,7 @@
 package treasure
 
+// 本檔釘住 spec 040 的七種貨幣轉換、分配與溢位邊界。
+
 import (
 	"errors"
 	"math"

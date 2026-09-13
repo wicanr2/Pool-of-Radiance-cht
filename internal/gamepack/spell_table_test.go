@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔以真實法術名稱與邊界釘住 spec 068。
+
 import (
 	"testing"
 

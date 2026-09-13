@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔釘住 spec 080 的裝備護甲值與魔法防具互斥。
+
 import (
 	"os"
 	"testing"

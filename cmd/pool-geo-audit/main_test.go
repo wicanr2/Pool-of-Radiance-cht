@@ -1,5 +1,7 @@
 package main
 
+// 本檔釘住 spec 009 的 GEO archive 盤點與 malformed block 邊界。
+
 import (
 	"testing"
 

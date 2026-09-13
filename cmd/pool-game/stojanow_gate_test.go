@@ -1,5 +1,7 @@
 package main
 
+// 本檔以 Stojanow 正常事件鏈釘住 spec 104 的 external CALL selector。
+
 import (
 	"fmt"
 	"path/filepath"

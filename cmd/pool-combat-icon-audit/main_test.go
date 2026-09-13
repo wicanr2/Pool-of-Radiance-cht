@@ -1,5 +1,7 @@
 package main
 
+// 本檔以真實 icon archive 釘住 spec 007。
+
 import (
 	"archive/zip"
 	"bytes"

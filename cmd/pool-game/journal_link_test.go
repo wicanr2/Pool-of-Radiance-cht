@@ -1,5 +1,7 @@
 package main
 
+// 本檔釘住 spec 132 的 Journal 引用呈現與頁面跳轉。
+
 import (
 	"strings"
 	"testing"

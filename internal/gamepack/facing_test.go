@@ -1,5 +1,7 @@
 package gamepack
 
+// 本檔以 Rolf 導覽移動釘住 spec 012 的方位座標契約。
+
 import (
 	"path/filepath"
 	"testing"

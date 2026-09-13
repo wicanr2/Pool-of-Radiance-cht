@@ -96,22 +96,6 @@
         "note": "沒有現成訊號可綁——要跑三次對拍才知道穩不穩。接上之後改成綁一支跑三次比雜湊的腳本，或在 `parity.json` 裡記下重跑的雜湊一致與否"
       },
       "github_issue": 11
-    },
-    {
-      "id": "spec-test-backlinks",
-      "layer": "verification",
-      "title": "五十六份規格沒有任何測試指回它",
-      "body": "`docs/audit/doc-index.json` 的 `specs_without_tests` 有 56 份。實作那一欄剛剛清完（每一份要嘛有檔案的註解指回它，要嘛在檔頭寫明實作不是 Go），測試這一欄還沒。\n\n**這不等於沒測**：測試可能存在，只是註解裡沒寫 `spec NNN`，那條線就接不起來。所以逐份要分三種處置——補註解（測試已經在測它）、補測試（真的沒測）、或在檔頭寫明為什麼不需要（純 RE 文件、實作在別的 repo）。",
-      "blocked_by": "分不出「沒測」與「測了但沒標」之前不能動手：前者要寫測試，後者只要一行註解，而兩者在這個數字上長得一樣。",
-      "acceptance": "`specs_without_tests` 歸零，而且每一份的處置要看得出是哪一種。不准為了讓數字下降而在無關的測試裡加 `spec NNN`。",
-      "verify": {
-        "kind": "json_gap",
-        "path": "docs/audit/doc-index.json",
-        "field": "specs_without_tests",
-        "min": 1,
-        "note": "綁 `cmd/pool-doc-index` 算出來的清單長度。`min` 是 1 不是現況值——這一條要的是歸零"
-      },
-      "github_issue": 13
     }
   ]
 }

@@ -1,5 +1,7 @@
 package gamepack_test
 
+// 本檔釘住 spec 113 的 game pack 載入、邊界與作品常數。
+
 import (
 	"encoding/json"
 	"sort"

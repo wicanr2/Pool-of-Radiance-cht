@@ -2,6 +2,15 @@
 
 更新日期：2026-09-13。
 
+## 2026-09-13 規格到測試的反向索引沒有缺口
+
+issue #13 的 56 份規格已逐份核實：既有測試補上精確的 `spec NNN` 反向引用；
+spec 038 的 ECL producer 清冊、spec 089 的 `PROTECTION` 停止條件，以及
+spec 094 的法術搜尋範圍新增直接回歸測試。spec 133 不重現於 remake 的 Go
+程式，改由規格檔頭明列 dosgolem `cmd/shots -keytrace` 軌跡入口。
+`docs/audit/doc-index.json` 現為 136 份規格、`specs_without_tests` 0，並把
+Go 以外驗證另列為 `specs_tested_outside_go`，不把它偽裝成 Go 測試。
+
 ## 2026-09-13 力量效果到期會還原，效果碼覆蓋已有盤點
 
 issue #12 的第一個玩家可見切片已閉合：`0Ch`／`26h` 依 DOS 的節點 `+3`

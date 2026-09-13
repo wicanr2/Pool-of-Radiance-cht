@@ -1,5 +1,7 @@
 package main
 
+// 本檔釘住 spec 124 的地圖名稱來源與安全 fallback。
+
 import (
 	"path/filepath"
 	"testing"
