@@ -504,7 +504,10 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			}
 		}
 		subject := &a.state.Party[slot]
-		outcome := gamepack.Restore(subject.DrainedLevels, subject.DrainedHitPoints)
+		levels := memberClassLevels(*subject)
+		outcome, restoredLevels, restoredExperience := gamepack.RestoreDrainedLevel(
+			levels, subject.Experience, subject.DrainedLevels,
+			subject.DrainedHitPoints, a.experienceTable)
 		if !outcome.Restored {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNothingToRestore),
 				strings.TrimSpace(subject.Name)))
@@ -512,6 +515,8 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		}
 		subject.DrainedLevels, subject.DrainedHitPoints =
 			outcome.DrainedLevels, outcome.DrainedHitPoints
+		subject.ClassLevels = append([]uint8(nil), restoredLevels[:]...)
+		subject.Experience = restoredExperience
 		subject.MaxHP += outcome.HitPoints
 		subject.CurrentHP += outcome.HitPoints
 		subject.RawHP += outcome.HitPoints

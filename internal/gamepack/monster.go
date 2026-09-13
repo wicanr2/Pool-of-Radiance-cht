@@ -3,6 +3,8 @@ package gamepack
 import (
 	"archive/zip"
 	"fmt"
+	"path/filepath"
+	"strings"
 )
 
 const monsterRecordSize = 285
@@ -182,6 +184,51 @@ func ReadDOSMonsterRecord(zipPath string, archiveNumber, blockID uint8) (Monster
 		return MonsterRecord{}, fmt.Errorf("%s has no block %d", name, blockID)
 	}
 	return parseMonsterRecord(blockID, payload)
+}
+
+// ReadDOSMonsterEffects 讀同一隻怪物在 MONnSPC.DAX 裡的效果串列。
+//
+// 原版把怪物的特殊攻擊也做成效果節點：代碼 55h／56h 分別是吸取一級／
+// 兩級（spec 112）。不是每一個 MONnCHA block 都有對應的 SPC block；沒有就
+// 是空串列，不是損壞。只要 block 存在，9-byte 節點形狀不合就失敗即關閉。
+func ReadDOSMonsterEffects(zipPath string, archiveNumber, blockID uint8) (EffectList, error) {
+	if archiveNumber < 1 || archiveNumber > 8 {
+		return nil, fmt.Errorf("Pool monster archive %d is outside 1..8", archiveNumber)
+	}
+	zr, err := zip.OpenReader(zipPath)
+	if err != nil {
+		return nil, fmt.Errorf("open DOS ZIP: %w", err)
+	}
+	defer zr.Close()
+
+	name := fmt.Sprintf("MON%dSPC.DAX", archiveNumber)
+	found := false
+	for _, candidate := range zr.File {
+		if strings.EqualFold(filepath.Base(candidate.Name), name) {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return nil, nil
+	}
+	member, err := uniqueMember(zr.File, name)
+	if err != nil {
+		return nil, err
+	}
+	blocks, err := readDAXBlocks(member)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", name, err)
+	}
+	payload, ok := blocks[blockID]
+	if !ok {
+		return nil, nil
+	}
+	nodes, err := ParseEffectList(payload)
+	if err != nil {
+		return nil, fmt.Errorf("%s block %d: %w", name, blockID, err)
+	}
+	return EffectList(nodes), nil
 }
 
 func parseMonsterRecord(blockID uint8, payload []byte) (MonsterRecord, error) {

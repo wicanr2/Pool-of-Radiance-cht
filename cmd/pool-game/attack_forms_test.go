@@ -6,6 +6,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
 // 一次行動要揮幾下、每一下用哪一組骰子（spec 051）。
@@ -57,6 +58,42 @@ func TestATrollSwingsTwiceWithClawsAndOnceWithItsBite(t *testing.T) {
 		if swings[index] != want[index] {
 			t.Errorf("第 %d 下是 %+v，要的是 %+v", index, swings[index], want[index])
 		}
+	}
+}
+
+// MONnSPC 的 55h 必須從真正的命中路徑扣到角色，而不是只測一支孤立 helper。
+func TestAHitFromAnEnergyDrainingMonsterLowersTheTargetLevel(t *testing.T) {
+	var thresholds gamepack.ExperienceTable
+	thresholds[2][2], thresholds[2][3] = 2000, 4000
+	levels := make([]uint8, gamepack.ClassThac0ClassCount)
+	levels[2] = 3
+	state := &tacticalState{
+		Roster:   []combat.CombatantCell{{}, {FootprintClass: 1}, {FootprintClass: 1}},
+		Friendly: []bool{false, true, false}, PartySlot: []int{-1, 0, -1},
+		HitPoints: []int{0, 18, 8}, MaxHitPoints: []int{0, 18, 8},
+		THAC0: []uint8{0, 0, 60}, ArmorClass: make([]int, 3),
+		States: make([]uint8, 3), Scores: []uint8{0, 1, 1},
+		AttackForms: make([][gamepack.MonsterAttackSlots]combat.DamageDice, 3),
+		AttackRates: make([][gamepack.MonsterAttackSlots]uint8, 3),
+		Effects:     make([]gamepack.EffectList, 3), Mover: 2,
+	}
+	state.AttackForms[2][0] = combat.DamageDice{Count: 1, Sides: 1}
+	state.AttackRates[2][0] = 2
+	state.Effects[2] = gamepack.EffectList{{Code: gamepack.EnergyDrainOneEffectCode}}
+	member := poolsave.Character{Name: "HERO", ClassID: "fighter",
+		ClassLevels: levels, Experience: 5000, MaxHP: 18, CurrentHP: 18, RawHP: 18}
+	application := &app{roller: fixedRoller{20}, experienceTable: thresholds,
+		state: poolsave.State{Party: []poolsave.Character{member}}}
+
+	if err := application.resolveTacticalAttack(state, 1); err != nil {
+		t.Fatal(err)
+	}
+	got := application.state.Party[0]
+	if got.ClassLevels[2] != 2 || got.DrainedLevels != 1 || got.DrainedHitPoints != 6 {
+		t.Fatalf("命中後角色沒有被吸取：%+v", got)
+	}
+	if state.MaxHitPoints[1] != 12 || state.HitPoints[1] != 11 {
+		t.Fatalf("戰場 HP 是 %d/%d，要的是 11/12", state.HitPoints[1], state.MaxHitPoints[1])
 	}
 }
 

@@ -2,6 +2,20 @@
 
 更新日期：2026-09-13。
 
+## 2026-09-13 能量吸取由 MONnSPC 特殊攻擊接通
+
+原版怪物特殊攻擊不是藏在 `MONnCHA` 的空傷害骰裡，而是同 archive／block 的
+`MONnSPC.DAX` 9-byte 效果節點。WIGHT／WRAITH 帶 `55h`，SPECTRE／VAMPIRE
+帶 `56h`。overlay-13 每一下命中造成傷害後以「攻擊形態＋1」派發群組 2／3；
+兩碼都在兩組。overlay-12 entry 80／81 再分別把 1／2 傳給 `211Eh`，沿攻擊者
+目前目標指標吸取受擊者。
+
+remake 現在會把怪物效果與記錄一起 staging，命中後同步扣職業等級、經驗值、
+最大／目前／原始 HP 並記欠帳；Restoration 會逐級還回職業等級與 HP。證據收據
+在 `docs/audit/dos-energy-drain-special-attacks.json`，spec 097／112 已更新。
+固定骰子的整合／覆蓋治具也明示使用測試 ECL seed 1，避免 #15 分流正常遊玩
+時間 seed 後，測試的遭遇與腳本路線反而受牆鐘影響。
+
 ## 2026-09-13 盜賊訓練後以真實 DEX 重算八格技能
 
 原版訓練常式在 overlay-16 `2F36h` 呼叫 overlay-23 entry 1；entry 1 於

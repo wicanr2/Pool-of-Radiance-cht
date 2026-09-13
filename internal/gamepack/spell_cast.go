@@ -744,8 +744,7 @@ type RestorationOutcome struct {
 //	2c60  +75h  -= gain
 //	2c67  +74h  -= 1
 //
-// **還沒接進遊戲**：remake 還沒有能量吸取（overlay-12 `21C4h`），
-// 沒有欠帳就沒有東西可還。規則先寫下來並釘住，接上吸取時就能直接用。
+// 怪物 MONnSPC 的 55h／56h 特殊攻擊會建立這份欠帳；沒有欠帳時仍直接返回。
 func Restore(drainedLevels, drainedHitPoints int) RestorationOutcome {
 	if drainedLevels <= 0 {
 		return RestorationOutcome{

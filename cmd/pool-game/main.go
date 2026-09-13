@@ -73,6 +73,8 @@ type treasureStage uint8
 type stagedMonster struct {
 	Spawn  eclvm.MonsterSpawn
 	Record gamepack.MonsterRecord
+
+	Effects gamepack.EffectList
 }
 
 const (
@@ -319,6 +321,8 @@ type app struct {
 	currentCharacter int
 	loadTreasure     func(archive, block uint8) ([]gamepack.TreasureItemRecord, error)
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
+
+	loadMonsterEffects func(archive, block uint8) (gamepack.EffectList, error)
 	combatActive     bool
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
@@ -536,6 +540,9 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.loadMonster = func(archive, block uint8) (gamepack.MonsterRecord, error) {
 		return gamepack.ReadDOSMonsterRecord(zipPath, archive, block)
+	}
+	application.loadMonsterEffects = func(archive, block uint8) (gamepack.EffectList, error) {
+		return gamepack.ReadDOSMonsterEffects(zipPath, archive, block)
 	}
 	application.loadPortrait = func(head, body uint8) (*ebiten.Image, error) {
 		parts, err := assets.ReadCreationPortraitParts(zipPath, head, body)
@@ -1729,7 +1736,15 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 		if err != nil {
 			return fmt.Errorf("load Pool monster archive %d block %d: %w", archive, spawn.MonsterID, err)
 		}
-		staged = append(staged, stagedMonster{Spawn: spawn, Record: record})
+		var effects gamepack.EffectList
+		if a.loadMonsterEffects != nil {
+			effects, err = a.loadMonsterEffects(archive, spawn.MonsterID)
+			if err != nil {
+				return fmt.Errorf("load Pool monster effects archive %d block %d: %w",
+					archive, spawn.MonsterID, err)
+			}
+		}
+		staged = append(staged, stagedMonster{Spawn: spawn, Record: record, Effects: effects})
 		labels = append(labels, fmt.Sprintf("%s ×%d", a.monsterText.Translate(record.Name), spawn.Count))
 	}
 	if len(staged) == 0 {

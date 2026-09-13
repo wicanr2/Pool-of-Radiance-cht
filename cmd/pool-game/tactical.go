@@ -791,7 +791,9 @@ func (a *app) enterTacticalPreview() error {
 				gamepack.PlayerAttackRate(levels), 0}
 			continue
 		}
-		if record, ok := a.stagedRecordFor(index, friendly); ok {
+		if monster, ok := a.stagedMonsterFor(index, friendly); ok {
+			record := monster.Record
+			state.Effects[index] = append(gamepack.EffectList(nil), monster.Effects...)
 			state.BaseMovement[index] = record.Movement()
 			// 先攻修正讀這一格（overlay-25 entry 11，spec 052）。
 			state.Dexterity[index] = record.Dexterity()
@@ -1554,9 +1556,9 @@ func (a *app) tacticalInput() error {
 	return nil
 }
 
-// stagedRecordFor 找出敵方第 index 筆對應的原版怪物記錄。staged 的每一筆帶著
-// 數量，所以要依序展開才對得回去。
-func (a *app) stagedRecordFor(index int, friendly []bool) (gamepack.MonsterRecord, bool) {
+// stagedMonsterFor 找出敵方第 index 筆對應的原版怪物記錄與效果串列。staged
+// 的每一筆帶著數量，所以要依序展開才對得回去。
+func (a *app) stagedMonsterFor(index int, friendly []bool) (stagedMonster, bool) {
 	position := 0
 	for slot := 1; slot < index; slot++ {
 		if !friendly[slot] {
@@ -1565,11 +1567,11 @@ func (a *app) stagedRecordFor(index int, friendly []bool) (gamepack.MonsterRecor
 	}
 	for _, monster := range a.combatMonsters {
 		if position < int(monster.Spawn.Count) {
-			return monster.Record, true
+			return monster, true
 		}
 		position -= int(monster.Spawn.Count)
 	}
-	return gamepack.MonsterRecord{}, false
+	return stagedMonster{}, false
 }
 
 // resolveTacticalAttack 以既有的命中與傷害規則（spec 050／051）解一次攻擊。
@@ -1615,6 +1617,12 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 		if state.HitPoints[target] <= 0 {
 			break
 		}
+		// 原版在每一下成功造成傷害之後，以「攻擊形態 + 1」派發群組 2／3。
+		// 55h／56h 同時在兩組裡，所以不論是哪一形態命中，都由攻擊者身上的
+		// MONnSPC 節點對目前目標吸取一級／兩級（spec 112）。
+		if a.applyEnergyDrainSpecialAttack(state, state.Mover, target) {
+			break
+		}
 	}
 	if landed == 0 {
 		state.Status = state.say(msgStatusMissed, target, lastRoll)
@@ -1632,6 +1640,64 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	state.States[target] = combat.DyingState
 	state.Status = state.say(msgStatusDown, target)
 	return nil
+}
+
+// applyEnergyDrainSpecialAttack 套用目前已閉合的兩個怪物特殊攻擊代碼。
+// 回傳 true 代表目標已因吸取倒下。
+func (a *app) applyEnergyDrainSpecialAttack(state *tacticalState, attacker, target uint8) bool {
+	if int(attacker) >= len(state.Effects) || int(target) >= len(state.PartySlot) {
+		return false
+	}
+	count := 0
+	for _, effect := range state.Effects[attacker] {
+		switch effect.Code {
+		case gamepack.EnergyDrainOneEffectCode:
+			count++
+		case gamepack.EnergyDrainTwoEffectCode:
+			count += 2
+		}
+	}
+	party := state.PartySlot[target]
+	if count == 0 || party < 0 || party >= len(a.state.Party) {
+		return false
+	}
+	member := &a.state.Party[party]
+	levels := memberClassLevels(*member)
+	beforeCurrent := member.CurrentHP
+	outcome := gamepack.DrainEnergy(levels, member.Experience,
+		member.MaxHP, member.CurrentHP, member.RawHP,
+		member.DrainedLevels, member.DrainedHitPoints, count, a.experienceTable)
+	member.ClassLevels = append([]uint8(nil), outcome.Levels[:]...)
+	member.Experience = outcome.Experience
+	member.MaxHP, member.CurrentHP, member.RawHP =
+		outcome.MaxHitPoints, outcome.CurrentHitPoints, outcome.RawHitPoints
+	member.DrainedLevels, member.DrainedHitPoints =
+		outcome.DrainedLevels, outcome.DrainedHitPoints
+	if outcome.Killed {
+		// 存檔模型以 Status 表示死亡，MaxHP 必須保持可驗證；原版 runtime
+		// 暫時把 +32h 歸零是戰鬥離場訊號，不可直接存成非法角色資料。
+		if member.MaxHP < 1 {
+			member.MaxHP = 1
+		}
+		member.CurrentHP, member.Status = 0, combat.DeadState
+		state.HitPoints[target] = 0
+		state.rememberFootprint(int(target))
+		state.Roster[target].FootprintClass = 0
+		state.Scores[target], state.States[target] = 0, combat.DeadState
+	} else {
+		lost := beforeCurrent - member.CurrentHP
+		state.HitPoints[target] = subtractCombatHitPoints(state.HitPoints[target], lost)
+		state.MaxHitPoints[target] = member.MaxHP
+	}
+	syncTrainedLibraryCharacter(&a.state, *member)
+	return outcome.Killed || state.HitPoints[target] <= 0
+}
+
+func subtractCombatHitPoints(value, amount int) int {
+	if value <= amount {
+		return 0
+	}
+	return value - amount
 }
 
 // attackSwingsThisPhase 列出這一次行動要揮幾下、每一下用哪一組骰子。

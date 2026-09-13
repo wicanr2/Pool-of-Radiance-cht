@@ -18,6 +18,7 @@ func bootCityParty(t *testing.T, zipPath string) *app {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
 	application.roller = diceRoller{random: rand.New(rand.NewSource(7))}
+	application.eclSeed = 1
 	party := make([]poolsave.Character, 0, 6)
 	for index := 0; index < 6; index++ {
 		party = append(party, poolsave.Character{Name: string(rune('A' + index)),

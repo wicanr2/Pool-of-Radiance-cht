@@ -1,0 +1,54 @@
+{
+  "schema": "pool-dos-energy-drain-special-attacks/1",
+  "date": "2026-09-13",
+  "input": {
+    "file": "Pool of Radiance (1988).zip",
+    "sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633"
+  },
+  "monster_effect_archives": [
+    {
+      "member": "poolrad/mon2spc.dax",
+      "sha256": "8ab7c7a7593466eb269a9ea5fb1a48e08c5707cec0fb24aaaa1c36d3711645f8",
+      "size": 150,
+      "samples": [{"block": 17, "monster": "SPECTRE", "effect_code": "56h"}]
+    },
+    {
+      "member": "poolrad/mon4spc.dax",
+      "sha256": "4e87bb3aeb9d6a8750dfad5d0fe5a416c5d921dac9a7f36dfce91492dda99343",
+      "size": 904,
+      "samples": [
+        {"block": 20, "monster": "WIGHT", "effect_code": "55h"},
+        {"block": 21, "monster": "WRAITH", "effect_code": "55h"},
+        {"block": 23, "monster": "VAMPIRE", "effect_code": "56h"}
+      ]
+    }
+  ],
+  "ida": {
+    "version": "9.4",
+    "input": "overlay-12.bin",
+    "sha256": "d1b057432515b7daa2b83199d2588c131a120037d30117e664b01e4c6f2bcb7e",
+    "address_space": "overlay-local file offset, base 0, 16-bit metapc",
+    "handlers": [
+      {"effect_code": "55h", "entry": 80, "start": "2372h", "count_bytes": "B0 01 50", "callee": "211Eh"},
+      {"effect_code": "56h", "entry": 81, "start": "2392h", "count_bytes": "B0 02 50", "callee": "211Eh"}
+    ],
+    "drain_primitive": {
+      "start": "211Eh",
+      "level_debt_offset": "+74h",
+      "hit_point_debt_offset": "+75h",
+      "class_levels": "+96h..+9Dh",
+      "max_hit_points": "+32h",
+      "raw_hit_points": "+B1h",
+      "current_hit_points": "+11Bh"
+    }
+  },
+  "dispatch": {
+    "input": "overlay-13 attack span",
+    "address_space": "overlay-local file offset, base 0, 16-bit metapc",
+    "range": "1678h..176Ah",
+    "call": "1740h..174Dh: group = attack_slot + 1; far call 0100h:002Fh",
+    "groups": {"slot_1": 2, "slot_2": 3},
+    "note": "55h and 56h occur in both groups"
+  },
+  "confidence": "exact"
+}

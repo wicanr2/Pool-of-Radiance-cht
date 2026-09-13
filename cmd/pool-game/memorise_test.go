@@ -114,6 +114,7 @@ func TestCastMagicMissileInCombat(t *testing.T) {
 		CharacterLibrary: party, Party: party}
 	application.saveState = func(poolsave.State) error { return nil }
 	application.roller = diceRoller{random: rand.New(rand.NewSource(3))}
+	application.eclSeed = 1
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}

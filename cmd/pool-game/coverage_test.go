@@ -32,6 +32,7 @@ func TestRandomWalkReachesKnownContentWithoutFailing(t *testing.T) {
 			t.Skipf("no zip: %v", err)
 		}
 		application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
+		application.eclSeed = 1
 		party := make([]poolsave.Character, 0, 6)
 		for index := 0; index < 6; index++ {
 			party = append(party, poolsave.Character{Name: string(rune('A' + index)),
@@ -600,6 +601,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 		return 0, false
 	}
 	application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
+	application.eclSeed = 1
 	party := make([]poolsave.Character, 0, 6)
 	for index := 0; index < 6; index++ {
 		party = append(party, poolsave.Character{Name: string(rune('A' + index)),

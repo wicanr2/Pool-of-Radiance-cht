@@ -21,23 +21,6 @@
       "github_issue": 1
     },
     {
-      "id": "level-drain-source",
-      "layer": "feature",
-      "title": "能量吸取沒有來源（缺的是特殊攻擊那一批）",
-      "body": "欠帳那對欄位（記錄 `+74h`／`+75h`）與還帳（恢復術走 `gamepack.Restore`）**都接好了**，spec 097 是 CONFORMED、`21C4h..2286h` 逐行讀完了。缺的是**誰來扣**：原版由怪物的特殊攻擊呼叫 `21C4h`，而 remake 還沒有特殊攻擊那一批。所以 `DrainedLevels` 一律是 0——**空的是正確答案不是佔位**（沒欠帳時原版的 `2C16h` 也是直接返回），程式裡的註解已經這樣寫。",
-      "acceptance": "把特殊攻擊的分派讀出來寫進 spec 並標 READY，接上之後吸取扣得動等級，復原走神殿那條路。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "internal/save/state.go"
-        ],
-        "pattern": "remake 還沒有吸取的來源",
-        "note": "程式裡的自承還在"
-      },
-      "blocked_by": "特殊攻擊的分派還沒讀。線索在 spec 065：「第一形態空的那六隻怪物，牠們的第一形態是特殊攻擊」——所以怪物記錄的兩個攻擊槽裡，空骰子的那一格代表走特殊攻擊，但走去哪一支、怎麼挑，都還沒定位。",
-      "github_issue": 3
-    },
-    {
       "id": "combat-numbers-vs-original",
       "layer": "verification",
       "title": "戰鬥數值對原版",

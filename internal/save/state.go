@@ -93,8 +93,7 @@ type Character struct {
 	Experience uint32 `json:"experience,omitempty"`
 	// DrainedLevels 與 DrainedHitPoints 是能量吸取的欠帳（記錄 `+74h`／
 	// `+75h`，spec 097）。恢復術一次還一級，還回來的 HP 是欠的 HP 除以
-	// 欠的等級。remake 還沒有吸取的來源，所以目前一律是 0——**空的是正確
-	// 答案，不是佔位**。
+	// 欠的等級。怪物 MONnSPC 的 55h／56h 特殊攻擊會寫入，恢復術逐級還清。
 	DrainedLevels    int `json:"drained_levels,omitempty"`
 	DrainedHitPoints int `json:"drained_hit_points,omitempty"`
 	// Effects 是掛在身上的效果串列（spec 069 的節點，記錄 `+7Fh` 起）。

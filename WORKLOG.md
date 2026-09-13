@@ -3,6 +3,22 @@
 本檔按日期追加已完成工作的短收據；目前真相見 `CONTEXT.md`，未完成工作與驗收條件
 見 `WORKLIST.md`，逆向證據見 `docs/spec/`、`docs/re/` 與 `docs/audit/`。
 
+## 2026-09-13：怪物特殊攻擊接通能量吸取與恢復
+
+- 目標：完成 GitHub issue #3；定位能量吸取的怪物資料、命中後派發點與
+  `55h`／`56h` 處理常式，接到既有欠帳與 Restoration 路徑。
+- 證據：`MON2SPC.DAX`／`MON4SPC.DAX` 的 SPECTRE、WIGHT、WRAITH、VAMPIRE
+  節點分別帶 `56h`／`55h`；overlay-13 `1740h..174Dh` 以攻擊形態＋1 派發
+  群組 2／3；IDA Pro 9.4 證實 overlay-12 entry 80／81 分別傳 1／2 給
+  `211Eh`。輸入雜湊與 bytes 收在 `docs/audit/dos-energy-drain-special-attacks.json`。
+- 實作：新增 MONnSPC block 解析與怪物效果 staging；命中後依 `55h`／`56h`
+  扣一級／兩級，同步職業等級、經驗值、三份 HP 與欠帳；Restoration 同時
+  還回等級、HP 與門檻經驗值。
+- 驗證：四個原版怪物節點、純規則吸取／恢復往返，以及真正戰術命中路徑
+  三層測試通過；`go test ./internal/gamepack ./cmd/pool-game -count=1` 亦通過
+  （1.593 秒／298.555 秒）。回歸期間並補齊 #15 後遺漏的測試 `eclSeed=1`：
+  固定骰子的路徑現在也固定 ECL RANDOM，世界巡迴不再隨牆鐘漂移。
+
 ## 2026-09-13：盜賊訓練技能重算接上原版
 
 - 目標：完成 GitHub issue #2；查清訓練是否再算 `+77h..+7Eh`，以及是否使用

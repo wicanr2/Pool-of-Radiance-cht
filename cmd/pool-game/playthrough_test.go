@@ -348,6 +348,7 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 	application.saveState = func(poolsave.State) error { return nil }
 	// 骰子固定：不然「放倒幾隻」每次都不一樣，門檻只能訂得很鬆或很脆。
 	application.roller = diceRoller{random: rand.New(rand.NewSource(3))}
+	application.eclSeed = 1
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}
@@ -508,6 +509,7 @@ func TestAnEquippedPartyWinsTheFirstFight(t *testing.T) {
 	}
 	// 骰子固定，否則「贏了」只是這一次的運氣。
 	application.roller = diceRoller{random: rand.New(rand.NewSource(11))}
+	application.eclSeed = 1
 
 	kit, err := premadeReadiedKit()
 	if err != nil {
@@ -719,6 +721,7 @@ func TestNormalKeysReachThePartyManagementCell(t *testing.T) {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
 	application.roller = diceRoller{random: rand.New(rand.NewSource(5))}
+	application.eclSeed = 1
 	party := make([]poolsave.Character, 0, 6)
 	for index := 0; index < 6; index++ {
 		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
