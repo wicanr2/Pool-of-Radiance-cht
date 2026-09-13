@@ -44,19 +44,6 @@
       "github_issue": 6
     },
     {
-      "id": "view-sheet-portrait-frame",
-      "layer": "presentation",
-      "title": "人物資料頁半身像核對並補上原版外框",
-      "body": "使用者指出現行繁中人物資料頁的右上半身像直接落在黑底上，認為 DOS 原版有獨立外框。先以 dosgolem 重生同狀態原版畫面，確認外框存在與精確矩形／色盤；證實後再由 renderer 補框，不把框烘進人物資產。",
-      "acceptance": "dosgolem 原版收據可回查；若原版確有外框，繁中與英文人物頁都補上同幾何外框，至少兩種肖像不裁切、不壓字；版面測試與 AppImage 對拍通過。",
-      "verify": {
-        "kind": "manual",
-        "note": "需先由 dosgolem 同狀態畫面確認外框，再做視覺與發行包驗收。"
-      },
-      "blocked_by": "原版外框存在、幾何與色盤尚待 dosgolem 證據確認。",
-      "github_issue": 16
-    },
-    {
       "id": "modern-fantasy-sprite-redraw",
       "layer": "presentation",
       "title": "以 DOS 為構圖基準重繪全套現代奇幻 sprite",
