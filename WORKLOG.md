@@ -3,6 +3,19 @@
 本檔按日期追加已完成工作的短收據；目前真相見 `CONTEXT.md`，未完成工作與驗收條件
 見 `WORKLIST.md`，逆向證據見 `docs/spec/`、`docs/re/` 與 `docs/audit/`。
 
+## 2026-09-13：測試按鍵的同 tick 語意對齊 Ebitengine
+
+- 目標：完成 GitHub issue #14，讓 `scriptedKeys.JustPressed` 不再藉由查詢時
+  `delete` 假裝按鍵消費。
+- 勘誤：先只改成不消費，兩條 `TestNormalKeys*` 皆在建角結束後得到
+  0 人隊伍。原因不是產品分派，而是共用的 `scriptedTextKeys` map 把每個
+  舊 tick 的鍵都留著。
+- 變更：`JustPressed` 在同 tick 內不消費；兩條跨 tick 流程的 `step`
+  每次建新鍵集合，`idle` 清成空集合。產品程式碼無需修改。
+- 驗證：兩條正常按鍵測試單獨通過（0.190s）；完整 `cmd/pool-game`
+  回歸通過（353.065s）。兩者都使用專案既有 `coab-go-test:20260729`
+  Docker／Xvfb 工具鏈。
+
 ## 2026-09-03：離場者的先攻、以及歷史信箱改寫
 
 - 目標：查 `NEWECL FF` 修完、GEO1/31 走得進去之後冒出的兩類卡住，先分清是既有

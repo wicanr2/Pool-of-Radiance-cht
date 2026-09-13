@@ -34,7 +34,9 @@ func TestNormalKeysReachTheFirstDungeonStep(t *testing.T) {
 	application.keys = text
 	step := func(what string, key ebiten.Key, chars ...rune) {
 		t.Helper()
-		text.scriptedKeys[key] = true
+		// Ebitengine 的 JustPressed 在同一個 tick 內可重複查詢，但下一個
+		// tick 會換成新的按鍵集合；治具也要同時保留這兩個語意。
+		text.scriptedKeys = scriptedKeys{key: true}
 		text.chars = chars
 		if err := application.Update(); err != nil {
 			t.Fatalf("%s: %v", what, err)
@@ -42,6 +44,7 @@ func TestNormalKeysReachTheFirstDungeonStep(t *testing.T) {
 	}
 	idle := func() {
 		t.Helper()
+		text.scriptedKeys = scriptedKeys{}
 		text.chars = nil
 		if err := application.Update(); err != nil {
 			t.Fatalf("idle: %v", err)

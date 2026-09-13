@@ -26,17 +26,11 @@ type fixedTempleRoller int
 
 func (value fixedTempleRoller) Roll(count, sides int) int { return int(value) }
 
-// JustPressed 查一次就消費掉。
-//
-// **這與 ebiten 的 `IsKeyJustPressed` 不一致**（那一支不消費，同一個 tick 裡
-// 每個分派點查到的都是同一個答案），而整個建角與商店流程目前依賴這個差異。
-// 換成不消費之後，那兩條 `TestNormalKeys*` 立刻紅——也就是說**真實遊戲裡按
-// 一下可能推進不只一步**，只是被治具藏住了。技術債記在 worklist 的
-// `test-keys-consume-input`，不在修門那一輪處理。
+// JustPressed 與 ebiten 的 `IsKeyJustPressed` 一樣，在同一個 tick 內不消費。
+// 一顆鍵若被不同分派點查詢，每一處都會看到同一個答案；產品分派必須自己
+// 在處理完後結束這個影格，不能依賴治具替它吃掉鍵。
 func (keys scriptedKeys) JustPressed(key ebiten.Key) bool {
-	pressed := keys[key]
-	delete(keys, key)
-	return pressed
+	return keys[key]
 }
 
 type scriptedTextKeys struct {
@@ -1052,9 +1046,9 @@ func TestPoolPostWallLayerMapsOverTheRenderedTopCorners(t *testing.T) {
 	}
 }
 
-// 全域熱鍵（J 手冊、I 裝備、K 法術）只在冒險畫面生效，而且**不能在別的畫面
-// 把按鍵吃掉**：`justPressed` 讀一次就消費，條件寫成
-// `justPressed(K) && mode == adventure` 會讓建角的 portrait editor 收不到 KEEP。
+// 全域熱鍵（J 手冊、I 裝備、K 法術）只在冒險畫面生效。條件的畫面限制要在
+// `justPressed` 前面；這不只避免無關畫面誤開 overlay，也讓同一顆鍵繼續流到當前
+// 畫面真正的分派點。
 func TestGlobalHotkeysDoNotConsumeKeysOutsideAdventure(t *testing.T) {
 	for _, key := range []ebiten.Key{ebiten.KeyJ, ebiten.KeyI, ebiten.KeyK} {
 		keys := scriptedKeys{key: true}

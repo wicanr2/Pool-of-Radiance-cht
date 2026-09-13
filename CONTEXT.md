@@ -1,6 +1,21 @@
 # Pool of Radiance remake 現況
 
-更新日期：2026-09-11。
+更新日期：2026-09-13。
+
+## 2026-09-13 測試按鍵改成同 tick 不消費；兩條紅燈是治具跨 tick 沒有換集合
+
+`scriptedKeys.JustPressed` 已與 Ebitengine `inpututil.IsKeyJustPressed` 對齊：同一個
+tick 內同一顆鍵每次查詢都回傳 true，不再以 `delete` 假裝消費。
+
+2026-09-11 的舊結論「建角與商店至少有一處產品分派依賴消費」已被
+這次最小重現推翻。兩條 `TestNormalKeys*` 紅的真正原因是它們跨多個 tick
+共用同一個 `scriptedTextKeys` map：改成不消費後，前面影格的 C、ENTER、K
+等鍵永久留在 map，這同樣不是 Ebitengine 行為。治具現在每次 `step`
+都換成當前影格的新鍵集合，`idle` 則換成空集合；因此同時保留了
+「同 tick 可重複讀」與「下一 tick 鍵釋放」兩個契約。
+
+沒有任何產品分派點需要改動。兩條正常按鍵玩家路徑單獨通過，完整
+`cmd/pool-game` 也在同一個 Docker／Xvfb 工具鏈以 353.065 秒全綠。
 
 ## 2026-09-11 指令表沒有跟著走完整條路徑，PC 在 passthrough 之後錯位
 

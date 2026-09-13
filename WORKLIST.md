@@ -107,14 +107,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **卡在**：分不出「沒測」與「測了但沒標」之前不能動手：前者要寫測試，後者只要一行註解，而兩者在這個數字上長得一樣。
       **驗收**：`specs_without_tests` 歸零，而且每一份的處置要看得出是哪一種。不准為了讓數字下降而在無關的測試裡加 `spec NNN`。
       **討論**：[#13](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/13)
-- [ ] **測試治具的按鍵會被消費，真實的不會。** `scriptedKeys.JustPressed`（`cmd/pool-game/main_test.go`）查一次就 `delete`，而 ebiten 的 `IsKeyJustPressed` **不消費**：同一個 tick 裡不同的分派點各自查一次，每一次都看到同一個答案。
-      
-      **這個差異會藏住真的缺陷。** 產品程式碼裡「查了某個鍵、但沒有處理它也沒有return」的路徑，在治具下會把鍵吃掉（後面的分派點看不到），在真實遊戲裡卻不會——後面的分派點照樣會處理它，也就是**按一下推進不只一步**。
-      
-      2026-09-11 實測過：把 `JustPressed` 改成不消費，`TestNormalKeysReachTheFirstDungeonStep` 與 `TestNormalKeysBuyAndEquipFromTheWeaponShop` 立刻紅（建角走完人物名單 0 人）。所以建角與商店那條路上**至少有一處**依賴這個差異，而那一處在真實遊戲裡的行為還沒有人看過。
-      **卡在**：要先逐一找出「查了鍵卻沒 return」的分派點，判斷每一處在真實 ebiten 下會發生什麼。直接把治具改成不消費會讓那兩條測試紅，而紅的原因是產品行為，不是測試寫錯——先查清楚再改，不要為了讓測試綠而把治具改回去。
-      **驗收**：`scriptedKeys.JustPressed` 改成不消費（與 ebiten 一致），而且整套測試綠。每一個為此改動的產品分派點都要有註解說明為什麼那一下按鍵只該被處理一次。
-      **討論**：[#14](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/14)
 
 ### 三、版面與資料的差距
 
