@@ -8,18 +8,6 @@
   },
   "items": [
     {
-      "id": "combat-numbers-vs-original",
-      "layer": "verification",
-      "title": "戰鬥數值對原版",
-      "body": "敵方 AI 已換成原版的接近規則，命中、傷害、豁免與存活**沒有在同一場戰鬥裡對過原版**。",
-      "acceptance": "同一組人物、同一場遭遇、固定骰子種子，逐回合比 THAC0、傷害骰結果與雙方 HP 變化；不一致的逐條記進 spec，不留「大致相符」。",
-      "verify": {
-        "kind": "manual",
-        "note": "沒有機器可判的訊號。接上逐回合比對的測試之後，把這一條改成綁那條測試存不存在"
-      },
-      "github_issue": 4
-    },
-    {
       "id": "main-line-end-to-end",
       "layer": "verification",
       "title": "主線從開場到結局連續跑過一次",
