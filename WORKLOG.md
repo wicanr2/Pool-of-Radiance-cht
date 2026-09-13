@@ -202,3 +202,15 @@
 - 驗證：`tools/go.sh test ./cmd/pool-worklist` 通過；`gofmt -d` 無輸出；
   `-mode verify` 只列上述六項；舊「JSON 是權威」現行文字零命中，`git diff --check`
   通過。一次性容器均以 `--rm` 結束，專案樹無 root-owned 檔案或誤建的 `.md` 目錄。
+
+## 2026-09-14：#10 城堡覆蓋測試效能
+
+- 基準：同一 Docker 包裝器下單跑 `TestTheCastleBehindStojanowGateHasContent` 為
+  199.52 秒，完整保留 ECL block 3、4、5、6、7。
+- 根因：正常付費過門只需 0.25 秒；rotate 3 命中 block 5／7 並離開城堡後仍繼續
+  掃城區，分段耗時 166.69 秒。rotate 1／2 沒有增加要求覆蓋。
+- 變更：只保留會增加覆蓋的 rotate 0／3，命中各自目標後立即停止；南緣 block 6
+  仍走正常地圖生命週期。新增每次不得超過 120 秒的測試內閘門。
+- 驗證：同一容器連跑三次為 2.08、1.92、2.59 秒，三次都取得 block 3..7；
+  相鄰三條正常路徑測試 18.863 秒通過，`./cmd/pool-game` 全套 204.451 秒通過；
+  可重生收據在 `docs/audit/castle-test-runtime.json`。

@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
@@ -324,15 +325,24 @@ func walkStojanowGateIntoTheCastle(t *testing.T) *app {
 // （`ecl5/3` 的入口 0 用 `GETTABLE @9AA6[@C04D]`，東邊出去是區塊 4、南邊是
 // 區塊 6；院子裡 (4,8) 朝北是上樓進區塊 5），光是踩過每一格挑不出來。
 func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
+	started := time.Now()
+	defer func() {
+		if elapsed := time.Since(started); elapsed > 2*time.Minute {
+			t.Errorf("城堡覆蓋測試耗時 %s，必須維持在 2 分鐘內", elapsed)
+		}
+	}()
 	blocks := map[int]bool{}
 	maps := map[string]bool{}
 	record := func(a *app) {
 		blocks[int(a.eventSession.CurrentBlockID())] = true
 		maps[fmt.Sprintf("GEO%d/%d", a.spawn.Map.Archive, a.spawn.Map.BlockID)] = true
 	}
-	// 四個方向輪替起點各掃一趟：規劃器先往哪個方向走，決定先撞到哪一個出口，
-	// 而出口一走就換圖，後面那一段就看不到了。聯集才是這條路後面的全貌。
-	for _, rotate := range []int{0, 1, 2, 3} {
+	// 規劃器先往哪個方向走，決定先撞到哪一個出口，而出口一走就換圖，後面
+	// 那一段就看不到。四個方向的基準量測裡，輪替 1／2 都只留在區塊 3，沒有
+	// 增加覆蓋；輪替 0 進區塊 4，輪替 3 進區塊 5／7。只保留這兩條會增加
+	// 聯集的正常走路路線；區塊 6 仍由下面的院子南緣正常路線取得。
+	for _, rotate := range []int{0, 3} {
+		routeStarted := time.Now()
 		application := walkStojanowGateIntoTheCastle(t)
 		tried := map[[3]int]bool{}
 		last := -1
@@ -343,6 +353,12 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 				t.Logf("輪替 %d 第 %d 圈：ECL block %d，GEO%d/%d (%d,%d)", rotate, round, id,
 					application.spawn.Map.Archive, application.spawn.Map.BlockID,
 					application.spawn.X, application.spawn.Y)
+			}
+			// 每條輪替只負責它在基準量測中唯一增加的覆蓋。命中後立刻停；
+			// 繼續逐格掃會在已離開城堡後探索整張城區，對 3..7 的斷言沒有
+			// 增量，rotate 3 的 166 秒長尾就是從這裡來的。
+			if rotate == 0 && blocks[4] || rotate == 3 && blocks[5] && blocks[7] {
+				break
 			}
 			key := func(x, y int) [3]int {
 				return [3]int{int(application.spawn.Map.Archive),
@@ -371,8 +387,10 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 				}
 			}
 		}
+		t.Logf("輪替 %d 耗時 %s", rotate, time.Since(routeStarted))
 	}
 	// 院子南緣那一個出口深掃時碰不到（先撞到別的出口就換圖了），單獨走一次。
+	southStarted := time.Now()
 	application := walkStojanowGateIntoTheCastle(t)
 	plan := planToCells(application, 0, func(x, y int) bool { return x == 11 && y == 15 })
 	for _, step := range plan {
@@ -390,6 +408,7 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 			application.spawn.Map.Archive, application.spawn.Map.BlockID,
 			application.spawn.X, application.spawn.Y)
 	}
+	t.Logf("院子南緣路線耗時 %s", time.Since(southStarted))
 	names := make([]string, 0, len(maps))
 	for name := range maps {
 		names = append(names, name)

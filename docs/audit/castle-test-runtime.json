@@ -1,0 +1,40 @@
+{
+  "schema": "pool-castle-test-runtime/1",
+  "generated_at": "2026-09-14",
+  "github_issue": 10,
+  "base_commit": "dfe2621d7ee34eaad9e9e49cd064eb9b4a792e8f",
+  "environment": {
+    "wrapper": "tools/go.sh",
+    "image": "coab-go-test:20260729",
+    "cpus": 2,
+    "memory": "2g"
+  },
+  "baseline": {
+    "command": "tools/go.sh test ./cmd/pool-game -run '^TestTheCastleBehindStojanowGateHasContent$' -count=1 -v",
+    "seconds": 199.52,
+    "required_ecl_blocks": [3, 4, 5, 6, 7],
+    "observed_ecl_blocks": [0, 3, 4, 5, 6, 7]
+  },
+  "diagnosis": {
+    "single_gate_entry_seconds": 0.25,
+    "rotate_0_seconds": 9.71,
+    "rotate_3_seconds": 166.69,
+    "south_edge_seconds": 0.18,
+    "cause": "rotate 3 reached ECL blocks 5 and 7, left the castle for block 0, then kept scanning unrelated city cells"
+  },
+  "optimized": {
+    "command": "tools/go.sh test ./cmd/pool-game -run '^TestTheCastleBehindStojanowGateHasContent$' -count=3 -v",
+    "limit_seconds_per_run": 120,
+    "runs_seconds": [2.08, 1.92, 2.59],
+    "required_ecl_blocks": [3, 4, 5, 6, 7],
+    "observed_ecl_blocks_each_run": [3, 4, 5, 6, 7],
+    "passed": true
+  },
+  "regression": {
+    "related_command": "tools/go.sh test ./cmd/pool-game -run '^(TestTheCastleBehindStojanowGateHasContent|TestPayingTheTollAtStojanowGateOpensTheCastle|TestSokalKeepOpensTheOtherBoatRoutes)$' -count=1 -v",
+    "related_seconds": 18.863,
+    "package_command": "tools/go.sh test ./cmd/pool-game -count=1",
+    "package_seconds": 204.451,
+    "passed": true
+  }
+}
