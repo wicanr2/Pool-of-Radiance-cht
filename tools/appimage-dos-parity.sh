@@ -76,7 +76,7 @@ done
 # **基準一律由 dosgolem 產**（AGENTS.md §7）。這裡不是提醒是閘門：
 # 一份放了幾天的 `workplace/` 目錄從外表看不出它是誰產的，而基準來自哪裡
 # 是整份對拍結論的前提。缺產地證明就重跑 `tools/dosgolem-reference.sh`。
-docker run --rm --network none --memory 128m --cpus 1 --pids-limit 32 \
+docker run --rm -i --network none --memory 128m --cpus 1 --pids-limit 32 \
   -v "$REF:/ref:ro" -v "$REF_CITYHALL:/ref-cityhall:ro" \
   -v "$REF_CAMPQUIT:/ref-campquit:ro" -v "$REF_TEMPLE:/ref-temple:ro" \
   -v "$REF_SHOP:/ref-shop:ro" -v "$REF_SPELLS:/ref-spells:ro" \

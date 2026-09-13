@@ -30,7 +30,7 @@ if [[ "${POOL_PARITY_VERIFY_ONLY:-0}" != 1 ]]; then
   done
 fi
 
-docker run --rm --network none --memory 256m --cpus 1 --pids-limit 64 \
+docker run --rm -i --network none --memory 256m --cpus 1 --pids-limit 64 \
   -u "$(id -u):$(id -g)" -v "$RUN_ROOT:/runs" -v "$APPIMAGE:/game.AppImage:ro" \
   python:3.12-slim python - "$VERSION" "$FLAVOUR" "$LANG_MODE" "$SOURCE_COMMIT" <<'PY'
 import hashlib

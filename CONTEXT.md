@@ -2,6 +2,21 @@
 
 更新日期：2026-09-14。
 
+## 2026-09-14 發行包對拍已可重複
+
+issue #11 的三個非決定性來源已限制在捕捉介面：AppImage 對拍兩次啟動都傳入
+`-dice-seed 136`；新增 `-capture-camp-fire-frame 0` 只固定對拍營火圖格，正常遊玩
+仍用時間 seed 並播放動畫；`tools/appimage-dos-parity-repeat.sh` 連跑三次後核對所有
+remake PNG 的 SHA-256。`v.1.1.5-20260914` patch AppImage（SHA-256
+`4661cda0c0d829c958e6e6d347ad0247c333f7c7403395da8efc60473e2e1c03`）三輪都走完
+市政廳等完整鍵序，每輪 35 張，manifest 均為
+`9823d30e228b38dd68888dcdadde1fe83fbf1920018f0125134ad4684deac0eb`。
+收據在 `docs/audit/appimage-parity-reproducibility.json`。
+
+同輪也修正兩個容器 Python here-doc 漏掉 `docker run -i` 的假綠：先前 dosgolem
+產地閘門與新雜湊器其實收到空 stdin。修正後六組基準均實際解析為 dosgolem
+`d351681ba86d`、同一原版 `START.EXE` SHA-256 前綴 `12811cbc8166`。
+
 ## 2026-09-14 城堡覆蓋測試移除無增量長尾
 
 issue #10 的原命令在目前 Docker 環境量得 199.52 秒，仍超過兩分鐘。單次正常

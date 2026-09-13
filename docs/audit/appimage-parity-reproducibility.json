@@ -1,0 +1,47 @@
+{
+  "schema": "pool-appimage-parity-reproducibility/1",
+  "generated_at": "2026-09-14",
+  "github_issue": 11,
+  "command": "tools/appimage-dos-parity-repeat.sh v.1.1.5-20260914 patch zh",
+  "version": "v.1.1.5-20260914",
+  "flavour": "patch",
+  "language": "zh",
+  "source_commit": "0cbb6ec82ecb941641d44d8663db0b0f5d302477",
+  "appimage_sha256": "4661cda0c0d829c958e6e6d347ad0247c333f7c7403395da8efc60473e2e1c03",
+  "capture": {
+    "dice_and_ecl_seed": 136,
+    "camp_fire_frame": 0,
+    "normal_gameplay_unchanged": true
+  },
+  "dosgolem_provenance": {
+    "reference_sets": 6,
+    "generator_revision": "d351681ba86d",
+    "original_exe_sha256_prefix": "12811cbc8166",
+    "all_same_original": true
+  },
+  "screenshot_count_each_run": 35,
+  "runs": [
+    {
+      "run": 1,
+      "completed": true,
+      "manifest_sha256": "9823d30e228b38dd68888dcdadde1fe83fbf1920018f0125134ad4684deac0eb"
+    },
+    {
+      "run": 2,
+      "completed": true,
+      "manifest_sha256": "9823d30e228b38dd68888dcdadde1fe83fbf1920018f0125134ad4684deac0eb"
+    },
+    {
+      "run": 3,
+      "completed": true,
+      "manifest_sha256": "9823d30e228b38dd68888dcdadde1fe83fbf1920018f0125134ad4684deac0eb"
+    }
+  ],
+  "all_screenshots_byte_identical": true,
+  "regression": {
+    "targeted_tests_passed": true,
+    "pool_game_package_seconds": 211.092,
+    "pool_game_package_passed": true,
+    "shell_syntax_passed": true
+  }
+}

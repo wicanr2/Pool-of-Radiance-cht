@@ -216,3 +216,19 @@
   可重生收據在 `docs/audit/castle-test-runtime.json`。
 - GitHub：修正 `8350f28` 已推送；證據回覆後關閉 issue #10，才同步移除
   `docs/worklist.json` 的輔助條目並重生 `WORKLIST.md`。
+
+## 2026-09-14：#11 AppImage 對拍可重複性
+
+- 對拍兩次啟動 AppImage 都固定 `-dice-seed 136`；新增捕捉專用
+  `-capture-camp-fire-frame 0`，正常遊玩的時間 seed 與營火動畫不變。
+- 新增 `tools/appimage-dos-parity-repeat.sh`：完整跑三輪，動態盤點全部 remake PNG，
+  對缺圖、多圖或任一 SHA-256 不同皆失敗即關閉。
+- 建立 `v.1.1.5-20260914` patch AppImage，SHA-256 為
+  `4661cda0c0d829c958e6e6d347ad0247c333f7c7403395da8efc60473e2e1c03`；三輪都走完
+  35 張，manifest 都是 `9823d30e228b38dd68888dcdadde1fe83fbf1920018f0125134ad4684deac0eb`。
+- 追查收據時發現兩個 `docker run ... python - <<PY` 漏了 `-i`，原先會空跑假綠；
+  修正後真正執行雜湊器，並確認六組基準都是 dosgolem `d351681ba86d`、同一原版
+  `START.EXE`（SHA-256 前綴 `12811cbc8166`）。收據在
+  `docs/audit/appimage-parity-reproducibility.json`。
+- 回歸：捕捉相位／正常動畫／固定 ECL seed 的精準測試通過；`./cmd/pool-game`
+  全套 211.092 秒通過；shell 語法與 `git diff --check` 通過。
