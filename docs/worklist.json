@@ -57,21 +57,6 @@
       "github_issue": 6
     },
     {
-      "id": "guide-other-maps",
-      "layer": "presentation",
-      "title": "遊戲內攻略擴到其餘地圖",
-      "body": "`F3` 的機制與資料格式做好了（[`docs/guide/README.md`](docs/guide/README.md)），目前只有 `3/00` 費蘭的文明區建了 48 個點。",
-      "acceptance": "每一張新地圖的點都由原始 GEO／ECL 推出來、每一個點帶 `source`，且 `internal/guide` 的三個測試全綠——**不可以抄第三方攻略的座標**，那種錯的症狀是「測試綠、玩家走不到」。",
-      "verify": {
-        "kind": "json_len",
-        "path": "internal/guide/zh-TW.json",
-        "field": "maps",
-        "max": 1,
-        "note": "攻略只涵蓋 1 張圖（3/00）時這一條仍未完成；多一張這裡就會開口"
-      },
-      "github_issue": 7
-    },
-    {
       "id": "parity-sampling-gaps",
       "layer": "presentation",
       "title": "抽樣擴到還沒對拍的畫面",

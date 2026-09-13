@@ -343,6 +343,54 @@
           "source": "docs/spec/102-city-location-dispatch.md"
         }
       ]
+    },
+    "2/20": {
+      "title": "The Slums of Phlan",
+      "source": "docs/spec/136-slum-encounter-staging.md",
+      "points": [
+        {
+          "x": 14,
+          "y": 4,
+          "label": "Slums entry passage",
+          "summary": "The first forward position observed in the original after entering from the Civilized Area's west gate.",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "label": "Safe flee destination",
+          "summary": "One of five original destinations when fleeing a random encounter.",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "label": "Safe flee destination",
+          "summary": "One of five original destinations when fleeing a random encounter.",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 11,
+          "y": 5,
+          "label": "Safe flee destination",
+          "summary": "One of five original destinations when fleeing a random encounter.",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "label": "Safe flee destination",
+          "summary": "One of five original destinations when fleeing a random encounter.",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "label": "Safe flee destination",
+          "summary": "One of five original destinations when fleeing a random encounter.",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        }
+      ]
     }
   }
 }

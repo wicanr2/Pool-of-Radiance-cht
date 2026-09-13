@@ -343,6 +343,54 @@
           "source": "docs/spec/102-city-location-dispatch.md"
         }
       ]
+    },
+    "2/20": {
+      "title": "費蘭貧民窟",
+      "source": "docs/spec/136-slum-encounter-staging.md",
+      "points": [
+        {
+          "x": 14,
+          "y": 4,
+          "label": "貧民窟入口通道",
+          "summary": "從文明區西門進入後，原版實測的第一個前進位置。",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "label": "逃跑安全落點",
+          "summary": "隨機遭遇選擇逃跑時，原版五個可能落點之一。",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "label": "逃跑安全落點",
+          "summary": "隨機遭遇選擇逃跑時，原版五個可能落點之一。",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 11,
+          "y": 5,
+          "label": "逃跑安全落點",
+          "summary": "隨機遭遇選擇逃跑時，原版五個可能落點之一。",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "label": "逃跑安全落點",
+          "summary": "隨機遭遇選擇逃跑時，原版五個可能落點之一。",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "label": "逃跑安全落點",
+          "summary": "隨機遭遇選擇逃跑時，原版五個可能落點之一。",
+          "source": "docs/spec/136-slum-encounter-staging.md"
+        }
+      ]
     }
   }
 }

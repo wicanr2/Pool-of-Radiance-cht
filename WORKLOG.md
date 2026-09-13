@@ -3,6 +3,18 @@
 本檔按日期追加已完成工作的短收據；目前真相見 `CONTEXT.md`，未完成工作與驗收條件
 見 `WORKLIST.md`，逆向證據見 `docs/spec/`、`docs/re/` 與 `docs/audit/`。
 
+## 2026-09-13：遊戲內攻略加入第二張地圖
+
+- 目標：完成 GitHub issue #7，把 `F3` 攻略從文明區擴到至少一張其他地圖。
+- 證據：`GEO2/20` 的地圖身分與入口由 spec 100／136 閉合；入口後 `(14,4)`
+  有 dosgolem 正常路徑收據，五個逃跑落點直接讀自 ECL2/20
+  `B6F2h`／`B6F7h`，並以 `cmd/pool-world-graph` 的原始 `cell_terrain`／
+  `cell_components` 核對都落在可走區。
+- 實作：繁中與英文攻略各新增 `2/20` 貧民窟及六個帶 `source` 的點，更新
+  `docs/guide/README.md`；沒有採用第三方攻略座標。
+- 驗證：`internal/guide` 的雙語座標、原始 GEO 與重複格三項測試全綠；
+  authoritative worklist verify 不再列出 `guide-other-maps`。
+
 ## 2026-09-13：怪物特殊攻擊接通能量吸取與恢復
 
 - 目標：完成 GitHub issue #3；定位能量吸取的怪物資料、命中後派發點與

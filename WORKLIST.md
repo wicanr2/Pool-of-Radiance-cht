@@ -96,9 +96,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 ### 三、版面與資料的差距
 
-- [ ] **遊戲內攻略擴到其餘地圖。** `F3` 的機制與資料格式做好了（[`docs/guide/README.md`](docs/guide/README.md)），目前只有 `3/00` 費蘭的文明區建了 48 個點。
-      **驗收**：每一張新地圖的點都由原始 GEO／ECL 推出來、每一個點帶 `source`，且 `internal/guide` 的三個測試全綠——**不可以抄第三方攻略的座標**，那種錯的症狀是「測試綠、玩家走不到」。
-      **討論**：[#7](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/7)
 - [ ] **抽樣擴到還沒對拍的畫面。** 現況表有二十項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營底下那九層、商店、神殿、挑法術頁、裝備、地圖上施法、平面圖。
       **驗收**：每加一項都照市政廳那一節的做法（另產一組基準或延長主鍵序、compare 的 plan 加一項），`docs/audit/dos-parity-sample.json` 跟著多一項。
       **討論**：[#8](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/8)
