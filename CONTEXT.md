@@ -2,6 +2,16 @@
 
 更新日期：2026-09-14。
 
+## 2026-09-14 貧民窟走路遭遇四出口已接通
+
+issue #1 的遊戲層缺口已由正常輸入路徑閉合：標題選單開始冒險、走完羅夫導覽，
+從 `(0,4)` 朝西進 ECL2/block 20，再以畫面選單分別走 COMBAT／WAIT／FLEE／PARLAY。
+四條路都透過 `app.Update()` 收鍵，沒有直接切地圖、座標、入口、旗標或結果碼；
+`@9802` 實際依序得到 1／0／2／3。COMBAT 進入一群怪物的戰鬥，WAIT 在本次表中
+讓怪物撤退，FLEE 落到原版五格表的 `(14,6)`，PARLAY 進入與 KOBOLDS 交談。
+ECL seed 1 與 SURPRISE 骰流 seed 1／2 均預先固定，三次重跑全過；收據在
+`docs/audit/slum-wandering-e2e.json`。
+
 ## 2026-09-14 新增兩項 presentation／polish 工作
 
 GitHub issue #16 登記人物資料頁半身像外框：先由 dosgolem 同狀態原版畫面確認

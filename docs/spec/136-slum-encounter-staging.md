@@ -1,10 +1,10 @@
 # Spec 136：貧民窟走一步會遇到什麼
 
-狀態：CONFORMED（正常新遊戲與測試／對拍的 RANDOM seed 分流）；
+狀態：CONFORMED（正常新遊戲與測試／對拍的 RANDOM seed 分流、遊戲層四出口）；
 READY（入口 1 的整條路徑、擲骰與門檻、四個旗標、編組、突襲四路、
 四個出口、五張參數表與逃跑落點的位元組）；DRAFT（`@9805`／`@9806`／`@9827`
 各是什麼、`@4A16` 那組遞減值、`@C04F` 的最高位）。
-日期：2026-09-11。
+日期：2026-09-14。
 
 ## 走路遭遇跑的是入口 1
 
@@ -292,6 +292,20 @@ seed 戰鬥對拍」），正常遊玩不該有——原版的 seed 來自 DOS �
 驗證收據：不依賴原版 ZIP 的 synthetic constructor 測試釘住預設 seed 1 與
 明示 seed；真實 ECL2 block 20 以 seed 1 與 2 走同一座標序列，首次遭遇
 收據不同；正常 `beginAdventuring` 的 snapshot 也保留 app 設定的 seed。
+
+## 遊戲層四出口收據（2026-09-14）
+
+`TestNormalKeysReachAllSlumWanderingEncounterChoices` 從標題選單送出
+`B)EGIN ADVENTURING`，走完羅夫導覽後由 `(0,4)` 朝西進貧民窟；後續選擇也全部由
+`app.Update()` 收鍵，沒有直接切 archive、block、座標、旗標、ECL entry 或結果碼。
+六名一級戰士是正常建角可得的隊伍；使用六人是因單人隊伍經原版
+`PARTYSTRENGTH ÷3×2` 會得到數量 0，無法形成可操作戰鬥。
+
+ECL `RANDOM` 固定 seed 1，`SURPRISE` 骰流以 seed 1／2 覆蓋兩張實際選單表。
+四個玩家選項分別把 `@9802` 寫成 1／0／2／3：COMBAT 建立一群怪物並進戰鬥；
+WAIT 在該突襲表走到 `The monsters flee.`；FLEE 落在五格表的 `(14,6)`；PARLAY
+走到 `YOU ARE CONVERSING WITH A PARTY OF KOBOLDS.`。同一測試連跑三次全過，
+收據在 `docs/audit/slum-wandering-e2e.json`。
 
 ## 還沒讀
 

@@ -243,3 +243,18 @@
   保留，現代美術為可切換表現層。依 `grilling` 決策閘門，先做 inventory 與可丟棄
   prototype，再確認視覺聖經、資產邊界與授權。
 - 兩項都先建立 GitHub issue，再加入 `docs/worklist.json` 輔助鏡像。
+
+## 2026-09-14：#1 貧民窟走路遭遇四出口
+
+- 新增 `TestNormalKeysReachAllSlumWanderingEncounterChoices`：由標題選單開始、走完
+  羅夫導覽，再從 `(0,4)` 朝西進貧民窟；所有動作只從 `app.Update()` 送鍵。
+- 固定 ECL RANDOM seed 1，另以 SURPRISE 骰流 seed 1／2 覆蓋實際出現的兩張
+  選單表；四個選項把 `@9802` 寫成 1／0／2／3。
+- COMBAT 建立一群怪物並進戰鬥；WAIT 走到怪物撤退；FLEE 落在原版五格表的
+  `(14,6)`；PARLAY 進入與 KOBOLDS 交談。連跑三次均通過，收據在
+  `docs/audit/slum-wandering-e2e.json`。
+- 既有第一場戰鬥與新測試連跑三次為 1.357 秒；typed 遭遇表、走路擲骰及搜尋
+  加成回歸為 0.019 秒；`./cmd/pool-game` 全套 244.282 秒通過。
+- 追查過程確認只固定 ECL seed 不足：`23h SURPRISE` 使用前端骰流；兩條都固定後
+  才可重播。同時確認一人一級隊伍的原版強度公式會產生零怪物，驗收改用正常可建立
+  的六人一級隊伍，沒有強化能力值或注入戰鬥結果。

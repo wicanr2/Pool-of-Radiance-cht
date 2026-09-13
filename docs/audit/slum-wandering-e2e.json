@@ -1,0 +1,60 @@
+{
+  "schema": "pool-slum-wandering-e2e/1",
+  "generated_at": "2026-09-14",
+  "github_issue": 1,
+  "base_commit": "2ece53e3c7b70a83dc7ced2adc46fb96e3015369",
+  "command": "tools/go.sh test ./cmd/pool-game -run TestNormalKeysReachAllSlumWanderingEncounterChoices -count=3 -v",
+  "path": {
+    "entry": "title -> B)EGIN ADVENTURING -> Rolf tour -> (0,4) facing west",
+    "input_boundary": "all player actions pass through app.Update",
+    "forbidden_shortcuts_used": false,
+    "party": "six normally creatable level-one fighters",
+    "ecl_random_seed": 1,
+    "surprise_dice_seeds": [1, 2]
+  },
+  "encounter": {
+    "archive": 2,
+    "block": 20,
+    "menu": ["COMBAT", "WAIT", "FLEE", "PARLAY"],
+    "result_address": "0x9802"
+  },
+  "choices": [
+    {
+      "choice": "COMBAT",
+      "dice_seed": 1,
+      "result": 1,
+      "combat_active": true,
+      "monster_groups": 1
+    },
+    {
+      "choice": "WAIT",
+      "dice_seed": 2,
+      "result": 0,
+      "message": "The monsters flee."
+    },
+    {
+      "choice": "FLEE",
+      "dice_seed": 1,
+      "result": 2,
+      "landing": [14, 6],
+      "landing_is_in_original_five_point_table": true
+    },
+    {
+      "choice": "PARLAY",
+      "dice_seed": 2,
+      "result": 3,
+      "message": "YOU ARE CONVERSING WITH A PARTY OF KOBOLDS."
+    }
+  ],
+  "repeatability": {
+    "runs": 3,
+    "all_passed": true,
+    "package_seconds": 0.926
+  },
+  "regression": {
+    "normal_first_combat_and_four_choices_three_runs_seconds": 1.357,
+    "typed_rules_and_wandering_rate_seconds": 0.019,
+    "pool_game_package_seconds": 244.282,
+    "all_passed": true
+  }
+}
