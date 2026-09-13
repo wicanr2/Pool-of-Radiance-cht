@@ -60,13 +60,13 @@
       "id": "parity-sampling-gaps",
       "layer": "presentation",
       "title": "抽樣擴到還沒對拍的畫面",
-      "body": "現況表有二十一項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營底下其餘八層、商店、神殿、挑法術頁、裝備、地圖上施法。平面圖與紮營 REST 已納入。",
+      "body": "現況表有二十八項；原版也有、remake 也做了、但還沒進抽樣的清單在 [`docs/audit/dos-parity-sample.md`](docs/audit/dos-parity-sample.md) 的〈還沒進抽樣的〉——紮營的存檔後退出確認、商店、神殿、挑法術頁、裝備、地圖上施法。平面圖與其餘八個 camp 子層已納入。",
       "acceptance": "每加一項都照市政廳那一節的做法（另產一組基準或延長主鍵序、compare 的 plan 加一項），`docs/audit/dos-parity-sample.json` 跟著多一項。",
       "verify": {
         "kind": "json_len",
         "path": "docs/audit/dos-parity-sample.json",
         "field": "screens",
-        "max": 21,
+        "max": 28,
         "note": "綁數量而不是綁註解：註解會被順手改掉，項數不會。**`max` 要跟著現況走**——每加一項就把它加一，這樣條目在清單還沒清空之前一直有效。"
       },
       "github_issue": 8

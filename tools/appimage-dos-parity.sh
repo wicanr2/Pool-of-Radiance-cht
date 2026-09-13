@@ -288,6 +288,35 @@ step r camp-rest
 sleep 0.6
 shot remake-camp-rest
 step e camp
+# ALTER 底下七個狀態都用原版的字母／數字鍵走，不用 direct-entry。
+step a camp-alter
+sleep 0.4
+shot remake-camp-alter
+step s camp-speed
+sleep 0.4
+shot remake-camp-speed
+step e camp-alter
+step p camp-pics
+sleep 0.4
+shot remake-camp-pics
+step e camp-alter
+step i camp-icon
+sleep 0.5
+shot remake-camp-icon
+step e camp-alter
+step o camp-order-select
+sleep 0.4
+shot remake-camp-order-select
+step 1 camp-order-place
+sleep 0.4
+shot remake-camp-order-place
+step 1 camp-order-select
+step e camp-alter
+step d camp-drop
+sleep 0.4
+shot remake-camp-drop
+step n camp-alter
+step e camp
 step e adventure-cell-done
 sleep 0.4
 
