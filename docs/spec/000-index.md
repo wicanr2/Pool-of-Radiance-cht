@@ -147,7 +147,7 @@
 | [133](133-original-keyboard-shape.md) | 原版怎麼讀鍵盤 | READY＋DRAFT | dosgolem 的送鍵鍵序（`tools/dosgolem-reference.sh`）。 | — |
 | [134](134-spell-list-layout.md) | 原版的法術清單版面 | READY＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/spell_page_test.go` |
 | [135](135-camp-screen-layout.md) | 原版紮營畫面的版面 | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/icon_menu.go` 等 7 個 | `cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go`、`cmd/pool-game/memorise_test.go` 等 4 個 |
-| [136](136-slum-encounter-staging.md) | 貧民窟走一步會遇到什麼 | READY＋DRAFT | `cmd/pool-game/main.go` | `internal/gamepack/slum_encounter_test.go`、`internal/gamepack/slum_wandering_test.go` |
+| [136](136-slum-encounter-staging.md) | 貧民窟走一步會遇到什麼 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/main.go`、`internal/gamepack/intro.go` | `cmd/pool-game/main_test.go`、`internal/gamepack/slum_encounter_test.go`、`internal/gamepack/slum_wandering_test.go` |
 
 ## `cmd/` 底下的工具
 

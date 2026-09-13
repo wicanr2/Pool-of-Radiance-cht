@@ -1,6 +1,7 @@
 # Spec 136：貧民窟走一步會遇到什麼
 
-狀態：READY（入口 1 的整條路徑、擲骰與門檻、四個旗標、編組、突襲四路、
+狀態：CONFORMED（正常新遊戲與測試／對拍的 RANDOM seed 分流）；
+READY（入口 1 的整條路徑、擲骰與門檻、四個旗標、編組、突襲四路、
 四個出口、五張參數表與逃跑落點的位元組）；DRAFT（`@9805`／`@9806`／`@9827`
 各是什麼、`@4A16` 那組遞減值、`@C04F` 的最高位）。
 日期：2026-09-11。
@@ -275,12 +276,22 @@ COMBAT  WAIT  FLEE  PARLAY
 寫好了。所以走路遭遇缺的不是接線，是**遊戲層還沒有端到端測試**走進貧民窟證明
 玩家真的遇得到。
 
-### 隨機流每一局都一樣
+### 隨機流的正常遊玩與決定性驗證分流
 
 `RANDOM` 的 seed 在三個建立點都硬寫成 1，走路遭遇的測試連跑五次、第 0 步擲中、
 三群的編號與數量一個位元都不差。對拍與測試要這個決定性（spec 050 的「DOS 同
 seed 戰鬥對拍」），正常遊玩不該有——原版的 seed 來自 DOS 計時器 tick。
-記在 worklist 的 `ecl-random-seed-fixed`。
+
+2026-09-13 已分流：無參數的 `NewInitialEventSession`、`NewDOSECLArchiveSession`
+與掃描工具繼續用 seed 1，保留既有測試與對拍的可重播性；它們的
+`WithSeed` 入口接受明示 seed。正常 `newApp` 在每局只取一次
+`time.Now().UnixNano()`，同時交給角色擲骰與 ECL session；`-dice-seed`
+給值時則同時固定兩條隨機流。存檔的 engine snapshot 保留 seed 與已消耗次數，
+讀檔後由 `Restore` 繼續舊流，不會重擲。
+
+驗證收據：不依賴原版 ZIP 的 synthetic constructor 測試釘住預設 seed 1 與
+明示 seed；真實 ECL2 block 20 以 seed 1 與 2 走同一座標序列，首次遭遇
+收據不同；正常 `beginAdventuring` 的 snapshot 也保留 app 設定的 seed。
 
 ## 還沒讀
 

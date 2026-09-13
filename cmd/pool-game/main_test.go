@@ -95,6 +95,31 @@ func TestGlobalHelpThemeAndQuitKeys(t *testing.T) {
 	}
 }
 
+// 正常新遊戲必須把這一局的 seed 傳給 ECL RANDOM（spec 136）。
+// 這裡明示覆寫成固定值，同時驗 `-dice-seed` 所需的可重播接口。
+func TestBeginAdventuringUsesConfiguredECLSeed(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	application.eclSeed = 8675309
+	character := poolsave.Character{Name: "HERO", RaceID: "dwarf", GenderID: "male",
+		ClassID: "fighter", AlignmentID: "lawful-good",
+		Abilities: [6]int{14, 10, 10, 13, 10, 10}, MaxHP: 8, CurrentHP: 8}
+	application.state.Party = []poolsave.Character{character}
+	if err := application.beginAdventuring(); err != nil {
+		t.Fatal(err)
+	}
+	snapshot, err := application.eventSession.Snapshot()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if snapshot.Machine.Random.Seed != application.eclSeed {
+		t.Fatalf("ECL seed=%d, want %d", snapshot.Machine.Random.Seed, application.eclSeed)
+	}
+}
+
 func TestF10AndLoadRoundTripStableCampaignSession(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))

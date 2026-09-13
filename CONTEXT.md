@@ -2,6 +2,17 @@
 
 更新日期：2026-09-13。
 
+## 2026-09-13 正常新遊戲的 ECL RANDOM 不再每局固定為 1
+
+ECL session 建立器現在有明示 seed 入口；既有無參數 API 與掃描工具繼續使用
+seed 1，所以測試與對拍不會漂移。正常 `newApp` 把同一個每局時間 seed
+交給角色擲骰與 ECL RANDOM；`-dice-seed` 給值時則同時固定兩者。讀檔
+仍由 engine snapshot 恢復原有 seed 與消耗位置，不重啟新隨機流。
+
+驗證已覆蓋預設／明示 constructor seed、seed 1 與 2 同路線的不同首次遭遇、
+以及正常 `beginAdventuring` 的 seed 傳遞。完整 `internal/gamepack` 與
+`cmd/pool-game` 分別以 1.910 秒與 277.391 秒全綠。
+
 ## 2026-09-13 測試按鍵改成同 tick 不消費；兩條紅燈是治具跨 tick 沒有換集合
 
 `scriptedKeys.JustPressed` 已與 Ebitengine `inpututil.IsKeyJustPressed` 對齊：同一個

@@ -1,12 +1,61 @@
 package gamepack_test
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
+
+// 正常遊玩的每局 seed 不同，同一條路線不應永遠排出同一場。
+// 這裡用兩個明示 seed 取代 wall clock，測試才能可重播（spec 136）。
+func TestDifferentSessionSeedsChangeTheSlumEncounterRoute(t *testing.T) {
+	first := firstSlumEncounter(t, 1)
+	second := firstSlumEncounter(t, 2)
+	if first == second {
+		t.Fatalf("seed 1 與 2 的同路線遭遇都是 %s", first)
+	}
+}
+
+func firstSlumEncounter(t *testing.T, seed int64) string {
+	t.Helper()
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	archive, err := gamepack.ReadDOSECLArchive(zipPath, 2)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	party := make([]gamepack.InitialCharacter, 0, 6)
+	for index := 0; index < 6; index++ {
+		party = append(party, gamepack.InitialCharacter{
+			Name: string(rune('A' + index)), ClassID: "fighter", CurrentHP: 60,
+			Abilities: [6]int{18, 10, 10, 16, 10, 10},
+		})
+	}
+	session, err := gamepack.NewDOSECLArchiveSessionWithSeed(archive, 20, 0x9900, seed, party...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for step := 0; step < 200; step++ {
+		position := gamepack.Spawn{X: uint8(14 - step%6), Y: 4}
+		result, err := gamepack.RunInitialSessionSearchEntry(session, geometry.Grid{}, position)
+		if err != nil {
+			t.Fatalf("seed %d 第 %d 步：%v", seed, step, err)
+		}
+		for round := 0; round < 24 && len(result.MonsterSpawns) == 0 && !result.Exited; round++ {
+			result, err = session.RunUntilEvent(4096, nil, true)
+			if err != nil {
+				t.Fatalf("seed %d 第 %d 步第 %d 輪：%v", seed, step, round, err)
+			}
+		}
+		if len(result.MonsterSpawns) != 0 {
+			return fmt.Sprintf("第%d步:%v", step, result.MonsterSpawns)
+		}
+	}
+	t.Fatalf("seed %d 走 200 步仍沒有遭遇", seed)
+	return ""
+}
 
 // 走路遭遇（spec 136）。
 //

@@ -11,6 +11,10 @@ import (
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
+// deterministicECLSeed 是測試、掃描與對拍的預設 seed。正常新遊戲會由
+// 前端經 `NewInitialEventSessionWithSeed` 傳入每局的時間 seed（spec 136）。
+const deterministicECLSeed int64 = 1
+
 // InitialEvent is the first player-visible ECL3/block 0 event reached by a
 // newly created party. Text stays sourced from the user's original ZIP.
 type InitialEvent struct {
@@ -382,7 +386,7 @@ func NewCellSweepSession(archive ECLArchive, blockID uint16,
 		return nil, fmt.Errorf("Pool ECL archive %d has no block %d", archive.Number, blockID)
 	}
 	session, err := eclvm.NewBlockSession(archive.Blocks, blockID, 0x9900, 0, 5,
-		initialEventPassthrough(), 1)
+		initialEventPassthrough(), deterministicECLSeed)
 	if err != nil {
 		return nil, err
 	}
@@ -433,6 +437,13 @@ func initialEventPassthrough() map[byte]bool {
 // 跨 archive 的 `NEWECL`（菲蘭 → 貧民窟那一步）與它不重置什麼，在 spec 045；
 // 哪一個 archive 有哪些區塊由 spec 042 的目錄決定。
 func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) (*eclvm.BlockSession, error) {
+	return NewInitialEventSessionWithSeed(event, deterministicECLSeed, characters...)
+}
+
+// NewInitialEventSessionWithSeed 建立可明確指定 RANDOM seed 的連續 session。
+// 正常新遊戲傳時間 seed；測試與對拍傳固定值（spec 136）。
+func NewInitialEventSessionWithSeed(event InitialEvent, seed int64,
+	characters ...InitialCharacter) (*eclvm.BlockSession, error) {
 	blocks := event.ScriptBlocks
 	if len(blocks) == 0 && len(event.ScriptBlock) != 0 {
 		blocks = map[uint16][]byte{0: event.ScriptBlock}
@@ -440,7 +451,8 @@ func NewInitialEventSession(event InitialEvent, characters ...InitialCharacter) 
 	if len(blocks) == 0 {
 		return nil, fmt.Errorf("initial event has no ECL blocks")
 	}
-	session, err := eclvm.NewBlockSession(blocks, 0, 0x9900, int(event.HandlerAddress)-0x9900, 5, initialEventPassthrough(), 1)
+	session, err := eclvm.NewBlockSession(blocks, 0, 0x9900, int(event.HandlerAddress)-0x9900, 5,
+		initialEventPassthrough(), seed)
 	if err != nil {
 		return nil, err
 	}

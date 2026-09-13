@@ -3,6 +3,17 @@
 本檔按日期追加已完成工作的短收據；目前真相見 `CONTEXT.md`，未完成工作與驗收條件
 見 `WORKLIST.md`，逆向證據見 `docs/spec/`、`docs/re/` 與 `docs/audit/`。
 
+## 2026-09-13：正常新遊戲與固定 ECL seed 分流
+
+- 目標：完成 GitHub issue #15；正常遊玩不再每局走同一條 ECL RANDOM 流，
+  測試與對拍仍可明確固定。
+- 變更：兩組 ECL session constructor 新增 `WithSeed` 入口；舊 API 與掃描器
+  保留 seed 1。`newApp` 以同一個 `UnixNano` seed 建立角色擲骰與 ECL 流，
+  `-dice-seed` 同時覆寫兩者。讀檔仍保留 snapshot 的隨機消耗位置。
+- 驗證：synthetic constructor、兩 seed 同路線遭遇、正常新遊戲 seed 傳遞
+  三條目標測試通過；完整 `internal/gamepack` 1.910s，完整
+  `cmd/pool-game` 277.391s，皆以專案 Docker／Xvfb 工具鏈通過。
+
 ## 2026-09-13：測試按鍵的同 tick 語意對齊 Ebitengine
 
 - 目標：完成 GitHub issue #14，讓 `scriptedKeys.JustPressed` 不再藉由查詢時

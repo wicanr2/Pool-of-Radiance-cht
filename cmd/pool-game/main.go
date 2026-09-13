@@ -126,6 +126,9 @@ type app struct {
 	cursor          int
 	rolled          *creation.RolledCharacter
 	roller          creation.Roller
+	// eclSeed 是這一局 ECL RANDOM 的起點（spec 136）。正常遊玩由
+	// newApp 取時間 seed；`-dice-seed` 讓測試與對拍可固定它。
+	eclSeed         int64
 	help            bool
 	tacticalPreview bool
 	language        language
@@ -405,10 +408,12 @@ func newApp(zipPath, statePath string) (*app, error) {
 	if err != nil {
 		return nil, err
 	}
+	seed := time.Now().UnixNano()
 	application := &app{
 		mode:   modeTitle,
 		flow:   creation.NewFlow(),
-		roller: diceRoller{random: rand.New(rand.NewSource(time.Now().UnixNano()))},
+		roller: diceRoller{random: rand.New(rand.NewSource(seed))},
+		eclSeed: seed,
 		keys:   ebitenKeys{},
 		state:  poolsave.NewState(),
 		campOrderPick: -1,
@@ -2950,7 +2955,7 @@ func (a *app) beginAdventuring() error {
 				ExceptionalStrength: character.ExceptionalStrength, CurrentHP: character.CurrentHP,
 			}
 		}
-		session, err := gamepack.NewInitialEventSession(*a.initialEvent, characters...)
+		session, err := gamepack.NewInitialEventSessionWithSeed(*a.initialEvent, a.eclSeed, characters...)
 		if err != nil {
 			return err
 		}
@@ -3825,7 +3830,7 @@ func main() {
 	// 骰子種子。預設跟著時間跑（每一局不一樣），給值就固定——
 	// 對拍截圖要的是「同一份程式碼拍出同一張圖」，擲值每次不同的話
 	// 連 HP 都會變，雜湊就永遠對不上，那份清冊也就證不了東西。
-	diceSeed := flag.Int64("dice-seed", 0, "fixed dice seed; 0 keeps the time-based seed")
+	diceSeed := flag.Int64("dice-seed", 0, "fixed dice and ECL seed; 0 keeps the time-based seed")
 	// 配樂目錄。空字串時找執行檔旁邊的 music/；那個目錄只有本機的 full-local
 	// 發行包才有，可散布的包不帶音訊（spec 128）。
 	musicDir := flag.String("music-dir", "", "directory holding the OGG music; defaults to music/ beside the executable")
@@ -3858,6 +3863,7 @@ func main() {
 	}
 	if *diceSeed != 0 {
 		game.roller = diceRoller{random: rand.New(rand.NewSource(*diceSeed))}
+		game.eclSeed = *diceSeed
 	}
 	game.screenStatePath = defaultScreenStatePath(*screenState)
 	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters

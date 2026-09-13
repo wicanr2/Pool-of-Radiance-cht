@@ -98,15 +98,22 @@ func ReadDOSECLArchive(zipPath string, archiveNumber uint8) (ECLArchive, error) 
 }
 
 func NewDOSECLArchiveSession(archive ECLArchive, blockID uint16, startAddress uint16, characters ...InitialCharacter) (*eclvm.BlockSession, error) {
+	return NewDOSECLArchiveSessionWithSeed(archive, blockID, startAddress, deterministicECLSeed,
+		characters...)
+}
+
+// NewDOSECLArchiveSessionWithSeed 是 archive session 的可重播入口。新遊戲由
+// `NewInitialEventSessionWithSeed` 建立；這一支供對拍、測試與恢復前建殼使用。
+func NewDOSECLArchiveSessionWithSeed(archive ECLArchive, blockID uint16, startAddress uint16,
+	seed int64, characters ...InitialCharacter) (*eclvm.BlockSession, error) {
 	if archive.Number < 1 || archive.Number > 8 || len(archive.Blocks) == 0 {
 		return nil, fmt.Errorf("Pool ECL archive catalog is invalid")
 	}
 	if startAddress < 0x9900 {
 		return nil, fmt.Errorf("Pool ECL start 0x%04X precedes code base", startAddress)
 	}
-	// 最後那個 1 是 `RANDOM` 的 seed。目前這一局的隨機流每一局都一樣，
-	// 原版的來自 DOS 計時器 tick——對拍與測試要決定性，正常遊玩不該有。
-	session, err := eclvm.NewBlockSession(archive.Blocks, blockID, 0x9900, int(startAddress)-0x9900, 5, initialEventPassthrough(), 1)
+	session, err := eclvm.NewBlockSession(archive.Blocks, blockID, 0x9900,
+		int(startAddress)-0x9900, 5, initialEventPassthrough(), seed)
 	if err != nil {
 		return nil, err
 	}

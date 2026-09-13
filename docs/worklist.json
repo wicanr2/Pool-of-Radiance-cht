@@ -195,22 +195,6 @@
         "note": "綁 `cmd/pool-doc-index` 算出來的清單長度。`min` 是 1 不是現況值——這一條要的是歸零"
       },
       "github_issue": 13
-    },
-    {
-      "id": "ecl-random-seed-fixed",
-      "layer": "feature",
-      "title": "每一局的隨機流都一樣",
-      "body": "ECL VM 的 `RANDOM` seed 在三個建立點都硬寫成 1（`internal/gamepack/ecl_catalog.go`、`intro.go` 兩處），遊戲本體也是。所以**同一條路線每一局遇到的怪完全相同**——走路遭遇的測試連跑五次，第 0 步擲中、三群的編號與數量一個位元都不差（spec 136）。\n\n原版的 seed 來自 DOS 的計時器 tick，每一局不同。固定 seed 對拍與測試需要（spec 050 的「DOS 同 seed 戰鬥對拍」），正常遊玩不該有。",
-      "acceptance": "正常遊玩用時間 seed、對拍與測試沿用可指定的固定 seed；同一段路線連玩兩次要遇到不同的怪，而既有測試不受影響。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "internal/gamepack/ecl_catalog.go"
-        ],
-        "pattern": "目前這一局的隨機流每一局都一樣",
-        "note": "遊戲本體那一個建立點還寫死 seed 1"
-      },
-      "github_issue": 15
     }
   ]
 }
