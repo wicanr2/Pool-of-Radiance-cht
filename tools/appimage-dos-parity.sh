@@ -20,11 +20,8 @@
 # 逐格相同是**只對兩張**宣稱的：`title`（同一份 TITLE.DAX，位置與縮放都一樣）
 # 與 `first-person`（spec 047／126，玩家整趟冒險看最久的一塊）。
 #
-# **這份報表現在還不可重複**（2026-09-10 量的，worklist 的
-# `parity-not-reproducible`）：同一個 AppImage 連跑三次，兩次走位失敗、成功
-# 那兩次有六張截圖逐像素不同——狀態列的時鐘一組，建角擲值與肖像一組。
-# 所以數字每次會浮動十個像素上下，**小幅變動不代表回歸，也不代表沒有回歸**。
-# 判讀時只有 title 與 first-person 那兩張的 100% 是硬條件。
+# `tools/appimage-dos-parity-repeat.sh` 會用固定骰子／ECL seed 與營火圖格連跑三次，
+# 並逐位元組核對全部 remake 截圖；單跑仍由本腳本產生報表。
 #
 # 建隊到進城那一段的每一張也拍、也比，但那幾張的版面是 remake 自己的
 #（原版是 320x200 的文字排版，remake 是 640x400 加漢字），所以比出來的數字
@@ -50,9 +47,13 @@ REF_CAMPQUIT="$ROOT/workplace/dosgolem-ref-campquit"
 REF_TEMPLE="$ROOT/workplace/dosgolem-ref-temple"
 REF_SHOP="$ROOT/workplace/dosgolem-ref-shop"
 REF_SPELLS="$ROOT/workplace/dosgolem-ref-spells"
-OUT="$ROOT/workplace/dos-parity-$LANG_MODE"
+OUT="${POOL_PARITY_OUT:-$ROOT/workplace/dos-parity-$LANG_MODE}"
 
 [[ -n "$VERSION" ]] || { echo "用法：tools/appimage-dos-parity.sh <版本> [patch|full-local] [zh|en]" >&2; exit 2; }
+case "$OUT" in
+  "$ROOT"/workplace/dos-parity-*) ;;
+  *) echo "POOL_PARITY_OUT 必須位於 $ROOT/workplace/dos-parity-*" >&2; exit 2 ;;
+esac
 test -f "$APPIMAGE"
 # **發行包要是當前原始碼建的。** 這一支比的是打包好的 AppImage，而它是現成的
 # 檔案——改完程式碼直接跑對拍，量到的是上一版，數字看起來正常，結論整份是空的。
@@ -144,7 +145,8 @@ if test "$LANG_MODE" = zh; then
 else
   set -- -lang en
 fi
-(exec ./squashfs-root/AppRun -zip /zip/pool.zip -screen-state "$STATE" "$@") >/tmp/game.log 2>&1 &
+(exec ./squashfs-root/AppRun -zip /zip/pool.zip -screen-state "$STATE" \
+  -dice-seed 136 -capture-camp-fire-frame 0 "$@") >/tmp/game.log 2>&1 &
 game=$!
 n=0
 window=
@@ -384,7 +386,8 @@ wait "$game" 2>/dev/null || true
 game=
 STATE=/tmp/pool-screen-caster
 rm -f "$STATE"
-(exec ./squashfs-root/AppRun -zip /zip/pool.zip -screen-state "$STATE" "$@") >/tmp/game-caster.log 2>&1 &
+(exec ./squashfs-root/AppRun -zip /zip/pool.zip -screen-state "$STATE" \
+  -dice-seed 136 -capture-camp-fire-frame 0 "$@") >/tmp/game-caster.log 2>&1 &
 game=$!
 window=
 n=0

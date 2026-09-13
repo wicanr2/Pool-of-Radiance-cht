@@ -276,6 +276,8 @@ type app struct {
 	// campFire 是營火動畫的兩張（`PIC<區號>.DAX` 區塊 29）。
 	campFire     []*ebiten.Image
 	campFireTick int
+	// captureCampFireFrame 只供發行包對拍固定營火截圖相位；nil 維持正常動畫。
+	captureCampFireFrame *int
 	loadCampFire func(archive uint8) ([]*ebiten.Image, error)
 	// 紮營要玩家挑的休息時間（spec 114）。原版的欄位是天／時／分，
 	// 分鐘一次五分；`restField` 是目前選中的那一欄。
@@ -3465,7 +3467,7 @@ func (a *app) campFireImage() *ebiten.Image {
 		return nil
 	}
 	if len(a.campFire) != 0 {
-		return a.campFire[a.campFireTick/campFireTicksPerFrame%len(a.campFire)]
+		return a.campFire[a.campFireFrameIndex()]
 	}
 	if a.loadCampFire == nil {
 		return nil
@@ -3477,7 +3479,14 @@ func (a *app) campFireImage() *ebiten.Image {
 		return nil
 	}
 	a.campFire = frames
-	return a.campFire[a.campFireTick/campFireTicksPerFrame%len(a.campFire)]
+	return a.campFire[a.campFireFrameIndex()]
+}
+
+func (a *app) campFireFrameIndex() int {
+	if a.captureCampFireFrame != nil {
+		return *a.captureCampFireFrame % len(a.campFire)
+	}
+	return a.campFireTick / campFireTicksPerFrame % len(a.campFire)
 }
 
 // clearCampFire 換主題時要重畫一次（配色是換主題換的）。
@@ -3846,6 +3855,9 @@ func main() {
 	// 對拍截圖要的是「同一份程式碼拍出同一張圖」，擲值每次不同的話
 	// 連 HP 都會變，雜湊就永遠對不上，那份清冊也就證不了東西。
 	diceSeed := flag.Int64("dice-seed", 0, "fixed dice and ECL seed; 0 keeps the time-based seed")
+	// 發行包截圖專用。預設 -1 維持營火動畫；非負值固定營火圖格，讓同一份
+	// AppImage 的逐位元組重跑收據不受擷取時機影響。
+	captureCampFireFrame := flag.Int("capture-camp-fire-frame", -1, "fixed camp-fire frame for deterministic capture; -1 keeps animation")
 	// 配樂目錄。空字串時找執行檔旁邊的 music/；那個目錄只有本機的 full-local
 	// 發行包才有，可散布的包不帶音訊（spec 128）。
 	musicDir := flag.String("music-dir", "", "directory holding the OGG music; defaults to music/ beside the executable")
@@ -3879,6 +3891,13 @@ func main() {
 	if *diceSeed != 0 {
 		game.roller = diceRoller{random: rand.New(rand.NewSource(*diceSeed))}
 		game.eclSeed = *diceSeed
+	}
+	if *captureCampFireFrame < -1 {
+		log.Fatal("capture-camp-fire-frame must be -1 or non-negative")
+	}
+	if *captureCampFireFrame >= 0 {
+		frame := *captureCampFireFrame
+		game.captureCampFireFrame = &frame
 	}
 	game.screenStatePath = defaultScreenStatePath(*screenState)
 	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters
