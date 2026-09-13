@@ -1,5 +1,5 @@
 {
-  "schema": "pool-dos-combat-parity/1",
+  "schema": "pool-dos-combat-parity/2",
   "generator": "dosgolem",
   "generator_revision": "d351681ba86d97aab571d00b979c36e2336486f3",
   "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
@@ -7,20 +7,39 @@
   "controlled_random_method": "restore battle snapshot, then advance Turbo Pascal Random(word) eight times with n=20",
   "remake_random_method": "fixed roll stream [20, 2] consumed as d20 then 1d2",
   "pre_rolls": 8,
-  "scope": "first resolved attack of the first tactical turn",
-  "attacker": "HERO",
-  "victim": "GOBLIN",
-  "attacker_thac0_internal": 40,
-  "attacker_thac0_display": 20,
-  "effective_ac_internal": 54,
-  "effective_ac_display": 6,
-  "d20": 20,
-  "hit": true,
-  "damage_dice": "1d2",
-  "damage_roll": 2,
-  "damage": 2,
-  "attacker_hp_before": 6,
-  "attacker_hp_after": 6,
-  "victim_hp_before": 4,
-  "victim_hp_after": 2
+  "scope": "complete first battle: one resolved action, foe removal, continue prompt, N, victory award",
+  "actions": [
+    {
+      "round": 1,
+      "action": 1,
+      "attacker": "HERO",
+      "victim": "GOBLIN",
+      "attacker_thac0_internal": 40,
+      "attacker_thac0_display": 20,
+      "effective_ac_internal": 54,
+      "effective_ac_display": 6,
+      "d20": 20,
+      "hit": true,
+      "damage_dice": "1d2",
+      "damage_roll": 2,
+      "damage": 2,
+      "attacker_hp_before": 6,
+      "attacker_hp_after": 6,
+      "victim_hp_before": 4,
+      "victim_hp_after_damage": 2,
+      "victim_hp_after_resolution": 0,
+      "victim_state_after": 4,
+      "victim_present_after": false,
+      "resolution": "downed and removed from battle"
+    }
+  ],
+  "end": {
+    "resolved_actions": 1,
+    "continue_prompt": true,
+    "continue_answer": "N",
+    "outcome": "party_victory",
+    "xp_per_character": 15,
+    "prompt_frame_sha256": "0a76276072a68815d2549728b293824d29623912c24066905d2e5b4a1ca24aab",
+    "victory_frame_sha256": "00efa7759fa40d6cc24bb1cc3573545941efacf87e1e77ccde829bdfef889149"
+  }
 }

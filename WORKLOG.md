@@ -269,11 +269,20 @@
 - 正常建角、羅夫導覽、第一場遭遇、`COMBAT`、`QUICK` 後，在戰鬥快照明確前進
   Turbo Pascal RNG 八次。第一個戰術行動為 HERO（THAC0 20）以 d20=20 命中
   AC 6 的 GOBLIN，`1d2=2`，雙方 HP 為 `6→6`／`4→2`。
-- `docs/audit/dos-combat-parity.json` 保存產生器版本、輸入雜湊、路徑、亂數控制方式
-  與 typed 結果；`TestDOSFirstCombatControlledTrace` 直接讀收據，讓 remake 正式
-  攻擊路徑消費固定骰流 `[20,2]`，並核對雙方 HP 與骰值消耗筆數。
+- schema 2 收據把整場補齊：傷害函式回傳後 GOBLIN HP 2；QUICK 解算完成後為
+  HP 0、狀態 4、移出戰場；續戰提示色號雜湊 `0a762760…24aab`，答 N 後的勝利／
+  每人 15 XP 畫面雜湊 `00efa775…9149`。整場只有上述一筆命中判定。
+- `docs/audit/dos-combat-parity.json` 保存產生器版本、輸入雜湊、路徑、亂數控制方式、
+  一筆 typed action 與結束結果；`TestDOSFirstCombatControlledTrace` 直接讀收據，讓
+  remake 正式攻擊路徑消費固定骰流 `[20,2]`，再核對清敵提示與勝利 outcome。
+- 正式 N 鍵輸入及戰後 ECL continuation 由
+  `TestWinningTheRealSlumsCombatResumesTheECLScript` 經 `Update()` 覆蓋；沒有把
+  DOS 狀態碼 4 猜成 remake 的狀態碼。
 - 基礎武器攻擊沒有豁免步驟；沒有為湊欄位捏造一次豁免。豁免鏈仍由 spec 075 的
   原版反組譯、真實人物表與獨立測試負責。
+- 驗證：正式產生器重生 schema 2 收據；兩條精準測試 0.118 秒；
+  `tools/go.sh test ./...` 全綠（`cmd/pool-game` 203.600 秒）；
+  `tools/go.sh vet ./...`、兩個既有 Go 檔案的 `gofmt -d` 與 `git diff --check` 通過。
 
 ## 2026-09-14：#16 人物資料頁原版肖像框
 

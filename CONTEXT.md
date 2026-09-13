@@ -1612,13 +1612,17 @@ remake 讓它一直是 0——兩邊都沒有可靠的擋路行為，這一格�
 （東南要 `49C4 != 31`）。「拒絕」就是 `SAVE 255 → @6DC9`。
 46 個地點格共用 **20 支腳本**（25 八支、26 八支、27 四支），每一支的入口與
 第一句原文都列進 spec 105，名字取自原版而不是攻略。
-## 2026-09-14：第一場戰鬥已有可重生數值對拍
+## 2026-09-14：第一場戰鬥已有完整可重生數值對拍
 
 - `tools/pool-dos-combat-parity.sh` 從正常建角與羅夫導覽走進第一場遭遇，鎖定
   dosgolem revision 與原版 `START.EXE` SHA-256，重生
   `docs/audit/dos-combat-parity.json`。
-- 收據的第一個戰術行動：HERO THAC0 20、GOBLIN AC 6、d20 20 命中、`1d2=2`，
-  HP 為 HERO `6→6`、GOBLIN `4→2`。remake 測試直接消費這份 typed 收據。
+- 這場只有一筆命中判定：HERO THAC0 20、GOBLIN AC 6、d20 20 命中、`1d2=2`；
+  傷害函式邊界 HP 為 HERO `6→6`、GOBLIN `4→2`。QUICK 解算後 GOBLIN 為 HP 0、
+  狀態 4 並移出戰場；答續戰提示 N 後進入隊伍勝利、每人 15 XP 畫面。
+- schema 2 收據以提示與勝利兩張色號雜湊鎖住整場結束；remake 測試消費同一組
+  typed 數值並核對敵方清空後的提示／勝利邊界，正式 N 鍵與 ECL continuation
+  另由 `TestWinningTheRealSlumsCombatResumesTheECLScript` 覆蓋。
 - 亂數採明示受控輸入：DOS 快照前進 Turbo Pascal RNG 八次；remake 固定消費
   `[20,2]`。這不冒稱兩套 RNG 的同數字 seed 會產生同序列。
 

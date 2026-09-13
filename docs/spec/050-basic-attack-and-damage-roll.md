@@ -112,13 +112,23 @@ DOS `START.EXE` 重生收據。路徑是正常建角、羅夫導覽、走進第�
 - HERO 的 internal THAC0 40（畫面值 20），GOBLIN 的 effective internal AC 54
   （畫面值 6）；
 - d20 為 20，命中；傷害為 `1d2` 擲出 2；
-- HERO HP `6 → 6`，GOBLIN HP `4 → 2`。
+- HERO HP `6 → 6`；GOBLIN 在傷害函式回傳時為 `4 → 2`，QUICK 解算完成後為
+  HP 0、原版 `+10Ch = 4`、`+10Dh = 0`（已移出戰場）。
 
-`TestDOSFirstCombatControlledTrace` 直接讀取該收據，讓同一組 typed 值走過正式
-`resolveTacticalAttack`，並要求只消耗 d20、d2 兩筆骰值且雙方 HP 完全一致。這是
-第一場遭遇第一個已解決戰術行動的 exact 數值對拍；它不宣稱已逐場覆蓋所有武器、
-效果或整場戰鬥。基礎武器攻擊本身沒有豁免步驟；豁免的原版順序與五格資料表由
-[spec 075](075-saving-throws.md) 及其獨立測試閉合，不把不存在的擲骰塞進本收據。
+這場戰鬥只有上述一筆命中判定。敵人移出後，原版穩定顯示 `CONTINUE BATTLE?`
+（色號陣列 SHA-256 `0a762760…24aab`）；答 `N` 後進入隊伍勝利、每名角色 15 XP
+的畫面（`00efa775…9149`）。產生器把兩張畫面雜湊當成失敗即關閉的斷言，不靠
+操作者目視猜測結束點。
+
+`TestDOSFirstCombatControlledTrace` 直接讀取 schema 2 收據，讓同一組 typed 值走過
+正式 `resolveTacticalAttack`，要求只消耗 d20、d2 兩筆骰值且傷害函式邊界的雙方 HP
+完全一致；再以敵方已移出的同狀態邊界驗證 remake 也先詢問、答 N 為勝利。
+`TestWinningTheRealSlumsCombatResumesTheECLScript` 另由 `Update()` 送入 N，釘住正式
+輸入分派與戰後 ECL continuation。這關閉的是**這一場完整的一筆數值行動與結束邊界**，
+不宣稱已逐場覆蓋所有武器、效果或一般化完整戰術回合。原版 QUICK 為何把 HP 2 的
+GOBLIN 轉成狀態 4 不在本 primitive 內，不把它猜成 remake 的狀態碼。基礎武器攻擊
+本身沒有豁免步驟；豁免的原版順序與五格資料表由 [spec 075](075-saving-throws.md)
+及其獨立測試閉合，不把不存在的擲骰塞進本收據。
 
 ### 傷害
 
@@ -138,7 +148,8 @@ DOS `START.EXE` 重生收據。路徑是正常建角、羅夫導覽、走進第�
   `19h 47h 25h 2Fh 30h 59h`；擲出來的 d20 放在 `DS:6780h`，自然 1 直接失手、
   自然 20 改寫成 100，然後才讓效果調整。見 [spec 112](112-effect-code-dispatch.md)。）
 - attack slot `+112h` 次數如何生成、武器如何覆寫 `+115h..+119h`；
-- initiative、移動、目標選擇、AI、特殊攻擊、status transition、勝敗與 ECL continuation。
+- initiative、移動、目標選擇、AI、特殊攻擊與一般化 status transition；本次只以
+  schema 2 收據閉合所選第一場的一筆行動與結束邊界。
 
 因此本規格不能授權前端自動戰鬥或 forced-win；它只關閉可被後續戰術 runtime 使用的
 兩個純規則 primitive。

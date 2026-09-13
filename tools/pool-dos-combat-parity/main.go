@@ -15,9 +15,11 @@ import (
 )
 
 const (
-	wantEXESHA256  = "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f"
-	randomIDA      = 0x16844
-	applyDamageIDA = 0x1114c
+	wantEXESHA256          = "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f"
+	wantPromptFrameSHA256  = "0a76276072a68815d2549728b293824d29623912c24066905d2e5b4a1ca24aab"
+	wantVictoryFrameSHA256 = "00efa7759fa40d6cc24bb1cc3573545941efacf87e1e77ccde829bdfef889149"
+	randomIDA              = 0x16844
+	applyDamageIDA         = 0x1114c
 )
 
 var diceSignature = []byte{
@@ -26,30 +28,51 @@ var diceSignature = []byte{
 }
 
 type receipt struct {
-	Schema                 string `json:"schema"`
-	Generator              string `json:"generator"`
-	GeneratorRevision      string `json:"generator_revision"`
-	OriginalEXESHA256      string `json:"original_exe_sha256"`
-	Path                   string `json:"path"`
-	ControlledRandomMethod string `json:"controlled_random_method"`
-	RemakeRandomMethod     string `json:"remake_random_method"`
-	PreRolls               int    `json:"pre_rolls"`
-	Scope                  string `json:"scope"`
-	Attacker               string `json:"attacker"`
-	Victim                 string `json:"victim"`
-	AttackerTHAC0Internal  int    `json:"attacker_thac0_internal"`
-	AttackerTHAC0Display   int    `json:"attacker_thac0_display"`
-	EffectiveACInternal    int    `json:"effective_ac_internal"`
-	EffectiveACDisplay     int    `json:"effective_ac_display"`
-	D20                    int    `json:"d20"`
-	Hit                    bool   `json:"hit"`
-	DamageDice             string `json:"damage_dice"`
-	DamageRoll             int    `json:"damage_roll"`
-	Damage                 int    `json:"damage"`
-	AttackerHPBefore       int    `json:"attacker_hp_before"`
-	AttackerHPAfter        int    `json:"attacker_hp_after"`
-	VictimHPBefore         int    `json:"victim_hp_before"`
-	VictimHPAfter          int    `json:"victim_hp_after"`
+	Schema                 string         `json:"schema"`
+	Generator              string         `json:"generator"`
+	GeneratorRevision      string         `json:"generator_revision"`
+	OriginalEXESHA256      string         `json:"original_exe_sha256"`
+	Path                   string         `json:"path"`
+	ControlledRandomMethod string         `json:"controlled_random_method"`
+	RemakeRandomMethod     string         `json:"remake_random_method"`
+	PreRolls               int            `json:"pre_rolls"`
+	Scope                  string         `json:"scope"`
+	Actions                []combatAction `json:"actions"`
+	End                    combatEnd      `json:"end"`
+}
+
+type combatAction struct {
+	Round                   int    `json:"round"`
+	Action                  int    `json:"action"`
+	Attacker                string `json:"attacker"`
+	Victim                  string `json:"victim"`
+	AttackerTHAC0Internal   int    `json:"attacker_thac0_internal"`
+	AttackerTHAC0Display    int    `json:"attacker_thac0_display"`
+	EffectiveACInternal     int    `json:"effective_ac_internal"`
+	EffectiveACDisplay      int    `json:"effective_ac_display"`
+	D20                     int    `json:"d20"`
+	Hit                     bool   `json:"hit"`
+	DamageDice              string `json:"damage_dice"`
+	DamageRoll              int    `json:"damage_roll"`
+	Damage                  int    `json:"damage"`
+	AttackerHPBefore        int    `json:"attacker_hp_before"`
+	AttackerHPAfter         int    `json:"attacker_hp_after"`
+	VictimHPBefore          int    `json:"victim_hp_before"`
+	VictimHPAfterDamage     int    `json:"victim_hp_after_damage"`
+	VictimHPAfterResolution int    `json:"victim_hp_after_resolution"`
+	VictimStateAfter        int    `json:"victim_state_after"`
+	VictimPresentAfter      bool   `json:"victim_present_after"`
+	Resolution              string `json:"resolution"`
+}
+
+type combatEnd struct {
+	ResolvedActions    int    `json:"resolved_actions"`
+	ContinuePrompt     bool   `json:"continue_prompt"`
+	ContinueAnswer     string `json:"continue_answer"`
+	Outcome            string `json:"outcome"`
+	XPPerCharacter     int    `json:"xp_per_character"`
+	PromptFrameSHA256  string `json:"prompt_frame_sha256"`
+	VictoryFrameSHA256 string `json:"victory_frame_sha256"`
 }
 
 type callFrame struct {
@@ -114,6 +137,44 @@ func settleEGA(o *oracle.Oracle, label string) error {
 	// 正式截圖產生器會記錄此情況後繼續；建角動畫已知會碰到這個邊界。
 	fmt.Fprintf(os.Stderr, "警告：%s 的 EGA 畫面未在預算內靜止，依基準產生器契約續跑\n", label)
 	return nil
+}
+
+// settleVisibleEGA 跳過換頁時的全黑中間幀，直到可見畫面連續穩定。
+func settleVisibleEGA(o *oracle.Oracle, label string) error {
+	var last []byte
+	lastChange := o.Steps()
+	deadline := o.Steps() + 100_000_000
+	for o.Steps() < deadline {
+		if err := o.Run(100_000); err != nil {
+			return fmt.Errorf("%s: %w", label, err)
+		}
+		frame := o.IndexedEGA()
+		nonzero := 0
+		for _, pixel := range frame {
+			if pixel != 0 {
+				nonzero++
+			}
+		}
+		if nonzero <= 1000 {
+			last = nil
+			lastChange = o.Steps()
+			continue
+		}
+		if !bytes.Equal(last, frame) {
+			last = append(last[:0], frame...)
+			lastChange = o.Steps()
+			continue
+		}
+		if o.Steps()-lastChange >= 3_000_000 {
+			return nil
+		}
+	}
+	return fmt.Errorf("%s: visible EGA frame did not settle", label)
+}
+
+func frameSHA256(o *oracle.Oracle) string {
+	sum := sha256.Sum256(o.IndexedEGA())
+	return hex.EncodeToString(sum[:])
 }
 
 func send(o *oracle.Oracle, key string) error {
@@ -191,7 +252,7 @@ func run(exe, root, scratch, revision string) (receipt, error) {
 	}
 
 	result := receipt{
-		Schema:                 "pool-dos-combat-parity/1",
+		Schema:                 "pool-dos-combat-parity/2",
 		Generator:              "dosgolem",
 		GeneratorRevision:      revision,
 		OriginalEXESHA256:      gotSHA,
@@ -199,12 +260,18 @@ func run(exe, root, scratch, revision string) (receipt, error) {
 		ControlledRandomMethod: "restore battle snapshot, then advance Turbo Pascal Random(word) eight times with n=20",
 		RemakeRandomMethod:     "fixed roll stream [20, 2] consumed as d20 then 1d2",
 		PreRolls:               8,
-		Scope:                  "first resolved attack of the first tactical turn",
-		Attacker:               "HERO",
-		Victim:                 "GOBLIN",
-		DamageDice:             "1d2",
+		Scope:                  "complete first battle: one resolved action, foe removal, continue prompt, N, victory award",
+		Actions: []combatAction{{
+			Round:      1,
+			Action:     1,
+			Attacker:   "HERO",
+			Victim:     "GOBLIN",
+			DamageDice: "1d2",
+		}},
 	}
+	action := &result.Actions[0]
 	var hitDone, applyDone bool
+	var hitCalls int
 	var applyErr error
 	var attacker, victim oracle.Addr
 
@@ -213,24 +280,25 @@ func run(exe, root, scratch, revision string) (receipt, error) {
 			return
 		}
 		if frame.args[0] == 20 && frame.args[1] == 1 && !hitDone {
-			result.D20 = int(value)
+			action.D20 = int(value)
 		}
-		if hitDone && frame.args[0] == 2 && frame.args[1] == 1 && result.DamageRoll == 0 {
-			result.DamageRoll = int(value)
+		if hitDone && frame.args[0] == 2 && frame.args[1] == 1 && action.DamageRoll == 0 {
+			action.DamageRoll = int(value)
 		}
 	})
 	hookFar(o, hitEntry, 5, func(o *oracle.Oracle, args []uint16) any {
+		hitCalls++
 		victim = oracle.Far(args[2], args[1])
 		attacker = oracle.Far(args[4], args[3])
-		result.EffectiveACInternal = int(uint8(args[0]))
-		result.AttackerTHAC0Internal = int(byteAt(o, attacker, 0x110))
-		result.AttackerTHAC0Display = 60 - result.AttackerTHAC0Internal
-		result.EffectiveACDisplay = 60 - result.EffectiveACInternal
-		result.AttackerHPBefore = int(byteAt(o, attacker, 0x11b))
-		result.VictimHPBefore = int(byteAt(o, victim, 0x11b))
+		action.EffectiveACInternal = int(uint8(args[0]))
+		action.AttackerTHAC0Internal = int(byteAt(o, attacker, 0x110))
+		action.AttackerTHAC0Display = 60 - action.AttackerTHAC0Internal
+		action.EffectiveACDisplay = 60 - action.EffectiveACInternal
+		action.AttackerHPBefore = int(byteAt(o, attacker, 0x11b))
+		action.VictimHPBefore = int(byteAt(o, victim, 0x11b))
 		return nil
 	}, func(_ *oracle.Oracle, _ callFrame, value uint16) {
-		result.Hit = uint8(value) != 0
+		action.Hit = uint8(value) != 0
 		hitDone = true
 	})
 	hookFar(o, o.IDA(applyDamageIDA), 3, func(o *oracle.Oracle, args []uint16) any {
@@ -239,14 +307,14 @@ func run(exe, root, scratch, revision string) (receipt, error) {
 			applyErr = fmt.Errorf("damage victim %s, want hit victim %s", appliedVictim, victim)
 			return applyErr
 		}
-		result.Damage = int(uint8(args[0]))
+		action.Damage = int(uint8(args[0]))
 		return nil
 	}, func(o *oracle.Oracle, frame callFrame, _ uint16) {
 		if callErr, ok := frame.data.(error); ok && callErr != nil {
 			return
 		}
-		result.AttackerHPAfter = int(byteAt(o, attacker, 0x11b))
-		result.VictimHPAfter = int(byteAt(o, victim, 0x11b))
+		action.AttackerHPAfter = int(byteAt(o, attacker, 0x11b))
+		action.VictimHPAfterDamage = int(byteAt(o, victim, 0x11b))
 		applyDone = true
 	})
 
@@ -268,11 +336,43 @@ func run(exe, root, scratch, revision string) (receipt, error) {
 	if applyErr != nil {
 		return receipt{}, applyErr
 	}
+	if err := settleEGA(o, "continue battle prompt"); err != nil {
+		return receipt{}, err
+	}
+	action.VictimHPAfterResolution = int(byteAt(o, victim, 0x11b))
+	action.VictimStateAfter = int(byteAt(o, victim, 0x10c))
+	action.VictimPresentAfter = byteAt(o, victim, 0x10d) != 0
+	action.Resolution = "downed and removed from battle"
+	result.End = combatEnd{
+		ResolvedActions:   hitCalls,
+		ContinuePrompt:    true,
+		ContinueAnswer:    "N",
+		PromptFrameSHA256: frameSHA256(o),
+	}
+	if result.End.PromptFrameSHA256 != wantPromptFrameSHA256 {
+		return receipt{}, fmt.Errorf("continue prompt frame SHA-256 %s, want %s",
+			result.End.PromptFrameSHA256, wantPromptFrameSHA256)
+	}
+	if err := o.TypeKeys("N"); err != nil {
+		return receipt{}, err
+	}
+	if err := settleVisibleEGA(o, "victory award"); err != nil {
+		return receipt{}, err
+	}
+	result.End.Outcome = "party_victory"
+	result.End.XPPerCharacter = 15
+	result.End.VictoryFrameSHA256 = frameSHA256(o)
+	if result.End.VictoryFrameSHA256 != wantVictoryFrameSHA256 {
+		return receipt{}, fmt.Errorf("victory frame SHA-256 %s, want %s",
+			result.End.VictoryFrameSHA256, wantVictoryFrameSHA256)
+	}
 
-	if result.AttackerTHAC0Internal != 40 || result.EffectiveACInternal != 54 ||
-		result.D20 != 20 || !result.Hit || result.DamageRoll != 2 || result.Damage != 2 ||
-		result.AttackerHPBefore != 6 || result.AttackerHPAfter != 6 ||
-		result.VictimHPBefore != 4 || result.VictimHPAfter != 2 {
+	if action.AttackerTHAC0Internal != 40 || action.EffectiveACInternal != 54 ||
+		action.D20 != 20 || !action.Hit || action.DamageRoll != 2 || action.Damage != 2 ||
+		action.AttackerHPBefore != 6 || action.AttackerHPAfter != 6 ||
+		action.VictimHPBefore != 4 || action.VictimHPAfterDamage != 2 ||
+		action.VictimHPAfterResolution != 0 || action.VictimStateAfter != 4 ||
+		action.VictimPresentAfter || result.End.ResolvedActions != 1 {
 		return receipt{}, fmt.Errorf("unexpected combat receipt: %+v", result)
 	}
 	return result, nil
