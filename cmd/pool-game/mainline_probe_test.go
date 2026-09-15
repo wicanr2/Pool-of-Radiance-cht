@@ -66,8 +66,8 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		}
 	}
 	for index, member := range application.state.Party {
-		t.Logf("party %d %s abilities=%v hp=%d money=%v inventory=%d", index,
-			member.Name, member.Abilities, member.CurrentHP, member.Money, len(member.Inventory))
+		t.Logf("party %d %s %s abilities=%v hp=%d money=%v inventory=%d", index,
+			member.Name, member.ClassID, member.Abilities, member.CurrentHP, member.Money, len(member.Inventory))
 	}
 	step(ebiten.KeyB)
 	for tick := 0; tick < 20000 && !application.introDone; tick++ {
@@ -80,6 +80,11 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	if !application.introDone {
 		t.Fatal("opening did not finish")
 	}
+	// 玩家策略層第二條：先去武具店把金幣換成裝備（mainline_outfit_test.go）。
+	outfitter := &mainlineDriver{t: t, a: application, pilot: &tacticalPilot{},
+		step: func(key ebiten.Key) { step(key) }}
+	outfitter.outfitParty()
+	application.keys = text
 	for count := 0; count < 64 && application.encounter == nil; count++ {
 		key := ebiten.KeyArrowUp
 		if application.cellEventPending || application.cellWaitingMenu {
@@ -87,31 +92,35 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		}
 		step(key)
 	}
-	if application.encounter == nil {
-		t.Fatalf("no encounter from %+v", application.spawn)
+	if application.spawn.Map != (gamepack.MapKey{Archive: 2, BlockID: 20}) {
+		t.Fatalf("walking west from the gate did not enter the slums: %+v", application.spawn)
 	}
-	if err := selectMenuOption(t, application, "COMBAT"); err != nil {
-		t.Fatal(err)
-	}
-	for guard := 0; guard < 8 && !application.combatActive; guard++ {
+	// 走進貧民窟的頭幾步不一定會遇敵（遭遇擲骰在 spec 136）；遇到了就在這裡打，
+	// 沒遇到就交給下面的巡邏。
+	if application.encounter != nil {
+		if err := selectMenuOption(t, application, "COMBAT"); err != nil {
+			t.Fatal(err)
+		}
+		for guard := 0; guard < 8 && !application.combatActive; guard++ {
+			step(ebiten.KeyEnter)
+		}
+		if !application.combatActive {
+			t.Fatalf("combat not staged: %q", application.eventText)
+		}
 		step(ebiten.KeyEnter)
+		pilot := &tacticalPilot{}
+		for tick := 0; tick < 20000 && application.tactical != nil; tick++ {
+			step(pilot.key(application))
+		}
+		if application.tactical != nil {
+			t.Fatalf("battle stalled at round %d mover %d", application.tactical.Round,
+				application.tactical.Mover)
+		}
+		for index, member := range application.state.Party {
+			t.Logf("after %d %s hp=%d status=%d", index, member.Name, member.CurrentHP, member.Status)
+		}
+		t.Logf("battle ended: combat=%v text=%q", application.combatActive, application.eventText)
 	}
-	if !application.combatActive {
-		t.Fatalf("combat not staged: %q", application.eventText)
-	}
-	step(ebiten.KeyEnter)
-	pilot := &tacticalPilot{}
-	for tick := 0; tick < 20000 && application.tactical != nil; tick++ {
-		step(pilot.key(application))
-	}
-	if application.tactical != nil {
-		t.Fatalf("battle stalled at round %d mover %d", application.tactical.Round,
-			application.tactical.Mover)
-	}
-	for index, member := range application.state.Party {
-		t.Logf("after %d %s hp=%d status=%d", index, member.Name, member.CurrentHP, member.Status)
-	}
-	t.Logf("battle ended: combat=%v text=%q", application.combatActive, application.eventText)
 
 	visited := map[[3]int]bool{}
 	maps := map[string]bool{}

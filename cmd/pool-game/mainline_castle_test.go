@@ -27,6 +27,8 @@ type mainlineDriver struct {
 	pilot *tacticalPilot
 	log   []string
 	trace bool
+	// wantShop 為真時 settle 走到商店就停下交還，不按 ESC 離開（買裝備那一段用）。
+	wantShop bool
 }
 
 // flags 是每一個 Fatalf 都要帶的現場：主線旗標一次印齊，查失敗不用重跑。
@@ -76,6 +78,9 @@ func (d *mainlineDriver) settle(prefer ...string) {
 	for tick := 0; tick < 40000 && d.busy(); tick++ {
 		if a.gameOver {
 			d.fatalf("the party was destroyed")
+		}
+		if a.shopActive && d.wantShop {
+			return
 		}
 		switch {
 		case a.endingActive:
