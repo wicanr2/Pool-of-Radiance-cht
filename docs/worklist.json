@@ -138,22 +138,6 @@
         "note": "camp.go 還沒呼叫入口 2 就是還沒做"
       },
       "github_issue": 24
-    },
-    {
-      "id": "combat-bandage",
-      "layer": "feature",
-      "title": "戰鬥缺 BANDAGE：倒地的隊員九回合後必死",
-      "body": "原版戰鬥指令列有 BANDAGE；remake 沒有，倒地者九回合後轉死亡，一級隊伍付不起復活。",
-      "acceptance": "讀出原版入口與效果接進戰術輸入；駕駛在有人倒地時先包紮。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "cmd/pool-game/tactical.go"
-        ],
-        "pattern": "bandage",
-        "note": "戰術輸入裡還沒有 bandage 就是還沒做"
-      },
-      "github_issue": 25
     }
   ]
 }
