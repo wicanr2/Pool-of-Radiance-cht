@@ -59,38 +59,12 @@ func TestMainlineProbeHouseRuleCommissionExperience(t *testing.T) {
 	runMainlineProbe(t, true, 137)
 }
 
-// mainlineProbeSeed 是原版規則那一條探針的骰子 seed。
-const mainlineProbeSeed = 136
-
-func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
-	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
-	statePath := filepath.Join(t.TempDir(), "state.json")
-	application, err := newApp(zipPath, statePath)
-	if err != nil {
-		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
-	}
-	application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
-	application.eclSeed = 1
-	text := &scriptedTextKeys{scriptedKeys: scriptedKeys{}}
-	application.keys = text
-	step := func(key ebiten.Key, chars ...rune) {
-		t.Helper()
-		application.keys = text
-		text.scriptedKeys = scriptedKeys{key: true}
-		text.chars = chars
-		if err := application.Update(); err != nil {
-			t.Fatal(err)
-		}
-	}
-	idle := func() {
-		t.Helper()
-		application.keys = text
-		text.scriptedKeys, text.chars = scriptedKeys{}, nil
-		if err := application.Update(); err != nil {
-			t.Fatal(err)
-		}
-	}
-
+// buildManualParty 從標題開始：照說明書 p.13 建六個人、重擲、（自訂規則按 H）、
+// B 開場、導覽全按 ENTER、武具店買甲、記法術。回傳帶著這個 app 的主線駕駛。
+// 兩條探針與戰術的最小重現共用；step／idle 由呼叫端給，因為讀檔之後 app 會換。
+func buildManualParty(t *testing.T, application *app, step func(key ebiten.Key, chars ...rune),
+	idle func(), houseRule bool) *mainlineDriver {
+	t.Helper()
 	step(ebiten.KeyEnter)
 	// 隊伍照說明書 p.13 的建議組：「二個牧師，兩個魔法師和一個賊，其中至少要有
 	// 一個專職牧師……其他的最好全部都兼戰士」；「全是戰士的隊伍當然無法長期生存」。
@@ -171,7 +145,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	outfitter.outfitParty()
 	// 第四條：牧師記輕傷治療、法師記催眠術（mainline_spells_test.go）；休息之後生效。
 	t.Logf("memorised %d spells before leaving the city", outfitter.memoriseSpells())
-	application.keys = text
+	idle()
 	for _, member := range application.state.Party {
 		items := []string{}
 		for _, item := range member.Inventory {
@@ -180,6 +154,42 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		armour, movement, err := application.memberDefenceStats(member, creationArmorClassInternal, creationBaseMovement)
 		t.Logf("equipped %s: ac=%d move=%d err=%v items=%v", strings.TrimSpace(member.Name), armour, movement, err, items)
 	}
+	return outfitter
+}
+
+// mainlineProbeSeed 是原版規則那一條探針的骰子 seed。
+const mainlineProbeSeed = 136
+
+func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	statePath := filepath.Join(t.TempDir(), "state.json")
+	application, err := newApp(zipPath, statePath)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
+	application.eclSeed = 1
+	text := &scriptedTextKeys{scriptedKeys: scriptedKeys{}}
+	application.keys = text
+	step := func(key ebiten.Key, chars ...rune) {
+		t.Helper()
+		application.keys = text
+		text.scriptedKeys = scriptedKeys{key: true}
+		text.chars = chars
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	idle := func() {
+		t.Helper()
+		application.keys = text
+		text.scriptedKeys, text.chars = scriptedKeys{}, nil
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	outfitter := buildManualParty(t, application, step, idle, houseRule)
 	for count := 0; count < 64 && application.encounter == nil; count++ {
 		key := ebiten.KeyArrowUp
 		if application.cellEventPending || application.cellWaitingMenu {
@@ -458,93 +468,9 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 				}())
 		}
 	}
-	// 玩家策略層第一條：打完看 HP。有人掉到一半以下、或昏迷（狀態 4）就停下
-	// 探索，找地方紮營休息到滿——每二十四小時回一點（spec 114）。
-	hurt := func(a *app) bool {
-		// 打到一半不算：戰鬥的生命值要等 `finishCombat` 才寫回隊伍，而續戰
-		// 提示（`CONTINUE BATTLE`）還開著時按 E 開不了營。
-		if a.tactical != nil {
-			return false
-		}
-		for _, member := range a.state.Party {
-			if member.Status == 4 || (member.Status == 0 && member.CurrentHP*2 < member.MaxHP) {
-				return true
-			}
-		}
-		// 催眠術用完也算：沒有催眠的一場架（13 名哥布林）就是全滅的那一場。
-		// 原版玩家每打完一場就回去休息重記，這裡照做。
-		return !sleepReady(a)
-	}
-	// restUntilHealed 就地紮營到全隊回滿：按鍵照原版紮營畫面（spec 135）：
-	// E 紮營、R 排時間、Y 選天、I 加一天、R 休息、ESC 收掉。天數是全隊缺最多
-	// 的那一位（每 24 小時回 1 點，spec 114）。
-	//
-	// 不再先走去屋內：打完一場常常只剩兩個人站著，走去找床的路上再撞一場
-	// 就是全滅（實測第 14 場之後）。原版在街上休息會被打斷（`ecl2/20` 入口 2
-	// 把打斷參數設成 24／24，屋內 0／0），remake 還沒跑那個入口（#24）；接上
-	// 之後被打斷的那一場由同一個駕駛打，打完再睡，這裡的迴圈就是為那一天留的。
-	restUntilHealed := func() {
-		t.Helper()
-		restPilot := &tacticalPilot{}
-		settle := func() {
-			for guard := 0; guard < 400 && (application.cellEventPending || application.cellWaitingMenu ||
-				application.tactical != nil); guard++ {
-				if application.tactical != nil {
-					step(restPilot.key(application))
-					continue
-				}
-				step(ebiten.KeyEnter)
-			}
-			if application.gameOver {
-				t.Fatalf("the party was destroyed while resting: %q", application.eventText)
-			}
-		}
-		for attempt := 0; attempt < 8 && (hurt(application) || pendingMemorisation(application)); attempt++ {
-			settle()
-			// 打過架用掉的法術格先補記，這一次休息順便記完。
-			outfitter.memoriseSpells()
-			days := 0
-			for _, member := range application.state.Party {
-				if member.Status == 0 || member.Status == 4 {
-					if missing := member.MaxHP - member.CurrentHP; missing > days {
-						days = missing
-					}
-				}
-			}
-			if days == 0 && pendingMemorisation(application) {
-				days = 1
-			}
-			before := application.gameTime
-			step(ebiten.KeyE)
-			if !application.campOpen {
-				t.Fatalf("E did not open the camp at %+v: %q (mode=%d help=%t tactical=%t event=%t menu=%t door=%t shop=%t program=%t text=%q)",
-					application.spawn, application.statusLine, application.mode, application.help,
-					application.tactical != nil, application.cellEventPending, application.cellWaitingMenu,
-					application.door != nil, application.shopActive, application.campFromProgram, application.eventText)
-			}
-			step(ebiten.KeyR)
-			step(ebiten.KeyY)
-			for guard := 0; guard < 64 && !application.restDuration.IsZero(); guard++ {
-				step(ebiten.KeyD)
-			}
-			for day := 0; day < days; day++ {
-				step(ebiten.KeyI)
-			}
-			step(ebiten.KeyR)
-			for guard := 0; guard < 8 && (application.campOpen || application.campFromProgram); guard++ {
-				step(ebiten.KeyEscape)
-			}
-			settle()
-			hp := []string{}
-			for _, member := range application.state.Party {
-				hp = append(hp, fmt.Sprintf("%s %d/%d st%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status))
-			}
-			t.Logf("rested %d days at %+v (clock %v → %v): %v", days, application.spawn, before, application.gameTime, hp)
-		}
-		if hurt(application) || pendingMemorisation(application) {
-			t.Fatalf("still hurt or unmemorised after resting at %+v (status %q)", application.spawn, application.statusLine)
-		}
-	}
+	// 玩家策略層第一條：受傷或催眠用完就地紮營（mainline_rest_test.go）。
+	hurt := partyHurt
+	restUntilHealed := outfitter.restUntilHealed
 	outfitter.hurt, outfitter.rest = hurt, restUntilHealed
 	readyToHandIn := func(a *app) bool {
 		// LOAD FILES 已把玩家放回城區時，eventSession 的 block 可能還會保留
@@ -876,6 +802,18 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	reachable := true
 	var lastBattle *tacticalState
 	lastStatus := ""
+	// 每一場的計數（#22 的尺）：探索器裡打的架也要量。
+	tally := &battleTally{}
+	observe := func(a *app) {
+		if a.tactical != nil {
+			tally.observe(a)
+			return
+		}
+		if tally.state != nil && !tally.reported {
+			tally.reported = true
+			t.Logf("battle result: %s", tally.line())
+		}
+	}
 	// 貧民窟一級隊伍打得起的只有 20 場（實跑紀錄「補四」）：連續三趟 `4ABB`
 	// 沒動就收手，先去做索寇要塞，回頭再補。
 	stalled, lastCount := 0, uint16(0)
@@ -914,6 +852,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			avoid, map[[3]int]bool{}, map[[3]int]int{}, map[string]int{},
 			map[[4]int]int{}, visited, maps, blocks, flags, noBoatOverride, &failures, nil,
 			application, &slums, func(a *app) bool {
+				observe(a)
 				if a.tactical != nil && a.tactical != lastBattle {
 					lastBattle = a.tactical
 					names := []string{}
@@ -1132,7 +1071,8 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	for pass := 0; pass < 24 && application.eventMachine.Memory[0x4AA7] != 0xFF; pass++ {
 		sokalPasses++
 		if application.gameOver {
-			t.Fatalf("the party was destroyed on the way to Sokal Keep: %q at %+v", application.eventText, application.spawn)
+			t.Fatalf("the party was destroyed on the way to Sokal Keep: %q at %+v (%s)", application.eventText,
+				application.spawn, tally.line())
 		}
 		// 受傷或催眠用完就地紮營（要塞裡也一樣），再繼續探索。
 		restUntilHealed()
@@ -1140,6 +1080,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			map[[3]int]bool{}, map[[3]int]bool{}, transitionUses, menuTurn, exitUses,
 			visited, maps, blocks, flags, noBoatOverride, &failures, nil,
 			application, nil, func(a *app) bool {
+				observe(a)
 				if a.tactical != nil && a.tactical != lastBattle {
 					lastBattle = a.tactical
 					names := []string{}
@@ -1147,6 +1088,10 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 						names = append(names, fmt.Sprintf("%s×%d", monster.Record.Name, monster.Spawn.Count))
 					}
 					t.Logf("battle at %+v: %v", a.spawn, names)
+				}
+				if a.tactical != nil && a.tactical.Status != lastStatus {
+					lastStatus = a.tactical.Status
+					t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
 				}
 				return a.eventMachine != nil &&
 					(a.eventMachine.Memory[0x4AA7] == 0xFF || readyToHandIn(a) || hurt(a))

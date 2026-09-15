@@ -109,6 +109,9 @@ func (d *mainlineDriver) walkAllowing(what string, wanted, allowed func(x, y int
 			continue
 		}
 		d.settle()
+		if a.gameOver {
+			return false
+		}
 		d.restIfHurt()
 		if a.spawn.Map != startMap || a.eventSession.CurrentBlockID() != startBlock {
 			d.note("walkAllowing %s: left the map at (%d,%d) block %d → %d", what,

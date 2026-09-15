@@ -37,6 +37,19 @@ type mainlineDriver struct {
 	// lastBattle 讓每一場只記一次陣容；lastStatus 讓 trace 每個狀態只記一次。
 	lastBattle *tacticalState
 	lastStatus string
+	// tally 是每一場的計數（命中率、包紮、倒下順序），打完記一行。
+	tally battleTally
+	// tolerateDefeat 為真時全滅只記不 fatal（量牆的測試用）。
+	tolerateDefeat bool
+}
+
+// reportBattle 在一場打完之後把計數記一行（只記一次）。
+func (d *mainlineDriver) reportBattle() {
+	if d.a.tactical != nil || d.tally.state == nil || d.tally.reported {
+		return
+	}
+	d.tally.reported = true
+	d.note("battle result: %s", d.tally.line())
 }
 
 // noteBattle 在戰術盤剛擺好時記一次陣容。
@@ -52,12 +65,18 @@ func (d *mainlineDriver) noteBattle() {
 			monster.Spawn.Count, monster.Record.MaxHitPoints(), monster.Record.ArmorClass()))
 	}
 	foes := 0
+	stats := []string{}
 	for index := 1; index < len(a.tactical.Roster); index++ {
 		if !a.tactical.Friendly[index] {
 			foes++
 		}
+		if index < len(a.tactical.ArmorClass) && index < len(a.tactical.THAC0) && (a.tactical.Friendly[index] || index < 9) {
+			// 內部編碼是 60 減顯示值（`placeholderInternalTHAC0` 的註解）。
+			stats = append(stats, fmt.Sprintf("%d:ac%d/thac0 %d", index,
+				60-int(a.tactical.ArmorClass[index]), 60-int(a.tactical.THAC0[index])))
+		}
 	}
-	d.note("battle at %+v: %v (%d foes on the board) party=%s", a.spawn, names, foes, d.partyLine())
+	d.note("battle at %+v: %v (%d foes on the board) stats=%v party=%s", a.spawn, names, foes, stats, d.partyLine())
 }
 
 // flags 是每一個 Fatalf 都要帶的現場：主線旗標一次印齊，查失敗不用重跑。
@@ -108,10 +127,16 @@ func (d *mainlineDriver) settle(prefer ...string) {
 		prefer = d.prefer
 	}
 	for tick := 0; tick < 40000 && d.busy(); tick++ {
+		d.reportBattle()
+		if a.gameOver && d.tolerateDefeat {
+			d.note("the party was destroyed: %s", d.tally.line())
+			return
+		}
 		if a.gameOver {
 			last := "no battle"
 			if d.lastBattle != nil {
-				last = fmt.Sprintf("round %d: %s / %s", d.lastBattle.Round, d.lastBattle.Status, d.lastBattle.FoeLog)
+				last = fmt.Sprintf("round %d: %s / %s; %s", d.lastBattle.Round, d.lastBattle.Status,
+					d.lastBattle.FoeLog, d.tally.line())
 			}
 			d.fatalf("the party was destroyed (%s)", last)
 		}
@@ -123,6 +148,7 @@ func (d *mainlineDriver) settle(prefer ...string) {
 			d.step(ebiten.KeyEnter)
 		case a.tactical != nil:
 			d.noteBattle()
+			d.tally.observe(a)
 			if d.trace && a.tactical.Status != d.lastStatus {
 				d.lastStatus = a.tactical.Status
 				d.t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
@@ -170,6 +196,7 @@ func (d *mainlineDriver) settle(prefer ...string) {
 			d.step(ebiten.KeyEnter)
 		}
 	}
+	d.reportBattle()
 	if d.busy() {
 		d.fatalf("settle did not finish")
 	}
