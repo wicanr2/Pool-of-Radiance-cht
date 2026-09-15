@@ -331,12 +331,92 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				}())
 		}
 	}
+	// 玩家策略層第一條：打完看 HP。有人掉到一半以下、或昏迷（狀態 4）就停下
+	// 探索，找地方紮營休息到滿——每二十四小時回一點（spec 114）。
+	hurt := func(a *app) bool {
+		for _, member := range a.state.Party {
+			if member.Status == 4 || (member.Status == 0 && member.CurrentHP*2 < member.MaxHP) {
+				return true
+			}
+		}
+		return false
+	}
+	// restUntilHealed 在貧民窟找一格**已經走過、地形碼不是 0** 的格子紮營：
+	// `ecl2/20` 入口 2（`9A0Eh`）只在街上（地形 0）把打斷參數設成 24／24，
+	// 屋內（地形非 0）是 0／0 不打擾；沒踩過的事件格不去，那裡的事件還沒跑。
+	// 按鍵照原版紮營畫面（spec 135）：E 紮營、R 排時間、Y 選天、I 加一天、
+	// R 休息、ESC 收掉。天數是全隊缺最多的那一位。
+	restUntilHealed := func() {
+		t.Helper()
+		if !hurt(application) {
+			return
+		}
+		inside := func(x, y int) bool {
+			cell, ok := application.initialMap.Grid.Cell(x, y)
+			key := [3]int{int(application.spawn.Map.Archive), int(application.spawn.Map.BlockID), y*100 + x}
+			return ok && cell.Terrain&0x7F != 0 && visited[key]
+		}
+		for guard := 0; guard < 200 && !inside(int(application.spawn.X), int(application.spawn.Y)); guard++ {
+			if application.cellEventPending || application.cellWaitingMenu {
+				step(ebiten.KeyEnter)
+				continue
+			}
+			plan := planInside(inside, 0)
+			if len(plan) == 0 {
+				t.Logf("no visited indoor cell to rest in; resting on the street at %+v", application.spawn)
+				break
+			}
+			want := plan[0]
+			if application.spawn.Facing != want.facing {
+				step(ebiten.KeyArrowRight)
+				continue
+			}
+			step(ebiten.KeyArrowUp)
+		}
+		for application.cellEventPending || application.cellWaitingMenu {
+			step(ebiten.KeyEnter)
+		}
+		days := 0
+		for _, member := range application.state.Party {
+			if member.Status == 0 || member.Status == 4 {
+				if missing := member.MaxHP - member.CurrentHP; missing > days {
+					days = missing
+				}
+			}
+		}
+		before := application.gameTime
+		step(ebiten.KeyE)
+		if !application.campOpen {
+			t.Fatalf("E did not open the camp at %+v: %q", application.spawn, application.statusLine)
+		}
+		step(ebiten.KeyR)
+		step(ebiten.KeyY)
+		for guard := 0; guard < 64 && !application.restDuration.IsZero(); guard++ {
+			step(ebiten.KeyD)
+		}
+		for day := 0; day < days; day++ {
+			step(ebiten.KeyI)
+		}
+		step(ebiten.KeyR)
+		for guard := 0; guard < 8 && (application.campOpen || application.campFromProgram); guard++ {
+			step(ebiten.KeyEscape)
+		}
+		hp := []string{}
+		for _, member := range application.state.Party {
+			hp = append(hp, fmt.Sprintf("%s %d/%d st%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status))
+		}
+		t.Logf("rested %d days at %+v (clock %v → %v): %v", days, application.spawn, before, application.gameTime, hp)
+		if hurt(application) {
+			t.Fatalf("still hurt after resting %d days at %+v: %v (status %q)", days, application.spawn, hp, application.statusLine)
+		}
+	}
 	reachable := true
-	for patrol := 0; patrol < 4 && application.eventMachine.Memory[0x4ABB] != 0xFE; patrol++ {
+	for patrol := 0; patrol < 40 && application.eventMachine.Memory[0x4ABB] != 0xFE; patrol++ {
 		if application.gameOver {
 			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X, patrol %d)",
 				application.eventText, application.eventMachine.Memory[0x4ABB], patrol)
 		}
+		restUntilHealed()
 		avoid := map[[3]int]bool{}
 		for _, key := range boundaryExitKeys(application) {
 			avoid[key] = true
@@ -346,7 +426,7 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 			avoid, map[[3]int]bool{}, map[[3]int]int{}, map[string]int{},
 			map[[4]int]int{}, visited, maps, blocks, flags, noBoatOverride, &failures, nil,
 			application, &slums, func(a *app) bool {
-				return a.eventMachine != nil && a.eventMachine.Memory[0x4ABB] == 0xFE
+				return a.eventMachine != nil && (a.eventMachine.Memory[0x4ABB] == 0xFE || hurt(a))
 			}, false)
 		if !reachable {
 			t.Fatal("existing application was rejected while clearing the slums")
@@ -364,6 +444,9 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				application.eventText, application.eventMachine.Memory[0x4ABB])
 		}
 		if application.eventMachine.Memory[0x4ABB] != 0xFE {
+			if hurt(application) {
+				continue
+			}
 			if application.eventMachine.Memory[0x4A80] >= 15 &&
 				application.eventMachine.Memory[0x4A0B] == 0 {
 				completeOldWoman()

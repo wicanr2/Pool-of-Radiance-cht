@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -461,10 +462,15 @@ func (a *app) restParty() {
 		if pending > 0 && restedHours >= pending {
 			memorised += gamepack.CompletePendingMemorisation(member.Memorised)
 		}
-		if healed > 0 {
+		if healed > 0 && member.Status != combat.DeadState {
 			member.CurrentHP += healed
 			if member.CurrentHP > member.MaxHP {
 				member.CurrentHP = member.MaxHP
+			}
+			// 昏迷（4）的人回到有生命值就站起來——與戰後 `04ADh` 對狀態 4 的
+			// 規則同形（有 HP 就換回 0）；休息本身怎麼寫這一格還沒讀，hypothesis。
+			if member.Status == 4 && member.CurrentHP > 0 {
+				member.Status = 0
 			}
 		}
 		syncTrainedLibraryCharacter(&a.state, *member)

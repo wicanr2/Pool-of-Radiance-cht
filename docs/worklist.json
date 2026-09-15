@@ -122,6 +122,22 @@
         "note": "要先寫最小重現才有機器訊號"
       },
       "github_issue": 23
+    },
+    {
+      "id": "rest-entry-2-interruption",
+      "layer": "feature",
+      "title": "紮營休息沒有跑各區的 ECL 入口 2：打斷參數永遠是 0",
+      "body": "`restParty` 只推時鐘不跑入口 2，`6DD2h`／`6DD3h` 永遠 0，任何地方休息都不會被打擾；原版貧民窟街上 24／24、城區 1／101。",
+      "acceptance": "休息時跑入口 2；探針在貧民窟街上休息會被打斷、屋內不會。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game/camp.go"
+        ],
+        "pattern": "SetEntry(2)",
+        "note": "camp.go 還沒呼叫入口 2 就是還沒做"
+      },
+      "github_issue": 24
     }
   ]
 }
