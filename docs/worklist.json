@@ -138,6 +138,22 @@
         "note": "camp.go 還沒呼叫入口 2 就是還沒做"
       },
       "github_issue": 24
+    },
+    {
+      "id": "mainline-route-levels",
+      "layer": "verification",
+      "title": "主線路線表補委任獎賞、建議等級與順序",
+      "body": "一級隊伍打不起 20+ 隻的固定事件（貧民窟衛兵 33、獸人的家 24、索寇要塞 50），散戰 21 場只有 221 XP；等級靠委任獎賞，`ecl3/8` 的獎賞表還沒讀成表。",
+      "acceptance": "spec 137 多一欄「建議等級／順序」，每個委任區有最大一場的怪物清冊與獎賞金／經驗；探針照順序跑並記每段等級。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "docs/spec/137-mainline-route.md"
+        ],
+        "pattern": "建議等級",
+        "note": "spec 137 還沒有那一欄就是還沒做"
+      },
+      "github_issue": 26
     }
   ]
 }
