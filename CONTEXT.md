@@ -2,6 +2,17 @@
 
 更新日期：2026-09-14。
 
+## 2026-09-15 自訂規則的探針：諾里斯的獎賞升一級，圖書館的書帶不出去，古托井走得動了
+
+- 第二條主線探針 `TestMainlineProbeHouseRuleCommissionExperience`（spec 140 開著、seed 137）
+  走到：古托井打諾里斯 → 交件每人 1250／1375 XP → 訓練所牧師升二級 → 索寇 (8,5) 全滅。
+  原版規則那一條（seed 136）不動。數字在 `docs/playtest/mainline-end-to-end.md` 補六。
+- 已推翻：spec 137「圖書館一級可」。書拿得到，帶著書站上門格朝出口方向（含撞門那一下）
+  就召出幽靈（`ecl2/15 99F8h`），`TestLibraryBooksSummonTheSpectreOnTheWayOut`。
+- remake 修正：腳本叫過 `C01Eh` 但座標沒變（古托井每一步都往前看一格再寫回）不算
+  走掉這一步，引擎照走（spec 104）。`TestKutoWellLookAheadDoesNotEatTheStep`。#21 不動。
+- 停止線：索寇 (8,5) 同一死因第四次。剩下的是戰術層（#22），不是規則層。
+
 ## 2026-09-14 貧民窟走路遭遇四出口已接通
 
 issue #1 的遊戲層缺口已由正常輸入路徑閉合：標題選單開始冒險、走完羅夫導覽，

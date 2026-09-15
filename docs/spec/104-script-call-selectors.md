@@ -58,6 +58,16 @@ ecl7/26、ecl8/27、ecl8/29 各 1024 格全部停在 `2Dh`），所以隊伍一�
 - `BA03h` 播的兩段是什麼（`DS:263Ch`／`DS:263Eh`）。
 - `2C90h` 那一支後半段的五個旗標（`DS:82A6h` 等）與兩個呼叫。
 
+## remake 這邊：`C01Eh` 要真的走掉了才算走掉
+
+`C01Eh` 有兩種用法。換區那一步（`6DD5 != 0`）是「腳本自己走掉這一步再 `NEWECL`」，
+引擎不能再走一次；古托井的入口 0（`ecl8/29 99DAh`）則是**往前看一格**：
+`SAVE @C04B → @6E7A`、`CALL C01Eh`、`CALL C018h`、讀 `C04F`、再把 `6E7A`／`6E7C`
+寫回 `C04B`／`C04C`——人沒動，這一步還是要由引擎走。所以「叫過 `C01Eh`」要配上
+「跑完入口 0 之後座標真的變了」才算腳本走掉這一步；只看旗標的話那張圖一步都走不動
+（`TestKutoWellLookAheadDoesNotEatTheStep`，改前紅）。`SAVE → C04B` 的傳送不在這條
+判斷裡（remake 照舊再加玩家按的那一步）：原版在那之後加不加一步是 #21 的問題。
+
 ## remake 這邊：吃掉邊界的時候不能把 `Writes`一起吃掉
 
 `cmd/pool-game` 的 `consumeInitialTransitionResources` 把這些沒有動作的邊界

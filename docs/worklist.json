@@ -154,22 +154,6 @@
         "note": "建議順序還標著待實跑就是還沒做；探針照順序跑完再把那個標記拿掉"
       },
       "github_issue": 26
-    },
-    {
-      "id": "commission-experience-house-rule",
-      "layer": "feature",
-      "title": "自訂規則（預設關）：委任獎賞折算經驗值",
-      "body": "原版委任只給錢（spec 137 獎賞表），使用者要求可切換的 house rule：AD&D 一版 1 gp ＝ 1 XP，市政廳獎賞那一場空戰鬥的戰後結算發放。",
-      "acceptance": "選項存在、預設關；開著時交件經驗值依金幣等值增加，關著時 0，各一條測試；探針多一條 house rule 開的收據。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "cmd/pool-game"
-        ],
-        "pattern": "commissionExperience",
-        "note": "程式裡還沒有這個選項就是還沒做"
-      },
-      "github_issue": 28
     }
   ]
 }

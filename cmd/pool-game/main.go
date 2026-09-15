@@ -206,7 +206,7 @@ type app struct {
 	eventLabel         string
 	cellEventPending   bool
 	cellWaitingMenu    bool
-	// cellMovedByScript 記「這一步是腳本自己用 `CALL C01Eh` 走掉的」。
+	// cellMovedByScript 記「這一步的入口 0 裡腳本叫過 `CALL C01Eh`」。
 	cellMovedByScript bool
 	cellMenuOptions   []string
 	// door 是目前擋在前面的那一道鎖住的門（spec 122）。**不走
@@ -1249,6 +1249,7 @@ func (a *app) moveInitialDungeonForward() error {
 	a.door = nil
 	if a.eventMachine != nil {
 		a.cellMovedByScript = false
+		origin := a.spawn
 		a.setMapExitFlag(dx, dy)
 		result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
 		if err != nil {
@@ -1309,8 +1310,12 @@ func (a *app) moveInitialDungeonForward() error {
 			a.eventMachine.Memory[wildernessX] = a.eventMachine.Memory[wildernessNextX]
 			a.eventMachine.Memory[wildernessY] = a.eventMachine.Memory[wildernessNextY]
 		}
-		// 腳本自己叫過 `CALL C01Eh` 就已經走過那一步了，不能再走一次。
-		if !a.cellMovedByScript {
+		// 腳本自己用 `CALL C01Eh` 走掉這一步（換區）就不再走一次——但要**真的
+		// 走掉了**才算：古托井的入口 0（`ecl8/29 99DAh`）每一步都先 `CALL C01Eh`
+		// 往前看一格、再把 `C04B`／`C04C` 寫回原值，人沒動，這一步還是要由引擎
+		// 走。只看旗標的話那張圖一步都走不動（spec 104）。`SAVE → C04B` 的傳送
+		// 照舊加這一步：原版加不加是 #21 的問題，這裡不改它的答案。
+		if !a.cellMovedByScript || (a.spawn.X == origin.X && a.spawn.Y == origin.Y) {
 			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
 			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 			a.advanceGameMinute()
@@ -1334,6 +1339,7 @@ func (a *app) runBlockedInitialCellEntry(dx, dy int) (bool, error) {
 	}
 	beforeMap := a.initialMap.Key
 	beforeBlock := a.eventSession.CurrentBlockID()
+	origin := a.spawn
 	a.cellMovedByScript = false
 	// 即使 GEO 把這一面標成牆，ECL 仍可能把它當成樓梯／區域出口。
 	// 入口 0 先讀 `@6DD5` 再決定要不要呼叫 `C01Eh`；若在這條 blocked
@@ -1376,7 +1382,9 @@ func (a *app) runBlockedInitialCellEntry(dx, dy int) (bool, error) {
 	if !applied {
 		a.applyCellECLResult(result)
 	}
-	return a.cellMovedByScript || a.initialMap.Key != beforeMap ||
+	// 同上：腳本往前看一格再寫回來不算搬人。
+	movedByScript := a.cellMovedByScript && (a.spawn.X != origin.X || a.spawn.Y != origin.Y)
+	return movedByScript || a.initialMap.Key != beforeMap ||
 		a.eventSession.CurrentBlockID() != beforeBlock, nil
 }
 

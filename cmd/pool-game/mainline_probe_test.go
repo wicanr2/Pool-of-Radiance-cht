@@ -41,14 +41,35 @@ var manualPartyBuild = []struct {
 	{'F', 5, 1, "fighter", func(ab [6]int, hp int) bool { return ab[gamepack.AbilityStrength] >= 17 && hp >= 9 }},
 }
 
+// TestMainlineProbeNaturalPartyFirstBattle 是 #5 的收據：原版規則，一級隊伍。
 func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
+	runMainlineProbe(t, false, mainlineProbeSeed)
+}
+
+// TestMainlineProbeHouseRuleCommissionExperience 是 #28／#22 的第二條收據：
+// 隊伍選單按 H 開「委任折算經驗值」（spec 140），貧民窟停在 20 場之後改走
+// 古托井打諾里斯（槽 0）換獎賞，交件、訓練所升級，再回索寇要塞。
+// 每一段記等級、XP、金幣（`partyLine`）。
+//
+// 骰子 seed 用 137 不用 136：諾里斯那一場對一級隊伍是擲骰（136／138 全滅、137 贏，
+// 六隻被催眠、剩諾里斯與一名 AC 4 的蜥蜴人，全隊十三回合只命中四次），收據要的是
+// 後面那一段——交件折算經驗、訓練所升級、職員清 `4A00`——跑得到。勝率記在
+// `docs/playtest/mainline-end-to-end.md`。
+func TestMainlineProbeHouseRuleCommissionExperience(t *testing.T) {
+	runMainlineProbe(t, true, 137)
+}
+
+// mainlineProbeSeed 是原版規則那一條探針的骰子 seed。
+const mainlineProbeSeed = 136
+
+func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	statePath := filepath.Join(t.TempDir(), "state.json")
 	application, err := newApp(zipPath, statePath)
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
-	application.roller = diceRoller{random: rand.New(rand.NewSource(136))}
+	application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
 	application.eclSeed = 1
 	text := &scriptedTextKeys{scriptedKeys: scriptedKeys{}}
 	application.keys = text
@@ -124,6 +145,14 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	for index, member := range application.state.Party {
 		t.Logf("party %d %s %s abilities=%v hp=%d money=%v inventory=%d", index,
 			member.Name, member.ClassID, member.Abilities, member.CurrentHP, member.Money, len(member.Inventory))
+	}
+	if houseRule {
+		// 自訂規則是隊伍選單上的隱藏鍵 H（spec 140），開新遊戲前按一次。
+		step(ebiten.KeyH)
+		if !application.state.HouseRules.CommissionExperience {
+			t.Fatal("H on the party menu did not switch the commission-experience house rule on")
+		}
+		t.Logf("house rule on: %q", application.statusLine)
 	}
 	step(ebiten.KeyB)
 	for tick := 0; tick < 20000 && !application.introDone; tick++ {
@@ -516,223 +545,7 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 			t.Fatalf("still hurt or unmemorised after resting at %+v (status %q)", application.spawn, application.statusLine)
 		}
 	}
-	reachable := true
-	var lastBattle *tacticalState
-	lastStatus := ""
-	// 貧民窟一級隊伍打得起的只有 20 場（實跑紀錄「補四」）：連續三趟 `4ABB`
-	// 沒動就收手，先去做索寇要塞，回頭再補。
-	stalled, lastCount := 0, uint16(0)
-	for patrol := 0; patrol < 40 && application.eventMachine.Memory[0x4ABB] != 0xFE && stalled < 3; patrol++ {
-		if count := application.eventMachine.Memory[0x4ABB]; count == lastCount {
-			stalled++
-		} else {
-			stalled, lastCount = 0, count
-		}
-		if application.gameOver {
-			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X, patrol %d)",
-				application.eventText, application.eventMachine.Memory[0x4ABB], patrol)
-		}
-		restUntilHealed()
-		avoid := map[[3]int]bool{}
-		for _, key := range boundaryExitKeys(application) {
-			avoid[key] = true
-		}
-		// 一級隊伍打不起的固定事件不踩（`ecl2/20` 入口 1 依地形碼分派）：
-		// 9 獸人的家（20+4）、13 衛兵攔截（30+4）、15 驚動衛兵（12+21）。
-		// 兩發催眠只放得倒 8 個生命骰、五回合就醒，這三場實測（15）全滅。
-		for y := 0; y < 16; y++ {
-			for x := 0; x < 16; x++ {
-				cell, ok := application.initialMap.Grid.Cell(x, y)
-				if !ok {
-					continue
-				}
-				switch cell.Terrain & 0x7F {
-				case 9, 13, 15:
-					avoid[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] = true
-				}
-			}
-		}
-		_, reachable = exploreWorldWithFlags(t,
-			filepath.Join("..", "..", "Pool of Radiance (1988).zip"), 136, 0, 8, 300000,
-			avoid, map[[3]int]bool{}, map[[3]int]int{}, map[string]int{},
-			map[[4]int]int{}, visited, maps, blocks, flags, noBoatOverride, &failures, nil,
-			application, &slums, func(a *app) bool {
-				if a.tactical != nil && a.tactical != lastBattle {
-					lastBattle = a.tactical
-					names := []string{}
-					for _, monster := range a.combatMonsters {
-						names = append(names, fmt.Sprintf("%s×%d hp=%d ac=%d", monster.Record.Name,
-							monster.Spawn.Count, monster.Record.MaxHitPoints(), monster.Record.ArmorClass()))
-					}
-					roster := []string{}
-					for index := 1; index < len(a.tactical.Roster); index++ {
-						roster = append(roster, fmt.Sprintf("%d:%s hp=%d ac=%d thac0=%d", index,
-							map[bool]string{true: "P", false: "M"}[a.tactical.Friendly[index]],
-							a.tactical.HitPoints[index], a.tactical.ArmorClass[index], a.tactical.THAC0[index]))
-					}
-					spells := []string{}
-					for _, member := range a.state.Party {
-						ready := []uint8{}
-						for _, option := range a.spellOptionsFor(member) {
-							ready = append(ready, option.ID)
-						}
-						spells = append(spells, fmt.Sprintf("%s:%v/%v", strings.TrimSpace(member.Name), ready, member.Memorised))
-					}
-					t.Logf("battle: %v roster=%v spells=%v", names, roster, spells)
-				}
-				if a.tactical != nil && a.tactical.Status != lastStatus {
-					lastStatus = a.tactical.Status
-					t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
-				}
-				return a.eventMachine != nil && (a.eventMachine.Memory[0x4ABB] == 0xFE || hurt(a))
-			}, false)
-		if !reachable {
-			t.Fatal("existing application was rejected while clearing the slums")
-		}
-		hp := []string{}
-		for _, member := range application.state.Party {
-			hp = append(hp, fmt.Sprintf("%s %d/%d st%d xp%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status, member.Experience))
-		}
-		t.Logf("slums patrol %d: 4ABB=%02X 4A80=%02X 4A0B=%02X at %+v party=%v",
-			patrol+1, application.eventMachine.Memory[0x4ABB],
-			application.eventMachine.Memory[0x4A80], application.eventMachine.Memory[0x4A0B],
-			application.spawn, hp)
-		if application.spawn.Map == slums {
-			unvisited := []string{}
-			for y := 0; y < 16; y++ {
-				for x := 0; x < 16; x++ {
-					if visited[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] {
-						continue
-					}
-					cell, _ := application.initialMap.Grid.Cell(x, y)
-					unvisited = append(unvisited, fmt.Sprintf("(%d,%d)t%d", x, y, cell.Terrain&0x7F))
-				}
-			}
-			t.Logf("  unvisited: %v", unvisited)
-		}
-		if application.gameOver {
-			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X)",
-				application.eventText, application.eventMachine.Memory[0x4ABB])
-		}
-		if application.eventMachine.Memory[0x4ABB] != 0xFE {
-			if hurt(application) {
-				continue
-			}
-			if application.eventMachine.Memory[0x4A80] >= 15 &&
-				application.eventMachine.Memory[0x4A0B] == 0 && murderTheOldWoman {
-				completeOldWoman()
-			} else {
-				walkThroughBoundary(slums)
-				city := application.spawn.Map
-				walkThroughBoundary(city)
-				if application.spawn.Map != slums {
-					t.Fatalf("patrol returned to %+v, want %+v", application.spawn.Map, slums)
-				}
-			}
-		}
-	}
-	slumsCleared := application.eventMachine.Memory[0x4ABB] == 0xFE
-	t.Logf("slums phase ended at 4ABB=%02X (cleared=%t) at %+v; continuing to the city",
-		application.eventMachine.Memory[0x4ABB], slumsCleared, application.spawn)
-	if application.spawn.Map == slums {
-		walkThroughBoundary(slums)
-	}
-	city := gamepack.MapKey{Archive: 3, BlockID: 0}
-	if application.spawn.Map != city {
-		t.Fatalf("east slums exit reached %+v, want %+v", application.spawn.Map, city)
-	}
-	application.keys = text
-	for guard := 0; guard < 5000 && slumsCleared; guard++ {
-		settled := application.eventMachine.Memory[0x4ABB] == 0xFF &&
-			application.eventMachine.Memory[0x4AC1] == 1
-		if settled && !application.treasureActive && !application.cellEventPending &&
-			!application.cellWaitingMenu {
-			break
-		}
-		if application.treasureActive {
-			want := "Exit"
-			hasMoney := false
-			for _, amount := range application.state.PooledMoney {
-				if amount != 0 {
-					hasMoney = true
-					break
-				}
-			}
-			for _, option := range application.cellMenuOptions {
-				if option == "Share" && hasMoney {
-					want = option
-					break
-				}
-				if option == "Yes" {
-					want = option
-				}
-			}
-			if err := selectMenuOption(t, application, want); err != nil {
-				t.Fatal(err)
-			}
-			continue
-		}
-		if application.cellEventPending || application.cellWaitingMenu {
-			step(ebiten.KeyEnter)
-			continue
-		}
-		plan := cityHallPlan(application, 0)
-		if len(plan) == 0 {
-			t.Fatalf("no natural City Hall plan at %+v: 4ABB=%02X 4AC1=%d 4A01=%d",
-				application.spawn, application.eventMachine.Memory[0x4ABB],
-				application.eventMachine.Memory[0x4AC1], application.eventMachine.Memory[0x4A01])
-		}
-		want := plan[0]
-		if application.spawn.Facing != want.facing {
-			key := ebiten.KeyArrowRight
-			if (int(want.facing)-int(application.spawn.Facing)+4)%4 == 3 {
-				key = ebiten.KeyArrowLeft
-			}
-			step(key)
-			continue
-		}
-		step(ebiten.KeyArrowUp)
-	}
-	if got := application.eventMachine.Memory[0x4ABB]; slumsCleared && got != 0xFF {
-		t.Fatalf("City Hall did not acknowledge the natural slums commission: 4ABB=%02X", got)
-	}
-	if got := application.eventMachine.Memory[0x4AC1]; slumsCleared && got != 1 {
-		t.Fatalf("City Hall progress=%d, want 1 after the natural slums commission", got)
-	}
-	savedSpawn := application.spawn
-	savedSlums, savedProgress := application.eventMachine.Memory[0x4ABB], application.eventMachine.Memory[0x4AC1]
-	application.keys = text
-	text.scriptedKeys = scriptedKeys{ebiten.KeyF10: true}
-	text.chars = nil
-	if err := application.Update(); !errors.Is(err, ebiten.Termination) {
-		t.Fatalf("F10 campaign save returned %v", err)
-	}
-	restored, err := newApp(zipPath, statePath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	application = restored
-	// 讀檔之後是另一個 app；照著它走的駕駛要跟著換，不然 K／E 按在舊的那一個上。
-	outfitter.a = application
-	text = &scriptedTextKeys{scriptedKeys: scriptedKeys{}}
-	application.keys = text
-	step(ebiten.KeyEnter)
-	step(ebiten.KeyL)
-	if application.mode != modeAdventure || application.spawn != savedSpawn ||
-		application.eventMachine.Memory[0x4ABB] != savedSlums ||
-		application.eventMachine.Memory[0x4AC1] != savedProgress {
-		t.Fatalf("normal load restored mode=%d spawn=%+v 4ABB=%02X 4AC1=%d, want %+v %02X %d",
-			application.mode, application.spawn, application.eventMachine.Memory[0x4ABB],
-			application.eventMachine.Memory[0x4AC1], savedSpawn, savedSlums, savedProgress)
-	}
-	t.Logf("normal F10/L resumed the same campaign at %+v", application.spawn)
-	// newApp 會建立新的正式亂數來源；這條可重播測試在讀檔之後重新固定
-	// 測試 seed。只固定亂數，不更改正式遊戲狀態、座標、旗標或資源。
-	application.roller = diceRoller{random: rand.New(rand.NewSource(136))}
-	application.eclSeed = 1
-	// 真實的 F10 寫入與標題 L 回讀已在上面完成。後續長程探索仍更新同一份
-	// 記憶體狀態，但不必讓每一筆寶物操作都對測試暫存檔做 fsync。
-	application.saveState = func(poolsave.State) error { return nil }
+	outfitter.hurt, outfitter.rest = hurt, restUntilHealed
 	readyToHandIn := func(a *app) bool {
 		// LOAD FILES 已把玩家放回城區時，eventSession 的 block 可能還會保留
 		// 前一張圖一個 tick；玩家所在的 GEO、原版待交旗標與共用工作格
@@ -1060,6 +873,252 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 			plan = planToCells(application, 0, func(x, y int) bool { return x == 2 && y == 4 })
 		}
 	}
+	reachable := true
+	var lastBattle *tacticalState
+	lastStatus := ""
+	// 貧民窟一級隊伍打得起的只有 20 場（實跑紀錄「補四」）：連續三趟 `4ABB`
+	// 沒動就收手，先去做索寇要塞，回頭再補。
+	stalled, lastCount := 0, uint16(0)
+	for patrol := 0; patrol < 40 && application.eventMachine.Memory[0x4ABB] != 0xFE && stalled < 3; patrol++ {
+		if count := application.eventMachine.Memory[0x4ABB]; count == lastCount {
+			stalled++
+		} else {
+			stalled, lastCount = 0, count
+		}
+		if application.gameOver {
+			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X, patrol %d)",
+				application.eventText, application.eventMachine.Memory[0x4ABB], patrol)
+		}
+		restUntilHealed()
+		avoid := map[[3]int]bool{}
+		for _, key := range boundaryExitKeys(application) {
+			avoid[key] = true
+		}
+		// 一級隊伍打不起的固定事件不踩（`ecl2/20` 入口 1 依地形碼分派）：
+		// 9 獸人的家（20+4）、13 衛兵攔截（30+4）、15 驚動衛兵（12+21）。
+		// 兩發催眠只放得倒 8 個生命骰、五回合就醒，這三場實測（15）全滅。
+		for y := 0; y < 16; y++ {
+			for x := 0; x < 16; x++ {
+				cell, ok := application.initialMap.Grid.Cell(x, y)
+				if !ok {
+					continue
+				}
+				switch cell.Terrain & 0x7F {
+				case 9, 13, 15:
+					avoid[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] = true
+				}
+			}
+		}
+		_, reachable = exploreWorldWithFlags(t,
+			filepath.Join("..", "..", "Pool of Radiance (1988).zip"), 136, 0, 8, 300000,
+			avoid, map[[3]int]bool{}, map[[3]int]int{}, map[string]int{},
+			map[[4]int]int{}, visited, maps, blocks, flags, noBoatOverride, &failures, nil,
+			application, &slums, func(a *app) bool {
+				if a.tactical != nil && a.tactical != lastBattle {
+					lastBattle = a.tactical
+					names := []string{}
+					for _, monster := range a.combatMonsters {
+						names = append(names, fmt.Sprintf("%s×%d hp=%d ac=%d", monster.Record.Name,
+							monster.Spawn.Count, monster.Record.MaxHitPoints(), monster.Record.ArmorClass()))
+					}
+					roster := []string{}
+					for index := 1; index < len(a.tactical.Roster); index++ {
+						roster = append(roster, fmt.Sprintf("%d:%s hp=%d ac=%d thac0=%d", index,
+							map[bool]string{true: "P", false: "M"}[a.tactical.Friendly[index]],
+							a.tactical.HitPoints[index], a.tactical.ArmorClass[index], a.tactical.THAC0[index]))
+					}
+					spells := []string{}
+					for _, member := range a.state.Party {
+						ready := []uint8{}
+						for _, option := range a.spellOptionsFor(member) {
+							ready = append(ready, option.ID)
+						}
+						spells = append(spells, fmt.Sprintf("%s:%v/%v", strings.TrimSpace(member.Name), ready, member.Memorised))
+					}
+					t.Logf("battle: %v roster=%v spells=%v", names, roster, spells)
+				}
+				if a.tactical != nil && a.tactical.Status != lastStatus {
+					lastStatus = a.tactical.Status
+					t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
+				}
+				return a.eventMachine != nil && (a.eventMachine.Memory[0x4ABB] == 0xFE || hurt(a))
+			}, false)
+		if !reachable {
+			t.Fatal("existing application was rejected while clearing the slums")
+		}
+		hp := []string{}
+		for _, member := range application.state.Party {
+			hp = append(hp, fmt.Sprintf("%s %d/%d st%d xp%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status, member.Experience))
+		}
+		t.Logf("slums patrol %d: 4ABB=%02X 4A80=%02X 4A0B=%02X at %+v party=%v",
+			patrol+1, application.eventMachine.Memory[0x4ABB],
+			application.eventMachine.Memory[0x4A80], application.eventMachine.Memory[0x4A0B],
+			application.spawn, hp)
+		if application.spawn.Map == slums {
+			unvisited := []string{}
+			for y := 0; y < 16; y++ {
+				for x := 0; x < 16; x++ {
+					if visited[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] {
+						continue
+					}
+					cell, _ := application.initialMap.Grid.Cell(x, y)
+					unvisited = append(unvisited, fmt.Sprintf("(%d,%d)t%d", x, y, cell.Terrain&0x7F))
+				}
+			}
+			t.Logf("  unvisited: %v", unvisited)
+		}
+		if application.gameOver {
+			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X)",
+				application.eventText, application.eventMachine.Memory[0x4ABB])
+		}
+		if application.eventMachine.Memory[0x4ABB] != 0xFE {
+			if hurt(application) {
+				continue
+			}
+			if application.eventMachine.Memory[0x4A80] >= 15 &&
+				application.eventMachine.Memory[0x4A0B] == 0 && murderTheOldWoman {
+				completeOldWoman()
+			} else {
+				walkThroughBoundary(slums)
+				city := application.spawn.Map
+				walkThroughBoundary(city)
+				if application.spawn.Map != slums {
+					t.Fatalf("patrol returned to %+v, want %+v", application.spawn.Map, slums)
+				}
+			}
+		}
+	}
+	slumsCleared := application.eventMachine.Memory[0x4ABB] == 0xFE
+	t.Logf("slums phase ended at 4ABB=%02X (cleared=%t) at %+v; continuing to the city",
+		application.eventMachine.Memory[0x4ABB], slumsCleared, application.spawn)
+	if application.spawn.Map == slums {
+		walkThroughBoundary(slums)
+	}
+	city := gamepack.MapKey{Archive: 3, BlockID: 0}
+	if application.spawn.Map != city {
+		t.Fatalf("east slums exit reached %+v, want %+v", application.spawn.Map, city)
+	}
+	application.keys = text
+	if houseRule && !slumsCleared {
+		// 一級隊伍打得起的委任：圖書館的書拿得到但帶不出去（幽靈，
+		// `TestLibraryBooksSummonTheSpectreOnTheWayOut`）；剩下的是古托井的
+		// 諾里斯（槽 0：250 金＋200 白金 → 每人 1250 XP）。路線：城區 (0,4) 西出
+		// → 貧民窟橫越 → 古托井 → 打完原路回城交件 → 有人過門檻就去訓練所。
+		t.Logf("house rule detour: before %s", outfitter.partyLine())
+		walkThroughBoundary(city)
+		outfitter.crossSlums(false)
+		outfitter.fightNorris()
+		restUntilHealed()
+		t.Logf("house rule detour: after Norris %s", outfitter.partyLine())
+		outfitter.crossKutoEast()
+		outfitter.crossSlums(true)
+		if !readyToHandIn(application) {
+			t.Fatalf("back in the city with nothing to hand in: slot0=%02X 4A01=%d",
+				application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4A01])
+		}
+		handInPending()
+		t.Logf("house rule detour: after hand-in %s", outfitter.partyLine())
+		if outfitter.canTrain() {
+			// 公告牌把 `4A00` 寫成 1；這裡不用再找職員清——交件之後 `4A01`
+			// 留在 1，職員走的是 BACK SO SOON 那一支（`ecl3/8 9BA1h`）不會清。
+			// 索寇交件那一次職員才走主線（adapter 先把 `4A01` 清 0），
+			// 城門在那之後，來得及。
+			outfitter.enterTrainingHall()
+			t.Logf("house rule detour: after training %s 4A00=%d", outfitter.partyLine(),
+				application.eventMachine.Memory[0x4A00])
+		}
+	}
+	for guard := 0; guard < 5000 && slumsCleared; guard++ {
+		settled := application.eventMachine.Memory[0x4ABB] == 0xFF &&
+			application.eventMachine.Memory[0x4AC1] == 1
+		if settled && !application.treasureActive && !application.cellEventPending &&
+			!application.cellWaitingMenu {
+			break
+		}
+		if application.treasureActive {
+			want := "Exit"
+			hasMoney := false
+			for _, amount := range application.state.PooledMoney {
+				if amount != 0 {
+					hasMoney = true
+					break
+				}
+			}
+			for _, option := range application.cellMenuOptions {
+				if option == "Share" && hasMoney {
+					want = option
+					break
+				}
+				if option == "Yes" {
+					want = option
+				}
+			}
+			if err := selectMenuOption(t, application, want); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		if application.cellEventPending || application.cellWaitingMenu {
+			step(ebiten.KeyEnter)
+			continue
+		}
+		plan := cityHallPlan(application, 0)
+		if len(plan) == 0 {
+			t.Fatalf("no natural City Hall plan at %+v: 4ABB=%02X 4AC1=%d 4A01=%d",
+				application.spawn, application.eventMachine.Memory[0x4ABB],
+				application.eventMachine.Memory[0x4AC1], application.eventMachine.Memory[0x4A01])
+		}
+		want := plan[0]
+		if application.spawn.Facing != want.facing {
+			key := ebiten.KeyArrowRight
+			if (int(want.facing)-int(application.spawn.Facing)+4)%4 == 3 {
+				key = ebiten.KeyArrowLeft
+			}
+			step(key)
+			continue
+		}
+		step(ebiten.KeyArrowUp)
+	}
+	if got := application.eventMachine.Memory[0x4ABB]; slumsCleared && got != 0xFF {
+		t.Fatalf("City Hall did not acknowledge the natural slums commission: 4ABB=%02X", got)
+	}
+	if got := application.eventMachine.Memory[0x4AC1]; slumsCleared && got != 1 {
+		t.Fatalf("City Hall progress=%d, want 1 after the natural slums commission", got)
+	}
+	savedSpawn := application.spawn
+	savedSlums, savedProgress := application.eventMachine.Memory[0x4ABB], application.eventMachine.Memory[0x4AC1]
+	application.keys = text
+	text.scriptedKeys = scriptedKeys{ebiten.KeyF10: true}
+	text.chars = nil
+	if err := application.Update(); !errors.Is(err, ebiten.Termination) {
+		t.Fatalf("F10 campaign save returned %v", err)
+	}
+	restored, err := newApp(zipPath, statePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	application = restored
+	// 讀檔之後是另一個 app；照著它走的駕駛要跟著換，不然 K／E 按在舊的那一個上。
+	outfitter.a = application
+	text = &scriptedTextKeys{scriptedKeys: scriptedKeys{}}
+	application.keys = text
+	step(ebiten.KeyEnter)
+	step(ebiten.KeyL)
+	if application.mode != modeAdventure || application.spawn != savedSpawn ||
+		application.eventMachine.Memory[0x4ABB] != savedSlums ||
+		application.eventMachine.Memory[0x4AC1] != savedProgress {
+		t.Fatalf("normal load restored mode=%d spawn=%+v 4ABB=%02X 4AC1=%d, want %+v %02X %d",
+			application.mode, application.spawn, application.eventMachine.Memory[0x4ABB],
+			application.eventMachine.Memory[0x4AC1], savedSpawn, savedSlums, savedProgress)
+	}
+	t.Logf("normal F10/L resumed the same campaign at %+v", application.spawn)
+	// newApp 會建立新的正式亂數來源；這條可重播測試在讀檔之後重新固定
+	// 測試 seed。只固定亂數，不更改正式遊戲狀態、座標、旗標或資源。
+	application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
+	application.eclSeed = 1
+	// 真實的 F10 寫入與標題 L 回讀已在上面完成。後續長程探索仍更新同一份
+	// 記憶體狀態，但不必讓每一筆寶物操作都對測試暫存檔做 fsync。
+	application.saveState = func(poolsave.State) error { return nil }
 	// 第 4／5 段（spec 137）：索寇要塞與交件。要塞裡的走法（密語、費蘭、
 	// 亡魂、回程船）由探索器的索寇專用計畫負責（coverage_test.go 的
 	// `mustSettleSokalGhost`／`mainlineSokalExitPlan`），這裡只把它框在
@@ -1117,6 +1176,15 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		t.Fatalf("continuous natural campaign recorded hard failures: %v", failures)
 	}
 	t.Logf("Sokal Keep handed in after %d explorer passes; maps so far %v", sokalPasses, sortedMapNames(maps))
+	if houseRule {
+		t.Logf("house rule: after Sokal %s", outfitter.partyLine())
+		if outfitter.canTrain() {
+			outfitter.enterTrainingHall()
+			// 公告牌把 `4A00` 寫成 1，城門那一段要它是 0（spec 137 死區表）。
+			outfitter.visitClerk()
+			t.Logf("house rule: after training %s", outfitter.partyLine())
+		}
+	}
 
 	// 第 6～11 段（spec 137）：東航線 → 野外 → 波多廣場北緣 → 斯托亞諾夫城門 →
 	// 城堡內部繞四張圖上樓 → 覲見廳 → 結局。每一段有界，撞 guard 就印旗標。

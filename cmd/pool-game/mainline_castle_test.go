@@ -29,6 +29,35 @@ type mainlineDriver struct {
 	trace bool
 	// wantShop 為真時 settle 走到商店就停下交還，不按 ESC 離開（買裝備那一段用）。
 	wantShop bool
+	// hurt／rest 是探針的策略層（受傷就紮營）；沒接就不休息。
+	hurt func(*app) bool
+	rest func()
+	// prefer 是 settle 沒帶偏好時的預設答案（古托井的爬井選單要答 NO）。
+	prefer []string
+	// lastBattle 讓每一場只記一次陣容；lastStatus 讓 trace 每個狀態只記一次。
+	lastBattle *tacticalState
+	lastStatus string
+}
+
+// noteBattle 在戰術盤剛擺好時記一次陣容。
+func (d *mainlineDriver) noteBattle() {
+	a := d.a
+	if a.tactical == nil || a.tactical == d.lastBattle {
+		return
+	}
+	d.lastBattle = a.tactical
+	names := []string{}
+	for _, monster := range a.combatMonsters {
+		names = append(names, fmt.Sprintf("%s×%d hp=%d ac=%d", monster.Record.Name,
+			monster.Spawn.Count, monster.Record.MaxHitPoints(), monster.Record.ArmorClass()))
+	}
+	foes := 0
+	for index := 1; index < len(a.tactical.Roster); index++ {
+		if !a.tactical.Friendly[index] {
+			foes++
+		}
+	}
+	d.note("battle at %+v: %v (%d foes on the board) party=%s", a.spawn, names, foes, d.partyLine())
 }
 
 // flags 是每一個 Fatalf 都要帶的現場：主線旗標一次印齊，查失敗不用重跑。
@@ -75,9 +104,16 @@ func (d *mainlineDriver) busy() bool {
 func (d *mainlineDriver) settle(prefer ...string) {
 	d.t.Helper()
 	a := d.a
+	if len(prefer) == 0 {
+		prefer = d.prefer
+	}
 	for tick := 0; tick < 40000 && d.busy(); tick++ {
 		if a.gameOver {
-			d.fatalf("the party was destroyed")
+			last := "no battle"
+			if d.lastBattle != nil {
+				last = fmt.Sprintf("round %d: %s / %s", d.lastBattle.Round, d.lastBattle.Status, d.lastBattle.FoeLog)
+			}
+			d.fatalf("the party was destroyed (%s)", last)
 		}
 		if a.shopActive && d.wantShop {
 			return
@@ -86,6 +122,11 @@ func (d *mainlineDriver) settle(prefer ...string) {
 		case a.endingActive:
 			d.step(ebiten.KeyEnter)
 		case a.tactical != nil:
+			d.noteBattle()
+			if d.trace && a.tactical.Status != d.lastStatus {
+				d.lastStatus = a.tactical.Status
+				d.t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
+			}
 			d.step(d.pilot.key(a))
 		case a.encounter != nil:
 			if err := selectMenuOption(d.t, a, "COMBAT"); err != nil {

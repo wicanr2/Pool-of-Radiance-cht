@@ -38,3 +38,9 @@ CLAUDE.md §3：原版忠實是驗收基準，改變原版規則狀態的東西�
 `cmd/pool-game/main.go`：`commissionExperienceValue`／`awardCommissionExperience`（掛在
 `enterTreasure`）、`houseRuleStateMessage`、冒險畫面的標記；`party_menu.go` 的 `H`。
 測試 `cmd/pool-game/house_rule_test.go`：換算值、開／關各走一次真的職員交件、選單開關。
+
+探針收據 `TestMainlineProbeHouseRuleCommissionExperience`（`mainline_probe_test.go`，
+開關開著、seed 137）：貧民窟 20 場 → 古托井打諾里斯 → 市政廳交件每人 1250／1375 XP
+→ 訓練所（`mainline_house_rule_test.go` 的 `enterTrainingHall`）牧師升二級 → 索寇要塞
+(8,5) 全滅。數字與每一段的差異在 `docs/playtest/mainline-end-to-end.md` 補六。
+規則本身照設計運作；一級隊伍過不了的仍是戰術（#22）。
