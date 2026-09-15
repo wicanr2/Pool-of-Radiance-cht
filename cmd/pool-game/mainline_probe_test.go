@@ -14,6 +14,33 @@ import (
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
+// manualPartyBuild 是說明書 p.13 建議的隊伍：兩個牧師（一個專職）、兩個法師、
+// 一個賊，其餘兼戰士。race／class 是建角畫面上要按幾下 ↓（照 `creation.Races`
+// 與 `ClassesForRace` 的順序），good 是 MODIFY 重擲的收手條件。
+// murderTheOldWoman 是「隨機遭遇打滿 15 場之後去殺算命的老婦人」那條路：
+// `ecl2/20 A749h` 把隨機計數 `4A80` 歸零、`4A0B = FFh`，之後隨機遭遇的人數 +5、
+// 機率 +5，而且屋內休息也會被打斷（入口 2 `9A0Eh`）。玩家不會這樣做——
+// 差額由 14 個固定事件補。留著這個開關只是為了對照。
+const murderTheOldWoman = false
+
+var manualPartyBuild = []struct {
+	name        rune
+	race, class int
+	classID     string
+	good        func(abilities [6]int, hp int) bool
+}{
+	{'A', 5, 0, "cleric", func(ab [6]int, hp int) bool { return ab[gamepack.AbilityWisdom] >= 15 && hp >= 7 }},
+	{'B', 3, 4, "cleric-fighter", func(ab [6]int, hp int) bool {
+		return ab[gamepack.AbilityStrength] >= 16 && ab[gamepack.AbilityWisdom] >= 13 && hp >= 7
+	}},
+	{'C', 1, 3, "fighter-magic-user", func(ab [6]int, hp int) bool {
+		return ab[gamepack.AbilityStrength] >= 16 && ab[gamepack.AbilityIntelligence] >= 13 && hp >= 6
+	}},
+	{'D', 5, 2, "magic-user", func(ab [6]int, hp int) bool { return ab[gamepack.AbilityIntelligence] >= 15 && hp >= 4 }},
+	{'E', 3, 8, "fighter-thief", func(ab [6]int, hp int) bool { return ab[gamepack.AbilityStrength] >= 16 && hp >= 7 }},
+	{'F', 5, 1, "fighter", func(ab [6]int, hp int) bool { return ab[gamepack.AbilityStrength] >= 17 && hp >= 9 }},
+}
+
 func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	statePath := filepath.Join(t.TempDir(), "state.json")
@@ -44,37 +71,47 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	}
 
 	step(ebiten.KeyEnter)
-	for index, name := range []rune{'A', 'B', 'C', 'D', 'E', 'F'} {
+	// 隊伍照說明書 p.13 的建議組：「二個牧師，兩個魔法師和一個賊，其中至少要有
+	// 一個專職牧師……其他的最好全部都兼戰士」；「全是戰士的隊伍當然無法長期生存」。
+	// 種族與職業的游標位置照 `creation.Races` 與 `ClassesForRace` 的順序。
+	for index, member := range manualPartyBuild {
 		step(ebiten.KeyC)
+		for down := 0; down < member.race; down++ {
+			step(ebiten.KeyArrowDown)
+		}
 		step(ebiten.KeyEnter)
 		step(ebiten.KeyEnter)
-		if index == 0 {
+		for down := 0; down < member.class; down++ {
 			step(ebiten.KeyArrowDown)
 		}
 		step(ebiten.KeyEnter)
 		step(ebiten.KeyEnter)
 		idle()
 		step(ebiten.KeyEnter)
-		step(ebiten.KeyEnter, name)
+		step(ebiten.KeyEnter, member.name)
 		step(ebiten.KeyK)
 		step(ebiten.KeyE)
 		step(ebiten.KeyY)
 		step(ebiten.KeyA)
 		if len(application.state.Party) != index+1 {
-			t.Fatalf("after creating %c party size=%d, want %d", name,
+			t.Fatalf("after creating %c party size=%d, want %d", member.name,
 				len(application.state.Party), index+1)
+		}
+		if got := application.state.Party[index].ClassID; got != member.classID {
+			t.Fatalf("created %c as %q, want %q (cursor race %d class %d)", member.name, got,
+				member.classID, member.race, member.class)
 		}
 	}
 	// 玩家策略層第三條：M）ODIFY CHARACTER 重擲（說明書 p.8：經驗 0、身上只有錢
 	// 的新人物可以「重新調整屬性與生命力」）。原版玩家開場就是這樣把戰士擲到
-	// 高力量高生命；這裡對每個人按 1..6 選人再按 M，擲到力量 ≥ 17、生命 ≥ 9
-	// 為止，上限 400 次——全部是隊伍選單上的正常按鍵。
+	// 高力量高生命；這裡對每個人按 1..6 選人再按 M，擲到各職業要的主屬性與
+	// 生命為止，上限 400 次——全部是隊伍選單上的正常按鍵。
 	memberKeys := []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3,
 		ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6}
 	for index := range application.state.Party {
 		good := func() bool {
 			member := application.state.Party[index]
-			return member.Abilities[0] >= 17 && member.MaxHP >= 9
+			return manualPartyBuild[index].good(member.Abilities, member.MaxHP)
 		}
 		step(memberKeys[index])
 		tries := 0
@@ -103,6 +140,8 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	outfitter := &mainlineDriver{t: t, a: application, pilot: &tacticalPilot{},
 		step: func(key ebiten.Key) { step(key) }}
 	outfitter.outfitParty()
+	// 第四條：牧師記輕傷治療、法師記催眠術（mainline_spells_test.go）；休息之後生效。
+	t.Logf("memorised %d spells before leaving the city", outfitter.memoriseSpells())
 	application.keys = text
 	for _, member := range application.state.Party {
 		items := []string{}
@@ -156,6 +195,10 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	var failures []string
 	slums := application.spawn.Map
 	var planInside func(wanted func(x, y int) bool, rotate int) []exploreStep
+	// planStreet 是 planInside，但路上只走地形碼 0 的街道格：屋內的事件格
+	// 踩到就跑事件——潛在委託人那一間（地形 3）答 LEAVE 會把隊伍搬回門口
+	// (14,10)，規劃器再把它排進路徑，就永遠走不到邊界。
+	var planStreet func(wanted func(x, y int) bool, rotate int) []exploreStep
 	walkThroughBoundary := func(from gamepack.MapKey) {
 		t.Helper()
 		application.keys = text
@@ -224,7 +267,11 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				}
 				continue
 			}
-			plan := planInside(isExit, 0)
+			plan := planStreet(isExit, 0)
+			if len(plan) == 0 {
+				// 站在屋子裡出不到街上：先照屋內的路走出去。
+				plan = planInside(isExit, 0)
+			}
 			if len(plan) == 0 {
 				t.Fatalf("cannot reach boundary from %+v", application.spawn)
 			}
@@ -240,12 +287,16 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 			step(ebiten.KeyArrowUp)
 		}
 		if application.spawn.Map == from {
-			t.Fatalf("boundary did not leave %+v: position=%+v status=%q event=%q pending=%v menu=%v door=%v",
-				from, application.spawn, application.statusLine, application.eventText,
-				application.cellEventPending, application.cellWaitingMenu, application.door != nil)
+			cell, _ := application.initialMap.Grid.Cell(int(application.spawn.X), int(application.spawn.Y))
+			t.Fatalf("boundary did not leave %+v: position=%+v terrain=%d status=%q event=%q pending=%v menu=%v/%v@%d door=%v C04B=%d,%d,%d",
+				from, application.spawn, cell.Terrain&0x7F, application.statusLine, application.eventText,
+				application.cellEventPending, application.cellWaitingMenu, application.cellMenuOptions,
+				application.cellMenuCursor, application.door != nil,
+				application.eventMachine.Memory[0xC04B], application.eventMachine.Memory[0xC04C],
+				application.eventMachine.Memory[0xC04D])
 		}
 	}
-	planInside = func(wanted func(x, y int) bool, rotate int) []exploreStep {
+	planStreetOrInside := func(wanted func(x, y int) bool, rotate int, streetOnly bool) []exploreStep {
 		type node struct{ x, y int }
 		start := node{int(application.spawn.X), int(application.spawn.Y)}
 		from := map[node]node{start: start}
@@ -277,11 +328,22 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				if _, seen := from[next]; seen {
 					continue
 				}
+				if streetOnly && !wanted(next.x, next.y) {
+					if cell, ok := application.initialMap.Grid.Cell(next.x, next.y); ok && cell.Terrain&0x7F != 0 {
+						continue
+					}
+				}
 				from[next], via[next] = current, uint8(facing)
 				queue = append(queue, next)
 			}
 		}
 		return nil
+	}
+	planInside = func(wanted func(x, y int) bool, rotate int) []exploreStep {
+		return planStreetOrInside(wanted, rotate, false)
+	}
+	planStreet = func(wanted func(x, y int) bool, rotate int) []exploreStep {
+		return planStreetOrInside(wanted, rotate, true)
 	}
 	completeOldWoman := func() {
 		t.Helper()
@@ -380,7 +442,9 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				return true
 			}
 		}
-		return false
+		// 催眠術用完也算：沒有催眠的一場架（13 名哥布林）就是全滅的那一場。
+		// 原版玩家每打完一場就回去休息重記，這裡照做。
+		return !sleepReady(a)
 	}
 	// restUntilHealed 就地紮營到全隊回滿：按鍵照原版紮營畫面（spec 135）：
 	// E 紮營、R 排時間、Y 選天、I 加一天、R 休息、ESC 收掉。天數是全隊缺最多
@@ -406,8 +470,10 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				t.Fatalf("the party was destroyed while resting: %q", application.eventText)
 			}
 		}
-		for attempt := 0; attempt < 8 && hurt(application); attempt++ {
+		for attempt := 0; attempt < 8 && (hurt(application) || pendingMemorisation(application)); attempt++ {
 			settle()
+			// 打過架用掉的法術格先補記，這一次休息順便記完。
+			outfitter.memoriseSpells()
 			days := 0
 			for _, member := range application.state.Party {
 				if member.Status == 0 || member.Status == 4 {
@@ -415,6 +481,9 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 						days = missing
 					}
 				}
+			}
+			if days == 0 && pendingMemorisation(application) {
+				days = 1
 			}
 			before := application.gameTime
 			step(ebiten.KeyE)
@@ -443,8 +512,8 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 			}
 			t.Logf("rested %d days at %+v (clock %v → %v): %v", days, application.spawn, before, application.gameTime, hp)
 		}
-		if hurt(application) {
-			t.Fatalf("still hurt after resting at %+v (status %q)", application.spawn, application.statusLine)
+		if hurt(application) || pendingMemorisation(application) {
+			t.Fatalf("still hurt or unmemorised after resting at %+v (status %q)", application.spawn, application.statusLine)
 		}
 	}
 	reachable := true
@@ -459,6 +528,21 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		avoid := map[[3]int]bool{}
 		for _, key := range boundaryExitKeys(application) {
 			avoid[key] = true
+		}
+		// 一級隊伍打不起的固定事件不踩（`ecl2/20` 入口 1 依地形碼分派）：
+		// 9 獸人的家（20+4）、13 衛兵攔截（30+4）、15 驚動衛兵（12+21）。
+		// 兩發催眠只放得倒 8 個生命骰、五回合就醒，這三場實測（15）全滅。
+		for y := 0; y < 16; y++ {
+			for x := 0; x < 16; x++ {
+				cell, ok := application.initialMap.Grid.Cell(x, y)
+				if !ok {
+					continue
+				}
+				switch cell.Terrain & 0x7F {
+				case 9, 13, 15:
+					avoid[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] = true
+				}
+			}
 		}
 		_, reachable = exploreWorldWithFlags(t,
 			filepath.Join("..", "..", "Pool of Radiance (1988).zip"), 136, 0, 8, 300000,
@@ -478,7 +562,15 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 							map[bool]string{true: "P", false: "M"}[a.tactical.Friendly[index]],
 							a.tactical.HitPoints[index], a.tactical.ArmorClass[index], a.tactical.THAC0[index]))
 					}
-					t.Logf("battle: %v roster=%v", names, roster)
+					spells := []string{}
+					for _, member := range a.state.Party {
+						ready := []uint8{}
+						for _, option := range a.spellOptionsFor(member) {
+							ready = append(ready, option.ID)
+						}
+						spells = append(spells, fmt.Sprintf("%s:%v/%v", strings.TrimSpace(member.Name), ready, member.Memorised))
+					}
+					t.Logf("battle: %v roster=%v spells=%v", names, roster, spells)
 				}
 				if a.tactical != nil && a.tactical.Status != lastStatus {
 					lastStatus = a.tactical.Status
@@ -491,12 +583,25 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		}
 		hp := []string{}
 		for _, member := range application.state.Party {
-			hp = append(hp, fmt.Sprintf("%s %d/%d st%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status))
+			hp = append(hp, fmt.Sprintf("%s %d/%d st%d xp%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status, member.Experience))
 		}
 		t.Logf("slums patrol %d: 4ABB=%02X 4A80=%02X 4A0B=%02X at %+v party=%v",
 			patrol+1, application.eventMachine.Memory[0x4ABB],
 			application.eventMachine.Memory[0x4A80], application.eventMachine.Memory[0x4A0B],
 			application.spawn, hp)
+		if application.spawn.Map == slums {
+			unvisited := []string{}
+			for y := 0; y < 16; y++ {
+				for x := 0; x < 16; x++ {
+					if visited[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] {
+						continue
+					}
+					cell, _ := application.initialMap.Grid.Cell(x, y)
+					unvisited = append(unvisited, fmt.Sprintf("(%d,%d)t%d", x, y, cell.Terrain&0x7F))
+				}
+			}
+			t.Logf("  unvisited: %v", unvisited)
+		}
 		if application.gameOver {
 			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X)",
 				application.eventText, application.eventMachine.Memory[0x4ABB])
@@ -506,7 +611,7 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				continue
 			}
 			if application.eventMachine.Memory[0x4A80] >= 15 &&
-				application.eventMachine.Memory[0x4A0B] == 0 {
+				application.eventMachine.Memory[0x4A0B] == 0 && murderTheOldWoman {
 				completeOldWoman()
 			} else {
 				walkThroughBoundary(slums)

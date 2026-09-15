@@ -148,8 +148,12 @@ func explorerCanTraverse(app *app, x, y, facing int) bool {
 	// GEO7/22 與 GEO7/23 各被靜態門邊切成 5／22 個連通元件，而腳本要求
 	// 23→22→26 才能返回樞紐。全圖開放這個假設會讓貧民窟探索器誤走
 	// 西側邊界，所以在其他地圖仍只規劃原始 GEO 當下可通行的邊。
-	if app.spawn.Map.Archive != 7 ||
-		(app.spawn.Map.BlockID != 22 && app.spawn.Map.BlockID != 23) {
+	// 貧民窟（GEO2/20）也算：清貧民窟要的 25 場裡，14 個固定事件多半在
+	// 鎖著的屋子裡（`ecl2/20` 入口 1 依地形碼 1..20 分派），隨機遭遇又在
+	// `4A80 ≥ 15` 之後停發——只走開著的路只踩得到 66 格、16 場。
+	slums := app.spawn.Map == (gamepack.MapKey{Archive: 2, BlockID: 20})
+	if !slums && (app.spawn.Map.Archive != 7 ||
+		(app.spawn.Map.BlockID != 22 && app.spawn.Map.BlockID != 23)) {
 		return false
 	}
 	flags, door := app.initialMap.Grid.WallDoorFlagsWrapped(x, y, facing*2)
@@ -1224,6 +1228,29 @@ walk:
 						application.eventText)
 				}
 				want := menuTurn[optionKey] % len(application.cellMenuOptions)
+				// 主線不殺 NPC：有 LEAVE 可選的 ATTACK 選單（算命的老婦人、
+				// 沒貨的店家）一律不選 ATTACK——殺老婦人會把 `4A0B` 設成 FFh，
+				// 之後貧民窟的隨機遭遇人數 +5、屋內休息也會被打斷；打店家
+				// 招來 21 名衛兵。有 SPEAK 就講話，否則走人。
+				if flags != nil {
+					attack, leave, speak := -1, -1, -1
+					for index, option := range application.cellMenuOptions {
+						switch strings.ToUpper(option) {
+						case "ATTACK":
+							attack = index
+						case "LEAVE":
+							leave = index
+						case "SPEAK":
+							speak = index
+						}
+					}
+					if attack >= 0 && leave >= 0 {
+						want = leave
+						if speak >= 0 {
+							want = speak
+						}
+					}
+				}
 				// 剛打完密碼的那一次是確認框，答 NO 只會跳回去重打。
 				if confirmInput[key] {
 					want = 0

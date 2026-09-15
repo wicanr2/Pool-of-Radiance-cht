@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
 // tacticalPilot 是探索與主線探針用的「自己人怎麼打」。**這不是原版的演算法**，
@@ -13,7 +14,8 @@ import (
 // 每一回合的優先序：
 //
 //  1. 有隊友倒地就 B）ANDAGE（spec 138）；旁邊有敵人時撐到計時快到才包。
-//  2. 旁邊有敵人就 A）IM，挑生命力最少的那一隻集火（N 鍵換目標）。
+//  2. 記著催眠術而場上還有三個以上醒著的敵人就 C）AST 催眠（說明書 p.44）。
+//  3. 旁邊有敵人就 A）IM，挑生命力最少的那一隻集火（N 鍵換目標）。
 //  3. 否則往「站得上去、又貼著敵人」的最近一格走：步數表把別人站的格子
 //     當牆，不再撞進同伴背後（以前四成的行動都是 BLOCKED）。
 //  4. 走不動、走夠了或沒有路就結束回合。
@@ -25,6 +27,9 @@ type tacticalPilot struct {
 	// aim 是這一回合按 A 之後要挑的目標；aimCycles 是換目標的 guard。
 	aim       uint8
 	aimCycles int
+	// castID 是這一回合按 C 之後要挑的法術；castCycles 是移游標的 guard。
+	castID     uint8
+	castCycles int
 	// distance 是這一個回合的步數表（到任一「貼著敵人的空格」幾步），
 	// 每一 tick 重算會讓探索的時間全花在廣度優先上。
 	distance map[int]int
@@ -51,6 +56,20 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 		}
 		return ebiten.KeyY
 	}
+	if app.castOpen {
+		// 法術清單：↓ 移到要施的那一條再 ENTER；找不到就 ESC 回去照常打。
+		if pilot.castID != 0 && pilot.castCycles < len(app.castOptions) &&
+			app.castCursor < len(app.castOptions) && app.castOptions[app.castCursor].ID != pilot.castID {
+			pilot.castCycles++
+			return ebiten.KeyArrowDown
+		}
+		if pilot.castID == 0 || app.castCursor >= len(app.castOptions) ||
+			app.castOptions[app.castCursor].ID != pilot.castID {
+			pilot.castID = 0
+			return ebiten.KeyEscape
+		}
+		return ebiten.KeyEnter
+	}
 	if app.castTargeting {
 		// 集火：游標預設停在最近的敵人，N 往下一個，轉到想打的那一隻再 ENTER。
 		if pilot.aim != 0 && len(app.castTargets) > 0 && pilot.aimCycles < len(app.castTargets) &&
@@ -68,6 +87,7 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 		pilot.mover, pilot.round = state.Mover, state.Round
 		pilot.tried, pilot.moves = false, 0
 		pilot.aim, pilot.aimCycles = 0, 0
+		pilot.castID, pilot.castCycles = 0, 0
 		pilot.distance, pilot.stepped = nil, false
 	}
 	here := state.Roster[state.Mover]
@@ -84,6 +104,10 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 		if target, ok := state.bandageTarget(); ok &&
 			(!pilot.adjacentToFoe(state) || state.DyingCounters[target] >= bandageUrgency) {
 			return ebiten.KeyB
+		}
+		if id, ok := pilot.spellToCast(app); ok {
+			pilot.castID = id
+			return ebiten.KeyC
 		}
 		if target, ok := pilot.focusTarget(state); ok {
 			pilot.aim = target
@@ -120,6 +144,39 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 	// tick 數翻倍，探索的預算就全花在打不到的瞄準上。
 	pilot.tried = !pilot.adjacentToFoe(state)
 	return tacticalStepKeys[best]
+}
+
+// spellToCast 說這一個行動者現在該不該施法、施哪一條：記著催眠術、而且場上
+// 醒著的敵人還有三個以上（催眠一次放倒 2d4 個生命骰，說明書 p.44）。
+func (pilot *tacticalPilot) spellToCast(app *app) (uint8, bool) {
+	state := app.tactical
+	index, ok := app.moverPartyIndex(state.Mover)
+	if !ok || index >= len(app.state.Party) {
+		return 0, false
+	}
+	hasSleep := false
+	for _, option := range app.spellOptionsFor(app.state.Party[index]) {
+		if option.ID == gamepack.SpellIDSleep {
+			hasSleep = true
+		}
+	}
+	if !hasSleep {
+		return 0, false
+	}
+	awake := 0
+	for foe := 1; foe < len(state.Roster); foe++ {
+		if !standing(state, foe) || foe >= len(state.Friendly) ||
+			state.Friendly[foe] == state.Friendly[state.Mover] {
+			continue
+		}
+		if !state.hasEffect(foe, gamepack.SleepEffectCode) {
+			awake++
+		}
+	}
+	if awake < 3 {
+		return 0, false
+	}
+	return gamepack.SpellIDSleep, true
 }
 
 // standing 說第 index 格還在場上（體型類別非 0）。

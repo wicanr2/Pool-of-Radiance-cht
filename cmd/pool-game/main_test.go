@@ -19,6 +19,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
+	"github.com/wicanr2/golden-box-remake-engine/geometry"
 	"github.com/wicanr2/golden-box-remake-engine/graphics"
 	"github.com/wicanr2/golden-box-remake-engine/viewport"
 )
@@ -1603,5 +1604,28 @@ func TestAddNPCTakesItsClassFromTheRecord(t *testing.T) {
 	// 負對照：職業空著又沒有等級就要報錯，不能靜靜當成 0。
 	if _, err := partyClassLevels(poolsave.Character{Name: "X"}); err == nil {
 		t.Error("沒有職業也沒有等級的角色被接受了")
+	}
+}
+
+// `CALL 2C90h` 要用記憶體裡現在的座標重算 `C04Fh`（spec 104／106）。
+// 最小重現：腳本把隊伍從 (13,10) 的房間搬到 (14,10) 的街上（`ecl2/20 A01Bh`
+// 的 LEAVE），不出入口就 `GOTO` 回 SearchLocation——地形碼不重算就會再進同一間。
+func TestScriptCallRecalculatesTheTerrainCache(t *testing.T) {
+	grid := geometry.Grid{}
+	grid.Cells[10][13].Terrain = 3
+	grid.Cells[10][14].Terrain = 0
+	application := &app{initialMap: &gamepack.GeometryMap{Grid: grid},
+		eventMachine: &eclvm.Machine{Memory: map[uint16]uint16{
+			0xC04B: 13, 0xC04C: 10, 0xC04D: 1, 0xC04F: 3}}}
+	application.eventMachine.Memory[0xC04B] = 14
+	application.applyScriptCall(terrainRecalcCall)
+	if got := application.eventMachine.Memory[0xC04F]; got != 0 {
+		t.Fatalf("C04F=%d after CALL 2C90h at (14,10), want the street's 0", got)
+	}
+	// 不是 2C90h 的選擇子不動它。
+	application.eventMachine.Memory[0xC04B] = 13
+	application.applyScriptCall(0x2C4E)
+	if got := application.eventMachine.Memory[0xC04F]; got != 0 {
+		t.Fatalf("an inert selector recalculated C04F to %d", got)
 	}
 }

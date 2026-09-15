@@ -621,7 +621,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastTookEffect),
 			strings.TrimSpace(member.Name), option.Label))
 	}
-	state.endTurn(a.rollDice, false)
+	state.endTurnAfterAction(a.rollDice)
 	if state.Finished {
 		return a.finishCombat(state.Outcome)
 	}

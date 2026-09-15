@@ -2786,6 +2786,10 @@ func (a *app) applyMapExitCommit(result eclvm.Result) {
 // 邊界繞回）。前四個在 remake 這邊每次查地圖時本來就重算，所以只有
 // `C01Eh` 需要動作。
 func (a *app) applyScriptCall(selector uint16) {
+	if selector == terrainRecalcCall {
+		a.recalculateTerrainCache()
+		return
+	}
 	if selector != mapExitCommitCall {
 		return
 	}
@@ -2805,6 +2809,27 @@ func (a *app) applyScriptCall(selector uint16) {
 		a.eventMachine.Memory[mapExitFlagAddress] = 0
 	}
 	a.cellMovedByScript = true
+}
+
+// terrainRecalcCall 是 `CALL 2C90h`：overlay-03 `3050h` 重算地形暫存
+// `DS:6A0Fh`（spec 104），而 ECL 的 `C04Fh` 就是 `DS:6A0Fh`（spec 106：
+// `C04Bh + n` 直接對到 `DS:6A0Bh + n`）。
+const terrainRecalcCall = 0x2C90
+
+// recalculateTerrainCache 用記憶體裡**現在**的座標重算 `C04Fh`。
+//
+// 「每次查地圖時本來就重算」只對入口邊界成立；腳本自己把隊伍搬走之後
+// **不出入口**就 `GOTO` 回 SearchLocation 的那幾支（貧民窟潛在委託人的
+// LEAVE：`ecl2/20 A01Bh` 寫 `C04B`／`C04C` → `B248h CALL 2C90h` →
+// `GOTO 9975h`）會拿舊的地形碼再分派一次，於是隊伍站在門口的街上，
+// 畫面卻一直是那個房間——玩家按 LEAVE 永遠出不來。
+func (a *app) recalculateTerrainCache() {
+	if a.eventMachine == nil || a.initialMap == nil {
+		return
+	}
+	x, y := int(a.eventMachine.Memory[0xC04B]), int(a.eventMachine.Memory[0xC04C])
+	cell := a.initialMap.Grid.CellWrapped(x, y)
+	a.eventMachine.Memory[0xC04F] = uint16(cell.Terrain)
 }
 
 // scriptCallSelector 取出 `2Dh CALL` 的選擇子。共用 VM 會把那個運算元當成
