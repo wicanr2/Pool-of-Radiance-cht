@@ -65,6 +65,25 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 				len(application.state.Party), index+1)
 		}
 	}
+	// 玩家策略層第三條：M）ODIFY CHARACTER 重擲（說明書 p.8：經驗 0、身上只有錢
+	// 的新人物可以「重新調整屬性與生命力」）。原版玩家開場就是這樣把戰士擲到
+	// 高力量高生命；這裡對每個人按 1..6 選人再按 M，擲到力量 ≥ 17、生命 ≥ 9
+	// 為止，上限 400 次——全部是隊伍選單上的正常按鍵。
+	memberKeys := []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3,
+		ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6}
+	for index := range application.state.Party {
+		good := func() bool {
+			member := application.state.Party[index]
+			return member.Abilities[0] >= 17 && member.MaxHP >= 9
+		}
+		step(memberKeys[index])
+		tries := 0
+		for ; tries < 400 && !good(); tries++ {
+			step(ebiten.KeyM)
+		}
+		t.Logf("modify %s: %d rerolls → %v hp=%d", application.state.Party[index].Name, tries,
+			application.state.Party[index].Abilities, application.state.Party[index].MaxHP)
+	}
 	for index, member := range application.state.Party {
 		t.Logf("party %d %s %s abilities=%v hp=%d money=%v inventory=%d", index,
 			member.Name, member.ClassID, member.Abilities, member.CurrentHP, member.Money, len(member.Inventory))
@@ -85,6 +104,14 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		step: func(key ebiten.Key) { step(key) }}
 	outfitter.outfitParty()
 	application.keys = text
+	for _, member := range application.state.Party {
+		items := []string{}
+		for _, item := range member.Inventory {
+			items = append(items, fmt.Sprintf("%s(ready=%d)", item.Name, item.Raw[itemReadyOffset]))
+		}
+		armour, movement, err := application.memberDefenceStats(member, creationArmorClassInternal, creationBaseMovement)
+		t.Logf("equipped %s: ac=%d move=%d err=%v items=%v", strings.TrimSpace(member.Name), armour, movement, err, items)
+	}
 	for count := 0; count < 64 && application.encounter == nil; count++ {
 		key := ebiten.KeyArrowUp
 		if application.cellEventPending || application.cellWaitingMenu {
@@ -420,6 +447,8 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		}
 	}
 	reachable := true
+	var lastBattle *tacticalState
+	lastStatus := ""
 	for patrol := 0; patrol < 40 && application.eventMachine.Memory[0x4ABB] != 0xFE; patrol++ {
 		if application.gameOver {
 			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X, patrol %d)",
@@ -435,6 +464,25 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 			avoid, map[[3]int]bool{}, map[[3]int]int{}, map[string]int{},
 			map[[4]int]int{}, visited, maps, blocks, flags, noBoatOverride, &failures, nil,
 			application, &slums, func(a *app) bool {
+				if a.tactical != nil && a.tactical != lastBattle {
+					lastBattle = a.tactical
+					names := []string{}
+					for _, monster := range a.combatMonsters {
+						names = append(names, fmt.Sprintf("%s×%d hp=%d ac=%d", monster.Record.Name,
+							monster.Spawn.Count, monster.Record.MaxHitPoints(), monster.Record.ArmorClass()))
+					}
+					roster := []string{}
+					for index := 1; index < len(a.tactical.Roster); index++ {
+						roster = append(roster, fmt.Sprintf("%d:%s hp=%d ac=%d thac0=%d", index,
+							map[bool]string{true: "P", false: "M"}[a.tactical.Friendly[index]],
+							a.tactical.HitPoints[index], a.tactical.ArmorClass[index], a.tactical.THAC0[index]))
+					}
+					t.Logf("battle: %v roster=%v", names, roster)
+				}
+				if a.tactical != nil && a.tactical.Status != lastStatus {
+					lastStatus = a.tactical.Status
+					t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
+				}
 				return a.eventMachine != nil && (a.eventMachine.Memory[0x4ABB] == 0xFE || hurt(a))
 			}, false)
 		if !reachable {

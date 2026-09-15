@@ -70,15 +70,39 @@ func (a *app) toggleReady() {
 		return
 	}
 	wasReady := inventory[state.item].Raw[itemReadyOffset] != 0
+	// 同一類只能裝一件（武器換武器、甲換甲、盾換盾），不同類並存——甲、盾、
+	// 武器本來就是一起穿的，AC 的累加也是分格算的（`ArmourClassFor` 的
+	// acc[1] 盾、acc[4] 甲）。以前這裡把**全部**物品都卸下，於是裝上長劍就
+	// 脫掉板甲，AC 永遠是 10（2026-09-15，主線探針量到）。哪些物品算同一類
+	// 看型別表的類別欄；查不到型別的照舊全部互斥。
+	category, known := a.itemCategory(inventory[state.item])
 	for index := range inventory {
-		if len(inventory[index].Raw) > itemReadyOffset {
-			inventory[index].Raw[itemReadyOffset] = 0
+		if len(inventory[index].Raw) <= itemReadyOffset {
+			continue
 		}
+		if known {
+			if other, ok := a.itemCategory(inventory[index]); ok && other != category {
+				continue
+			}
+		}
+		inventory[index].Raw[itemReadyOffset] = 0
 	}
 	if !wasReady {
 		inventory[state.item].Raw[itemReadyOffset] = 1
 	}
 	state.message = ""
+}
+
+// itemCategory 是物品型別表的類別欄（`+0`：武器、甲、盾、護符戒指…）。
+func (a *app) itemCategory(item poolsave.Item) (uint8, bool) {
+	if a.itemTypes == nil || len(item.Raw) <= itemTypeOffset {
+		return 0, false
+	}
+	entry, err := a.itemTypes.Entry(item.Raw[itemTypeOffset])
+	if err != nil {
+		return 0, false
+	}
+	return entry.Category(), true
 }
 
 func (a *app) equipmentInput() {
