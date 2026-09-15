@@ -4,28 +4,12 @@
 本文件是給下一個 agent session 的開工提示詞；進度、證據與關閉狀態一律回到 issue，
 這裡不重複記流水帳。
 
-## 現況（2026-09-15 盤點）
+## 現況
 
-open issue 只剩三條：#5 是唯一 agent 能自主推進的；#6 要人在 Windows／macOS 真機上
-跑回填；#17 的提示詞已寫在 issue 內，且卡在使用者尚未定案的視覺聖經。**這一輪只做 #5。**
-
-#5 已跑兩輪自然路徑（證據在 issue 留言）：
-
-| 已自然走到 | 證據 |
-|---|---|
-| 正常按鍵建 6 人隊伍、首戰、貧民窟委任、F10 存檔／回標題／L 讀檔延續 | 第一輪 |
-| Sokal Keep、搭船返城、City Hall 交件 | `4AA7=FF`、`4AC1=2` |
-| WEST／BAY 荒野口袋（依 spec 105 接受隨機樹林／廢墟／洞穴事件並重擲位移）、ECL 25／26／27 | 第二輪，補了 `INVESTIGATE` |
-| 金字塔 ECL 22／23、城市西區 ECL 18、井下 ECL 29／32 | 第二輪 |
-
-**卡點**：通用探索器在 ECL 18 與港務長路線反覆循環，測試撞 5 分鐘上限。這是導航器
-沒有「委任狀態 → 下一個目標 → 已知出口」狀態機的失敗，不是遊戲規則失敗。第一輪的
-GEO1/31（ECL1 block 24，無牆面出口）同型。
-
-**工作樹有未提交進度**：`cmd/pool-game/mainline_probe_test.go`（872 行，
-`TestMainlineProbeNaturalPartyFirstBattle`）、`password_door_test.go`、`tactical_pilot_test.go`
-三個新檔，加上 `coverage_test.go`／`main.go`／`wilderness_explore_test.go` 等 8 檔共
-約 1,170 行修改。這批碼的測試**目前不通過**。
+以 GitHub #5 的最新留言與 [`docs/playtest/mainline-end-to-end.md`](../playtest/mainline-end-to-end.md)
+為準；路線本身在 [spec 137](../spec/137-mainline-route.md)。2026-09-15 第三輪之後：
+路線層從標題到結局的狀態機已經接通（commit `c713d2c`），但戰後生命值寫回之後，
+正常建角的一級隊伍在貧民窟第 3～4 場全滅——下一段是測試駕駛的玩家策略層（#22）。
 
 ## 提示詞（可直接貼給 agent）
 
