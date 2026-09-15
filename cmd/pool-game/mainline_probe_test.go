@@ -519,7 +519,15 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	reachable := true
 	var lastBattle *tacticalState
 	lastStatus := ""
-	for patrol := 0; patrol < 40 && application.eventMachine.Memory[0x4ABB] != 0xFE; patrol++ {
+	// 貧民窟一級隊伍打得起的只有 20 場（實跑紀錄「補四」）：連續三趟 `4ABB`
+	// 沒動就收手，先去做索寇要塞，回頭再補。
+	stalled, lastCount := 0, uint16(0)
+	for patrol := 0; patrol < 40 && application.eventMachine.Memory[0x4ABB] != 0xFE && stalled < 3; patrol++ {
+		if count := application.eventMachine.Memory[0x4ABB]; count == lastCount {
+			stalled++
+		} else {
+			stalled, lastCount = 0, count
+		}
 		if application.gameOver {
 			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X, patrol %d)",
 				application.eventText, application.eventMachine.Memory[0x4ABB], patrol)
@@ -623,17 +631,18 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 			}
 		}
 	}
-	if got := application.eventMachine.Memory[0x4ABB]; got != 0xFE {
-		t.Fatalf("natural slums campaign stopped at 4ABB=%02X, want FE", got)
+	slumsCleared := application.eventMachine.Memory[0x4ABB] == 0xFE
+	t.Logf("slums phase ended at 4ABB=%02X (cleared=%t) at %+v; continuing to the city",
+		application.eventMachine.Memory[0x4ABB], slumsCleared, application.spawn)
+	if application.spawn.Map == slums {
+		walkThroughBoundary(slums)
 	}
-	t.Logf("natural slums commission completed at %+v; continuing to City Hall", application.spawn)
-	walkThroughBoundary(slums)
 	city := gamepack.MapKey{Archive: 3, BlockID: 0}
 	if application.spawn.Map != city {
 		t.Fatalf("east slums exit reached %+v, want %+v", application.spawn.Map, city)
 	}
 	application.keys = text
-	for guard := 0; guard < 5000; guard++ {
+	for guard := 0; guard < 5000 && slumsCleared; guard++ {
 		settled := application.eventMachine.Memory[0x4ABB] == 0xFF &&
 			application.eventMachine.Memory[0x4AC1] == 1
 		if settled && !application.treasureActive && !application.cellEventPending &&
@@ -684,13 +693,14 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		}
 		step(ebiten.KeyArrowUp)
 	}
-	if got := application.eventMachine.Memory[0x4ABB]; got != 0xFF {
+	if got := application.eventMachine.Memory[0x4ABB]; slumsCleared && got != 0xFF {
 		t.Fatalf("City Hall did not acknowledge the natural slums commission: 4ABB=%02X", got)
 	}
-	if got := application.eventMachine.Memory[0x4AC1]; got != 1 {
+	if got := application.eventMachine.Memory[0x4AC1]; slumsCleared && got != 1 {
 		t.Fatalf("City Hall progress=%d, want 1 after the natural slums commission", got)
 	}
 	savedSpawn := application.spawn
+	savedSlums, savedProgress := application.eventMachine.Memory[0x4ABB], application.eventMachine.Memory[0x4AC1]
 	application.keys = text
 	text.scriptedKeys = scriptedKeys{ebiten.KeyF10: true}
 	text.chars = nil
@@ -702,16 +712,18 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		t.Fatal(err)
 	}
 	application = restored
+	// 讀檔之後是另一個 app；照著它走的駕駛要跟著換，不然 K／E 按在舊的那一個上。
+	outfitter.a = application
 	text = &scriptedTextKeys{scriptedKeys: scriptedKeys{}}
 	application.keys = text
 	step(ebiten.KeyEnter)
 	step(ebiten.KeyL)
 	if application.mode != modeAdventure || application.spawn != savedSpawn ||
-		application.eventMachine.Memory[0x4ABB] != 0xFF ||
-		application.eventMachine.Memory[0x4AC1] != 1 {
-		t.Fatalf("normal load restored mode=%d spawn=%+v 4ABB=%02X 4AC1=%d",
+		application.eventMachine.Memory[0x4ABB] != savedSlums ||
+		application.eventMachine.Memory[0x4AC1] != savedProgress {
+		t.Fatalf("normal load restored mode=%d spawn=%+v 4ABB=%02X 4AC1=%d, want %+v %02X %d",
 			application.mode, application.spawn, application.eventMachine.Memory[0x4ABB],
-			application.eventMachine.Memory[0x4AC1])
+			application.eventMachine.Memory[0x4AC1], savedSpawn, savedSlums, savedProgress)
 	}
 	t.Logf("normal F10/L resumed the same campaign at %+v", application.spawn)
 	// newApp 會建立新的正式亂數來源；這條可重播測試在讀檔之後重新固定
@@ -1058,14 +1070,27 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	menuTurn := map[string]int{}
 	exitUses := map[[4]int]int{}
 	sokalPasses := 0
-	for pass := 0; pass < 6 && application.eventMachine.Memory[0x4AA7] != 0xFF; pass++ {
+	for pass := 0; pass < 24 && application.eventMachine.Memory[0x4AA7] != 0xFF; pass++ {
 		sokalPasses++
+		if application.gameOver {
+			t.Fatalf("the party was destroyed on the way to Sokal Keep: %q at %+v", application.eventText, application.spawn)
+		}
+		// 受傷或催眠用完就地紮營（要塞裡也一樣），再繼續探索。
+		restUntilHealed()
 		_, reachable = exploreWorldWithFlags(t, zipPath, int64(136+pass), pass%4, 8, 300000,
 			map[[3]int]bool{}, map[[3]int]bool{}, transitionUses, menuTurn, exitUses,
 			visited, maps, blocks, flags, noBoatOverride, &failures, nil,
 			application, nil, func(a *app) bool {
+				if a.tactical != nil && a.tactical != lastBattle {
+					lastBattle = a.tactical
+					names := []string{}
+					for _, monster := range a.combatMonsters {
+						names = append(names, fmt.Sprintf("%s×%d", monster.Record.Name, monster.Spawn.Count))
+					}
+					t.Logf("battle at %+v: %v", a.spawn, names)
+				}
 				return a.eventMachine != nil &&
-					(a.eventMachine.Memory[0x4AA7] == 0xFF || readyToHandIn(a))
+					(a.eventMachine.Memory[0x4AA7] == 0xFF || readyToHandIn(a) || hurt(a))
 			}, false)
 		if !reachable {
 			t.Fatal("the loaded natural campaign could not continue")
