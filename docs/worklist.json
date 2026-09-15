@@ -154,6 +154,38 @@
         "note": "建議順序還標著待實跑就是還沒做；探針照順序跑完再把那個標記拿掉"
       },
       "github_issue": 26
+    },
+    {
+      "id": "training-hall-fee-and-doors",
+      "layer": "feature",
+      "title": "訓練所不收 1000 金、不分職業門",
+      "body": "說明書 p.9 收 1000 金；四道門各寫職業遮罩進 6DA8h（spec 097）。remake 的 trainMember 傳 hallMask 0、不扣錢。",
+      "acceptance": "overlay-16 找到扣款點寫進 spec 097；trainMember 扣錢並照門的遮罩限制職業；錢不夠／門不對各一條測試從 Update() 走。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/training.go"
+        ],
+        "pattern": "仍然不限制",
+        "note": "training.go 檔頭還自承不限制職業就是還沒接"
+      },
+      "github_issue": 29
+    },
+    {
+      "id": "shop-platinum-payment",
+      "layer": "feature",
+      "title": "武具店只收金幣：白金換不成裝備",
+      "body": "shop.go 的 buy 只看 Money[Gold]；委任獎賞主要是白金，探針拿到 500 白金買不了板甲。",
+      "acceptance": "原版商店的付款順序與找零寫進 spec；buy 照原版扣；一條測試用白金買東西從 Update() 走。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/shop.go"
+        ],
+        "pattern": "換算還沒閉合",
+        "note": "shop.go 還自承換算沒閉合就是還沒接"
+      },
+      "github_issue": 30
     }
   ]
 }

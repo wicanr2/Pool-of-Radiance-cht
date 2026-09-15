@@ -55,6 +55,12 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **紮營休息沒有跑各區的 ECL 入口 2：打斷參數永遠是 0。** `restParty` 只推時鐘不跑入口 2，`6DD2h`／`6DD3h` 永遠 0，任何地方休息都不會被打擾；原版貧民窟街上 24／24、城區 1／101。
       **驗收**：休息時跑入口 2；探針在貧民窟街上休息會被打斷、屋內不會。
       **討論**：[#24](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/24)
+- [ ] **訓練所不收 1000 金、不分職業門。** 說明書 p.9 收 1000 金；四道門各寫職業遮罩進 6DA8h（spec 097）。remake 的 trainMember 傳 hallMask 0、不扣錢。
+      **驗收**：overlay-16 找到扣款點寫進 spec 097；trainMember 扣錢並照門的遮罩限制職業；錢不夠／門不對各一條測試從 Update() 走。
+      **討論**：[#29](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/29)
+- [ ] **武具店只收金幣：白金換不成裝備。** shop.go 的 buy 只看 Money[Gold]；委任獎賞主要是白金，探針拿到 500 白金買不了板甲。
+      **驗收**：原版商店的付款順序與找零寫進 spec；buy 照原版扣；一條測試用白金買東西從 Update() 走。
+      **討論**：[#30](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/30)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
