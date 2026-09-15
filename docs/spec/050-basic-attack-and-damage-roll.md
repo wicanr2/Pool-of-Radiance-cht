@@ -141,7 +141,15 @@ GOBLIN 轉成狀態 4 不在本 primitive 內，不把它猜成 remake 的狀態
 
 ## 明確排除
 
-- `1B15h` 的 effective AC modifier 細目；
+- ~~`1B15h` 的 effective AC modifier 細目~~ ——2026-09-15 讀完
+  （`docs/audit/ida-overlay13-range-ac-modifier.json`）：它只是**射程**修正。
+  `f(AC 出參, 目標, 攻擊者)`：距離＝overlay-25 entry 33；目標若是遠程（entry 43 非 0）
+  就拿武器型別表 `+0Ch` 的 `(射程−1)/3` 當一段，否則一段就是距離本身；超過一段
+  AC 加 2，再超過一段再加 3。呼叫端 `15ABh` 之前另有 `2558h`
+  （`ida-overlay13-backstab-check.json`）：攻擊者有賊等級（`+9Ch`）、武器型別
+  7／8／22h..25h、身上甲的型別 32h、站在目標背後（`261Bh` 對 runtime `+9`）→
+  背刺，AC 改用目標 `+112h − 2`。**睡著／定身的目標沒有自動命中**——效果群組
+  16（目標側命中修正）是 `19h 47h 25h 2Fh 30h 59h`，不含 `34h`／`35h`（spec 112）。
 - `DS:4937h +6E0h/+6E2h` 的來源。（`02E2h` 的 effect codes `0Ah` 與 `10h`
   已經解出來了：`0Ah` 是**攻擊者**身上的命中修正
   `01h 02h 21h 24h 31h 03h 06h 12h 1Ah`，`10h` 是**目標**身上的
