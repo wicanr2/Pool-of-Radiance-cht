@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	"github.com/wicanr2/golden-box-remake-engine/geometry"
 )
 
 // 野外的走法：瞄地點表，而且照 GEO 的牆規劃路線。
@@ -266,6 +267,64 @@ func wildernessNextFacing(a *app, zipPath string, walk *wildernessWalk) (uint8, 
 	return walk.route[0], true
 }
 
+// wildernessReturnFacing 只做一件事：從西側荒野圖一路往東回到圖 27 的
+// (9,29) 船格。先嘗試不穿過其他地點格；若目前這座平鋪迷宮沒有那種路，才
+// 放寬成可經過地點的正常步行，事件若把隊伍帶走就由上層重新規劃。
+// 所有移動仍由 Update() 的正常方向鍵完成。
+func wildernessReturnFacing(a *app, zipPath string, walk *wildernessWalk) (uint8, bool) {
+	block := int(a.eventSession.CurrentBlockID())
+	here := [2]int{int(a.eventMachine.Memory[wildernessX]),
+		int(a.eventMachine.Memory[wildernessY])}
+	if block != walk.block {
+		walk.block, walk.route, walk.steps = block, nil, 0
+		walk.at = here
+	}
+	switch {
+	case len(walk.route) == 0:
+	case here == walk.at:
+		// 這一 tick 只轉向，保留原路線。
+	case here == wildernessAdvance(walk.at, walk.route[0]):
+		walk.route, walk.at = walk.route[1:], here
+	default:
+		walk.route = nil
+		walk.at = here
+	}
+	if len(walk.route) != 0 {
+		return walk.route[0], true
+	}
+	if block == 27 {
+		boat := [2]int{9, 29}
+		if here == boat {
+			return 0, false
+		}
+		walk.route = wildernessRoute(a, here, boat, wildernessPlaceSet(zipPath, block))
+		if len(walk.route) == 0 {
+			walk.route = wildernessRoute(a, here, boat, nil)
+		}
+	} else if block == 25 || block == 26 {
+		if here[0] == wildernessMaxX && wildernessCanLeave(a, here, 1) {
+			return 1, true
+		}
+		route, ok := wildernessCrossingRow(a, here, wildernessMaxX, 1,
+			wildernessPlaceSet(zipPath, block), walk.rowPick)
+		if !ok {
+			route, ok = wildernessCrossingRow(a, here, wildernessMaxX, 1,
+				nil, walk.rowPick)
+		}
+		if !ok {
+			return 0, false
+		}
+		walk.route = route
+	} else {
+		return 0, false
+	}
+	walk.at = here
+	if len(walk.route) == 0 {
+		return 0, false
+	}
+	return walk.route[0], true
+}
+
 // planWildernessRoute 規劃下一條路線：先跨到還沒去過的鄰圖，都去過了才走這
 // 一張自己的地點。
 //
@@ -432,16 +491,9 @@ func TestTheWildernessWalkReachesTheWesternSheet(t *testing.T) {
 		if err := press(application, key); err != nil {
 			t.Fatal(err)
 		}
-		// 地點選單選最後一項：那通常是「離開／不進去」，留在野外才走得完。
-		for tick := 0; tick < 200 &&
-			(application.cellEventPending || application.cellWaitingMenu); tick++ {
-			if application.cellWaitingMenu && len(application.cellMenuOptions) > 1 &&
-				application.cellMenuCursor != len(application.cellMenuOptions)-1 {
-				press(application, ebiten.KeyArrowRight)
-				continue
-			}
-			press(application, ebiten.KeyEnter)
-		}
+		// 地點選單選最後一項：那通常是「離開／不進去」，留在野外才走得完；
+		// 隨機遭遇交給戰術駕駛（drainWildernessEvents）。
+		drainWildernessEvents(application)
 		if !application.inWilderness() {
 			break
 		}
@@ -520,7 +572,25 @@ func TestAnAreaMapStepLeavesTheWildernessPositionAlone(t *testing.T) {
 
 // drainWildernessEvents 把格子事件與選單按掉，讓下一次方向鍵真的送進移動。
 func drainWildernessEvents(a *app) {
-	for tick := 0; tick < 200 && (a.cellEventPending || a.cellWaitingMenu); tick++ {
+	// 野外的隨機遭遇也要打：以前這裡只按 ENTER，隊伍在戰術盤上不出手被打光，
+	// 而戰敗又不寫回生命值，走路就照常繼續——測試因此「通過」。戰後寫回
+	// 之後（spec 137）全滅會停在 The END!，所以遭遇交給戰術駕駛。
+	for tick := 0; tick < 4000 && (a.cellEventPending || a.cellWaitingMenu ||
+		a.encounter != nil || a.tactical != nil || a.combatActive); tick++ {
+		switch {
+		case a.tactical != nil:
+			press(a, wildernessPilot.key(a))
+			continue
+		case a.encounter != nil:
+			for guard := 0; guard < 8 && a.cellMenuOptions[a.cellMenuCursor] != "COMBAT"; guard++ {
+				press(a, ebiten.KeyArrowRight)
+			}
+			press(a, ebiten.KeyEnter)
+			continue
+		case a.combatActive:
+			press(a, ebiten.KeyEnter)
+			continue
+		}
 		if a.cellWaitingMenu && len(a.cellMenuOptions) > 1 &&
 			a.cellMenuCursor != len(a.cellMenuOptions)-1 {
 			press(a, ebiten.KeyArrowRight)
@@ -529,6 +599,9 @@ func drainWildernessEvents(a *app) {
 		press(a, ebiten.KeyEnter)
 	}
 }
+
+// wildernessPilot 是野外測試共用的戰術駕駛。
+var wildernessPilot = &tacticalPilot{}
 
 // 野外 → 城西緣 → 區塊 18 → 北邊界 → 區塊 9。
 //
@@ -610,5 +683,35 @@ func TestTheNorthEdgeOfBlockEighteenLeadsToBlockNine(t *testing.T) {
 	}
 	if got := application.spawn.Map.BlockID; got != 9 {
 		t.Fatalf("地圖是 GEO%d/%d，要 GEO2/9", application.spawn.Map.Archive, got)
+	}
+}
+
+func TestGraveyardVampireTerrainInventory(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	catalog, err := gamepack.ReadDOSGeometryCatalog(zipPath)
+	if err != nil {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	geoMap, ok := catalog.MapByBlock(10)
+	if !ok {
+		t.Fatal("GEO block 10 is missing")
+	}
+	cells := map[uint8][][2]int{25: nil, 28: nil}
+	for y := 0; y < geometry.Height; y++ {
+		for x := 0; x < geometry.Width; x++ {
+			cell, _ := geoMap.Grid.Cell(x, y)
+			terrain := cell.Terrain & 0x7F
+			if _, wanted := cells[terrain]; wanted {
+				cells[terrain] = append(cells[terrain], [2]int{x, y})
+			}
+		}
+	}
+	for _, terrain := range []uint8{25, 28} {
+		if len(cells[terrain]) == 0 {
+			t.Fatalf("GEO4/10 has no terrain-%d vampire event", terrain)
+		}
+	}
+	if len(cells[25]) == 0 || len(cells[28]) == 0 {
+		t.Fatal("GEO4/10 is missing one of the two vampire event terrains")
 	}
 }

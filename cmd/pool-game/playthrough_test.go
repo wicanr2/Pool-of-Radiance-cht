@@ -317,8 +317,24 @@ func TestPassiveCombatTerminates(t *testing.T) {
 		t.Fatalf("combat never ended: round %d, status %q, foe log %q",
 			application.tactical.Round, application.tactical.Status, application.tactical.FoeLog)
 	}
-	if !strings.Contains(application.statusLine, "defeated") {
-		t.Fatalf("a party that never fought back ended with %q", application.statusLine)
+	// 不出手的隊伍會被打光：原版戰後主流程（overlay-05 `14CAh`）印
+	// `The END!`／`The monsters rejoice for the party has been destroyed`，
+	// 等一鍵（spec 137）。
+	if !strings.Contains(application.eventText, "destroyed") || !application.gameOver {
+		t.Fatalf("a party that never fought back ended with %q / %q", application.eventText, application.statusLine)
+	}
+	// 倒下的人要寫回隊伍：生命值 0、狀態是倒地／死亡（全滅那一支不換算）。
+	for _, member := range application.state.Party {
+		if member.CurrentHP != 0 || (member.Status != combat.DyingState && member.Status != combat.DeadState) {
+			t.Fatalf("%s ended the rout with hp=%d status=%d; combat never wrote back",
+				strings.TrimSpace(member.Name), member.CurrentHP, member.Status)
+		}
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if application.mode != modeTitle || application.gameOver {
+		t.Fatalf("after The END! the game is in mode %d (gameOver=%t), want the title", application.mode, application.gameOver)
 	}
 }
 
@@ -897,12 +913,11 @@ func escapeKeyForWalk(application *app) (ebiten.Key, bool) {
 		// 旅店的過夜會開紮營畫面（`38h PROGRAM` 值 9，spec 081）。
 		return ebiten.KeyEscape, true
 	case application.tactical != nil:
-		if application.tactical.Prompt {
-			if application.tactical.sideCounts().Foes == 0 {
-				return ebiten.KeyN, true
-			}
-			return ebiten.KeyY, true
-		}
+		// 戰術盤交給駕駛打：以前這裡只按 ENTER，隊伍不出手被打光，而戰敗
+		// 不寫回生命值，走路就照常繼續。戰後寫回之後（spec 137）全滅會停在
+		// The END!，所以要真的打。
+		return walkPilot.key(application), true
+	case application.gameOver:
 		return ebiten.KeyEnter, true
 	case application.treasureActive && len(application.cellMenuOptions) != 0:
 		if want := treasureMenuChoice(application.cellMenuOptions); want != application.cellMenuCursor {
@@ -919,6 +934,9 @@ func escapeKeyForWalk(application *app) (ebiten.Key, bool) {
 	}
 	return 0, false
 }
+
+// walkPilot 是 escapeKeyForWalk 用的戰術駕駛。
+var walkPilot = &tacticalPilot{}
 
 // planInsideThisArea 找最近一格沒踩過的，路徑不跨出這一區的邊界。
 func planInsideThisArea(application *app, walked map[[2]int]bool) []exploreStep {

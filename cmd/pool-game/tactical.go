@@ -260,6 +260,11 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 
 	allies, traitors := make([]int, 0, len(a.state.Party)), make([]int, 0, 1)
 	for index, member := range a.state.Party {
+		// 昏迷（4）、倒地（5）與死亡（6）的人不上戰場：狀態是戰後寫回的
+		// （`storeCombatHitPoints`），不排除的話 0 HP 的人會拿預設的 8 HP 再打一場。
+		if member.Status == 4 || member.Status == combat.DyingState || member.Status == combat.DeadState {
+			continue
+		}
 		if member.Side != 0 {
 			traitors = append(traitors, index)
 			continue
@@ -1745,6 +1750,14 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	// 先把效果寫回隊伍，再把盤面丟掉——`a.tactical` 下一行就被清成 nil。
 	// 勝敗都寫：串列在原版長在角色記錄上，不會因為戰鬥收場而清空。
 	a.storeCombatEffects(a.tactical)
+	// 生命值與狀態同樣要寫回。戰鬥的生命值是另一份陣列，以前只讀不寫，
+	// 於是每一場打完隊伍都回到滿血、倒下的人也站起來——貧民窟 25 場與
+	// 城堡的兩場才會被一支 4 HP 的一級隊伍「打過」（2026-09-15，spec 137）。
+	// （`tacticalPreview` 在真的遭遇裡也是 true——它是「戰術盤開著」不是
+	// 「F5 預覽」；分辨用的是 `combatActive`。）
+	if staged {
+		a.storeCombatHitPoints(a.tactical, outcome)
+	}
 	a.tacticalPreview, a.tactical = false, nil
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
@@ -1757,21 +1770,23 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		return nil
 	}
 	if outcome != combat.CombatVictory {
-		// 輸掉之後**要把排好的遭遇清掉**，否則同一場架會被重新排出來，
-		// 隊伍的生命值又回到滿的（戰鬥的生命值是另一份陣列，沒有寫回隊伍），
-		// 於是打輸、重來、再打輸——實測那個迴圈永遠不會停，從外面看就是
-		// 遊戲不動了。
-		//
-		// **原版輸掉之後做什麼還沒讀**（overlay-08 `0868h` 判完就返回給呼叫端，
-		// 呼叫端那一段還沒解）。所以這裡只做「不再重來」，沒有補上結束流程。
+		// 輸掉之後**要把排好的遭遇清掉**，否則同一場架會被重新排出來。
 		a.combatActive, a.combatMonsters = false, nil
-		a.statusLine = "Party defeated; the post-combat script does not run."
-		return nil
+		if !staged {
+			a.statusLine = "Tactical preview finished; no encounter was staged."
+			return nil
+		}
+		return a.partyDestroyed()
 	}
 	if !staged {
 		// F5 開的是預覽盤面，不是 ECL 排出來的遭遇，所以沒有戰後腳本可以續跑。
 		a.statusLine = "Tactical preview finished; no encounter was staged."
 		return nil
+	}
+	// 戰後主流程（overlay-05 `14CAh`）一進來就把結果碼 `6DC7` 清成 0；
+	// 腳本拿它判勝負（`COMPARE @6DC7, 128 ; IF >` 是被打退，spec 136）。
+	if a.eventMachine != nil {
+		a.eventMachine.Memory[0x6DC7] = 0
 	}
 	a.awardCombatExperience()
 	a.combatActive, a.combatMonsters = false, nil
@@ -1786,6 +1801,64 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	// 這樣卡住的：打贏泰倫斯拉克斯之後 `A82Ah PROGRAM 08` 沒有人接，
 	// 後面的結局文字與回到菲蘭的 `NEWECL 0` 一條都不會跑。
 	return a.consumeInitialSearch(result)
+}
+
+// storeCombatHitPoints 把戰場上的生命值與狀態寫回隊伍（角色記錄 `+11Bh`／
+// `+10Ch`）。狀態的換算照 overlay-05 `04ADh` 的 `0636h..0686h`，只在**打贏**
+// 時做：3 → 0、5（倒地）→ 4、4 而且還有 HP → 0；全滅那一支（`4960h != 0`）
+// 跳過換算，人怎麼倒的就怎麼留。
+func (a *app) storeCombatHitPoints(state *tacticalState, outcome combat.CombatOutcome) {
+	if state == nil {
+		return
+	}
+	for index := 1; index < len(state.Roster) && index < len(state.PartySlot); index++ {
+		slot := state.PartySlot[index]
+		if slot < 0 || slot >= len(a.state.Party) {
+			continue
+		}
+		member := &a.state.Party[slot]
+		hp := 0
+		if index < len(state.HitPoints) && state.HitPoints[index] > 0 {
+			hp = state.HitPoints[index]
+		}
+		status := member.Status
+		if index < len(state.States) {
+			status = state.States[index]
+		}
+		if outcome == combat.CombatVictory {
+			switch status {
+			case 3:
+				status = 0
+			case combat.DyingState:
+				status = 4
+			case 4:
+				if hp > 0 {
+					status = 0
+				}
+			}
+		}
+		member.CurrentHP, member.Status = hp, status
+		syncTrainedLibraryCharacter(&a.state, *member)
+	}
+}
+
+// partyDestroyed 是全滅（overlay-05 `14CAh` 的 `1557h` 分支）：結果碼
+// `6DC7 = 80h`，印 `The END!`／`The monsters rejoice for the party has been
+// destroyed`／`Press any key to continue`（三段字串在 overlay-05 `1471h`／
+// `147Ah`／`14B0h`），等一個鍵。戰後腳本**不續跑**——停在 COMBAT 邊界的
+// 那一份 pending 也要清掉，否則任何一個 ENTER 都會把腳本當成打贏往下跑。
+func (a *app) partyDestroyed() error {
+	if a.eventMachine != nil {
+		a.eventMachine.Memory[0x6DC7] = 0x80
+	}
+	a.cellEventPending, a.cellWaitingMenu, a.cellTextSticky = false, false, false
+	a.cellMenuOptions, a.cellMenuCursor = nil, 0
+	a.encounter = nil
+	a.eventText = "The END!\nThe monsters rejoice for the party has been destroyed"
+	a.eventLabel = ""
+	a.statusLine = "Press any key to continue"
+	a.gameOver = true
+	return nil
 }
 
 // sideCounts 數出兩邊還站著的人，對應原版的 DS:6772h 與 DS:6773h。

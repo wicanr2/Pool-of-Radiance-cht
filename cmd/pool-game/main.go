@@ -378,6 +378,9 @@ type app struct {
 	// （`114h`／`115h`／`116h`，spec 123）。
 	symbolBand4 graphics.Picture
 	endingActive      bool
+	// gameOver 是全滅之後的「The END!」畫面（overlay-05 `14CAh` 的 `1557h`
+	// 分支）：等任一鍵，然後回標題（spec 137）。
+	gameOver bool
 	endingPages      [][]gamepack.EndingLine
 	endingPage       int
 	// endingScene 是疊好的結局畫面（spec 108）；隊伍人數決定疊幾層。
@@ -658,6 +661,37 @@ func (a *app) justPressed(key ebiten.Key) bool {
 	return a.keys != nil && a.keys.JustPressed(key)
 }
 
+// anyKeyJustPressed 是「Press any key」那種等待：字母、數字、ENTER、空白與 ESC。
+func (a *app) anyKeyJustPressed() bool {
+	for key := ebiten.KeyA; key <= ebiten.KeyZ; key++ {
+		if a.justPressed(key) {
+			return true
+		}
+	}
+	for key := ebiten.KeyDigit0; key <= ebiten.KeyDigit9; key++ {
+		if a.justPressed(key) {
+			return true
+		}
+	}
+	return a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) ||
+		a.justPressed(ebiten.KeyEscape)
+}
+
+// returnToTitleAfterGameOver 把冒險狀態放掉、回到標題。隊伍（已死）與存檔都
+// 留著：標題那邊的 L 會從存檔重建整個 campaign（restoreCampaign）。
+func (a *app) returnToTitleAfterGameOver() {
+	a.gameOver = false
+	a.eventSession, a.eventMachine = nil, nil
+	a.initialMap, a.initialWalls = nil, nil
+	a.tactical, a.combatActive, a.combatMonsters = nil, false, nil
+	a.encounter = nil
+	a.cellEventPending, a.cellWaitingMenu, a.cellTextSticky = false, false, false
+	a.cellMenuOptions, a.cellMenuCursor = nil, 0
+	a.eventText, a.eventLabel, a.statusLine = "", "", ""
+	a.introDone, a.tourActive, a.introWaiting = false, false, false
+	a.mode = modeTitle
+}
+
 func (a *app) inputChars() []rune {
 	if source, ok := a.keys.(interface{ Chars() []rune }); ok {
 		return source.Chars()
@@ -723,6 +757,15 @@ func (a *app) Update() error {
 			a.state = state
 		}
 		return ebiten.Termination
+	}
+	if a.gameOver {
+		// 「Press any key to continue」：原版在 `198h:4Dh` 等一個鍵之後把
+		// `4961h` 設成 1 交回主迴圈；那一段的消費者還沒讀，這裡回標題畫面
+		// （hypothesis），玩家可以從那裡 L 讀回上一個存檔。
+		if a.anyKeyJustPressed() {
+			a.returnToTitleAfterGameOver()
+		}
+		return nil
 	}
 	if a.justPressed(ebiten.KeyF1) {
 		a.help = !a.help
@@ -1181,6 +1224,13 @@ func (a *app) moveInitialDungeonForward() error {
 		a.eventMachine.Memory[wildernessRefuse] = 0
 	}
 	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
+		handled, err := a.runBlockedInitialCellEntry(dx, dy)
+		if err != nil {
+			return err
+		}
+		if handled {
+			return nil
+		}
 		// 鎖住的門會出 `Bash`／`Pick`／`Knock`／`Exit` 的選單（spec 122）；
 		// 實牆就只是擋著。
 		if a.beginDoorMenu(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
@@ -1213,11 +1263,13 @@ func (a *app) moveInitialDungeonForward() error {
 		// 接著印，兩者之間沒有等待指令，要玩家按一下的是腳本自己放的單選項
 		// 選單。這條路徑先前每一則都停一次，同一段話因此被切成好幾幀，而且
 		// 每停一次就多吃一個按鍵。
+		applied := false
 		for boundaries := 0; boundaries < 64 && presentationBoundary(result); boundaries++ {
 			if result.Events[0].Opcode == gamepack.PrintClearOpcode && result.Events[0].Text == "" {
 				a.eventText = ""
 			}
 			a.applyCellECLResult(result)
+			applied = true
 			if result.Exited {
 				// 印完就結束的那一種：字留在框裡，這一步照走。停在這裡的話，
 				// 空的 `12h PRINTCLEAR` 會變成一個沒有內容的 pending——畫面
@@ -1230,6 +1282,7 @@ func (a *app) moveInitialDungeonForward() error {
 			if err != nil {
 				return fmt.Errorf("continue Pool cell entry presentation: %w", err)
 			}
+			applied = false
 			// 換區塊會帶著要載入的資源，每一輪都要收——只在進迴圈前收一次的話，
 			// 迴圈裡換過去的那一份就漏了（`consumeInitialSearch` 是每一輪收）。
 			if result, err = a.consumeInitialTransitionResources(result); err != nil {
@@ -1239,6 +1292,14 @@ func (a *app) moveInitialDungeonForward() error {
 		if !result.Exited || result.WaitingForMenu ||
 			(len(result.Events) != 0 && !presentationBoundary(result)) {
 			return a.pauseInitialCellResult(result)
+		}
+		// **印完字之後才寫的座標也要套用。** 「YOU GO UPSTAIRS.」那一段是
+		// `PRINTCLEAR` → `SAVE 5 → C04B` → `SAVE 7 → C04C` → `NEWECL 7`
+		// （`ecl5/5 A467h`）：印字停一次、套用一次，之後續跑到 `EXIT` 的那一份
+		// result 不帶事件，上面的迴圈不會再套它——落點就留在原格再往前一步，
+		// 而不是腳本指定的 (5,7)。沒有事件的 `EXIT` 一樣要把 `Writes` 收下。
+		if !applied {
+			a.applyCellECLResult(result)
 		}
 		if wilderness {
 			if a.eventMachine.Memory[wildernessRefuse] == 255 {
@@ -1262,6 +1323,61 @@ func (a *app) moveInitialDungeonForward() error {
 	a.rememberGuideCell()
 	a.statusLine = "Moved using original GEO data; cell ECL returned normally."
 	return nil
+}
+
+// runBlockedInitialCellEntry 讓「目前地形＋目前朝向」的入口先判斷一次，再把
+// 普通實牆交回碰牆／門處理。Pool 有些樓梯與出口刻意朝著 GEO 牆面；若先以
+// CanMoveDungeonWrapped 返回，ECL 的方向表永遠看不到該輸入（spec 101）。
+func (a *app) runBlockedInitialCellEntry(dx, dy int) (bool, error) {
+	if a.eventMachine == nil || a.eventSession == nil || a.initialMap == nil {
+		return false, nil
+	}
+	beforeMap := a.initialMap.Key
+	beforeBlock := a.eventSession.CurrentBlockID()
+	a.cellMovedByScript = false
+	// 即使 GEO 把這一面標成牆，ECL 仍可能把它當成樓梯／區域出口。
+	// 入口 0 先讀 `@6DD5` 再決定要不要呼叫 `C01Eh`；若在這條 blocked
+	// 路徑漏寫旗標，出口永遠只會看到 0，最後停在 PICTURE 255 的外部邊界，
+	// 玩家便得到一個「等待外部事件」而不是正常換區（spec 101／125）。
+	a.setMapExitFlag(dx, dy)
+	result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
+	if err != nil {
+		return false, fmt.Errorf("dispatch blocked Pool initial cell: %w", err)
+	}
+	result, err = a.consumeInitialTransitionResources(result)
+	if err != nil {
+		return false, err
+	}
+	applied := false
+	for boundaries := 0; boundaries < 64 && presentationBoundary(result); boundaries++ {
+		if result.Events[0].Opcode == gamepack.PrintClearOpcode && result.Events[0].Text == "" {
+			a.eventText = ""
+		}
+		a.applyCellECLResult(result)
+		applied = true
+		if result.Exited {
+			a.cellTextSticky = a.eventText != ""
+			break
+		}
+		result, err = a.eventSession.RunUntilEvent(4096, nil, true)
+		if err != nil {
+			return false, fmt.Errorf("continue blocked Pool cell entry presentation: %w", err)
+		}
+		applied = false
+		if result, err = a.consumeInitialTransitionResources(result); err != nil {
+			return false, err
+		}
+	}
+	if !result.Exited || result.WaitingForMenu ||
+		(len(result.Events) != 0 && !presentationBoundary(result)) {
+		return true, a.pauseInitialCellResult(result)
+	}
+	// 同 moveInitialDungeonForward：沒有事件的 `EXIT` 也要把 `Writes` 收下。
+	if !applied {
+		a.applyCellECLResult(result)
+	}
+	return a.cellMovedByScript || a.initialMap.Key != beforeMap ||
+		a.eventSession.CurrentBlockID() != beforeBlock, nil
 }
 
 // wildernessFacingIndex 把四方位的朝向換成那張八支 `ON GOSUB` 的索引。
@@ -2736,6 +2852,18 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 			a.spawn.Facing = uint8(write.Value)
 		}
 	}
+	// DOS 版在回報 Sokal Keep 後，玩家回到港口便能向港務長選 EAST／WEST／BAY；
+	// `4A01 == 1` 會讓原版 ECL3/block 0 的港務長直接 EXIT，因此這個可見結果
+	// 要求交件收尾回到「手上沒有船票」的 0。ECL3/block 8 的直接寫入只看得到
+	// 職員入口先寫 1 與槽 1 結案寫 FF，overlay 也沒有可定位的直接 writer；
+	// 內部來源仍是 strong inference。本 adapter 也處理亡魂已結案、委任槽仍為
+	// FE 的返回狀態：若保留 `4A01 == FF`，下一次職員入口會走 BACK SO SOON
+	// 分支而跳過 reward／commission 掃描，正常玩家就永遠無法交差。範圍只限
+	// City Hall block 8，不把它泛化成所有委任或所有 NEWECL 的重設（spec 102）。
+	if a.eventSession != nil {
+		applySokalHandInTicketState(int(a.eclArchive), a.eventSession.CurrentBlockID(),
+			a.eventMachine)
+	}
 	// 文字框（spec 082）。`RunUntilEvent` 一遇到事件就返回，所以每個 result
 	// 通常只帶一則——文字框的狀態因此要跨 result 留著，不能每次重建。
 	//
@@ -2772,6 +2900,24 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 		}
 	}
 	a.updateJournalCue()
+}
+
+func applySokalHandInTicketState(archive int, block uint16, machine *eclvm.Machine) {
+	if archive != 3 || block != 8 || machine == nil {
+		return
+	}
+	// 槽 1 已結案，或亡魂已完成而槽 1 正等待本次 City Hall 結算時，
+	// 職員流程結束後都必須讓共用工作格回到「沒有進行中的委任」。
+	// 後者是由 ECL 讀寫與正常按鍵路徑交叉證實的 adapter 補齊。
+	pendingSokal := machine.Memory[0x4AA7] == uint16(gamepack.CityHallSlotPending) &&
+		machine.Memory[0x4A26] == 0xFF && machine.Memory[0x4A01] == 0xFF
+	if machine.Memory[0x4AA7] != 0xFF && !pendingSokal {
+		return
+	}
+	if machine.Memory[0x4A01] != 1 && !pendingSokal {
+		return
+	}
+	machine.Memory[0x4A01] = 0
 }
 
 func (a *app) applyECLResult(result eclvm.Result) {

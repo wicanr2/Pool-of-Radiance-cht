@@ -24,11 +24,13 @@ func TestFoesCloseOnACrowdedBoard(t *testing.T) {
 	}
 	application.roller = diceRoller{random: rand.New(rand.NewSource(29))}
 	application.eclSeed = 1
+	// 這條測的是敵方的繞路，不是隊伍撐不撐得住：生命值會寫回之後（spec 137），
+	// 走到擠的那一場之前先打的小場面會把 60 HP 磨光，所以治具給厚一點。
 	party := make([]poolsave.Character, 0, 6)
 	for index := 0; index < 6; index++ {
 		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
 			GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good",
-			Abilities: [6]int{18, 10, 10, 16, 10, 10}, MaxHP: 60, CurrentHP: 60,
+			Abilities: [6]int{18, 10, 10, 16, 10, 10}, MaxHP: 400, CurrentHP: 400,
 			PortraitHead: 1, PortraitBody: 1, IconSize: 1})
 	}
 	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
@@ -102,8 +104,9 @@ func TestFoesCloseOnACrowdedBoard(t *testing.T) {
 		t.Fatalf("戰鬥沒收尾：round %d, foe log %q",
 			application.tactical.Round, application.tactical.FoeLog)
 	}
-	if !strings.Contains(application.statusLine, "defeated") {
-		t.Fatalf("%d 隻敵人打不死一支完全不還手的隊伍，敵方大概沒繞過來：%q",
-			foes, application.statusLine)
+	// 全滅的收場是 The END!（overlay-05 `14CAh`，spec 137）。
+	if !strings.Contains(application.eventText, "destroyed") || !application.gameOver {
+		t.Fatalf("%d 隻敵人打不死一支完全不還手的隊伍，敵方大概沒繞過來：%q / %q",
+			foes, application.eventText, application.statusLine)
 	}
 }

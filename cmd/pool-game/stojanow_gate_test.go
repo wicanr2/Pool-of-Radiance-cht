@@ -344,7 +344,12 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 	for _, rotate := range []int{0, 3} {
 		routeStarted := time.Now()
 		application := walkStojanowGateIntoTheCastle(t)
-		tried := map[[3]int]bool{}
+		// 鍵要含 ECL 區塊：區塊 3（院子）與區塊 5（二樓）共用 GEO5/3 這一張圖，
+		// 只用地圖當鍵的話，在院子踩過 (1,3) 就不會在二樓再踩一次——而上樓到
+		// 區塊 7 的入口正是二樓的 (1,3) 朝東（`ecl5/5 9B28h`：地形 4 ＋ 朝向 1）。
+		// 症狀是「走到 5 卻永遠走不到 7」，而且取決於掃描順序：戰鬥的亂數一變，
+		// 先在院子踩到 (1,3) 的那一版就失敗。
+		tried := map[[4]int]bool{}
 		last := -1
 		for round := 0; round < 3000; round++ {
 			record(application)
@@ -360,9 +365,10 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 			if rotate == 0 && blocks[4] || rotate == 3 && blocks[5] && blocks[7] {
 				break
 			}
-			key := func(x, y int) [3]int {
-				return [3]int{int(application.spawn.Map.Archive),
-					int(application.spawn.Map.BlockID), y*100 + x}
+			key := func(x, y int) [4]int {
+				return [4]int{int(application.spawn.Map.Archive),
+					int(application.spawn.Map.BlockID),
+					int(application.eventSession.CurrentBlockID()), y*100 + x}
 			}
 			plan := planToCells(application, rotate, func(x, y int) bool {
 				return !tried[key(x, y)]
@@ -409,6 +415,24 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 			application.spawn.X, application.spawn.Y)
 	}
 	t.Logf("院子南緣路線耗時 %s", time.Since(southStarted))
+	// 三樓（區塊 7）不是掃格子掃得到的：上樓那一格在城堡內部腳本（區塊 5）
+	// 繞完四張 GEO 之後的 GEO5/3 (13,15)（spec 137）。以前這條測試走到 7 是
+	// 靠 `49C5` 沒投影時 `LOAD FILES @6E82` 讀到殘值、誤載 GEO5/4 撞上的；
+	// `49C5` 投影對了之後那條巧合就沒了，改走查證過的路。
+	stairsStarted := time.Now()
+	application = walkStojanowGateIntoTheCastle(t)
+	driver := &mainlineDriver{t: t, a: application, pilot: castlePilot,
+		step: func(key ebiten.Key) {
+			if err := press(application, key); err != nil {
+				t.Fatal(err)
+			}
+		}}
+	driver.castleUpstairs()
+	record(application)
+	t.Logf("內部繞四張圖上三樓：ECL block %d，GEO%d/%d (%d,%d)，耗時 %s",
+		application.eventSession.CurrentBlockID(), application.spawn.Map.Archive,
+		application.spawn.Map.BlockID, application.spawn.X, application.spawn.Y,
+		time.Since(stairsStarted))
 	names := make([]string, 0, len(maps))
 	for name := range maps {
 		names = append(names, name)

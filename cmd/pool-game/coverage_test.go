@@ -137,6 +137,26 @@ type exploreStep struct{ facing uint8 }
 // exploreDeltas 是四個朝向的位移，0 北、1 東、2 南、3 西（spec 076）。
 var exploreDeltas = [4][2]int{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
 
+// explorerCanTraverse 是測試導覽器的規劃邊。原始 GEO 把鎖門與閒門
+// 標成不可直接通行，但玩家走向它會先進入 BASH／PICK／KNOCK 選單。
+// 規劃器只將這兩類「可嘗試的門」納入路徑；門有沒有真正打開仍由
+// Update() 的正常輸入分派與角色能力決定，這裡不改地圖狀態。
+func explorerCanTraverse(app *app, x, y, facing int) bool {
+	if app.initialMap.Grid.CanMoveDungeonWrapped(x, y, facing*2) {
+		return true
+	}
+	// 目前只有 Stojanow 這組已完成任務卻回不去的地圖有直接證據：
+	// GEO7/22 與 GEO7/23 各被靜態門邊切成 5／22 個連通元件，而腳本要求
+	// 23→22→26 才能返回樞紐。全圖開放這個假設會讓貧民窟探索器誤走
+	// 西側邊界，所以在其他地圖仍只規劃原始 GEO 當下可通行的邊。
+	if app.spawn.Map.Archive != 7 ||
+		(app.spawn.Map.BlockID != 22 && app.spawn.Map.BlockID != 23) {
+		return false
+	}
+	flags, door := app.initialMap.Grid.WallDoorFlagsWrapped(x, y, facing*2)
+	return door && (flags == gamepack.DoorLocked || flags == gamepack.DoorBarred)
+}
+
 // explorePlan 從目前這一格廣度優先找到最近的一格「還沒踩過的」，
 // 回傳走過去要的朝向序列。走不到就回 nil。
 //
@@ -169,7 +189,7 @@ func explorePlan(app *app, visited, avoid map[[3]int]bool, banPass bool, rotate 
 		for step := 0; step < 4; step++ {
 			// rotate 讓每一趟從不同的方向先展開，見 planToCells 的說明。
 			facing := (step + rotate) % 4
-			if !app.initialMap.Grid.CanMoveDungeonWrapped(current.x, current.y, facing*2) {
+			if !explorerCanTraverse(app, current.x, current.y, facing) {
 				continue
 			}
 			x := current.x + exploreDeltas[facing][0]
@@ -252,6 +272,10 @@ var (
 	harbourApproachCell = [2]int{11, 2}
 	// dockCell 是碼頭那一格；踩上去就會開航線選單。
 	dockCell = [2]int{15, 1}
+	// civilisedPhlanBoatCell 是區域樞紐裡的回程船。連續主線實跑已從
+	// GEO5/5 (8,0) 經 TAKE BOAT 正常回到 GEO3/0；它是玩家要交差時的
+	// 明確目的地，不是直接改寫 spawn 的傳送接縫。
+	civilisedPhlanBoatCell = [2]int{8, 0}
 )
 
 // boundaryExitKeys 是這一張 GEO 邊界上「往外沒有牆」的格子。
@@ -299,6 +323,86 @@ func treasureMenuChoice(options []string) int {
 		return 0
 	}
 	return len(options) - 1
+}
+
+// pendingCommission 說同一個 campaign 是否有已完成、尚未回市政廳交差的槽。
+// 只讀原版腳本自己寫出的 FEh；探索器不製造或改寫委任旗標。
+func pendingCommission(application *app) bool {
+	if application.eventMachine == nil {
+		return false
+	}
+	for address := uint16(0x4AA6); address <= 0x4ABF; address++ {
+		if application.eventMachine.Memory[address] == uint16(gamepack.CityHallSlotPending) {
+			return true
+		}
+	}
+	return false
+}
+
+// cityHallPlan 在有待交差委任時，從城區走進市政廳，再走到職員 (5,5)。
+// 路線全部由目前 GEO 的牆資料規劃，最後一步也經 Update()，不改 spawn 或 ECL PC。
+func cityHallPlan(application *app, rotate int) []exploreStep {
+	if !pendingCommission(application) {
+		return nil
+	}
+	// `4A01 > 0` 會從 `9BA8h` 跳過 reward scan 到 `A7FDh`；區域腳本尚未
+	// 把這個共用工作格清回 0 時，不能只因委任槽是 FE 就搶先回 clerk。
+	// 重入時還要先踩職員外側 (4,5)，把 `4A06` 清零，再往東踏入職員格。
+	insideClerk := application.eclArchive == 3 && application.eventSession != nil &&
+		application.eventSession.CurrentBlockID() == 8
+	if application.eventMachine == nil {
+		return nil
+	}
+	// `4A01 == FF` 是已清除的索寇船票。費蘭接受實話後
+	//（`4AA7 >= FE`、`4A26 == FF`），正常下一步是回到職員處交差。
+	// 把所有非零值都視為有效船票會把探索器送回港務長、再次購買索寇船票；
+	// 因此只在這個亡魂已結案的狀態允許進市政廳，真正有效的船票
+	//（`4A01 == 1`）仍然擋住。
+	clearedSokalTicket := application.eventMachine.Memory[0x4A01] == 0xFF &&
+		application.eventMachine.Memory[0x4AA7] >= uint16(gamepack.CityHallSlotPending) &&
+		application.eventMachine.Memory[0x4A26] == 0xFF
+	if application.eventMachine.Memory[0x4A01] != 0 && !clearedSokalTicket && !insideClerk {
+		return nil
+	}
+	// City Hall 共用 GEO3/0 的地圖；進門後只有 ECL block 換成 8，spawn.Map
+	// 仍是 block 0。只看地圖鍵會把已進門的隊伍又帶回入口，形成 (3,4)／
+	// (4,4) 往返。
+	if insideClerk {
+		if application.eventMachine.Memory[0x4A06] != 0 {
+			return planToCells(application, 0, func(x, y int) bool { return x == 4 && y == 5 })
+		}
+		if int(application.spawn.X) == 4 && int(application.spawn.Y) == 5 {
+			return []exploreStep{{facing: 1}}
+		}
+		// 踏到職員格之後只需把文字／獎賞事件翻完；再送方向鍵會離開
+		// 職員，形成 (5,5)／(5,6) 往返。
+		if int(application.spawn.X) == 5 && int(application.spawn.Y) == 5 {
+			return nil
+		}
+		// 與職員重入的真實腳本相同：由 (4,5) 往東踏進 (5,5)。
+		return planToCells(application, 0, func(x, y int) bool { return x == 5 && y == 5 })
+	}
+	switch application.spawn.Map {
+	case (gamepack.MapKey{Archive: 2, BlockID: 20}):
+		// 野外回程船會把隊伍送到貧民窟（ECL block 20），不是直接送進
+		// City Hall。沿 GEO 的牆走到東側可通行邊界，再由正常前進鍵回城。
+		isEastExit := func(x, y int) bool {
+			return x == geometry.Width-1 &&
+				application.initialMap.Grid.CanMoveDungeonWrapped(x, y, 2)
+		}
+		plan := planToCells(application, rotate, isEastExit)
+		if isEastExit(int(application.spawn.X), int(application.spawn.Y)) {
+			plan = nil
+		}
+		return append(plan, exploreStep{facing: 1})
+	case (gamepack.MapKey{Archive: 3, BlockID: 0}):
+		plan := planToCells(application, rotate, func(x, y int) bool { return x == 3 && y == 4 })
+		if int(application.spawn.X) == 3 && int(application.spawn.Y) == 4 {
+			plan = nil
+		}
+		return append(plan, exploreStep{facing: 1})
+	}
+	return nil
 }
 
 // tacticalPilot 是探索用的「自己人怎麼打」：先試瞄準，打不到就往最近的敵人
@@ -354,9 +458,10 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 	if pilot.moves >= exploreMaxCombatSteps {
 		return ebiten.KeyEnter
 	}
-	if pilot.distance == nil || state.Roster[pilot.goal].FootprintClass == 0 {
+	if pilot.goalNeedsRefresh(state) {
 		target, ok := state.nearestReachableOpposing(state.Mover)
 		if !ok {
+			pilot.goal, pilot.distance = 0, nil
 			return ebiten.KeyEnter
 		}
 		pilot.goal = target
@@ -392,6 +497,18 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 	return tacticalStepKeys[best]
 }
 
+// goalNeedsRefresh 在讀取快取目標之前先驗證它仍是目前 roster 裡站著的敵人。
+// 戰鬥結束一個單位後 roster 可能縮短；只看 FootprintClass 會先以舊索引 panic，
+// 而沒有縮短但已倒下或倒戈的格子也不能繼續當目標。
+func (pilot *tacticalPilot) goalNeedsRefresh(state *tacticalState) bool {
+	if pilot.distance == nil || pilot.goal == 0 || int(pilot.goal) >= len(state.Roster) ||
+		int(pilot.goal) >= len(state.Friendly) || int(state.Mover) >= len(state.Friendly) {
+		return true
+	}
+	return state.Roster[pilot.goal].FootprintClass == 0 ||
+		state.Friendly[pilot.goal] == state.Friendly[state.Mover]
+}
+
 func boolInt(value bool) int {
 	if value {
 		return 1
@@ -424,6 +541,19 @@ func (pilot *tacticalPilot) adjacentToFoe(state *tacticalState) bool {
 // `9CACh`）踩到就把 `4A01` 寫回 1（spec 102），去港務長的路上經過就前功盡棄。
 func planToCellsAvoiding(app *app, rotate int, wanted func(x, y int) bool,
 	skip func(x, y int) bool) []exploreStep {
+	return planToCellsAvoidingWrap(app, rotate, wanted, skip, true)
+}
+
+// planToCellsWithoutWrapping 用在「先走到邊界、再刻意跨出去」的出口計畫。
+// GEO 的座標資料雖以 16×16 環狀取格，玩家從邊界往外走會先換區；規劃器若
+// 把另一側當成一步可達，送出的那一步其實會提早離開目前地圖。
+func planToCellsWithoutWrapping(app *app, rotate int, wanted func(x, y int) bool,
+	skip func(x, y int) bool) []exploreStep {
+	return planToCellsAvoidingWrap(app, rotate, wanted, skip, false)
+}
+
+func planToCellsAvoidingWrap(app *app, rotate int, wanted func(x, y int) bool,
+	skip func(x, y int) bool, wrap bool) []exploreStep {
 	type node struct{ x, y int }
 	start := node{int(app.spawn.X), int(app.spawn.Y)}
 	from := map[node]node{start: start}
@@ -441,13 +571,16 @@ func planToCellsAvoiding(app *app, rotate int, wanted func(x, y int) bool,
 		}
 		for step := 0; step < 4; step++ {
 			facing := (step + rotate) % 4
-			if !app.initialMap.Grid.CanMoveDungeonWrapped(current.x, current.y, facing*2) {
+			if !explorerCanTraverse(app, current.x, current.y, facing) {
 				continue
 			}
-			next := node{
-				x: geometry.WrapCoordinate(current.x+exploreDeltas[facing][0], geometry.Width),
-				y: geometry.WrapCoordinate(current.y+exploreDeltas[facing][1], geometry.Height),
+			nextX := current.x + exploreDeltas[facing][0]
+			nextY := current.y + exploreDeltas[facing][1]
+			if !wrap && (nextX < 0 || nextX >= geometry.Width || nextY < 0 || nextY >= geometry.Height) {
+				continue
 			}
+			next := node{x: geometry.WrapCoordinate(nextX, geometry.Width),
+				y: geometry.WrapCoordinate(nextY, geometry.Height)}
 			if _, seen := from[next]; seen {
 				continue
 			}
@@ -482,7 +615,7 @@ func planToCells(app *app, rotate int, wanted func(x, y int) bool) []exploreStep
 			// 不代表走得回來），所以固定順序每一趟都會走進同一個死角；
 			// 換個順序就會換一條路。
 			facing := (step + rotate) % 4
-			if !app.initialMap.Grid.CanMoveDungeonWrapped(current.x, current.y, facing*2) {
+			if !explorerCanTraverse(app, current.x, current.y, facing) {
 				continue
 			}
 			next := node{
@@ -552,7 +685,7 @@ const exploreMaxTargetTries = 12
 // exploreMaxWildernessSteps 是一趟在野外最多亂走幾步。野外沒有「這一格踩過
 // 了」可用（位置在 `DS:49C3h`／`DS:49C4h`，不是 GEO 格子，spec 105），
 // 所以隨機走不會自己停；沒有上限的話一趟就把整包預算花在那裡。
-const exploreMaxWildernessSteps = 800
+const exploreMaxWildernessSteps = 8000
 
 // explorerDoorKey 是同一趟探索裡一道門的穩定身分。選過的動作要跟著門，
 // 不能只跟著選單游標；BASH 失敗時選項可能仍留在原位。
@@ -604,7 +737,7 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit,
 	blocks map[int]bool, hardFailures *[]string) (int, bool) {
 	return exploreWorldWithFlags(t, zipPath, seed, rotate, rewalkLimit, budget,
 		avoid, walked, transitionUses, menuTurn, exitUses, visited, maps, blocks,
-		nil, noBoatOverride, hardFailures, nil)
+		nil, noBoatOverride, hardFailures, nil, nil, nil, nil, false)
 }
 
 // noBoatOverride 關掉航線覆寫（見 exploreWorldWithFlags 的 boat 參數）。
@@ -630,46 +763,51 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	avoid, walked map[[3]int]bool, transitionUses map[[3]int]int, menuTurn map[string]int,
 	exitUses map[[4]int]int, visited map[[3]int]bool, maps map[string]bool,
 	blocks map[int]bool, flags map[uint16]uint16, boat int,
-	hardFailures *[]string, overrides map[uint16]uint16) (int, bool) {
+	hardFailures *[]string, overrides map[uint16]uint16, existing *app,
+	holdMap *gamepack.MapKey, stop func(*app) bool, deferHandIn bool) (int, bool) {
 	t.Helper()
-	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
-	if err != nil {
-		return 0, false
-	}
-	application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
-	application.eclSeed = 1
-	party := make([]poolsave.Character, 0, 6)
-	for index := 0; index < 6; index++ {
-		member := poolsave.Character{Name: string(rune('A' + index)),
-			RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
-			AlignmentID: "lawful-good", Abilities: [6]int{18, 10, 10, 16, 10, 10},
-			// 白金給足：船資是一枚白金（spec 090），身上沒有的話港務長那
-			// 一段永遠停在「你的白金不夠」，探索器就永遠出不了海。
-			MaxHP: 60, CurrentHP: 60, PortraitHead: 1, PortraitBody: 1, IconSize: 1,
-			Money: [7]uint16{4: 20}}
-		if index == 0 {
-			member.ClassLevels = make([]uint8, gamepack.ClassThac0ClassCount)
-			member.ClassLevels[gamepack.ClassSlotFighter] = 1
-			member.ClassLevels[gamepack.ThiefClassSlotIndex] = 1
-			member.ThiefSkills = make([]uint8, gamepack.ThiefSkillCount)
+	application := existing
+	if application == nil {
+		var err error
+		application, err = newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+		if err != nil {
+			return 0, false
 		}
-		if index == 1 {
-			member.Memorised = []uint8{gamepack.KnockSpellID}
+		application.roller = diceRoller{random: rand.New(rand.NewSource(seed))}
+		application.eclSeed = 1
+		party := make([]poolsave.Character, 0, 6)
+		for index := 0; index < 6; index++ {
+			member := poolsave.Character{Name: string(rune('A' + index)),
+				RaceID: "dwarf", GenderID: "male", ClassID: "fighter",
+				AlignmentID: "lawful-good", Abilities: [6]int{18, 10, 10, 16, 10, 10},
+				// 白金給足：船資是一枚白金（spec 090），身上沒有的話港務長那
+				// 一段永遠停在「你的白金不夠」，探索器就永遠出不了海。
+				MaxHP: 60, CurrentHP: 60, PortraitHead: 1, PortraitBody: 1, IconSize: 1,
+				Money: [7]uint16{4: 20}}
+			if index == 0 {
+				member.ClassLevels = make([]uint8, gamepack.ClassThac0ClassCount)
+				member.ClassLevels[gamepack.ClassSlotFighter] = 1
+				member.ClassLevels[gamepack.ThiefClassSlotIndex] = 1
+				member.ThiefSkills = make([]uint8, gamepack.ThiefSkillCount)
+			}
+			if index == 1 {
+				member.Memorised = []uint8{gamepack.KnockSpellID}
+			}
+			party = append(party, member)
 		}
-		party = append(party, member)
-	}
-	application.state = poolsave.State{Schema: poolsave.Schema,
-		CharacterLibrary: party, Party: party}
-	application.saveState = func(poolsave.State) error { return nil }
-	press(application, ebiten.KeyEnter)
-	press(application, ebiten.KeyB)
-	for tick := 0; tick < 20000 && !application.introDone; tick++ {
-		if application.introWaiting || application.tourPage >= 0 {
-			press(application, ebiten.KeyEnter)
-			continue
+		application.state = poolsave.State{Schema: poolsave.Schema,
+			CharacterLibrary: party, Party: party}
+		application.saveState = func(poolsave.State) error { return nil }
+		press(application, ebiten.KeyEnter)
+		press(application, ebiten.KeyB)
+		for tick := 0; tick < 20000 && !application.introDone; tick++ {
+			if application.introWaiting || application.tourPage >= 0 {
+				press(application, ebiten.KeyEnter)
+				continue
+			}
+			application.keys = scriptedKeys{}
+			application.Update()
 		}
-		application.keys = scriptedKeys{}
-		application.Update()
 	}
 
 	var plan []exploreStep
@@ -695,6 +833,7 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// approached 記「這一格從這個方向走進去過了」。見 spec 102。
 	approached := map[[4]int]bool{}
 	var exit *areaExit
+	exitContext := [2]int{-1, -1}
 	var failures []string
 	// walked 由呼叫端給：量覆蓋率時直接傳 visited（跨趟累積，不重做已經走過
 	// 的路），要重走找出口時傳一份自己的。
@@ -704,6 +843,12 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// 走上去，所以那段期間先把它們塞進 avoid，了結之後再拿回來。
 	heldBack := map[[3]int]bool{}
 	lastMap, lastCell := application.spawn.Map, [2]int{-1, -1}
+	if int(lastMap.Archive) == cityArchive && int(lastMap.BlockID) == cityBlock {
+		avoid[[3]int{cityArchive, cityBlock, dockCell[1]*100 + dockCell[0]}] = true
+		if deferHandIn {
+			avoid[[3]int{cityArchive, cityBlock, 4*100 + 4}] = true
+		}
+	}
 	// 主線旗標一動，走過的地點就要重走一次：地點腳本是旗標閘門的
 	//（港務長 `9C4Bh` 比 `4A01`、`9C5Ch` 比 `4AA7`，spec 102），
 	// 同一格在不同旗標下講不同的話。只記「這個方向走進去過」的話，
@@ -721,10 +866,25 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	// 野外的目標追蹤（wilderness_explore_test.go）。兩種走法與跨圖的列由
 	// 種子決定：單一種走法量到的區塊不一樣，聯集才是覆蓋面。
 	wild := newWildernessWalk(seed%2 == 0, int(seed%32))
+	// 完成委託後先回文明區交差。東航線的下船點 (9,29) 同時是原版
+	// 地點 3「回文明區的船」（spec 105）；剛下船時必須先離開一格，
+	// 再以正常走路踏回去，才會重新觸發地點腳本。
+	returnWild := newWildernessWalk(true, int(seed%32))
+	returnDetour := newWildernessWalk(false, int(seed%32))
 	// dockTried 同理：票拿到手之後主動走一次碼頭，每個鎖住週期一次。
 	dockTried := false
+	// routeBought 只在五項航線選單真的按下選擇後成立；走到港務長門口不等於
+	// 已買票，否則會拿 `4AC4` 的舊目的地再次登船。
+	routeBought := false
+	// 同一堆寶物只嘗試 Share 一次；若還有不能整除或無法收入的餘額，
+	// 正常玩家路徑是 Exit 後確認留下，不能永遠重按 Share。
+	treasureShared := false
 walk:
 	for step := 0; step < budget; step++ {
+		if stop != nil && stop(application) {
+			reason = "指定的主線狀態已達成"
+			break
+		}
 		if application.eventMachine != nil {
 			now := [2]uint16{application.eventMachine.Memory[0x4AA7],
 				application.eventMachine.Memory[0x4A01]}
@@ -734,10 +894,13 @@ walk:
 					if application.eventSession != nil {
 						block = int(application.eventSession.CurrentBlockID())
 					}
-					t.Logf("4A01 %d→%d 於 GEO%d/%d (%d,%d) ECL block %d",
-						quest[1], now[1], application.spawn.Map.Archive,
-						application.spawn.Map.BlockID, application.spawn.X,
-						application.spawn.Y, block)
+					if application.spawn.Map.BlockID == 21 ||
+						application.eclArchive == cityArchive && block == cityBlock {
+						t.Logf("4A01 %d→%d 於 GEO%d/%d (%d,%d) ECL block %d",
+							quest[1], now[1], application.spawn.Map.Archive,
+							application.spawn.Map.BlockID, application.spawn.X,
+							application.spawn.Y, block)
+					}
 				}
 				quest = now
 				for key := range approached {
@@ -745,11 +908,30 @@ walk:
 				}
 			}
 		}
+		if !application.treasureActive {
+			treasureShared = false
+		}
 		if application.spawn.Map != lastMap {
+			// plan／exit 都是以上一張 GEO 的牆與座標算出的；LOAD FILES
+			// 換圖後若繼續送它的下一步，會在新圖重新規劃前誤踩另一個事件格，
+			// 甚至立刻彈回原圖。換圖本身已由正常 Update() 完成，這裡只清除
+			// 測試導覽器的過期導航狀態。
+			plan, exit = nil, nil
+			currentBlock := -1
+			if application.eventSession != nil {
+				currentBlock = int(application.eventSession.CurrentBlockID())
+			}
 			t.Logf("換圖 GEO%d/%d → GEO%d/%d 位置 (%d,%d) 朝向 %d",
 				lastMap.Archive, lastMap.BlockID,
 				application.spawn.Map.Archive, application.spawn.Map.BlockID,
 				application.spawn.X, application.spawn.Y, application.spawn.Facing)
+			if application.eventMachine != nil {
+				t.Logf("  換圖狀態 ECL%d/%d 4AA7=%d 4A01=%d 4A26=%d pending=%v",
+					application.eclArchive, currentBlock,
+					application.eventMachine.Memory[0x4AA7],
+					application.eventMachine.Memory[0x4A01],
+					application.eventMachine.Memory[0x4A26], pendingCommission(application))
+			}
 			// 換圖不是在「按下前進」那一 tick 發生的：格子事件先跑，
 			// LOAD FILES 是在事件那一段做掉的。所以要跨 tick 比對，
 			// 記下**換圖前站的那一格**。少了這個，avoid 永遠是空的，
@@ -761,6 +943,34 @@ walk:
 				avoid[key] = true
 			}
 			lastMap = application.spawn.Map
+			// 同一趟航程可能先從城區自然探索到 ECL4/21，開出
+			// 4AA7=FE，再依 Sokal 航線重新抵達同一張圖。第二次
+			// 抵達時，這張圖的腳本閘門已改變；不能沿用第一段
+			// 探索留下的 walked，否則會把回程碼頭當成唯一出口，
+			// 立刻彈回城區而沒有重跑新的事件。
+			if application.spawn.Map == (gamepack.MapKey{Archive: 4, BlockID: 21}) &&
+				application.eventMachine != nil &&
+				application.eventMachine.Memory[0x4AA7] == uint16(gamepack.CityHallSlotPending) {
+				for key := range walked {
+					if key[0] == 4 && key[1] == 21 {
+						delete(walked, key)
+					}
+				}
+			}
+			// 每次由外地回到城區，都是一趟新的航程：先重新向港務長選目的地，
+			// 再走碼頭。這兩個布林只記探索器已送過哪些正常按鍵，不代表遊戲狀態。
+			if int(application.spawn.Map.Archive) == cityArchive &&
+				int(application.spawn.Map.BlockID) == cityBlock {
+				harbourTried, dockTried, routeBought = false, false, false
+				// 一般探索不能把碼頭當成普通事件格；只有五項航線選單真的
+				// 買票後，下面的專用碼頭計畫才會放行這一格。
+				avoid[[3]int{cityArchive, cityBlock, dockCell[1]*100 + dockCell[0]}] = true
+				if deferHandIn {
+					// 同一趟航程先把可達的委任做完，再一起回報。職員入口
+					// 是 (4,4)；暫緩期間只擋這一格，不改任何 ECL 狀態。
+					avoid[[3]int{cityArchive, cityBlock, 4*100 + 4}] = true
+				}
+			}
 			// 踏上新的一張圖就先把邊界出口格擋起來。
 			//
 			// 不擋的話探索器是**走路走出去的，不是挑出口挑出去的**：規劃器
@@ -814,8 +1024,6 @@ walk:
 			settling := mustSettleSokalGhost(application)
 			if settling {
 				holdMainlineExits(application, avoid, heldBack, transitionUses)
-			} else {
-				harbourTried = false
 			}
 			if settling != heldHere {
 				heldHere = settling
@@ -1021,8 +1229,21 @@ walk:
 			// 寶物選單停在 View 上，一直按 Enter 只會一直看，出不去。
 			plan = nil
 			key := ebiten.KeyEnter
-			if want := treasureMenuChoice(application.cellMenuOptions); want != application.cellMenuCursor {
+			want := treasureMenuChoice(application.cellMenuOptions)
+			if !treasureShared && application.state.PooledMoney != ([7]uint32{}) {
+				for index, option := range application.cellMenuOptions {
+					if strings.EqualFold(option, "Share") {
+						want = index
+						break
+					}
+				}
+			}
+			if want != application.cellMenuCursor {
 				key = ebiten.KeyArrowRight
+			}
+			if key == ebiten.KeyEnter &&
+				strings.EqualFold(application.cellMenuOptions[application.cellMenuCursor], "Share") {
+				treasureShared = true
 			}
 			if err := press(application, key); err != nil {
 				failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
@@ -1146,45 +1367,119 @@ walk:
 					menuTurn[optionKey] < 4 {
 					want = 0
 				}
-				// 同一條路上要走到亡魂那一段：登陸的遭遇要選「交涉」，
-				// 費蘭問話則**看船票在不在手上**：
-				//
-				//   - `4A01 == 1`（手上有票，港務長不再開口）→ 選「說謊」，
-				//     `ABBDh` 會把 `4A01` 寫成 255，票就清掉了。
-				//   - 否則 → 選「說實話」，費蘭才會給 SAMOSUD 並把
-				//     `4AA7` 寫成 254（`ADAAh`），碼頭的其他航線才開。
-				//
-				// 說謊那一支**不寫 `4A26`**，所以亡魂還會再出現；說實話那一支
-				// 才寫（`ADA4h`），寫完就不再出現。兩件事因此都做得到。
+				// 索寇要塞上層的舊樓梯是雙向入口：第一次正常探索要下到
+				// GEO8/30，完成下層委任後由 `mainlineSokalExitPlan` 帶回
+				// 上層，這時同一格仍會再次顯示 YES／NO。玩家不會在剛爬
+				// 回來後又立刻下樓；固定選 NO 才能讓上層繼續走向荒野
+				// 出口。這只針對原文樓梯問句，不影響其他 YES／NO 地點。
+				if application.initialMap != nil &&
+					application.initialMap.Key == (gamepack.MapKey{Archive: 8, BlockID: 16}) &&
+					application.eventMachine != nil &&
+					application.eventMachine.Memory[0x4AA7] == 0xFF &&
+					strings.Contains(strings.ToUpper(application.eventText), "STAIRS") {
+					for index, option := range application.cellMenuOptions {
+						if strings.EqualFold(option, "NO") {
+							want = index
+						}
+					}
+				}
+				// 搭船抵達索寇要塞時，隊伍正站在回程碼頭，ECL4/21
+				// 會先問「DO YOU WANT TO TAKE A BOAT BACK TO PHLAN?」。
+				// 第一次必須答 NO 才能從碼頭走進要塞；探索完回到同一格
+				// 時讓輪替策略答 YES，正常回城交件。
+				if application.eventSession != nil &&
+					application.eventSession.CurrentBlockID() == 21 &&
+					application.eventMachine != nil &&
+					application.eventMachine.Memory[0x4AA7] == uint16(gamepack.CityHallSlotPending) &&
+					application.eventMachine.Memory[0x4A01] == 1 &&
+					menuTurn["\x00sokal-dock-stayed"] == 0 &&
+					application.spawn.Map == (gamepack.MapKey{Archive: 4, BlockID: 21}) &&
+					application.spawn.X == 15 && application.spawn.Y == 1 {
+					for index, option := range application.cellMenuOptions {
+						if strings.EqualFold(option, "NO") {
+							want = index
+							menuTurn["\x00sokal-dock-stayed"] = 1
+						}
+					}
+				}
+				// 斯托揚諾河的密室不是一個單次 YES／NO 事件。原版先讓
+				// 玩家搜尋，再在石板前顯示 GO BACK／MOVE ON／THROW A ROCK；
+				// `THROW A ROCK` 會把 4A4D 的搜尋狀態推進，最後才由
+				// ecl7/23 AC35/AC53 設 4A52 bit 2 與委任槽 13。通用輪替
+				// 若先選 GO BACK 或 MOVE ON 只會離開／重置房間，永遠不會
+				// 抵達結案分支。
+				if application.eventSession != nil &&
+					application.eventSession.CurrentBlockID() == 23 &&
+					application.eventMachine.Memory[0x4AB3] < 0xFE {
+					for index, option := range application.cellMenuOptions {
+						if strings.EqualFold(option, "THROW A ROCK") {
+							want = index
+						}
+					}
+				}
+				// 同一條路上要走到亡魂那一段：登陸的遭遇選「交涉」，Ferran
+				// 問話必須先說謊、再說實話（spec 102）。第一次說謊把船票
+				// `4A01` 清成 255，但不完成 `4A26`／`4AA7`；探索器留在要塞
+				// 再觸發一次，說實話才完成亡魂委託並保留已清掉的船票。
 				if flags != nil {
 					// 港務長的完整航線選單：SOKAL 是回索寇要塞（已經走過），
 					// NONE 是不上船，所以在 EAST／WEST／BAY 之間輪流挑。
 					if len(application.cellMenuOptions) == 5 &&
 						strings.EqualFold(application.cellMenuOptions[0], "SOKAL") {
-						want = 1 + menuTurn[optionKey]%3
+						// City Hall 的 Sokal 委任仍是 FE 時，第一項 SOKAL
+						// 才是這筆委任的正常目的地；若誤選 EAST，會落到
+						// 荒野的其他地點，永遠不會進入 ECL4/21。
+						// 結案後才輪流使用 EAST／WEST／BAY。
+						if application.eventMachine.Memory[0x4AA7] == uint16(gamepack.CityHallSlotPending) {
+							want = 0
+						} else {
+							want = 1 + menuTurn[optionKey]%3
+						}
+						// 公告進度 3 時，下一個窄目標是 Kuto's Well 的 Norris。
+						// BAY 航線接 ECL7/26 城外樞紐，再由城區入口通往 Podal Plaza；選擇
+						// 仍經港務長的正常五項選單，不寫船票或目的地旗標。
+						if application.eventMachine.Memory[0x4AA7] != uint16(gamepack.CityHallSlotPending) &&
+							application.eventMachine.Memory[0x4AC1] == 3 &&
+							application.eventMachine.Memory[0x4AA6] < 0xFE {
+							want = 3
+						}
+						if application.eventMachine.Memory[0x4AA7] != uint16(gamepack.CityHallSlotPending) &&
+							application.eventMachine.Memory[0x4AC1] == 2 &&
+							application.eventMachine.Memory[0x4AB0] < 0xFE {
+							want = 3
+						}
+						// BAY 航線在荒野圖 26 的 (13,27) 落地；波多廣場的
+						// 西城緣與墓園入口都在相鄰地點（spec 105）。
+						if application.eventMachine.Memory[0x4AA7] != uint16(gamepack.CityHallSlotPending) &&
+							application.eventMachine.Memory[0x4AC1] >= 4 &&
+							application.eventMachine.Memory[0x4AB1] < 0xFE {
+							want = 3
+						}
+						if application.cellMenuCursor == want {
+							routeBought = true
+						}
 					}
 					for index, option := range application.cellMenuOptions {
 						if strings.EqualFold(option, "Parlay") {
 							want = index
 						}
-						lie := strings.EqualFold(option, "LIE?")
-						truth := strings.EqualFold(option, "TELL THE TRUTH?")
-						if !lie && !truth {
+						if !strings.EqualFold(option, "TELL THE TRUTH?") &&
+							!strings.EqualFold(option, "LIE?") {
 							continue
 						}
-						holdsTicket := application.eventMachine != nil &&
-							application.eventMachine.Memory[0x4A01] == 1
-						if lie == holdsTicket {
-							want = index
-							t.Logf("費蘭選單 GEO%d/%d (%d,%d) 選 %s"+
-								"（4A01=%d 4A26=%d 4AA7=%d）",
-								application.spawn.Map.Archive,
-								application.spawn.Map.BlockID,
-								application.spawn.X, application.spawn.Y, option,
-								application.eventMachine.Memory[0x4A01],
-								application.eventMachine.Memory[0x4A26],
-								application.eventMachine.Memory[0x4AA7])
+						chooseLie := application.eventMachine.Memory[0x4A01] == 1
+						if strings.EqualFold(option, "LIE?") != chooseLie {
+							continue
 						}
+						want = index
+						t.Logf("費蘭選單 GEO%d/%d (%d,%d) 選 %s"+
+							"（4A01=%d 4A26=%d 4AA7=%d）",
+							application.spawn.Map.Archive,
+							application.spawn.Map.BlockID,
+							application.spawn.X, application.spawn.Y, option,
+							application.eventMachine.Memory[0x4A01],
+							application.eventMachine.Memory[0x4A26],
+							application.eventMachine.Memory[0x4AA7])
 					}
 				}
 				// 帶封印的箱子不要拆。這不是憑感覺挑的：`ecl4/2` 的
@@ -1199,14 +1494,113 @@ walk:
 						want = index
 					}
 				}
+				// Norris the Gray 在 Kuto's Well 地下包圍隊伍時只給 SURRENDER／FIGHT。
+				// City Hall 明確委託是除掉他，且原始 ecl8/29 的 FIGHT 分支才接
+				// LOAD MONSTER 32/57/1、COMBAT 與槽 0 的 FEh producer（spec 041）。
+				if application.spawn.Map.BlockID == 32 &&
+					application.eventMachine.Memory[0x4AA6] != 0xFF {
+					for index, option := range application.cellMenuOptions {
+						if strings.EqualFold(option, "FIGHT") &&
+							len(application.cellMenuOptions) == 2 &&
+							strings.EqualFold(application.cellMenuOptions[0], "SURRENDER") {
+							want = index
+						}
+					}
+				}
+				if (application.eventMachine.Memory[0x4AC1] == 2 &&
+					application.eventMachine.Memory[0x4AB0] < 0xFE ||
+					application.eventMachine.Memory[0x4AC1] == 3 &&
+						application.eventMachine.Memory[0x4AA6] < 0xFE) &&
+					len(application.cellMenuOptions) == 3 &&
+					strings.EqualFold(application.cellMenuOptions[0], "NORTH") &&
+					strings.EqualFold(application.cellMenuOptions[1], "SOUTH") {
+					want = 0
+				}
+				if application.eventMachine.Memory[0x4AC1] == 3 &&
+					application.eventMachine.Memory[0x4AA6] < 0xFE &&
+					len(application.cellMenuOptions) == 3 &&
+					strings.EqualFold(application.cellMenuOptions[0], "CITY") &&
+					strings.EqualFold(application.cellMenuOptions[1], "GRAVEYARD") {
+					want = 0
+				}
+				if pendingCommission(application) &&
+					len(application.cellMenuOptions) == 3 &&
+					strings.EqualFold(application.cellMenuOptions[0], "CITY") &&
+					strings.EqualFold(application.cellMenuOptions[1], "GRAVEYARD") {
+					want = 0
+				}
+				if application.eventMachine.Memory[0x4AC1] >= 4 &&
+					application.eventMachine.Memory[0x4AB1] < 0xFE &&
+					len(application.cellMenuOptions) == 3 &&
+					strings.EqualFold(application.cellMenuOptions[0], "CITY") &&
+					strings.EqualFold(application.cellMenuOptions[1], "GRAVEYARD") {
+					want = 1
+				}
+				// 槽 11 在 City Hall 結案後是 FFh，而且這一槽依原版通知表不增加
+				// 4AC1h。若交回通用輪替又選 GRAVEYARD，墓園完成分支會把它重寫
+				// 成 FEh，製造一個原本已結案的重複委託。結案後由北門進 CITY，
+				// 繼續探索同一公告進度解鎖的下一區。
+				if application.eventMachine.Memory[0x4AB1] == 0xFF &&
+					len(application.cellMenuOptions) == 3 &&
+					strings.EqualFold(application.cellMenuOptions[0], "CITY") &&
+					strings.EqualFold(application.cellMenuOptions[1], "GRAVEYARD") {
+					want = 0
+				}
+				// 墓園 terrain 25 的黑色大理石墓穴以 SANCTIFY 把
+				// `4A43` 寫成 FBh，下一次正常踏入才接到吸血鬼事件
+				//（ECL4/10 `AF0Eh`、`B06Eh`、`B102h`）。選 EXAMINE
+				// 只會離開，通用輪替會徒增整張圖的探索趟數。
+				if application.eventMachine.Memory[0x4AC1] >= 4 &&
+					application.eventMachine.Memory[0x4AB1] < 0xFE &&
+					len(application.cellMenuOptions) == 3 &&
+					strings.EqualFold(application.cellMenuOptions[0], "EXAMINE") &&
+					strings.EqualFold(application.cellMenuOptions[1], "SANCTIFY") &&
+					strings.EqualFold(application.cellMenuOptions[2], "OVERTURN") {
+					want = 1
+				}
+				// 公告進度 2 的波多廣場任務要求查明拍賣品。入口的三條
+				// `STRIDE`／`DISGUISE`／`SNEAK` 分支裡，原版攻略與 ECL
+				// 拍賣完成分支都指向偽裝進場；通用輪替若先選 STRIDE，會
+				// 把整趟變成清街怪而不是委任路徑（spec 041）。
+				for index, option := range application.cellMenuOptions {
+					if strings.EqualFold(option, "DISGUISE PARTY AS MONSTERS.") {
+						want = index
+					}
+				}
+				// 神殿估價後的 Sell／Keep 若選 Keep，珠寶仍留在身上，下一輪
+				// Appraise 會再回到同一件物品。探索器要把這個有限流程收掉，
+				// 所以估價完成就選 Sell；這仍是玩家選單的正常按鍵路徑。
+				if len(application.cellMenuOptions) == 2 &&
+					strings.EqualFold(application.cellMenuOptions[0], "SELL") &&
+					strings.EqualFold(application.cellMenuOptions[1], "KEEP") {
+					want = 0
+				}
 				// 在野外地形上遇到「要不要進去」就進去。進區域圖再走出來會把
 				// 野外的位移重擲一次（`ecl6/25 A472h RANDOM 3`，spec 105），
 				// 那是換口袋的唯一方法——不進去就只走得到落點那一個口袋。
-				// 只認 `ENTER`，所以不會誤選登陸點的 `TAKE BOAT`（那是回城）。
+				// 只認進入／調查區域的選項，所以不會誤選登陸點的 `TAKE BOAT`
+				//（那是回城）。野外 26 的原文是 `INVESTIGATE`，漏掉它就會
+				// 永遠拒絕西區唯一能重擲位移的正常玩家事件（spec 105）。
 				if application.inWildernessOverland() {
 					for index, option := range application.cellMenuOptions {
 						if strings.EqualFold(option, "ENTER") ||
-							strings.EqualFold(option, "ENTER CAVE") {
+							strings.EqualFold(option, "ENTER CAVE") ||
+							strings.EqualFold(option, "INVESTIGATE") {
+							want = index
+						}
+					}
+				}
+				// 一旦已有待交委任，回文明區優先於繼續探索。這會在區域
+				// 樞紐與荒野回程點選玩家可見的 TAKE BOAT，不改寫地圖或旗標。
+				if !deferHandIn && pendingCommission(application) {
+					for index, option := range application.cellMenuOptions {
+						// 從金字塔回到區域樞紐時仍站在入口事件格；先選
+						// GO BACK 留在外面，否則通用輪替會再次 ENTER。
+						if application.spawn.Map == (gamepack.MapKey{Archive: 5, BlockID: 5}) &&
+							strings.EqualFold(option, "GO BACK") {
+							want = index
+						}
+						if strings.EqualFold(option, "TAKE BOAT") {
 							want = index
 						}
 					}
@@ -1252,7 +1646,108 @@ walk:
 			}
 			key := ebiten.KeyArrowUp
 			aimed := false
-			if want, ok := wildernessNextFacing(application, zipPath, wild); ok {
+			want, ok := uint8(0), false
+			here := [2]int{int(application.eventMachine.Memory[wildernessX]),
+				int(application.eventMachine.Memory[wildernessY])}
+			if pendingCommission(application) && application.eventMachine.Memory[0x4A01] == 1 {
+				// 新船票落地時仍站在回程船的地點格，staging 要先正常走
+				// 一步才把 4A01 清成 0。先走一個可通行方向，下一步再由
+				// wildernessReturnFacing 原路踏回船格，讓 TAKE BOAT 事件出現。
+				for facing := uint8(0); facing < 4; facing++ {
+					if wildernessCanLeave(application, here, facing) {
+						want, ok = facing, true
+						break
+					}
+				}
+			}
+			// 公告進度 5 之後，尚未結案的三個野外委任各有原版地點表
+			// 入口（spec 105）：蜥蜴人是圖 27 的 (11,8)，狗頭人是圖 27
+			// 的 (6,15)，遊牧營地與斯托揚諾河分別是圖 26 的 (12,11)
+			// 與 (6,16)。先以目前航線口袋能走得到的目標為優先；走不到
+			// 時交回下方的跨圖／進出區域規劃，下一趟會以新的正常船路
+			// 位移再試，不能直接寫旗標代替玩家走路。
+			if !ok && !mustSettleSokalGhost(application) &&
+				application.eventSession.CurrentBlockID() == 27 {
+				target := [2]int{}
+				haveTarget := false
+				switch {
+				case application.eventMachine.Memory[0x4AB5] < 0xFE:
+					target, haveTarget = [2]int{11, 8}, true // lizardmen
+				case application.eventMachine.Memory[0x4AB6] < 0xFE:
+					target, haveTarget = [2]int{6, 15}, true // kobolds
+				}
+				if haveTarget {
+					if route := wildernessRoute(application, here, target, nil); len(route) != 0 {
+						want, ok = route[0], true
+					}
+				}
+			}
+			if !ok && !mustSettleSokalGhost(application) &&
+				application.eventSession.CurrentBlockID() == 26 {
+				target := [2]int{}
+				haveTarget := false
+				switch {
+				case application.eventMachine.Memory[0x4AB7] < 0xFE:
+					target, haveTarget = [2]int{12, 11}, true // nomads
+				case application.eventMachine.Memory[0x4AB3] < 0xFE:
+					target, haveTarget = [2]int{6, 16}, true // Stojanow River
+				}
+				if haveTarget {
+					if route := wildernessRoute(application, here, target, nil); len(route) != 0 {
+						want, ok = route[0], true
+					}
+				}
+			}
+			if !ok && application.eventMachine.Memory[0x4AC1] == 2 &&
+				application.eventMachine.Memory[0x4AB0] < 0xFE &&
+				application.eventSession.CurrentBlockID() == 26 {
+				// 公告進度 2 的下一項是波多廣場。荒野圖 26 的 (11,28)
+				// 是原版西城緣入口（spec 105），由那裡選北入口進廣場。
+				if route := wildernessRoute(application, here, [2]int{11, 28}, nil); len(route) != 0 {
+					want, ok = route[0], true
+				}
+			}
+			if !ok && application.eventMachine.Memory[0x4AC1] == 3 &&
+				application.eventMachine.Memory[0x4AA6] < 0xFE &&
+				application.eventSession.CurrentBlockID() == 26 {
+				if route := wildernessRoute(application, here, [2]int{11, 28}, nil); len(route) != 0 {
+					want, ok = route[0], true
+				}
+			}
+			if !ok && application.eventMachine.Memory[0x4AC1] >= 4 &&
+				application.eventMachine.Memory[0x4AB1] < 0xFE &&
+				application.eventSession.CurrentBlockID() == 26 {
+				// 公告進度 4 解鎖瓦海登墳場委託（spec 038）。荒野圖 26
+				// 的 (13,26) 是原版地點 2 的墓園入口（spec 105）；只規劃
+				// 正常走路，抵達後仍由玩家選單決定是否進入。
+				if route := wildernessRoute(application, here, [2]int{13, 26}, nil); len(route) != 0 {
+					want, ok = route[0], true
+				}
+			}
+			if !ok && !deferHandIn && pendingCommission(application) &&
+				application.eventMachine.Memory[0x4A01] == 0 {
+				want, ok = wildernessReturnFacing(application, zipPath, returnWild)
+				if !ok {
+					// 目前的平鋪迷宮若沒有通往東側邊界的路，先走最近的
+					// 玩家可見地點並正常進出，讓原版腳本重擲野外位移；
+					// 否則只會在同一個封閉口袋隨機漫步。
+					want, ok = wildernessNextFacing(application, zipPath, returnDetour)
+				}
+			} else if !ok {
+				want, ok = wildernessNextFacing(application, zipPath, wild)
+				if !ok && flags != nil {
+					// 連續主線已走完這趟航線的可達地點時，沿正常船路回 Phlan
+					// 再選下一條航線；留在荒野亂走只會重踩同一座平鋪迷宮。
+					want, ok = wildernessReturnFacing(application, zipPath, returnWild)
+					if !ok {
+						// WEST／BAY 的落點可能是孤立口袋，原版必須繼續走動等
+						// `INVESTIGATE`／`ENTER` 隨機事件，進出區域後才會重擲
+						// 位移。沒有可規劃路線時交回下面的有界正常按鍵漫步。
+						ok = false
+					}
+				}
+			}
+			if ok {
 				key, aimed = wildernessTurnKey(application.spawn.Facing, want), true
 			}
 			if !aimed {
@@ -1271,15 +1766,30 @@ walk:
 		}
 		// 這一張踩完之後才刻意走出去：站到邊界那一格、轉向外面、往前一步。
 		// 規劃器本身不跨邊界（見 explorePlan），所以換區一定經過這一段。
+		if exit != nil && application.eventSession != nil &&
+			exitContext != [2]int{int(application.eclArchive), int(application.eventSession.CurrentBlockID())} {
+			// C01Eh 可以先把座標繞到同一張 GEO 的對邊，再由 NEWECL 切到
+			// 區域樞紐。ECL 上下文已換就代表出口分派成功；若只比 Map，
+			// 探索器會把同一個出口當成尚未完成而反覆走。
+			exit, plan = nil, nil
+		}
 		if exit != nil {
 			at := [2]int{int(application.spawn.X), int(application.spawn.Y)}
 			switch {
 			case at == exit.cell && application.spawn.Facing == exit.facing:
+				before := application.spawn
 				if err := press(application, ebiten.KeyArrowUp); err != nil {
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
 					break walk
 				}
-				exit, plan = nil, nil
+				// 邊界前進可能先被原版外部 CALL／隨機遭遇攔下；C01Eh 甚至會
+				// 先把座標繞到對邊，下一個 RETURN 才跑到 NEWECL。只要仍是
+				// 同一張圖，出口就仍是同一個玩家目標。舊治具不分結果就清掉
+				// exit，八次停頓後把 hop 額度耗光，後續整輪不再嘗試離開。
+				if application.spawn.Map != before.Map {
+					exit = nil
+				}
+				plan = nil
 				continue
 			case at == exit.cell:
 				key := ebiten.KeyArrowRight
@@ -1298,11 +1808,18 @@ walk:
 				// `chooseAreaExit` 挑到的出口等於白挑——實測 GEO1/18 三次都
 				// 挑中 (4,0) 朝北（那一支就是缺的區塊 9），三次都在半路被
 				// 別的格子換走，落點是 GEO8/29 的 (1,11)。
-				plan = planToCellsAvoiding(application, rotate,
+				plan = planToCellsWithoutWrapping(application, rotate,
 					func(x, y int) bool {
 						return x == target.cell[0] && y == target.cell[1]
 					},
 					func(x, y int) bool {
+						// 主線指定的 ECL1/18 西出口已有 DOS `99D4h`
+						// 分支證據；舊探索趟留下的 avoid 不能把必經格子封死。
+						// 沿途事件仍由 Update() 正常處理，這裡只重算導航。
+						if application.spawn.Map == (gamepack.MapKey{Archive: 1, BlockID: 18}) &&
+							target.facing == 3 {
+							return false
+						}
 						return !heldHere && avoid[[3]int{
 							int(application.spawn.Map.Archive),
 							int(application.spawn.Map.BlockID), y*100 + x}]
@@ -1313,15 +1830,67 @@ walk:
 			}
 		}
 		if len(plan) == 0 && exit == nil {
+			if sokal := mainlineSokalExitPlan(application, rotate); len(sokal) != 0 {
+				plan = sokal
+				spin["索寇出口"]++
+				if spin["索寇出口"] <= 8 {
+					cell := application.initialMap.Grid.CellWrapped(int(application.spawn.X), int(application.spawn.Y))
+					t.Logf("索寇出口計畫 #%d：GEO%d/%d (%d,%d) 朝向 %d 地形 %d C04F=%d，步數 %d",
+						spin["索寇出口"], application.spawn.Map.Archive, application.spawn.Map.BlockID,
+						application.spawn.X, application.spawn.Y, application.spawn.Facing,
+						cell.Terrain&0x7F, application.eventMachine.Memory[0xC04F]&0x7F, len(plan))
+				}
+				continue
+			}
+			// 索寇亡魂的兩段狀態還沒結算時，港務長優先於市政廳。
+			// `4AA7 == FE` 也長得像一筆待交委託，但 `4A01 == FF` 代表
+			// 先前的船票已清掉；此時先踩 clerk office 只會跳過 reward scan，
+			// 並讓下面的港務長計畫永遠拿不到執行機會（spec 102）。
+			if !heldHere && !deferHandIn {
+				mainline := cityHallPlan(application, rotate)
+				if len(mainline) != 0 {
+					plan = mainline
+					spin["市政廳交差"]++
+					if spin["市政廳交差"] <= 12 {
+						block := -1
+						if application.eventSession != nil {
+							block = int(application.eventSession.CurrentBlockID())
+						}
+						t.Logf("市政廳計畫 #%d：GEO%d/%d (%d,%d) 朝向 %d ECL%d/%d 步數 %d",
+							spin["市政廳交差"], application.spawn.Map.Archive,
+							application.spawn.Map.BlockID, application.spawn.X, application.spawn.Y,
+							application.spawn.Facing, application.eclArchive, block, len(mainline))
+					}
+					continue
+				}
+			}
+			// 在 Stojanow 完成委任後，GEO5/5 的 (8,0) 會開出
+			// TAKE BOAT／STAY，前者正常返回文明區。通用探索若仍以「最少
+			// 使用的轉場」優先，會先走向其他區域並在樞紐間循環；有待交
+			// 委任時改以玩家已知的回程船為目標，移動與選擇仍全部經 Update()。
+			if !heldHere && !deferHandIn && pendingCommission(application) &&
+				application.spawn.Map == (gamepack.MapKey{Archive: 5, BlockID: 5}) {
+				plan = planToCells(application, rotate, func(x, y int) bool {
+					return x == civilisedPhlanBoatCell[0] && y == civilisedPhlanBoatCell[1]
+				})
+				if len(plan) != 0 {
+					spin["搭回程船交差"]++
+					continue
+				}
+			}
 			settling := heldHere
-			// 鎖住的時候，城區這一趟優先去問港務長。城區有好幾個地點會把
+			// 航線開放後，每次回到城區都先問港務長再去碼頭。鎖住的那一趟
+			// 尤其不能先踩其他地點：城區有好幾個地點會把
 			// `4A01` 寫回 1（市政廳職員 ECL3/8 `9BACh` 只在 0 時寫，
 			// 競技場 ECL3/11 `9CACh` 進到那一支就寫），先踩到就前功盡棄。
 			//
 			// 鎖的評估已經提到每一步（見迴圈上方），所以回到城區時手上的
 			// 舊計畫會在鎖亮的那一刻被丟掉，不會照著走過去踩競技場。
-			if settling && int(application.spawn.Map.Archive) == cityArchive &&
-				int(application.spawn.Map.BlockID) == cityBlock && !harbourTried {
+			if int(application.spawn.Map.Archive) == cityArchive &&
+				int(application.spawn.Map.BlockID) == cityBlock && !harbourTried &&
+				application.eventMachine != nil &&
+				application.eventMachine.Memory[0x4AA7] >= 254 &&
+				application.eventMachine.Memory[0x4A01] != 1 {
 				harbourTried = true
 				if int(application.spawn.X) == harbourApproachCell[0] &&
 					int(application.spawn.Y) == harbourApproachCell[1] {
@@ -1332,6 +1901,9 @@ walk:
 							return x == harbourApproachCell[0] && y == harbourApproachCell[1]
 						},
 						func(x, y int) bool {
+							if avoid[[3]int{cityArchive, cityBlock, y*100 + x}] {
+								return true
+							}
 							cell, ok := application.initialMap.Grid.Cell(x, y)
 							return ok && cell.Terrain&0x7F != 0
 						})
@@ -1341,20 +1913,32 @@ walk:
 				}
 				if len(plan) != 0 {
 					spin["找港務長"]++
+					t.Logf("港務長計畫 #%d：GEO%d/%d (%d,%d) 朝向 %d，首步 %d，步數 %d，4A01=%d",
+						spin["找港務長"], application.spawn.Map.Archive,
+						application.spawn.Map.BlockID, application.spawn.X, application.spawn.Y,
+						application.spawn.Facing, plan[0].facing, len(plan),
+						application.eventMachine.Memory[0x4A01])
 					continue
 				}
 			}
 			// 票拿到手之後主動走去碼頭。港務長那一段做完時 `4A01 == 1`
-			// 而且 `4AA7 == 254`，碼頭 (15,1) 的選單才會從「唯一的船是
+			// 而且 `4AA7 >= 254`，碼頭 (15,1) 的選單才會從「唯一的船是
 			// 索寇要塞」變成五個目的地（spec 099）。
 			//
 			// 探索器自己走不過去：碼頭是換圖點，第一次用完就進了 avoid，
 			// 規劃器再也不挑它。路上一樣繞開別的事件格，免得又踩到競技場。
-			if !settling && int(application.spawn.Map.Archive) == cityArchive &&
+			// 航線尚未解鎖時，碼頭本來就只有前往索寇要塞的一條船，不必先向
+			// 港務長挑目的地；解鎖之後才要求 routeBought，避免沿用舊目的地。
+			initialSokalRoute := application.eventMachine != nil &&
+				application.eventMachine.Memory[0x4AA7] < 254 &&
+				application.eventMachine.Memory[0x4A01] == 1
+			unlockedRoute := application.eventMachine != nil && routeBought &&
+				application.eventMachine.Memory[0x4AA7] >= 254 &&
+				application.eventMachine.Memory[0x4A01] == 1
+			if !settling && (initialSokalRoute || unlockedRoute) &&
+				int(application.spawn.Map.Archive) == cityArchive &&
 				int(application.spawn.Map.BlockID) == cityBlock && !dockTried &&
-				application.eventMachine != nil &&
-				application.eventMachine.Memory[0x4A01] == 1 &&
-				application.eventMachine.Memory[0x4AA7] == 254 {
+				application.eventMachine != nil {
 				dockTried = true
 				plan = planToCellsAvoiding(application, rotate,
 					func(x, y int) bool { return x == dockCell[0] && y == dockCell[1] },
@@ -1362,15 +1946,64 @@ walk:
 						if x == dockCell[0] && y == dockCell[1] {
 							return false
 						}
+						if avoid[[3]int{cityArchive, cityBlock, y*100 + x}] {
+							return true
+						}
 						cell, ok := application.initialMap.Grid.Cell(x, y)
 						return ok && cell.Terrain&0x7F != 0
 					})
+				if len(plan) == 0 && initialSokalRoute {
+					// 第一次去索寇以前，城市裡若有地點格橫在最短路上，可以正常
+					// 踩過去處理；此時尚無已解鎖航線目的地可被它覆寫。
+					plan = planToCellsAvoiding(application, rotate,
+						func(x, y int) bool { return x == dockCell[0] && y == dockCell[1] },
+						func(x, y int) bool {
+							if x == dockCell[0] && y == dockCell[1] {
+								return false
+							}
+							return avoid[[3]int{cityArchive, cityBlock, y*100 + x}]
+						})
+				}
 				if len(plan) != 0 {
 					spin["走去碼頭"]++
 					continue
 				}
 			}
-			leaving := hops < exploreMaxTransitionHops && !settling
+			if len(plan) == 0 {
+				if graveyard := mainlineGraveyardVampirePlan(application, rotate); len(graveyard) != 0 {
+					plan = graveyard
+					spin["墓園吸血鬼"]++
+					continue
+				}
+			}
+			leaving := hops < exploreMaxTransitionHops && !settling &&
+				(holdMap == nil || application.spawn.Map != *holdMap)
+			if len(plan) == 0 && leaving {
+				if auction := mainlinePodalAuctionPlan(application, rotate); len(auction) != 0 {
+					plan = auction
+					spin["波多拍賣"]++
+					continue
+				}
+			}
+			// 已知委任出口是主線目標，不是「整張圖探索完才試」的 fallback。
+			// 若先跑通用 explorePlan，波多廣場會在數百個地點朝向之間耗盡
+			// 本趟預算，甚至先踩到另一個換圖點；出口本身仍全部經正常按鍵。
+			if len(plan) == 0 && !settling && (leaving || pendingCommission(application)) {
+				if next, ok := mainlineCommissionExit(application); ok {
+					spin["委任出口"]++
+					if spin["委任出口"] <= 8 {
+						t.Logf("委任出口 #%d：GEO%d/%d (%d,%d) ECL%d/%d → (%d,%d) 朝向 %d",
+							spin["委任出口"], application.spawn.Map.Archive,
+							application.spawn.Map.BlockID, application.spawn.X, application.spawn.Y,
+							application.eclArchive, application.eventSession.CurrentBlockID(),
+							next.cell[0], next.cell[1], next.facing)
+					}
+					exitUses[exitKey(application, next)]++
+					exit, hops = &next, hops+1
+					exitContext = [2]int{int(application.eclArchive), int(application.eventSession.CurrentBlockID())}
+					continue
+				}
+			}
 			var target [3]int
 			plan, target = explorePlan(application, walked, avoid, !heldHere, rotate)
 			if len(plan) != 0 {
@@ -1436,11 +2069,13 @@ walk:
 				}
 			}
 			if len(plan) == 0 && leaving {
-				if next, ok := chooseAreaExit(application, exitUses); ok {
+				next, ok := chooseAreaExit(application, exitUses)
+				if ok {
 					// 選中就記一次。走不到那一格的出口不記的話，
 					// 下一輪會挑到同一個，隊伍就卡在原地重選到 hop 用完。
 					exitUses[exitKey(application, next)]++
 					exit, hops = &next, hops+1
+					exitContext = [2]int{int(application.eclArchive), int(application.eventSession.CurrentBlockID())}
 					continue
 				}
 			}
@@ -1663,7 +2298,7 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		// 只走一遍的話，鬼魂那一格多半在拿到裝備之前就踩過了。
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 8, 600000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
-			visited, maps, blocks, flags, noBoatOverride, &hardFailures, nil)
+			visited, maps, blocks, flags, noBoatOverride, &hardFailures, nil, nil, nil, nil, false)
 		if !reachable {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -1754,15 +2389,17 @@ func mustSettleSokalGhost(application *app) bool {
 	// 兩種狀態都算「主線這一段還沒了結」，而且**與隊伍站在哪一張圖無關**：
 	//
 	//  1. 票清掉了但亡魂還沒了結（要塞那一段還沒做完）。
-	//  2. 航線開了、票卻不在手上——這一趟就是要去找港務長。碼頭 (15,1) 就在
-	//     港務長 (11,1) 旁邊，先上船的話 `4AC4 = 0` 又被載回索寇要塞，
-	//     回來時入口 4 再把 `4AC4` 清成 0，繞不出去。
+	//  2. 航線剛開但亡魂尚未完成（`4A26 != FF`）時，不能先回市政廳或
+	//     港務長；否則舊船票會被重新啟用。亡魂完成後（`4A26 == FF`）
+	//     下一個正常玩家步驟是回市政廳交差，不再把隊伍鎖在港務長。
 	//
-	// 先前這支**依當前地圖分派**，於是同一組記憶體值在城區回 true、走進
-	// 貧民窟就回 false。鎖一熄 `heldBack` 整批放回去，回城區又亮——實測
-	// 「找港務長」一趟觸發 112 次，走到的 ECL block 反而從 5 掉到 4。
-	return (memory[0x4A01] == 255 && memory[0x4A26] != 255) ||
-		(memory[0x4AA7] == 254 && memory[0x4A01] != 1)
+	// 港務長賣出新票後先寫 1；實際搭船進目的區域時，blocks 25／26／27
+	// 的 staging 會把這個共用工作格寫成 0。0 已是「票用完、繼續當地」；
+	// 若把所有 `!= 1` 都視為待結算，就會在洞穴等區域錯誤封鎖全部出口。
+	//
+	// 亡魂還沒了結的第一種狀態與地圖無關；第二種只能在城區鎖起來。
+	// 若隊伍還在貧民窟或外地就鎖住，會連回城的 transition 也一併被擋掉。
+	return memory[0x4A01] == 255 && memory[0x4A26] != 255
 }
 
 // approachKey 把「這一格＋走進去的方向」壓成 approached 的鍵。
@@ -1801,8 +2438,7 @@ func chooseApproach(application *app, approached map[[4]int]bool,
 					fromY < 0 || fromY >= geometry.Height {
 					continue
 				}
-				if !application.initialMap.Grid.CanMoveDungeonWrapped(
-					fromX, fromY, int(facing)*2) {
+				if !explorerCanTraverse(application, fromX, fromY, int(facing)) {
 					continue
 				}
 				if approached[approachKey(application, [2]int{x, y}, facing)] {
@@ -1836,6 +2472,150 @@ func chooseTransitionCell(application *app, uses map[[3]int]int) ([2]int, bool) 
 		}
 	}
 	return best, found
+}
+
+// mainlineCommissionExit 只為已由正常 City Hall 進度解鎖的委託選已知出口。
+// GEO1/18 的 (15,11) 向東由本測試的正常 runtime trace 證實會進 ECL8/29；
+// 其餘狀態交回資料導出的輪替策略。
+func mainlineCommissionExit(application *app) (areaExit, bool) {
+	if application.eventMachine == nil {
+		return areaExit{}, false
+	}
+	if pendingCommission(application) {
+		switch application.spawn.Map {
+		case gamepack.MapKey{Archive: 1, BlockID: 31}:
+			if application.eclArchive != 1 || application.eventSession == nil ||
+				application.eventSession.CurrentBlockID() != 24 {
+				return areaExit{}, false
+			}
+			// ECL1/24 `99B0h` 的 map-31 表把北支導到 ECL3/14；隊伍從
+			// `(11,15)` 保持北向再走一步時，ECL3/14 `993Ch` 的方向 0
+			// 分支接到 ECL7/26。這條兩段鏈避開東支會先進入的隨機遭遇。
+			return areaExit{cell: [2]int{11, 0}, facing: 0}, true
+		case gamepack.MapKey{Archive: 1, BlockID: 24}:
+			return areaExit{cell: [2]int{15, 11}, facing: 1}, true
+		}
+	}
+	if application.spawn.Map != (gamepack.MapKey{Archive: 1, BlockID: 18}) {
+		return areaExit{}, false
+	}
+	progress := application.eventMachine.Memory[0x4AC1]
+	if progress == 2 &&
+		application.eventMachine.Memory[0x4AB0] == uint16(gamepack.CityHallSlotPending) {
+		return areaExit{cell: [2]int{0, 11}, facing: 3}, true
+	}
+	if progress == 3 && application.eventMachine.Memory[0x4AA6] < 0xFE {
+		return areaExit{cell: [2]int{15, 11}, facing: 1}, true
+	}
+	if progress == 3 &&
+		application.eventMachine.Memory[0x4AA6] == uint16(gamepack.CityHallSlotPending) {
+		return areaExit{cell: [2]int{0, 11}, facing: 3}, true
+	}
+	if progress >= 4 && application.eventMachine.Memory[0x4AB1] < 0xFE {
+		return areaExit{cell: [2]int{0, 11}, facing: 3}, true
+	}
+	return areaExit{}, false
+}
+
+// mainlinePodalAuctionPlan 把已接到的波多委託導向原版 entry dispatcher 的
+// terrain 1。ECL1/18 `9AC0h` 的第二支 edge 是拍賣流程 `A2A3h`，而真實
+// GEO1/18 的 terrain-1 格是 (7,6)..(7,8)。路線與最後一步都經 Update()；
+// 拍賣內的玩家選單仍由原 ECL 逐頁處理。
+func mainlinePodalAuctionPlan(application *app, rotate int) []exploreStep {
+	if application.eventMachine == nil || application.initialMap == nil ||
+		application.eventMachine.Memory[0x4AC1] != 2 ||
+		application.eventMachine.Memory[0x4AB0] >= 0xFE ||
+		application.spawn.Map != (gamepack.MapKey{Archive: 1, BlockID: 18}) {
+		return nil
+	}
+	return planToCells(application, rotate, func(x, y int) bool {
+		cell, ok := application.initialMap.Grid.Cell(x, y)
+		return ok && cell.Terrain&0x7F == 1
+	})
+}
+
+// mainlineGraveyardVampirePlan 依原版 ECL4/10 的兩段吸血鬼狀態機規劃路線：
+// terrain 25（`AEF8h`）先把墓穴聖化成 `4A43=FBh`，terrain 28
+//（`B1E1h`）的第一次吸血鬼戰鬥再寫 `4A41=FAh`，最後回 terrain 25
+// 才進 `B102h` 的委任戰鬥。這裡只規劃玩家實際可走的按鍵，不寫旗標。
+func mainlineGraveyardVampirePlan(application *app, rotate int) []exploreStep {
+	if application.eventMachine == nil || application.initialMap == nil ||
+		application.eventMachine.Memory[0x4AC1] < 4 ||
+		application.eventMachine.Memory[0x4AB1] >= 0xFE ||
+		application.spawn.Map != (gamepack.MapKey{Archive: 4, BlockID: 10}) {
+		return nil
+	}
+	targetTerrain := uint8(25)
+	if application.eventMachine.Memory[0x4A43] > 0xFA &&
+		application.eventMachine.Memory[0x4A41] < 0xFA {
+		targetTerrain = 28
+	}
+	return planToCells(application, rotate, func(x, y int) bool {
+		cell, ok := application.initialMap.Grid.Cell(x, y)
+		return ok && cell.Terrain&0x7F == targetTerrain
+	})
+}
+
+// mainlineSokalExitPlan 在索寇要塞下層完成亡魂委託後，走向 ECL8/16
+// `9B00h`／`9B0Ch` 表列的「往上」地形與朝向。這些不是 GEO 邊界出口，
+// chooseAreaExit 看不到；移動仍是從相鄰格經 Update() 踏進目標格。
+func mainlineSokalExitPlan(application *app, rotate int) []exploreStep {
+	if application.eventMachine == nil ||
+		application.eventSession == nil || application.eventSession.CurrentBlockID() != 16 ||
+		application.initialMap == nil {
+		return nil
+	}
+	// 亡魂委託尚未結案時，隊伍必須留在 GEO8/16 上層，走樓梯進入
+	// GEO8/30；把上層直接送回荒野會跳過 ECL8/16 的委託。結案後腳本
+	// 才會把隊伍留在 GEO8/30 下層，該圖沒有邊界出口，必須沿同一組
+	// 「往上」地形回到 GEO8/16，才能由正常 NEWECL 27 回到荒野。
+	if application.initialMap.Key == (gamepack.MapKey{Archive: 8, BlockID: 16}) {
+		if application.eventMachine.Memory[0x4AA7] != uint16(gamepack.CityHallSlotPending) {
+			return nil
+		}
+		// 讓一般 cell-menu 路由處理樓梯的 YES；這裡只負責完成後的下層出口。
+		return nil
+	}
+	if application.initialMap.Key != (gamepack.MapKey{Archive: 8, BlockID: 30}) ||
+		application.eventMachine.Memory[0x4AA7] == uint16(gamepack.CityHallSlotPending) {
+		return nil
+	}
+	directions := map[uint8]uint8{17: 0, 18: 1, 19: 0, 20: 0, 21: 2, 22: 3, 23: 0}
+	here := application.initialMap.Grid.CellWrapped(int(application.spawn.X), int(application.spawn.Y))
+	if facing, ok := directions[here.Terrain&0x7F]; ok {
+		return []exploreStep{{facing: facing}}
+	}
+	var best []exploreStep
+	for y := 0; y < geometry.Height; y++ {
+		for x := 0; x < geometry.Width; x++ {
+			cell, ok := application.initialMap.Grid.Cell(x, y)
+			if !ok {
+				continue
+			}
+			facing, ok := directions[cell.Terrain&0x7F]
+			if !ok {
+				continue
+			}
+			from := [2]int{x - exploreDeltas[facing][0], y - exploreDeltas[facing][1]}
+			if from[0] < 0 || from[0] >= geometry.Width || from[1] < 0 || from[1] >= geometry.Height ||
+				!application.initialMap.Grid.CanMoveDungeonWrapped(from[0], from[1], int(facing)*2) {
+				continue
+			}
+			route := planToCells(application, rotate, func(candidateX, candidateY int) bool {
+				return candidateX == from[0] && candidateY == from[1]
+			})
+			if len(route) == 0 && from != [2]int{int(application.spawn.X), int(application.spawn.Y)} {
+				continue
+			}
+			// 第一個同向步驟踏上表列地形；下一個步驟才讓 per-turn 入口
+			// 以「目前地形＋目前朝向」命中出口分派。
+			route = append(route, exploreStep{facing: facing}, exploreStep{facing: facing})
+			if best == nil || len(route) < len(best) {
+				best = route
+			}
+		}
+	}
+	return best
 }
 
 // areaExit 是「站在這一格、面向這個方向往前一步就離開這一區」。
@@ -1955,7 +2735,7 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 1, 200000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, exitUses,
 			visited, maps, blocks, nil, destination, &hardFailures,
-			states[pass%len(states)])
+			states[pass%len(states)], nil, nil, nil, false)
 		if !reachable {
 			t.Skip("original DOS ZIP is intentionally not tracked")
 		}
@@ -2041,7 +2821,7 @@ func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
 				int64(29+stage*101+pass*11+boat), pass%4, 1, 120000,
 				map[[3]int]bool{}, map[[3]int]bool{}, map[[3]int]int{},
 				menuTurn, exitUses, visited, maps, blocks, flags, boat,
-				&hardFailures, carry)
+				&hardFailures, carry, nil, nil, nil, false)
 			if !reachable {
 				t.Skip("original DOS ZIP is intentionally not tracked")
 			}

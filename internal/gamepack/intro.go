@@ -561,6 +561,11 @@ func RunInitialSessionCellEntry(session *eclvm.BlockSession, grid geometry.Grid,
 
 func projectInitialPosition(machine *eclvm.Machine, grid geometry.Grid, position Spawn) {
 	cell := grid.CellWrapped(int(position.X), int(position.Y))
+	// ECL1/24 的出口表同時服務 GEO24 與 GEO31：入口 0 會把目前 GEO
+	// block（`49C5`）等於 1Fh 時的朝向索引加四（spec 107）。這個值是
+	// 地圖 block 編號，不是 ECL archive；每次投影目前位置都要同步，否則
+	// 從 GEO31 的北城門離開時永遠讀到 GEO24 的 FF sentinel。
+	machine.Memory[0x49C5] = uint16(position.Map.BlockID)
 	machine.Memory[0xC04B] = uint16(position.X)
 	machine.Memory[0xC04C] = uint16(position.Y)
 	machine.Memory[0xC04D] = uint16(position.Facing)

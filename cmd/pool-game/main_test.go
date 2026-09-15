@@ -56,6 +56,31 @@ func press(application *app, key ebiten.Key) error {
 	return application.Update()
 }
 
+func TestSokalHandInClearsTheCityBoatTicket(t *testing.T) {
+	machine := &eclvm.Machine{Memory: map[uint16]uint16{}}
+	machine.Memory[0x4A01] = 1
+	machine.Memory[0x4AA7] = 0xFF
+	applySokalHandInTicketState(3, 8, machine)
+	if got := machine.Memory[0x4A01]; got != 0 {
+		t.Fatalf("Sokal 交件後 4A01=%d，港務長仍會拒絕提供已解鎖航線", got)
+	}
+	machine.Memory[0x4A01] = 1
+	applySokalHandInTicketState(3, 8, machine)
+	if got := machine.Memory[0x4A01]; got != 0 {
+		t.Fatalf("Sokal 結案後重進職員格，4A01=%d，港務長仍會拒絕已解鎖航線", got)
+	}
+	// 鬼魂委任剛完成、尚未由市政廳把槽 1 從 FEh 轉成 FFh 時，
+	// 4A01 仍是 ECL 的未清票狀態；正常走進職員格也必須先清回 0，
+	// 否則港務長會把這次回城誤判成尚未離開索寇要塞。
+	machine.Memory[0x4AA7] = uint16(gamepack.CityHallSlotPending)
+	machine.Memory[0x4A26] = 0xFF
+	machine.Memory[0x4A01] = 0xFF
+	applySokalHandInTicketState(3, 8, machine)
+	if got := machine.Memory[0x4A01]; got != 0 {
+		t.Fatalf("Sokal 鬼魂委任交差前的 FE 狀態未清票，4A01=%d", got)
+	}
+}
+
 func TestKeysDriveTitleToOriginalCharacterSheet(t *testing.T) {
 	application := &app{
 		mode:   modeTitle,
@@ -504,6 +529,52 @@ func TestRealNewPhlanControllerCrossesFromECL3ToSlumsECL2(t *testing.T) {
 	}
 	if application.initialWalls == nil || application.initialWalls.SetID != 1 || !reflect.DeepEqual(application.initialWalls.SymbolBlockIDs, []uint8{2, 4, 1}) || len(application.initialWalls.WallDefs) != 3 {
 		t.Fatalf("Slums wall slots=%+v", application.initialWalls)
+	}
+}
+
+func TestNorthCityBoundaryContinuesFromBlock24(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(1)
+	if !ok {
+		t.Fatal("ECL1 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 24, 0x9914)
+	if err != nil {
+		t.Fatal(err)
+	}
+	geoMap, ok := application.geometryCatalog.MapByBlock(31)
+	if !ok {
+		t.Fatal("GEO block 31 is absent")
+	}
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 1
+	application.initialMap = &geoMap
+	application.spawn = gamepack.Spawn{Map: geoMap.Key, X: 11, Y: 0, Facing: 0}
+	application.introDone, application.mode = true, modeAdventure
+	application.eventMachine.Memory[0x4AB1] = 0xFE
+	if err := application.configureEventSession(session); err != nil {
+		t.Fatal(err)
+	}
+	if err := application.moveInitialDungeonForward(); err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("north boundary: spawn=%+v ECL%d/%d PC=$%04X pending=%v text=%q status=%q",
+		application.spawn, application.eclArchive, session.CurrentBlockID(),
+		0x9900+application.eventMachine.PC, application.cellEventPending,
+		application.eventText, application.statusLine)
+	t.Logf("north boundary memory: 6DD5=%04X 6E12=%04X 6E7D=%04X 6E82=%04X C04B=%04X C04C=%04X",
+		application.eventMachine.Memory[0x6DD5], application.eventMachine.Memory[0x6E12],
+		application.eventMachine.Memory[0x6E7D], application.eventMachine.Memory[0x6E82],
+		application.eventMachine.Memory[0xC04B], application.eventMachine.Memory[0xC04C])
+	if application.spawn.X != 11 || application.spawn.Y != 15 {
+		t.Fatalf("north boundary did not wrap the scripted step: spawn=%+v", application.spawn)
+	}
+	if session.CurrentBlockID() == 24 {
+		t.Fatal("north boundary remained in ECL1/24 after the blocked GEO entry")
 	}
 }
 

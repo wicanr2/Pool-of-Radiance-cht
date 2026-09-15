@@ -28,6 +28,10 @@ var appraiseOptions = []string{"Gems", "Jewelry", "Exit"}
 func (a *app) enterTempleAppraise() {
 	character := a.state.Party[a.templeParty]
 	if character.Money[pooltreasure.Gems] == 0 && character.Money[pooltreasure.Jewelry] == 0 {
+		// resolveAppraise 會從 templeAppraiseOffer 再呼叫回來；最後一件賣掉
+		// 時若不先退回主選單，stage 與 Sell／Keep 就會留在舊畫面，玩家
+		// 每按一次 Enter 都只會再跑同一個 offer 分支。
+		a.enterTempleMain()
 		a.eventText = "No gems or jewelry"
 		a.statusLine = strings.TrimSpace(character.Name) + " has nothing to appraise."
 		return

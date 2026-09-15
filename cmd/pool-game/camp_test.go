@@ -195,6 +195,36 @@ func TestTempleAppraiseSellsAGemForPlatinum(t *testing.T) {
 	}
 }
 
+// 最後一件賣掉後要退回神殿主選單；留在 Sell／Keep 會讓正常按鍵永遠
+// 重跑已經沒有物品的 offer 分支。
+func TestTempleAppraiseSellingTheLastJewelReturnsToMainMenu(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 12}
+	character.Money[pooltreasure.Jewelry] = 1
+	application := &app{
+		roller: fixedTempleRoller(1),
+		state: poolsave.State{Schema: poolsave.Schema,
+			CharacterLibrary: []poolsave.Character{character},
+			Party:            []poolsave.Character{character}},
+		templeActive: true,
+	}
+	application.enterTempleAppraise()
+	application.cellMenuCursor = 1
+	if err := application.selectSuneTempleOption(); err != nil {
+		t.Fatal(err)
+	}
+	application.cellMenuCursor = 0
+	if err := application.selectSuneTempleOption(); err != nil {
+		t.Fatal(err)
+	}
+	if application.templeStage != templeMain ||
+		strings.Join(application.cellMenuOptions, "|") != "Heal|View|Pool|Appraise|Exit" {
+		t.Fatalf("最後一件賣掉後 stage=%d options=%v", application.templeStage, application.cellMenuOptions)
+	}
+	if application.eventText != "No gems or jewelry" {
+		t.Fatalf("最後一件賣掉後文字是 %q", application.eventText)
+	}
+}
+
 // 留著就變成一件物品，欄位照原版那 63 bytes。
 func TestTempleAppraiseKeepsAJewelAsAnItem(t *testing.T) {
 	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 12}
