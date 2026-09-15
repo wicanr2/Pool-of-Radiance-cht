@@ -694,6 +694,8 @@ const (
 	msgStatusCoughing
 	msgStatusCharmed
 	msgStatusHeld
+	// 原文是 overlay-08 `0FDDh` 的 `is bandaged`（spec 138）。
+	msgStatusBandaged
 	msgFoeNoTarget
 	msgFoeAttacked
 	msgFoeClosed

@@ -229,6 +229,7 @@ var messageKeys = map[messageID]string{
 	msgStageRace: "ui.stageRace",
 	msgStatusAsleep:   "ui.statusAsleep",
 	msgStatusCoughing: "ui.statusCoughing",
+	msgStatusBandaged: "ui.statusBandaged",
 	msgStatusBlocked: "ui.statusBlocked",
 	msgStatusCharmed: "ui.statusCharmed",
 	msgStatusContinuePrompt: "ui.statusContinuePrompt",

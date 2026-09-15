@@ -594,6 +594,52 @@ func (state *tacticalState) endTurn(roll func(count, sides int) int, delay bool)
 	}
 }
 
+// bandageTarget 是 B）ANDAGE 會包紮的那一格：沿名冊順序找第一個我方、狀態是
+// 倒地（5）的 combatant（overlay-08 `0FE9h`，spec 138）。原版沒有距離判斷——
+// 說明書 p.41 寫「靠近該瀕死夥伴的隊員」，但那支函式從 `DS:5CF4h` 走整條
+// 串列，只比陣營（`+10Eh`）與狀態（`+10Ch`），誰站在哪裡不看。指令列上
+// 有沒有 `Bandage` 這一項也是同一支函式（帶 0）判的。
+//
+// 原版另外要求 runtime（`+108h`）的 `+13h` 為 0；那個欄位的寫入端沒讀，
+// 這裡當它恆為 0（hypothesis）。
+func (state *tacticalState) bandageTarget() (int, bool) {
+	for index := 1; index < len(state.Roster) && index < len(state.States); index++ {
+		if index >= len(state.Friendly) || !state.Friendly[index] {
+			continue
+		}
+		if state.States[index] == combat.DyingState {
+			return index, true
+		}
+	}
+	return 0, false
+}
+
+// bandage 把那一格從倒地改成昏迷（`+10Ch` 5 → 4）並把倒地計時歸零
+// （`+108h` 的 `+0Eh` = 0），一次只包一個（原版包完就把參數清掉）。
+// 生命值不動：說明書 p.30 說包紮只是止血，狀況改善成不省人事。
+func (state *tacticalState) bandage() (int, bool) {
+	target, ok := state.bandageTarget()
+	if !ok {
+		return 0, false
+	}
+	state.States[target] = gamepack.UnconsciousState
+	if target < len(state.DyingCounters) {
+		state.DyingCounters[target] = 0
+	}
+	return target, true
+}
+
+// endTurnAfterAction 是「做了一件事、這個行動就用掉了」的收尾：把打中／落空／
+// 倒下／包紮那一句留在狀態列，不讓「回合結束」蓋掉它——狀態列只有一行，玩家
+// 要看的是結果不是換人。續戰提示與勝負那幾句照樣蓋上去，它們才是下一步。
+func (state *tacticalState) endTurnAfterAction(roll func(count, sides int) int) {
+	result := state.Status
+	state.endTurn(roll, false)
+	if !state.Prompt && !state.Finished {
+		state.Status = result
+	}
+}
+
 // endRound 重現 overlay-08 `0868h` 的回合收尾（spec 062）：先推進倒地計時，
 // 再判結束；「我方還在、敵方清光」那一支要多問一次要不要繼續，不是直接結束。
 //
@@ -1506,6 +1552,18 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
+	// DONE 底下的 B）ANDAGE（spec 138）：有隊友倒地才有這一項；包紮完
+	// 這個行動就用掉了（原版接著呼叫 overlay-25 entry 34，與 Q）UIT 同一支）。
+	if a.justPressed(ebiten.KeyB) && state.Mover != 0 {
+		if target, ok := state.bandage(); ok {
+			state.Status = state.say(msgStatusBandaged, target)
+			state.endTurnAfterAction(a.rollDice)
+			if state.Finished {
+				return a.finishCombat(state.Outcome)
+			}
+		}
+		return nil
+	}
 	if state.Mover == 0 {
 		return nil
 	}
@@ -1549,7 +1607,7 @@ func (a *app) tacticalInput() error {
 			//
 			// 這一相位該揮的每一下都在 `resolveTacticalAttack` 裡打完了
 			// （`attackSwingsThisPhase` 給次數），所以這裡結束回合是對的。
-			state.endTurn(a.rollDice, false)
+			state.endTurnAfterAction(a.rollDice)
 			if state.Finished {
 				return a.finishCombat(state.Outcome)
 			}

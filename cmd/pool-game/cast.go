@@ -196,7 +196,7 @@ func (a *app) resolveAimedAttack(target uint8) error {
 	if err := a.resolveTacticalAttack(state, target); err != nil {
 		return err
 	}
-	state.endTurn(a.rollDice, false)
+	state.endTurnAfterAction(a.rollDice)
 	if state.Finished {
 		return a.finishCombat(state.Outcome)
 	}

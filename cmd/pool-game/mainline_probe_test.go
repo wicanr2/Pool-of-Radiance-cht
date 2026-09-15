@@ -370,6 +370,11 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 	// 玩家策略層第一條：打完看 HP。有人掉到一半以下、或昏迷（狀態 4）就停下
 	// 探索，找地方紮營休息到滿——每二十四小時回一點（spec 114）。
 	hurt := func(a *app) bool {
+		// 打到一半不算：戰鬥的生命值要等 `finishCombat` 才寫回隊伍，而續戰
+		// 提示（`CONTINUE BATTLE`）還開著時按 E 開不了營。
+		if a.tactical != nil {
+			return false
+		}
 		for _, member := range a.state.Party {
 			if member.Status == 4 || (member.Status == 0 && member.CurrentHP*2 < member.MaxHP) {
 				return true
@@ -377,73 +382,69 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 		}
 		return false
 	}
-	// restUntilHealed 在貧民窟找一格**已經走過、地形碼不是 0** 的格子紮營：
-	// `ecl2/20` 入口 2（`9A0Eh`）只在街上（地形 0）把打斷參數設成 24／24，
-	// 屋內（地形非 0）是 0／0 不打擾；沒踩過的事件格不去，那裡的事件還沒跑。
-	// 按鍵照原版紮營畫面（spec 135）：E 紮營、R 排時間、Y 選天、I 加一天、
-	// R 休息、ESC 收掉。天數是全隊缺最多的那一位。
+	// restUntilHealed 就地紮營到全隊回滿：按鍵照原版紮營畫面（spec 135）：
+	// E 紮營、R 排時間、Y 選天、I 加一天、R 休息、ESC 收掉。天數是全隊缺最多
+	// 的那一位（每 24 小時回 1 點，spec 114）。
+	//
+	// 不再先走去屋內：打完一場常常只剩兩個人站著，走去找床的路上再撞一場
+	// 就是全滅（實測第 14 場之後）。原版在街上休息會被打斷（`ecl2/20` 入口 2
+	// 把打斷參數設成 24／24，屋內 0／0），remake 還沒跑那個入口（#24）；接上
+	// 之後被打斷的那一場由同一個駕駛打，打完再睡，這裡的迴圈就是為那一天留的。
 	restUntilHealed := func() {
 		t.Helper()
-		if !hurt(application) {
-			return
-		}
-		inside := func(x, y int) bool {
-			cell, ok := application.initialMap.Grid.Cell(x, y)
-			key := [3]int{int(application.spawn.Map.Archive), int(application.spawn.Map.BlockID), y*100 + x}
-			return ok && cell.Terrain&0x7F != 0 && visited[key]
-		}
-		for guard := 0; guard < 200 && !inside(int(application.spawn.X), int(application.spawn.Y)); guard++ {
-			if application.cellEventPending || application.cellWaitingMenu {
+		restPilot := &tacticalPilot{}
+		settle := func() {
+			for guard := 0; guard < 400 && (application.cellEventPending || application.cellWaitingMenu ||
+				application.tactical != nil); guard++ {
+				if application.tactical != nil {
+					step(restPilot.key(application))
+					continue
+				}
 				step(ebiten.KeyEnter)
-				continue
 			}
-			plan := planInside(inside, 0)
-			if len(plan) == 0 {
-				t.Logf("no visited indoor cell to rest in; resting on the street at %+v", application.spawn)
-				break
+			if application.gameOver {
+				t.Fatalf("the party was destroyed while resting: %q", application.eventText)
 			}
-			want := plan[0]
-			if application.spawn.Facing != want.facing {
-				step(ebiten.KeyArrowRight)
-				continue
-			}
-			step(ebiten.KeyArrowUp)
 		}
-		for application.cellEventPending || application.cellWaitingMenu {
-			step(ebiten.KeyEnter)
-		}
-		days := 0
-		for _, member := range application.state.Party {
-			if member.Status == 0 || member.Status == 4 {
-				if missing := member.MaxHP - member.CurrentHP; missing > days {
-					days = missing
+		for attempt := 0; attempt < 8 && hurt(application); attempt++ {
+			settle()
+			days := 0
+			for _, member := range application.state.Party {
+				if member.Status == 0 || member.Status == 4 {
+					if missing := member.MaxHP - member.CurrentHP; missing > days {
+						days = missing
+					}
 				}
 			}
+			before := application.gameTime
+			step(ebiten.KeyE)
+			if !application.campOpen {
+				t.Fatalf("E did not open the camp at %+v: %q (mode=%d help=%t tactical=%t event=%t menu=%t door=%t shop=%t program=%t text=%q)",
+					application.spawn, application.statusLine, application.mode, application.help,
+					application.tactical != nil, application.cellEventPending, application.cellWaitingMenu,
+					application.door != nil, application.shopActive, application.campFromProgram, application.eventText)
+			}
+			step(ebiten.KeyR)
+			step(ebiten.KeyY)
+			for guard := 0; guard < 64 && !application.restDuration.IsZero(); guard++ {
+				step(ebiten.KeyD)
+			}
+			for day := 0; day < days; day++ {
+				step(ebiten.KeyI)
+			}
+			step(ebiten.KeyR)
+			for guard := 0; guard < 8 && (application.campOpen || application.campFromProgram); guard++ {
+				step(ebiten.KeyEscape)
+			}
+			settle()
+			hp := []string{}
+			for _, member := range application.state.Party {
+				hp = append(hp, fmt.Sprintf("%s %d/%d st%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status))
+			}
+			t.Logf("rested %d days at %+v (clock %v → %v): %v", days, application.spawn, before, application.gameTime, hp)
 		}
-		before := application.gameTime
-		step(ebiten.KeyE)
-		if !application.campOpen {
-			t.Fatalf("E did not open the camp at %+v: %q", application.spawn, application.statusLine)
-		}
-		step(ebiten.KeyR)
-		step(ebiten.KeyY)
-		for guard := 0; guard < 64 && !application.restDuration.IsZero(); guard++ {
-			step(ebiten.KeyD)
-		}
-		for day := 0; day < days; day++ {
-			step(ebiten.KeyI)
-		}
-		step(ebiten.KeyR)
-		for guard := 0; guard < 8 && (application.campOpen || application.campFromProgram); guard++ {
-			step(ebiten.KeyEscape)
-		}
-		hp := []string{}
-		for _, member := range application.state.Party {
-			hp = append(hp, fmt.Sprintf("%s %d/%d st%d", strings.TrimSpace(member.Name), member.CurrentHP, member.MaxHP, member.Status))
-		}
-		t.Logf("rested %d days at %+v (clock %v → %v): %v", days, application.spawn, before, application.gameTime, hp)
 		if hurt(application) {
-			t.Fatalf("still hurt after resting %d days at %+v: %v (status %q)", days, application.spawn, hp, application.statusLine)
+			t.Fatalf("still hurt after resting at %+v (status %q)", application.spawn, application.statusLine)
 		}
 	}
 	reachable := true

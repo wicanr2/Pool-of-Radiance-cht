@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/golden-box-remake-engine/geometry"
@@ -405,132 +404,11 @@ func cityHallPlan(application *app, rotate int) []exploreStep {
 	return nil
 }
 
-// tacticalPilot 是探索用的「自己人怎麼打」：先試瞄準，打不到就往最近的敵人
-// 走一步再試，走不動或走夠了就結束回合。
-//
-// **這不是原版的演算法**，只是讓探索不會停在打不完的架上。只按 Enter 的話
-// 全隊都不出手，怪物也殺不完，那一場永遠結束不了——探索看起來像走不動，
-// 實際上是卡在戰鬥裡。
-type tacticalPilot struct {
-	mover uint8
-	round int
-	tried bool
-	moves int
-	// goal 與 distance 是這一個回合的目標與步數表。每一 tick 重算一次
-	// 廣度優先會讓探索的時間全花在重算上——盤面在同一個回合裡不會變到
-	// 需要重算的程度。
-	goal     uint8
-	distance map[int]int
-}
-
-// exploreMaxCombatSteps 是一個角色一回合最多走幾步。原版有移動額度擋著，
-// 這裡另外加一個上限，免得額度算法出錯時無限走下去。
-const exploreMaxCombatSteps = 12
-
-func (pilot *tacticalPilot) key(app *app) ebiten.Key {
-	state := app.tactical
-	if state.Prompt {
-		// 敵方清光之後那一次問的是「還要不要繼續打」（spec 062）。答 Y
-		// 會再開一輪，於是那一場永遠結束不了——開打與收工共用同一個旗標。
-		if state.sideCounts().Foes == 0 {
-			return ebiten.KeyN
-		}
-		return ebiten.KeyY
-	}
-	if app.castTargeting {
-		return ebiten.KeyEnter
-	}
-	if state.Mover == 0 || int(state.Mover) >= len(state.Friendly) ||
-		!state.Friendly[state.Mover] {
-		return ebiten.KeyEnter
-	}
-	if pilot.mover != state.Mover || pilot.round != state.Round {
-		pilot.mover, pilot.round = state.Mover, state.Round
-		pilot.tried, pilot.moves = false, 0
-		pilot.goal, pilot.distance = 0, nil
-	}
-	if !pilot.tried {
-		pilot.tried = true
-		if pilot.adjacentToFoe(state) {
-			return ebiten.KeyA
-		}
-	}
-	if pilot.moves >= exploreMaxCombatSteps {
-		return ebiten.KeyEnter
-	}
-	if pilot.goalNeedsRefresh(state) {
-		target, ok := state.nearestReachableOpposing(state.Mover)
-		if !ok {
-			pilot.goal, pilot.distance = 0, nil
-			return ebiten.KeyEnter
-		}
-		pilot.goal = target
-		pilot.distance = tacticalStepDistances(state.Grid, state.Classes,
-			state.Roster[target].X, state.Roster[target].Y)
-	}
-	goal := state.Roster[pilot.goal]
-	distance := pilot.distance
-	here := state.Roster[state.Mover]
-	best, bestDistance := -1, tacticalDistanceAt(distance, here.X, here.Y, goal)
-	for direction := uint8(0); direction < combat.DirectionCount; direction++ {
-		step, err := combat.DirectionStep(direction)
-		if err != nil {
-			continue
-		}
-		nextX := int(here.X) + int(step.X)
-		nextY := int(here.Y) + int(step.Y)
-		if nextX < 0 || nextY < 0 || nextX > combat.TacticalMaxX || nextY > combat.TacticalMaxY {
-			continue
-		}
-		candidate := tacticalDistanceAt(distance, uint8(nextX), uint8(nextY), goal)
-		if candidate < bestDistance {
-			best, bestDistance = int(direction), candidate
-		}
-	}
-	if best < 0 {
-		return ebiten.KeyEnter
-	}
-	pilot.moves++
-	// 走完只有站到敵人旁邊才值得再試一次瞄準。每走一步都按一次 A 會讓
-	// 一場架的 tick 數翻倍，探索的預算就全花在打不到的瞄準上。
-	pilot.tried = !pilot.adjacentToFoe(state)
-	return tacticalStepKeys[best]
-}
-
-// goalNeedsRefresh 在讀取快取目標之前先驗證它仍是目前 roster 裡站著的敵人。
-// 戰鬥結束一個單位後 roster 可能縮短；只看 FootprintClass 會先以舊索引 panic，
-// 而沒有縮短但已倒下或倒戈的格子也不能繼續當目標。
-func (pilot *tacticalPilot) goalNeedsRefresh(state *tacticalState) bool {
-	if pilot.distance == nil || pilot.goal == 0 || int(pilot.goal) >= len(state.Roster) ||
-		int(pilot.goal) >= len(state.Friendly) || int(state.Mover) >= len(state.Friendly) {
-		return true
-	}
-	return state.Roster[pilot.goal].FootprintClass == 0 ||
-		state.Friendly[pilot.goal] == state.Friendly[state.Mover]
-}
-
 func boolInt(value bool) int {
 	if value {
 		return 1
 	}
 	return 0
-}
-
-// adjacentToFoe 說目前這一格旁邊有沒有站著還在場的敵人。
-func (pilot *tacticalPilot) adjacentToFoe(state *tacticalState) bool {
-	here := state.Roster[state.Mover]
-	for index := 1; index < len(state.Roster); index++ {
-		if index == int(state.Mover) || state.Roster[index].FootprintClass == 0 {
-			continue
-		}
-		if state.Friendly[index] == state.Friendly[state.Mover] {
-			continue
-		}
-		if chebyshev(here.X, here.Y, state.Roster[index].X, state.Roster[index].Y) <= 1 {
-			return true
-		}
-	}
-	return false
 }
 
 // planToCells 找到最近的一格目標並回傳走過去的朝向序列，走不到就回 nil。
