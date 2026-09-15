@@ -186,6 +186,22 @@
         "note": "shop.go 還自承換算沒閉合就是還沒接"
       },
       "github_issue": 30
+    },
+    {
+      "id": "norris-thac0-record",
+      "layer": "feature",
+      "title": "NORRIS THE GRAY 的 THAC0 讀到 +110h 的 154：每一下都命中",
+      "body": "MON8CHA 第 32 筆 +110h = 154，remake 算成 THAC0 −94；記錄是 5 級戰士（+2Fh=2、+96h..=[0 0 5]），原版排怪時很可能照職業表重算（hypothesis，overlay-25 0DF4h）。",
+      "acceptance": "掃 MONnCHA 列出 +110h 不在 20..60 的記錄；overlay-25 排怪的 THAC0 來源寫進 spec；remake 照原版算，一條測試釘住諾里斯 THAC0 = 16。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game"
+        ],
+        "pattern": "TestNorrisTHAC0",
+        "note": "還沒有釘住諾里斯 THAC0 的測試就是還沒修"
+      },
+      "github_issue": 31
     }
   ]
 }

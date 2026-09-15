@@ -61,6 +61,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **武具店只收金幣：白金換不成裝備。** shop.go 的 buy 只看 Money[Gold]；委任獎賞主要是白金，探針拿到 500 白金買不了板甲。
       **驗收**：原版商店的付款順序與找零寫進 spec；buy 照原版扣；一條測試用白金買東西從 Update() 走。
       **討論**：[#30](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/30)
+- [ ] **NORRIS THE GRAY 的 THAC0 讀到 +110h 的 154：每一下都命中。** MON8CHA 第 32 筆 +110h = 154，remake 算成 THAC0 −94；記錄是 5 級戰士（+2Fh=2、+96h..=[0 0 5]），原版排怪時很可能照職業表重算（hypothesis，overlay-25 0DF4h）。
+      **驗收**：掃 MONnCHA 列出 +110h 不在 20..60 的記錄；overlay-25 排怪的 THAC0 來源寫進 spec；remake 照原版算，一條測試釘住諾里斯 THAC0 = 16。
+      **討論**：[#31](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/31)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
