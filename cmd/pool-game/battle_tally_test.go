@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
@@ -130,4 +131,65 @@ func (tally *battleTally) line() string {
 	return fmt.Sprintf("%s in %d rounds; party attacks %d/%d (%d%%), bandages %d, moves %d, blocked %d, casts %d; foe attacks %d/%d (%d%%); downs %v; asleep per round [%s]",
 		tally.result, tally.rounds, tally.hits, attacks, rate, tally.bandages, tally.moves, tally.blocked,
 		tally.casts, tally.foeHits, foeAttacks, foeRate, tally.downs, strings.Join(asleep, " "))
+}
+
+// boardLines 把戰術盤畫成文字：`.` 走得上去、`#` 牆、`Pn` 我方、`n` 敵方、
+// `z` 睡著、`x` 倒下。只畫有人的那一圈外擴 pad 格。
+func boardLines(state *tacticalState, pad int) []string {
+	marks := map[[2]int]string{}
+	minX, maxX, minY, maxY := 999, -1, 999, -1
+	for index := 1; index < len(state.Roster); index++ {
+		cell := state.Roster[index]
+		if cell.FootprintClass == 0 {
+			continue
+		}
+		mark := strconv.Itoa(index)
+		if index < len(state.Friendly) && state.Friendly[index] {
+			mark = "P" + mark
+		}
+		if state.hasEffect(index, gamepack.SleepEffectCode) {
+			mark += "z"
+		}
+		if index < len(state.States) && state.States[index] >= 4 {
+			mark += "x"
+		}
+		marks[[2]int{int(cell.X), int(cell.Y)}] = mark
+		if int(cell.X) < minX {
+			minX = int(cell.X)
+		}
+		if int(cell.X) > maxX {
+			maxX = int(cell.X)
+		}
+		if int(cell.Y) < minY {
+			minY = int(cell.Y)
+		}
+		if int(cell.Y) > maxY {
+			maxY = int(cell.Y)
+		}
+	}
+	lines := []string{}
+	for y := minY - pad; y <= maxY+pad; y++ {
+		if y < 0 || y > combat.TacticalMaxY {
+			continue
+		}
+		line := fmt.Sprintf("y=%2d ", y)
+		for x := minX - pad; x <= maxX+pad; x++ {
+			if x < 0 || x >= combat.TacticalRowStride {
+				continue
+			}
+			mark := marks[[2]int{x, y}]
+			if mark == "" {
+				terrain, err := state.Grid.TerrainAt(x, y)
+				record, classErr := combat.CellClassAt(state.Classes, terrain)
+				if err == nil && classErr == nil && record.EntryThreshold < 0xFF {
+					mark = "."
+				} else {
+					mark = "#"
+				}
+			}
+			line += fmt.Sprintf("%4s", mark)
+		}
+		lines = append(lines, line)
+	}
+	return lines
 }

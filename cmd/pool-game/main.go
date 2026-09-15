@@ -1351,6 +1351,14 @@ func (a *app) runBlockedInitialCellEntry(dx, dy int) (bool, error) {
 		return false, fmt.Errorf("dispatch blocked Pool initial cell: %w", err)
 	}
 	result, err = a.consumeInitialTransitionResources(result)
+	if errors.Is(err, errNoSuchECLArchive) {
+		// 換圖表指到不存在的封存檔，而 GEO 這一面本來就是牆：這一步就是撞牆。
+		// 腳本在 `NEWECL` 之前已經 `CALL C01Eh` 把座標繞到對邊，要放回來。
+		a.spawn = origin
+		a.eventMachine.Memory[0x6E12] = uint16(a.eclArchive)
+		a.eventMachine.Memory[mapExitFlagAddress] = 0
+		return false, nil
+	}
 	if err != nil {
 		return false, err
 	}
@@ -1613,7 +1621,7 @@ func (a *app) configureEventSession(session *eclvm.BlockSession) error {
 			return nil, nil
 		}
 		if selector > 8 {
-			return nil, fmt.Errorf("Pool ECL archive selector 0x%X is outside 1..8", selector)
+			return nil, fmt.Errorf("%w: selector 0x%X is outside 1..8", errNoSuchECLArchive, selector)
 		}
 		archive, ok := a.eclCatalog.Archive(uint8(selector))
 		if !ok {
@@ -1623,6 +1631,12 @@ func (a *app) configureEventSession(session *eclvm.BlockSession) error {
 		return archive.Blocks, nil
 	})
 }
+
+// errNoSuchECLArchive 是換區塊時選擇子指到不存在的封存檔。古托井（`ecl8/29`）的
+// 換圖表北向是封存檔 10h（spec 101），而那一邊每一格北面都是牆：原版走不到那
+// 一支，remake 在被牆擋住時照樣跑入口 0（樓梯常朝著牆），就會撞到它。被擋住的
+// 那一步撞到這個錯誤就當成牆（`runBlockedInitialCellEntry`）。
+var errNoSuchECLArchive = errors.New("Pool ECL archive does not exist")
 
 func (a *app) syncArchiveFromEventMachine() error {
 	if a.eventMachine == nil {

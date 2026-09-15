@@ -16,6 +16,12 @@ import (
 // slumsWallFight 把一級隊伍送到貧民窟地形 terrain 的固定事件上打一場。
 func slumsWallFight(t *testing.T, seed int64, terrain int) *mainlineDriver {
 	t.Helper()
+	return slumsWallFightWith(t, seed, terrain, nil)
+}
+
+// slumsWallFightWith 同上，多一個每場開打時的回呼（印盤面用）。
+func slumsWallFightWith(t *testing.T, seed int64, terrain int, onBattleStart func(*tacticalState)) *mainlineDriver {
+	t.Helper()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
@@ -44,6 +50,7 @@ func slumsWallFight(t *testing.T, seed int64, terrain int) *mainlineDriver {
 	driver := buildManualParty(t, application, step, idle, false)
 	driver.hurt, driver.rest = partyHurt, driver.restUntilHealed
 	driver.tolerateDefeat = true
+	driver.onBattleStart = onBattleStart
 	driver.stepOut("into the slums", 3)
 	driver.restIfHurt()
 	target := func(x, y int) bool { return driver.terrainCode(x, y) == terrain }

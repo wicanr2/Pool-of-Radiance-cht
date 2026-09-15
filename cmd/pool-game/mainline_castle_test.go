@@ -41,6 +41,8 @@ type mainlineDriver struct {
 	tally battleTally
 	// tolerateDefeat 為真時全滅只記不 fatal（量牆的測試用）。
 	tolerateDefeat bool
+	// onBattleStart 在每一場剛擺好時叫一次（量牆的測試拿來印盤面）。
+	onBattleStart func(*tacticalState)
 }
 
 // reportBattle 在一場打完之後把計數記一行（只記一次）。
@@ -77,6 +79,9 @@ func (d *mainlineDriver) noteBattle() {
 		}
 	}
 	d.note("battle at %+v: %v (%d foes on the board) stats=%v party=%s", a.spawn, names, foes, stats, d.partyLine())
+	if d.onBattleStart != nil {
+		d.onBattleStart(a.tactical)
+	}
 }
 
 // flags 是每一個 Fatalf 都要帶的現場：主線旗標一次印齊，查失敗不用重跑。

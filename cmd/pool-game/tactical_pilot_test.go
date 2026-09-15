@@ -42,9 +42,11 @@ type tacticalPilot struct {
 // 這裡另外加一個上限，免得額度算法出錯時無限走下去。
 const exploreMaxCombatSteps = 12
 
-// bandageUrgency 是倒地計時到幾就算緊急：旁邊有敵人也放下武器先包紮。
-// 上限是 9（`combat.DyingRoundLimit`），留三回合的餘裕給先攻順序。
-const bandageUrgency = 6
+// bandageUrgency 是倒地計時到幾就算緊急：旁邊有醒著的敵人也放下武器先包紮。
+// 計時在回合結束時加一、超過 9 才死（`combat.DyingRoundLimit`），所以看到 8 的
+// 那一回合包下去還有一回合餘裕。以前是 6：量過七場（playtest 補七），輸的那幾場
+// 每一個行動都要，早包等於少打一下。
+const bandageUrgency = 8
 
 func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 	state := app.tactical
@@ -102,7 +104,7 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 		// 不看距離（spec 138），代價是這一個行動。旁邊有敵人時多撐幾回合
 		// 再包——倒地計時到 9 才轉死亡，`bandageUrgency` 之前先把身邊的打掉。
 		if target, ok := state.bandageTarget(); ok &&
-			(!pilot.adjacentToFoe(state) || state.DyingCounters[target] >= bandageUrgency) {
+			(!pilot.adjacentToAwakeFoe(state) || state.DyingCounters[target] >= bandageUrgency) {
 			return ebiten.KeyB
 		}
 		if id, ok := pilot.spellToCast(app); ok {
@@ -210,6 +212,25 @@ func (pilot *tacticalPilot) foeCells(state *tacticalState) []combat.FootprintCel
 func (pilot *tacticalPilot) adjacentToFoe(state *tacticalState) bool {
 	_, ok := pilot.focusTarget(state)
 	return ok
+}
+
+// adjacentToAwakeFoe 只算醒著的：睡著的敵人貼在旁邊不是威脅，不必為它延後包紮。
+func (pilot *tacticalPilot) adjacentToAwakeFoe(state *tacticalState) bool {
+	here := state.Roster[state.Mover]
+	for index := 1; index < len(state.Roster); index++ {
+		if !standing(state, index) || index == int(state.Mover) ||
+			index >= len(state.Friendly) || state.Friendly[index] == state.Friendly[state.Mover] ||
+			state.hasEffect(index, gamepack.SleepEffectCode) {
+			continue
+		}
+		for _, cell := range combat.FootprintCells(state.Roster[index].FootprintClass,
+			state.Roster[index].X, state.Roster[index].Y) {
+			if cell.Valid() && chebyshev(here.X, here.Y, cell.X, cell.Y) <= 1 {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // focusTarget 挑旁邊生命力最少的敵人（同分取編號小的）：集火先打倒一隻，
@@ -373,5 +394,38 @@ func TestTacticalPilotWalksAroundTeammates(t *testing.T) {
 	}
 	if got == tacticalStepKeys[2] {
 		t.Fatalf("the pilot stepped straight into the teammate")
+	}
+}
+
+// 包紮的時機（playtest 補七之後改的）：旁邊只有睡著的敵人就先包；醒著的貼著時
+// 計時未到 8 先打，到 8 才包。
+func TestTacticalPilotBandagesUnlessAnAwakeFoeIsAdjacent(t *testing.T) {
+	state := newFoeTurnState(6, 5, 5, 5, 6)
+	state.Roster = append(state.Roster, combat.CombatantCell{X: 3, Y: 5, FootprintClass: 1})
+	state.Friendly = append(state.Friendly, true)
+	state.HitPoints = []int{0, 10, 8, 0}
+	state.States = make([]uint8, 4)
+	state.DyingCounters = make([]uint8, 4)
+	state.Effects = make([]gamepack.EffectList, 4)
+	state.States[3] = combat.DyingState
+	state.DyingCounters[3] = 2
+	state.Mover = 1
+	// 旁邊的敵人 2 睡著：先包。
+	state.addEffect(2, gamepack.SleepEffectCode, 0, 1)
+	pilot := &tacticalPilot{}
+	if got := pilot.key(&app{tactical: state}); got != ebiten.KeyB {
+		t.Fatalf("with only a sleeping foe adjacent the pilot returned %v, want B", got)
+	}
+	// 敵人 2 醒著、計時 2：先打。
+	state.removeEffect(2, gamepack.SleepEffectCode)
+	pilot = &tacticalPilot{}
+	if got := pilot.key(&app{tactical: state}); got != ebiten.KeyA {
+		t.Fatalf("with an awake foe adjacent at counter 2 the pilot returned %v, want A", got)
+	}
+	// 計時 8：包。
+	state.DyingCounters[3] = bandageUrgency
+	pilot = &tacticalPilot{}
+	if got := pilot.key(&app{tactical: state}); got != ebiten.KeyB {
+		t.Fatalf("at counter %d the pilot returned %v, want B", bandageUrgency, got)
 	}
 }

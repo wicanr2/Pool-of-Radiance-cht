@@ -65,3 +65,67 @@ func TestKutoWellLookAheadDoesNotEatTheStep(t *testing.T) {
 		}
 	}
 }
+
+// 古托井北緣每一格北面都是牆，而它的換圖表北向指到封存檔 10h（不存在的
+// `ECL16`，spec 101 的表）。被牆擋住的那一步 remake 照樣跑入口 0（樓梯常朝著
+// 牆，spec 101），於是 `NEWECL` 解到不存在的封存檔——以前是硬錯誤，探索器
+// 把它記成硬失敗（`TestRandomWalkReachesKnownContentWithoutFailing` 種子 7）。
+// 現在當成牆：人不動、沒有錯誤、下一步照走。
+func TestKutoWellNorthWallIsJustAWall(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	archive, ok := application.eclCatalog.Archive(8)
+	if !ok {
+		t.Fatal("ECL8 archive is absent")
+	}
+	session, err := gamepack.NewDOSECLArchiveSession(archive, 29, 0x9914)
+	if err != nil {
+		t.Fatal(err)
+	}
+	geoMap, ok := application.geometryCatalog.Map(gamepack.MapKey{Archive: 8, BlockID: 29})
+	if !ok {
+		t.Fatal("GEO8/29 is absent")
+	}
+	application.eventSession, application.eventMachine = session, session.Machine()
+	application.eclArchive = 8
+	application.initialMap = &geoMap
+	application.spawn = gamepack.Spawn{Map: geoMap.Key, X: 4, Y: 0, Facing: 0}
+	application.introDone, application.mode = true, modeAdventure
+	if err := application.configureEventSession(session); err != nil {
+		t.Fatal(err)
+	}
+	hero := poolsave.Character{Name: "HERO", RaceID: "human", GenderID: "male", ClassID: "fighter",
+		AlignmentID: "lawful-good", Abilities: [6]int{16, 10, 10, 10, 10, 10}, MaxHP: 10, CurrentHP: 10,
+		PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application.state.Party = []poolsave.Character{hero}
+	application.saveState = func(poolsave.State) error { return nil }
+	application.eclSeed = 1
+	if geoMap.Grid.CanMoveDungeonWrapped(4, 0, 0) {
+		t.Fatal("(4,0) is expected to have a wall to the north")
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatalf("walking into the north wall returned an error: %v", err)
+	}
+	if application.spawn.Map != geoMap.Key || application.spawn.X != 4 || application.spawn.Y != 0 {
+		t.Fatalf("the party moved to %+v", application.spawn)
+	}
+	if application.eclArchive != 8 || application.eventSession.CurrentBlockID() != 29 {
+		t.Fatalf("the session left ECL8/29: ECL%d/%d", application.eclArchive, application.eventSession.CurrentBlockID())
+	}
+	// 轉身往南走一步要走得動。
+	if err := press(application, ebiten.KeyArrowRight); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyArrowRight); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatalf("the next step returned an error: %v", err)
+	}
+	if application.spawn.Y != 1 {
+		t.Fatalf("after the wall the party could not walk south: %+v", application.spawn)
+	}
+}
