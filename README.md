@@ -160,6 +160,10 @@
   `/home/anr2/cht/golden_box/golden-box-remake-engine`，本 repository 不複製
   engine source。
 - 第一支 `cmd/pool-inventory` 只做唯讀 ZIP／DAX 形狀盤點，不解讀劇情語意。
+- **自訂規則（預設關）**：隊伍選單的 `H` 切換「委任獎賞折算經驗值」——原版的委任只給錢，
+  經驗值只從怪物身上發；開著時市政廳獎賞每 1 金幣等值折 1 點經驗、每位隊員各得
+  （AD&D 一版 DMG 的規則，SSI 沒實作），冒險畫面右上角會標「自訂規則」。關著時所有
+  對拍與收據都是原版規則（[spec 140](docs/spec/140-house-rule-commission-experience.md)）。
 
 ## 從原始碼建置需要什麼
 

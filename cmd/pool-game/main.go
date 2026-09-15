@@ -1937,12 +1937,53 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 		}
 	}
 	a.state.PooledMoney = pooled
+	a.awardCommissionExperience(pooled)
 	a.treasureActive, a.treasureStage = true, treasureMain
 	a.treasureItems, a.treasureSelected, a.treasureCurrency, a.treasureAmount = loaded, 0, 0, ""
 	a.cellEventPending, a.cellWaitingMenu = true, true
 	a.enterTreasureMain()
 	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s), seven money pools ready.", len(loaded))
 	return nil
+}
+
+// commissionExperienceValue 把七欄貨幣換成金幣等值（AD&D 一版：200 銅＝20 銀＝2 琥珀金
+// ＝1 金＝1/5 白金）。寶石與珠寶用估價表最低那一格（10／100 金，`treasure.GemValueBands`
+// ／`JewelryValueBands`）——估價本身要擲骰，這裡取基準值讓數字可重現。
+func commissionExperienceValue(pooled [7]uint32) uint32 {
+	value := uint64(pooled[pooltreasure.Copper])/200 + uint64(pooled[pooltreasure.Silver])/20 +
+		uint64(pooled[pooltreasure.Electrum])/2 + uint64(pooled[pooltreasure.Gold]) +
+		uint64(pooled[pooltreasure.Platinum])*pooltreasure.GoldPerPlatinum +
+		uint64(pooled[pooltreasure.Gems])*uint64(pooltreasure.GemValueBands[0].Value) +
+		uint64(pooled[pooltreasure.Jewelry])*uint64(pooltreasure.JewelryValueBands[0].Base)
+	if value > uint64(^uint32(0)) {
+		return ^uint32(0)
+	}
+	return uint32(value)
+}
+
+// awardCommissionExperience 是 house rule「委任折算經驗值」（spec 140，預設關）：
+// 只在市政廳職員（ECL3/8）發的獎賞上作用——那一筆是 `CLEARMONSTERS → TREASURE →
+// COMBAT` 的空戰鬥，原版戰後結算的經驗總額是 0。開著時每一位隊員各得獎賞的
+// 金幣等值（不除以人數——除的話一場委任只有一百多點，升不了級，規則就沒有意義），
+// 主屬性加成照 spec 097。撿到的寶物（貧民窟的袋子、樓板下的箱子）不算：它們不是委任。
+func (a *app) awardCommissionExperience(pooled [7]uint32) {
+	if !a.state.HouseRules.CommissionExperience || a.eventSession == nil ||
+		a.eclArchive != 3 || a.eventSession.CurrentBlockID() != 8 {
+		return
+	}
+	value := commissionExperienceValue(pooled)
+	if value == 0 {
+		return
+	}
+	for index := range a.state.Party {
+		member := &a.state.Party[index]
+		code, ok := creation.ClassDOSCode(member.ClassID)
+		if !ok {
+			continue
+		}
+		member.Experience += gamepack.ExperienceShare(value, code, member.Abilities)
+	}
+	a.statusLine = fmt.Sprintf(a.text(msgHouseRuleCommissionXP), value)
 }
 
 func (a *app) enterTreasureMain() {
@@ -3315,6 +3356,10 @@ func (a *app) Draw(screen *ebiten.Image) {
 		if len(a.state.Party) > 1 {
 			drawText(screen, a.text(msgMenuSelectHint), 396, 320, accent)
 		}
+		// 自訂規則開著才標（spec 140）；關著時這一頁與原版截圖一樣。
+		if a.state.HouseRules.CommissionExperience {
+			drawText(screen, fmt.Sprintf(a.text(msgMenuHouseRule), a.text(msgHouseRuleOn)), 112, 336, accent)
+		}
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 72, 350, foreground)
 		}
@@ -3397,8 +3442,22 @@ func (a *app) Draw(screen *ebiten.Image) {
 	}
 }
 
+// houseRuleStateMessage 是 H)OUSE RULE 那一列的開／關字。
+func (a *app) houseRuleStateMessage() messageID {
+	if a.state.HouseRules.CommissionExperience {
+		return msgHouseRuleOn
+	}
+	return msgHouseRuleOff
+}
+
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	a.drawFrame(screen, foreground, accent)
+	// 自訂規則開著時要看得到（spec 140）：畫在右上角框內，關著時什麼都不畫，
+	// 對拍的畫面因此不受影響。
+	if a.state.HouseRules.CommissionExperience {
+		mark := a.text(msgHouseRuleMark)
+		drawText(screen, mark, logicalWidth-24-font.MeasureString(uiFace, displayText(mark)).Ceil(), 30, accent)
+	}
 	// 原版的冒險畫面上面沒有標題列，這裡本來留著一句開發用的英文
 	// （`INITIAL DOS FIRST-PERSON VIEW`）。那是給自己看的，卻是玩家
 	// 整趟冒險每一格都看得到的東西。

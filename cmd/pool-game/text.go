@@ -712,6 +712,13 @@ const (
 	msgMenuRemove
 	msgMenuSave
 	msgMenuExit
+	// 自訂規則（spec 140）：隊伍選單的 H 列、開／關字、冒險畫面的標記、交件發經驗的提示。
+	msgMenuHouseRule
+	msgHouseRuleOn
+	msgHouseRuleOff
+	msgHouseRuleNote
+	msgHouseRuleMark
+	msgHouseRuleCommissionXP
 	msgMenuSelectHint
 	msgMenuDropPrompt
 	msgMenuDropped

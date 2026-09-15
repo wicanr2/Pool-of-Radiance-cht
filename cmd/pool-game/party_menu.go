@@ -248,6 +248,12 @@ func (a *app) partyMenuCommand() error {
 		}
 		return a.runPartyMenuEntry(entry)
 	}
+	// H 是自訂規則的開關（spec 140）。它不列在選單上——那一列照原版截圖只有
+	// 原版的項目（`TestEmptyPartyShowsOnlyTheFourOriginalEntries`）；開著時選單
+	// 底下與冒險畫面右上角會標出來，README 寫了這個鍵。
+	if a.justPressed(ebiten.KeyH) {
+		return a.runPartyMenuEntry(partyMenuEntry{key: ebiten.KeyH, message: msgMenuHouseRule})
+	}
 	// ENTER 等同 C：標題進來之後最常做的就是建角。
 	if a.justPressed(ebiten.KeyEnter) {
 		return a.runPartyMenuEntry(partyMenuEntry{key: ebiten.KeyC, message: msgMenuCreate})
@@ -295,6 +301,10 @@ func (a *app) runPartyMenuEntry(entry partyMenuEntry) error {
 		return a.saveCurrentGame()
 	case ebiten.KeyB:
 		return a.beginAdventuring()
+	case ebiten.KeyH:
+		a.state.HouseRules.CommissionExperience = !a.state.HouseRules.CommissionExperience
+		a.statusLine = a.text(msgHouseRuleNote)
+		return nil
 	case ebiten.KeyE:
 		return a.exitToDOS()
 	}

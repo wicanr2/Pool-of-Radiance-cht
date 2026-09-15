@@ -184,6 +184,17 @@ type State struct {
 	CharacterLibrary []Character `json:"character_library"`
 	Party            []Character `json:"party"`
 	Campaign         *Campaign   `json:"campaign,omitempty"`
+	// HouseRules 是這一場戰役開著的自訂規則（spec 140）。原版沒有這些；
+	// 預設全關，跟著存檔走，不是這台機器的偏好。
+	HouseRules HouseRules `json:"house_rules,omitempty"`
+}
+
+// HouseRules 是可切換、改變原版規則狀態的選項（CLAUDE.md §3：這種東西必須是
+// 表現層之外可開關的，對拍與原版收據都在全關的狀態下量）。
+type HouseRules struct {
+	// CommissionExperience 為真時，市政廳委任的獎賞折算成經驗值發給每一位隊員
+	// （AD&D 一版 DMG「寶物 1 gp ＝ 1 XP」，SSI 沒實作；spec 140）。
+	CommissionExperience bool `json:"commission_experience,omitempty"`
 }
 
 func NewState() State { return State{Schema: Schema} }
