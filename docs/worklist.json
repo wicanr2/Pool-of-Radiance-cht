@@ -11,13 +11,18 @@
       "id": "main-line-end-to-end",
       "layer": "verification",
       "title": "主線從開場到結局連續跑過一次",
-      "body": "破關那一場打得贏、旗標也立得起來（2026-09-03，`ECL5/7`），但那是單點驗證，不是一趟。",
+      "body": "路線層（spec 137）已用明確的狀態機從標題按到結局；但戰後生命值寫回之後，正常建角的一級隊伍在貧民窟第 3～4 場就全滅（2026-09-15，`docs/playtest/mainline-end-to-end.md`）。先前的貧民窟／索寇收據作廢。",
       "acceptance": "一次不中斷的實跑，每一個必經 block 都留下經過紀錄；中途卡住的地方寫成可重跑的測試。",
       "verify": {
-        "kind": "manual",
-        "note": "沒有機器可判的訊號。寫成可重跑的實跑測試之後，把這一條改成綁那條測試"
+        "kind": "present",
+        "paths": [
+          "docs/playtest/mainline-end-to-end.md"
+        ],
+        "pattern": "下一步（尚未做）",
+        "note": "實跑紀錄還掛著「下一步（尚未做）」那一節就代表主線還沒連續走完；走完時把那一節改成收據"
       },
-      "github_issue": 5
+      "github_issue": 5,
+      "blocked_by": "測試駕駛的玩家策略層（#22）：休息／神殿／訓練／裝備都走正常按鍵之後，才知道自然隊伍走得到哪一段。"
     },
     {
       "id": "real-machine-startup",
@@ -43,6 +48,80 @@
       },
       "blocked_by": "先完成 DOS sprite inventory 與三組可丟棄 prototype，再依 grilling 流程逐題確認視覺聖經與資產範圍。",
       "github_issue": 17
+    },
+    {
+      "id": "postcombat-original-parity",
+      "layer": "verification",
+      "title": "戰後生命值寫回與全滅收場：對照原版驗證回標題、狀態碼名稱與 4961h",
+      "body": "commit c713d2c 依 overlay-05 `04ADh`／`14CAh` 補上寫回、`6DC7` 與 The END!；全滅後回標題、狀態 4 的名稱、`81h` 被打退的觸發條件都還是 hypothesis。",
+      "acceptance": "三條各有一筆 dosgolem 或 trace 證據；`main.go` 裡「那一段的消費者還沒讀」改成定論。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/main.go"
+        ],
+        "pattern": "那一段的消費者還沒讀",
+        "note": "回標題那一段的自承還在就是還沒對照"
+      },
+      "github_issue": 19
+    },
+    {
+      "id": "clock-hour-projection",
+      "layer": "feature",
+      "title": "遊戲時刻沒有投影到 ECL 記憶體 49C8h／49C9h",
+      "body": "腳本的白天判斷（城門商人 `ADAAh`、碼頭 `9BAEh`、`ecl8/29 AF30h`）讀到的永遠是 0。",
+      "acceptance": "時鐘推進處寫 `49C8h`／`49C9h`；一條測試在 14 點後確認商人不出現。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "internal/gamepack/intro.go",
+          "cmd/pool-game/main.go",
+          "cmd/pool-game/camp.go"
+        ],
+        "pattern": "0x49C9",
+        "note": "程式裡還沒有任何地方寫 49C9 就是還沒做"
+      },
+      "github_issue": 20
+    },
+    {
+      "id": "script-teleport-extra-step",
+      "layer": "verification",
+      "title": "腳本在走一步的入口 0 裡搬座標之後，remake 還會再走原本那一步",
+      "body": "上樓落點腳本寫 (5,7)，remake 得到 (6,7)；原版順序未證。",
+      "acceptance": "一筆原版落點證據；spec 137 第 10 段的 hypothesis 改成定論。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/137-mainline-route.md"
+        ],
+        "pattern": "hypothesis（落點是否再加一步）",
+        "note": "spec 還標 hypothesis 就是還沒驗"
+      },
+      "github_issue": 21
+    },
+    {
+      "id": "explorer-player-strategy",
+      "layer": "verification",
+      "title": "探索器測試的玩家策略層：休息／治療／訓練",
+      "body": "戰後寫回之後四條探索器測試與主線探針全紅（接手時工作樹已讓探索器四條紅）。",
+      "acceptance": "四條探索器測試回綠；主線探針至少走過貧民窟 25 場與索寇要塞而不全滅，或記錄在哪一場、什麼等級全滅。",
+      "verify": {
+        "kind": "manual",
+        "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestRandomWalkReachesKnownContentWithoutFailing|TestSokalKeepOpensTheOtherBoatRoutes|TestWorldTourReachesTheAreasBehindTheHarbour|TestPlayingTheWorldCompletesCommissionsOnItsOwn'` 是否全綠，工具不跑測試"
+      },
+      "github_issue": 22
+    },
+    {
+      "id": "ecl7-17-event-loop",
+      "layer": "feature",
+      "title": "ECL7/17（遊牧營地）的格子事件在探索器裡無限迴圈",
+      "body": "探索器 log 在 GEO7/17 (7,15) 連續七趟「格子事件 300000」一步不走。",
+      "acceptance": "最小重現＋修正；探索器在該區能走動。",
+      "verify": {
+        "kind": "manual",
+        "note": "要先寫最小重現才有機器訊號"
+      },
+      "github_issue": 23
     }
   ]
 }

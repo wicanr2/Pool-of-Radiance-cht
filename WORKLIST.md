@@ -44,14 +44,33 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 <!-- worklist:begin 這一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改 -->
 
+### 一、玩家會撞到的功能缺口
+
+- [ ] **遊戲時刻沒有投影到 ECL 記憶體 49C8h／49C9h。** 腳本的白天判斷（城門商人 `ADAAh`、碼頭 `9BAEh`、`ecl8/29 AF30h`）讀到的永遠是 0。
+      **驗收**：時鐘推進處寫 `49C8h`／`49C9h`；一條測試在 14 點後確認商人不出現。
+      **討論**：[#20](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/20)
+- [ ] **ECL7/17（遊牧營地）的格子事件在探索器裡無限迴圈。** 探索器 log 在 GEO7/17 (7,15) 連續七趟「格子事件 300000」一步不走。
+      **驗收**：最小重現＋修正；探索器在該區能走動。
+      **討論**：[#23](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/23)
+
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
-- [ ] **主線從開場到結局連續跑過一次。** 破關那一場打得贏、旗標也立得起來（2026-09-03，`ECL5/7`），但那是單點驗證，不是一趟。
+- [ ] **主線從開場到結局連續跑過一次。** 路線層（spec 137）已用明確的狀態機從標題按到結局；但戰後生命值寫回之後，正常建角的一級隊伍在貧民窟第 3～4 場就全滅（2026-09-15，`docs/playtest/mainline-end-to-end.md`）。先前的貧民窟／索寇收據作廢。
+      **卡在**：測試駕駛的玩家策略層（#22）：休息／神殿／訓練／裝備都走正常按鍵之後，才知道自然隊伍走得到哪一段。
       **驗收**：一次不中斷的實跑，每一個必經 block 都留下經過紀錄；中途卡住的地方寫成可重跑的測試。
       **討論**：[#5](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/5)
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
+- [ ] **戰後生命值寫回與全滅收場：對照原版驗證回標題、狀態碼名稱與 4961h。** commit c713d2c 依 overlay-05 `04ADh`／`14CAh` 補上寫回、`6DC7` 與 The END!；全滅後回標題、狀態 4 的名稱、`81h` 被打退的觸發條件都還是 hypothesis。
+      **驗收**：三條各有一筆 dosgolem 或 trace 證據；`main.go` 裡「那一段的消費者還沒讀」改成定論。
+      **討論**：[#19](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/19)
+- [ ] **腳本在走一步的入口 0 裡搬座標之後，remake 還會再走原本那一步。** 上樓落點腳本寫 (5,7)，remake 得到 (6,7)；原版順序未證。
+      **驗收**：一筆原版落點證據；spec 137 第 10 段的 hypothesis 改成定論。
+      **討論**：[#21](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/21)
+- [ ] **探索器測試的玩家策略層：休息／治療／訓練。** 戰後寫回之後四條探索器測試與主線探針全紅（接手時工作樹已讓探索器四條紅）。
+      **驗收**：四條探索器測試回綠；主線探針至少走過貧民窟 25 場與索寇要塞而不全滅，或記錄在哪一場、什麼等級全滅。
+      **討論**：[#22](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/22)
 
 ### 三、版面與資料的差距
 
