@@ -230,6 +230,8 @@ var messageKeys = map[messageID]string{
 	msgStatusAsleep:   "ui.statusAsleep",
 	msgStatusCoughing: "ui.statusCoughing",
 	msgStatusBandaged: "ui.statusBandaged",
+	msgStatusQuick: "ui.statusQuick",
+	msgStatusQuickOff: "ui.statusQuickOff",
 	msgStatusBlocked: "ui.statusBlocked",
 	msgStatusCharmed: "ui.statusCharmed",
 	msgStatusContinuePrompt: "ui.statusContinuePrompt",

@@ -442,6 +442,7 @@ func TestWalkingIntoAnAllyDoesNotAttack(t *testing.T) {
 		t.Fatal("no eastward direction")
 	}
 	before := state.HitPoints[2]
+	state.Moving = true
 	a.keys = scriptedKeys{tacticalStepKeys[east]: true}
 	if err := a.tacticalInput(); err != nil {
 		t.Fatal(err)
@@ -471,6 +472,7 @@ func TestWalkingIntoAFoeStillAttacks(t *testing.T) {
 		}
 	}
 	before := state.HitPoints[2]
+	state.Moving = true
 	a.keys = scriptedKeys{tacticalStepKeys[east]: true}
 	if err := a.tacticalInput(); err != nil {
 		t.Fatal(err)

@@ -362,6 +362,10 @@ type tacticalState struct {
 	// MaxHitPoints 是每一格的生命上限（原版記錄 `+32h`）。死靈術把屍體
 	// 補到滿，補到哪裡由它決定。
 	MaxHitPoints []int
+	// Moving 是 M）OVE 之後的「移動中」：原版的方向鍵只在按過 M 之後才算
+	// 方向（說明書 p.38；overlay-08 `0387h` 比 'M' 進 `09C3h`），頂層的 Q 是
+	// Q）UICK。這個旗標讓兩個 Q 各歸各的。換人就清掉。
+	Moving bool
 	// AIDriven 對應原版記錄的 `+10Fh`：非零就由敵方 AI 分派這一格的行動。
 	// 隊員是 0，怪物是 1；**被魅惑的隊員也會變成 1**（spec 112 的
 	// overlay-12 entry 14 `048Fh`），所以「誰由 AI 走」不能拿陣營來判——
@@ -581,6 +585,7 @@ func (state *tacticalState) endTurn(roll func(count, sides int) int, delay bool)
 	if state.Mover == 0 {
 		return
 	}
+	state.Moving = false
 	if delay {
 		state.Scores[state.Mover] = combat.DelayInitiative()
 		state.Status = state.say(msgStatusDelayed)
@@ -592,6 +597,41 @@ func (state *tacticalState) endTurn(roll func(count, sides int) int, delay bool)
 	if state.Mover == 0 {
 		state.endRound(roll)
 	}
+}
+
+// quick 重現 overlay-08 `120Eh`：記錄 `+10Fh = 1`（這一格改由 AI 走）；
+// runtime 記著的目標若與自己同陣營就清掉——AI 不該接手玩家瞄著的同伴。
+func (state *tacticalState) quick(mover uint8) {
+	if int(mover) < len(state.AIDriven) {
+		state.AIDriven[mover] = true
+	}
+	if target, ok := state.foeTarget(mover); ok {
+		if same, err := state.sameSide(mover, target); err == nil && same {
+			state.setFoeTarget(mover, 0)
+		}
+	}
+}
+
+// releaseQuick 重現 overlay-08 `04D8h`：沿隊伍把不是 NPC（`+84h < 80h`）的
+// `+10Fh` 清成 0。回傳有沒有人被收回。
+func (a *app) releaseQuick(state *tacticalState) bool {
+	released := false
+	for index := range a.state.Party {
+		if a.state.Party[index].NPC || !a.state.Party[index].Quick {
+			continue
+		}
+		a.state.Party[index].Quick = false
+		released = true
+	}
+	for index := 1; index < len(state.Roster) && index < len(state.AIDriven); index++ {
+		if index >= len(state.PartySlot) || state.PartySlot[index] < 0 {
+			continue
+		}
+		if slot := state.PartySlot[index]; slot < len(a.state.Party) && !a.state.Party[slot].NPC {
+			state.AIDriven[index] = false
+		}
+	}
+	return released
 }
 
 // bandageTarget 是 B）ANDAGE 會包紮的那一格：沿名冊順序找第一個我方、狀態是
@@ -735,6 +775,12 @@ func (a *app) enterTacticalPreview() error {
 		Icons:        icons,
 		AIDriven:     aiDriven(partySlot),
 		Text:         a.text,
+	}
+	// Q）UICK 過的隊員一開場就由 AI 走（記錄 `+10Fh` 跨戰鬥保留，spec 139）。
+	for index, slot := range partySlot {
+		if slot >= 0 && slot < len(a.state.Party) && a.state.Party[slot].Quick {
+			state.AIDriven[index] = true
+		}
 	}
 	state.States = make([]uint8, size)
 	state.DyingCounters = make([]uint8, size)
@@ -1456,10 +1502,17 @@ func weaponBearerFor(member poolsave.Character, baseThac0Internal uint8) gamepac
 // rollDice 把 app 的骰子接成回合流程要的形狀。
 func (a *app) rollDice(count, sides int) int { return a.roller.Roll(count, sides) }
 
-// tacticalStepKeys 是原版 Move 命令的八個方向鍵，依 spec 053 對到 direction 0..7。
+// tacticalStepKeys 是原版 Move 命令的八個方向鍵（overlay-13 `3217h` 起逐個比
+// `H I M Q P O K G`），依 spec 053 對到 direction 0..7；tacticalStepKeypad 是
+// 說明書 p.38 畫的數字鍵盤 8 9 6 3 2 1 4 7。
 var tacticalStepKeys = [8]ebiten.Key{
 	ebiten.KeyH, ebiten.KeyI, ebiten.KeyM, ebiten.KeyQ,
 	ebiten.KeyP, ebiten.KeyO, ebiten.KeyK, ebiten.KeyG,
+}
+
+var tacticalStepKeypad = [8]ebiten.Key{
+	ebiten.KeyNumpad8, ebiten.KeyNumpad9, ebiten.KeyNumpad6, ebiten.KeyNumpad3,
+	ebiten.KeyNumpad2, ebiten.KeyNumpad1, ebiten.KeyNumpad4, ebiten.KeyNumpad7,
 }
 
 // tacticalInput 讓那八個鍵驅動 ResolveDestination，並在允許進入時提交這一步。
@@ -1515,6 +1568,15 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
+	// SPACE 收回全隊的自動戰鬥（NPC 除外）。原版在玩家指令迴圈（`04D8h`）與
+	// 每一隻 AI 動之前的按鍵檢查（overlay-09 entry 7 `0FC8h`）都認這個鍵，
+	// 所以它要排在 AI 分派前面——不然交出去的隊員永遠收不回來。
+	if a.justPressed(ebiten.KeySpace) && !a.castOpen && !a.castTargeting {
+		if a.releaseQuick(state) {
+			state.Status = state.say(msgStatusQuickOff)
+		}
+		return nil
+	}
 	if state.Mover != 0 && state.aiDrives(int(state.Mover)) {
 		if err := a.foeTurn(state); err != nil {
 			return err
@@ -1552,6 +1614,22 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
+	// Q）UICK（spec 139）：這一位從現在起由電腦走，這一回合立刻交給 AI。
+	// 移動中的 Q 是東南方向，不是這裡。
+	if a.justPressed(ebiten.KeyQ) && state.Mover != 0 && !state.Moving {
+		if index, ok := a.moverPartyIndex(state.Mover); ok && !a.state.Party[index].NPC {
+			a.state.Party[index].Quick = true
+			state.quick(state.Mover)
+			state.Status = state.say(msgStatusQuick, state.Mover)
+			if err := a.foeTurn(state); err != nil {
+				return err
+			}
+			if state.Finished {
+				return a.finishCombat(state.Outcome)
+			}
+		}
+		return nil
+	}
 	// DONE 底下的 B）ANDAGE（spec 138）：有隊友倒地才有這一項；包紮完
 	// 這個行動就用掉了（原版接著呼叫 overlay-25 entry 34，與 Q）UIT 同一支）。
 	if a.justPressed(ebiten.KeyB) && state.Mover != 0 {
@@ -1567,8 +1645,24 @@ func (a *app) tacticalInput() error {
 	if state.Mover == 0 {
 		return nil
 	}
-	for direction, key := range tacticalStepKeys {
-		if !a.justPressed(key) {
+	// M）OVE：按過 M 才進移動；之後的八個字母是方向（原版 `09C3h` 那一支）。
+	// 數字鍵盤的八個鍵不必先按 M——說明書 p.38 畫的就是它們。
+	if !state.Moving {
+		if a.justPressed(ebiten.KeyM) {
+			state.Moving = true
+			return nil
+		}
+		keypad := false
+		for _, key := range tacticalStepKeypad {
+			keypad = keypad || a.justPressed(key)
+		}
+		if !keypad {
+			return nil
+		}
+		state.Moving = true
+	}
+	for direction := range tacticalStepKeys {
+		if !a.justPressed(tacticalStepKeys[direction]) && !a.justPressed(tacticalStepKeypad[direction]) {
 			continue
 		}
 		tactical, err := state.tacticalSnapshot()

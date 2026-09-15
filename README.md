@@ -344,8 +344,9 @@ repo 不含也不產生任何素材檔。
 
 盤面本身由目前地城座標與真實 GEO 牆面資料現場生成，牆呈斜線是投影本身的形狀
 （`X = 21 + 6dx + 5dy + subB`）。視窗一進畫面就對到行動者身上，與原版一樣
-（overlay-32 `07D4h`，餘裕 0 一定捲到正中央）。原版 Move 命令的八個方向鍵
-（`H I M Q P O K G`）已接上移動判定，回合流程照
+（overlay-32 `07D4h`，餘裕 0 一定捲到正中央）。按 `M` 之後八個方向鍵
+（`H I M Q P O K G` 或數字鍵盤）接上移動判定，`Q` 是自動戰鬥、SPACE 收回
+（[spec 139](docs/spec/139-quick-auto-combat.md)），回合流程照
 [spec 062](docs/spec/062-combat-round-loop.md) 的順序在跑。
 
 目前以 Docker／Xvfb 做離線測試與煙霧擷取：

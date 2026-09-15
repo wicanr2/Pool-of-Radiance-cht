@@ -218,18 +218,14 @@ func TestNormalKeysReachTheFirstCombat(t *testing.T) {
 // 戰鬥要打得完。隊伍全程按 ENTER 不還手，怪物必須自己走過來把它打倒——
 // 在敵方回合加上「追最近的敵人」這條退路之前，站得遠的怪物會回報找不到
 // 目標然後原地結束回合，雙方隔著二十幾格互相不動，戰鬥永遠不結束。
-func TestPassiveCombatTerminates(t *testing.T) {
+// newGameAtFirstCombat 用給定的隊伍從標題開始正常遊玩（B、導覽、隨機走）直到
+// 第一場戰鬥開打，回傳停在戰術盤面上的 app。
+func newGameAtFirstCombat(t *testing.T, party []poolsave.Character) *app {
+	t.Helper()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
-	}
-	party := make([]poolsave.Character, 0, 4)
-	for index := 0; index < 4; index++ {
-		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
-			GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good",
-			Abilities: [6]int{18, 10, 10, 16, 10, 10}, MaxHP: 40, CurrentHP: 40,
-			PortraitHead: 1, PortraitBody: 1, IconSize: 1})
 	}
 	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
 	application.saveState = func(poolsave.State) error { return nil }
@@ -300,6 +296,18 @@ func TestPassiveCombatTerminates(t *testing.T) {
 	if application.tactical == nil {
 		t.Fatalf("tactical state absent: %q", application.statusLine)
 	}
+	return application
+}
+
+func TestPassiveCombatTerminates(t *testing.T) {
+	party := make([]poolsave.Character, 0, 4)
+	for index := 0; index < 4; index++ {
+		party = append(party, poolsave.Character{Name: string(rune('A' + index)), RaceID: "dwarf",
+			GenderID: "male", ClassID: "fighter", AlignmentID: "lawful-good",
+			Abilities: [6]int{18, 10, 10, 16, 10, 10}, MaxHP: 40, CurrentHP: 40,
+			PortraitHead: 1, PortraitBody: 1, IconSize: 1})
+	}
+	application := newGameAtFirstCombat(t, party)
 	for tick := 0; tick < 40000; tick++ {
 		state := application.tactical
 		if state == nil || state.Finished {
@@ -464,6 +472,11 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 				t.Fatal(err)
 			}
 			continue
+		}
+		if !application.tactical.Moving {
+			if err := press(application, ebiten.KeyM); err != nil {
+				t.Fatalf("combat tick %d: %v", tick, err)
+			}
 		}
 		if err := press(application, tacticalStepKeys[chosen]); err != nil {
 			t.Fatalf("combat tick %d: %v", tick, err)
@@ -704,6 +717,11 @@ func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 		})
 		moved := false
 		for _, direction := range order {
+			if application.tactical != nil && !application.tactical.Moving {
+				if err := press(application, ebiten.KeyM); err != nil {
+					return err
+				}
+			}
 			if err := press(application, tacticalStepKeys[direction]); err != nil {
 				return err
 			}

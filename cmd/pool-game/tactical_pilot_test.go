@@ -16,8 +16,8 @@ import (
 //  1. 有隊友倒地就 B）ANDAGE（spec 138）；旁邊有敵人時撐到計時快到才包。
 //  2. 記著催眠術而場上還有三個以上醒著的敵人就 C）AST 催眠（說明書 p.44）。
 //  3. 旁邊有敵人就 A）IM，挑生命力最少的那一隻集火（N 鍵換目標）。
-//  3. 否則往「站得上去、又貼著敵人」的最近一格走：步數表把別人站的格子
-//     當牆，不再撞進同伴背後（以前四成的行動都是 BLOCKED）。
+//  3. 否則往「站得上去、又貼著敵人」的最近一格走（先按 M 進移動）：步數表把
+//     別人站的格子當牆，不再撞進同伴背後（以前四成的行動都是 BLOCKED）。
 //  4. 走不動、走夠了或沒有路就結束回合。
 type tacticalPilot struct {
 	mover uint8
@@ -137,6 +137,10 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 	}
 	if best < 0 {
 		return ebiten.KeyEnter
+	}
+	// 原版的方向鍵要先按 M）OVE 才算方向（頂層的 Q 是 Q）UICK）。
+	if !state.Moving {
+		return ebiten.KeyM
 	}
 	pilot.moves++
 	pilot.lastX, pilot.lastY, pilot.stepped = here.X, here.Y, true
@@ -359,6 +363,10 @@ func TestTacticalPilotWalksAroundTeammates(t *testing.T) {
 	state.Roster[2] = combat.CombatantCell{X: 6, Y: 5, FootprintClass: 1} // 敵人
 	state.Mover = 1
 	pilot := &tacticalPilot{}
+	if got := pilot.key(&app{tactical: state}); got != ebiten.KeyM {
+		t.Fatalf("the pilot should press M before stepping, got %v", got)
+	}
+	state.Moving = true
 	got := pilot.key(&app{tactical: state})
 	if got == ebiten.KeyEnter || got == ebiten.KeyA {
 		t.Fatalf("blocked by a teammate the pilot returned %v, want a step", got)

@@ -64,6 +64,9 @@ type Character struct {
 	// NPC 為真代表這一位是 `36h ADD NPC` 加進來的，不是玩家建的
 	// （spec 091）。原版隊伍上限八人，玩家角色只佔得了六格。
 	NPC bool `json:"npc,omitempty"`
+	// Quick 是原版記錄的 `+10Fh`：Q）UICK 之後由電腦接管這一位的戰鬥回合，
+	// 跨戰鬥保留，直到戰鬥中按 SPACE 收回（spec 139）。
+	Quick bool `json:"quick,omitempty"`
 	// Side 是原版記錄的 `+10Eh`：0 與隊伍同一邊，非 0 是另一邊。
 	// 有一個 NPC 編號（18h）加進來就是敵方。
 	Side uint8 `json:"side,omitempty"`

@@ -696,6 +696,9 @@ const (
 	msgStatusHeld
 	// 原文是 overlay-08 `0FDDh` 的 `is bandaged`（spec 138）。
 	msgStatusBandaged
+	// Q）UICK 與 SPACE 收回（spec 139）；原版按 Q 不印字，這兩句是 remake 自己的。
+	msgStatusQuick
+	msgStatusQuickOff
 	msgFoeNoTarget
 	msgFoeAttacked
 	msgFoeClosed
