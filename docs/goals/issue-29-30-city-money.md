@@ -24,6 +24,16 @@
 - remake 讀點：`cmd/pool-game/training.go`（`trainMember`、檔頭「仍然不限制」）、
   `cmd/pool-game/shop.go`（`buy`，第 94 行「換算還沒閉合」）。鏡像的 verify 就是這兩句還在。
 
+## 2026-09-16 收在哪
+
+訓練常式 `2997h` 從頭讀完：清醒、1000 金（overlay-19 entry 11 四捨五入）、職業門、Y 確認、
+`42C1h` 逐種硬幣扣款找零（spec 097〈收費與門〉）；武具店 `034Fh` 角色先於 pool、entry 15
+重鑄（spec 116〈付款〉）。dosgolem 五筆收據（`dosgolem-training-fee.json` 三種錢包、
+`dosgolem-shop-payment.json` 兩種）逐欄相同。remake：`treasure` 五支付款 primitive、
+`trainMember` 四關＋`confirmTraining`、`shop.buy`；測試從 `Update()` 走（錢不夠、門不對、
+白金、pool）。探針的 outfit 段預算改成金幣等值，但探針在古托井就全滅（#22），獎賞買板甲那
+一段走不到——留在 #22。#29／#30 關。
+
 ## 提示詞（可直接貼給 `/goal`）
 
 > 目標：訓練所收 1000 金、只放對職業的門進來；武具店能用白金（與其他幣）付款、找零照原版；

@@ -230,6 +230,7 @@
       "ui.shopAppraiseSold": "賣得 %d 金幣。",
       "ui.shopAppraiseValue": "這件%s估價 %d 金幣。　S 賣掉（%d 金幣）　K 留著",
       "ui.shopBought": "%s 買下 %s，花了 %d 金幣。",
+      "ui.shopBoughtFromPool": "%s 買下 %s，從隊伍公款付了 %d 金幣。",
       "ui.shopBuyer": "買家 %d/%d　%s　金幣 %d",
       "ui.shopCount": "第 %d 件，共 %d 件",
       "ui.shopFooter": "TAB 換買家　上下選貨　ENTER 購買　G／J 估價　ESC 離開",
@@ -318,6 +319,10 @@
       "ui.trainGained": " 升了一級，生命值 ",
       "ui.trainNeedsMember": "先用 1-6 選一個角色再訓練。",
       "ui.trainNotYet": " 的經驗值還不夠訓練。",
+      "ui.trainNotConscious": "我們只訓練清醒的人。",
+      "ui.trainCosts": "訓練要 1000 金幣。",
+      "ui.trainWrongClass": "這裡不訓練那個職業。",
+      "ui.trainAsk": "：要訓練嗎？(Y/N)",
       "ui.viewSheetFooter": "ESC 返回",
       "ui.viewSheetPick": "看誰的資料？",
       "ui.whoPrompt": "誰？"

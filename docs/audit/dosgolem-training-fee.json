@@ -1,0 +1,158 @@
+{
+ "schema": "pool-dosgolem-training-fee/1",
+ "generator": "dosgolem",
+ "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+ "base": "docs/audit/dos-thief-training-skills.json 的前置狀態（route13-scratch 的 HUMAN.cha：DEX 18、XP 1251、盜賊 1 級），只改 +88h.. 五個錢欄",
+ "approach_keys": "rep:9:Space,Return,Return,a,a,e,b,rep:8:Return,Right,Right,Up,Up,Left,Up,Right,Up,Up,Up,Left,Up,Right,Up,Up,Return,n,n,Up,Return,Up,Return,Up,Return,Left,Up,Return,Up,y",
+ "train_keys": "t,y",
+ "scenarios": {
+  "mixed": {
+   "injected_money": {
+    "copper": 50,
+    "silver": 30,
+    "gold": 1003,
+    "platinum": 2
+   },
+   "injected_character_sha256": "c76929a011eebb0c06586e248b4e9f39ccdcae91aed134b2fa17c615eb32e45d",
+   "record": "3B80:0009",
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 50,
+      "silver": 30,
+      "electrum": 0,
+      "gold": 1003,
+      "platinum": 2
+     },
+     "thief_level": 1,
+     "experience": 1251,
+     "sha256_of_frame": "46ed2dd605a5166f597fb11e6f6f5a73425fbdb419519c37f22f58b337ba02c4"
+    },
+    {
+     "label": "t",
+     "wallet": {
+      "copper": 50,
+      "silver": 30,
+      "electrum": 0,
+      "gold": 1003,
+      "platinum": 2
+     },
+     "thief_level": 1,
+     "experience": 1251,
+     "sha256_of_frame": "77a96d536fc3624201dad4456d2593f5daf08bbd98db918f0ec0f5cf6fb68e58"
+    },
+    {
+     "label": "y",
+     "wallet": {
+      "copper": 0,
+      "silver": 5,
+      "electrum": 1,
+      "gold": 4,
+      "platinum": 2
+     },
+     "thief_level": 2,
+     "experience": 1251,
+     "sha256_of_frame": "d79e21b0272b82c7b572b17a45b349980143d4e44bf4a50258e4bbe6a9380892"
+    }
+   ]
+  },
+  "short": {
+   "injected_money": {
+    "gold": 500
+   },
+   "injected_character_sha256": "5549e296d65be5573ae2896bd2de0569daec369b2fa41dfb0b689f7a3b3023cc",
+   "record": "3B80:0009",
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 500,
+      "platinum": 0
+     },
+     "thief_level": 1,
+     "experience": 1251,
+     "sha256_of_frame": "46ed2dd605a5166f597fb11e6f6f5a73425fbdb419519c37f22f58b337ba02c4"
+    },
+    {
+     "label": "t",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 500,
+      "platinum": 0
+     },
+     "thief_level": 1,
+     "experience": 1251,
+     "sha256_of_frame": "46ed2dd605a5166f597fb11e6f6f5a73425fbdb419519c37f22f58b337ba02c4"
+    },
+    {
+     "label": "y",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 500,
+      "platinum": 0
+     },
+     "thief_level": 1,
+     "experience": 1251,
+     "sha256_of_frame": "46ed2dd605a5166f597fb11e6f6f5a73425fbdb419519c37f22f58b337ba02c4"
+    }
+   ]
+  },
+  "exact": {
+   "injected_money": {
+    "gold": 1000
+   },
+   "injected_character_sha256": "09f666a483532b173ecfe313b90b59686aa1661b698aeeecc3e91eba35c9e62c",
+   "record": "3B80:0009",
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 1000,
+      "platinum": 0
+     },
+     "thief_level": 1,
+     "experience": 1251,
+     "sha256_of_frame": "46ed2dd605a5166f597fb11e6f6f5a73425fbdb419519c37f22f58b337ba02c4"
+    },
+    {
+     "label": "t",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 1000,
+      "platinum": 0
+     },
+     "thief_level": 1,
+     "experience": 1251,
+     "sha256_of_frame": "77a96d536fc3624201dad4456d2593f5daf08bbd98db918f0ec0f5cf6fb68e58"
+    },
+    {
+     "label": "y",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "thief_level": 2,
+     "experience": 1251,
+     "sha256_of_frame": "d79e21b0272b82c7b572b17a45b349980143d4e44bf4a50258e4bbe6a9380892"
+    }
+   ]
+  }
+ },
+ "generator_revision": "9bd269a"
+}

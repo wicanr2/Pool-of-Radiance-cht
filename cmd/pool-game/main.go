@@ -248,6 +248,9 @@ type app struct {
 	menuMember int
 	// menuDropPending 是 D）ROP 的再確認畫面。
 	menuDropPending bool
+	// trainPending 是訓練所 "Do you wish to train?" 在等 Y／N，trainMemberIndex 是問的是誰。
+	trainPending     bool
+	trainMemberIndex int
 	// cellWaitedOnce／cellTextSticky 是「這一格的事件等過一次了」與
 	// 「腳本結束了但文字還留在框裡」（見 `pauseAppliedCellResult`）。
 	cellWaitedOnce bool
@@ -953,6 +956,9 @@ func (a *app) Update() error {
 		}
 		if a.menuDropPending {
 			return a.partyMenuDropConfirm()
+		}
+		if a.trainPending {
+			return a.partyMenuTrainConfirm()
 		}
 		// 1..6 指定 D、M、T、V、R 要對誰生效。
 		for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2,

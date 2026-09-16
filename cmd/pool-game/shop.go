@@ -90,9 +90,11 @@ func (a *app) enterShop(requests []eclvm.TreasureRequest) error {
 	return nil
 }
 
-// buy 把選中的物品賣給目前的買家。付款只用金幣：原版的價目也以金幣標示，
-// 其他六種貨幣的換算還沒閉合，先不動它們——換算錯的症狀是玩家買得起
-// 買不起的東西，而那在畫面上看不出來。
+// buy 把選中的物品賣給目前的買家（overlay-06 entry 4 `034Fh`，#30，spec 116〈付款〉）：
+// 先算買家五種硬幣的金幣等值（overlay-19 entry 11，四捨五入），夠就從他身上扣、餘額
+// 重鑄成白金＋金（overlay-21 entry 15）；不夠才看隊伍 pool（entry 17／16）；兩邊都不夠
+// 印 "Not enough money."。角色與 pool 不混付。收下物品那一步在前（entry 2，spec 035），
+// 超重就不扣錢。
 func (a *app) buy() {
 	state := a.shop
 	if state == nil || len(state.items) == 0 {
@@ -106,10 +108,12 @@ func (a *app) buy() {
 		state.buyer = 0
 	}
 	record := state.items[state.cursor]
-	price := record.Price()
+	price := int64(record.Price())
 	member := a.state.Party[state.buyer]
-	if uint32(member.Money[pooltreasure.Gold]) < uint32(price) {
-		state.message = fmt.Sprintf(a.text(msgShopNoGold), member.Name, member.Money[pooltreasure.Gold], price)
+	have := pooltreasure.GoldEquivalent(member.Money)
+	pooled := pooltreasure.PoolGoldEquivalent(a.state.PooledMoney)
+	if have < price && pooled < price {
+		state.message = fmt.Sprintf(a.text(msgShopNoGold), member.Name, have, price)
 		return
 	}
 	rawInventory := make([][]byte, len(member.Inventory))
@@ -126,15 +130,26 @@ func (a *app) buy() {
 		state.message = fmt.Sprintf(a.text(msgShopOverloaded), member.Name)
 		return
 	}
+	source, paid, err := pooltreasure.PayGold(&a.state, state.buyer, price)
+	if err != nil {
+		state.message = err.Error()
+		return
+	}
+	if !paid {
+		state.message = fmt.Sprintf(a.text(msgShopNoGold), member.Name, have, price)
+		return
+	}
 	item := poolsave.Item{Name: record.Name, Raw: append([]byte(nil), record.Raw[:]...)}
-	a.state.Party[state.buyer].Money[pooltreasure.Gold] -= price
 	a.state.Party[state.buyer].Inventory = append(a.state.Party[state.buyer].Inventory, item)
 	for index := range a.state.CharacterLibrary {
 		if a.state.CharacterLibrary[index].Name == member.Name {
-			a.state.CharacterLibrary[index].Money[pooltreasure.Gold] -= price
 			a.state.CharacterLibrary[index].Inventory =
 				append(a.state.CharacterLibrary[index].Inventory, item)
 		}
+	}
+	if source == pooltreasure.PaidByPool {
+		state.message = fmt.Sprintf(a.text(msgShopBoughtFromPool), member.Name, record.Name, price)
+		return
 	}
 	state.message = fmt.Sprintf(a.text(msgShopBought), member.Name, record.Name, price)
 }

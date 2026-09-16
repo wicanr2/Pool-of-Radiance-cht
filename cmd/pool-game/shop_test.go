@@ -1,6 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -67,8 +71,9 @@ func TestBuyingDeductsGoldAndAddsTheItem(t *testing.T) {
 		t.Fatal(err)
 	}
 	member := a.state.Party[0]
-	if got := member.Money[pooltreasure.Gold]; got != 85 {
-		t.Fatalf("gold is %d after buying a 15 gold long sword, want 85", got)
+	// 原版付完錢把餘額重鑄成白金＋金（overlay-21 entry 15，spec 116）：85 金 → 17 白金 0 金。
+	if member.Money[pooltreasure.Platinum] != 17 || member.Money[pooltreasure.Gold] != 0 {
+		t.Fatalf("money is %v after buying a 15 gold long sword from 100 gold, want 17 platinum", member.Money)
 	}
 	if len(member.Inventory) != 1 || member.Inventory[0].Name != "Long Sword" {
 		t.Fatalf("inventory is %+v", member.Inventory)
@@ -94,6 +99,51 @@ func TestBuyingRefusesWhenTheGoldIsShort(t *testing.T) {
 	}
 	if a.shop.message == "" {
 		t.Fatal("nothing explained why the purchase failed")
+	}
+}
+
+// 只帶白金也買得到（#30）：白金 5 金一枚，100 白金 = 500 金；買 15 金的長劍剩 485 →
+// 重鑄成 97 白金 0 金。
+func TestBuyingWithPlatinumOnly(t *testing.T) {
+	a := newShopApp(t)
+	a.state.Party[0].Money = [7]uint16{}
+	a.state.Party[0].Money[pooltreasure.Platinum] = 100
+	a.keys = scriptedKeys{ebiten.KeyEnter: true}
+	if err := a.shopInput(); err != nil {
+		t.Fatal(err)
+	}
+	member := a.state.Party[0]
+	if member.Money[pooltreasure.Platinum] != 97 || member.Money[pooltreasure.Gold] != 0 {
+		t.Fatalf("money is %v after paying 15 gold with 100 platinum, want 97 platinum", member.Money)
+	}
+	if len(member.Inventory) != 1 || member.Inventory[0].Name != "Long Sword" {
+		t.Fatalf("inventory is %+v", member.Inventory)
+	}
+	if a.state.CharacterLibrary[0].Money != member.Money {
+		t.Fatal("the character library copy kept the old money")
+	}
+}
+
+// 角色不夠才動隊伍公款（overlay-06 `03E7h`：entry 17 算、entry 16 寫回），不混付。
+func TestBuyingFallsBackToThePartyPool(t *testing.T) {
+	a := newShopApp(t)
+	a.state.Party[0].Money[pooltreasure.Gold] = 10
+	a.state.PooledMoney[pooltreasure.Gold] = 100
+	a.keys = scriptedKeys{ebiten.KeyEnter: true}
+	if err := a.shopInput(); err != nil {
+		t.Fatal(err)
+	}
+	if got := a.state.Party[0].Money[pooltreasure.Gold]; got != 10 {
+		t.Fatalf("the character's 10 gold changed to %d although the pool paid", got)
+	}
+	if a.state.PooledMoney[pooltreasure.Platinum] != 17 || a.state.PooledMoney[pooltreasure.Gold] != 0 {
+		t.Fatalf("pool is %v after paying 15 of 100 gold, want 17 platinum", a.state.PooledMoney)
+	}
+	if len(a.state.Party[0].Inventory) != 1 {
+		t.Fatal("the purchase paid by the pool did not arrive")
+	}
+	if a.shop.message == "" {
+		t.Fatal("no message for the pool purchase")
 	}
 }
 
@@ -180,5 +230,63 @@ func TestRealArmouryBytesEnterTheShopService(t *testing.T) {
 		if !names[want] {
 			t.Fatalf("the armoury stock has no %s (%d items)", want, len(a.shop.items))
 		}
+	}
+}
+
+// dosgolem 收據（docs/audit/dosgolem-shop-payment.json，#30）：同一個角色兩種錢包走進武具店
+// 按 b、Return 買清單第一件，原版記錄的五個錢欄前後——remake 用同一份清單、同一個游標
+// 買，錢包要逐欄相同（entry 11 的四捨五入、entry 15 的重鑄）。
+func TestShopPaymentMatchesTheDosgolemReceipt(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("..", "..", "docs", "audit", "dosgolem-shop-payment.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var receipt struct {
+		Scenarios map[string]struct {
+			Frames []struct {
+				Label  string         `json:"label"`
+				Wallet map[string]int `json:"wallet"`
+			} `json:"frames"`
+		} `json:"scenarios"`
+	}
+	if err := json.Unmarshal(raw, &receipt); err != nil {
+		t.Fatal(err)
+	}
+	names := []string{"copper", "silver", "electrum", "gold", "platinum"}
+	toMoney := func(wallet map[string]int) [7]uint16 {
+		var money [7]uint16
+		for coin, name := range names {
+			money[coin] = uint16(wallet[name])
+		}
+		return money
+	}
+	for name, scenario := range receipt.Scenarios {
+		a := newShopApp(t)
+		// 原版按 b 之後 Return 買到的是 HAND AXE（1 金）：500 金剩 499 → 99 白金 4 金。
+		// 這一家的存貨是 ITEM3.DAX block 35h（防具店的鐵匠），清單順序 remake 照檔案，
+		// 原版畫面照另一個順序排，所以用名字找同一件。
+		a.shop.cursor = -1
+		for index, record := range a.shop.items {
+			if strings.EqualFold(record.Name, "Hand Axe") {
+				a.shop.cursor = index
+			}
+		}
+		if a.shop.cursor < 0 {
+			t.Fatal("the armoury stock has no Hand Axe")
+		}
+		a.state.Party[0].Money = toMoney(scenario.Frames[0].Wallet)
+		a.state.CharacterLibrary[0].Money = a.state.Party[0].Money
+		a.keys = scriptedKeys{ebiten.KeyEnter: true}
+		if err := a.shopInput(); err != nil {
+			t.Fatal(err)
+		}
+		bought := a.shop.items[a.shop.cursor]
+		want := toMoney(scenario.Frames[len(scenario.Frames)-1].Wallet)
+		if got := a.state.Party[0].Money; got != want {
+			t.Fatalf("%s: remake wallet %v after buying %q (%d gold), original %v (message %q)",
+				name, got, bought.Name, bought.Price(), want, a.shop.message)
+		}
+		t.Logf("%s: %v → %v buying %q for %d gold matches the original", name,
+			scenario.Frames[0].Wallet, scenario.Frames[len(scenario.Frames)-1].Wallet, bought.Name, bought.Price())
 	}
 }

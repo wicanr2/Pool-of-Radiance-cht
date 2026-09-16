@@ -230,6 +230,7 @@
       "ui.shopAppraiseSold": "Sold for %d gp.",
       "ui.shopAppraiseValue": "The %s is valued at %d gp.  S sell (%d gp)  K keep",
       "ui.shopBought": "%s bought %s for %d gold.",
+      "ui.shopBoughtFromPool": "%s bought %s for %d gold from the party's pool.",
       "ui.shopBuyer": "Buyer %d/%d  %s  gold %d",
       "ui.shopCount": "item %d of %d",
       "ui.shopFooter": "TAB switch buyer  UP/DOWN choose  ENTER buy  G/J appraise  ESC leave",
@@ -318,6 +319,10 @@
       "ui.trainGained": " advances a level; hit points ",
       "ui.trainNeedsMember": "Choose a character with 1-6 before training.",
       "ui.trainNotYet": " does not have enough experience to train.",
+      "ui.trainNotConscious": "we only train conscious people",
+      "ui.trainCosts": "Training costs 1000 gp.",
+      "ui.trainWrongClass": "We don't train that class here",
+      "ui.trainAsk": ": Do you wish to train? (Y/N)",
       "ui.viewSheetFooter": "ESC BACK",
       "ui.viewSheetPick": "VIEW WHOM?",
       "ui.whoPrompt": "Who?"

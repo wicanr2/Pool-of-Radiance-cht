@@ -524,6 +524,7 @@ const (
 	msgShopAppraiseGem
 	msgShopAppraiseJewel
 	msgShopBought
+	msgShopBoughtFromPool
 	msgShopNoGold
 	msgShopOverloaded
 	msgShopNoParty
@@ -545,6 +546,10 @@ const (
 	msgTrainCommand
 	msgTrainNotYet
 	msgTrainGained
+	msgTrainNotConscious
+	msgTrainCosts
+	msgTrainWrongClass
+	msgTrainAsk
 	msgTrainNeedsMember
 	msgSpellsNeedsMember
 	msgSpellsMemorised

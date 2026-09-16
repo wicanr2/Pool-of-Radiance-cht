@@ -8,6 +8,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 )
 
 // 建角走完之後，賊的八格技能要跟原版逐格相同（spec 095）。
@@ -82,6 +83,7 @@ func TestTrainingAThiefRecalculatesTheOriginalSkillsWithRealDexterity(t *testing
 		ClassID: "thief", AlignmentID: "chaotic-good",
 		Abilities: [6]int{14, 17, 14, 18, 15, 16}, MaxHP: 10, CurrentHP: 10,
 		Experience: 1251, ThiefSkills: []uint8{35, 45, 40, 15, 10, 10, 75, 0}}
+	thief.Money[pooltreasure.Platinum] = 200 // 訓練要 1000 金（#29）
 	application.state = poolsave.State{Schema: poolsave.Schema,
 		CharacterLibrary: []poolsave.Character{thief}, Party: []poolsave.Character{thief}}
 	application.mode, application.programManaging = modeMenu, true
@@ -89,6 +91,9 @@ func TestTrainingAThiefRecalculatesTheOriginalSkillsWithRealDexterity(t *testing
 		t.Fatal(err)
 	}
 	if err := press(application, ebiten.KeyT); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyY); err != nil {
 		t.Fatal(err)
 	}
 	want := []uint8{45, 54, 45, 31, 25, 10, 76, 0}

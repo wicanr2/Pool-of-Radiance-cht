@@ -55,6 +55,15 @@
   `+2Dh`（獸人樣板 40 → 41）。remake `CombatThac0Internal` 照它算，諾里斯 −94 → 14。
   已推翻：spec 063「entry 7 第一步從職業表重算 `+2Dh`」——整顆 overlay-25 沒有 `3C16h`，
   `+2Dh` 是建角／訓練所寫的。
+- 城裡兩道收錢的門對回原版（#29／#30）。訓練常式 overlay-16 `2997h`：清醒 → 金幣等值
+  ≥ 1000（overlay-19 entry 11：五種硬幣乘 `0D38h` 換算值，`(總銅+100)÷200` 四捨五入）→
+  職業分類 `and` 這一家的遮罩 `+550h` → "Do you wish to train?" 按 Y → `42C1h` 逐種硬幣扣、
+  多付一枚、白金往下找零。武具店 `034Fh`：角色等值夠就角色出、餘額重鑄成白金＋金
+  （overlay-21 entry 15），不夠才整筆看 pool（entry 17／16），不混付。dosgolem 五筆收據
+  （訓練三種錢包、武具店兩種）逐欄相同。`treasure.PayInCoins`／`GoldEquivalent`／`Remint*`／
+  `PayGold`；`trainMember` 四關＋`confirmTraining`；`shop.buy` 照原版。原版付款迴圈沒守
+  「五種付完還有剩」（四捨五入的縫），remake 收光不往表外走（remake-owned）。神殿仍只看
+  金幣欄（spec 018 的簡化，同三支服務，還沒換）。
 
 ## 2026-09-15 自訂規則的探針：諾里斯的獎賞升一級，圖書館的書帶不出去，古托井走得動了
 

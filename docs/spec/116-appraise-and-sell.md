@@ -1,9 +1,10 @@
 # Spec 116：估價與販賣寶石珠寶（overlay-21 entry 19）
 
 狀態：READY（兩張價值表、賣價的比例、留著時建出來的物品欄位、
-「留著」出不出得來的門檻都已讀出、實作並接上神殿的界面）；
-OPEN（留下來那件物品的其餘欄位）。
-日期：2026-09-05（2026-09-10：商店那一側的入口已經接上，見下）。
+「留著」出不出得來的門檻都已讀出、實作並接上神殿的界面）；CONFORMED（武具店付款：
+金幣等值、重鑄、角色先於 pool——dosgolem 兩筆收據逐欄相同）；
+OPEN（留下來那件物品的其餘欄位；神殿仍只看金幣欄）。
+日期：2026-09-05（2026-09-10：商店那一側的入口已經接上；2026-09-16：付款，#30）。
 
 ## 一支給兩個地方用
 
@@ -69,6 +70,42 @@ AD&D 一版 1 白金 ＝ 5 金，所以那個 `div 5` 是**幣別換算**——�
 
 **「留著」不是永遠出得來**：`1DA7h` 比記錄 `+C7h`（帶著幾件物品）是不是已經
 到 10h（16）。滿了就只印 `Sell`，沒有 `Sell Keep`。
+
+## 付款：金幣等值、重鑄、角色先於 pool（exact，2026-09-16，#30）
+
+武具店的 B）uy（overlay-06 entry 4 `034Fh`）與神殿的付費（overlay-04，spec 018）用同三支
+服務：
+
+```
+39d  價 = 物品 +3Ah
+3af  有 = 00C9h:0057h(目前角色)                 ; overlay-19 entry 11（28A2h）
+3ba  價 <= 有 → 0230h 收下物品（entry 2，spec 035）成功才 有 −= 價；00D9h:006Bh(有)
+3e7  否則 pool = 00D9h:0075h(&6752h)           ; overlay-21 entry 17（00ACh）
+       價 <= pool → 收下物品成功才 pool −= 價；00D9h:0070h(pool)
+43f  都不夠 → "Not enough money."（cs:033Dh）
+```
+
+- **entry 11（`28A2h`）**：五種硬幣（`+88h` 銅、`+8Ah` 銀、`+8Ch` 琥珀金、`+8Eh` 金、
+  `+90h` 白金）各乘 `DS:0D38h` 的換算值（1、10、100、200、1000 銅）加總，
+  `(總銅 + 100) ÷ 200`——四捨五入到金幣。寶石、珠寶不算。
+- **entry 15（`012Eh`，`gp`）**：清掉目前角色五種硬幣，`+90h 白金 = gp ÷ 5`、
+  `+8Eh 金 = gp mod 5`。所以付完錢銀幣、銅幣、琥珀金都不見了，餘額全成白金加零頭的金。
+- **entry 17／16（`00ACh`／`0183h`）**：pool 版（`DS:6752h` 起五個 longint）的同兩支。
+- 角色出得起就角色出、餘額重鑄；不夠才整筆看 pool；不混付。
+
+dosgolem 收據 `docs/audit/dosgolem-shop-payment.json`（`tools/dosgolem-shop-payment.py`，
+走 `dosgolem-ref-shop` 那條路進武具店，`b,Return` 買 HAND AXE 1 金）：
+
+| 錢包 | 買前等值 | 買後（原版） | remake |
+|---|---|---|---|
+| 白金 100 | 500 | 白金 99 金 4 | 同 |
+| 銅 199 銀 19 金 30 白金 2 | (199+190+6000+2000+100)÷200 = 42 | 白金 8 金 1 | 同 |
+
+實作 `treasure.GoldEquivalent`／`PoolGoldEquivalent`／`RemintCharacterMoney`／
+`RemintPooledMoney`／`PayGold`；`cmd/pool-game/shop.go` 的 `buy` 照上面的順序
+（`TestBuyingWithPlatinumOnly`、`TestBuyingFallsBackToThePartyPool`、
+`TestShopPaymentMatchesTheDosgolemReceipt`）。神殿（`internal/temple`）仍只看金幣欄，
+那是 spec 018 的既有簡化，換過來是同三支服務。
 
 ## 實作
 

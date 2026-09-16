@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 )
 
@@ -57,6 +58,72 @@ func TestNoMonstersAwardsNothing(t *testing.T) {
 	}
 }
 
+// 訓練所的兩道門（#29，spec 097〈收費與門〉）：錢不到 1000 金印 "Training costs 1000 gp."
+// 不升級不扣錢；門的遮罩不收這一類印 "We don't train that class here"。都從隊伍畫面按鍵走。
+func TestTrainingRefusesWithoutTheFeeOrAtTheWrongDoor(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	fighter := poolsave.Character{Name: "A", RaceID: "dwarf", GenderID: "male",
+		ClassID: "fighter", AlignmentID: "lawful-good",
+		Abilities: [6]int{18, 10, 10, 10, 10, 10}, MaxHP: 10, CurrentHP: 10,
+		PortraitHead: 1, PortraitBody: 1, IconSize: 1, Experience: 2001}
+	// 999 金加 199 銅：四捨五入到 1000（entry 11 的 (總銅 + 100) ÷ 200）才過門，
+	// 199 銅差一點——(199800 + 199 + 100) ÷ 200 = 1000.49 → 1000。所以這裡給 999 金 99 銅
+	// 讓它擋下來：(199800 + 99 + 100) ÷ 200 = 999。
+	fighter.Money[pooltreasure.Gold], fighter.Money[pooltreasure.Copper] = 999, 99
+	application.state = poolsave.State{Schema: poolsave.Schema,
+		CharacterLibrary: []poolsave.Character{fighter}, Party: []poolsave.Character{fighter}}
+	application.mode, application.programManaging = modeMenu, true
+	if err := press(application, ebiten.KeyDigit1); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyT); err != nil {
+		t.Fatal(err)
+	}
+	if application.trainPending || application.statusLine != "Training costs 1000 gp." {
+		t.Fatalf("999 gold 99 copper should be refused; pending %v status %q", application.trainPending, application.statusLine)
+	}
+	if got := application.state.Party[0]; len(got.ClassLevels) != 0 || got.Money[pooltreasure.Gold] != 999 {
+		t.Fatalf("a refused training changed the character: %v %v", got.ClassLevels, got.Money)
+	}
+	// 補到 1000 金，但這一家是牧師門（ECL `6DA8h` = 72h）：戰士進不去。
+	application.state.Party[0].Money[pooltreasure.Copper] = 199
+	machine := &eclvm.Machine{Memory: map[uint16]uint16{}}
+	application.eventMachine = machine
+	machine.Memory[trainingMaskAddress] = TrainingMaskCleric
+	if err := press(application, ebiten.KeyT); err != nil {
+		t.Fatal(err)
+	}
+	if application.trainPending || application.statusLine != "We don't train that class here" {
+		t.Fatalf("a fighter at the clerics' door should be refused; pending %v status %q", application.trainPending, application.statusLine)
+	}
+	// 戰士門就過，Y 之後升級並收 1000 金（`42C1h` 一種一種扣、找零）：1000 金 199 銅
+	// 付 1000 金——銅先付光（剩 199801 銅要付），金付 1000 枚，多付 199 銅找回
+	// 1 琥珀金 9 銀 9 銅。
+	application.state.Party[0].Money[pooltreasure.Gold] = 1000
+	machine.Memory[trainingMaskAddress] = TrainingMaskFighter
+	if err := press(application, ebiten.KeyT); err != nil {
+		t.Fatal(err)
+	}
+	if !application.trainPending {
+		t.Fatalf("the fighters' door should ask; status %q", application.statusLine)
+	}
+	if err := press(application, ebiten.KeyY); err != nil {
+		t.Fatal(err)
+	}
+	got := application.state.Party[0]
+	if len(got.ClassLevels) == 0 || got.ClassLevels[2] != 2 {
+		t.Fatalf("the fighter should be level 2 now: %v; status %q", got.ClassLevels, application.statusLine)
+	}
+	if got.Money[pooltreasure.Gold] != 0 || got.Money[pooltreasure.Electrum] != 1 ||
+		got.Money[pooltreasure.Silver] != 9 || got.Money[pooltreasure.Copper] != 9 {
+		t.Fatalf("training should have taken 1000 gold and given change in electrum/silver/copper: %v", got.Money)
+	}
+}
+
 // 只用按鍵在隊伍管理畫面把一個角色訓練上去（spec 097）。
 func TestTrainingFromThePartyManagementScreen(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
@@ -68,17 +135,28 @@ func TestTrainingFromThePartyManagementScreen(t *testing.T) {
 		ClassID: "fighter", AlignmentID: "lawful-good",
 		Abilities: [6]int{18, 10, 10, 10, 10, 10}, MaxHP: 10, CurrentHP: 6,
 		PortraitHead: 1, PortraitBody: 1, IconSize: 1, Experience: 2001}
+	// 訓練要 1000 金（#29）：帶 1200 金進去，升完該剩 200。
+	fighter.Money[pooltreasure.Gold] = 1200
 	application.state = poolsave.State{Schema: poolsave.Schema,
 		CharacterLibrary: []poolsave.Character{fighter}, Party: []poolsave.Character{fighter}}
 	application.mode, application.programManaging = modeMenu, true
-	// 1 挑第一個人，T 訓練。
+	// 1 挑第一個人，T 訓練，Y 確認（原版 "Do you wish to train?"）。
 	if err := press(application, ebiten.KeyDigit1); err != nil {
 		t.Fatal(err)
 	}
 	if err := press(application, ebiten.KeyT); err != nil {
 		t.Fatal(err)
 	}
+	if !application.trainPending {
+		t.Fatalf("T 應該先問要不要訓練；狀態列 %q", application.statusLine)
+	}
+	if err := press(application, ebiten.KeyY); err != nil {
+		t.Fatal(err)
+	}
 	trained := application.state.Party[0]
+	if trained.Money[pooltreasure.Gold] != 200 {
+		t.Errorf("訓練該收 1000 金，剩 %v", trained.Money)
+	}
 	if len(trained.ClassLevels) == 0 || trained.ClassLevels[2] != 2 {
 		t.Fatalf("戰士應該升到第 2 級，職業等級是 %v；狀態列 %q",
 			trained.ClassLevels, application.statusLine)

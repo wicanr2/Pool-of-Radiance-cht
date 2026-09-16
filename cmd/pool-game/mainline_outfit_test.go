@@ -84,7 +84,8 @@ func (d *mainlineDriver) outfitParty() {
 		for guard := 0; guard < 8 && a.shop.buyer != member; guard++ {
 			d.step(ebiten.KeyTab)
 		}
-		gold := int(a.state.Party[member].Money[pooltreasure.Gold])
+		// 預算是五種硬幣的金幣等值（原版武具店就是這樣算的，#30）：委任獎賞的白金也算進去。
+		gold := int(pooltreasure.GoldEquivalent(a.state.Party[member].Money))
 		list := outfitShoppingList(a.state.Party[member].ClassID, gold)
 		for _, name := range list {
 			target, ok := index[name]
@@ -101,7 +102,7 @@ func (d *mainlineDriver) outfitParty() {
 			}
 		}
 		d.note("outfit: %s (%s) %d gp → %v, %d gp left", strings.TrimSpace(a.state.Party[member].Name),
-			a.state.Party[member].ClassID, gold, list, a.state.Party[member].Money[pooltreasure.Gold])
+			a.state.Party[member].ClassID, gold, list, pooltreasure.GoldEquivalent(a.state.Party[member].Money))
 	}
 	d.wantShop = false
 	d.step(ebiten.KeyEscape)

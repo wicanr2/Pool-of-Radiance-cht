@@ -7,6 +7,7 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 )
 
 // 訓練所（spec 097）。原版把它掛在隊伍管理畫面的 `T` 指令上
@@ -17,9 +18,19 @@ import (
 // 由 overlay-16 `01BFh` 的兩道閘門決定，第一道是這一區的訓練所遮罩
 // `[4937h]+550h`（＝ ECL 位址 `6DA8h`）。見 training_gate.go。
 //
-// **這一家收哪幾類仍然不限制**：原版拿那個遮罩逐人 `and` 職業分類
-//（`2C95h`／`2CC3h`／`2CF6h`），remake 目前只看它非不非零，等同於四道門
-// 都走得進去的訓練所。
+// 訓練常式本體是 overlay-16 `2997h`（#29，spec 097〈收費與門〉），順序是：
+//
+//  1. `+10Ch != 0`（不是清醒的）→ "we only train conscious people"（`29A2h`）。
+//  2. overlay-19 entry 11 算五種硬幣的金幣等值，不到 1000 → "Training costs 1000 gp."
+//     （`29D3h..2A02h`）。
+//  3. 職業分類 `and` 這一家的遮罩 `[4937h]+550h`（ECL `6DA8h`）為 0 →
+//     "We don't train that class here"（`2C8Ah..2CB3h`）；夠經驗的那些再 `and`
+//     一次為 0 → "Not Enough Experience"（`2CB8h..2CE1h`）。
+//  4. "Do you wish to train?" 要按 Y（`2E5Ch..2E7Bh`）。
+//  5. 升級、"Congratulations"，最後 `42C1h(記錄, 1000)` 一種一種硬幣扣、白金往下找零
+//     （`2E9Bh..2EABh`；`treasure.PayInCoins`）。
+//
+// `466Eh`（STING 除錯碼）非零時 1、2、3 的門與 5 的扣款都略過。
 
 // memberClassLevels 取一個成員的八個職業等級。
 //
@@ -45,8 +56,55 @@ func memberClassCode(member poolsave.Character) (uint8, bool) {
 	return 0, false
 }
 
-// trainMember 對隊伍裡的一個人做一次訓練，回傳給玩家看的一行字。
+// trainingFee 是說明書 p.9 與 `29DFh` 的 1000 金。
+const trainingFee = 1000
+
+// trainingHallMask 是這一家收哪幾類（`[4937h]+550h`，ECL `6DA8h`）；輸入過除錯碼
+// 就是 0，Train 把 0 當成不限。
+func (a *app) trainingHallMask() uint8 {
+	if a.stingUnlocked || a.eventMachine == nil {
+		return 0
+	}
+	return uint8(a.eventMachine.Memory[trainingMaskAddress])
+}
+
+// trainMember 是按 T 那一下：走 `2997h` 的前三道門，過了就問 "Do you wish to train?"，
+// 真正升級與扣款在 confirmTraining。回傳給玩家看的一行字。
 func (a *app) trainMember(index int) (string, error) {
+	if index < 0 || index >= len(a.state.Party) {
+		return "", fmt.Errorf("Pool training has no party member %d", index)
+	}
+	member := &a.state.Party[index]
+	code, ok := memberClassCode(*member)
+	if !ok {
+		return "", fmt.Errorf("Pool training cannot resolve the class of %q", member.Name)
+	}
+	name := strings.TrimSpace(member.Name)
+	if member.Status != 0 && !a.stingUnlocked {
+		return a.text(msgTrainNotConscious), nil
+	}
+	if pooltreasure.GoldEquivalent(member.Money) < trainingFee && !a.stingUnlocked {
+		return a.text(msgTrainCosts), nil
+	}
+	levels := memberClassLevels(*member)
+	hall := a.trainingHallMask()
+	if hall != 0 && a.levelUpTables.ClassCategoryMask(levels)&hall == 0 {
+		return a.text(msgTrainWrongClass), nil
+	}
+	outcome := a.levelUpTables.Train(levels, member.Experience, a.experienceTable,
+		member.Abilities[gamepack.AbilityConstitution], code, hall, a.roller)
+	if !outcome.Trained {
+		return fmt.Sprintf("%s%s", name, a.text(msgTrainNotYet)), nil
+	}
+	a.trainPending, a.trainMemberIndex = true, index
+	return fmt.Sprintf("%s%s", name, a.text(msgTrainAsk)), nil
+}
+
+// confirmTraining 是 "Do you wish to train?" 答 Y 之後的那一段（`2E80h..`）：升級、
+// 收 1000 金。
+func (a *app) confirmTraining() (string, error) {
+	index := a.trainMemberIndex
+	a.trainPending = false
 	if index < 0 || index >= len(a.state.Party) {
 		return "", fmt.Errorf("Pool training has no party member %d", index)
 	}
@@ -58,10 +116,15 @@ func (a *app) trainMember(index int) (string, error) {
 	levels := memberClassLevels(*member)
 	before := levels
 	outcome := a.levelUpTables.Train(levels, member.Experience, a.experienceTable,
-		member.Abilities[gamepack.AbilityConstitution], code, 0, a.roller)
+		member.Abilities[gamepack.AbilityConstitution], code, a.trainingHallMask(), a.roller)
 	name := strings.TrimSpace(member.Name)
 	if !outcome.Trained {
 		return fmt.Sprintf("%s%s", name, a.text(msgTrainNotYet)), nil
+	}
+	if !a.stingUnlocked {
+		if err := pooltreasure.PayInCoins(&member.Money, trainingFee); err != nil {
+			return "", err
+		}
 	}
 	trained := *member
 	trained.ClassLevels = append([]uint8(nil), outcome.Levels[:]...)

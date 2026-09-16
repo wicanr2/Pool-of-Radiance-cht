@@ -503,6 +503,11 @@ func (d *mainlineDriver) enterTrainingHall() []string {
 	for index := range a.state.Party {
 		d.step(keys[index])
 		d.step(ebiten.KeyT)
+		// 原版問 "Do you wish to train?"（#29）；沒問就是被清醒、1000 金或職業門擋下，
+		// 狀態列會說是哪一道。
+		if a.trainPending {
+			d.step(ebiten.KeyY)
+		}
 		member := a.state.Party[index]
 		lines = append(lines, fmt.Sprintf("%s: %s (levels=%v xp=%d hp=%d/%d)", a.statusLine,
 			member.ClassID, member.ClassLevels, member.Experience, member.CurrentHP, member.MaxHP))

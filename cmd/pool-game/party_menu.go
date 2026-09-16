@@ -325,6 +325,23 @@ func (a *app) partyMenuDropConfirm() error {
 	return nil
 }
 
+// partyMenuTrainConfirm 是訓練所的 "Do you wish to train?"（overlay-16 `2E5Ch`）：
+// Y 才升級收費，N／ESC 什麼都不動。
+func (a *app) partyMenuTrainConfirm() error {
+	switch {
+	case a.justPressed(ebiten.KeyY):
+		line, err := a.confirmTraining()
+		if err != nil {
+			return err
+		}
+		a.statusLine = line
+	case a.justPressed(ebiten.KeyN), a.justPressed(ebiten.KeyEscape):
+		a.trainPending = false
+		a.statusLine = ""
+	}
+	return nil
+}
+
 // saveCurrentGame 是 S）AVE CURRENT GAME：「存下目前的遊戲進度」（說明書 p.9）。
 // 原版分成 A..J 十個存檔位；remake 只有一份 JSON，所以這裡就是把它寫出去。
 func (a *app) saveCurrentGame() error {

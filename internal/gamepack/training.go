@@ -55,6 +55,18 @@ func (t LevelUpTables) EligibleTrainingMask(levels [ClassThac0ClassCount]uint8,
 	return mask, ceiling
 }
 
+// ClassCategoryMask 是這個人有等級的職業各自的分類位元疊起來（overlay-16 `2A25h..2C60h`
+// 迴圈存在 `[bp-0Bh]` 的那一個），訓練所拿它 `and` 這一家的遮罩判「收不收這一類」。
+func (t LevelUpTables) ClassCategoryMask(levels [ClassThac0ClassCount]uint8) uint8 {
+	mask := uint8(0)
+	for class, level := range levels {
+		if level != 0 {
+			mask |= t.ClassCategory[class]
+		}
+	}
+	return mask
+}
+
 // Train 對一個角色做一次訓練。mask 是這一家訓練所收的職業分類；
 // 傳 0 表示不限制，等同於原版那些每一類都收的訓練所。
 func (t LevelUpTables) Train(levels [ClassThac0ClassCount]uint8, experience uint32,

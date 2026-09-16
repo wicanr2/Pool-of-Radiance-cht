@@ -1,0 +1,120 @@
+{
+ "schema": "pool-dosgolem-shop-payment/1",
+ "generator": "dosgolem",
+ "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+ "base": "同 dosgolem-training-fee.json（HUMAN.cha 只改五個錢欄）",
+ "approach_keys": "rep:9:Space,Return,Return,a,a,e,b,rep:27:Return,Right,Right,Up,Return,Right,rep:7:Up,Left,rep:7:Up,y",
+ "buy_keys": "b,Return,Escape",
+ "scenarios": {
+  "platinum": {
+   "injected_money": {
+    "platinum": 100
+   },
+   "injected_character_sha256": "452f9e87c7f9f342e500dfab751a3a32aa4140acbbc411f62a37c56f7ef8d8e7",
+   "record": "3B80:0009",
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "sha256_of_frame": "bc422f5589b32fede71fe16c487bee9c83ae5c1318e6a9f62fd88807bbeada09"
+    },
+    {
+     "label": "b",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "sha256_of_frame": "4d5cbdcf50a8bbfcb2acea2a7a7ab4d7635ce2490050d8e0dac05b4e5bcfddf1"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 4,
+      "platinum": 99
+     },
+     "sha256_of_frame": "4d5cbdcf50a8bbfcb2acea2a7a7ab4d7635ce2490050d8e0dac05b4e5bcfddf1"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 4,
+      "platinum": 99
+     },
+     "sha256_of_frame": "283034c746542b3d3c8be0997d5aed68f0180bd13ef11a35faf6a80696f8f8cb"
+    }
+   ]
+  },
+  "mixed": {
+   "injected_money": {
+    "copper": 199,
+    "silver": 19,
+    "gold": 30,
+    "platinum": 2
+   },
+   "injected_character_sha256": "53ffaa2fb415ebbc4df679b27a7fb25ec99c9142e1bbfe3547b6e19076b63c4b",
+   "record": "3B80:0009",
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 199,
+      "silver": 19,
+      "electrum": 0,
+      "gold": 30,
+      "platinum": 2
+     },
+     "sha256_of_frame": "bc422f5589b32fede71fe16c487bee9c83ae5c1318e6a9f62fd88807bbeada09"
+    },
+    {
+     "label": "b",
+     "wallet": {
+      "copper": 199,
+      "silver": 19,
+      "electrum": 0,
+      "gold": 30,
+      "platinum": 2
+     },
+     "sha256_of_frame": "4d5cbdcf50a8bbfcb2acea2a7a7ab4d7635ce2490050d8e0dac05b4e5bcfddf1"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 1,
+      "platinum": 8
+     },
+     "sha256_of_frame": "4d5cbdcf50a8bbfcb2acea2a7a7ab4d7635ce2490050d8e0dac05b4e5bcfddf1"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 1,
+      "platinum": 8
+     },
+     "sha256_of_frame": "283034c746542b3d3c8be0997d5aed68f0180bd13ef11a35faf6a80696f8f8cb"
+    }
+   ]
+  }
+ },
+ "generator_revision": "9bd269a"
+}
