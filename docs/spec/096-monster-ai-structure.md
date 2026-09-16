@@ -460,6 +460,13 @@ dosgolem 衛兵那一場的收據（spec 061，`dosgolem-deployment-peek-guards.
 （`TestDeploymentMatchesTheSlumsReceipts` 的 log）；僵局仍由 endRound 的安全閥兜底
 （非原版，有觸發計數）。
 
+規則 2 的「第二次」remake 也照 `0A37h`／`0A49h`：忘掉目標、當場從名單重挑一個再走
+（`0A63h` 挑不到才收工），第三次起才清腳程。三筆收據的逐步快照（`actions`，dosgolem
+`-trace-peek`）量到原版一隻怪一輪內先往東再往西再換方向，就是這一條在動。
+`TestFoeWalkReproducesEveryOriginalAction` 拿三場 40 個原版動作逐一擺盤重走，32 個
+remake 走得到同一格；剩下 8 個是兩段擺盪之間夾了別人的行動，第二段起點吃第一段
+的骰（換到哪個模式、重挑到誰），留 #34。
+
 ## 基準方向就是目標的方位
 
 `0096h:0093h` 是 **overlay-13 entry 23（`261Bh`）**，spec 098 已經解過：

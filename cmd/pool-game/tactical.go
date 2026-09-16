@@ -994,28 +994,37 @@ func (a *app) foeTurn(state *tacticalState) error {
 	// 原版 overlay-13 `37B8h`：**還有效的目標就沿用**，換人才重挑。有效的
 	// 條件是「不是自己這一邊」、「還在場上（`+10Dh`）」，再過一次 `1087h`
 	// 的可打判定（那一支還沒讀）。追不到人時才換一個。
-	target, ok := state.foeTarget(mover)
-	if !ok {
+	// pickTarget 是 `37B8h` 的重挑：從候選名單裡擲骰隨機挑（`38A6h` 的 `骰(1, n)`），
+	// 名單由 `010Ah:00C0h` 用 `0912h` 填——就是 `OpposingNearbyAt`（spec 096）。
+	pickTarget := func() (uint8, error) {
+		snapshot, err := state.tacticalSnapshot()
+		if err != nil {
+			return 0, err
+		}
 		targets, err := combat.OpposingNearbyAt(snapshot, mover,
 			state.Roster[mover].X, state.Roster[mover].Y, foeSearchBudget, 1-side, state.sideOf)
 		if err != nil {
-			return err
+			return 0, err
 		}
 		if len(targets) != 0 {
-			// 原版是從候選名單裡擲骰隨機挑（`38A6h` 的 `骰(1, n)`），挑到
-			// 不能打的就把那一格劃掉重擲，最多二十次。
-			target = targets[a.rollDice(1, len(targets))-1]
-		} else if nearest, ok := state.nearestReachableOpposing(mover); ok {
-			// 反應距離內沒人時，改追盤面上最近的敵人。
-			//
-			// **這不是原版的名單**：原版的候選由 overlay-25 `010Ah:00C0h`
-			// 填進 `DS:6CD7h`，那一支還沒讀。`OpposingNearbyAt` 重現的是
-			// overlay-25 entry 32 的「鄰接反應」搜尋（spec 059），拿它當
-			// 名單本來就是借用。少了這個退路，站得遠的怪物會回報找不到目標
-			// 然後原地結束回合——實測索寇要塞那一場，最後兩隻殭屍與隊伍隔著
-			// 22 格互相不動，戰鬥永遠打不完。
-			target = nearest
+			return targets[a.rollDice(1, len(targets))-1], nil
 		}
+		// 名單空的時候改追盤面上最近的敵人。**這不是原版的名單**：原版第二輪把
+		// `1087h` 的判定放寬再挑一次（spec 096 的兩輪制），remake 沒有 `1087h`，
+		// 拿最近的頂——少了這個退路，站得遠的怪物會回報找不到目標然後原地結束
+		// 回合；實測索寇要塞那一場，最後兩隻殭屍與隊伍隔著 22 格互相不動。
+		if nearest, ok := state.nearestReachableOpposing(mover); ok {
+			return nearest, nil
+		}
+		return 0, nil
+	}
+	target, ok := state.foeTarget(mover)
+	if !ok {
+		picked, err := pickTarget()
+		if err != nil {
+			return err
+		}
+		target = picked
 		state.setFoeTarget(mover, target)
 	}
 	if target == 0 {
@@ -1094,14 +1103,24 @@ func (a *app) foeTurn(state *tacticalState) error {
 			break
 		}
 		if reverse := (int(direction) + combat.DirectionCount/2) % combat.DirectionCount; int(lastDirection) == reverse {
-			// 這一步剛好是上一步的反方向：原版一樣記一次卡住並換模式，但第一次
-			// 仍然走（`0A30h` 的 `439Fh <= 1`），第二次起才放棄這一隻的移動。
+			// 這一步剛好是上一步的反方向：原版記一次卡住並換模式（`0A0Ah`）。
+			// 第一次照走（`0A30h`：`439Fh <= 1`）；第二次忘掉目標、當場重挑一個
+			// 再走（`0A37h`／`0A49h`：`439Fh <= 2` → `0A63h`，挑不到才收工）；
+			// 第三次起這一隻這一輪不再動（`0A49h` 把腳程清成 0）。
 			mode = gamepack.NextTacticMode(mode)
 			stuck++
-			if stuck > 1 {
-				// 原版 `0A37h`：卡住第二次就把記錄裡存著的目標清掉，
-				// 下一回合重挑一個。
+			if stuck == 2 {
 				state.setFoeTarget(mover, 0)
+				picked, err := pickTarget()
+				if err != nil {
+					return err
+				}
+				if picked == 0 {
+					break
+				}
+				target = picked
+				state.setFoeTarget(mover, target)
+			} else if stuck > 2 {
 				break
 			}
 		}

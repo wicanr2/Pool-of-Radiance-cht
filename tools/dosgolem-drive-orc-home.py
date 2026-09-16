@@ -31,7 +31,7 @@ def run(keys, load, save, tag, budget=150000000):
       '-v',os.path.join(DOSGOLEM,'workplace','gocache')+':/gocache','-v',os.path.join(DOSGOLEM,'workplace','gomodcache')+':/gomodcache',
       '-e','GOCACHE=/gocache','-e','GOMODCACHE=/gomodcache','-e','HOME=/tmp','-e','GOFLAGS=-mod=mod',
       '-w','/dosgolem','golang:1.24-bookworm','go','run','./cmd/shots','-exe','/orig/start.exe','-root','/orig','-scratch','/scratch',
-      '-out','/work/'+tag,'-budget',str(budget),'-idle','3000000','-peek',PEEK,'-keys',keys]
+      '-out','/work/'+tag,'-budget',str(budget),'-idle','3000000','-peek',PEEK,'-trace-peek','ds:5E85:200,ds:6772:2','-keys',keys]
     if load: args+=['-load-state','/work/'+load]
     if save: args+=['-save-state','/work/'+save]
     p=subprocess.run(args,capture_output=True,text=True,timeout=1800)
@@ -127,16 +127,24 @@ def fight(start,prefix,batches=2):
         shots=run('Return',st,'%s%d.state'%(prefix,n),'%s%d'%(prefix,n)); st='%s%d.state'%(prefix,n)
         if classify(shots[-1],'%s%d'%(prefix,n))=='combat': break
     else: raise SystemExit('%s：沒進戰鬥'%prefix)
-    dep=shots[-1]; rows=[]; prev=None
+    dep=shots[-1]; rows=[]; prev=None; actions=[]; prev_a=None
+    def table_of(p):
+        b=bytes.fromhex(p['ds:5E85'].split('|')[1]); n=b[3]
+        return [(k,b[4*k],b[4*k+1],b[4*k+3]) for k in range(1,n)]
     for r in range(1,batches+1):
         shots=run(','.join(['d','g']*5),st,'%sr%d.state'%(prefix,r),'%sr%d'%(prefix,r)); st='%sr%d.state'%(prefix,r)
         for s_ in shots:
             p=s_['peek']
-            if not p.get('ds:5E85','').startswith('0850|'): continue
-            b=bytes.fromhex(p['ds:5E85'].split('|')[1]); n=b[3]
-            t=[(k,b[4*k],b[4*k+1],b[4*k+3]) for k in range(1,n)]
-            if t!=prev: rows.append({'round_batch':r,'frame':s_['index'],'label':s_['label'],'counts':p['ds:6772'][5:],'table':t}); prev=t
-    json.dump({'deploy_frame':{k:v for k,v in dep.items() if k!='path'},'rounds':rows},open(os.path.join(WORK,prefix+'-fight.json'),'w'))
+            if p.get('ds:5E85','').startswith('0850|'):
+                t=table_of(p)
+                if t!=prev: rows.append({'round_batch':r,'frame':s_['index'],'label':s_['label'],'counts':p['ds:6772'][5:],'table':t}); prev=t
+            # 逐步快照（-trace-peek）：一筆一步或一次死亡
+            for snap in (s_.get('peek_trace') or []):
+                q=snap['peek']
+                if not q.get('ds:5E85','').startswith('0850|'): continue
+                t=table_of(q)
+                if t!=prev_a: actions.append({'round_batch':r,'frame':s_['index'],'label':s_['label'],'step':snap['step'],'counts':q.get('ds:6772','')[5:],'table':t}); prev_a=t
+    json.dump({'deploy_frame':{k:v for k,v in dep.items() if k!='path'},'rounds':rows,'actions':actions},open(os.path.join(WORK,prefix+'-fight.json'),'w'))
 
 if __name__=='__main__':
     log=open(os.path.join(WORK,'drive.log'),'a')

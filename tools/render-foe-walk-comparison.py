@@ -53,7 +53,7 @@ for k, name in enumerate(['orc-home', 'guards', 'alarm']):
 out += ['## 一句話', '']
 for nm, foes, same, mo, mr, both in summary:
     out.append('- %s：%d 隻，第一輪後終點同格 %d 隻（原版動 %d、remake 動 %d，都動而且同格 %s）。' % (nm, foes, same, mo, mr, both))
-out += ['', '不同的那些：誰先動（先攻擲骰）、追誰（`38A6h` 從候選名單擲骰）與 GUARD 攻擊造成的死亡順序；規則層（五偏移依序試、卡住換模式、死者不擋路、一輪走幾格）在三場都沒有量到相反證據。要逐格一致得把原版的骰流讀出來重播，見 #34。']
+out += ['', '不同的那些：誰先動（先攻擲骰）、追誰（`38A6h` 從候選名單擲骰）與 GUARD 攻擊造成的死亡順序；規則層（五偏移依序試、卡住換模式、死者不擋路、一輪走幾格）在三場都沒有量到相反證據。動作層的對照（逐步快照，`TestFoeWalkReproducesEveryOriginalAction`）三場 40 個原版動作 remake 重現 32 個，沒重現的 8 個是擺盪序列吃前一段的骰。要逐格一致得把原版的骰流讀出來重播，見 #34。']
 target = os.path.join(ROOT, 'docs', 'audit', 'foe-walk-comparison.md')
 open(target, 'w').write('\n'.join(out) + '\n')
 print('寫出', target)
