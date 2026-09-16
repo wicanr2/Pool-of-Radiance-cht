@@ -20,8 +20,11 @@
   兩個 seed 變贏、獸人家 136 變全滅、衛兵兩場全滅。
 - 第二筆收據：五人隊在 (15,5) 突襲四隻哥布林，開打九格 remake 逐格相同
   （`TestDeploymentMatchesTheGoblinReceipt`）；之後三輪哥布林走位兩邊都是一輪最多兩格、
-  都走進死掉隊員的格子，差在挑誰（原版擲骰，spec 096）。獸人家那一場 dosgolem 走不到
-  （走路遭遇擋路、送鍵是盲的）。
+  都走進死掉隊員的格子，差在挑誰（原版擲骰，spec 096）。
+- 第三筆：`shots` 加 `-load-state`／`-save-state`，`tools/dosgolem-drive-orc-home.py` 看畫面再
+  送鍵（遭遇 WAIT、鎖門 BASH），五人隊撬三道門走到獸人的家開打——二十五格（含摘掉四隻）
+  remake 逐格相同（`TestDeploymentMatchesTheOrcHomeReceipt`）；獸人兩批走位形狀相同
+  （後排沿南側繞到側面），誰先動由骰決定。
 
 ## 2026-09-15 自訂規則的探針：諾里斯的獎賞升一級，圖書館的書帶不出去，古托井走得動了
 
