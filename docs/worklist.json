@@ -207,33 +207,17 @@
       "id": "deployment-and-pathing-vs-original",
       "layer": "verification",
       "title": "戰場部署與走位對回原版（spec 053／057／061）",
-      "body": "部署照原版換掉並以 dosgolem 收據（單人隊、哥布林、獸人的家、衛兵攔截、驚動衛兵）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）；foeTurn 拿掉非原版備案照 spec 096 走，卡住第二次照原版重挑再走。逐步快照對到動作層：三場 40 個原版動作 remake 重現 32 個（TestFoeWalkReproducesEveryOriginalAction），剩 8 個擺盪序列吃骰流，另開 #34；還有 GEO4 block 21 重跑確認、TestSokalKeep 變慢的成因。",
-      "acceptance": "GEO4 block 21 那一場不再隔牆；TestSokalKeep 變慢成因查明；走位的骰流重播在 #34。",
+      "body": "部署照原版換掉並以 dosgolem 收據（單人隊、哥布林、獸人的家、衛兵攔截、驚動衛兵）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）；走位照 spec 096，dosgolem 骰流餵回去三場 40 個原版動作 40 個逐格重現（TestFoeWalkReproducesEveryOriginalAction，#34 關）。還開著：GEO4 block 21 重跑確認、TestSokalKeep 變慢的成因。",
+      "acceptance": "GEO4 block 21 那一場不再隔牆；TestSokalKeep 變慢成因查明。",
       "verify": {
         "kind": "present",
         "paths": [
-          "docs/audit/foe-walk-comparison.md"
+          "docs/playtest/mainline-end-to-end.md"
         ],
-        "pattern": "見 #34",
-        "note": "對照表還指著 #34 就是走位那一半沒對完"
+        "pattern": "TestSokalKeepOpensTheOtherBoatRoutes",
+        "note": "補八還掛著 Sokal 變慢沒查、block 21 沒重跑就是這條沒收"
       },
       "github_issue": 32
-    },
-    {
-      "id": "foe-walk-dice-replay",
-      "layer": "verification",
-      "title": "敵方走位逐格對回原版：原版骰流讀出來重播",
-      "body": "三場固定事件同狀態下敵方走位剩「誰先動、追誰、卡住重挑到誰」的差（先攻與 37B8h 的擲骰）；動作層 40 個重現 32 個，剩 8 個是擺盪序列的第二段吃第一段的骰。要記原版一場戰鬥的骰流與呼叫端，remake 的 diceRoller 接重播來源並把戰鬥裡每個擲骰消費者的順序對上。",
-      "acceptance": "三場前三輪位置表原版 vs remake 逐格相同（TestFoeWalkReproducesEveryOriginalAction 40/40），或對不上的規則差寫進 spec 並標證據等級。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/audit/foe-walk-comparison.md"
-        ],
-        "pattern": "要逐格一致得把原版的骰流讀出來重播",
-        "note": "對照表還寫著要重播骰流就是沒做"
-      },
-      "github_issue": 34
     }
   ]
 }

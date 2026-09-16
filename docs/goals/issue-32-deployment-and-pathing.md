@@ -28,8 +28,9 @@ step 1 讀完（spec 061 CONFORMED、057／053／078 補齊）、step 3 換完�
 三場固定事件都到了（25／37／28 格逐格相同），#33 關。走位量到 remake 多的「要離目標
 更近」與繞路兩條非原版備案把後排鎖住，拿掉後照 spec 096 走；誰先動仍看骰。dosgolem 加逐步快照
 （`-trace-peek`）之後對到動作層：三場 40 個原版動作 remake 重現 32 個
-（`TestFoeWalkReproducesEveryOriginalAction`），卡住第二次改照原版重挑再走；剩 8 個是擺盪序列
-吃第一段的骰，要逐格一致得讀骰流重播，留 #34。
+（`TestFoeWalkReproducesEveryOriginalAction`），卡住第二次改照原版重挑再走；再加 `-trace-call`
+把骰流讀出來餵回去，40 個動作全部停在原版那一格——途中抓出三條規則差（步的成本門檻、剩 1 點
+收工、全不通換模式再試）與候選名單的排序／兩輪制，都照原版改了（spec 096 CONFORMED）。
 
 ## 提示詞（可直接貼給 `/goal`）
 

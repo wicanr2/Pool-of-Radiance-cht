@@ -951,13 +951,37 @@ func (state *tacticalState) sideOf(index uint8) (uint8, bool) {
 	return 1, true
 }
 
-// foeSearchBudget 是敵方找目標時給直線追蹤的預算。原版怎麼挑目標還沒讀出來，
-// 這個值只用來保證整個盤面都落在搜尋範圍內。
-const foeSearchBudget = 128
+// foeTargetRange 是 `37B8h` 填候選名單時給 `010Ah:00C0h` 的射程：entry 5 與走一步的那一支
+// 都傳 0FFh（spec 096），也就是直線追蹤的預算上限，整個盤面都在裡面。
+const foeTargetRange = 0xFF
 
-// foeMaxStepsPerTurn 是一回合內允許的步數上限。預算本身每步遞減、迴圈一定會停，
-// 這個上限只是防止未來改動把它變成不會停的迴圈。
-const foeMaxStepsPerTurn = 32
+// foeTargetCandidates 是 `37B8h` 兩輪制的候選名單（spec 096）：第一輪 `010Ah:00C0h(記錄,
+// 0FFh)` 用 `0912h` 填、依直線追蹤成本排序；一個都沒有時第二輪把 `DS:6674h` 的 +6 打開
+// （直線追蹤跳過地形，spec 058）再填一次——斜街裡隔著牆的隊伍就是靠這一輪被挑到的
+// （衛兵那一場 34 號從 (23,4) 擲 1 追最近的 P3，dosgolem 骰流收據）。
+func (state *tacticalState) foeTargetCandidates(mover, side uint8) ([]uint8, error) {
+	for _, relaxed := range []bool{false, true} {
+		snapshot, err := state.tacticalSnapshot()
+		if err != nil {
+			return nil, err
+		}
+		snapshot.Map.IgnoreTerrain = relaxed
+		targets, err := combat.OpposingNearbyAt(snapshot, mover,
+			state.Roster[mover].X, state.Roster[mover].Y, foeTargetRange, 1-side, state.sideOf)
+		if err != nil {
+			return nil, err
+		}
+		if len(targets) != 0 {
+			return targets, nil
+		}
+	}
+	return nil, nil
+}
+
+// foeMaxRoundsPerTurn 是接近迴圈一回合最多跑幾輪（原版 entry 5 `0C12h`：輪數超過
+// 14h 就收工，spec 096）。一輪是「搆得到就打，否則試一步」，五個方向全不通的那一輪
+// 不動但算一輪，所以它不等於步數。
+const foeMaxRoundsPerTurn = 20
 
 
 // attackRangeOf 是那一格搆得到幾格。原版 overlay-09 entry 5 的 `0C3Eh` 每一
@@ -994,29 +1018,22 @@ func (a *app) foeTurn(state *tacticalState) error {
 	// 原版 overlay-13 `37B8h`：**還有效的目標就沿用**，換人才重挑。有效的
 	// 條件是「不是自己這一邊」、「還在場上（`+10Dh`）」，再過一次 `1087h`
 	// 的可打判定（那一支還沒讀）。追不到人時才換一個。
-	// pickTarget 是 `37B8h` 的重挑：從候選名單裡擲骰隨機挑（`38A6h` 的 `骰(1, n)`），
-	// 名單由 `010Ah:00C0h` 用 `0912h` 填——就是 `OpposingNearbyAt`（spec 096）。
+	// pickTarget 是 `37B8h` 的重挑：從候選名單裡擲骰隨機挑（`38A6h` 的 `骰(1, n)`）。
+	// 名單是 `010Ah:00C0h(記錄, 0FFh)` 用 `0912h` 填的——就是 `OpposingNearbyAt`（spec 096），
+	// 射程給 0FFh，**依直線追蹤的成本排序**（`sub_2E`），所以擲 1 挑到的是最近的那一個。
+	// dosgolem 的骰流收據（`dosgolem-deployment-peek-*.json` 的 `dice`）量到兩件事：
+	// 骰面 n 就是對面還站著的人數（5 → 死一個變 4 → 3 → 2），而衛兵 34 號從 (23,4)
+	// 擲 1 追的是最近的 P3 不是索引最小的 P2——名單依距離排，不依索引。
+	// 原版挑到過不了 `1087h` 的會劃掉重擲，remake 沒有 `1087h`，第一擲就收。
 	pickTarget := func() (uint8, error) {
-		snapshot, err := state.tacticalSnapshot()
+		targets, err := state.foeTargetCandidates(mover, side)
 		if err != nil {
 			return 0, err
 		}
-		targets, err := combat.OpposingNearbyAt(snapshot, mover,
-			state.Roster[mover].X, state.Roster[mover].Y, foeSearchBudget, 1-side, state.sideOf)
-		if err != nil {
-			return 0, err
+		if len(targets) == 0 {
+			return 0, nil
 		}
-		if len(targets) != 0 {
-			return targets[a.rollDice(1, len(targets))-1], nil
-		}
-		// 名單空的時候改追盤面上最近的敵人。**這不是原版的名單**：原版第二輪把
-		// `1087h` 的判定放寬再挑一次（spec 096 的兩輪制），remake 沒有 `1087h`，
-		// 拿最近的頂——少了這個退路，站得遠的怪物會回報找不到目標然後原地結束
-		// 回合；實測索寇要塞那一場，最後兩隻殭屍與隊伍隔著 22 格互相不動。
-		if nearest, ok := state.nearestReachableOpposing(mover); ok {
-			return nearest, nil
-		}
-		return 0, nil
+		return targets[a.rollDice(1, len(targets))-1], nil
 	}
 	target, ok := state.foeTarget(mover)
 	if !ok {
@@ -1040,7 +1057,13 @@ func (a *app) foeTurn(state *tacticalState) error {
 	mode := state.tacticMode(mover, a.rollDice)
 
 	steps := 0
-	for ; steps < foeMaxStepsPerTurn; steps++ {
+	for round := 0; round < foeMaxRoundsPerTurn; round++ {
+		// 腳程剩不到一步就收工（`084Dh`：runtime +6 ÷ 2 <= 0 → entry 6）。原版顯示
+		// 給玩家的步數是 +6 ÷ 2，所以剩 1 點算零步；dosgolem 骰流收據（獸人家 24 號）
+		// 量到原版走六步剩 1 點就停，remake 以前拿那 1 點又往前踏了一格。
+		if state.Budget()/2 == 0 {
+			break
+		}
 		snapshot, err = state.tacticalSnapshot()
 		if err != nil {
 			return err
@@ -1083,30 +1106,24 @@ func (a *app) foeTurn(state *tacticalState) error {
 			if err != nil {
 				return err
 			}
-			outcome, err := combat.ResolveDestination(snapshot, mover, candidate, state.Budget())
+			enterable, err := state.foeStepEnterable(snapshot, mover, candidate)
 			if err != nil {
 				return err
 			}
-			if outcome.Action != combat.MovementEnter {
+			if !enterable {
 				continue
 			}
 			direction, found = candidate, true
 		}
-		if !found {
-			// 五個方向都不合用：原版一樣記一次卡住並換模式（`0A0Ah`），第二次
-			// 起忘掉目標、第三次起這一隻這一輪不再動。
-			mode = gamepack.NextTacticMode(mode)
-			stuck++
-			if stuck > 1 {
-				state.setFoeTarget(mover, 0)
-			}
-			break
-		}
-		if reverse := (int(direction) + combat.DirectionCount/2) % combat.DirectionCount; int(lastDirection) == reverse {
-			// 這一步剛好是上一步的反方向：原版記一次卡住並換模式（`0A0Ah`）。
-			// 第一次照走（`0A30h`：`439Fh <= 1`）；第二次忘掉目標、當場重挑一個
-			// 再走（`0A37h`／`0A49h`：`439Fh <= 2` → `0A63h`，挑不到才收工）；
-			// 第三次起這一隻這一輪不再動（`0A49h` 把腳程清成 0）。
+		reverse := (int(direction) + combat.DirectionCount/2) % combat.DirectionCount
+		if !found || int(lastDirection) == reverse {
+			// 五個方向都不合用，或這一步剛好是上一步的反方向：原版記一次卡住並換
+			// 模式（`0A0Ah`）。第一次照走（`0A30h`：`439Fh <= 1`）；第二次忘掉目標、
+			// 當場重挑一個再走（`0A37h`／`0A49h`：`439Fh <= 2` → `0A63h`，挑不到才
+			// 收工）；第三次起這一隻這一輪不再動（`0A49h` 把腳程清成 0）。五個全不通
+			// 時 `0A88h` 的「步 < 6」不成立，這一輪不動——但只是這一輪：entry 5 的
+			// 迴圈會再叫一次 `07E8h`，用換過的模式重試。dosgolem 骰流收據（獸人家
+			// 10 號）量到原版被四隻同伴圍住時換了模式往斜角走出去，就是這一條。
 			mode = gamepack.NextTacticMode(mode)
 			stuck++
 			if stuck == 2 {
@@ -1122,6 +1139,9 @@ func (a *app) foeTurn(state *tacticalState) error {
 				state.setFoeTarget(mover, target)
 			} else if stuck > 2 {
 				break
+			}
+			if !found {
+				continue
 			}
 		}
 
@@ -1139,12 +1159,61 @@ func (a *app) foeTurn(state *tacticalState) error {
 		state.Roster[mover].X, state.Roster[mover].Y = x, y
 		state.Budgets[mover] = budget
 		lastDirection = direction
+		steps++
 	}
 	state.setTacticMode(mover, mode)
 	state.FoeLog = state.say(msgFoeClosed, mover, steps, target)
 	state.endTurn(a.rollDice, false)
 	return nil
 }
+
+// foeStepEnterable 是原版 overlay-09 `066Eh` 對一格的判定（spec 096）：`013Dh:007Fh`
+// 探那一格，地形索引 0（盤面外）或有人就不行；格位類別 `DS:[2758h + 索引 × 4]` 要小於
+// 剩下的腳程（`0705h`）；再把步的成本（正 2、斜 3，`070Eh`..`0719h`）乘上格位類別
+// （`0730h`），腳程不夠付就不行（`07BAh`）。地形索引 1Eh 另有一道門：身上沒有
+// 20h／1Eh／6Fh／7Dh 四個效果之一，成本改成腳程加一（`073Ah`..`07ABh`），也就是走不進去。
+//
+// 斜步 3 點對正步 2 點這一條就是 dosgolem 骰流收據（獸人家 11 號第二輪、衛兵 31／34
+// 號）量到的差：腳程剩 2 時原版往正向走、remake 以前拿斜向反走一步再被卡住規則收掉。
+func (state *tacticalState) foeStepEnterable(snapshot combat.TacticalState, mover, direction uint8) (bool, error) {
+	target, class, err := combat.ProbeDestination(snapshot, mover, direction)
+	if err != nil {
+		return false, err
+	}
+	if target != 0 || class == combat.OffBoardDestinationClass {
+		return false, nil
+	}
+	record, err := combat.CellClassAt(snapshot.Classes, class)
+	if err != nil {
+		return false, err
+	}
+	budget := state.Budget()
+	if record.EntryThreshold >= budget {
+		return false, nil
+	}
+	cost := uint8(2)
+	if direction&1 != 0 {
+		cost = 3
+	}
+	cost *= record.EntryThreshold
+	if class == foeSpecialTerrainClass {
+		cost = budget + 1
+		for _, code := range foeSpecialTerrainEffects {
+			if state.hasEffect(int(mover), code) {
+				cost = 0
+				break
+			}
+		}
+	}
+	return budget >= cost, nil
+}
+
+// foeSpecialTerrainClass 是 `066Eh` 特別對待的地形索引 1Eh，foeSpecialTerrainEffects 是
+// 能走進去的四個效果碼（`0746h`／`075Dh`／`0774h`／`078Bh` 依序問 `010Ah:00A7h`）；
+// 哪一個是飛行、哪一個是漂浮還沒對到名字（spec 112 的效果表），這裡只照碼。
+const foeSpecialTerrainClass = 0x1E
+
+var foeSpecialTerrainEffects = [...]uint8{0x20, 0x1E, 0x6F, 0x7D}
 
 // 建角寫下的三個基礎值，逐一取自 overlay-16（spec 063）：AC internal 32h
 // （typed 10）、THAC0 internal 28h（typed 20）、基礎移動 0Ch。

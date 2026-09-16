@@ -31,7 +31,7 @@ def run(keys, load, save, tag, budget=150000000):
       '-v',os.path.join(DOSGOLEM,'workplace','gocache')+':/gocache','-v',os.path.join(DOSGOLEM,'workplace','gomodcache')+':/gomodcache',
       '-e','GOCACHE=/gocache','-e','GOMODCACHE=/gomodcache','-e','HOME=/tmp','-e','GOFLAGS=-mod=mod',
       '-w','/dosgolem','golang:1.24-bookworm','go','run','./cmd/shots','-exe','/orig/start.exe','-root','/orig','-scratch','/scratch',
-      '-out','/work/'+tag,'-budget',str(budget),'-idle','3000000','-peek',PEEK,'-trace-peek','ds:5E85:200,ds:6772:2','-keys',keys]
+      '-out','/work/'+tag,'-budget',str(budget),'-idle','3000000','-peek',PEEK,'-trace-peek','ds:5E85:200,ds:6772:2','-trace-call','5BB:C94','-keys',keys]
     if load: args+=['-load-state','/work/'+load]
     if save: args+=['-save-state','/work/'+save]
     p=subprocess.run(args,capture_output=True,text=True,timeout=1800)
@@ -120,14 +120,18 @@ ROUTE_ALARM=ROUTE[:20]+[((4,4),'S'),((4,5),'S'),((4,6),'W'),((3,6),'W'),((2,6),'
 BASE_KEYS=("rep:9:Space,Return,Return,"+"".join("c,rep:6:Return,y,%s,Return,k,e,y,"%L for L in "ABCDEF")+
   "a,End,a,End,a,End,a,End,a,End,a,e,b,rep:14:Return,Up,Up,Up,rep:10:Return")
 
-def fight(start,prefix,batches=2):
-    """從踏上事件格的狀態按 Return 到戰鬥畫面，記開打那一幀，再每個隊員 d,g 兩批記走位。"""
-    st=start
-    for n in range(8):
-        shots=run('Return',st,'%s%d.state'%(prefix,n),'%s%d'%(prefix,n)); st='%s%d.state'%(prefix,n)
-        if classify(shots[-1],'%s%d'%(prefix,n))=='combat': break
-    else: raise SystemExit('%s：沒進戰鬥'%prefix)
-    dep=shots[-1]; rows=[]; prev=None; actions=[]; prev_a=None
+def fight(start,prefix,batches=2,combat_state=None):
+    """從踏上事件格的狀態按 Return 到戰鬥畫面，記開打那一幀，再每個隊員 d,g 兩批記走位。
+    combat_state 給的是已經在戰鬥畫面的狀態檔（同目錄下要有同名的 shots 目錄），跳過按 Return 那一段。"""
+    if combat_state:
+        st=combat_state; shots=json.load(open(os.path.join(WORK,combat_state[:-6],'shots.json')))
+    else:
+        st=start
+        for n in range(8):
+            shots=run('Return',st,'%s%d.state'%(prefix,n),'%s%d'%(prefix,n)); st='%s%d.state'%(prefix,n)
+            if classify(shots[-1],'%s%d'%(prefix,n))=='combat': break
+        else: raise SystemExit('%s：沒進戰鬥'%prefix)
+    dep=shots[-1]; rows=[]; prev=None; actions=[]; prev_a=None; dice=[]
     def table_of(p):
         b=bytes.fromhex(p['ds:5E85'].split('|')[1]); n=b[3]
         return [(k,b[4*k],b[4*k+1],b[4*k+3]) for k in range(1,n)]
@@ -144,7 +148,10 @@ def fight(start,prefix,batches=2):
                 if not q.get('ds:5E85','').startswith('0850|'): continue
                 t=table_of(q)
                 if t!=prev_a: actions.append({'round_batch':r,'frame':s_['index'],'label':s_['label'],'step':snap['step'],'counts':q.get('ds:6772','')[5:],'table':t}); prev_a=t
-    json.dump({'deploy_frame':{k:v for k,v in dep.items() if k!='path'},'rounds':rows,'actions':actions},open(os.path.join(WORK,prefix+'-fight.json'),'w'))
+            # 骰流（-trace-call 5BB:C94，Turbo Pascal 的 Random(n)）：一筆一次，帶呼叫端
+            for c in (s_.get('calls') or []):
+                dice.append({'round_batch':r,'frame':s_['index'],'step':c['step'],'sides':c['arg'],'roll':c['result']+1,'caller':'%04X:%04X'%(c['caller_cs'],c['caller_ip'])})
+    json.dump({'deploy_frame':{k:v for k,v in dep.items() if k!='path'},'rounds':rows,'actions':actions,'dice':dice},open(os.path.join(WORK,prefix+'-fight.json'),'w'))
 
 if __name__=='__main__':
     log=open(os.path.join(WORK,'drive.log'),'a')

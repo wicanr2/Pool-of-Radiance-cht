@@ -86,12 +86,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **主線路線表補委任獎賞、建議等級與順序。** 一級隊伍打不起 20+ 隻的固定事件（貧民窟衛兵 33、獸人的家 24、索寇要塞 50），散戰 21 場只有 221 XP；等級靠委任獎賞，`ecl3/8` 的獎賞表還沒讀成表。
       **驗收**：spec 137 多一欄「建議等級／順序」，每個委任區有最大一場的怪物清冊與獎賞金／經驗；探針照順序跑並記每段等級。
       **討論**：[#26](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/26)
-- [ ] **戰場部署與走位對回原版（spec 053／057／061）。** 部署照原版換掉並以 dosgolem 收據（單人隊、哥布林、獸人的家、衛兵攔截、驚動衛兵）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）；foeTurn 拿掉非原版備案照 spec 096 走，卡住第二次照原版重挑再走。逐步快照對到動作層：三場 40 個原版動作 remake 重現 32 個（TestFoeWalkReproducesEveryOriginalAction），剩 8 個擺盪序列吃骰流，另開 #34；還有 GEO4 block 21 重跑確認、TestSokalKeep 變慢的成因。
-      **驗收**：GEO4 block 21 那一場不再隔牆；TestSokalKeep 變慢成因查明；走位的骰流重播在 #34。
+- [ ] **戰場部署與走位對回原版（spec 053／057／061）。** 部署照原版換掉並以 dosgolem 收據（單人隊、哥布林、獸人的家、衛兵攔截、驚動衛兵）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）；走位照 spec 096，dosgolem 骰流餵回去三場 40 個原版動作 40 個逐格重現（TestFoeWalkReproducesEveryOriginalAction，#34 關）。還開著：GEO4 block 21 重跑確認、TestSokalKeep 變慢的成因。
+      **驗收**：GEO4 block 21 那一場不再隔牆；TestSokalKeep 變慢成因查明。
       **討論**：[#32](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/32)
-- [ ] **敵方走位逐格對回原版：原版骰流讀出來重播。** 三場固定事件同狀態下敵方走位剩「誰先動、追誰、卡住重挑到誰」的差（先攻與 37B8h 的擲骰）；動作層 40 個重現 32 個，剩 8 個是擺盪序列的第二段吃第一段的骰。要記原版一場戰鬥的骰流與呼叫端，remake 的 diceRoller 接重播來源並把戰鬥裡每個擲骰消費者的順序對上。
-      **驗收**：三場前三輪位置表原版 vs remake 逐格相同（TestFoeWalkReproducesEveryOriginalAction 40/40），或對不上的規則差寫進 spec 並標證據等級。
-      **討論**：[#34](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/34)
 
 ### 三、版面與資料的差距
 
