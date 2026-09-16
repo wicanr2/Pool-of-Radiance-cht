@@ -57,7 +57,7 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 // 後面那一段——交件折算經驗、訓練所升級、職員清 `4A00`——跑得到。勝率記在
 // `docs/playtest/mainline-end-to-end.md`。
 func TestMainlineProbeHouseRuleCommissionExperience(t *testing.T) {
-	runMainlineProbe(t, true, 139)
+	runMainlineProbe(t, true, 143)
 }
 
 // buildManualParty 從標題開始：照說明書 p.13 建六個人、重擲、（自訂規則按 H）、

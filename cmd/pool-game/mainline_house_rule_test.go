@@ -272,6 +272,33 @@ func (d *mainlineDriver) approach(what string, target, allowed func(x, y int) bo
 	return facing
 }
 
+// approachIfPossible 與 approach 一樣，但走不到就回 false 而不是 fatal——
+// 呼叫端還有別條路可走時用它（例如旅店開不成就別睡，#38）。
+func (d *mainlineDriver) approachIfPossible(what string, target, allowed func(x, y int) bool) (uint8, bool) {
+	d.t.Helper()
+	a := d.a
+	facingTo := func(x, y int) (uint8, bool) {
+		for facing := 0; facing < 4; facing++ {
+			nx, ny := x+exploreDeltas[facing][0], y+exploreDeltas[facing][1]
+			if target(nx, ny) && a.initialMap.Grid.CanMoveDungeonWrapped(x, y, facing*2) {
+				return uint8(facing), true
+			}
+		}
+		return 0, false
+	}
+	beside := func(x, y int) bool { _, ok := facingTo(x, y); return ok && !target(x, y) }
+	if beside(int(a.spawn.X), int(a.spawn.Y)) {
+		return facingTo(int(a.spawn.X), int(a.spawn.Y))
+	}
+	if planAllowing(a, beside, allowed, false) == nil {
+		return 0, false
+	}
+	if !d.walkAllowing(what, beside, allowed, false) {
+		return 0, false
+	}
+	return facingTo(int(a.spawn.X), int(a.spawn.Y))
+}
+
 // fightNorris 走古托井的諾里斯線（`ecl8/29`，exact）：踩井 (7,7) 打兩場各 9 隻
 // 狗頭人（`A2D1h`／`A343h`，打完 `4A23 |= 1`）→ 再踩井答 YES 爬下去（`AE4Ah`，
 // 換 GEO8/32）→ 井底 (7,7) 的「密門」選單答 NO 留在地下 → 走到地形 12 選 FIGHT

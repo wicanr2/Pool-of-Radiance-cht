@@ -101,7 +101,7 @@
 | [087](087-ecl-input-opcodes.md) | `0Fh INPUT NUMBER` 與 `10h INPUT STRING` | READY | `cmd/pool-game/ecl_input.go`、`cmd/pool-game/main.go`、`internal/gamepack/ecl_operands.go` 等 4 個 | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go` |
 | [088](088-ecl-rob-opcode.md) | `28h ROB` | READY＋DRAFT | `cmd/pool-game/rob.go`、`internal/gamepack/intro.go`、`internal/gamepack/rob.go` | `internal/gamepack/rob_test.go` |
 | [089](089-ecl-protection-opcode.md) | `3Ch PROTECTION` | READY＋DRAFT | `cmd/pool-game/protection.go`、`internal/gamepack/ecl_operands.go`、`internal/gamepack/intro.go` | `cmd/pool-game/protection_test.go` |
-| [090](090-ecl-who-opcode.md) | `39h WHO` 與「目前角色」 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go` |
+| [090](090-ecl-who-opcode.md) | `39h WHO` 與「目前角色」 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_rest_test.go` |
 | [091](091-ecl-add-npc-opcode.md) | `36h ADD NPC` | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/main_test.go` |
 | [092](092-ecl-checkparty-opcode.md) | `1Eh CHECKPARTY` | READY | `cmd/pool-game/checkparty.go`、`internal/gamepack/checkparty.go`、`internal/gamepack/intro.go` | `internal/gamepack/checkparty_test.go` |
 | [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-ecl-trace/main.go`、`cmd/pool-game/ecl_clock.go`、`cmd/pool-game/main.go` 等 7 個 | `cmd/pool-ecl-audit/main_test.go` |
@@ -113,7 +113,7 @@
 | [099](099-boat-travel-and-quest-gate.md) | 搭船旅行與它的進度閘門 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/coverage_test.go` |
 | [100](100-the-6dd5-map-exit-gate.md) | `DS:6DD5h` — 擋住整個世界的那一個變數 | CONFORMED | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/main.go`、`cmd/pool-game/training_gate.go` | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/mainline_castle_test.go` 等 4 個 |
 | [101](101-world-transition-graph.md) | 世界怎麼接起來——NEWECL 圖與邊界出口 | READY | `cmd/pool-game/main.go`、`cmd/pool-world-graph/main.go` | `cmd/pool-game/kuto_well_test.go`、`cmd/pool-game/mainline_castle_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 6 個 |
-| [102](102-city-location-dispatch.md) | 城區的地點是 terrain 索引分派的，而且有些要面對它 | READY | `cmd/pool-game/main.go`、`cmd/pool-map-names/main.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/harbour_walk_test.go` 等 8 個 |
+| [102](102-city-location-dispatch.md) | 城區的地點是 terrain 索引分派的，而且有些要面對它 | READY | `cmd/pool-game/main.go`、`cmd/pool-map-names/main.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/harbour_walk_test.go` 等 9 個 |
 | [103](103-world-cell-sweep.md) | 整包格子入口掃描 | READY | `cmd/pool-world-cell-sweep/main.go` | `cmd/pool-game/coverage_test.go` |
 | [104](104-script-call-selectors.md) | `2Dh CALL` 的選擇子只有五個有動作 | READY | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/stojanow_gate_test.go` |
 | [105](105-wilderness-map.md) | 野外地圖——座標、三張圖怎麼接、地點表 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-wilderness-map/main.go`、`internal/gamepack/wilderness.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/harbour_walk_test.go`、`cmd/pool-game/mainline_castle_test.go` 等 5 個 |
@@ -125,7 +125,7 @@
 | [111](111-turn-undead.md) | 轉變不死生物 | READY | `internal/gamepack/turn_undead_resolve.go` | `internal/journal/manual_tables_test.go` |
 | [112](112-effect-code-dispatch.md) | 效果代碼的分派（overlay-24 entry 3／entry 1 與 `014Dh`） | READY | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/cloud.go` 等 6 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/strength_effect_integration_test.go`、`internal/gamepack/effect_list_test.go` 等 4 個 |
 | [113](113-game-pack.md) | Pool 的 game pack 與 adapter | READY | `internal/gamepack/pack.go` | `internal/gamepack/pack_test.go` |
-| [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_interruption_test.go`、`cmd/pool-game/camp_screen_test.go` 等 7 個 |
+| [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_interruption_test.go`、`cmd/pool-game/camp_screen_test.go` 等 8 個 |
 | [115](115-temple-services.md) | 神殿的九項服務（overlay-04） | READY | `cmd/pool-game/main.go`、`internal/save/state.go` | `cmd/pool-game/main_test.go` |
 | [116](116-appraise-and-sell.md) | 估價與販賣寶石珠寶（overlay-21 entry 19） | CONFORMED＋READY＋OPEN | `cmd/pool-game/appraise.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/camp_test.go`、`cmd/pool-game/mainline_reward_test.go`、`cmd/pool-game/shop_test.go` |
 | [117](117-npc-approach-portrait.md) | APPROACH 的 NPC 半身像 | READY＋DRAFT | `cmd/pool-game/main.go`、`internal/assets/camp_fire.go`、`internal/assets/npc_portrait.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`internal/gamepack/intro_test.go` |

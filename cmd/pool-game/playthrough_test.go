@@ -220,6 +220,69 @@ func TestNormalKeysReachTheFirstCombat(t *testing.T) {
 // 目標然後原地結束回合，雙方隔著二十幾格互相不動，戰鬥永遠不結束。
 // newGameAtFirstCombat 用給定的隊伍從標題開始正常遊玩（B、導覽、隨機走）直到
 // 第一場戰鬥開打，回傳停在戰術盤面上的 app。
+// pressTowardTheSlums 從城區走向城門 (0,4) 再往西踏出去。只走街道（地形 0），
+// 所以不會踩進商店、神殿或市政廳。規劃不出路就回 handled=false 讓呼叫端亂走。
+func pressTowardTheSlums(application *app) (error, bool) {
+	street := func(x, y int) bool {
+		cell, ok := application.initialMap.Grid.Cell(x, y)
+		return ok && cell.Terrain&0x1F == 0
+	}
+	if int(application.spawn.X) == 0 && int(application.spawn.Y) == 4 {
+		if application.spawn.Facing != 3 {
+			return press(application, ebiten.KeyArrowRight), true
+		}
+		return press(application, ebiten.KeyArrowUp), true
+	}
+	gate := func(x, y int) bool { return x == 0 && y == 4 }
+	plan := planAllowing(application, gate, street, false)
+	if len(plan) == 0 {
+		return nil, false
+	}
+	if application.spawn.Facing != plan[0].facing {
+		return press(application, ebiten.KeyArrowRight), true
+	}
+	return press(application, ebiten.KeyArrowUp), true
+}
+
+// equipForFirstCombat 給治具的隊伍鏈甲、盾與長劍——**原版玩家的第一件事就是
+// 去武具店買裝備**（`outfitParty` 走的也是這條路），而這個治具的隊伍本來什麼
+// 都沒有：AC 10、空手 1d2。時鐘接上 ECL 之後（#20）城裡十四點就宵禁，它不能
+// 再像以前那樣在城裡繞 900 步才找到一場架，得真的打一場自然遭遇——而貧民窟的
+// 隨機遭遇隻數會跟著隊伍強度放大（實測 12～16 隻），空手打不贏。
+//
+// 直接塞進背包再標成已裝備，不走商店：這個治具要量的是 Q）UICK 與經驗值，
+// 買東西那條路有 `TestBuying…` 那幾條在釘。
+func equipForFirstCombat(t *testing.T, party []poolsave.Character) []poolsave.Character {
+	t.Helper()
+	stock, err := gamepack.ReadDOSTreasureItemBlock(dosZIPForTests, 3, 0x35)
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	pick := func(name string) (poolsave.Item, bool) {
+		for _, record := range stock {
+			if record.Name != name {
+				continue
+			}
+			item := poolsave.Item{Name: record.Name, Raw: append([]byte(nil), record.Raw[:]...)}
+			if len(item.Raw) > itemReadyOffset {
+				item.Raw[itemReadyOffset] = 1
+			}
+			return item, true
+		}
+		return poolsave.Item{}, false
+	}
+	for index := range party {
+		for _, name := range []string{"Chain Mail", "Shield", "Long Sword"} {
+			item, ok := pick(name)
+			if !ok {
+				t.Fatalf("武具店的存貨裡沒有 %q", name)
+			}
+			party[index].Inventory = append(party[index].Inventory, item)
+		}
+	}
+	return party
+}
+
 func newGameAtFirstCombat(t *testing.T, party []poolsave.Character) *app {
 	t.Helper()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
@@ -227,6 +290,7 @@ func newGameAtFirstCombat(t *testing.T, party []poolsave.Character) *app {
 	if err != nil {
 		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
 	}
+	party = equipForFirstCombat(t, party)
 	application.state = poolsave.State{Schema: poolsave.Schema, CharacterLibrary: party, Party: party}
 	application.saveState = func(poolsave.State) error { return nil }
 	if err := press(application, ebiten.KeyEnter); err != nil {
@@ -272,6 +336,17 @@ func newGameAtFirstCombat(t *testing.T, party []poolsave.Character) *app {
 				err = press(application, ebiten.KeyEnter)
 			}
 		default:
+			// 先走出城區再找架。城裡沒有打得起的固定戰鬥，唯一會開打的是
+			// **十四點的宵禁**（衛兵 38 隻，含 12 名六級戰士）——時鐘接上 ECL
+			// 之後（#20）在城裡漫無目的地走滿十四小時就一定撞上它，以前時鐘
+			// 凍在午夜才碰不到。原版玩家的第一場架在貧民窟（spec 137 第 2 段：
+			// 城區 (0,4) 往西出界）。規劃不出路就照舊亂走。
+			if application.spawn.Map.Archive == 3 && application.spawn.Map.BlockID == 0 {
+				if pressed, handled := pressTowardTheSlums(application); handled {
+					err = pressed
+					break
+				}
+			}
 			if random.Intn(3) == 0 || forwardWouldLeaveTheArea(application) {
 				err = press(application, ebiten.KeyArrowRight)
 			} else {
