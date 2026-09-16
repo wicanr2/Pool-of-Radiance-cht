@@ -2173,7 +2173,7 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 // 主線第一段：清掉索寇要塞會把碼頭的其他航線開出來（spec 099）。
 //
 // 這一條與覆蓋率那一條問的不是同一件事。覆蓋率量「走得到多少」，這一條量
-// **主線推得動嗎**：拿到裝備、打贏那一場、鬼魂說出 SAMOSUD，`DS:4AA7h`
+// **主線推得動嗎**：對費蘭說 LUX 再選 TELL THE TRUTH（`ecl4/21 AD9Ah`），`DS:4AA7h`
 // 才會被寫成 254，碼頭才會從「唯一的船是去索寇要塞的」變成五個選項。
 func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
@@ -2198,9 +2198,10 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		// 第二輪一開始就被擋在碼頭外面。
 		avoid = map[[3]int]bool{}
 		transitionUses = map[[3]int]int{}
-		// 重走上限拉高：要塞那一段有先後順序——先在裝備架拿到裝備、打贏
-		// 那一場（`4A21 = 255`），鬼魂才肯說出 SAMOSUD（`4AA7 = 254`）。
-		// 只走一遍的話，鬼魂那一格多半在拿到裝備之前就踩過了。
+		// 重走上限拉高：費蘭那一格（地形 12）要遭遇選單選 PARLAY、打 LUX、選
+		// TELL THE TRUTH 才寫 `4AA7 = 254`（`AD9Ah`；`4A21` 只決定多不多印一句
+		// 軍械庫的提示，不是門檻——#37 讀 ECL4/21 定的）。探索器的選項是輪流試的，
+		// 只走一遍多半答錯，而答錯字 `4A13 = 255` 之後他不再出現。
 		_, reachable := exploreWorldWithFlags(t, zipPath, seed, 0, 8, 600000,
 			avoid, map[[3]int]bool{}, transitionUses, menuTurn, map[[4]int]int{},
 			visited, maps, blocks, flags, noBoatOverride, &hardFailures, nil, nil, nil, nil, false)

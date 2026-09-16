@@ -12,6 +12,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 )
 
 // manualPartyBuild 是說明書 p.13 建議的隊伍：兩個牧師（一個專職）、兩個法師、
@@ -56,7 +57,7 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 // 後面那一段——交件折算經驗、訓練所升級、職員清 `4A00`——跑得到。勝率記在
 // `docs/playtest/mainline-end-to-end.md`。
 func TestMainlineProbeHouseRuleCommissionExperience(t *testing.T) {
-	runMainlineProbe(t, true, 137)
+	runMainlineProbe(t, true, 139)
 }
 
 // buildManualParty 從標題開始：照說明書 p.13 建六個人、重擲、（自訂規則按 H）、
@@ -141,7 +142,9 @@ func buildManualParty(t *testing.T, application *app, step func(key ebiten.Key, 
 	}
 	// 玩家策略層第二條：先去武具店把金幣換成裝備（mainline_outfit_test.go）。
 	outfitter := &mainlineDriver{t: t, a: application, pilot: &tacticalPilot{},
-		step: func(key ebiten.Key) { step(key) }}
+		step: func(key ebiten.Key) { step(key) },
+		// 只送字元不按鍵：-1 不是任何一顆鍵，分派點都查不到它。
+		chars: func(text string) { step(ebiten.Key(-1), []rune(text)...) }}
 	outfitter.outfitParty()
 	// 第四條：牧師記輕傷治療、法師記催眠術（mainline_spells_test.go）；休息之後生效。
 	t.Logf("memorised %d spells before leaving the city", outfitter.memoriseSpells())
@@ -689,6 +692,8 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			switch {
 			case application.shopActive:
 				step(ebiten.KeyEscape)
+			case application.treasureActive && outfitter.reward != nil && outfitter.reward():
+				// 獎金由駕駛分配（集中給要升級的人，#37）。
 			case application.treasureActive:
 				want := "Exit"
 				if !sharedReward && application.state.PooledMoney != ([7]uint32{}) {
@@ -955,8 +960,23 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			t.Fatalf("back in the city with nothing to hand in: slot0=%02X 4A01=%d",
 				application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4A01])
 		}
+		// 獎金 250 金＋200 白金分六份沒有人付得起 1000 金學費（spec 097）：寶物畫面先 Pool
+		// 再 Take 200 白金給經驗值過門檻的第一個人（house rule 的 XP 在畫面打開時就記上了），
+		// 其餘留在隊伍的 pool 給武具店付板甲（#30）。
+		trainee := -1
+		outfitter.reward = func() bool {
+			if trainee < 0 {
+				trainee = outfitter.trainee()
+				if trainee < 0 {
+					trainee = 0
+				}
+				t.Logf("house rule detour: reward goes to %s", strings.TrimSpace(application.state.Party[trainee].Name))
+			}
+			return outfitter.takeRewardTo(trainee, 200)
+		}
 		handInPending()
-		t.Logf("house rule detour: after hand-in %s", outfitter.partyLine())
+		outfitter.reward = nil
+		t.Logf("house rule detour: after hand-in %s pool=%v", outfitter.partyLine(), application.state.PooledMoney)
 		if outfitter.canTrain() {
 			// 公告牌把 `4A00` 寫成 1；這裡不用再找職員清——交件之後 `4A01`
 			// 留在 1，職員走的是 BACK SO SOON 那一支（`ecl3/8 9BA1h`）不會清。
@@ -966,6 +986,20 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			t.Logf("house rule detour: after training %s 4A00=%d", outfitter.partyLine(),
 				application.eventMachine.Memory[0x4A00])
 		}
+		// 剩下的獎金買板甲：給第一個沒穿板甲的戰士，錢不夠自己付就由 pool 付（#30）。
+		if pooltreasure.PoolGoldEquivalent(application.state.PooledMoney) >= 400 {
+			buyer := -1
+			for index, member := range application.state.Party {
+				if strings.Contains(strings.ToLower(member.ClassID), "fighter") && !strings.Contains(strings.ToLower(member.ClassID), "magic") {
+					buyer = index
+					break
+				}
+			}
+			if buyer >= 0 {
+				t.Logf("house rule detour: %s", outfitter.buyArmourFromPool(buyer, "Plate Mail"))
+			}
+		}
+		t.Logf("house rule detour: after shopping %s pool=%v", outfitter.partyLine(), application.state.PooledMoney)
 	}
 	for guard := 0; guard < 5000 && slumsCleared; guard++ {
 		settled := application.eventMachine.Memory[0x4ABB] == 0xFF &&

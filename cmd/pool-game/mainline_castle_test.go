@@ -43,6 +43,10 @@ type mainlineDriver struct {
 	tolerateDefeat bool
 	// onBattleStart 在每一場剛擺好時叫一次（量牆的測試拿來印盤面）。
 	onBattleStart func(*tacticalState)
+	// chars 把一串字元送進 Update（寶物畫面 Take 的金額）；沒接就打不了字。
+	chars func(text string)
+	// reward 接手寶物畫面（市政廳的獎賞）：回 true 表示這一影格它處理掉了（#37：集中錢）。
+	reward func() bool
 }
 
 // reportBattle 在一場打完之後把計數記一行（只記一次）。
@@ -163,6 +167,8 @@ func (d *mainlineDriver) settle(prefer ...string) {
 			if err := selectMenuOption(d.t, a, "COMBAT"); err != nil {
 				d.fatalf("encounter menu: %v", err)
 			}
+		case a.treasureActive && d.reward != nil && d.reward():
+			// 獎賞由 reward 鉤子分配（集中給要升級的人，#37）。
 		case a.combatActive:
 			d.step(ebiten.KeyEnter)
 		case a.shopActive:
