@@ -19,6 +19,14 @@
 - 工具：`tools/ida.sh`（overlay-10／13／31／32）、`docs/audit/ida-overlay*.json` 的匯出腳本、
   dosgolem（`tools/dosgolem-reference.sh`，可送鍵、可讀變數）。
 
+## 2026-09-16 停在哪
+
+step 1 讀完（spec 061 CONFORMED、057／053／078 補齊）、step 3 換完（`combat.PlaceCombatant`、
+遭遇距離走法、COMBAT 開打前壓距離）、三場兩 seed 進補八；dosgolem 兩筆收據（單人隊、
+五人隊）開打九格逐格相同。**獸人家那一場走不到**：在鎖著的屋子裡、走路遭遇讓盲送鍵作廢
+——停止線，另開 #33（看畫面再送鍵的驅動）。敵方走位同狀態要同骰流（spec 096 挑目標擲骰），
+留在 #32。
+
 ## 提示詞（可直接貼給 `/goal`）
 
 > 目標：把戰場的部署與走位對回原版，讓貧民窟三場固定事件的開打陣型與敵方走位跟原版

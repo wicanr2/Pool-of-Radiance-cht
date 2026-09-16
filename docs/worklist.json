@@ -218,6 +218,18 @@
         "note": "補八還寫著敵方走位要等 spec 096 就是還沒對完"
       },
       "github_issue": 32
+    },
+    {
+      "id": "dosgolem-orc-home-route",
+      "layer": "verification",
+      "title": "dosgolem 走到獸人家開打（看畫面再送鍵的驅動）",
+      "body": "獸人家在鎖著的屋子裡（GEO2/20 從 (14,4) 到地形 9 沒有不撬門的路），走路遭遇又讓盲送鍵作廢；要一個逐步讀畫面／變數再送鍵的 dosgolem 驅動（WAIT 過遭遇、BASH／PICK 開門、擾動時序重跑），用 save-state 接續。",
+      "acceptance": "獸人家開打那一幀的 5E85h 與 remake 同狀態逐格相同，或差異寫進 spec 061。",
+      "verify": {
+        "kind": "manual",
+        "note": "要跑 dosgolem 看收據，沒有機器訊號"
+      },
+      "github_issue": 33
     }
   ]
 }

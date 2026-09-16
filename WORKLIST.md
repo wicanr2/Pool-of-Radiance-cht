@@ -89,6 +89,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **戰場部署與走位對回原版（spec 053／057／061）。** 部署已照原版換掉並以 dosgolem 兩筆同狀態收據（單人隊、五人隊）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）。剩下：敵方走位同狀態對照要同骰流（原版挑目標擲骰，spec 096）、獸人家那一場走不到（走路遭遇擋路）、GEO4 block 21 重跑確認不再隔牆、TestSokalKeep 變慢的成因。
       **驗收**：敵方三輪走位在同骰流下對上原版，或 spec 096 的目標挑選讀出並標 exact；playtest 補八記錄；#32 關閉。
       **討論**：[#32](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/32)
+- [ ] **dosgolem 走到獸人家開打（看畫面再送鍵的驅動）。** 獸人家在鎖著的屋子裡（GEO2/20 從 (14,4) 到地形 9 沒有不撬門的路），走路遭遇又讓盲送鍵作廢；要一個逐步讀畫面／變數再送鍵的 dosgolem 驅動（WAIT 過遭遇、BASH／PICK 開門、擾動時序重跑），用 save-state 接續。
+      **驗收**：獸人家開打那一幀的 5E85h 與 remake 同狀態逐格相同，或差異寫進 spec 061。
+      **討論**：[#33](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/33)
 
 ### 三、版面與資料的差距
 
