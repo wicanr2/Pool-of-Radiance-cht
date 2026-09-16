@@ -1,5 +1,8 @@
 # Goal：休息要挑地方——駕駛走去旅店付一枚白金（GitHub #38；spec 114／102／081／090）
 
+狀態：**已完成**（2026-09-16，`72455d1`；[issue #38](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/38)
+已關閉）。這一輪交出的東西見〈2026-09-16 收在哪〉；剩下的尾巴轉到 #22／#26。
+
 主台帳：[issue #38](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/38)。
 上一個 goal 的結案位置：[`issue-24-20-rest-entry2-and-clock.md`](issue-24-20-rest-entry2-and-clock.md)
 （#24／#20 關：入口 2 接上、時鐘投影七位）。
