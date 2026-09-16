@@ -207,15 +207,15 @@
       "id": "deployment-and-pathing-vs-original",
       "layer": "verification",
       "title": "戰場部署與走位對回原版（spec 053／057／061）",
-      "body": "部署已照原版換掉並以 dosgolem 三筆同狀態收據（單人隊、五人隊哥布林、五人隊獸人的家二十五格）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）。剩下：敵方走位同狀態對照要同骰流（原版挑目標擲骰，spec 096）、GEO4 block 21 重跑確認不再隔牆、TestSokalKeep 變慢的成因。",
-      "acceptance": "敵方三輪走位在同骰流下對上原版，或 spec 096 的目標挑選讀出並標 exact；playtest 補八記錄；#32 關閉。",
+      "body": "部署照原版換掉並以 dosgolem 四筆同狀態收據（單人隊、五人隊哥布林、獸人的家、衛兵攔截、驚動衛兵）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）；foeTurn 的非原版備案拿掉、照 spec 096 走。剩下：敵方走位「誰先動」要同骰流才對得出同一條路、GEO4 block 21 重跑確認、TestSokalKeep 變慢的成因。",
+      "acceptance": "敵方走位在同骰流下對上原版（或把先攻／挑目標的骰流讀出來重播）；GEO4 block 21 那一場不再隔牆；#32 關閉。",
       "verify": {
         "kind": "present",
         "paths": [
           "docs/playtest/mainline-end-to-end.md"
         ],
-        "pattern": "要再往下是 spec 096\n的目標挑選與同骰流，不在這一條",
-        "note": "補八還寫著敵方走位要等 spec 096 就是還沒對完"
+        "pattern": "哪一隻先到由先攻與挑目標的骰決定",
+        "note": "補八還寫著走位要等骰流就是還沒對完"
       },
       "github_issue": 32
     }

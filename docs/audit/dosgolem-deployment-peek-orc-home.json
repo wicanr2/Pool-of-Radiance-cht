@@ -1,9 +1,9 @@
 {
- "schema": "pool-dosgolem-peek/1",
+ "schema": "pool-dosgolem-peek/2",
  "generator": "dosgolem",
- "generator_revision": "pool-parity 91791cf + shots -load-state/-save-state（本次 commit）",
+ "generator_revision": "pool-parity 4faa8d3（shots -peek／-load-state／-save-state）",
  "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
- "driver": "tools/dosgolem-drive-orc-home.py（看畫面再送鍵：遭遇選單按 w、LOCKED 按 b、每一步從上一步的狀態檔展開）",
+ "driver": "tools/dosgolem-drive-orc-home.py（看畫面再送鍵：遭遇選單按 w、LOCKED 按 b、文字按 Return、每一步從上一步的狀態檔展開）",
  "boot_keys": "rep:9:Space,Return,Return,c,rep:6:Return,y,A,Return,k,e,y,c,rep:6:Return,y,B,Return,k,e,y,c,rep:6:Return,y,C,Return,k,e,y,c,rep:6:Return,y,D,Return,k,e,y,c,rep:6:Return,y,E,Return,k,e,y,c,rep:6:Return,y,F,Return,k,e,y,a,End,a,End,a,End,a,End,a,End,a,e,b,rep:14:Return,Up,Up,Up,rep:10:Return",
  "enter_keys": "Up,Up",
  "route": "(14,4) S,S,S,W,N,N,N,N,N,W,W,W,W,W(撬 (9,2) 西門),W,S,W(撬 (7,3) 西門),W,S,W,W,N(撬 (3,4) 北門 → (3,3) 地形 9)",
@@ -974,5 +974,29 @@
     ]
    ]
   }
+ ],
+ "party": "五人隊 B..F（預設擲骰矮人戰士），從 (14,4) 出發，共用前二十步到 (4,4)",
+ "after_deploy": "每個隊員 d,g（DONE→GUARD）兩批，看敵方自己走",
+ "party_cell": {
+  "x": 3,
+  "y": 3,
+  "facing": 0
+ },
+ "spawns": [
+  [
+   15,
+   1,
+   5
+  ],
+  [
+   14,
+   3,
+   5
+  ],
+  [
+   4,
+   20,
+   4
+  ]
  ]
 }

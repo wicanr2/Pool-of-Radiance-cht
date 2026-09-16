@@ -1,6 +1,7 @@
 # Spec 096：怪物 AI 的骨架（overlay-09）
 
-狀態：READY（分派 entry 1、接近迴圈 entry 5、單步移動 entry 13、戰術模式與
+狀態：READY（分派 entry 1、接近迴圈 entry 5、單步移動 entry 13（remake 2026-09-16
+起照它走，見該節）、戰術模式與
 方向表、候選搜尋、entry 11 的判定、entry 7 的玩家打斷、entry 8 的士氣兩關、
 entry 3 的用物品與它的四個過濾、追擊目標怎麼挑（`37B8h`）與候選名單怎麼填
 （`010Ah:00C0h`）都已讀出；entry 2 走的是轉變不死生物，內容在 spec 111；
@@ -450,6 +451,14 @@ remake 把 1 與 2 接上去了（目標存在 `tacticalState.FoeTargets`，重�
 2. **走回上一步的反方向算「卡住」**：第一次照走，第二次起忘掉目標，
    第三次起這一隻這一輪不再動。五個方向全不通也走同一條路。
 3. **模式在卡住時才換**，換法是 `(模式 mod 6) + 1`。
+
+remake 的 `foeTurn` 2026-09-16 起照這三條走：五個偏移依序試、第一個進得去的就
+走、不比距離。以前多了兩條非原版備案（「要離目標更近」的 BFS 篩選、八方向繞路），
+dosgolem 衛兵那一場的收據（spec 061，`dosgolem-deployment-peek-guards.json`）量到
+原版後排的獸人沿著隊伍北側一路擠上來（34：(19,5)→(23,4)→(26,4)），remake 的卻
+一步不動——那兩條把它們鎖住了。拿掉之後同狀態的後排走的是同一條走廊、到同一格
+（`TestDeploymentMatchesTheSlumsReceipts` 的 log）；僵局仍由 endRound 的安全閥兜底
+（非原版，有觸發計數）。
 
 ## 基準方向就是目標的方位
 

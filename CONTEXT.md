@@ -23,8 +23,12 @@
   都走進死掉隊員的格子，差在挑誰（原版擲骰，spec 096）。
 - 第三筆：`shots` 加 `-load-state`／`-save-state`，`tools/dosgolem-drive-orc-home.py` 看畫面再
   送鍵（遭遇 WAIT、鎖門 BASH），五人隊撬三道門走到獸人的家開打——二十五格（含摘掉四隻）
-  remake 逐格相同（`TestDeploymentMatchesTheOrcHomeReceipt`）；獸人兩批走位形狀相同
-  （後排沿南側繞到側面），誰先動由骰決定。
+  remake 逐格相同；同一支驅動再走到衛兵攔截（37 格）與驚動衛兵（28 格），三場一起釘在
+  `TestDeploymentMatchesTheSlumsReceipts`。
+- 走位量到一處規則差並改掉：衛兵那一場原版後排的獸人沿隊伍北側擠上來，remake 的一步
+  不動——`foeTurn` 多的「要離目標更近」BFS 篩選與八方向繞路是非原版的，拿掉後照
+  spec 096 `092Ah`「五個偏移依序試、第一個進得去的就走」；同狀態後排走同一條走廊到同
+  一格。誰先動、動到哪一格仍由先攻與挑目標的骰決定。
 
 ## 2026-09-15 自訂規則的探針：諾里斯的獎賞升一級，圖書館的書帶不出去，古托井走得動了
 

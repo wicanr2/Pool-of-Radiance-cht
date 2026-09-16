@@ -1024,10 +1024,6 @@ func (a *app) foeTurn(state *tacticalState) error {
 		return nil
 	}
 
-	// 目標在這一回合裡不會換，所以步數表只算一次；它只給備案用。
-	goalCell := state.Roster[target]
-	stepDistance := tacticalStepDistances(state.Grid, state.Classes, goalCell.X, goalCell.Y)
-
 	// 原版在 entry 5 開場把兩個全域清掉：`439Eh` 是上一步走的方向（8 代表
 	// 還沒走過），`439Fh` 是「卡住」的次數。兩者都只活在這一隻的這一次接近。
 	lastDirection := uint8(combat.DirectionAny)
@@ -1066,13 +1062,12 @@ func (a *app) foeTurn(state *tacticalState) error {
 			return err
 		}
 
-		// 五個相對偏移依序試，第一個進得去的就走（原版 `092Ah` 的迴圈）。
-		//
-		// 「而且要離目標更近」**不是原版的條件**：原版只問進不進得去，不比距離。
-		// 少了它，貼著牆的怪物會挑到 ±2 那兩個往旁邊走的方向，下一步又走回來，
-		// 一整回合原地打轉——實測過整場打不完。距離用的是繞得過去的實際步數
-		// （`tacticalStepDistances`），所以繞牆本身仍然算前進。
-		hereDistance := tacticalDistanceAt(stepDistance, here.X, here.Y, goal)
+		// 五個相對偏移依序試，**第一個進得去的就走，不比距離**（原版 `092Ah`
+		// 的迴圈，spec 096）。以前這裡多了「而且要離目標更近」與八方向繞路兩條
+		// 非原版的備案；dosgolem 衛兵那一場（spec 061 的收據）量到原版後排的
+		// 獸人照樣往前擠，remake 的卻一步不動——那兩條把它們鎖住了，所以拿掉。
+		// 貼牆打轉的情形原版靠「走回反方向算卡住」收（下面那一段），僵局靠
+		// endRound 的安全閥兜底。
 		direction, found := uint8(0), false
 		for step := 1; step <= gamepack.TacticSteps && !found; step++ {
 			candidate, err := gamepack.DefaultTacticOffsets.Direction(mode, step, base)
@@ -1086,29 +1081,17 @@ func (a *app) foeTurn(state *tacticalState) error {
 			if outcome.Action != combat.MovementEnter {
 				continue
 			}
-			x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, candidate)
-			if err != nil {
-				return err
-			}
-			if tacticalDistanceAt(stepDistance, x, y, goal) >= hereDistance {
-				continue
-			}
 			direction, found = candidate, true
 		}
 		if !found {
-			// 五個方向都不合用：原版換模式、記一次卡住，然後就結束這一隻的移動，
-			// 靠下一回合換到的模式脫困。照抄會讓怪物在死路裡卡上好幾回合，
-			// 所以這裡再多一個**非原版**的繞路備案：八個方向裡挑離目標最近的。
+			// 五個方向都不合用：原版一樣記一次卡住並換模式（`0A0Ah`），第二次
+			// 起忘掉目標、第三次起這一隻這一輪不再動。
 			mode = gamepack.NextTacticMode(mode)
 			stuck++
-			detour, ok, err := state.detourStep(snapshot, mover, stepDistance, here, goal)
-			if err != nil {
-				return err
+			if stuck > 1 {
+				state.setFoeTarget(mover, 0)
 			}
-			if !ok {
-				break
-			}
-			direction, found = detour, true
+			break
 		}
 		if reverse := (int(direction) + combat.DirectionCount/2) % combat.DirectionCount; int(lastDirection) == reverse {
 			// 這一步剛好是上一步的反方向：原版一樣記一次卡住並換模式，但第一次
@@ -1255,44 +1238,6 @@ func applyMonsterAttackForms(state *tacticalState, index int, record gamepack.Mo
 		}
 	}
 	return nil
-}
-
-// tacticalDistanceAt 查步數表；查不到（那一格與目標之間沒有通路）就退回
-// 直線距離，讓行為不會比先前差。
-func tacticalDistanceAt(distance map[int]int, x, y uint8, goal combat.CombatantCell) int {
-	if step, ok := distance[tacticalCellKey(x, y)]; ok {
-		return step
-	}
-	return chebyshev(x, y, goal.X, goal.Y) + len(distance)
-}
-
-// detourStep 是五個戰術方向全不通時的**非原版**備案：八個方向都問一次，挑一個
-// 走得進去而且離目標更近的。原版沒有這一步，它靠的是跨回合換戰術模式脫困；照抄
-// 會讓怪物在死路裡卡上好幾回合——實測過最後兩隻殭屍與隊伍隔著 22 格互不相動，
-// 戰鬥永遠打不完。
-func (state *tacticalState) detourStep(snapshot combat.TacticalState, mover uint8,
-	stepDistance map[int]int, here, goal combat.CombatantCell) (uint8, bool, error) {
-	best, bestDistance := uint8(0), tacticalDistanceAt(stepDistance, here.X, here.Y, goal)
-	found := false
-	for direction := uint8(0); direction < combat.DirectionCount; direction++ {
-		outcome, err := combat.ResolveDestination(snapshot, mover, direction, state.Budget())
-		if err != nil {
-			return 0, false, err
-		}
-		if outcome.Action != combat.MovementEnter {
-			continue
-		}
-		x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
-		if err != nil {
-			return 0, false, err
-		}
-		distance := tacticalDistanceAt(stepDistance, x, y, goal)
-		if distance >= bestDistance {
-			continue
-		}
-		best, bestDistance, found = direction, distance, true
-	}
-	return best, found, nil
 }
 
 // foeTarget 取這一格上一回合追的目標，順便驗它還有沒有效（原版 `37B8h`

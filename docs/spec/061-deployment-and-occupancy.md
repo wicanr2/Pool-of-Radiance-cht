@@ -2,7 +2,7 @@
 
 狀態：CONFORMED（部署驅動 `1A99h`、樣板填寫、兩邊的偏移與象限、逐人放置
 `1609h` 的掃描順序、換陣型的鄰格、放不下就摘掉、五張 DS 表——dosgolem 三筆同狀態
-收據，含獸人的家二十五格全對）；
+收據，貧民窟三場固定事件全對）；
 READY（佔用格重建、畫面相對座標、四個失敗出口、`DS:45BAh` 的寫入者、屍體格、
 死亡後體型類別歸 0 的效果）；DRAFT（runtime `+13h` 的語意、奇數象限多跳一腿
 的用意、overlay-16 entry 3 對放不下的怪物做了什麼、戰鬥中把體型類別寫成 0 的
@@ -23,6 +23,8 @@ READY（佔用格重建、畫面相對座標、四個失敗出口、`DS:45BAh` �
 | `docs/audit/dosgolem-deployment-peek.json` | dosgolem 跑到第一場遭遇按 COMBAT 那一幀讀的 `6A0Bh`／`45B2h`／`6772h`／`5E85h`／`6039h`，正對照 `2D0h` | 同上（`start.exe`） |
 | `docs/audit/dosgolem-deployment-peek-goblins.json` | 五人隊在 (15,5) 突襲四隻哥布林：開打那一幀與之後每一幀位置表變動的快照 | 同上 |
 | `docs/audit/dosgolem-deployment-peek-orc-home.json` | 五人隊撬門走到獸人的家 (3,3)：開打那一幀二十五筆、二十四隻放上二十隻，之後兩批走位 | 同上 |
+| `docs/audit/dosgolem-deployment-peek-guards.json` | 同一隊走到衛兵攔截 (0,7)：三十七筆、三十四隻放上三十二隻，之後兩批走位 | 同上 |
+| `docs/audit/dosgolem-deployment-peek-alarm.json` | 同一隊走到驚動衛兵 (3,11)：二十八筆、三十三隻放上二十三隻，之後兩批走位 | 同上 |
 
 跨 overlay 的呼叫用 spec 109 的對照表反查：`013Dh:0048h` 是 overlay-32 entry 8
 （`03A2h`，佔用格重建）、`010Ah:00BBh` 是 overlay-25 entry 31（`2419h`，兩邊
@@ -223,8 +225,10 @@ return !giveUp
 - **獸人的家收據**（`docs/audit/dosgolem-deployment-peek-orc-home.json`）：同一隊在 (3,3)
   面向 N 對二十四隻獸人，`45B2h..45BAh = 00 00 00 00 03 0C 00 02 01`，原版放上二十隻、
   摘掉四隻；remake 同狀態二十五格逐格相同、摘掉的也是四隻
-  （`TestDeploymentMatchesTheOrcHomeReceipt`）——這一筆把「放不下就摘掉」與換陣型
-  的鄰格掃描一起對上了。
+  ——這一筆把「放不下就摘掉」與換陣型的鄰格掃描一起對上了。衛兵攔截（三十七筆、
+  摘掉兩隻）與驚動衛兵（二十八筆、摘掉十隻）同法拍到，同狀態逐格相同；驚動衛兵第 17
+  隻在原版第一次等輸入前已先攻走一格（收據標 `moved_before_first_prompt`）。三場一起
+  釘在 `TestDeploymentMatchesTheSlumsReceipts`。
 - 同一筆收據往後三輪：死掉的哥布林與隊員在 `5E85h` 的體型類別變成 0、從 `6039h`
   消失，而活著的哥布林**會走進死掉隊員那一格**（(26,12)）——死者的格子在戰鬥中
   不擋路；寫 0 的是哪一支仍沒讀。
