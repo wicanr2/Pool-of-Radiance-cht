@@ -207,15 +207,15 @@
       "id": "deployment-and-pathing-vs-original",
       "layer": "verification",
       "title": "戰場部署與走位對回原版（spec 053／057／061）",
-      "body": "部署已照原版換掉（spec 061 的 1A99h／1609h、spec 078 的遭遇距離走法），dosgolem 只拍到單人隊一筆收據；六人隊的陣型、敵方三回合走位、GEO4 block 21 那一場的對照還沒做。",
-      "acceptance": "dosgolem 六人隊在獸人家（或走得到的固定事件）的 5E85h／6039h 收據與 remake 同狀態一致；敵方走三回合的位置對照；spec 061 狀態行改 CONFORMED。",
+      "body": "部署已照原版換掉並以 dosgolem 兩筆同狀態收據（單人隊、五人隊）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）。剩下：敵方走位同狀態對照要同骰流（原版挑目標擲骰，spec 096）、獸人家那一場走不到（走路遭遇擋路）、GEO4 block 21 重跑確認不再隔牆、TestSokalKeep 變慢的成因。",
+      "acceptance": "敵方三輪走位在同骰流下對上原版，或 spec 096 的目標挑選讀出並標 exact；playtest 補八記錄；#32 關閉。",
       "verify": {
         "kind": "present",
         "paths": [
-          "docs/spec/061-deployment-and-occupancy.md"
+          "docs/playtest/mainline-end-to-end.md"
         ],
-        "pattern": "六人隊的收據還沒拍",
-        "note": "spec 061 還寫著六人隊收據沒拍就是還沒對完"
+        "pattern": "要再往下是 spec 096\n的目標挑選與同骰流，不在這一條",
+        "note": "補八還寫著敵方走位要等 spec 096 就是還沒對完"
       },
       "github_issue": 32
     }

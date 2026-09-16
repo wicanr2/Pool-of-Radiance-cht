@@ -17,7 +17,11 @@
 - overlay-31 `0419h` 斜走只看落點，remake 本來就對（spec 057）；`03A2h` 不讀 `+10Ch`，
   戰鬥中誰把體型類別寫 0 仍是 hypothesis（spec 061）。
 - 三場兩 seed（`docs/playtest/mainline-end-to-end.md` 補八）：僵局一場都沒有了；驚動衛兵
-  兩個 seed 變贏、獸人家 136 變全滅、衛兵兩場全滅。六人隊的 dosgolem 收據還沒拍。
+  兩個 seed 變贏、獸人家 136 變全滅、衛兵兩場全滅。
+- 第二筆收據：五人隊在 (15,5) 突襲四隻哥布林，開打九格 remake 逐格相同
+  （`TestDeploymentMatchesTheGoblinReceipt`）；之後三輪哥布林走位兩邊都是一輪最多兩格、
+  都走進死掉隊員的格子，差在挑誰（原版擲骰，spec 096）。獸人家那一場 dosgolem 走不到
+  （走路遭遇擋路、送鍵是盲的）。
 
 ## 2026-09-15 自訂規則的探針：諾里斯的獎賞升一級，圖書館的書帶不出去，古托井走得動了
 
