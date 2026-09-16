@@ -32,7 +32,7 @@
 `dosgolem-shop-payment.json` 兩種）逐欄相同。remake：`treasure` 五支付款 primitive、
 `trainMember` 四關＋`confirmTraining`、`shop.buy`；測試從 `Update()` 走（錢不夠、門不對、
 白金、pool）。探針的 outfit 段預算改成金幣等值，但探針在古托井就全滅（#22），獎賞買板甲那
-一段走不到——留在 #22。#29／#30 關。
+一段走不到——開 #37 調查（與攻略比對觸發、編成、獎賞與順序）。#29／#30 關。
 
 ## 提示詞（可直接貼給 `/goal`）
 
