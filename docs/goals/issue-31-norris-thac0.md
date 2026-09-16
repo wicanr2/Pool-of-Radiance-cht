@@ -20,6 +20,14 @@
   `6517h` 表指到的記錄可以直接讀執行期 `+110h`，古托井那一場走得到：主線探針 136 的路線）。
 - remake 讀點：`cmd/pool-game/tactical.go` 兩處 `state.THAC0[index] = uint8(60 - record.THAC0())`。
 
+## 2026-09-16 收在哪
+
+#36 先判讀：樣板 `+110h` 是殘值（42/43 筆 bit 7 ＝ `+2Dh + 109`），開打時 overlay-10 `1380h`
+對每一隻叫 entry 7 把 `+2Dh` 抄進 `+110h`（沒武器再加力量修正，`12AEh` 自己查 `+0AAh`），
+dosgolem 獸人家二十隻執行期逐隻等於 `+2Dh`。remake `CombatThac0Internal` 照算，諾里斯
+154 → 46（表面 14），`TestNorrisTHAC0ReadsTheBaseFieldNotTheTemplate`、
+`TestMonsterTHAC0MatchesTheOrcHomeRuntimeReceipt`；補七諾里斯那一列重量。#31／#36 關。
+
 ## 提示詞（可直接貼給 `/goal`）
 
 > 目標：怪物的 THAC0 照原版算，諾里斯那一場敵方命中率回到正常；主台帳 #31。

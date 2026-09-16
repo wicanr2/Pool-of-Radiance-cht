@@ -47,7 +47,8 @@ DRAFT（裝備覆寫、effect code 12、完整 initiative）。玩家角色的�
 
 ## 傷害骰的來源欄位是 `+0A2h/+0A4h/+0A6h`（2026-09-04）
 
-`+114h..+11Ah` 是**執行期**的副本。overlay-25 `0DF4h` 在排怪時抄過去：
+`+114h..+11Ah` 是**執行期**的副本。overlay-25 entry 7（`0BBEh`，整份重算，spec 063）
+在 `0DBAh..0E1Bh` 抄過去——開打初始化 overlay-10 `1380h` 對每一個 combatant 都叫它一次：
 
 ```
 for i = 1; ; i++ {

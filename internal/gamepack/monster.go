@@ -59,6 +59,35 @@ func (record MonsterRecord) MaxHitPoints() uint8     { return record.Raw[0x32] }
 func (record MonsterRecord) CurrentHitPoints() uint8 { return record.Raw[0x11B] }
 func (record MonsterRecord) ArmorClass() int         { return 60 - int(record.Raw[0x111]) }
 func (record MonsterRecord) THAC0() int              { return 60 - int(record.Raw[0x110]) }
+
+// CombatThac0Internal 是這一隻開打時真正拿來擲命中的 THAC0（internal，60 − 表面值）。
+//
+// 樣板的 `+110h` 不是它：overlay-10 開打初始化（`1ED6h` 的 `1F9Ch` → `1380h`）沿 `5CF4h`
+// 串列對**每一個** combatant 呼叫 overlay-25 entry 7（`0BBEh`）重算，`0E65h` 把 `+2Dh`
+// 抄進 `+110h`，沒有備妥武器就再加力量的命中修正（`12AEh`，`0E8Dh..0EA9h`），有武器
+// 才走 entry 1 的武器算式（spec 063）。MONnCHA 樣板裡的 `+110h` 是殘值——43 筆亮著
+// bit 7，其中 42 筆恰好是 `+2Dh + 109`（`docs/audit/monster-thac0-template-scan.json`），
+// 諾里斯的 154 就是這樣來的；dosgolem 在獸人家開打那一幀讀到獸人的 `+110h` 已經從
+// 樣板的 40 變成 `+2Dh` 的 41（`docs/audit/dosgolem-monster-thac0-runtime.json`）。
+// `+2Dh` 本身開打時不重算（獸人的 41 不是一級戰士表的 40），照樣板。
+//
+// remake 沒有怪物的物品鏈，一律走「沒有武器」那一條：`+0AAh` 開著才加力量修正
+// （spec 063 的同一個開關）。
+func (record MonsterRecord) CombatThac0Internal() (uint8, error) {
+	internal := int(record.Raw[BaseThac0Offset])
+	if record.Raw[AbilityBonusFlagOffset] != 0 {
+		index, err := StrengthTableIndex(int(record.Raw[StrengthOffset]), int(record.Raw[ExceptionalStrengthOffset]))
+		if err != nil {
+			return 0, err
+		}
+		internal += StrengthHitAdjustment(index)
+	}
+	if internal < 0 || internal > 0xFF {
+		return 0, fmt.Errorf("Pool monster %q THAC0 internal %d is outside a byte", record.Name, internal)
+	}
+	return uint8(internal), nil
+}
+
 // 傷害骰有**兩種攻擊形態**，每一種各有顆數、面數與加值（spec 051）：
 //
 //	顆數 `+0A2h + n`   面數 `+0A4h + n`   加值 `+0A6h + n`   （n = 1 或 2）
@@ -113,7 +142,7 @@ func (record MonsterRecord) DamageBonus() int8 {
 	return int8(record.Raw[MonsterDamageBonusBase+int(record.primaryAttackSlot())])
 }
 
-func (record MonsterRecord) Movement() uint8         { return record.Raw[0x11C] }
+func (record MonsterRecord) Movement() uint8 { return record.Raw[0x11C] }
 
 // 經驗值（spec 097）。overlay-05 entry 2 的 `00C0h..00F4h` 算的是
 // `+0B8h + +0BAh × +0B1h`：AD&D 一版的「基礎值加每點生命值的加成」。

@@ -1,0 +1,4498 @@
+{
+ "bit7_count": 43,
+ "fields": {
+  "ac_111h": "AC internal",
+  "attack_rates_0A1h": "+0A1h／+0A2h",
+  "base_thac0_2Dh": "基礎 THAC0 internal（60 − 值 = 表面 THAC0）",
+  "class_2Fh": "職業碼",
+  "levels_96h": "八個職業等級",
+  "thac0_110h": "執行期 THAC0 欄（entry 7 重算時被 +2Dh 蓋掉）",
+  "weapon_0CCh": "備妥武器遠指標（樣板）"
+ },
+ "input_sha256": {
+  "MON1CHA.DAX": "304cf750bac1474a3c5a1a15570795da598157e8e2da9f219cbc2ca0e4097225",
+  "MON2CHA.DAX": "30ba6c43886dcf9ac661b5c1870862da95c00e38040dbbe58d077d2fead3a2a0",
+  "MON3CHA.DAX": "bfcea37ee0ebb7549036e9815c367ccd6ffa4368c63945b0510ecc021ded0600",
+  "MON4CHA.DAX": "e6f6de26dcd8880d169667bf1fb2780409686e32a58be54624085a79e2fd715e",
+  "MON5CHA.DAX": "dd8bc74ea450a581a1f7cacd4afc5c823bb0990ea6e5aa753d50619e21706d82",
+  "MON6CHA.DAX": "2ad12c6a1f3b1f8a11fa39fa4752814dae0f9296fb032121913b06341624b53b",
+  "MON7CHA.DAX": "af406dd08cd0e4b07069c9bfd2eade739628e565b87c981eb857f8d46ff36e36",
+  "MON8CHA.DAX": "3d47476ed41519a0adc730ff58f7787bc71aadd566c9a7459dee2c4b30c7fe83"
+ },
+ "mismatch_count": 53,
+ "records": [
+  {
+   "archive": 1,
+   "block": 2,
+   "name": "GOBLIN GUARD",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 3,
+   "name": "GOBLIN LEADER",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 4,
+   "name": "ORC",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 5,
+   "name": "ORC LEADER",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 6,
+   "name": "HOBGOBLIN",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 7,
+   "name": "HOBGOBLIN LDR",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 8,
+   "name": "OGRE",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 9,
+   "name": "OGRE LEADER",
+   "thac0_110h": 166,
+   "base_thac0_2Dh": 57,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 1,
+   "block": 22,
+   "name": "GIANT SKELETON",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 23,
+   "name": "VAMPIRE",
+   "thac0_110h": 155,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 59,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 1,
+   "block": 33,
+   "name": "MACE",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 53,
+   "class_2Fh": 0,
+   "levels_96h": [
+    5,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 1,
+   "block": 44,
+   "name": "ORC",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 1,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 1,
+   "block": 107,
+   "name": "DIRTEN",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 51,
+   "class_2Fh": 0,
+   "levels_96h": [
+    5,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 0,
+   "name": "KOBOLD",
+   "thac0_110h": 39,
+   "base_thac0_2Dh": 39,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 1,
+   "name": "KOBOLD LEADER",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 2,
+   "name": "GOBLIN GUARD",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 3,
+   "name": "GOBLIN LEADER",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 4,
+   "name": "ORC",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 5,
+   "name": "ORC LEADER",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 6,
+   "name": "HOBGOBLIN",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 7,
+   "name": "HOBGOBLIN LDR",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 8,
+   "name": "OGRE",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 11,
+   "name": "KOBOLD LEADER",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 12,
+   "name": "GOBLIN LEADER",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 13,
+   "name": "ORC",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 14,
+   "name": "ORC LEADER",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 15,
+   "name": "ORC LEADER",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 17,
+   "name": "SPECTRE",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 24,
+   "name": "LEVEL 6 MU",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    6,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 25,
+   "name": "MAD MAN",
+   "thac0_110h": 149,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 2,
+   "block": 26,
+   "name": "BASILISK",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 31,
+   "name": "TROLL",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 53,
+   "name": "AIDES",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 2,
+   "block": 55,
+   "name": "HILL GIANT",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 63,
+   "name": "BUGBEAR",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 71,
+   "name": "ETTIN",
+   "thac0_110h": 50,
+   "base_thac0_2Dh": 50,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 73,
+   "name": "GNOLL",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 2,
+   "block": 82,
+   "name": "LEVEL 6 MU",
+   "thac0_110h": 233,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    6,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 2,
+   "block": 89,
+   "name": "5TH LVL MU",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    5,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 2,
+   "block": 94,
+   "name": "LEVEL 3 MU",
+   "thac0_110h": 39,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    3,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 36,
+   "name": "SWORDSMAN",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 3,
+   "block": 40,
+   "name": "NOMAD",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 3,
+   "block": 45,
+   "name": "1ST LVL THIEF",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 51,
+   "name": "6TH LVL THIEF",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 53,
+   "name": "AIDES",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 3,
+   "block": 54,
+   "name": "CORPORAL",
+   "thac0_110h": 149,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 3,
+   "block": 83,
+   "name": "7TH LVL CLERIC",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 52,
+   "class_2Fh": 0,
+   "levels_96h": [
+    7,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 84,
+   "name": "6TH LVL FIGHTER",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 3,
+   "block": 85,
+   "name": "8TH LVL FIGHTER",
+   "thac0_110h": 46,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    3,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 94,
+   "name": "LEVEL 3 MU",
+   "thac0_110h": 39,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    3,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 103,
+   "name": "WARRIOR",
+   "thac0_110h": 149,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 50,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 3,
+   "block": 106,
+   "name": "WOLF",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 107,
+   "name": "DIRTEN",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 51,
+   "class_2Fh": 0,
+   "levels_96h": [
+    5,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 108,
+   "name": "ACOLYTE",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 50,
+   "class_2Fh": 0,
+   "levels_96h": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 109,
+   "name": "HERO",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 3,
+   "block": 110,
+   "name": "THEURGIST",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 111,
+   "name": "ROBBER",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 112,
+   "name": "CURATE",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 51,
+   "class_2Fh": 0,
+   "levels_96h": [
+    4,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 3,
+   "block": 122,
+   "name": "EVOKER",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    2,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 4,
+   "name": "ORC",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 5,
+   "name": "ORC LEADER",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 6,
+   "name": "HOBGOBLIN",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 7,
+   "name": "HOBGOBLIN LDR",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 8,
+   "name": "OGRE",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 17,
+   "name": "SPECTRE",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 18,
+   "name": "LARGE SCORPION",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 19,
+   "name": "FERRAN MARTINEZ",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 20,
+   "name": "WIGHT",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 21,
+   "name": "WRAITH",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 22,
+   "name": "GIANT SKELETON",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 23,
+   "name": "VAMPIRE",
+   "thac0_110h": 155,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 59,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 4,
+   "block": 24,
+   "name": "LEVEL 6 MU",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    6,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 27,
+   "name": "SKULLCRUSHER",
+   "thac0_110h": 152,
+   "base_thac0_2Dh": 43,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 4,
+   "block": 28,
+   "name": "GRISHNAK",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 55,
+   "class_2Fh": 11,
+   "levels_96h": [
+    6,
+    0,
+    0,
+    0,
+    0,
+    6,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 29,
+   "name": "JUJU ZOMBIE",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 34,
+   "name": "SKELETON",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 35,
+   "name": "ZOMBIE",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 38,
+   "name": "POISONOUS FROG",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    0,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 39,
+   "name": "HUGE SCORPION",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 70,
+   "name": "EFREETI",
+   "thac0_110h": 50,
+   "base_thac0_2Dh": 50,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 72,
+   "name": "GHOUL",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 104,
+   "name": "PRINCESS FATIMA",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 4,
+   "block": 105,
+   "name": "VAMPIRE",
+   "thac0_110h": 155,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 59,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 4,
+   "block": 106,
+   "name": "WOLF",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 4,
+   "block": 114,
+   "name": "MUMMY",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 26,
+   "name": "BASILISK",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 31,
+   "name": "TROLL",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 5,
+   "block": 45,
+   "name": "1ST LVL THIEF",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 49,
+   "name": "MEDUSA",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    0,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 55,
+   "name": "HILL GIANT",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 56,
+   "name": "FIRE GIANT",
+   "thac0_110h": 51,
+   "base_thac0_2Dh": 51,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    12,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 60,
+   "name": "GIANT SNAKE",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    0,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 66,
+   "name": "TYRANITHRAXUS",
+   "thac0_110h": 50,
+   "base_thac0_2Dh": 55,
+   "ac_111h": 60,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 5,
+   "block": 84,
+   "name": "6TH LVL FIGHTER",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 5,
+   "block": 85,
+   "name": "8TH LVL FIGHTER",
+   "thac0_110h": 46,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    3,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 86,
+   "name": "AL-HYAM DAZID",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 87,
+   "name": "ENVOY",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 9,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    6,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 5,
+   "block": 88,
+   "name": "GENHEERIS",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 90,
+   "name": "1ST LVL CLERIC",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 50,
+   "class_2Fh": 0,
+   "levels_96h": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 91,
+   "name": "LEVEL 5 CLERIC",
+   "thac0_110h": 42,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 50,
+   "class_2Fh": 0,
+   "levels_96h": [
+    5,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 92,
+   "name": "TYRANITHRAXUS",
+   "thac0_110h": 86,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    8,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 5,
+   "block": 93,
+   "name": "6TH LVL THIEF",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 10,
+   "name": "QUICKLINGS",
+   "thac0_110h": 73,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 63,
+   "class_2Fh": 2,
+   "levels_96h": [
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    6,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 45,
+   "name": "1ST LVL THIEF",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 48,
+   "name": "DWARVEN FIGHTER",
+   "thac0_110h": 153,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 52,
+   "class_2Fh": 0,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 50,
+   "name": "COMMANDANT",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    3,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 51,
+   "name": "6TH LVL THIEF",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 53,
+   "name": "AIDES",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 54,
+   "name": "CORPORAL",
+   "thac0_110h": 149,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 60,
+   "name": "GIANT SNAKE",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    0,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 65,
+   "name": "AHNKHEG",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 67,
+   "name": "CENTAUR",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 74,
+   "name": "GIANT MANTIS",
+   "thac0_110h": 50,
+   "base_thac0_2Dh": 50,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 86,
+   "name": "AL-HYAM DAZID",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 96,
+   "name": "GUARD",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 50,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 97,
+   "name": "BANDIT",
+   "thac0_110h": 72,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 99,
+   "name": "BUCCANEER",
+   "thac0_110h": 149,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 50,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 100,
+   "name": "3RD LVL FIGHTER",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 101,
+   "name": "5TH LVL FIGHTER",
+   "thac0_110h": 153,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 51,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 102,
+   "name": "CAPTAIN",
+   "thac0_110h": 157,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    3,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 118,
+   "name": "THRI-KREEN",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    8,
+    2
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 6,
+   "block": 119,
+   "name": "TIGER",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 6,
+   "block": 120,
+   "name": "WILD BOAR",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 0,
+   "name": "KOBOLD",
+   "thac0_110h": 39,
+   "base_thac0_2Dh": 39,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 1,
+   "name": "KOBOLD LEADER",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 40,
+   "name": "NOMAD",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 7,
+   "block": 42,
+   "name": "HASSAD",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 43,
+   "name": "SHAMAN",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    5,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 44,
+   "name": "ORC",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 53,
+   "name": "AIDES",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 7,
+   "block": 57,
+   "name": "LIZARDMAN",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    4
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 58,
+   "name": "MUTANT LIZ-MAN ",
+   "thac0_110h": 46,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    4
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 61,
+   "name": "STIRGE",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 62,
+   "name": "MINOTAUR",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    2
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 7,
+   "block": 68,
+   "name": "DISPLACER BEAST",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 69,
+   "name": "DRIDER",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 57,
+   "class_2Fh": 15,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    7,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    0,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 7,
+   "block": 76,
+   "name": "7TH LVL DW FIGH",
+   "thac0_110h": 155,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 7,
+   "block": 77,
+   "name": "7TH LVL THIEF",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 6,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 78,
+   "name": "2ND LVL CLERIC",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 50,
+   "class_2Fh": 0,
+   "levels_96h": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 79,
+   "name": "DIANE",
+   "thac0_110h": 40,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    5,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 80,
+   "name": "7TH LVL FIGHTER",
+   "thac0_110h": 155,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 52,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 7,
+   "block": 81,
+   "name": "YARASH",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    9,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 97,
+   "name": "BANDIT",
+   "thac0_110h": 72,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 98,
+   "name": "MERCHANT",
+   "thac0_110h": 72,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 7,
+   "block": 123,
+   "name": "KOBOLD",
+   "thac0_110h": 39,
+   "base_thac0_2Dh": 39,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 0,
+   "name": "KOBOLD",
+   "thac0_110h": 39,
+   "base_thac0_2Dh": 39,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 1,
+   "name": "KOBOLD LEADER",
+   "thac0_110h": 41,
+   "base_thac0_2Dh": 41,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 31,
+   "name": "TROLL",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 32,
+   "name": "NORRIS THE GRAY",
+   "thac0_110h": 154,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 8,
+   "block": 57,
+   "name": "LIZARDMAN",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 56,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    4
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 59,
+   "name": "GIANT LIZARD",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 62,
+   "name": "MINOTAUR",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    7,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    2
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 8,
+   "block": 72,
+   "name": "GHOUL",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 73,
+   "name": "GNOLL",
+   "thac0_110h": 44,
+   "base_thac0_2Dh": 44,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 87,
+   "name": "ENVOY",
+   "thac0_110h": 156,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 58,
+   "class_2Fh": 9,
+   "levels_96h": [
+    0,
+    0,
+    6,
+    0,
+    0,
+    6,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 8,
+   "block": 94,
+   "name": "LEVEL 3 MU",
+   "thac0_110h": 39,
+   "base_thac0_2Dh": 40,
+   "ac_111h": 51,
+   "class_2Fh": 5,
+   "levels_96h": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    3,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 95,
+   "name": "DRYTHH",
+   "thac0_110h": 155,
+   "base_thac0_2Dh": 46,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    4
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 8,
+   "block": 104,
+   "name": "PRINCESS FATIMA",
+   "thac0_110h": 151,
+   "base_thac0_2Dh": 42,
+   "ac_111h": 54,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": true,
+   "thac0_bit7": true
+  },
+  {
+   "archive": 8,
+   "block": 113,
+   "name": "HIPPOGRIFF",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 55,
+   "class_2Fh": 2,
+   "levels_96h": [
+    255,
+    0,
+    255,
+    0,
+    0,
+    255,
+    255,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    4,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 116,
+   "name": "PHASE SPIDER",
+   "thac0_110h": 47,
+   "base_thac0_2Dh": 47,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    255,
+    0,
+    255,
+    0,
+    0,
+    255,
+    255,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    0,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 120,
+   "name": "WILD BOAR",
+   "thac0_110h": 45,
+   "base_thac0_2Dh": 45,
+   "ac_111h": 53,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 121,
+   "name": "WYVERN",
+   "thac0_110h": 48,
+   "base_thac0_2Dh": 48,
+   "ac_111h": 57,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    2
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  },
+  {
+   "archive": 8,
+   "block": 124,
+   "name": "EFREETI",
+   "thac0_110h": 50,
+   "base_thac0_2Dh": 50,
+   "ac_111h": 58,
+   "class_2Fh": 2,
+   "levels_96h": [
+    0,
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weapon_0CCh": "00000000",
+   "attack_rates_0A1h": [
+    2,
+    0
+   ],
+   "thac0_differs_from_base": false,
+   "thac0_bit7": false
+  }
+ ],
+ "schema": "pool-monster-thac0-template-scan/1"
+}

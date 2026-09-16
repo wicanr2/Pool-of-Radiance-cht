@@ -1404,7 +1404,10 @@ func TestNPCCombatStatsComeFromItsOwnRecord(t *testing.T) {
 	record := make([]byte, poolsave.NPCRecordSize)
 	record[0x11C] = 9  // 移動力
 	record[0x11B] = 33 // 目前生命值
-	record[0x110] = 60 - 14
+	// THAC0 讀 `+2Dh`：開打時 entry 7 對每一個 combatant（NPC 也是）把 `+2Dh` 抄進
+	// `+110h`（spec 063），檔案裡的 `+110h` 是殘值——這裡故意放一個爛值確認沒人讀它。
+	record[0x2D] = 60 - 14
+	record[0x110] = 154
 	record[0x111] = 60 - 3
 	// 傷害骰讀的是來源欄位 `+0A2h/+0A4h/+0A6h`（spec 051）：形態 1 是 2d6+1。
 	record[0xA1] = 2

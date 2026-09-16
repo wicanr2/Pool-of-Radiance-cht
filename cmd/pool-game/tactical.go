@@ -909,7 +909,12 @@ func (a *app) enterTacticalPreview() error {
 			state.SaveTargets[index], state.SaveBonus[index] = targets, bonus
 			state.HitPoints[index] = int(record.CurrentHitPoints())
 			state.MaxHitPoints[index] = int(record.MaxHitPoints())
-			state.THAC0[index] = uint8(60 - record.THAC0())
+			// 命中用的是 `+2Dh` 那一條（開打時 entry 7 重算過的值），不是樣板的 `+110h`（#31）。
+			thac0, err := record.CombatThac0Internal()
+			if err != nil {
+				return err
+			}
+			state.THAC0[index] = thac0
 			state.ArmorClass[index] = 60 - record.ArmorClass()
 			state.Damage[index] = combat.DamageDice{
 				Count: record.DamageDiceCount(),
@@ -1295,7 +1300,11 @@ func applyNPCCombatStats(state *tacticalState, index int, member poolsave.Charac
 	if index < len(state.MaxHitPoints) {
 		state.MaxHitPoints[index] = int(record.MaxHitPoints())
 	}
-	state.THAC0[index] = uint8(60 - record.THAC0())
+	thac0, err := record.CombatThac0Internal()
+	if err != nil {
+		return err
+	}
+	state.THAC0[index] = thac0
 	state.ArmorClass[index] = 60 - record.ArmorClass()
 	state.Damage[index] = combat.DamageDice{
 		Count: record.DamageDiceCount(),

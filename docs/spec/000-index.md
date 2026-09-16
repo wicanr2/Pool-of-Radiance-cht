@@ -63,7 +63,7 @@
 | [049](049-pool-character-combat-fields.md) | Pool 285-byte 角色／怪物戰鬥欄位 | READY＋DRAFT | `internal/gamepack/class_thac0.go`、`internal/gamepack/cloud.go` | `internal/gamepack/cloud_test.go` |
 | [050](050-basic-attack-and-damage-roll.md) | Pool 基礎命中與傷害骰 primitive | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go` | `cmd/pool-game/dos_combat_parity_test.go`、`internal/combat/rules_test.go` |
 | [051](051-attack-slot-phase-count.md) | Pool 雙攻擊槽與半回合攻擊次數 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/gamepack/monster.go`、`internal/gamepack/saving_throw_table.go` | `cmd/pool-game/attack_forms_test.go`、`cmd/pool-game/main_test.go`、`internal/gamepack/monster_test.go` |
-| [052](052-combat-initiative-order.md) | Pool 戰鬥先攻分數與行動者選取 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/character/export.go`、`internal/gamepack/monster.go` | `internal/gamepack/monster_test.go` |
+| [052](052-combat-initiative-order.md) | Pool 戰鬥先攻分數與行動者選取 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/character/export.go`、`internal/gamepack/monster.go` | `cmd/pool-game/foe_walk_receipt_test.go`、`internal/gamepack/monster_test.go` |
 | [053](053-tactical-movement-budget.md) | Pool 戰術移動預算與八方向成本 | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/manual_aim.go`、`cmd/pool-game/tactical.go` 等 5 個 | `cmd/pool-game/tactical_test.go` |
 | [054](054-softworld-manual-journal-corpus.md) | 《軟體世界》說明書轉錄與 Journal 繁中 corpus | CONFORMED＋DRAFT | `cmd/pool-journal-corpus/main.go` | `internal/journal/journal_test.go` |
 | [055](055-ecl-area-script-map.md) | ECL 區域腳本對照 | READY＋DRAFT | `cmd/pool-map-names/main.go`、`internal/gamepack/cityhall.go` | `cmd/pool-map-names/main_test.go`、`internal/gamepack/cityhall_test.go` |
@@ -72,9 +72,9 @@
 | [058](058-destination-probe-and-tactical-layout.md) | 目的格探測與戰術層資料版面 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/destination.go` | `internal/combat/destination_test.go` |
 | [059](059-reaction-attack-gate.md) | 離開威脅區的反應攻擊閘門 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/character/export.go`、`internal/combat/nearby.go` 等 5 個 | `internal/gamepack/effect_list_test.go` |
 | [060](060-tactical-map-generation.md) | 戰術地圖的生成 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/assets/combat_terrain.go`、`internal/combat/indoormap.go` 等 4 個 | `cmd/pool-game/playthrough_test.go` |
-| [061](061-deployment-and-occupancy.md) | 戰鬥部署與佔用格重建 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/encounter.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/mainline_walls_test.go`、`internal/combat/deployment_original_test.go`、`internal/combat/deployment_test.go` 等 4 個 |
+| [061](061-deployment-and-occupancy.md) | 戰鬥部署與佔用格重建 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/encounter.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/deployment_templates_receipt_test.go`、`cmd/pool-game/mainline_walls_test.go`、`internal/combat/deployment_original_test.go` 等 5 個 |
 | [062](062-combat-round-loop.md) | 戰鬥回合迴圈與結束條件 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/round.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/playthrough_test.go`、`cmd/pool-game/tactical_pilot_test.go` 等 4 個 |
-| [063](063-character-base-combat-stats.md) | 角色的基礎 AC、THAC0、移動與武器攻擊數值 | READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/dos_export.go`、`cmd/pool-game/tactical.go` 等 12 個 | `cmd/pool-game/dos_export_test.go`、`cmd/pool-game/tactical_test.go`、`internal/gamepack/experience_test.go` 等 5 個 |
+| [063](063-character-base-combat-stats.md) | 角色的基礎 AC、THAC0、移動與武器攻擊數值 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/dos_export.go`、`cmd/pool-game/tactical.go` 等 14 個 | `cmd/pool-game/dos_export_test.go`、`cmd/pool-game/main_test.go`、`cmd/pool-game/monster_thac0_receipt_test.go` 等 7 個 |
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | `internal/journal/journal_test.go` |
 | [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
 | [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | `cmd/pool-doc-index/main_test.go` |
@@ -107,7 +107,7 @@
 | [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-ecl-trace/main.go`、`cmd/pool-game/ecl_clock.go`、`cmd/pool-game/main.go` 等 7 個 | `cmd/pool-ecl-audit/main_test.go` |
 | [094](094-ecl-spell-search-opcode.md) | `3Bh SPELL` | READY＋DRAFT | `cmd/pool-game/spell_search.go`、`internal/gamepack/intro.go`、`internal/gamepack/memorised_spells.go` | `internal/gamepack/memorised_spells_test.go` |
 | [095](095-thief-skills.md) | 角色記錄的八個賊技能 | CONFORMED | `cmd/pool-game/checkparty.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 10 個 | `cmd/pool-game/thief_skills_test.go`、`internal/gamepack/thief_skills_build_test.go` |
-| [096](096-monster-ai-structure.md) | 怪物 AI 的骨架（overlay-09） | READY | `cmd/pool-game/tactical.go`、`internal/gamepack/tactic_offsets.go`、`internal/gamepack/turn_undead_resolve.go` | `internal/gamepack/tactic_offsets_test.go` |
+| [096](096-monster-ai-structure.md) | 怪物 AI 的骨架（overlay-09） | CONFORMED＋READY | `cmd/pool-game/tactical.go`、`internal/gamepack/tactic_offsets.go`、`internal/gamepack/turn_undead_resolve.go` | `cmd/pool-game/foe_walk_receipt_test.go`、`internal/gamepack/tactic_offsets_test.go` |
 | [097](097-training-level-up-and-energy-drain.md) | 經驗值、訓練所昇級、生命骰與能量吸取 | CONFORMED＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 14 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/door_test.go`、`cmd/pool-game/experience_test.go` 等 6 個 |
 | [098](098-spell-casting-machinery.md) | 施法的共用機制（擲骰、施法者等級、處理常式的呼叫慣例） | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/main.go`、`cmd/pool-game/spells.go` 等 9 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/memorise_test.go`、`internal/gamepack/spell_cast_test.go` |
 | [099](099-boat-travel-and-quest-gate.md) | 搭船旅行與它的進度閘門 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/coverage_test.go` |
@@ -176,6 +176,7 @@
 | `pool-inventory` | performs a read-only shape audit of a DOS game ZIP | 有 | — |
 | `pool-journal-corpus` | 把轉錄好的《探險者手冊》上冊切成遊戲內可查的條目 | 有 | 054、064 |
 | `pool-map-names` | 把「換圖的目的地區塊」與「同一段腳本剛印出來的字」配成對，用來替每一張地圖找出**原版自己給的名字** | 有 | 055、102、124 |
+| `pool-monster-thac0-scan` | 把八個 MONnCHA.DAX 的樣板記錄裡跟命中有關的幾格列出來（#36／#31，spec 063）：`+110h`（執行期 THAC0 欄）、`+2Dh`（基礎 THAC0）、`+111h` （AC）、`+2Fh`（職業碼）、`+96h..+9Dh`（八個職業等級）、`+0CCh`（備妥武器的遠指標，樣板裡通常是 0）、`+0A0h..+0A7h`（攻擊次數與傷害骰的來源欄） | — | 063 |
 | `pool-name-audit` | 把說明書定案的專有名詞回對原版資料自己的字串 | 有 | — |
 | `pool-ovr-manifest` | 產生 docs/audit/dos-ovr-manifest.json：38 顆 overlay 的位置、長度、重定位表與各自的 SHA-256，是所有 overlay 反查的起點 | 有 | — |
 | `pool-portrait-audit` | measures Pool's HEAD/BODY archives through the reusable engine picture decoder | 有 | 006 |

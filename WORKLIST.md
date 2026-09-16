@@ -61,9 +61,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **武具店只收金幣：白金換不成裝備。** shop.go 的 buy 只看 Money[Gold]；委任獎賞主要是白金，探針拿到 500 白金買不了板甲。
       **驗收**：原版商店的付款順序與找零寫進 spec；buy 照原版扣；一條測試用白金買東西從 Update() 走。
       **討論**：[#30](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/30)
-- [ ] **NORRIS THE GRAY 的 THAC0 讀到 +110h 的 154：每一下都命中。** MON8CHA 第 32 筆 +110h = 154，remake 算成 THAC0 −94；記錄是 5 級戰士（+2Fh=2、+96h..=[0 0 5]），原版排怪時很可能照職業表重算（hypothesis，overlay-25 0DF4h）。
-      **驗收**：掃 MONnCHA 列出 +110h 不在 20..60 的記錄；overlay-25 排怪的 THAC0 來源寫進 spec；remake 照原版算，一條測試釘住諾里斯 THAC0 = 16。
-      **討論**：[#31](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/31)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -86,9 +83,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **主線路線表補委任獎賞、建議等級與順序。** 一級隊伍打不起 20+ 隻的固定事件（貧民窟衛兵 33、獸人的家 24、索寇要塞 50），散戰 21 場只有 221 XP；等級靠委任獎賞，`ecl3/8` 的獎賞表還沒讀成表。
       **驗收**：spec 137 多一欄「建議等級／順序」，每個委任區有最大一場的怪物清冊與獎賞金／經驗；探針照順序跑並記每段等級。
       **討論**：[#26](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/26)
-- [ ] **判讀 MONnCHA 樣板 +110h 的 154（bit 7）：旗標編碼還是樣板殘值。** 讀 overlay-25 0DF4h 排怪對 +110h 做了什麼（抄樣板／從 +2Dh 重算／只對有武器的重算）；掃八個 MONnCHA 列出 bit 7 亮的記錄；dosgolem 讀諾里斯那一場執行期的 +110h／+2Dh（蜥蜴人 44 當正對照）。結論進 spec 051／063，#31 據此改。
-      **驗收**：spec 有一節寫明 +110h 樣板值的性質與證據等級；bit 7 清單進 docs/audit；一筆 dosgolem 執行期收據。
-      **討論**：[#36](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/36)
 
 ### 三、版面與資料的差距
 

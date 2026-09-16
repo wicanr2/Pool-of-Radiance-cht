@@ -6,7 +6,7 @@
     "mismatches": []
   },
   "spec_count": 140,
-  "tool_count": 28,
+  "tool_count": 29,
   "specs_without_implementation": [],
   "specs_without_tests": [],
   "specs_in_shared_engine": [
@@ -28,5 +28,7 @@
     "133"
   ],
   "tools_without_doc": [],
-  "tools_without_tests": []
+  "tools_without_tests": [
+    "pool-monster-thac0-scan"
+  ]
 }
