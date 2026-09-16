@@ -47,6 +47,10 @@ test -f "$SOURCE/start.exe" || {
 #
 # 要看「鍵被誰讀走、讀到什麼」設 `POOL_DOSGOLEM_KEYTRACE=1`，
 # 它會開 dosgolem 的 `-keytrace`（dosgolem `docs/spec/185`）。
+# 要在每一步讀原版的變數（部署表、佔用格那種）設 `POOL_DOSGOLEM_PEEK`，
+# 格式同 dosgolem `shots -peek`（`ds:5E85:104,ds:2D0:16`）；讀到的值進
+# `shots.json` 的 `peek` 欄。**一定要帶一個已知常數當正對照**（`ds:2D0:16`
+# 要讀到 `0804060208060400…`），DS 抓錯時讀到的零跟「表是空的」長得一樣。
 #
 # 名字**一個字母一個 script 項**：整串一次推進佇列時，原版的輸入欄只收得到
 # 最後一個字（量到的結果是 `O.cha` 不是 `HERO.CHA`）。原因還沒解，
@@ -85,6 +89,7 @@ docker run --rm --network none --memory 4g --cpus "${PARITY_CPUS:-2}" --pids-lim
   -w /dosgolem golang:1.24-bookworm \
   go run ./cmd/shots -exe /orig/start.exe -root /orig -scratch /scratch \
     -out /out -budget 150000000 -idle 3000000 ${POOL_DOSGOLEM_KEYTRACE:+-keytrace} \
+    ${POOL_DOSGOLEM_PEEK:+-peek "$POOL_DOSGOLEM_PEEK"} \
     -keys "$KEYS"
 
 # 產地證明。對拍腳本認這一份：**沒有它、或 generator 不是 dosgolem 就不准跑**

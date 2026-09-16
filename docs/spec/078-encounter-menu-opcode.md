@@ -2,9 +2,10 @@
 
 狀態：CONFORMED（運算元陣列的版面與十四個運算元的型別與用途、四個選項的
 字面、怪物逼近的走法、隊伍移動力的算法、四個選項各自寫回哪個結果碼；
-remake 已接上並走得到索寇要塞的第一場戰鬥）；DRAFT（結果碼 0..3 在 ECL
-那邊各自代表什麼、`4933h+1CCh` 那個條件、類型 3 選 ADVANCE 那一格）。
-日期：2026-09-03。
+remake 已接上並走得到索寇要塞的第一場戰鬥）；READY（`0489h` 的走法、
+`0131h:0034h` 的單步規則、`24h COMBAT` 開打前的距離壓低、dosgolem 一筆
+距離 0 的收據）；DRAFT（結果碼 0..3 在 ECL 那邊各自代表什麼、`@49E6` 的
+語意、類型 3 選 ADVANCE 那一格）。日期：2026-09-03；2026-09-16 補走法（#32）。
 
 ## 為什麼先讀它
 
@@ -86,7 +87,38 @@ continue Pool SearchLocation: opcode 0x29 at 1288 has no core handler or adapter
 4 南 y+1、6 西 x−1），與牆面查詢同一套，不是隊伍朝向那套 0..3（spec 076）。
 
 常式最多讓怪物往前走兩步（`lcall 0131h:0034h` 一步，撞到就停），回報走了
-幾步。`[DS:4933h] + 1CCh` 為零時直接給 2，不走。
+幾步。`[DS:4933h] + 1CCh` 為零時直接給 2 並寫進 `+582h`，不走。
+
+### `0489h` 的走法（exact；`docs/audit/ida-overlay07-encounter-distance-walk.json`）
+
+```
+0489h(X, Y, dir)                          ; 呼叫端傳 6A0Bh, 6A0Ch, 6A0Dh
+  steps = 0; stopped = 0; result = 0
+  [4933h]+1CCh == 0 → result = 2; +582h = 2; return
+  while steps < 2 且 !stopped:
+    0131h:0034h(X, Y, dir) ≠ 0 → stopped = 1
+    否則 steps += 1; result = steps; (X, Y) 朝 dir 走一格（0: Y−1、2: X+1、4: Y+1、6: X−1）
+  return result                           ; 呼叫端再夾到運算元 2 的上限才寫 +582h
+```
+
+所以**距離是「眼前走得到的格數」**：面前就是牆時 0，開闊時 2。`0131h:0034h`
+是 overlay-30 entry 4 `048Ah`（`docs/audit/ida-overlay30-wall-nibble-step.json`）：
+`0327h` 先判 (X, Y) 是否都在 0..15；出界而且區塊 `DS:82A2h` 是 0 或 0Ah 就回 0
+（當開），否則把座標各自繞回 0..15，再回 `DS:69BAh` 那份 GEO 牆資料在 dir 那一
+面的 nibble（0／2 在前 256 bytes 的高／低 nibble，4／6 在 `+100h` 起）。回的是
+原始 nibble，門也算非 0，所以怪物不會穿門。
+
+dosgolem 收據（`docs/audit/dosgolem-deployment-peek.json`）：貧民窟 (14, 4) 面向
+西，第三步撞上遭遇，`45B3h`／`45B5h` 都是 0——`+582h` 是 0，正是面前有牆那
+一路。
+
+### `24h COMBAT` 開打前再壓一次（exact）
+
+固定事件（`LOAD MONSTER` + `COMBAT`，沒有遭遇選單）不會寫 `+582h`，它留著上
+一次選單的值。COMBAT 的處理常式（overlay-03 `18C8h..18F8h`，
+`docs/audit/ida-overlay03-combat-opcode-distance-clamp.json`）開打前再呼叫一次
+`0045h:0043h`，**結果比 `+582h` 小才寫回**。部署驅動（spec 061）讀的就是壓過
+之後的值，所以敵方一定擺在眼前走得到的那一格，不會擺進隔著牆的房間。
 
 `0045h:004Dh` 拿兩個訊息索引與這個距離組出描述字串放到 `DS:828Eh`。
 選 PARLAY 或 ADVANCE 就把 `+582h` 減一並重組描述——那就是雙方再靠近一格。
@@ -172,9 +204,9 @@ opcode 對 ECL 的可見效果就是「把 0..3 其中一個結果碼寫進運�
 ## 還沒讀完的部分
 
 - 運算元 10..12：這支常式沒有直接讀它們，呼叫的子常式有沒有讀還沒查。
-- `0131h:0034h` 的單步移動規則（什麼算撞到）。
-- `[DS:4933h] + 1CCh` 是什麼——它與 `+582h` 一起決定第四個選項是 PARLAY
-  還是 ADVANCE，也決定那一項指到表的第 3 還是第 4 格。
+- `[DS:4933h] + 1CCh`（ECL `@49E6`，spec 074：全域初始化設 1、野外腳本會改）
+  代表什麼——它與 `+582h` 一起決定第四個選項是 PARLAY 還是 ADVANCE，也決定
+  那一項指到表的第 3 還是第 4 格，為 0 時距離固定 2。
 
 ## remake 這一側
 
@@ -184,6 +216,10 @@ opcode 對 ECL 的可見效果就是「把 0..3 其中一個結果碼寫進運�
 
 接上去之後實測：探索器在索寇要塞登陸的遭遇選 PARLAY、對亡魂說出 `LUX`、
 再對費蘭選「說謊」，`DS:4A01h` 變成 255——那正是 spec 102 追的船票旗標。
+
+距離：`encounterStartDistance` 照 `0489h` 走（`@49E6` 新遊戲時設 1，牆值讀
+GEO 的原始 nibble），每次寫距離都鏡射到 `@6DC1`（`+582h`）；`enterCombatStaging`
+在 COMBAT 開打前照 `18C8h` 再走一次、比較小才寫回，部署（spec 061）讀那一格。
 
 `cmd/pool-game` 把 `29h` 接成一個四選項選單，選完之後把結果碼寫進運算元 4
 指的 ECL 變數再讓 ECL 跑下去。`TestNormalKeysReachTheFirstCombat` 只用按鍵

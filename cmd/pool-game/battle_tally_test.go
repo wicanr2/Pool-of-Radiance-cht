@@ -112,8 +112,28 @@ func (tally *battleTally) count(line string, party bool) {
 	}
 }
 
-// line 是一場的一行摘要。
+// line 是一場的一行摘要。收場那一個 tick 常常看不到（`a.tactical` 在同一個
+// Update 裡就被清掉），所以結果空著時用倒下的人數推：我方全倒是 DEFEAT，
+// 否則 VICTORY。
 func (tally *battleTally) line() string {
+	if tally.result == "" && tally.state != nil {
+		party, down := 0, 0
+		for index := 1; index < len(tally.state.Friendly); index++ {
+			if tally.state.Friendly[index] {
+				party++
+			}
+		}
+		for _, entry := range tally.downs {
+			if strings.Contains(entry, ":party") {
+				down++
+			}
+		}
+		if party > 0 && down >= party {
+			tally.result = "DEFEAT"
+		} else if tally.rounds > 0 {
+			tally.result = "VICTORY"
+		}
+	}
 	attacks := tally.hits + tally.misses
 	rate := 0
 	if attacks > 0 {

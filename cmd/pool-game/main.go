@@ -1892,6 +1892,15 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 		a.statusLine = "Original monster descriptors staged no monsters."
 		return nil
 	}
+	// `24h COMBAT` 的處理常式（overlay-03 `18C8h..18F8h`）開打前再走一次遭遇距離
+	// 的那一支（`0045h:0043h`，spec 078），**比 `+582h` 小才寫回**——固定事件沒有
+	// 遭遇選單，`@6DC1` 留著上一場的值，這一步把它壓到眼前走得到的格數，部署
+	// 驅動 `1A99h` 讀的就是壓過之後的值（spec 061）。
+	if a.eventMachine != nil {
+		if walked := uint16(a.encounterStartDistance(2)); walked < a.eventMachine.Memory[encounterDistanceAddress] {
+			a.eventMachine.Memory[encounterDistanceAddress] = walked
+		}
+	}
 	a.combatActive = true
 	a.combatMonsters = staged
 	a.cellEventPending, a.cellWaitingMenu = true, false
@@ -3214,6 +3223,10 @@ func (a *app) beginAdventuring() error {
 			return err
 		}
 		machine := session.Machine()
+		// 原版的全域初始化（overlay-07 `02D2h`）把 `[4933h]+1CCh`（`@49E6`）設成 1，
+		// 然後才清 ECL 記憶體 `4A00h` 起那一段，所以這個 1 留著（spec 074）。
+		// 遭遇距離的走法（spec 078）看它；讀檔的路徑由存檔裡的記憶體帶回來。
+		machine.Memory[encounterWalkFlagAddress] = 1
 		a.eventSession = session
 		a.eventMachine = machine
 		result, runErr := machine.Run(2000, nil, true)

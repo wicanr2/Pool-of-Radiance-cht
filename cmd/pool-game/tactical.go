@@ -175,55 +175,26 @@ func drawCastMenu(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 }
 
-// 這一段的部署是暫定的。原版由 DS:43A2h 的陣型樣板決定誰站哪一格，而那張表
-// 是執行期填的、不在檔案裡（spec 061），填寫者還沒解出來。在解出來之前，
-// 這裡只從部署投影的格子裡挑得進去的來放，並在畫面上標明它是暫定版面。
-const (
-	provisionalPartyOffsetX = -1
-	provisionalFoeOffsetX   = 2
-)
-
-// deploymentCandidates 依部署投影列出某個地城格偏移底下可以站人的格子，
-// 順序與原版走樣板的順序相同：外層 row、內層 col。
-func deploymentCandidates(grid combat.TacticalGrid, classes combat.CellClasses, offsetX int, taken map[[2]int]bool) [][2]int {
-	candidates := make([][2]int, 0, combat.DeploymentTemplateSize)
-	for row := 0; row < combat.DeploymentTemplateRows; row++ {
-		for column := 0; column < combat.DeploymentTemplateCols; column++ {
-			x, y := combat.DeploymentCell(offsetX, 0, row, column)
-			if x < 0 || x > combat.TacticalMaxX || y < 0 || y > combat.TacticalMaxY {
-				continue
-			}
-			if taken[[2]int{x, y}] {
-				continue
-			}
-			code := grid.Terrain[y*combat.TacticalRowStride+x]
-			if code == combat.UnpaintedCellClass {
-				continue
-			}
-			decision, err := combat.TryPlaceCombatant(0xFF, 0, code, classes)
-			if err != nil || decision != combat.PlacementAccepted {
-				continue
-			}
-			candidates = append(candidates, [2]int{x, y})
-		}
-	}
-	return candidates
-}
-
-// provisionalRoster 把隊伍與已 staged 的怪物擺上戰場，回傳 1-based 的位置表、
-// 各筆屬於哪一方，以及每一格對回哪一個隊伍成員（不是隊伍成員的是 −1）。
-// 放不下的就不放——不擠、不重疊、不自行擴大範圍。
+// deployRoster 照原版部署（spec 061）把隊伍與已 staged 的怪物擺上戰場：
+// overlay-10 `1A99h` 先算兩邊的地城格偏移（我方 0、敵方「遭遇距離 × 朝向」）
+// 與象限、用 `DS:304h` 填好陣型樣板，再沿 combatant 串列逐筆呼叫 `1609h`
+//（`combat.PlaceCombatant`）找一格放，每放一個重建一次佔用格。回傳 1-based
+// 的位置表、各筆屬於哪一方，以及每一格對回哪一個隊伍成員（不是隊伍成員的
+// 是 −1）。放不下的就不放——原版把放不下的怪物從戰鬥裡摘掉、隊員留成體型 0。
 //
 // **陣營是逐人看的**：`36h ADD NPC` 加進來的 NPC 記錄 `+10Eh` 非零時站在
 // 對面（spec 091），所以不能整批當成我方；隊伍索引也因此要另外記，
 // 不能靠「友方槽依序對應隊伍」那個假設。
-func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) (
-	[]combat.CombatantCell, []bool, []int, []boardIcon) {
+//
+// 與原版仍有兩處差：昏迷／倒地／死亡的隊員原版也會擺上去再改成體型 0 並
+// 留一具屍體（地形 `1Fh`），這裡直接不擺；串列順序原版是 `5CF4h` 的順序，
+// 這裡是隊伍、倒戈的 NPC、怪物。
+func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) (
+	[]combat.CombatantCell, []bool, []int, []boardIcon, error) {
 	cells := []combat.CombatantCell{{}}
 	friendly := []bool{false}
 	partySlot := []int{-1}
 	icons := []boardIcon{{}}
-	taken := map[[2]int]bool{}
 	// 怪物照 ECL 的順序展開：`LOAD MONSTER` 的第三個引數是那一群共用的造形
 	// 編號（`MonsterSpawn.IconBlock`），數量是第二個。
 	foeIcons := make([]uint8, 0, 8)
@@ -233,30 +204,6 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 		}
 	}
 	nextFoe := 0
-
-	// reach 非 nil 時只收「與隊伍走得通」的格子，見 assignOpposing 的說明。
-	assign := func(members []int, offsetX int, isParty bool, reach map[int]int) int {
-		next := 0
-		for _, spot := range deploymentCandidates(grid, classes, offsetX, taken) {
-			if next >= len(members) {
-				return next
-			}
-			if reach != nil {
-				if _, ok := reach[tacticalCellKey(uint8(spot[0]), uint8(spot[1]))]; !ok {
-					continue
-				}
-			}
-			taken[[2]int{spot[0], spot[1]}] = true
-			cells = append(cells, combat.CombatantCell{
-				X: uint8(spot[0]), Y: uint8(spot[1]), FootprintClass: 1,
-			})
-			friendly = append(friendly, isParty)
-			partySlot = append(partySlot, members[next])
-			icons = append(icons, a.boardIconFor(members[next], isParty, foeIcons, &nextFoe))
-			next++
-		}
-		return next
-	}
 
 	allies, traitors := make([]int, 0, len(a.state.Party)), make([]int, 0, 1)
 	for index, member := range a.state.Party {
@@ -271,17 +218,78 @@ func provisionalRoster(a *app, grid combat.TacticalGrid, classes combat.CellClas
 		}
 		allies = append(allies, index)
 	}
-	assign(allies, provisionalPartyOffsetX, true, nil)
-	foes := 0
-	for _, monster := range a.combatMonsters {
-		foes += int(monster.Spawn.Count)
-	}
 	opposing := append([]int(nil), traitors...)
-	for index := 0; index < foes; index++ {
-		opposing = append(opposing, -1)
+	for _, monster := range a.combatMonsters {
+		for index := 0; index < int(monster.Spawn.Count); index++ {
+			opposing = append(opposing, -1)
+		}
 	}
-	assignOpposing(grid, classes, cells, assign, opposing)
-	return cells, friendly, partySlot, icons
+
+	// 朝向：remake 的 0..3 對回原版 `DS:6A0Dh` 的 0／2／4／6（spec 076）。
+	// 距離：`[4937h]+582h`，也就是 ECL 的 `@6DC1`（spec 078／136）。
+	if a.spawn.Facing > 3 {
+		return nil, nil, nil, nil, fmt.Errorf("Pool deployment needs a cardinal facing, got %d", a.spawn.Facing)
+	}
+	distance := 0
+	if a.eventMachine != nil {
+		distance = int(a.eventMachine.Memory[encounterDistanceAddress])
+	}
+	sides, err := combat.DeploymentSides(a.spawn.Facing*2, distance, [2]int{len(allies), len(opposing)})
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	templates, err := combat.FillDeploymentTemplates(sides)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	wall := geoWallProbe(a.initialMap.Grid, int(a.spawn.Y))
+
+	place := func(slot int, isParty bool, side uint8) error {
+		index := uint8(len(cells))
+		// `14CFh` 先把座標寫進位置表，再以方向 8 對這一個 combatant 做目的格
+		// 探測（overlay-32 `0CB9h`）；佔用格是上一個人放好之後重建的，所以
+		// 這一筆自己不在裡面。
+		occupancy, err := combat.RebuildOccupancy(cells)
+		if err != nil {
+			return err
+		}
+		probe := func(x, y int) (uint8, uint8, error) {
+			if x < 0 || y < 0 || x > combat.TacticalMaxX || y > combat.TacticalMaxY {
+				return 0, combat.OffBoardDestinationClass, nil
+			}
+			trial := append(append([]combat.CombatantCell(nil), cells...),
+				combat.CombatantCell{X: uint8(x), Y: uint8(y), FootprintClass: 1})
+			snapshot := combat.TacticalState{Map: grid, Occupancy: occupancy, Cells: trial, Classes: classes}
+			return combat.ProbeDestination(snapshot, index, combat.DirectionAny)
+		}
+		placement, err := combat.PlaceCombatant(sides, &templates, side, combat.DeploymentBoard{
+			Wall: wall, PartyX: int(a.spawn.X), PartyY: int(a.spawn.Y), Probe: probe,
+		}, classes)
+		if err != nil {
+			return err
+		}
+		if !placement.Placed {
+			return nil
+		}
+		cells = append(cells, combat.CombatantCell{
+			X: uint8(placement.X), Y: uint8(placement.Y), FootprintClass: 1,
+		})
+		friendly = append(friendly, isParty)
+		partySlot = append(partySlot, slot)
+		icons = append(icons, a.boardIconFor(slot, isParty, foeIcons, &nextFoe))
+		return nil
+	}
+	for _, slot := range allies {
+		if err := place(slot, true, 0); err != nil {
+			return nil, nil, nil, nil, err
+		}
+	}
+	for _, slot := range opposing {
+		if err := place(slot, false, 1); err != nil {
+			return nil, nil, nil, nil, err
+		}
+	}
+	return cells, friendly, partySlot, icons, nil
 }
 
 // boardIcon 是一格用哪一個戰鬥造形。怪物與角色共用 `CBODY.DAX` 的身體，
@@ -313,39 +321,6 @@ func (a *app) boardIconFor(slot int, isParty bool, foeIcons []uint8, nextFoe *in
 	}
 	return boardIcon{Head: 0, Body: body, Size: 1,
 		Colours: [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}, Valid: true}
-}
-
-// assignOpposing 把敵方擺上去，而且**只擺在與隊伍走得通的格子**。
-//
-// 先照原本的偏移（`provisionalFoeOffsetX`）試，一個都擺不下才往別的偏移找，
-// 全部都不通才退回原本的偏移不設限地擺——寧可擺得下也不要整場沒有敵人。
-//
-// 為什麼要這一層：實測 GEO4 block 21 那一場，雙方各自被地形圍在兩塊不相連
-// 的區域裡（隊伍站 x=17..22、敵方站 x=36..38，中間走不過去）。誰都走不到
-// 誰、誰都打不到誰，回合數一路加到兩百多還在跑——**那一場永遠結束不了**，
-// 從外面看就像遊戲卡住。
-//
-// **這不是原版的部署演算法**：原版的部署還沒讀出來，整個 provisionalRoster
-// 都是暫時的。這一步只是讓暫時的版本不會生出打不完的架。
-func assignOpposing(grid combat.TacticalGrid, classes combat.CellClasses,
-	placed []combat.CombatantCell,
-	assign func(members []int, offsetX int, isParty bool, reach map[int]int) int,
-	opposing []int) {
-	if len(opposing) == 0 {
-		return
-	}
-	if len(placed) < 2 {
-		assign(opposing, provisionalFoeOffsetX, false, nil)
-		return
-	}
-	anchor := placed[1]
-	reach := tacticalStepDistances(grid, classes, anchor.X, anchor.Y)
-	for _, offsetX := range []int{provisionalFoeOffsetX, 1, 3, 0, -2, 4} {
-		if assign(opposing, offsetX, false, reach) != 0 {
-			return
-		}
-	}
-	assign(opposing, provisionalFoeOffsetX, false, nil)
 }
 
 // tacticalState 是戰術預覽跨影格保留的狀態。Scores 對應原版 runtime 的 `+3`
@@ -754,7 +729,10 @@ func (a *app) enterTacticalPreview() error {
 		return err
 	}
 	classes := gamepack.OriginalCombatCellClassTable()
-	roster, friendly, partySlot, icons := provisionalRoster(a, grid, classes)
+	roster, friendly, partySlot, icons, err := deployRoster(a, grid, classes)
+	if err != nil {
+		return err
+	}
 
 	base, source := uint8(placeholderBaseMovement), a.text(msgBudgetPlaceholder)
 	if len(a.combatMonsters) > 0 {

@@ -29,6 +29,13 @@ type encounterState struct {
 	message string
 }
 
+// encounterDistanceAddress 是 `[4937h]+582h` 的 ECL 位址（class 1：
+// `(2A00h + 6DC1h × 2) mod 10000h = 582h`，spec 078／136）。原版的遭遇選單
+// 把距離寫在那裡、PARLAY／ADVANCE 減一，戰鬥開打時部署驅動 `1A99h` 再從
+// 同一格讀「敵方要放在幾格外」（spec 061）。remake 的 encounterState 留著
+// 自己的副本，這裡只把每次寫入鏡射到 ECL 記憶體，讓部署與腳本讀到同一個值。
+const encounterDistanceAddress = 0x6DC1
+
 // encounterNumericOperands 是這裡真的當數值讀的運算元序號：距離上限、
 // 五格類型表、兩個移動力門檻。
 var encounterNumericOperands = []int{2, 5, 6, 7, 8, 9, 13, 14}
@@ -129,7 +136,7 @@ func (a *app) enterEncounter(event eclvm.Event) error {
 	}
 	state := &encounterState{
 		resultAddress:    address,
-		distance:         encounterStartDistance(int(event.Arguments[1])),
+		distance:         a.encounterStartDistance(int(event.Arguments[1])),
 		fleeThreshold:    int(event.Arguments[12]),
 		advanceThreshold: int(event.Arguments[13]),
 		slowest:          slowest,
@@ -139,14 +146,64 @@ func (a *app) enterEncounter(event eclvm.Event) error {
 		state.kinds[index] = uint8(event.Arguments[gamepack.EncounterMenuOutcomeFirstOperand-1+index])
 	}
 	a.encounter = state
+	a.storeEncounterDistance()
 	a.showEncounterMenu()
 	return nil
 }
 
-// encounterStartDistance 是怪物離隊伍幾格。remake 還沒有地圖上的怪物群，
-// 所以走原版「沒有情境」那一支：`0489h` 直接給 2，再夾到運算元 2 的上限。
-func encounterStartDistance(limit int) int {
+// storeEncounterDistance 把目前的距離寫進 `@6DC1`（見 encounterDistanceAddress）。
+func (a *app) storeEncounterDistance() {
+	if a.encounter == nil || a.eventMachine == nil {
+		return
+	}
+	a.eventMachine.Memory[encounterDistanceAddress] = uint16(a.encounter.distance)
+}
+
+// encounterWalkFlagAddress 是 `[4933h]+1CCh` 的 ECL 位址（class 0，spec 074／
+// 114／117）：全域初始化 `02D2h` 設成 1，野外腳本會改它。
+const encounterWalkFlagAddress = 0x49E6
+
+// encounterStartDistance 重現 overlay-07 `0489h`（spec 078）：`@49E6` 為 0 時直接
+// 給 2；否則從隊伍那一格朝朝向走，每一步先問 overlay-30 entry 4（`048Ah`）
+// 那一面的 GEO 牆值，非 0 就停，最多兩步，**走了幾步就是距離**。走出 16×16
+// 之外時區塊 0 與 0Ah 一律當開，其餘把座標繞回 0..15 再查。之後夾到運算元 2
+// 的上限。dosgolem 在貧民窟 (14,4) 面向西撞牆量到 0，就是這條路。
+func (a *app) encounterStartDistance(limit int) int {
 	distance := 2
+	if a.eventMachine != nil && a.eventMachine.Memory[encounterWalkFlagAddress] != 0 &&
+		a.initialMap != nil && a.spawn.Facing <= 3 {
+		x, y := int(a.spawn.X), int(a.spawn.Y)
+		direction := int(a.spawn.Facing) * 2
+		block := uint16(0xFFFF)
+		if a.eventSession != nil {
+			block = a.eventSession.CurrentBlockID()
+		}
+		distance = 0
+		for distance < 2 {
+			wall := uint8(0)
+			if x < 0 || x > 15 || y < 0 || y > 15 {
+				if block != 0 && block != 0x0A {
+					wall, _ = a.initialMap.Grid.WallWrapped(x, y, direction)
+				}
+			} else {
+				wall, _ = a.initialMap.Grid.Wall(x, y, direction)
+			}
+			if wall != 0 {
+				break
+			}
+			distance++
+			switch direction {
+			case 0:
+				y--
+			case 2:
+				x++
+			case 4:
+				y++
+			case 6:
+				x--
+			}
+		}
+	}
 	if limit < distance {
 		distance = limit
 	}
@@ -191,6 +248,7 @@ func (a *app) selectEncounterOption() error {
 	}
 	if outcome.Approach && state.distance > 0 {
 		state.distance--
+		a.storeEncounterDistance()
 	}
 	state.message = outcome.Message
 	if outcome.Repeat {

@@ -18,6 +18,7 @@ overlay-16 entry 3 對放不下的怪物做了什麼、戰鬥中倒地／死亡�
 | `docs/audit/ida-overlay10-deployment-bounds.json` | overlay-10 `149Eh..14CCh`（界限檢查） | 同上 |
 | `docs/audit/ida-overlay10-45BA-references.json` | overlay-10 內 `45BAh` 與 `14CFh` 的全部運算元 | 同上 |
 | `docs/audit/ida-start-deployment-tables.json` | `START.EXE` DS `2D0h..33Fh`（112 bytes，五張表） | `12811cbc…10d9f` |
+| `docs/audit/dosgolem-deployment-peek.json` | dosgolem 跑到第一場遭遇按 COMBAT 那一幀讀的 `6A0Bh`／`45B2h`／`6772h`／`5E85h`／`6039h`，正對照 `2D0h` | 同上（`start.exe`） |
 
 跨 overlay 的呼叫用 spec 109 的對照表反查：`013Dh:0048h` 是 overlay-32 entry 8
 （`03A2h`，佔用格重建）、`010Ah:00BBh` 是 overlay-25 entry 31（`2419h`，兩邊
@@ -165,8 +166,10 @@ loop:
            n += 1; state = 3
   state 3: d = 2F0h[(k+3) mod 4]; (col,row) = (col0,row0) + 單位向量(d) × len
            n += 1; len += 1; state = 2
-  oob = !(0 ≤ col ≤ 10 且 0 ≤ row ≤ 5)          ; 149Eh 做的是同一件事
+  anyOut  = col ∉ 0..10 或 row ∉ 0..5            ; [bp-5]
+  bothOut = col ∉ 0..10 且 row ∉ 0..5            ; 149Eh 回 1 的條件
   if state > 1:
+    anyOut 且非 bothOut           → 換腿（掃到列尾）
     firstLeg 且 n ≥ 45B6h[side]  → 換腿
     非 firstLeg 且 n > 0Bh        → 換腿
     換腿 = leg += 1; state = 1; firstLeg = 0;
@@ -174,7 +177,8 @@ loop:
            對原地城格 (6A0Bh+dx, 6A0Ch+dy) 用 2D0h[q×4 + 1..3] 三個方向各問一次
            01BAh（spec 060 的牆面查詢）；在室外（495Bh > 1）或任一方向沒有牆
            → leg 再加一
-  if oob:
+  if anyOut 且非 bothOut: 這一格不試，回到 loop
+  if bothOut:
     placed = 0; state = 0
     while formation < 3 且 state ≠ 1:
       formation += 1; d = 2D0h[q×4 + formation]
@@ -187,16 +191,25 @@ loop:
 return !giveUp
 ```
 
+兩道界限檢查長得像、答案不一樣：`[bp-5]` 是任一座標出界，`149Eh`
+（`14A4h..14C2h`）是 `col ∉ 0..10` **且** `row ∉ 0..5` 才回 1。一列掃到
+`col = 11` 或 `−1` 時只有 col 出界，走的是換腿；腿的原點沿垂直方向一路移出
+樣板（例如面向 N 的 leg 6 原點 (11, 9)）兩個都出界，才換陣型。
+
 讀出來的形狀：
 
 - **掃描是「一腿一列，從中間向兩側交替」**：`2F0h` 的 (k+1) 與 (k+3) 是一對
   反方向，候選格依序在原點、+1、−1、+2、−2……；(k+2) 是與它垂直的方向，
   每換一腿原點就往那個方向移一格。面向 N（q0）時原點 (5,3)、沿 E／W 掃、
   換腿往 SE，三腿正好對上樣板 F0 的三列。
-- **第一腿的候選數是 `⌈n÷2⌉ − 1`**：`n` 從原點算 1，比到上限就換腿，比較在
-  嘗試之前。六人隊伍上限 3，第一列只放得下兩個人（原點與其右一格），其餘在
-  第二列從中間往外排。這是位元組上的行為，不是筆誤；step 2 用 dosgolem 讀
-  `5E85h` 對過才算 CONFORMED。
+- **第一腿的候選數是 `⌈n÷2⌉`**：`n` 從原點算 1，數到上限就把下一圈改成新的
+  腿，但**這一格照試**（換腿之後仍走到 `1A4Ch`）。六人隊伍上限 3，第一列放
+  原點、右一、左一三個人，其餘在第二列從中間往外排；單人隊上限 1，原點那一
+  格試完就換腿。dosgolem 收據（`docs/audit/dosgolem-deployment-peek.json`）：
+  單人隊面向 W、距離 0、雙方各一人，原版 `5E85h` 給隊員 (28, 13)、敵人
+  (26, 12)，`45B2h..45B9h = 00 00 00 00 01 01 03 01`，`6039h` 只有那兩格非零；
+  `combat.PlaceCombatant` 同狀態算出同一組（`TestPlaceCombatantMatchesTheDosgolemReceipt`）。
+  六人隊的收據還沒拍。
 - **陣型 1..3 是原地城格的三個鄰格**（`2D0h`：面向 N 時依序 S、W、E），每一個
   都從 `45B2h`／`45B4h` 重算，不累積；室內有牆的鄰格跳過。三個鄰格都放不下才
   回 0，驅動就把這一筆摘掉或留成體型 0。
@@ -226,21 +239,30 @@ return !giveUp
 7. 兩邊的地城格偏移由朝向與遭遇距離算（我方 0、敵方 距離 × 朝向單位向量），
    象限由朝向 ÷ 2 取；不得用固定偏移。
 8. 逐人放置照 `1609h` 的掃描順序（原點、±1、±2……、換腿、三個鄰格），第一腿
-   上限 `⌈n÷2⌉`，換腿後上限 11；`5CF4h` 的串列順序就是放置順序。
+   上限 `⌈n÷2⌉`（上限那一格照試），一列掃到出界就換腿，腿走到兩個座標都出界
+   才換陣型；`5CF4h` 的串列順序就是放置順序。
 9. 放不下的人體型 0 留在表上（或依 runtime `+13h` 摘掉），不得自行擴大範圍。
 
-## remake 的暫時部署：敵方只能站在隊伍走得到的格子
+## remake 的實作
 
-原版的偏移與樣板已在上面讀出（`1A99h`／`1609h`）。remake 目前仍用固定偏移
-（隊伍 −1、敵方 ＋2），`provisionalRoster` 的名字就是這個意思；換成原版演算法
-是 #32 的 step 3，換掉之後這一節整段刪除。
+`combat.DeploymentSides`／`FillDeploymentTemplates`／`PlaceCombatant`
+（`internal/combat/deployment_original.go`）照 `1A99h`／`1609h` 重建，五張表
+逐位元組對 `ida-start-deployment-tables.json`
+（`TestDeploymentTablesMatchTheDataSegment`）；`cmd/pool-game/tactical.go` 的
+`deployRoster` 把隊伍、倒戈的 NPC、怪物依序丟給它，遭遇距離讀 ECL `@6DC1`
+（遭遇選單每次寫距離都鏡射到那一格，spec 078）。
 
-固定偏移有一個會讓遊戲停住的後果，實測量到過：**雙方被地形圍在兩塊不相連
-的區域裡**。GEO4 block 21 那一場，隊伍站 x=17..22、敵方站 x=36..38，中間那
-幾行地形走不過去。誰都走不到誰、誰都打不到誰，回合數一路加到兩百多還在跑，
-從外面看就是遊戲卡住不動。
+與原版仍有的差（都是 remake 的簡化，不是原版規則）：
 
-所以敵方的部署多一道限制：**候選格必須與隊伍第一格連通**（用 spec 057 的
-成本模型做廣度優先），原本的偏移一格都擺不下才換偏移試，全部不通才退回原本
-的偏移不設限地擺。這**不是原版的演算法**，是暫時部署的一道護欄；原版的偏移
-選擇讀出來之後這一層要一起換掉。
+- 昏迷／倒地／死亡的隊員原版一樣擺上去、再改成體型 0 並登記屍體（地形
+  `1Fh`），remake 直接不擺。
+- 放置順序原版是 `5CF4h` 串列的順序，remake 固定是隊伍 → 倒戈 NPC → 怪物。
+- 遭遇距離：原版 `0489h` 會讓怪物在地圖上先走最多兩步、撞到就停，距離是
+  走到的格數（dosgolem 那一場是 0）；remake 沒有地圖上的怪物群，固定給 2
+  再夾上限（spec 078）。同一場的敵方偏移因此可能差兩格，那是 spec 078 的缺口。
+- 放不下的怪物原版從串列摘掉（overlay-16 entry 3），remake 直接不擺，效果相同。
+
+之前那一版固定偏移（隊伍 −1、敵方 ＋2）加「敵方只擺在與隊伍連通的格子」
+的護欄已經整段拿掉；連通護欄當初擋的是 GEO4 block 21 那種雙方被地形隔開、
+打不完的場面，換成原版演算法之後敵方本來就擺在隊伍朝向前方 `距離` 格的
+那一個地城格，同一條走廊上。那一場要重跑一次確認（見 #32）。

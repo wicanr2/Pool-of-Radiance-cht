@@ -667,7 +667,8 @@ const (
 	msgTacticalNoState
 	msgTacticalBoard
 	msgTacticalRound
-	// 這一項標的是三塊還沒有原版依據的東西，中英文都要看得出來是暫定的。
+	// 這一項標的是還沒有原版依據的東西（部署已照 spec 061 換掉，不在裡面了），
+	// 中英文都要看得出來是暫定的。
 	msgTacticalProvisional
 	msgTacticalKeys
 	msgTacticalPrompt

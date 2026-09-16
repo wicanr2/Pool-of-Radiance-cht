@@ -13,10 +13,16 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// slumsWallFight 把一級隊伍送到貧民窟地形 terrain 的固定事件上打一場。
+// slumsWallFight 把一級隊伍送到貧民窟地形 terrain 的固定事件上打一場，
+// 開打那一刻把盤面印進 log（部署對原版的收據就是這幾張，spec 061）。
 func slumsWallFight(t *testing.T, seed int64, terrain int) *mainlineDriver {
 	t.Helper()
-	return slumsWallFightWith(t, seed, terrain, nil)
+	return slumsWallFightWith(t, seed, terrain, func(state *tacticalState) {
+		t.Logf("terrain %d seed %d board at round 1:", terrain, seed)
+		for _, line := range boardLines(state, 1) {
+			t.Log(line)
+		}
+	})
 }
 
 // slumsWallFightWith 同上，多一個每場開打時的回呼（印盤面用）。
