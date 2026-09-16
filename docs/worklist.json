@@ -202,6 +202,22 @@
         "note": "還沒有釘住諾里斯 THAC0 的測試就是還沒修"
       },
       "github_issue": 31
+    },
+    {
+      "id": "deployment-and-pathing-vs-original",
+      "layer": "verification",
+      "title": "戰場部署與走位對回原版（spec 053／057／061）",
+      "body": "remake 的暫時部署（隊伍 −1、敵方 ＋2）、非原版的繞路備案與僵局安全閥決定了貧民窟固定事件的陣型與收場；原版的樣板填寫者、45BAh、2759h／275Ah、佔用格對狀態的處理都還沒讀。",
+      "acceptance": "spec 061 的 DRAFT 兩項閉合或標明證據等級；斜向走位與佔用格規則寫進 spec；dosgolem 獸人家一場的陣型與敵方走位對拍；remake 依讀出的規則換掉 provisionalRoster。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/061-deployment-and-occupancy.md"
+        ],
+        "pattern": "remake 的暫時部署",
+        "note": "spec 061 還有「暫時部署」那一節就是還沒換掉"
+      },
+      "github_issue": 32
     }
   ]
 }
