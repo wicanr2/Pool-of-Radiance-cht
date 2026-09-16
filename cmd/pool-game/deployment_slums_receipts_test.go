@@ -26,11 +26,11 @@ type dosgolemDeployReceipt struct {
 		X, Y   uint8
 		Facing uint8
 	} `json:"party_cell"`
-	Spawns      [][3]uint8 `json:"spawns"`
+	Spawns [][3]uint8 `json:"spawns"`
 	// MovedBeforeFirstPrompt 是收據那一幀讀到時已經先攻走過一步的敵人：原版的幀是
 	// 畫面靜下來等玩家輸入時拍的，先攻比隊員快的敵人已經動了，只能要求「差一格內」。
 	MovedBeforeFirstPrompt []int `json:"moved_before_first_prompt"`
-	DeployFrame struct {
+	DeployFrame            struct {
 		Peek map[string]string `json:"peek"`
 	} `json:"deploy_frame"`
 }
