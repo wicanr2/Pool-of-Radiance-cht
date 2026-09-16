@@ -124,16 +124,16 @@
     {
       "id": "rest-location-and-inn",
       "layer": "feature",
-      "title": "休息要挑地方：街上睡不成，駕駛需要旅店（`4A07`）或清出來的屋子",
-      "body": "入口 2 接上（#24）之後 `6DD2h`／`6DD3h` 有真值：城區 1／101、貧民窟街上 24／24、屋內 0／0。回一點生命力要連續睡滿 24 小時，所以街上實際睡不了，而貧民窟被打斷是直接排一場隨機遭遇（`ecl2/20 9A49h`）。原版只有屋內或 `4A07 != 0`（hypothesis：旅店）睡得成。",
-      "acceptance": "`4A07` 的 writer 讀出來並定名；駕駛能走到睡得成的地方把隊伍補滿；spec 114 最後那一段的 hypothesis 改成定論。",
+      "title": "休息要挑地方：街上睡不成，駕駛要走去旅店付一枚白金",
+      "body": "入口 2 接上（#24）之後 `6DD2h`／`6DD3h` 有真值：城區 1／101、貧民窟街上 24／24、屋內 0／0。回一點生命力要連續睡滿 24 小時，所以街上實際睡不了，而貧民窟被打斷是直接排一場隨機遭遇（`ecl2/20 9A49h`）。`4A07` 已讀出來是旅店的房錢（`ecl3/0 A140h`，城區地形索引 9 七格，一枚白金；付完腳本自己重跑入口 2 寫 0／0），remake 的 `PROGRAM 9` 也早就接到 `openCamp`——缺的是駕駛走過去付錢。",
+      "acceptance": "駕駛需要休息而這一區會打擾時，走到城區旅店那七格之一、付一枚白金、睡滿；`restUntilHealed` 裡「不睡、記一行」那條退路拿掉。連帶修好 `TestQuickCombatEarnsExperience` 的治具。",
       "verify": {
         "kind": "present",
         "paths": [
-          "docs/spec/114-camp-rest-time.md"
+          "cmd/pool-game/mainline_rest_test.go"
         ],
-        "pattern": "hypothesis：那是旅店的房間",
-        "note": "spec 114 還把 `4A07` 標成 hypothesis 就是還沒讀出來；讀出來之後那一句會改寫"
+        "pattern": "not sleeping here",
+        "note": "駕駛還掛著「這一區會打擾就不睡」那條退路就是還沒學會去旅店；學會了那一行會被拿掉"
       },
       "github_issue": 38,
       "blocked_by": "駕駛怎麼挑地方睡歸 #22；`TestQuickCombatEarnsExperience` 的治具也掛在這一條。"

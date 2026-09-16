@@ -241,9 +241,35 @@ overlay-07 清成 0」這個自洽但不完整的答案，還據此推論過「�
 `SAVE 200 @4A1F`、`PARTYSTRENGTH`、`GOTO 9B68h`——直接排一場隨機遭遇。
 城區的入口 3 才是城衛隊那個 GO／STAY 選單。
 
-要睡得成只有兩條路：**進屋**（同一支入口 2 對屋內寫 0／0），或讓城區的
-`4A07 != 0`（hypothesis：那是旅店的房間，城區設施 19）。remake 的測試駕駛
-現在遇到「這一區會打擾」就不睡並記一行，挑地方睡歸 #22。
+要睡得成只有兩條路：**進屋**（同一支入口 2 對屋內寫 0／0），或**去旅店付房錢**
+（城區的 `4A07 != 0`）。
+
+`4A07` 是旅店的房錢（exact，2026-09-16）。城區地形索引 9（spec 102）那七格
+——GEO3/0 的 `89h`：(4,12)(6,12)(4,13)(6,13)(0,14)(1,14)(2,14)，從城門 (0,4)
+走街道 12 步就到——跑 `ecl3/0 A140h`：
+
+```
+A140  COMPARE @4A07, 0 ; IF <> ; EXIT        ; 已經有房間就不再問
+A14E  PICTURE 24
+A15C  PRINTCLEAR "'IT WILL COST YOU 1 PLATINUM PIECE TO REST HERE.  DO YOU WANT TO STAY?'"
+A195  GOSUB AE5A → A199 ON GOTO [A1A5, AA38] ; YES／NO
+A1A5  GOSUB A1B4      ; WHO 'WHO WILL PAY?' → 扣一枚白金（`6BC3`，spec 090）
+                      ;   不夠：A20Dh "YOU DON'T HAVE ENOUGH PLATINUM."
+A206    SAVE 1 → 4A07 ; （在 A1B4 裡，收完錢才寫）
+A1A9  GOSUB 9A63      ; ★ 城區入口 2 的本體，重算 6DD2／6DD3
+A1AD  PROGRAM 9       ; 紮營（spec 081）
+```
+
+關鍵在 `A1A9h`：付完錢之後腳本**自己再跑一次入口 2 的本體**，這時 `4A07 == 1`
+所以走 `9A86h` 那一支寫 0／0——於是接著的 `PROGRAM 9` 睡得安穩。remake 這一側
+`ProgramCamp = 9` 早就接到 `openCamp`（`program.go`），而 `openCamp` 又會再跑一次
+入口 2，答案一樣是 0／0，兩邊不打架。
+
+房間只管這一次：城區地形索引 0（一般街道，185 格）跑的 `AE6Ah` 開頭就是
+`SAVE 0 @4A07`，所以**踏回街上房間就沒了**，下次要再付一枚。
+
+remake 的測試駕駛目前遇到「這一區會打擾」就不睡並記一行；走去旅店付錢是玩家
+策略層的事，見 #38。
 
 ## 打斷之後跑的是入口 3（2026-09-10）
 
