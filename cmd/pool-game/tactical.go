@@ -443,11 +443,16 @@ type tacticalState struct {
 
 // tacticalStalemateRounds 是「盤面完全沒變」幾回合之後判僵局。
 //
-// **非原版**，與同一個檔案裡的繞路備案同一個性質：原版怎麼收這種場面還沒讀。
-// 實測有這樣一場——野外 25 的野豬 ×5，雙方誰也走不到誰，回合數一路衝到
-// 兩萬兩千還在跑，從外面看就是遊戲不動了（WORKLIST 的「走得到的內容量」）。
-// 五十回合完全沒有位移、沒有狀態變化、沒有人倒下，正常戰鬥不會發生。
+// **非原版（remake-owned）**：原版怎麼收這種場面還沒讀。繞路備案 2026-09-16 已拿掉
+// （spec 096），這是戰術層剩下的唯一一條。實測有這樣一場——野外 25 的野豬 ×5，雙方
+// 誰也走不到誰，回合數一路衝到兩萬兩千還在跑，從外面看就是遊戲不動了（WORKLIST 的
+// 「走得到的內容量」）。五十回合完全沒有位移、沒有狀態變化、沒有人倒下，正常戰鬥不會
+// 發生。觸發次數記在 `tacticalStalemateEndings`：走位照原版之後貧民窟三場兩 seed 與
+// 索寇要塞的探索都是 0 次。
 const tacticalStalemateRounds = 50
+
+// tacticalStalemateEndings 是安全閥實際收場的次數（整個程序累計），給測試讀。
+var tacticalStalemateEndings int
 
 // stallFingerprint 是「盤面有沒有變」的指紋：每一格的位置、生命值、狀態與
 // 倒地計時。
@@ -1929,6 +1934,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		// 僵局收場：雙方都還在，只是誰也碰不到誰。跟打輸一樣要把排好的遭遇
 		// 清掉，否則同一場架會被重新排出來。
 		a.combatActive, a.combatMonsters = false, nil
+		tacticalStalemateEndings++
 		a.statusLine = "Tactical combat ended in a stalemate; neither side could close."
 		return nil
 	}

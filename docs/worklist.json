@@ -202,22 +202,6 @@
         "note": "還沒有釘住諾里斯 THAC0 的測試就是還沒修"
       },
       "github_issue": 31
-    },
-    {
-      "id": "deployment-and-pathing-vs-original",
-      "layer": "verification",
-      "title": "戰場部署與走位對回原版（spec 053／057／061）",
-      "body": "部署照原版換掉並以 dosgolem 收據（單人隊、哥布林、獸人的家、衛兵攔截、驚動衛兵）逐格對上（spec 061 CONFORMED）；遭遇距離走法補上（spec 078）；走位照 spec 096，dosgolem 骰流餵回去三場 40 個原版動作 40 個逐格重現（TestFoeWalkReproducesEveryOriginalAction，#34 關）。還開著：GEO4 block 21 重跑確認、TestSokalKeep 變慢的成因。",
-      "acceptance": "GEO4 block 21 那一場不再隔牆；TestSokalKeep 變慢成因查明。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/playtest/mainline-end-to-end.md"
-        ],
-        "pattern": "TestSokalKeepOpensTheOtherBoatRoutes",
-        "note": "補八還掛著 Sokal 變慢沒查、block 21 沒重跑就是這條沒收"
-      },
-      "github_issue": 32
     }
   ]
 }

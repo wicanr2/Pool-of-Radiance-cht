@@ -410,8 +410,12 @@ dosgolem `shots` 再加 `-trace-call 5BB:C94`，把原版每一次 `Random(n)` �
 贏 21；沒有僵局。回合邊界的對照表重印在 `docs/audit/foe-walk-comparison.md`（11／27／8），
 那一張兩邊各用自己的骰，差的只剩先攻與擲骰本身。
 
-#32 還掛著兩條沒收：`TestSokalKeepOpensTheOtherBoatRoutes` 從 7 秒變 165 秒
-（`planToCellsAvoidingWrap`），成因沒查；GEO4 block 21 那一場隔牆開打沒有重跑確認。
+#32 最後兩條：`TestSokalKeepOpensTheOtherBoatRoutes` 從 7 秒變 165 秒不是變慢——它十個種子
+輪流試、旗標湊齊才提早收工；戰後生命值寫回之後沒有一個種子湊得齊（#22 那四條紅的同一個
+成因），於是十個種子跑滿（一個約 16 秒）。索寇要塞 GEO4/21 (8,5) 那一場（獸人 31、獸人頭目
+4、大哥布林 15）用原版部署與走位重跑：主線探針 136 在第 7 回合分出勝負（隊伍全滅），探索
+器十個種子都走到 GEO4/21、僵局安全閥收場 0 次（`tacticalStalemateEndings`）；以前那種雙方
+隔著地形、CLOSED 0 STEPS 六十回合的場面沒有再出現。
 
 ## 下一步（尚未做）
 

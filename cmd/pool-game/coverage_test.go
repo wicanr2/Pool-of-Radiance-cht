@@ -2234,8 +2234,8 @@ func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
 		blockList = append(blockList, block)
 	}
 	sort.Ints(blockList)
-	t.Logf("走到的地圖：%d 張 %v；ECL block：%d 個 %v",
-		len(maps), sortedMapNames(maps), len(blocks), blockList)
+	t.Logf("走到的地圖：%d 張 %v；ECL block：%d 個 %v；僵局安全閥收場 %d 次",
+		len(maps), sortedMapNames(maps), len(blocks), blockList, tacticalStalemateEndings)
 	t.Logf("旗標 4A21=%d（要塞的裝備與那一場架）4AA7=%d（碼頭航線）4AC4=%d 6E12=%d "+
 		"4A01=%d 4AC5=%d 4ABA=%d",
 		flags[0x4A21], flags[0x4AA7], flags[0x4AC4], flags[0x6E12],

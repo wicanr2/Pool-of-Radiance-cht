@@ -66,7 +66,7 @@ func slumsWallFightWith(t *testing.T, seed int64, terrain int, onBattleStart fun
 		t.Fatalf("cannot reach terrain %d", terrain)
 	}
 	driver.settle()
-	t.Logf("slums terrain %d seed %d: %s", terrain, seed, driver.tally.line())
+	t.Logf("slums terrain %d seed %d: %s; stalemate endings so far %d", terrain, seed, driver.tally.line(), tacticalStalemateEndings)
 	return driver
 }
 
