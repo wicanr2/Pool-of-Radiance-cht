@@ -289,6 +289,9 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 			return nil, nil, nil, nil, err
 		}
 	}
+	// 放完之後的樣板留一份：原版 `14CFh` 每放一個就把那一格清零，開打那一幀的
+	// `DS:43A2h` 就是這個樣子，dosgolem 收據拿它逐 byte 對（#35，spec 061）。
+	a.deploymentTemplates = templates
 	return cells, friendly, partySlot, icons, nil
 }
 

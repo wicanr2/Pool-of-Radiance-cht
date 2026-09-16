@@ -202,22 +202,6 @@
         "note": "還沒有釘住諾里斯 THAC0 的測試就是還沒修"
       },
       "github_issue": 31
-    },
-    {
-      "id": "deployment-template-runtime-provenance",
-      "layer": "verification",
-      "title": "陣型樣板 DS:43A2h 的來源要從原版執行期追蹤確認",
-      "body": "樣板是 1A99h 用 DS:304h 填的，目前靜態讀出；要 dosgolem 在四場開打那一幀讀 43A2h 的 528 bytes 對 remake 的 FillDeploymentTemplates，追 304h／43A2h 的所有寫入端，陣型 1..3 找一筆執行期收據。",
-      "acceptance": "四場樣板 528 bytes 逐 byte 相同並釘測試；寫入端清單進 spec 061；陣型 1..3 至少一筆收據或寫明踩不到。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/spec/061-deployment-and-occupancy.md"
-        ],
-        "pattern": "陣型樣板不在檔案裡：由 `1A99h` 在每場開打前填",
-        "note": "樣板一節還是靜態讀出的標題、沒有執行期收據那一段，就是這條沒收"
-      },
-      "github_issue": 35
     }
   ]
 }

@@ -15,6 +15,13 @@
   `cmd/pool-disp-scan`（掃 disp16 寫入端，要帶正對照）、`tools/ida.sh`。
 - 順序：#31（諾里斯 THAC0，小）可先做，不衝突。
 
+## 2026-09-16 收在哪
+
+四場（獸人家、衛兵、驚動衛兵、哥布林）開打那一幀 `43A2h` 528 bytes 逐 byte 相同
+（`docs/audit/dosgolem-deployment-templates.json`、`TestDeploymentTemplatesMatchTheOriginalAtRuntime`），
+`304h` 執行期等於 START.EXE；寫入端掃完只有 `1A99h`／`14CFh`；陣型 1（衛兵 32 隻）與陣型 2
+（獸人家、驚動衛兵）有執行期收據，陣型 3 沒踩到（寫在 spec 061）。#35 關。
+
 ## 提示詞（可直接貼給 `/goal`）
 
 > 目標：把陣型樣板從原版執行期讀出來，證明 remake 的 `FillDeploymentTemplates` 與原版填出來的

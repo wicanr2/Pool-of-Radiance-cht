@@ -27,6 +27,7 @@ import (
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/assets"
 	poolcharacter "github.com/wicanr2/Pool-of-Radiance-cht/internal/character"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/etenfont"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
@@ -128,6 +129,8 @@ type app struct {
 	cursor          int
 	rolled          *creation.RolledCharacter
 	roller          creation.Roller
+	// deploymentTemplates 是上一場部署放完之後的陣型樣板（原版 `DS:43A2h` 的形狀）。
+	deploymentTemplates combat.DeploymentTemplates
 	// eclSeed 是這一局 ECL RANDOM 的起點（spec 136）。正常遊玩由
 	// newApp 取時間 seed；`-dice-seed` 讓測試與對拍可固定它。
 	eclSeed         int64
