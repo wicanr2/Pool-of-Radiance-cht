@@ -1,0 +1,347 @@
+{
+ "schema": "pool-overlay-operand-pattern-ida/1",
+ "input": "overlay-10.bin",
+ "sha256": "b929c7040aaa399ba803911c8630e06a8e21b9e7d64a67def69c700d7fe14439",
+ "ida_version": "9.4",
+ "address_space": "overlay-local file offset, base 0",
+ "segment_bitness": 0,
+ "pattern": "45BA|14CF",
+ "matches": [
+  {
+   "address": 5385,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5327,
+   "function_end": 5641
+  },
+  {
+   "address": 5603,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5327,
+   "function_end": 5641
+  },
+  {
+   "address": 5667,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 5680,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 5700,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 6265,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 6308,
+   "bytes": "803eba4500",
+   "text": "cmp     byte ptr ds:45BAh, 0",
+   "mnemonic": "cmp",
+   "operands": [
+    "byte ptr ds:45BAh",
+    "0"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 6352,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 6374,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 6410,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 6553,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 6575,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 6575,
+   "function_end": 6629
+  },
+  {
+   "address": 6598,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 6575,
+   "function_end": 6629
+  },
+  {
+   "address": 6665,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": null,
+   "function_end": null
+  },
+  {
+   "address": 6695,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": null,
+   "function_end": null
+  },
+  {
+   "address": 6763,
+   "bytes": "e861fa",
+   "text": "call    near ptr sub_14CF",
+   "mnemonic": "call",
+   "operands": [
+    "near ptr sub_14CF",
+    ""
+   ],
+   "function_start": 5641,
+   "function_end": 6477
+  },
+  {
+   "address": 7010,
+   "bytes": "c606ba4500",
+   "text": "mov     byte ptr ds:45BAh, 0",
+   "mnemonic": "mov",
+   "operands": [
+    "byte ptr ds:45BAh",
+    "0"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7017,
+   "bytes": "fe06ba45",
+   "text": "inc     byte ptr ds:45BAh",
+   "mnemonic": "inc",
+   "operands": [
+    "byte ptr ds:45BAh",
+    ""
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7021,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7042,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7052,
+   "bytes": "803eba4501",
+   "text": "cmp     byte ptr ds:45BAh, 1",
+   "mnemonic": "cmp",
+   "operands": [
+    "byte ptr ds:45BAh",
+    "1"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7059,
+   "bytes": "c606ba4500",
+   "text": "mov     byte ptr ds:45BAh, 0",
+   "mnemonic": "mov",
+   "operands": [
+    "byte ptr ds:45BAh",
+    "0"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7066,
+   "bytes": "fe06ba45",
+   "text": "inc     byte ptr ds:45BAh",
+   "mnemonic": "inc",
+   "operands": [
+    "byte ptr ds:45BAh",
+    ""
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7091,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7212,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7265,
+   "bytes": "a0ba45",
+   "text": "mov     al, ds:45BAh",
+   "mnemonic": "mov",
+   "operands": [
+    "al",
+    "ds:45BAh"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7315,
+   "bytes": "803eba4501",
+   "text": "cmp     byte ptr ds:45BAh, 1",
+   "mnemonic": "cmp",
+   "operands": [
+    "byte ptr ds:45BAh",
+    "1"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  },
+  {
+   "address": 7406,
+   "bytes": "a2ba45",
+   "text": "mov     ds:45BAh, al",
+   "mnemonic": "mov",
+   "operands": [
+    "ds:45BAh",
+    "al"
+   ],
+   "function_start": 6809,
+   "function_end": 7875
+  }
+ ]
+}

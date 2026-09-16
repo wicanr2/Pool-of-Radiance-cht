@@ -109,8 +109,8 @@ START.EXE 初始化資料是固定 66×4 bytes；戰術地圖每格 record `+7` 
 | 位移 | 現行 typed 名稱 | 已證實用途 | 等級 |
 |---|---|---|---|
 | `+0`／`2758h` | `EntryThreshold` | 玩家 Move 的剩餘 budget gate；其他路徑 consumer 以 `FFh` 排除 | exact |
-| `+1`／`2759h` | `PathByte1` | overlay-31 路徑候選計算讀取；原始 66 筆初始化值全為 0 | exact raw，玩家語意 DRAFT |
-| `+2`／`275Ah` | `PathByte2` | overlay-31 路徑候選 gate 讀取；原始值集合為 `00h/02h/FFh` | exact raw，玩家語意 DRAFT |
+| `+1`／`2759h` | `PathByte1` | overlay-31 `0419h` 取起點格的這一欄當通行門檻；原始 66 筆初始化值全為 0 | exact（用途見 spec 057） |
+| `+2`／`275Ah` | `PathByte2` | overlay-31 `0419h` 每一步比較目前格的這一欄 `> 起點格 PathByte1` 就停；原始值集合為 `00h/02h/FFh` | exact（用途見 spec 057） |
 | `+3`／`275Bh` | `PresentationCode` | overlay-32 傳入 tactical tile drawing service；overlay-10 依 code `16h` 替換地圖格類別。**那個值是 `*COM.DAX` 圖塊集裡的序號**，見 [spec 131](131-combat-terrain-tiles.md) | exact consumer |
 
 不能把 66 筆中的 `FFh` 一律解釋成同一種牆：`+0` 與 `+2` 是不同欄，且同一筆可有

@@ -1,0 +1,265 @@
+{
+ "schema": "pool-overlay-span-lenient-ida/1",
+ "input": "overlay-10.bin",
+ "sha256": "b929c7040aaa399ba803911c8630e06a8e21b9e7d64a67def69c700d7fe14439",
+ "ida_version": "9.4",
+ "address_space": "overlay-local file offset, base 0, 16-bit metapc",
+ "start": 5278,
+ "end": 5327,
+ "instruction_count": 18,
+ "data_runs": 0,
+ "items": [
+  {
+   "kind": "insn",
+   "address": 5278,
+   "bytes": "55",
+   "text": "push    bp",
+   "operands": [
+    "bp",
+    ""
+   ],
+   "operand_values": [
+    5,
+    -1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5279,
+   "bytes": "89e5",
+   "text": "mov     bp, sp",
+   "operands": [
+    "bp",
+    "sp"
+   ],
+   "operand_values": [
+    5,
+    4
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5281,
+   "bytes": "83ec02",
+   "text": "sub     sp, 2",
+   "operands": [
+    "sp",
+    "2"
+   ],
+   "operand_values": [
+    4,
+    2
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5284,
+   "bytes": "807e0800",
+   "text": "cmp     byte ptr [bp+8], 0",
+   "operands": [
+    "byte ptr [bp+8]",
+    "0"
+   ],
+   "operand_values": [
+    8,
+    0
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5288,
+   "bytes": "7c06",
+   "text": "jl      short loc_14B0",
+   "operands": [
+    "loc_14B0",
+    ""
+   ],
+   "operand_values": [
+    5296,
+    -1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5290,
+   "bytes": "807e080b",
+   "text": "cmp     byte ptr [bp+8], 0Bh",
+   "operands": [
+    "byte ptr [bp+8]",
+    "0Bh"
+   ],
+   "operand_values": [
+    8,
+    11
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5294,
+   "bytes": "7c0c",
+   "text": "jl      short loc_14BC",
+   "operands": [
+    "loc_14BC",
+    ""
+   ],
+   "operand_values": [
+    5308,
+    -1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5296,
+   "bytes": "807e0600",
+   "text": "cmp     byte ptr [bp+6], 0",
+   "operands": [
+    "byte ptr [bp+6]",
+    "0"
+   ],
+   "operand_values": [
+    6,
+    0
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5300,
+   "bytes": "7c0c",
+   "text": "jl      short loc_14C2",
+   "operands": [
+    "loc_14C2",
+    ""
+   ],
+   "operand_values": [
+    5314,
+    -1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5302,
+   "bytes": "807e0606",
+   "text": "cmp     byte ptr [bp+6], 6",
+   "operands": [
+    "byte ptr [bp+6]",
+    "6"
+   ],
+   "operand_values": [
+    6,
+    6
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5306,
+   "bytes": "7d06",
+   "text": "jge     short loc_14C2",
+   "operands": [
+    "loc_14C2",
+    ""
+   ],
+   "operand_values": [
+    5314,
+    -1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5308,
+   "bytes": "c646ff00",
+   "text": "mov     byte ptr [bp-1], 0",
+   "operands": [
+    "byte ptr [bp-1]",
+    "0"
+   ],
+   "operand_values": [
+    18446744073709551615,
+    0
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5312,
+   "bytes": "eb04",
+   "text": "jmp     short loc_14C6",
+   "operands": [
+    "loc_14C6",
+    ""
+   ],
+   "operand_values": [
+    5318,
+    -1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5314,
+   "bytes": "c646ff01",
+   "text": "mov     byte ptr [bp-1], 1",
+   "operands": [
+    "byte ptr [bp-1]",
+    "1"
+   ],
+   "operand_values": [
+    18446744073709551615,
+    1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5318,
+   "bytes": "8a46ff",
+   "text": "mov     al, [bp-1]",
+   "operands": [
+    "al",
+    "[bp-1]"
+   ],
+   "operand_values": [
+    16,
+    18446744073709551615
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5321,
+   "bytes": "89ec",
+   "text": "mov     sp, bp",
+   "operands": [
+    "sp",
+    "bp"
+   ],
+   "operand_values": [
+    4,
+    5
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5323,
+   "bytes": "5d",
+   "text": "pop     bp",
+   "operands": [
+    "bp",
+    ""
+   ],
+   "operand_values": [
+    5,
+    -1
+   ]
+  },
+  {
+   "kind": "insn",
+   "address": 5324,
+   "bytes": "ca0400",
+   "text": "retf    4",
+   "operands": [
+    "4",
+    ""
+   ],
+   "operand_values": [
+    4,
+    -1
+   ]
+  }
+ ]
+}
