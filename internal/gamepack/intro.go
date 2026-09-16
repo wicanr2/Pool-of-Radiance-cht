@@ -612,8 +612,33 @@ func RunInitialSessionCampEntry(session *eclvm.BlockSession, grid geometry.Grid,
 	return session.RunUntilEvent(4096, nil, true)
 }
 
+// RunInitialSessionRestEntry 跑目前區塊的命令集入口 2——原版一進紮營畫面就跑的
+// 那一支，它把「這一區會不會被打擾」寫進 `6DD2h`（週期）／`6DD3h`（門檻）。
+//
+// 呼叫點是 exact：overlay-03 的紮營常式 `312Ah` 開頭先把「被打斷了沒」清成 0
+// （`3130h`），`3134h` push `DS:4948h`（入口 2 的 header，spec 022 的
+// `DS:4944..494C` 表）再 `3139h` 呼叫 VM runner `35DBh`；**之後**才
+// `3141h` far call overlay-15 entry 1（紮營畫面，`00ACh:0025h`），休息迴圈
+// （overlay-20 entry 3 `0C45h`，spec 114）在那裡面。所以順序是
+// **入口 2 → 紮營畫面／休息 → 被打斷才入口 3**，而且入口 2 一次紮營只跑一次。
+//
+// 入口 2 會讀地形（`@C04F`、`@6E82`），所以與入口 0／1／3 一樣要先投影座標。
+func RunInitialSessionRestEntry(session *eclvm.BlockSession, grid geometry.Grid, position Spawn) (eclvm.Result, error) {
+	if session == nil || session.Machine() == nil {
+		return eclvm.Result{}, fmt.Errorf("initial ECL session is nil")
+	}
+	projectInitialPosition(session.Machine(), grid, position)
+	if err := session.SetEntry(restEntryIndex); err != nil {
+		return eclvm.Result{}, err
+	}
+	return session.RunUntilEvent(4096, nil, true)
+}
+
+// restEntryIndex 是紮營畫面打開時跑的命令集入口（spec 114）。
+const restEntryIndex = 2
+
 // campEntryIndex 是紮營被打斷之後跑的命令集入口（spec 114）。
-// 入口 0 是每格、入口 1 是搜尋，這是第三個。
+// 入口 0 是每格、入口 1 是搜尋、入口 2 是紮營畫面打開，這是第四個。
 const campEntryIndex = 3
 
 // RunInitialCellEntry projects the live first-person registers and executes

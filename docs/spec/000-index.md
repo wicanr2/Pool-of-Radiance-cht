@@ -26,14 +26,14 @@
 | [012](012-dos-cardinal-coordinate-wrapper.md) | DOS cardinal coordinate wrapper 與 401Fh dispatch | READY＋DRAFT | `cmd/pool-game/main.go` | `internal/gamepack/facing_test.go` |
 | [013](013-shared-ecl-vm-rolf-path.md) | 共用 ECL VM 與 Rolf 真實 bytecode 路徑 | CONFORMED＋DRAFT | 共用 engine | `internal/gamepack/eclvm_test.go` |
 | [014](014-initial-map-basic-geo-walk.md) | 第一張地圖基本 GEO walk | DRAFT | `cmd/pool-game/main.go` | `internal/gamepack/geometry_test.go` |
-| [015](015-initial-map-cell-lifecycle.md) | 第一張地圖 cell lifecycle 接線 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-initial-cell-sweep/main_test.go` |
+| [015](015-initial-map-cell-lifecycle.md) | 第一張地圖 cell lifecycle 接線 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/rest_entry_clock_test.go`、`cmd/pool-initial-cell-sweep/main_test.go` |
 | [016](016-initial-search-location-and-sune.md) | 初始地圖 SearchLocation 與 Sune 第一個事件 | CONFORMED | `cmd/pool-game/command_bar.go` | `cmd/pool-game/main_test.go` |
 | [017](017-sune-temple-service-entry.md) | Sune 神殿服務入口與離開續行 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/main_test.go` |
 | [018](018-save-hp-status-and-temple-wounds.md) | 存檔生命值／狀態與神殿傷勢治療 | CONFORMED＋DRAFT | `internal/save/state.go`、`internal/temple/services.go`、`internal/treasure/payment.go` | `internal/temple/services_test.go` |
 | [019](019-pool-ecl-dialect-newecl.md) | Pool ECL dialect 與 `20h` 跨 block 交接 | CONFORMED＋DRAFT | 共用 engine | `internal/gamepack/ecl_command_table_test.go` |
 | [020](020-compare-and.md) | `14h COMPARE AND` 四 operand 比較 | CONFORMED | 共用 engine | `internal/gamepack/ecl_command_table_test.go` |
 | [021](021-load-character-selection.md) | `0Ah LOAD CHARACTER` 選定角色與 Pool 記憶體投影 | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/harbour_walk_test.go` |
-| [022](022-dos-cell-entry-order.md) | DOS 自由移動的 ECL 入口順序 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go` |
+| [022](022-dos-cell-entry-order.md) | DOS 自由移動的 ECL 入口順序 | CONFORMED | `cmd/pool-game/main.go`、`internal/gamepack/intro.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/rest_entry_clock_test.go` |
 | [023](023-city-hall-proclamations.md) | City Hall 公告與選單目的位址 | CONFORMED＋READY | 共用 engine | `internal/gamepack/cityhall_test.go` |
 | [024](024-city-hall-commission-proclamations.md) | City Hall commission 公告分派 | CONFORMED | 共用 engine | `cmd/pool-game/coverage_test.go` |
 | [025](025-newecl-transition-lifecycle.md) | `NEWECL` 後的 command-set lifecycle | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/playthrough_test.go` |
@@ -80,7 +80,7 @@
 | [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | `cmd/pool-doc-index/main_test.go` |
 | [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go` | `cmd/pool-game/mainline_outfit_test.go`、`cmd/pool-game/shop_walk_test.go` |
 | [068](068-spell-name-table.md) | 法術名稱表 | CONFORMED＋DRAFT | `cmd/pool-game/spells.go`、`internal/gamepack/spell_dispatch.go`、`internal/gamepack/spell_table.go` | `internal/gamepack/spell_table_test.go` |
-| [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/tactical.go`、`internal/character/export.go` 等 9 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
+| [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 12 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
 | [070](070-memorised-spells.md) | 記憶法術陣列與 1-based 法術編號 | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/spells.go`、`cmd/pool-spell-dispatch/main.go` 等 6 個 | `cmd/pool-game/inn_test.go`、`cmd/pool-spell-dispatch/main_test.go`、`internal/gamepack/memorisation_test.go` |
 | [071](071-experience-and-level-caps.md) | 經驗值門檻表與等級上限 | CONFORMED | `cmd/pool-game/main.go`、`internal/gamepack/spell_slots.go` | `cmd/pool-game/mainline_house_rule_test.go`、`internal/journal/manual_tables_test.go` |
 | [072](072-spell-slots-and-wisdom-bonus.md) | 可記憶法術數與睿智加成 | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/spells.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/memorise_test.go`、`internal/gamepack/memorisation_test.go`、`internal/gamepack/saving_throw_table_test.go` |
@@ -125,7 +125,7 @@
 | [111](111-turn-undead.md) | 轉變不死生物 | READY | `internal/gamepack/turn_undead_resolve.go` | `internal/journal/manual_tables_test.go` |
 | [112](112-effect-code-dispatch.md) | 效果代碼的分派（overlay-24 entry 3／entry 1 與 `014Dh`） | READY | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/cloud.go` 等 6 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/strength_effect_integration_test.go`、`internal/gamepack/effect_list_test.go` 等 4 個 |
 | [113](113-game-pack.md) | Pool 的 game pack 與 adapter | READY | `internal/gamepack/pack.go` | `internal/gamepack/pack_test.go` |
-| [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_interruption_test.go`、`cmd/pool-game/camp_screen_test.go` 等 6 個 |
+| [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_interruption_test.go`、`cmd/pool-game/camp_screen_test.go` 等 7 個 |
 | [115](115-temple-services.md) | 神殿的九項服務（overlay-04） | READY | `cmd/pool-game/main.go`、`internal/save/state.go` | `cmd/pool-game/main_test.go` |
 | [116](116-appraise-and-sell.md) | 估價與販賣寶石珠寶（overlay-21 entry 19） | CONFORMED＋READY＋OPEN | `cmd/pool-game/appraise.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/camp_test.go`、`cmd/pool-game/mainline_reward_test.go`、`cmd/pool-game/shop_test.go` |
 | [117](117-npc-approach-portrait.md) | APPROACH 的 NPC 半身像 | READY＋DRAFT | `cmd/pool-game/main.go`、`internal/assets/camp_fire.go`、`internal/assets/npc_portrait.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`internal/gamepack/intro_test.go` |
@@ -148,7 +148,7 @@
 | [134](134-spell-list-layout.md) | 原版的法術清單版面 | READY＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/spell_page_test.go` |
 | [135](135-camp-screen-layout.md) | 原版紮營畫面的版面 | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/icon_menu.go` 等 7 個 | `cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go`、`cmd/pool-game/mainline_rest_test.go` 等 5 個 |
 | [136](136-slum-encounter-staging.md) | 貧民窟走一步會遇到什麼 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/intro.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_probe_test.go`、`cmd/pool-game/wandering_encounter_e2e_test.go` 等 5 個 |
-| [137](137-mainline-route.md) | 主線必經路徑——從標題到結局要走過哪些區塊 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` | `cmd/pool-game/foe_routing_test.go`、`cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_castle_probe_test.go` 等 12 個 |
+| [137](137-mainline-route.md) | 主線必經路徑——從標題到結局要走過哪些區塊 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` | `cmd/pool-game/foe_routing_test.go`、`cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_castle_probe_test.go` 等 13 個 |
 | [138](138-combat-bandage.md) | 戰鬥裡的 B）ANDAGE——止血，不看距離 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go` | `cmd/pool-game/bandage_test.go`、`cmd/pool-game/tactical_pilot_test.go` |
 | [139](139-quick-auto-combat.md) | Q）UICK 自動戰鬥與 M）OVE 的兩層按鍵 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go`、`internal/save/state.go` | `cmd/pool-game/quick_test.go` |
 | [140](140-house-rule-commission-experience.md) | 自訂規則——委任獎賞折算經驗值（預設關） | CONFORMED＋READY | `cmd/pool-game/main.go`、`cmd/pool-game/party_menu.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` |

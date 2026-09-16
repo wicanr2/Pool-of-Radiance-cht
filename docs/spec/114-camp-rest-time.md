@@ -169,9 +169,11 @@ ECL1／2／3 找到 **123 個引用，其中 117 個是 `SAVE`**。本規格先�
 （貧民區被城衛隊趕起來）那一段 ECL 開頭正是 `SAVE 0 → @6DD3`——打斷過一次
 就把門檻清掉。
 
-remake 這一側：`RestInterruptionPeriodAddress`／`…ThresholdAddress` 兩個常數，
-`camp.go` 的 `restInterruption()` 從 `eventMachine.Memory` 讀。ECL VM 本來就
-在跑那些 `SAVE`，所以值是自然到位的，不需要另外餵。
+寫它們的 `SAVE` 幾乎都在**每一區的命令集入口 2**，而入口 2 是紮營畫面打開時
+跑的（見下一節）。remake 這一側：`RestInterruptionPeriodAddress`／
+`…ThresholdAddress` 兩個常數，`camp.go` 的 `openCamp` 先跑
+`gamepack.RunInitialSessionRestEntry`（入口 2），`restInterruption()` 再從
+`eventMachine.Memory` 讀。
 
 ### 教訓：掃 overlay 的定址形狀，看不到 ECL 寫進去的東西
 
@@ -184,6 +186,64 @@ overlay-07 清成 0」這個自洽但不完整的答案，還據此推論過「�
 判準是它有沒有落在 `[4933h]`／`[4937h]` 那兩個基底的窗內；是的話換算回 ECL
 位址再掃一次 ECL 檔。這條連同它的反方向（ECL 位址的字面值也掃不到引擎的
 「基底＋位移」寫入，見 spec 100／125）已經收進 `AGENTS.md` §5。
+
+## 打斷的參數是入口 2 寫的，呼叫點在紮營常式開頭（2026-09-16，exact，#24）
+
+入口 2 是**紮營畫面一打開就跑**的那一支。overlay-03 的紮營常式 `312Ah`：
+
+```
+312A  push bp ; mov bp,sp ; sub sp,2
+3130  mov byte [bp-1], 0          ; 被打斷了沒（out 參數）
+3134  push ds:4948h               ; ★ 命令集入口 2 的 header
+3139  call 35DBh                  ; VM runner（與入口 0／1 同一支，spec 022）
+313C  lea di,[bp-1] ; push ss ; push di
+3141  call far 00ACh:0025h        ; overlay-15 entry 1 ＝ 紮營畫面
+3146  cmp byte [bp-1], 0 ; jz 3159
+314C  call far 010Ah:00D9h        ; overlay-25
+3151  push ds:494Ah               ; ★ 命令集入口 3 的 header
+3156  call 35DBh
+3159  call far 0124h:0025h        ; overlay-27
+315E  mov byte ds:54DBh, 0
+3163  leave ; retf
+```
+
+所以順序是 **入口 2 → 紮營畫面（休息迴圈在裡面）→ 被打斷才入口 3**，
+而且入口 2 **一次紮營只跑一次**，不是每一刻。
+
+證據鏈（每一步都有唯一命中，並帶正對照）：
+
+| 問題 | 做法 | 結果 |
+|---|---|---|
+| 入口 2 的 header 在哪 | spec 022 已證五個 header 依序寫到 `DS:4944..494C` | `4948h` 是入口 2、`494Ah` 是入口 3 |
+| 誰讀 `4948h` | `pool-disp-scan -addresses 4944,4946,4948,494A,494C` | overlay-03 `3134h` 一筆（正對照：`494Ah` 也只有 overlay-03 `3151h` 一筆，就是已知的入口 3 呼叫點）|
+| `3141h` 呼叫的是誰 | spec 109 的 stub segment 表 | `00ACh` ＝ overlay-15，`(25h−20h)÷5 = 1` ＝ entry 1 |
+| overlay-15 entry 1 是不是紮營畫面 | IDA span `1E45h..` | 存時鐘 `DS:6CB6h` 14 個 word、畫視窗（`1638h` 11h/26h/16h）、把 out 參數清 0——是整個紮營畫面 |
+| 休息迴圈在哪 | 掃 overlay-15 找 `9a 2f 00 d2 00` | `07ECh` 一筆 ＝ `00D2h:002Fh` ＝ overlay-20 entry 3，code offset `0C45h`，正是本規格上面那一段 |
+
+**入口 2 讀的是 `@6E82` 不是 `@C04F`**：那一格是入口 0／1 每次移動時用
+`AND 127 @C04F → @6E82` 留下的（spec 015 `9965h`）。正常玩的時候它自然是最新的。
+注意遮罩是 `7Fh` 不是 `1Fh`——貧民窟的 `80h` 遮完是 0（街上），`81h`／`82h`／`83h`
+才是屋內。
+
+四份已經讀出來的入口 2：
+
+| 區 | 入口 2 | 條件 → 週期／門檻 |
+|---|---|---|
+| 城區 `ecl3/0` | `9A5Eh` → `GOSUB 9A63h` | `4ABA < 254`（還沒通關）且 `4A07 == 0` → **1／101**；否則 0／0 |
+| 貧民窟 `ecl2/20` | `9A0Eh` | `4A0B == 255` → 24／24；`4ABB >= 254`（清完）→ 0／0；`@6E82 == 0`（街上）→ **24／24**；否則（屋內）0／0 |
+| 古托井 `ecl8/29` | `9BDDh` | 預設 0／100；井底且諾里斯還活著 → `6DD2 = 1`；地面 `4A22 < 10` 且不是井那一格 → 12／12 |
+| 索寇要塞 `ecl4/21` | `9A29h` | `4A03 <= 4`（巡邏還在）→ 2／1；否則 0／0 |
+
+`Period` 是「每幾刻擲一次」、`Threshold` 是百分位門檻（`SimulateRest`）。
+貧民窟街上的 24／24 是**每兩小時擲一次、24% 中**，而回一點生命力要連續睡滿
+二十四小時（288 刻）——十二次檢定全過的機率只有四%。也就是**街上實際上睡不了**。
+而且貧民窟被打斷之後的入口 3（`ecl2/20 9A49h`）不是選單，是
+`SAVE 200 @4A1F`、`PARTYSTRENGTH`、`GOTO 9B68h`——直接排一場隨機遭遇。
+城區的入口 3 才是城衛隊那個 GO／STAY 選單。
+
+要睡得成只有兩條路：**進屋**（同一支入口 2 對屋內寫 0／0），或讓城區的
+`4A07 != 0`（hypothesis：那是旅店的房間，城區設施 19）。remake 的測試駕駛
+現在遇到「這一區會打擾」就不睡並記一行，挑地方睡歸 #22。
 
 ## 打斷之後跑的是入口 3（2026-09-10）
 

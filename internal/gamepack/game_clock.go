@@ -41,6 +41,17 @@ const (
 	RestMinutesPerTick = 60 / RestTicksPerHour
 )
 
+// ClockECLBaseAddress 是七位時鐘在 ECL 記憶體裡的起點。原版 overlay-20
+// entry 2（`0392h`）把時間加上去之後就寫這七個 word（class 0，
+// `[4933h] + 6E00h + addr × 2`，spec 069／106），腳本讀的是其中的小時
+// （`49C9h` = base + TimeDigitHour）：城區上船的圖 `ecl3/0 9BAEh`
+// （`49C9 > 14` 跳過 `PICTURE 41`）、城門的馬車商人 `ADAAh`、索寇要塞的圖
+// `ecl4/21 AE48h`（`49C9 >= 14` → `4A18 = 8`）。
+//
+// 引擎這一側不投影的話，腳本讀到的永遠是 0，也就是「永遠是午夜」——白天的
+// 判斷全部成立（#20）。
+const ClockECLBaseAddress = 0x49C6
+
 // TimeRadix 是逐位的進位上限。
 type TimeRadix [TimeDigits]int
 
@@ -72,6 +83,18 @@ func ReadDOSTimeRadix(zipPath string) (TimeRadix, error) {
 
 // GameTime 是那個逐位的數。
 type GameTime [TimeDigits]int
+
+// ProjectClock 把七位時鐘寫進 ECL 記憶體的 `49C6h..49CCh`。**七位都要寫**——
+// 原版寫的是整個時間，只寫小時那一位會讓別的腳本讀到半舊的值，而那種錯誤
+// 不會出聲。
+func (t GameTime) ProjectClock(memory map[uint16]uint16) {
+	if memory == nil {
+		return
+	}
+	for digit, value := range t {
+		memory[ClockECLBaseAddress+uint16(digit)] = uint16(value)
+	}
+}
 
 // Normalise 重現 overlay-20 entry 5（`02B1h`）：由低位往高位掃，某一位到達
 // 它的上限就進位一次。最高位溢位時原版是讓隊伍每個人的 `+30h`（年齡）加一，

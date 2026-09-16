@@ -155,5 +155,16 @@ func (a *app) advanceGameMinute() {
 func (a *app) advanceGameTime(minutes int) {
 	a.gameTime[gamepack.TimeDigitMinuteOnes] += minutes
 	a.gameTime, _ = a.gameTime.Normalise(a.timeRadix)
+	a.projectGameClock()
 	a.advancePartyEffects(minutes)
+}
+
+// projectGameClock 把時鐘交給 ECL（`49C6h..49CCh`，spec 069）。推時鐘、換
+// machine（換圖、讀檔）之後都要叫——新的 machine 那七格是 0，不補就等於
+// 把時間倒回午夜（#20）。
+func (a *app) projectGameClock() {
+	if a.eventMachine == nil {
+		return
+	}
+	a.gameTime.ProjectClock(a.eventMachine.Memory)
 }

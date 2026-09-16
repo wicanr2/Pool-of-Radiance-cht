@@ -148,6 +148,7 @@ entry 4 的參數是（欄位索引, 數量）。函式開頭用 `DS:35D4h` 的�
 | entry 4 的換算與批次 | `gamepack.EffectList.AdvanceEffects`（單位是分）|
 | `0165h` 的三條規則 | 同上，見上一節 |
 | 走一步加一分 | `(*app).advanceGameMinute` → `advanceGameTime(1)` |
+| entry 2 把時間寫回 ECL 的 `49C6h..49CCh` | `GameTime.ProjectClock`，由 `advanceGameTime` 與 `configureEventSession`／讀檔各叫一次（#20）。**七位都要寫**；腳本讀的是 `49C9h`（小時），例如 `ecl3/0 9BAEh`、城門的馬車商人 `ADAAh`、`ecl4/21 AE48h` 都比 14 |
 | 休息迴圈每刻的 `0D5Eh` | `restParty` 裡逐刻 `advanceGameTime(RestMinutesPerTick)` |
 | `0100h:002Ah`（overlay-24 entry 2）的收尾 | `(*app).expiredEffectTeardown`：`NeedsTeardown()` 為真才叫。**地圖上目前一個代碼都不需要動作**——remake 實作過收尾的只有 `28h`（雲團），而雲團是盤面上的物件，走出戰場就不存在 |
 

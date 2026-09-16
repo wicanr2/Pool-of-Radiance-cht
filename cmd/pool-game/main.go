@@ -1615,6 +1615,11 @@ func (a *app) configureEventSession(session *eclvm.BlockSession) error {
 		return err
 	}
 	a.characterBinding = binding
+	// 換 machine 之後那七格時鐘是 0；不補就等於把時間倒回午夜，腳本的白天
+	// 判斷全部成立（#20，spec 069）。
+	if machine := session.Machine(); machine != nil {
+		a.gameTime.ProjectClock(machine.Memory)
+	}
 	// 接上一個 session 的時候，它握著的就是呼叫端剛設好的那一份 archive。
 	// （`restoreCampaign` 是先接再設 `eclArchive`，所以它自己再設一次。）
 	a.eclSessionArchive = a.eclArchive
@@ -2399,6 +2404,9 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.eclSessionArchive = campaign.ECLArchive
 	a.gameTime = campaign.Clock
 	a.eventSession, a.eventMachine = session, session.Machine()
+	// 讀檔的時鐘比 configureEventSession 晚設，所以那一次投影用的是舊值；
+	// 這裡再投一次才是存檔裡的時間（#20）。
+	a.projectGameClock()
 	a.introWaiting, a.introDone = false, true
 	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
 	a.cellEventPending, a.cellWaitingMenu = false, false

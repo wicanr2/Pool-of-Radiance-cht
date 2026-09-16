@@ -47,6 +47,8 @@ type mainlineDriver struct {
 	chars func(text string)
 	// reward 接手寶物畫面（市政廳的獎賞）：回 true 表示這一影格它處理掉了（#37：集中錢）。
 	reward func() bool
+	// resting 擋住重入：休息中若又走路，每一步都會問「受傷了沒」→ 又來休息。
+	resting bool
 }
 
 // reportBattle 在一場打完之後把計數記一行（只記一次）。

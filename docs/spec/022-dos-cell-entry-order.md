@@ -9,8 +9,10 @@
 - 工具：IDA Pro 9.4；16-bit raw overlay、base 0；非破壞性匯出保留位址、bytes 與
   operands。收據：`docs/audit/ida-overlay03-lifecycle-controller.json`。
 - Spec 002 已由 overlay-07 VM 初始化 `0207h..02C7h` 精確證明五個 header 依序寫到
-  `DS:4944..494C`。因此 `DS:4944=entry 0`、`DS:4946=entry 1`、
-  `DS:494C=entry 4`，不是名稱推測。
+  `DS:4944..494C`。因此 `DS:4944=entry 0`、`DS:4946=entry 1`、`DS:4948=entry 2`、
+  `DS:494A=entry 3`、`DS:494C=entry 4`，不是名稱推測。入口 2 與 3 的唯一呼叫點
+  都在 overlay-03 的紮營常式 `312Ah` 裡（入口 2 在紮營畫面之前、入口 3 在被打斷
+  之後，spec 114）。
 
 overlay-03 自由移動 controller `377Fh..3992h` 的原始順序如下：
 

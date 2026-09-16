@@ -76,6 +76,30 @@ func (a *app) openCamp() {
 	if a.campMember >= len(a.state.Party) {
 		a.campMember = 0
 	}
+	// 原版一進紮營畫面就先跑這一區的 ECL 入口 2（overlay-03 `3134h`，在
+	// 紮營畫面 `3141h` 之前），它把 `6DD2h`／`6DD3h` 寫成這一區的打斷設定。
+	// 不跑它兩個值永遠是 0，任何地方休息都不會被打擾（#24）。
+	if err := a.runRestEntry(); err != nil {
+		a.statusLine = err.Error()
+	}
+}
+
+// runRestEntry 跑目前區塊的命令集入口 2（spec 114）。入口 2 只寫變數、不產生
+// 玩家事件——貧民窟、城區、古托井、索寇要塞四份都是 `COMPARE`／`SAVE`／`EXIT`
+// ——所以這裡不接事件消費流程；真的吐了事件就照搜尋那條路走完，不要吞掉。
+func (a *app) runRestEntry() error {
+	if a.eventSession == nil || a.initialMap == nil {
+		return nil
+	}
+	result, err := gamepack.RunInitialSessionRestEntry(a.eventSession, a.initialMap.Grid, a.spawn)
+	if err != nil {
+		return fmt.Errorf("start Pool rest entry: %w", err)
+	}
+	if len(result.Events) == 0 {
+		return nil
+	}
+	a.cellWaitedOnce, a.cellTextSticky = false, false
+	return a.consumeInitialSearch(result)
 }
 
 // closeCamp 離開紮營。
@@ -427,6 +451,10 @@ func (a *app) campRestTimeLine() string {
 // `+5A4h`／`+5A6h` 換算回 ECL 位址是 `6DD2h`／`6DD3h`，而 ECL1／2／3 共 117 個
 // `SAVE` 指向它們。先前找不到那個 writer，是因為掃的是 overlay 的 disp16
 // 形狀——那看不到 ECL 的寫入。
+//
+// 寫它們的 `SAVE` 幾乎都在**入口 2**，由 `openCamp` 的 `runRestEntry` 跑
+// （overlay-03 `3134h`，在紮營畫面之前）。沒跑它的時候兩個值一直是 0，
+// 也就是哪裡都不會被打擾——那是 #24 的成因，不是原版行為。
 //
 // 沒有事件機器時回 0／0，那也是原版的初值（overlay-07 `0244h` 清成 0），
 // 意思是「這一區不會被打擾」。
