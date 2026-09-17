@@ -124,6 +124,25 @@ spec 140（自訂規則）的前例，而且標示要比 spec 140 更明顯：
 >     - 單一 seed 的探針超過 10 分鐘；
 >     - 使用者的「強制打開」原意需要產品自動開作弊。
 
+## 2026-09-17 收在哪
+
+第 1～8 步做完，#43 關閉（`879adc2`）。
+
+- **規格與盤點**：spec 141 READY。隊伍造成傷害只有兩個入口：`resolveTacticalAttack` 與 `applySpellDamage`；
+  能量吸取、ECL `DAMAGE` 只打隊員，不蓋。
+- **產品**：`cmd/pool-game/cheats.go`。存檔新增 `Cheats`／`CheatsUsed`。F1 說明頁本來就超出框，改成兩頁。
+  標示的分隔字交給 locale，因為英文字型的全形斜線會畫成 `@`。
+- **測試**：選單按鍵與存讀檔；鎖 HP 正反對照；一擊斃命近戰正反對照（打到沒打死：關著 11 次、開著 0 次）；
+  法術與敵方傷害；說明頁兩頁；存檔往返。治具 `hp_lock_test.go` 改呼叫產品的 `restorePartyHitPoints`，
+  `TestMainlineProbeHPLockedRouteA` 照樣綠。
+- **探針**：seed 136..150 裡，走到諾里斯的 6 個全部打贏；之後 3 個停在古托井地面、3 個死在索寇中庭的巡邏；
+  9 個走不到諾里斯（playtest 補十四）。收據 `TestMainlineProbeHouseRuleCheatAtNorris`（seed 142）會紅，
+  停在古托井地面 (13,4)。
+- **對拍**：`v.1.1.10-20260917`，照樣停在 #42；拍到的 33 張逐項不變。截圖用 `tools/capture-help-cheats.sh`
+  拍，放在 `docs/screenshots/cheat-menu/`。
+- **全套紅燈**：六條，原本五條加上新的收據探針。
+- **沒有觸發停止線**：沒有改 `internal/combat`，作弊關著時沒有測試或對拍數字變化，單一 seed 約 5 秒。
+
 ## 已知風險與待決
 
 - **F1 說明頁的空間**：框已經畫了十幾行。加一行可能超出 (568,340)，也可能擠掉出處那幾行。先量，
