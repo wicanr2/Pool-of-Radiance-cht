@@ -14,6 +14,7 @@ package main
 // 穿上鏈甲、盾與長劍，這條測的是路通不通，不是一級隊伍打不打得過。
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -169,4 +170,75 @@ func TestSlumsQuietRoomLetsThePartyRest(t *testing.T) {
 		t.Fatalf("走進安靜的屋內卻開打了：%q", a.eventText)
 	}
 	t.Logf("rest indoors at (%d,%d) terrain %d", a.spawn.X, a.spawn.Y, code)
+}
+
+// probeRiverDetour 打開時，house rule 探針買完甲之後改走斯托揚諾河那條陸路（goal
+// `issue-22-26-levels-before-sokal.md` 第 4 步的量測）。預設關：主線收據照原本的路線。
+var probeRiverDetour = false
+
+// riverDetour 從城區走去金字塔：城區西出 → 貧民窟 → 古托井西緣 → 波多廣場西緣 → 野外 26
+// → 交給探索器找 (6,14) 的小船與金字塔。每場戰鬥記編成與隊伍 HP，停在進了金字塔或全滅，
+// 用 `Fatalf` 報結果（這是量測，不是收據）。
+func (d *mainlineDriver) riverDetour() {
+	t, a := d.t, d.a
+	t.Helper()
+	street := func(x, y int) bool { return d.terrain(x, y) == 0 }
+	if a.spawn.Map.Archive == 3 && a.spawn.Map.BlockID == 0 {
+		d.leaveMap("river detour: city → west", func(x, y int) bool { return x == 0 && y == 4 }, street, false, 3)
+	}
+	d.crossSlums(false)
+	westEdge := func(x, y int) bool { return x == 0 && a.initialMap.Grid.CanMoveDungeonWrapped(x, y, 6) }
+	if !d.walkAllowing("river detour: Kuto west edge", westEdge, d.kutoSafe, false) {
+		d.fatalf("river detour: cannot reach Kuto's Well west edge")
+	}
+	d.leaveMap("river detour: Kuto → Podol", westEdge, d.kutoSafe, false, 3)
+	d.note("river detour: Podol at (%d,%d) %s", a.spawn.X, a.spawn.Y, d.partyLine())
+	anywhere := func(int, int) bool { return true }
+	if !westEdge(int(a.spawn.X), int(a.spawn.Y)) && !d.walkAllowing("river detour: Podol west edge", westEdge, anywhere, false) {
+		d.fatalf("river detour: cannot reach Podol's west edge")
+	}
+	d.settle()
+	d.face(3)
+	// 不經過 `settle`：落點 (11,28) 是野外 26 的地點 4，一踏上去就問要去哪，`settle` 答第
+	// 0 項會把隊伍送回波多廣場。`drainWildernessEvents` 答最後一項。
+	d.step(ebiten.KeyArrowUp)
+	drainWildernessEvents(a)
+	if a.eclArchive != 7 || a.eventSession.CurrentBlockID() != 26 {
+		d.fatalf("river detour: Podol's west edge led to ECL%d/%d, not the wilderness", a.eclArchive, a.eventSession.CurrentBlockID())
+	}
+	wilderness := func(a *app) bool {
+		switch {
+		case a.eclArchive == 6 && a.eventSession.CurrentBlockID() == 25,
+			a.eclArchive == 7 && a.eventSession.CurrentBlockID() == 26,
+			a.eclArchive == 8 && a.eventSession.CurrentBlockID() == 27:
+			return true
+		}
+		return false
+	}
+	var failures []string
+	var lastBattle *tacticalState
+	_, reachable := exploreWorldWithFlags(t, dosZIPForTests, 136, 0, 8, 300000,
+		map[[3]int]bool{}, map[[3]int]bool{}, map[[3]int]int{}, map[string]int{}, map[[4]int]int{},
+		map[[3]int]bool{}, map[string]bool{}, map[int]bool{}, map[uint16]uint16{}, noBoatOverride,
+		&failures, nil, a, nil, func(a *app) bool {
+			if a.tactical != nil && a.tactical != lastBattle {
+				lastBattle = a.tactical
+				names := []string{}
+				for _, monster := range a.combatMonsters {
+					names = append(names, fmt.Sprintf("%s×%d", monster.Record.Name, monster.Spawn.Count))
+				}
+				d.note("river detour: battle ECL%d/%d wilderness (%d,%d): %v %s", a.eclArchive,
+					a.eventSession.CurrentBlockID(), a.eventMachine.Memory[wildernessX],
+					a.eventMachine.Memory[wildernessY], names, partyHP(a))
+			}
+			// 離開野外也停：探索器不是往金字塔走的，走回波多廣場或古托井量到的就不是野外。
+			return a.gameOver || !wilderness(a)
+		}, true)
+	if !reachable {
+		t.Skip("original DOS ZIP is intentionally not tracked")
+	}
+	t.Fatalf("river detour result: pyramid=%t over=%t at ECL%d/%d %+v wilderness (%d,%d) %s",
+		a.eclArchive == 7 && a.eventSession.CurrentBlockID() == 22, a.gameOver, a.eclArchive,
+		a.eventSession.CurrentBlockID(), a.spawn, a.eventMachine.Memory[wildernessX],
+		a.eventMachine.Memory[wildernessY], partyHP(a))
 }

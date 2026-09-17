@@ -1020,6 +1020,9 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			}
 		}
 		t.Logf("house rule detour: after shopping %s pool=%v", outfitter.partyLine(), application.state.PooledMoney)
+		if probeRiverDetour {
+			outfitter.riverDetour()
+		}
 	}
 	for guard := 0; guard < 5000 && slumsCleared; guard++ {
 		settled := application.eventMachine.Memory[0x4ABB] == 0xFF &&
@@ -1131,14 +1134,20 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		// 受傷或催眠用完就地紮營（要塞裡也一樣），再繼續探索。
 		restUntilHealed()
 		// 要塞裡巡邏還在時是 2／1（spec 114），旅店又不在這張圖上：睡不成而 `hurt`
-		// 還成立（`partyHurt` 含「催眠術用完」），下面那一趟一步都不會走就收工。以前
-		// 這樣空轉滿 24 趟才報「沒交件」（2026-09-17 seed 142：HP 全滿、催眠用完）；
-		// 在這裡就報原因。
+		// 還成立（`partyHurt` 含「催眠術用完」），下面那一趟一步都不會走就收工——以前
+		// 這樣空轉滿 24 趟才報「沒交件」（2026-09-17 seed 142：HP 全滿、催眠用完）。
+		// 睡不成就帶著現在的狀態往下打（原版玩家也只能這樣），有人倒地才停。
+		pressOn := false
 		if hurt(application) && application.eventMachine.Memory[0x4AA7] != 0xFF && !readyToHandIn(application) {
-			t.Fatalf("cannot rest in Sokal Keep at %+v (interruption %d／%d): sleepReady=%t unmemorised=%t party=%s",
-				application.spawn, application.restInterruption().Period,
-				application.restInterruption().Threshold, sleepReady(application),
-				pendingMemorisation(application), partyHP(application))
+			if down := partyDown(application); down != "" {
+				t.Fatalf("cannot rest in Sokal Keep at %+v with %s down (interruption %d／%d): %s",
+					application.spawn, down, application.restInterruption().Period,
+					application.restInterruption().Threshold, partyHP(application))
+			}
+			pressOn = true
+			t.Logf("Sokal pass %d: cannot rest (interruption %d／%d, sleepReady=%t), pressing on: %s",
+				pass+1, application.restInterruption().Period, application.restInterruption().Threshold,
+				sleepReady(application), partyHP(application))
 		}
 		_, reachable = exploreWorldWithFlags(t, zipPath, int64(136+pass), pass%4, 8, 300000,
 			map[[3]int]bool{}, map[[3]int]bool{}, transitionUses, menuTurn, exitUses,
@@ -1158,7 +1167,8 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 					t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
 				}
 				return a.eventMachine != nil &&
-					(a.eventMachine.Memory[0x4AA7] == 0xFF || readyToHandIn(a) || hurt(a))
+					(a.eventMachine.Memory[0x4AA7] == 0xFF || readyToHandIn(a) ||
+						(hurt(a) && (!pressOn || partyDown(a) != "")))
 			}, false)
 		if !reachable {
 			t.Fatal("the loaded natural campaign could not continue")
