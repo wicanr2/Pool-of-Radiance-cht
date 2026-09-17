@@ -86,7 +86,7 @@
       "layer": "verification",
       "title": "探索器測試的玩家策略層：休息／治療／訓練",
       "body": "策略層已有：包紮、催眠、集火、旅店休息並睡到早上、城衛隊問句照安全選項答、交件集中獎金、訓練所、隊伍 pool 買甲。兩條主線探針停在索寇要塞 (8,5) 全滅；house rule seed 136..150 只有 143 打贏諾里斯；三條探索器測試卡在走路迴圈（2026-09-17 補九）。",
-      "acceptance": "四條探索器測試回綠；主線探針至少走過貧民窟 25 場與索寇要塞而不全滅，或記錄在哪一場、什麼等級全滅。",
+      "acceptance": "貧民窟不因睡不成而死（屋內或旅店挑近的；白金用完明確停下）；探針依 #26 順序多拿等級再量索寇 (8,5)；三條探索器測試回綠或改成記錄停在哪；多 seed 結局表。",
       "verify": {
         "kind": "manual",
         "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestRandomWalkReachesKnownContentWithoutFailing|TestSokalKeepOpensTheOtherBoatRoutes|TestWorldTourReachesTheAreasBehindTheHarbour|TestPlayingTheWorldCompletesCommissionsOnItsOwn'` 是否全綠，工具不跑測試"
@@ -110,7 +110,7 @@
       "layer": "verification",
       "title": "主線路線表補委任獎賞、建議等級與順序",
       "body": "委任只給錢不給經驗值（`ecl3/8 9EC2h`，exact）。建議順序第 1、2 段與進城辦事的時刻已實跑（seed 143：市政廳 `49C9 >= 14` 鎖門，spec 102），第 3、5 段沒跑；第 4 段的索寇要塞 (8,5) 全滅。",
-      "acceptance": "spec 137 多一欄「建議等級／順序」，每個委任區有最大一場的怪物清冊與獎賞金／經驗；探針照順序跑並記每段等級。",
+      "acceptance": "建議順序第 3 段（斯托揚諾河、波多廣場隨機場）由探針實跑並記等級、XP、時刻、最大一場與結果；第 4 段索寇 (8,5) 用之後的等級再量；spec 137 拿掉「hypothesis，待探針實跑」。",
       "verify": {
         "kind": "present",
         "paths": [
@@ -120,6 +120,22 @@
         "note": "建議順序還標著待實跑就是還沒做；探針照順序跑完再把那個標記拿掉"
       },
       "github_issue": 26
+    },
+    {
+      "id": "city-night-lock-original-receipt",
+      "layer": "verification",
+      "title": "城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟",
+      "body": "spec 102〈晚上鎖門與城衛隊〉的分支與比較方向已對過原版；原版晚上站上鎖門格的畫面沒拍，地形 0 牆型 9 的十一個門面沒對到建築。不擋主線。",
+      "acceptance": "dosgolem 原版晚上在 (3,4) 朝東的鎖門問句畫面與 `6E7D = 8`；十一個門面對到建築名寫進 spec 102 並拿掉 OPEN 那一條。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/102-city-location-dispatch.md"
+        ],
+        "pattern": "牆型 9 的那十一個門面是哪幾棟建築",
+        "note": "spec 102 OPEN 還列著這一條就代表還沒做"
+      },
+      "github_issue": 39
     }
   ]
 }
