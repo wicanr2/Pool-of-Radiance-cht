@@ -52,9 +52,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
-- [ ] **主線從開場到結局連續跑過一次。** 使用者 2026-09-17 決定：主線收據改成「用產品的作弊選單（spec 141）從標題以正常按鍵跑到結局」，原版那一側用 dosgolem 鎖 HP 跑同一條路線，逐段對照必經區塊與旗標。不開作弊的正常強度改為可選（#22）。remake 那一側已有治具版鎖血跑到結局（playtest 補十三）。
-      **驗收**：TestMainlineProbeCheatMenuToEnding 開產品作弊選單從標題跑到結局；dosgolem 作弊跑同一條路線到結局；docs/audit/cheat-playthrough-compare.md 逐段對照沒有未開 issue 的不一致。
-      **討論**：[#5](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/5)
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
@@ -73,6 +70,15 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **導覽結束那一格紮營休息完，又印一次導覽結尾句。** 新遊戲導覽結束後在城區 (0,4) 休息 2 小時，收尾停在格子文字「OUR TOUR IS ENDED...」，發行包對拍在 field-cast 之前停下。v.1.1.5 的對拍走得完；與 #41 無關（拿掉區塊載入寫入結果相同）。原版同一格休息完的畫面還沒量。
       **驗收**：dosgolem 量原版在同一格休息 2 小時後的畫面；remake 從 Update() 送鍵的結果一致並有測試；發行包對拍走完 35 張。
       **討論**：[#42](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/42)
+- [ ] **索寇要塞回程船：remake 落在貧民窟 ECL2/20，原版是城區碼頭 ECL3/0。** 兩邊作弊通關對照（#5）抓到：ecl4/21 9977h..998Fh 寫 C04B=15、C04C=1、朝向 3、SAVE 3 @6E12、NEWECL 0，原版落 ECL3/0 (15,1)；remake 的 checkpoint 是 ECL2/20／GEO2/20 (15,1)。
+      **驗收**：索寇邊界答 YES 之後 eclArchive=3、區塊 0、GEO3/0 (15,1) 朝西，測試從 Update() 送鍵；重跑 TestMainlineProbeCheatMenuToEnding 與 tools/cheat-playthrough-compare.py，sokal 段不再有出口不同。
+      **討論**：[#44](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/44)
+- [ ] **結局頁數：remake 3 頁，原版駕駛只攔到 1 頁。** ecl5/7 A815h SAVE FE → A82Ah PROGRAM 8 → A82Dh PRINTCLEAR。原版駕駛在 4ABA=FE 之後只看到 A82Dh 那一頁；PROGRAM 8 的過場有幾頁、是否等鍵還沒量，不確定差異在哪一側。
+      **驗收**：dosgolem 從 workplace/dosgolem-cheat/ending-hall.state 逐幀量 PROGRAM 8 的頁數；確認偏差側並修正或修正駕駛；對照報表的結局頁數一列相同。
+      **討論**：[#45](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/45)
+- [ ] **即死路徑不經過扣血入口 2266h（城堡毒荊棘）。** 原版城堡內部毒荊棘答 YES：「D DIES.」，-intercept-damage 零筆攔截。寫入者還沒定位；重現狀態檔 workplace/dosgolem-cheat/ending-hedge.state。
+      **驗收**：對 +10Ch 設寫入監看量出寫入者的 overlay／entry 並寫進 spec 084；決定攔截是否涵蓋、remake 的即死是否一致。
+      **討論**：[#46](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/46)
 
 ### 三、版面與資料的差距
 
