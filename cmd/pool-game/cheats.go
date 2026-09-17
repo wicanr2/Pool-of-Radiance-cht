@@ -72,7 +72,7 @@ func (a *app) applyCheatLockHP() {
 }
 
 // restorePartyHitPoints 把隊員補回上限、倒地與死亡拉回正常，並計數。作弊選單的
-// 鎖 HP 與測試治具（`hp_lock_test.go`）共用這一支。
+// 作弊選單的鎖 HP 用這一支（spec 141）。
 func restorePartyHitPoints(a *app, counts *cheatRestoreCounts) {
 	if state := a.tactical; state != nil {
 		for index := 1; index < len(state.Roster) && index < len(state.PartySlot); index++ {

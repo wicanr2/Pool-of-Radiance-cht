@@ -322,17 +322,6 @@ func (d *mainlineDriver) podolRouteA(walkThroughBoundary func(gamepack.MapKey), 
 	d.note("route (a): Podol handed in 4AB0=%02X 4AC1=%d %s", memory[0x4AB0], memory[0x4AC1], d.partyLine())
 }
 
-// TestMainlineProbeHPLockedRouteA 是 #40 的診斷收據：HP 鎖定、house rule、路線 (a)，
-// 從標題以正常按鍵跑到結局。**不證明打得贏**——那是 #22／#5。
-func TestMainlineProbeHPLockedRouteA(t *testing.T) {
-	lock := &hpLock{}
-	defer lock.install()()
-	probeRouteA = true
-	defer func() { probeRouteA = false }()
-	defer func() { t.Log(lock.line()) }()
-	runMainlineProbe(t, true, 142)
-}
-
 // slumsBoothFight 打貧民窟那個「沒貨可賣」的攤位（地形 19，`ecl2/20 AE1Eh`）：
 // LEAVE／ATTACK／SPEAK 答 ATTACK → "THE MAN RUNS SCREAMING INTO THE BACK OF THE BOOTH."
 // → 7×4、6×15 → 只要潛在委託人那一支沒走完（`4A81 != 255`）就 `GOSUB B69Ch` 計數。

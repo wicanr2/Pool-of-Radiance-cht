@@ -196,6 +196,10 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	}
 
 	outfitter := buildManualParty(t, application, step, idle, houseRule)
+	// #5：主線收據開產品的作弊選單，全程不關（CLAUDE.md §3 的口徑）。
+	if probeCheatWholeRun {
+		outfitter.setCheats(true, true)
+	}
 	for count := 0; count < 64 && application.encounter == nil; count++ {
 		key := ebiten.KeyArrowUp
 		if application.cellEventPending || application.cellWaitingMenu {

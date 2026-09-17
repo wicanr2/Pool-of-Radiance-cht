@@ -73,6 +73,37 @@ else:            remaining = 0;           deficit = damage - hp
 「赤字大於 9 直接死透」就是規則書的 −10 點；狀態 4 是剛好歸零的不省人事，
 5 是瀕死，6 是死透。
 
+### 呼叫契約與所有呼叫端（2026-09-17，exact）
+
+`2266h` 是 `f(目標: far pointer; 傷害: byte)`，Pascal 慣例（IDA 9.4 匯出 `workplace/ida-g5-ov25/ov25-2266.json`）：
+
+```
+2266  55 / 89 E5 / 83 EC 02        push bp; mov bp,sp; sub sp,2
+2274  C4 7E 08                     les di,[bp+8]        ; 目標 far pointer
+2277  26 8A 85 1B 01               mov al,es:[di+11Bh]  ; 目前 HP
+227C  3A 46 06                     cmp al,[bp+6]        ; 傷害 byte
+22C9  26 C6 85 0C 01 06            mov byte es:[di+10Ch],6
+22DA  26 C6 85 0C 01 05            mov byte es:[di+10Ch],5
+2301  26 C6 85 0C 01 04            mov byte es:[di+10Ch],4
+```
+
+**狀態寫在 `+10Ch`**（上面「`+10Dh = 0`」那一行是新狀態不在 {0,1} 時另外清的欄位）。
+
+overlay-25 的 stub segment 是 `(14FCh − ACh − 3B0h) ÷ 16 = 010Ah`（spec 109），所以呼叫它的遠呼叫位元組是
+`9A AC 00 0A 01`。掃全部 38 顆 overlay，只有三處：
+
+| 呼叫端 | 用途 |
+|---|---|
+| overlay-03 `2A71h` | ECL `DAMAGE`（本 spec） |
+| overlay-13 `048Dh` | 戰鬥攻擊（spec 050 的攻擊區段之後） |
+| overlay-24 `14FBh` | 法術 |
+
+同一個掃描的正對照：overlay-13 `16D2h` 的 `9A 3E 00 00 01` 是 spec 050 已知的 `0100:003E` 呼叫。
+
+所以**原版所有扣血都經過 stub `010Ah:00ACh`**。dosgolem `shots -intercept-damage` 在這裡讀堆疊上的
+`[sp+4]` 傷害、`[sp+6]`／`[sp+8]` 目標，就能鎖住隊員的 HP、讓怪物一擊斃命（#5）。
+戰鬥中陣營看 `+10Eh`：衛兵攔截那一場量到隊員 `0`、怪物 `1`（`docs/audit/dosgolem-intercept-damage.json`）。
+
 ## 訊息
 
 overlay-03 的字串：`" is hit for "`、`" points of damage."`、`" dies. "`。

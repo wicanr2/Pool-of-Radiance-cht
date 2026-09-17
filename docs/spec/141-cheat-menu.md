@@ -53,9 +53,7 @@ CLAUDE.md §3／§6 規定原版忠實是驗收基準、主線驗收不得依賴
 - 戰鬥外：`state.Party` 每一位的 `CurrentHP` 補到 `MaxHP`，狀態 4／5／6 拉回 0。
 
 寫回次數記在 app 上（戰鬥中、戰鬥外、從死亡拉回來各一個計數），測試與探針讀它。
-形狀與 `cmd/pool-game/hp_lock_test.go` 的治具版相同。治具版改成呼叫同一支寫回函式，
-但仍由治具掛在 `afterTick`：治具要跨 app 實例（讀檔之後換新的 app）統計、不寫
-`CheatsUsed`，而且不能讓探針存檔多出作弊標記。
+形狀沿用 #40 的測試治具（已刪除，由 `TestMainlineProbeCheatMenuToEnding` 開產品作弊選單取代）。
 
 **限制**：寫回在 tick 結束時才做，一個 tick 內從滿血打到全滅，仍會看到全滅畫面。
 治具版在補十三的整趟路線量到 0 次。

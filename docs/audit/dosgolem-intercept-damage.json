@@ -1,0 +1,77 @@
+{
+ "schema": "pool-dosgolem-intercept-damage/1",
+ "generator": "dosgolem",
+ "generator_revision": "b4d5a3f",
+ "start_state": "workplace/orc-drive/guards2.state（貧民窟衛兵攔截，戰鬥剛開始）",
+ "stub": "010A:00AC（overlay-25 entry 28 `2266h`）",
+ "party_side_field": "+10Eh：我方 0、敵方 1",
+ "runs": {
+  "log-q6": {
+   "hook": "stub=010A:00AC,hp=11B,side=10E,combat=4954:5",
+   "keys": "rep:8:q",
+   "calls": 15,
+   "callers": [
+    "1E6F:0492",
+    "1ED2:0492"
+   ],
+   "sides": [
+    0,
+    1
+   ],
+   "party_calls": 11,
+   "party_changed_to_zero": 0,
+   "foe_calls": 4,
+   "foe_set_to_hp": 0,
+   "final_counts_party_foe": "041f",
+   "last_frame": "08-q.png",
+   "last_frame_sha256": "00a133570c14b41b1d0d9fee71f7ddafee9e8506899121df9475a55bd61fe353"
+  },
+  "lock-q": {
+   "hook": "stub=010A:00AC,hp=11B,side=10E,combat=4954:5,party=0,lock",
+   "keys": "rep:10:q",
+   "calls": 104,
+   "callers": [
+    "1E6F:0492",
+    "1ED2:0492",
+    "217C:0492",
+    "21DF:0492"
+   ],
+   "sides": [
+    0,
+    1
+   ],
+   "party_calls": 61,
+   "party_changed_to_zero": 61,
+   "foe_calls": 43,
+   "foe_set_to_hp": 0,
+   "final_counts_party_foe": "0500",
+   "last_frame": "10-q.png",
+   "last_frame_sha256": "3c8618eb321083e211c413d24d52ac760bbede159a58439ddc653b6f343d263f"
+  },
+  "lockkill-q": {
+   "hook": "stub=010A:00AC,hp=11B,side=10E,combat=4954:5,party=0,lock,kill",
+   "keys": "rep:8:q",
+   "calls": 55,
+   "callers": [
+    "1E6F:0492",
+    "1ED2:0492",
+    "217C:0492",
+    "21DF:0492"
+   ],
+   "sides": [
+    0,
+    1
+   ],
+   "party_calls": 31,
+   "party_changed_to_zero": 31,
+   "foe_calls": 24,
+   "foe_set_to_hp": 16,
+   "final_counts_party_foe": "0500",
+   "last_frame": "08-q.png",
+   "last_frame_sha256": "fc8af6d62c6e6e3941a9737520c8b36a9ee17ecfb75298b0c12a7ae0c3e58c1e"
+  }
+ },
+ "negative_control_note": "log 那一趟最後一張是空的隊伍名單與 PRESS ANY KEY TO CONTINUE（全滅）",
+ "verdict": "ok",
+ "problems": []
+}

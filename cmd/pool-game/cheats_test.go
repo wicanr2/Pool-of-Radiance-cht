@@ -126,8 +126,7 @@ func TestCheatMenuTogglesFromKeysAndRemembersItWasUsed(t *testing.T) {
 	}
 }
 
-// 鎖 HP：同一場（貧民窟衛兵攔截，seed 136）不開全滅、開了打贏。負對照在
-// `TestHPLockTurnsTheSlumsGuardsWipeIntoAWin`（治具版）已經跑過同一個 seed，這裡照樣先跑一次。
+// 鎖 HP：同一場（貧民窟衛兵攔截，seed 136）不開全滅、開了打贏。負對照先跑。
 func TestCheatLockHPTurnsTheSlumsGuardsWipeIntoAWin(t *testing.T) {
 	const seed, guards = 136, 13
 	plain := slumsWallFightWith(t, seed, guards, nil)
