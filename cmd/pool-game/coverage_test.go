@@ -771,23 +771,28 @@ walk:
 			now := [2]uint16{application.eventMachine.Memory[0x4AA7],
 				application.eventMachine.Memory[0x4A01]}
 			if now != quest {
+				block := -1
+				if application.eventSession != nil {
+					block = int(application.eventSession.CurrentBlockID())
+				}
+				inCity := application.eclArchive == cityArchive && block == cityBlock
 				if now[1] != quest[1] {
-					block := -1
-					if application.eventSession != nil {
-						block = int(application.eventSession.CurrentBlockID())
-					}
-					if application.spawn.Map.BlockID == 21 ||
-						application.eclArchive == cityArchive && block == cityBlock {
+					if application.spawn.Map.BlockID == 21 || inCity {
 						t.Logf("4A01 %d→%d 於 GEO%d/%d (%d,%d) ECL block %d",
 							quest[1], now[1], application.spawn.Map.Archive,
 							application.spawn.Map.BlockID, application.spawn.X,
 							application.spawn.Y, block)
 					}
 				}
-				quest = now
-				for key := range approached {
-					delete(approached, key)
+				// 地點要重新走近，只在航線開了（`4AA7`）的時候。`4A01` 是區塊暫存：每進出一棟
+				// 有自己區塊的建築就清成 0（原版載入區塊時清，spec 106、#41），港務長的票也會跟著
+				// 沒掉，下次路過又給一張。拿它當進度，探索器會在港務長與訓練所之間繞到預算用完。
+				if now[0] != quest[0] {
+					for key := range approached {
+						delete(approached, key)
+					}
 				}
+				quest = now
 			}
 		}
 		if !application.treasureActive {
@@ -868,8 +873,7 @@ walk:
 				avoid[key] = true
 			}
 		}
-		// boat：**測試治具**，不是遊玩。港務長那一段目前推不動（原版載入區塊時
-		// 清 `4A01`，remake 還沒有，#41），而碼頭的船照著 `4AC4`
+		// boat：**測試治具**，不是遊玩。不經過港務長，而碼頭的船照著 `4AC4`
 		// 決定去哪。把那三個值直接寫進去，就能把主線之後的區域先走一遍，
 		// 找出那些區域自己的問題——走得到不走得到是另一個問題。
 		if boat != noBoatOverride && application.eventMachine != nil {
@@ -1324,9 +1328,9 @@ walk:
 					}
 				}
 				// 同一條路上要走到亡魂那一段：登陸的遭遇選「交涉」，Ferran
-				// 問話必須先說謊、再說實話（spec 102；只在 remake 還沒有載入區塊的
-				// 清除時才要，#41）。第一次說謊把船票 `4A01` 清成 255，但不完成
-				// `4A26`／`4AA7`；探索器留在要塞再觸發一次，說實話才完成亡魂委託並保留已清掉的船票。
+				// 問話先說謊、再說實話（spec 102）。說謊不完成 `4A26`／`4AA7`，
+				// 探索器留在要塞再觸發一次，說實話才完成亡魂委託。船票 `4A01` 回城時
+				// 由載入區塊的清除歸零（spec 106），說謊寫的 255 不是必要條件。
 				if flags != nil {
 					// 港務長的完整航線選單：SOKAL 是回索寇要塞（已經走過），
 					// NONE 是不上船，所以在 EAST／WEST／BAY 之間輪流挑。
@@ -2583,9 +2587,8 @@ func chooseAreaExit(application *app, exitUses map[[4]int]int) (areaExit, bool) 
 	return best, found
 }
 
-// 世界巡迴：**測試治具**，不是玩家路徑。港務長那一段目前推不動
-//（原版載入區塊時清船票旗標 `4A01`，remake 還沒有，#41），所以主線之後的區域
-// 一直沒有被真的跑過——只有 spec 103 的入口掃描碰過它們，而那是乾淨變數的
+// 世界巡迴：**測試治具**，不是玩家路徑。它不經過港務長，直接把航線寫進去，
+// 讓主線之後的區域在完整的前端底下跑一遍——spec 103 的入口掃描是乾淨變數的
 // 靜態掃描，沒有前端、沒有戰鬥、沒有選單。
 //
 // 這一條把碼頭的目的地直接寫進 `DS:4AC4h`，讓探索器把四條航線各走一遍，

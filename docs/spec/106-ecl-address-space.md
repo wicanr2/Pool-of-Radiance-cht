@@ -1,8 +1,8 @@
 # Spec 106：ECL 的位址空間是虛擬的
 
-狀態：READY（分類器、四個類別各自的儲存、class 4 已讀出來的特例、載入區塊時清掉的兩段）；
-DRAFT（class 1 的 entry 13 分支、class 4 特例清單是否還有沒讀到的、`4959h` 的寫入時機）。
-remake 還沒有載入區塊的清除（#41）。
+狀態：READY（分類器、四個類別各自的儲存、class 4 已讀出來的特例、載入區塊時的寫入）；
+CONFORMED（載入區塊時的寫入：`internal/gamepack/block_load.go`，#41）；
+DRAFT（class 1 的 entry 13 分支、class 4 特例清單是否還有沒讀到的、`4959h` 在哪一條路徑寫 1）。
 
 ## 一句話
 
@@ -115,7 +115,17 @@ class 0 的 `4A00h..4A1Fh` 與 class 1 的 `6E79h..6E82h` 清成 0，見下方
 ## 載入區塊時清掉的兩段
 
 overlay-07 entry 3（`01C8h`，ECL 區塊載入的初始化；overlay-07 SHA-256
-`a59f9d16…78ae`，IDA 9.4，overlay 檔內偏移）：
+`a59f9d16…78ae`，IDA 9.4，overlay 檔內偏移）在清除之前先無條件寫五個 ECL 變數：
+
+| 位元組位址 | 指令 | ECL 位址 | 值 |
+|---|---|---|---|
+| `0237h` | `mov word es:[([4937h])+5C2h], 0FFh` | `6DE1h` | `FFh` |
+| `0244h` | `mov es:[([4937h])+5A4h], 0` | `6DD2h` | 0（休息打斷週期，spec 114）|
+| `024Fh` | `mov es:[([4937h])+5A6h], 0` | `6DD3h` | 0（休息打斷門檻）|
+| `025Ah` | `mov es:[([4933h])+1CAh], 0` | `49E5h` | 0 |
+| `02D1h` | `mov word es:[([4933h])+1CCh], 1` | `49E6h` | 1（遭遇距離的走法，spec 078）|
+
+然後才是兩段清除：
 
 ```
 02D8  80 3E 59 49 00      cmp  byte [4959h], 0
@@ -143,14 +153,26 @@ overlay-07 entry 3（`01C8h`，ECL 區塊載入的初始化；overlay-07 SHA-256
 - **清的範圍**：class 0 `4A00h..4A1Fh`（32 格），class 1 `6E79h..6E82h`（10 格）。
   exact（位元組）。
 - **`4959h` 擋一次**：非 0 時跳過清除並把它歸零。寫 1 的是 overlay-16
-  `03EFh`（建隊選單那一支，推測是讀檔之後第一次載入區塊，讓存檔裡的暫存
-  存活），寫 0 的另有 overlay-11 `038Ch`。旗標語意是 strong inference。
+  `03EFh`（建隊選單那一支），寫 0 的另有 overlay-11 `038Ch`。**讀檔那一條路
+  不寫它**：在市政廳職員格（`4A01 = 1`）紮營存 J 槽、重開程式從建隊選單 L 讀回，
+  `DS:4959h` 的 CPU 寫入監看零筆、十萬指令粒度的取樣一直是 0，而讀回來的
+  `4A01` 仍是 1（exact）。`4959h` 在哪一條路徑寫 1 還沒量到。
 - **實跑收據**：`tools/dosgolem-4a01-block-load.py` 從貧民窟狀態走進市政廳找職員
   再走出來，對 `2EA2:0202`（class 0 `4A01h`）設寫入監看，量到兩筆寫入：
   職員 `00→01`（`1997:0CBF`，ECL `SAVE`）與走出市政廳 `01→00`
   （`1997:02FE`，即上面的 `02F9` 指令之後）；`1997` 段經核對是 overlay-07。
   收據在 `docs/audit/dosgolem-4a01-block-load-clear.json`（dosgolem `b4d5a3f`）。
-  「每一次 `NEWECL` 都經過 entry 3」只量了這一個換區，是 strong inference。
-- **remake 現況**：共用 engine 的區塊切換沒有給 title 的載入 hook，Pool adapter
-  也沒有清這兩段，於是 `4A01h` 留在 1——職員走 BACK SO SOON、港務長不開口。
-  修正追蹤在 issue #41。
+- **跨 archive 與讀檔**（`tools/dosgolem-block-load-clear-cases.py`，收據
+  `docs/audit/dosgolem-block-load-clear-cases.json`）：
+  - 貧民窟（ecl2/20，`4A00 = FFh`）走進城區（ecl3/0）那一步：`4A00 FF→00 ← 1997:02FE`，
+    `6E7D 0B→00 ← 1997:0323`；**之後**城區入口才寫 `4A17 00→01`（`1997:0CBF`）與
+    `6E7D 00→0B`（`1997:0CED`）。清除早於新區塊的入口，exact。前三步沒有換區，零筆寫入。
+  - 讀檔之後第一次換區（走出市政廳）：`4A01 01→00 ← 2BA4:02FE`，那一步的 `2BA4` 段
+    逐位元組等於 overlay-07。
+  - 五個附帶寫入在量測的狀態裡已經等於要寫的值，監看看不到變化；證據是位元組。
+- **remake**：共用 engine `eclvm.BlockSession.SetBlockLoadWrites` 以資料宣告，
+  `SwitchBlock` 之後、新區塊第一個入口之前套用；Pool 的宣告是
+  `gamepack.BlockLoadWrites()`，在每個建 session 的建構子接上。新遊戲不經 `NEWECL`，
+  由前端呼叫 `ApplyBlockLoadWrites` 套一次；讀檔走 `Restore`，不套。
+  測試：`TestLeavingCityHallClearsTheBlockScratch`、
+  `TestLoadingInsideCityHallKeepsTheScratchUntilTheNextBlock`（從 `Update()` 送鍵）。

@@ -116,7 +116,7 @@
         "paths": [
           "docs/spec/137-mainline-route.md"
         ],
-        "pattern": "勝負與其餘段落仍是 hypothesis",
+        "pattern": "勝負與建議強度仍是 hypothesis",
         "note": "建議順序的標題還寫著其餘段落是 hypothesis 就是還沒做；路線 (a) 自然強度跑完再改標題"
       },
       "github_issue": 26
@@ -141,14 +141,13 @@
       "id": "hp-locked-route-a-diagnostic",
       "layer": "verification",
       "title": "HP 鎖定診斷通關：路線 (a) 從標題按鍵跑到結局",
-      "body": "使用者 2026-09-17 決定以 HP 鎖定強制通關，驗證路線 (a)、旗標、換圖與結局鏈。依 CLAUDE.md §3／§6 這是診斷收據，不取代 #5 的正常強度收據。`TestMainlineProbeHPLockedRouteA`（seed 142）走到諾里斯，交件與港務長被 #41 擋住（playtest 補十二）。",
+      "body": "使用者 2026-09-17 決定以 HP 鎖定強制通關，驗證路線 (a)、旗標、換圖與結局鏈。依 CLAUDE.md §3／§6 這是診斷收據，不取代 #5 的正常強度收據。#41 接上之後 `TestMainlineProbeHPLockedRouteA`（seed 142）從標題跑到結局：`4ABA = FE`、結局 3 頁（playtest 補十三）。",
       "acceptance": "HP 鎖定探針從標題以正常按鍵跑到結局（泰倫斯拉克斯、`4ABA = FEh`、結局頁），收據列每段入口／出口旗標、等級、時刻、HP 寫回次數與每場回合數；非戰力的卡點都有修正或 issue。",
       "verify": {
         "kind": "manual",
-        "note": "訊號是 `TestMainlineProbeHPLockedRouteA` 從標題跑到結局而通過；它現在停在 #41，不能拿「那段 fatal 不見了」當完成"
+        "note": "探針已經走到結局；關 issue 要等 #41 的程式推送（engine 與 Pool 的 go.mod 鎖版）"
       },
-      "github_issue": 40,
-      "blocked_by": "remake 載入 ECL 區塊時不清 `4A00..4A1F`（#41）。"
+      "github_issue": 40
     },
     {
       "id": "ecl-block-load-scratch-clear",
@@ -165,6 +164,18 @@
         "note": "探針裡這道自承的 fatal 還在就是沒修；修好時一起拿掉"
       },
       "github_issue": 41
+    },
+    {
+      "id": "rest-after-intro-repeats-tour-text",
+      "layer": "verification",
+      "title": "導覽結束那一格紮營休息完，又印一次導覽結尾句",
+      "body": "新遊戲導覽結束後在城區 (0,4) 休息 2 小時，收尾停在格子文字「OUR TOUR IS ENDED...」，發行包對拍在 field-cast 之前停下。v.1.1.5 的對拍走得完；與 #41 無關（拿掉區塊載入寫入結果相同）。原版同一格休息完的畫面還沒量。",
+      "acceptance": "dosgolem 量原版在同一格休息 2 小時後的畫面；remake 從 Update() 送鍵的結果一致並有測試；發行包對拍走完 35 張。",
+      "verify": {
+        "kind": "manual",
+        "note": "要原版收據與對拍重跑，沒有程式內的自承訊號"
+      },
+      "github_issue": 42
     }
   ]
 }

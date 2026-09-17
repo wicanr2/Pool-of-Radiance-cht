@@ -59,31 +59,6 @@ func press(application *app, key ebiten.Key) error {
 	return err
 }
 
-func TestSokalHandInClearsTheCityBoatTicket(t *testing.T) {
-	machine := &eclvm.Machine{Memory: map[uint16]uint16{}}
-	machine.Memory[0x4A01] = 1
-	machine.Memory[0x4AA7] = 0xFF
-	applySokalHandInTicketState(3, 8, machine)
-	if got := machine.Memory[0x4A01]; got != 0 {
-		t.Fatalf("Sokal 交件後 4A01=%d，港務長仍會拒絕提供已解鎖航線", got)
-	}
-	machine.Memory[0x4A01] = 1
-	applySokalHandInTicketState(3, 8, machine)
-	if got := machine.Memory[0x4A01]; got != 0 {
-		t.Fatalf("Sokal 結案後重進職員格，4A01=%d，港務長仍會拒絕已解鎖航線", got)
-	}
-	// 鬼魂委任剛完成、尚未由市政廳把槽 1 從 FEh 轉成 FFh 時，
-	// 4A01 仍是 ECL 的未清票狀態；正常走進職員格也必須先清回 0，
-	// 否則港務長會把這次回城誤判成尚未離開索寇要塞。
-	machine.Memory[0x4AA7] = uint16(gamepack.CityHallSlotPending)
-	machine.Memory[0x4A26] = 0xFF
-	machine.Memory[0x4A01] = 0xFF
-	applySokalHandInTicketState(3, 8, machine)
-	if got := machine.Memory[0x4A01]; got != 0 {
-		t.Fatalf("Sokal 鬼魂委任交差前的 FE 狀態未清票，4A01=%d", got)
-	}
-}
-
 func TestKeysDriveTitleToOriginalCharacterSheet(t *testing.T) {
 	application := &app{
 		mode:   modeTitle,

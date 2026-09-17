@@ -92,7 +92,16 @@ func (d *mainlineDriver) sleepUntilHour(target int) bool {
 	d.t.Helper()
 	if err := a.runRestEntry(); err == nil && a.restInterruption().Period != 0 {
 		if !d.restAtTheInn() {
-			return false
+			// 旅店的 `WHO WILL PAY?` 只扣個人身上的白金；買完甲、交完學費，白金都在隊伍的
+			// pool 裡。玩家這時去貧民窟找安靜的屋子睡（不用錢），醒了再走回城區。
+			if partyPlatinum(a) > 0 || a.eclArchive != 3 || a.eventSession.CurrentBlockID() != 0 {
+				return false
+			}
+			d.walkBackFrom(slumsMap)
+			if a.spawn.Map != slumsMap || !d.restIndoors() {
+				return false
+			}
+			defer d.walkBackToPhlan()
 		}
 	}
 	hours := (target - a.gameTime[gamepack.TimeDigitHour] + 24) % 24

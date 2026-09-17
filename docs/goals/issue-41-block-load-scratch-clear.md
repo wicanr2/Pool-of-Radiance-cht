@@ -140,6 +140,34 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
 >    - 單一段超過 60 秒，或整條探針超過 10 分鐘。
 >    - 需要注入旗標、座標、時鐘、金錢或 XP 才走得下去。
 
+## 2026-09-17 收在哪
+
+第 1～7 步做完，#40 的探針從標題跑到結局；**push、engine 併回 main、Pool `go.mod` 鎖版還沒做，等使用者決定**，
+所以 #41、#40 的 issue 先不關。
+
+- **第 1 步（原版收據）**：`tools/dosgolem-block-load-clear-cases.py` → `docs/audit/dosgolem-block-load-clear-cases.json`（ok）。
+  跨 archive（貧民窟 → 城區）class 0 `4A00 FF→00 ← 1997:02FE`、class 1 `6E7D 0B→00 ← 1997:0323`，之後城區入口才寫
+  範圍內的值；讀檔那一條路不寫 `4959h`、讀回 `4A01 = 1`，讀檔後第一次換區照常清（`2BA4:02FE`，段內容等於 overlay-07）。
+  entry 3 另外五個附帶寫入（`6DE1=FF`、`6DD2`／`6DD3=0`、`49E5=0`、`49E6=1`）位元組 exact，remake 原本一個都沒有做——
+  同一個宣告表達得了，併進這一條；`49E6 = 1` 原本只在新遊戲手寫一次。
+- **第 2 步（engine）**：分支 `block-load-writes`，`f9c0ae7`：`MemoryFill`、`SetBlockLoadWrites`、`ApplyBlockLoadWrites`；
+  `SwitchBlock` 之後、第一個入口之前套用，Clone 帶著，範圍碰到程式碼窗就拒絕。engine 全套測試綠。未推送。
+- **第 3 步（CoAB 唯讀回歸）**：`git archive` 匯出 `7a81a33` 與 `f9c0ae7`，臨時 modfile 以 replace 指過去，各跑一次 CoAB
+  全套測試：兩次都是 60 個套件全綠，紅燈名單相同（零條）；CoAB 工作樹零變更。
+- **第 4 步（Pool adapter）**：`internal/gamepack/block_load.go`，三個建構子都宣告；新遊戲前端改呼叫
+  `ApplyBlockLoadWrites`。測試 `TestLeavingCityHallClearsTheBlockScratch`、
+  `TestLoadingInsideCityHallKeepsTheScratchUntilTheNextBlock`（負對照：拿掉宣告兩條都紅）。`applySokalHandInTicketState`
+  與它的單元測試移除。
+- **第 5 步（紅燈與探針）**：`TestMainlineProbeHPLockedRouteA` 走到結局（補血 849 次、死亡復活 0）。路上修了兩處治具：
+  付不出旅店錢改去貧民窟屋內睡；探索器只在 `4AA7` 變化時重置走近過的地點（`TestDirectedExplorationReachesMaps`
+  一度掉到 2 張圖，修完回到 3 張）。全套紅燈五條，名稱同上一輪；兩條自然強度探針的停止位置變了，見 playtest 補十三。
+- **第 6 步（對拍）**：`v.1.1.9-20260917` 發行包。對拍腳本在野外施法兩張之前停下：導覽結束那一格休息完又印一次
+  導覽結尾句，v.1.1.5 之後就有、與 #41 無關，開 #42。拍到的 33 張用同一支比對程式量，與 v.1.1.5 逐項相同
+  （變好 0、變差 0、不變 33）；`docs/audit/dos-parity-sample.*` 沒有覆寫。
+- **第 7 步（文件）**：spec 106 狀態 CONFORMED、附帶寫入表與收據；spec 102 刪掉只在 remake 成立的順序限制；
+  spec 137 死路表刪四列、鎖血診斷節改成走到結局；CONTEXT、playtest 補十三。
+- **第 8 步（台帳）**：開 #42；worklist 加 #42、更新 #40。#41 的 verify 已經回「可能已完成」，關 issue 與移除鏡像等推送。
+
 ## 已知風險與待決
 
 - **每種換區是否都經過 entry 3**：目前只量過「走出市政廳」這一種。碼頭上船走的是 `LOAD FILES` 再 `NEWECL`；

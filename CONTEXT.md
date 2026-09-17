@@ -2,6 +2,26 @@
 
 更新日期：2026-09-17。
 
+## 2026-09-17 載入 ECL 區塊時的寫入接上；HP 鎖定探針從標題跑到結局（#41、#40）
+
+- 共用 engine 加 `eclvm.BlockSession.SetBlockLoadWrites`／`ApplyBlockLoadWrites`：以資料宣告，
+  `SwitchBlock` 之後、新區塊第一個入口之前套用；不收 callback，未宣告時行為不變（engine 分支
+  `block-load-writes`，`f9c0ae7`）。CoAB 以 `7a81a33` 與 `f9c0ae7` 各跑一次全套測試，60 個套件
+  都綠，紅燈名單相同；CoAB 檔案沒有改。
+- Pool 的宣告是 `gamepack.BlockLoadWrites()`：overlay-07 entry 3 的五個附帶寫入（`6DE1=FF`、
+  `6DD2`／`6DD3=0`、`49E5=0`、`49E6=1`）加兩段清除。每個建 session 的建構子都接；新遊戲前端
+  呼叫一次 `ApplyBlockLoadWrites`（取代原本手寫的 `49E6 = 1`），讀檔不套。
+- 原版收據補兩種（`docs/audit/dosgolem-block-load-clear-cases.json`）：跨 archive 換區時清除早於
+  新區塊入口；讀檔那一條路不寫 `4959h`、讀回的 `4A01` 留著，讀檔後第一次換區照常清。
+- `applySokalHandInTicketState` 移除：它補的就是這個缺口。
+- `TestMainlineProbeHPLockedRouteA`（seed 142）走到結局：`4ABA = FE`、結局 3 頁，補血 849 次、
+  死亡復活 0（playtest 補十三）。駕駛補了一條：付不出旅店錢時去貧民窟安靜的屋子睡到早上。
+- 探索器原本把 `4A01` 的變化當主線進度、每次都重置「走近過的地點」；`4A01` 現在每進出一棟
+  建築就循環一次，探索器在港務長與訓練所之間繞到預算用完。改成只看 `4AA7`。
+- 全套紅燈五條，名稱與上一輪相同；兩條自然強度探針停的位置變了（自然隊伍在索寇 (12,6) 三人
+  倒地睡不成；house rule seed 142 輸給諾里斯），都在 #22 的牆上。
+- 已推翻：spec 102「先說謊再說實話、中間不能回城區」的順序限制——它只在沒有清除的 remake 裡成立。
+
 ## 2026-09-17 原版載入 ECL 區塊時清 `4A00..4A1F`；remake 沒有，路線 (a) 卡在這裡（#40、#41）
 
 - overlay-07 entry 3（`01C8h`）在 `[4959h] == 0` 時把 class 0 `4A00..4A1F` 與 class 1 `6E79..6E82`

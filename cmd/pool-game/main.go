@@ -2966,18 +2966,6 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 			a.spawn.Facing = uint8(write.Value)
 		}
 	}
-	// DOS 版在回報 Sokal Keep 後，玩家回到港口便能向港務長選 EAST／WEST／BAY；
-	// `4A01 == 1` 會讓原版 ECL3/block 0 的港務長直接 EXIT，因此這個可見結果
-	// 要求交件收尾回到「手上沒有船票」的 0。ECL3/block 8 的直接寫入只看得到
-	// 職員入口先寫 1 與槽 1 結案寫 FF，overlay 也沒有可定位的直接 writer；
-	// 內部來源仍是 strong inference。本 adapter 也處理亡魂已結案、委任槽仍為
-	// FE 的返回狀態：若保留 `4A01 == FF`，下一次職員入口會走 BACK SO SOON
-	// 分支而跳過 reward／commission 掃描，正常玩家就永遠無法交差。範圍只限
-	// City Hall block 8，不把它泛化成所有委任或所有 NEWECL 的重設（spec 102）。
-	if a.eventSession != nil {
-		applySokalHandInTicketState(int(a.eclArchive), a.eventSession.CurrentBlockID(),
-			a.eventMachine)
-	}
 	// 文字框（spec 082）。`RunUntilEvent` 一遇到事件就返回，所以每個 result
 	// 通常只帶一則——文字框的狀態因此要跨 result 留著，不能每次重建。
 	//
@@ -3014,24 +3002,6 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 		}
 	}
 	a.updateJournalCue()
-}
-
-func applySokalHandInTicketState(archive int, block uint16, machine *eclvm.Machine) {
-	if archive != 3 || block != 8 || machine == nil {
-		return
-	}
-	// 槽 1 已結案，或亡魂已完成而槽 1 正等待本次 City Hall 結算時，
-	// 職員流程結束後都必須讓共用工作格回到「沒有進行中的委任」。
-	// 後者是由 ECL 讀寫與正常按鍵路徑交叉證實的 adapter 補齊。
-	pendingSokal := machine.Memory[0x4AA7] == uint16(gamepack.CityHallSlotPending) &&
-		machine.Memory[0x4A26] == 0xFF && machine.Memory[0x4A01] == 0xFF
-	if machine.Memory[0x4AA7] != 0xFF && !pendingSokal {
-		return
-	}
-	if machine.Memory[0x4A01] != 1 && !pendingSokal {
-		return
-	}
-	machine.Memory[0x4A01] = 0
 }
 
 func (a *app) applyECLResult(result eclvm.Result) {
@@ -3240,10 +3210,13 @@ func (a *app) beginAdventuring() error {
 			return err
 		}
 		machine := session.Machine()
-		// 原版的全域初始化（overlay-07 `02D2h`）把 `[4933h]+1CCh`（`@49E6`）設成 1，
-		// 然後才清 ECL 記憶體 `4A00h` 起那一段，所以這個 1 留著（spec 074）。
-		// 遭遇距離的走法（spec 078）看它；讀檔的路徑由存檔裡的記憶體帶回來。
-		machine.Memory[encounterWalkFlagAddress] = 1
+		// 新遊戲在第一個區塊開始遊玩，沒有經過 `NEWECL`，所以區塊載入的寫入
+		// （overlay-07 entry 3：`@49E6 = 1`、`@6DE1 = FFh`、清 `4A00h..4A1Fh` 等，
+		// spec 106）要手動套一次；之後每次換區由 session 自己套。讀檔的路徑由
+		// 存檔裡的記憶體帶回來，不套。遭遇距離的走法（spec 078）看 `@49E6`。
+		if err := session.ApplyBlockLoadWrites(); err != nil {
+			return err
+		}
 		a.eventSession = session
 		a.eventMachine = machine
 		result, runErr := machine.Run(2000, nil, true)

@@ -316,13 +316,7 @@ func (d *mainlineDriver) podolRouteA(walkThroughBoundary func(gamepack.MapKey), 
 	d.crossKutoEast()
 	d.crossSlums(true)
 	if !ready(a) {
-		// remake 載入區塊時不清 `4A00..4A1F`（#41）：波多廣場的隨機遭遇把 `4A01` 當暫存
-		// 留成非 0，職員 `9BA1h` 走 BACK SO SOON。原版出了任何一次換區就是 0。記下來往下走。
-		if memory[0x4AB0] != uint16(gamepack.CityHallSlotPending) {
-			d.fatalf("route (a): back in the city with nothing to hand in (4AB0=%02X 4A01=%d at %+v)", memory[0x4AB0], memory[0x4A01], a.spawn)
-		}
-		d.note("route (a): Podol hand-in blocked by 4A01=%d (#41), slot 10 stays FE", memory[0x4A01])
-		return
+		d.fatalf("route (a): back in the city with nothing to hand in (4AB0=%02X 4A01=%d at %+v)", memory[0x4AB0], memory[0x4A01], a.spawn)
 	}
 	handIn()
 	d.note("route (a): Podol handed in 4AB0=%02X 4AC1=%d %s", memory[0x4AB0], memory[0x4AC1], d.partyLine())

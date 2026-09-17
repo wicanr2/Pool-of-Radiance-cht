@@ -390,6 +390,9 @@ func NewCellSweepSession(archive ECLArchive, blockID uint16,
 	if err != nil {
 		return nil, err
 	}
+	if err := declareBlockLoadWrites(session); err != nil {
+		return nil, err
+	}
 	// 解碼用 Pool 自己量出來的指令表，不是共用 engine 那張二手的（spec 093）。
 	session.Machine().SetCommands(PoolCommandTable())
 	// 沒有投影器的話 `1Ch LOAD CHARACTER` 會直接報錯，而正常遊玩那條路是有的
@@ -457,6 +460,9 @@ func NewInitialEventSessionWithSeed(event InitialEvent, seed int64,
 		return nil, err
 	}
 	if err := session.SetTransitionEntries(0, 4); err != nil {
+		return nil, err
+	}
+	if err := declareBlockLoadWrites(session); err != nil {
 		return nil, err
 	}
 	session.Machine().SetCommands(PoolCommandTable())

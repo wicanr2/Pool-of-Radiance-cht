@@ -1,0 +1,273 @@
+{
+ "schema": "pool-dosgolem-block-load-clear-cases/1",
+ "generator": "dosgolem",
+ "generator_revision": "b4d5a3f",
+ "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+ "overlay07_sha256": "a59f9d16a1d186bbd3806865ffe55de4be5b58484287237fb73872295da778ae",
+ "walk_out_keys": "rep:9:Space,Return,Return,c,rep:6:Return,y,A,Return,k,e,y,c,rep:6:Return,y,B,Return,k,e,y,c,rep:6:Return,y,C,Return,k,e,y,c,rep:6:Return,y,D,Return,k,e,y,c,rep:6:Return,y,E,Return,k,e,y,c,rep:6:Return,y,F,Return,k,e,y,a,End,a,End,a,End,a,End,a,End,a,e,b,rep:14:Return,Up,Up,Up",
+ "pointers": {
+  "class0": "2EA2:0000 (DS:4933h)",
+  "class1": "2F22:0000 (DS:4937h)"
+ },
+ "entry3_side_writes_at_slums_state": {
+  "note": "49E5=0／49E6=1（2EA2:01CA）、6DD2=0／6DD3=0（2F22:05A4）、6DE1=FF（2F22:05C2）；值已經等於 entry 3 要寫的，監看看不到變化",
+  "peek": {
+   "2EA2:01CA": "2EA2|00000100",
+   "2F22:05A4": "2F22|00000000",
+   "2F22:05C2": "2F22|ff00"
+  }
+ },
+ "cross_archive_class0": {
+  "route": [
+   "Right",
+   "Right",
+   "Up",
+   "Up",
+   "Up"
+  ],
+  "watch_linear": "2EC20-2EC5F",
+  "writes": [
+   {
+    "step": 5301689270,
+    "linear": "2EC20",
+    "old": "FF",
+    "new": "00",
+    "cs": "1997",
+    "ip": "02FE"
+   },
+   {
+    "step": 5303676592,
+    "linear": "2EC4E",
+    "old": "00",
+    "new": "01",
+    "cs": "1997",
+    "ip": "0CBF"
+   }
+  ],
+  "frames": [
+   {
+    "key": "Right",
+    "step": 5220400000,
+    "x": 14,
+    "y": 4,
+    "terrain_C04F": 0
+   },
+   {
+    "key": "Right",
+    "step": 5260800000,
+    "x": 14,
+    "y": 4,
+    "terrain_C04F": 0
+   },
+   {
+    "key": "Up",
+    "step": 5301500000,
+    "x": 15,
+    "y": 4,
+    "terrain_C04F": 0
+   },
+   {
+    "key": "Up",
+    "step": 5354600000,
+    "x": 0,
+    "y": 4,
+    "terrain_C04F": 25
+   },
+   {
+    "key": "Up",
+    "step": 5395100000,
+    "x": 1,
+    "y": 4,
+    "terrain_C04F": 0
+   }
+  ]
+ },
+ "cross_archive_class1": {
+  "route": [
+   "Right",
+   "Right",
+   "Up",
+   "Up",
+   "Up"
+  ],
+  "watch_linear": "2F912-2F925",
+  "writes": [
+   {
+    "step": 5301689632,
+    "linear": "2F91A",
+    "old": "0B",
+    "new": "00",
+    "cs": "1997",
+    "ip": "0323"
+   },
+   {
+    "step": 5303934103,
+    "linear": "2F91A",
+    "old": "00",
+    "new": "0B",
+    "cs": "1997",
+    "ip": "0CED"
+   },
+   {
+    "step": 5303936482,
+    "linear": "2F924",
+    "old": "00",
+    "new": "19",
+    "cs": "1997",
+    "ip": "0CED"
+   },
+   {
+    "step": 5303943345,
+    "linear": "2F912",
+    "old": "00",
+    "new": "07",
+    "cs": "1997",
+    "ip": "0CED"
+   },
+   {
+    "step": 5355075543,
+    "linear": "2F924",
+    "old": "19",
+    "new": "00",
+    "cs": "1997",
+    "ip": "0CED"
+   },
+   {
+    "step": 5355076659,
+    "linear": "2F912",
+    "old": "07",
+    "new": "00",
+    "cs": "1997",
+    "ip": "0CED"
+   }
+  ],
+  "frames": [
+   {
+    "key": "Right",
+    "step": 5220400000,
+    "x": 14,
+    "y": 4,
+    "terrain_C04F": 0
+   },
+   {
+    "key": "Right",
+    "step": 5260800000,
+    "x": 14,
+    "y": 4,
+    "terrain_C04F": 0
+   },
+   {
+    "key": "Up",
+    "step": 5301500000,
+    "x": 15,
+    "y": 4,
+    "terrain_C04F": 0
+   },
+   {
+    "key": "Up",
+    "step": 5354600000,
+    "x": 0,
+    "y": 4,
+    "terrain_C04F": 25
+   },
+   {
+    "key": "Up",
+    "step": 5395100000,
+    "x": 1,
+    "y": 4,
+    "terrain_C04F": 0
+   }
+  ]
+ },
+ "load": {
+  "save_keys": "e,s,J (from clerk.state)",
+  "load_keys": "rep:9:Space,Return,Return,l,J",
+  "watch_4959_linear": "CE59",
+  "writes_4959": [],
+  "after_load_peek": {
+   "0850:4959": "0850|00",
+   "0850:6A0B": "0850|050502039d",
+   "2EA2:0202": "2EA2|0100"
+  },
+  "walk_out": [
+   "Left",
+   "Left",
+   "Up",
+   "Right",
+   "Up",
+   "Left",
+   "Up",
+   "Return"
+  ],
+  "walk_out_writes": [
+   {
+    "step": 860696400,
+    "linear": "2EC22",
+    "old": "01",
+    "new": "00",
+    "cs": "2BA4",
+    "ip": "02FE"
+   }
+  ],
+  "walk_out_frames": [
+   {
+    "key": "Left",
+    "step": 645100000,
+    "x": 5,
+    "y": 5,
+    "terrain_C04F": 157
+   },
+   {
+    "key": "Left",
+    "step": 685700000,
+    "x": 5,
+    "y": 5,
+    "terrain_C04F": 157
+   },
+   {
+    "key": "Up",
+    "step": 738700000,
+    "x": 4,
+    "y": 5,
+    "terrain_C04F": 156
+   },
+   {
+    "key": "Right",
+    "step": 779100000,
+    "x": 4,
+    "y": 5,
+    "terrain_C04F": 156
+   },
+   {
+    "key": "Up",
+    "step": 819700000,
+    "x": 4,
+    "y": 4,
+    "terrain_C04F": 155
+   },
+   {
+    "key": "Left",
+    "step": 860100000,
+    "x": 4,
+    "y": 4,
+    "terrain_C04F": 155
+   },
+   {
+    "key": "Up",
+    "step": 913100000,
+    "x": 3,
+    "y": 4,
+    "terrain_C04F": 26
+   },
+   {
+    "key": "Return",
+    "step": 953100000,
+    "x": 3,
+    "y": 4,
+    "terrain_C04F": 26
+   }
+  ]
+ },
+ "verdict": "ok",
+ "problems": []
+}

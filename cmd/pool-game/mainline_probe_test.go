@@ -1008,17 +1008,9 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		t.Logf("house rule detour: after Norris %s", outfitter.partyLine())
 		outfitter.crossKutoEast()
 		outfitter.crossSlums(true)
-		handInBlocked := false
 		if !readyToHandIn(application) {
-			// 路線 (a)：remake 載入區塊時不清 `4A00..4A1F`（#41），`4A01` 會留著非 0，
-			// 職員走 BACK SO SOON 不掃獎賞。記下來往下走，交件留到索寇（那一次 adapter 清）。
-			if !probeRouteA || !pendingCommission(application) {
-				t.Fatalf("back in the city with nothing to hand in: slot0=%02X 4A01=%d",
-					application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4A01])
-			}
-			handInBlocked = true
-			outfitter.note("route (a): Norris hand-in blocked by 4A01=%d (#41); slot0=%02X 4AB0=%02X",
-				application.eventMachine.Memory[0x4A01], application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4AB0])
+			t.Fatalf("back in the city with nothing to hand in: slot0=%02X 4A01=%d",
+				application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4A01])
 		}
 		// 獎金 250 金＋200 白金分六份沒有人付得起 1000 金學費（spec 097）：寶物畫面先 Pool
 		// 再 Take 200 白金給經驗值過門檻的第一個人（house rule 的 XP 在畫面打開時就記上了），
@@ -1034,16 +1026,12 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			}
 			return outfitter.takeRewardTo(trainee, 200)
 		}
-		if !handInBlocked {
-			handInPending()
-		}
+		handInPending()
 		outfitter.reward = nil
 		t.Logf("house rule detour: after hand-in %s pool=%v", outfitter.partyLine(), application.state.PooledMoney)
 		if outfitter.canTrain() {
-			// 公告牌把 `4A00` 寫成 1；這裡不用再找職員清——交件之後 `4A01`
-			// 留在 1，職員走的是 BACK SO SOON 那一支（`ecl3/8 9BA1h`）不會清。
-			// 索寇交件那一次職員才走主線（adapter 先把 `4A01` 清 0），
-			// 城門在那之後，來得及。
+			// 公告牌把 `4A00` 寫成 1，職員格把 `4A01` 寫成 1；兩個都是區塊暫存，
+			// 走出那一棟就清成 0（spec 106），不用另外找人清。
 			outfitter.enterTrainingHall()
 			t.Logf("house rule detour: after training %s 4A00=%d", outfitter.partyLine(),
 				application.eventMachine.Memory[0x4A00])
@@ -1121,7 +1109,8 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	if got := application.eventMachine.Memory[0x4ABB]; slumsCleared && got != 0xFF {
 		t.Fatalf("City Hall did not acknowledge the natural slums commission: 4ABB=%02X", got)
 	}
-	if got := application.eventMachine.Memory[0x4AC1]; slumsCleared && got != 1 {
+	// 路線 (a) 在這之前已經交了波多廣場與諾里斯，進度不只 1。
+	if got := application.eventMachine.Memory[0x4AC1]; slumsCleared && (got < 1 || !probeRouteA && got != 1) {
 		t.Fatalf("City Hall progress=%d, want 1 after the natural slums commission", got)
 	}
 	savedSpawn := application.spawn
@@ -1173,13 +1162,6 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		if application.gameOver {
 			t.Fatalf("the party was destroyed on the way to Sokal Keep: %q at %+v (%s)", application.eventText,
 				application.spawn, tally.line())
-		}
-		// 路線 (a)：還沒拿到索寇的船、`4A01 == 1` 時港務長 `9C4Bh` 不開口，而原版出了
-		// 市政廳就會把它清成 0（#41）。探索器只會在市政廳裡繞，直接報原因。
-		if probeRouteA && application.eventMachine.Memory[0x4AA7] == 0 && application.eventMachine.Memory[0x4A01] == 1 &&
-			application.spawn.Map.Archive != 4 {
-			t.Fatalf("route (a) blocked by #41: 4A01=1 after a City Hall visit, the harbor master will not give the Sokal ticket (at %+v ECL%d/%d); %s",
-				application.spawn, application.eclArchive, application.eventSession.CurrentBlockID(), strings.Join(outfitter.log, " | "))
 		}
 		// 受傷或催眠用完就地紮營（要塞裡也一樣），再繼續探索。
 		restUntilHealed()
