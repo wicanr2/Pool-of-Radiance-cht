@@ -135,6 +135,9 @@ type app struct {
 	// newApp 取時間 seed；`-dice-seed` 讓測試與對拍可固定它。
 	eclSeed         int64
 	help            bool
+	helpPage        int
+	cheatOpen       bool
+	cheatRestores   cheatRestoreCounts
 	tacticalPreview bool
 	language        language
 	gameText        *gametext.Catalogue
@@ -747,6 +750,8 @@ func (a *app) Update() error {
 	// 配樂跟著畫面狀態走（spec 128）。沒有音訊資產時 musicPlayer 是 nil，
 	// 這一行什麼都不做。
 	a.updateMusic()
+	// 鎖 HP 在這一次更新結束時補，不論從哪一個分支返回（spec 141）。
+	defer a.applyCheatLockHP()
 	if a.justPressed(ebiten.KeyF10) {
 		if a.saveState != nil {
 			state, err := a.stateForSave()
@@ -773,8 +778,9 @@ func (a *app) Update() error {
 		}
 		return nil
 	}
-	if a.justPressed(ebiten.KeyF1) {
+	if a.justPressed(ebiten.KeyF1) && !a.cheatOpen {
 		a.help = !a.help
+		a.helpPage = 0
 	}
 	if a.justPressed(ebiten.KeyF2) {
 		if err := a.switchTheme(); err != nil {
@@ -783,6 +789,10 @@ func (a *app) Update() error {
 	}
 	// 攻略頁開著的時候由它先吃鍵，`F3` 與 ESC 才關得掉。
 	if handled, err := a.guideInput(); handled {
+		return err
+	}
+	// 作弊選單開著時吃掉所有按鍵（spec 141）。
+	if handled, err := a.cheatInput(); handled {
 		return err
 	}
 	// 探索施法那一頁同理。
@@ -900,8 +910,13 @@ func (a *app) Update() error {
 		return nil
 	}
 	if a.help {
-		if a.justPressed(ebiten.KeyEscape) {
+		switch {
+		case a.justPressed(ebiten.KeyEscape):
 			a.help = false
+		case a.justPressed(ebiten.KeyArrowRight), a.justPressed(ebiten.KeyPageDown):
+			a.helpPage = (a.helpPage + 1) % helpPages
+		case a.justPressed(ebiten.KeyArrowLeft), a.justPressed(ebiten.KeyPageUp):
+			a.helpPage = (a.helpPage + helpPages - 1) % helpPages
 		}
 		return nil
 	}
@@ -3385,6 +3400,10 @@ func (a *app) Draw(screen *ebiten.Image) {
 		if a.state.HouseRules.CommissionExperience {
 			drawText(screen, fmt.Sprintf(a.text(msgMenuHouseRule), a.text(msgHouseRuleOn)), 112, 336, accent)
 		}
+		// 開過作弊就一直標（spec 141）；沒開過時這一頁與原版截圖一樣。
+		if mark := a.cheatMark(); mark != "" {
+			drawText(screen, mark, 396, 336, accent)
+		}
 		if a.statusLine != "" {
 			drawText(screen, a.statusLine, 72, 350, foreground)
 		}
@@ -3465,6 +3484,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 	if a.guideOpen {
 		drawGuide(screen, a, background, foreground, accent)
 	}
+	if a.cheatOpen {
+		drawCheatMenu(screen, a, background, foreground, accent)
+	}
 }
 
 // houseRuleStateMessage 是 H)OUSE RULE 那一列的開／關字。
@@ -3479,9 +3501,15 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 	a.drawFrame(screen, foreground, accent)
 	// 自訂規則開著時要看得到（spec 140）：畫在右上角框內，關著時什麼都不畫，
 	// 對拍的畫面因此不受影響。
+	markLine := 30
 	if a.state.HouseRules.CommissionExperience {
 		mark := a.text(msgHouseRuleMark)
-		drawText(screen, mark, logicalWidth-24-font.MeasureString(uiFace, displayText(mark)).Ceil(), 30, accent)
+		drawText(screen, mark, logicalWidth-24-font.MeasureString(uiFace, displayText(mark)).Ceil(), markLine, accent)
+		markLine += 18
+	}
+	// 作弊開著或開過都標（spec 141〈標示〉）；沒開過時什麼都不畫。
+	if mark := a.cheatMark(); mark != "" {
+		drawText(screen, mark, logicalWidth-24-font.MeasureString(uiFace, displayText(mark)).Ceil(), markLine, accent)
 	}
 	// 原版的冒險畫面上面沒有標題列，這裡本來留著一句開發用的英文
 	// （`INITIAL DOS FIRST-PERSON VIEW`）。那是給自己看的，卻是玩家
@@ -4017,24 +4045,39 @@ func stageName(stage creation.Stage) string {
 	}
 }
 
+// helpPages 是說明頁的頁數（spec 141〈說明頁〉）：第 1 頁鍵說明，第 2 頁英文指令與出處。
+// 一頁排不下——每行 22 像素、從 y=100 起畫時，第 14 行已經壓在繩索框上，出處整段
+// 畫到螢幕外（2026-09-17 發行包實拍）。
+const helpPages = 2
+
+// helpLineHeight 與 helpBottom：行距 20、框鋪到 y=364，一頁放得下 13 行。
+const (
+	helpLineHeight = 20
+	helpBottom     = 364
+)
+
 func drawHelp(screen *ebiten.Image, a *app, background, foreground, accent color.Color, provenance []string) {
-	for y := 54; y < 340; y++ {
-		for x := 72; x < 568; x++ {
+	for y := 54; y < helpBottom; y++ {
+		for x := 72; x < 616; x++ {
 			screen.Set(x, y, background)
 		}
 	}
-	drawText(screen, a.text(msgHelpTitle), 292, 80, accent)
-	// 每一行一句，換行分隔——翻譯要換行數或併行時不用改程式。
-	lines := strings.Split(a.text(msgHelpKeys), "\n")
-	for index, line := range lines {
-		drawText(screen, line, 104, 100+index*22, foreground)
+	drawText(screen, fmt.Sprintf("%s %d/%d", a.text(msgHelpTitle), a.helpPage+1, helpPages), 104, 80, accent)
+	hint := a.text(msgHelpPageHint)
+	drawText(screen, hint, 600-font.MeasureString(uiFace, displayText(hint)).Ceil(), 80, accent)
+	if a.helpPage == 0 {
+		// 每一行一句，換行分隔——翻譯要換行數或併行時不用改程式。
+		for index, line := range strings.Split(a.text(msgHelpKeys), "\n") {
+			drawText(screen, line, 104, 100+index*helpLineHeight, foreground)
+		}
+		return
 	}
-	for index, line := range adventureCommandHelp() {
-		drawText(screen, line, 104, 100+(len(lines)+index)*22, foreground)
+	commands := adventureCommandHelp()
+	for index, line := range commands {
+		drawText(screen, line, 88, 100+index*helpLineHeight, foreground)
 	}
-	base := len(lines) + len(adventureCommandHelp()) + 1
 	for index, line := range provenance {
-		drawText(screen, line, 104, 100+(base+index)*22, accent)
+		drawText(screen, line, 88, 100+(len(commands)+1+index)*helpLineHeight, accent)
 	}
 }
 

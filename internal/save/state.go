@@ -187,6 +187,19 @@ type State struct {
 	// HouseRules 是這一場戰役開著的自訂規則（spec 140）。原版沒有這些；
 	// 預設全關，跟著存檔走，不是這台機器的偏好。
 	HouseRules HouseRules `json:"house_rules,omitempty"`
+	// Cheats 是作弊選單的兩個開關（spec 141）。原版沒有；預設關。
+	Cheats Cheats `json:"cheats,omitempty"`
+	// CheatsUsed 在任一作弊開關打開過之後就是真，之後不會再回到假：開過作弊的
+	// 戰役不算原版驗收，讀檔之後也要標得出來。
+	CheatsUsed bool `json:"cheats_used,omitempty"`
+}
+
+// Cheats 是作弊選單的開關（spec 141）。
+type Cheats struct {
+	// LockHP 為真時，隊員的 HP 在每一次更新結束時補回上限，倒地與死亡拉回正常。
+	LockHP bool `json:"lock_hp,omitempty"`
+	// OneHitKill 為真時，隊員造成的傷害改成目標剩下的 HP。
+	OneHitKill bool `json:"one_hit_kill,omitempty"`
 }
 
 // HouseRules 是可切換、改變原版規則狀態的選項（CLAUDE.md §3：這種東西必須是

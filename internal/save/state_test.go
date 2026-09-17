@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
@@ -321,5 +322,44 @@ func TestStateRoundTripsFullEffectNodes(t *testing.T) {
 	if node := got.Party[0].Effects[0]; node.Code != 0x3B ||
 		node.Payload != [4]byte{0x2C, 0x01, 0x05, 0x01} {
 		t.Fatalf("節點往返之後是 %+v", node)
+	}
+}
+
+// 作弊開關與「開過作弊」跟著存檔走；沒有這幾個欄位的舊存檔讀回來是全關（spec 141）。
+func TestCheatsRoundTripAndOldSavesReadAsOff(t *testing.T) {
+	dir := t.TempDir()
+	plain := NewState()
+	plain.CharacterLibrary = []Character{validCharacter("HERO")}
+	plainPath := filepath.Join(dir, "plain.json")
+	if err := WriteAtomic(plainPath, plain); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(plainPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(raw), "cheats_used") || strings.Contains(string(raw), "lock_hp") {
+		t.Fatalf("沒開過作弊的存檔寫了作弊欄位：%s", raw)
+	}
+	got, err := Read(plainPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.CheatsUsed || got.Cheats != (Cheats{}) {
+		t.Fatalf("舊存檔讀回來作弊開著：%+v used=%t", got.Cheats, got.CheatsUsed)
+	}
+	cheated := plain
+	cheated.Cheats = Cheats{LockHP: true}
+	cheated.CheatsUsed = true
+	cheatedPath := filepath.Join(dir, "cheated.json")
+	if err := WriteAtomic(cheatedPath, cheated); err != nil {
+		t.Fatal(err)
+	}
+	got, err = Read(cheatedPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !got.CheatsUsed || !got.Cheats.LockHP || got.Cheats.OneHitKill {
+		t.Fatalf("作弊欄位沒有照樣讀回：%+v used=%t", got.Cheats, got.CheatsUsed)
 	}
 }

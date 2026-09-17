@@ -106,6 +106,10 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 	drawCombatBoard(screen, a, foreground)
 	drawCombatInfo(screen, a, foreground, accent)
+	// 作弊開著或開過都標在資訊欄，暫定說明那一塊的上面（spec 141〈標示〉）。
+	if mark := a.cheatMark(); mark != "" {
+		drawText(screen, mark, combatInfoLeft, combatNoteLine-24, accent)
+	}
 
 	// remake 自己加的一行：鍵位。原版沒有這一行，但拿掉的話玩家看得到指令名
 	// 卻不知道按什麼——remake 還沒有原版那套「先按 M 進移動模式」的子模式輸入。
@@ -1809,6 +1813,8 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 		if err != nil {
 			return err
 		}
+		// 一擊斃命（spec 141）：隊員命中時傷害改成目標剩下的 HP；擲骰照常。
+		damage = a.cheatDamage(state, state.Mover, target, damage)
 		landed++
 		total += damage
 		state.HitPoints[target] -= damage

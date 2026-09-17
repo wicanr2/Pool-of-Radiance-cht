@@ -28,6 +28,13 @@ func slumsWallFight(t *testing.T, seed int64, terrain int) *mainlineDriver {
 // slumsWallFightWith 同上，多一個每場開打時的回呼（印盤面用）。
 func slumsWallFightWith(t *testing.T, seed int64, terrain int, onBattleStart func(*tacticalState)) *mainlineDriver {
 	t.Helper()
+	return slumsWallFightPrepared(t, seed, terrain, onBattleStart, nil)
+}
+
+// slumsWallFightPrepared 再多一個「建好隊伍、走出城之前」的準備步驟（開作弊選單用，spec 141）。
+func slumsWallFightPrepared(t *testing.T, seed int64, terrain int, onBattleStart func(*tacticalState),
+	prepare func(*mainlineDriver)) *mainlineDriver {
+	t.Helper()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
 	if err != nil {
@@ -59,6 +66,9 @@ func slumsWallFightWith(t *testing.T, seed int64, terrain int, onBattleStart fun
 	driver.hurt, driver.rest = partyHurt, driver.restUntilHealed
 	driver.tolerateDefeat = true
 	driver.onBattleStart = onBattleStart
+	if prepare != nil {
+		prepare(driver)
+	}
 	driver.stepOut("into the slums", 3)
 	driver.restIfHurt()
 	target := func(x, y int) bool { return driver.terrainCode(x, y) == terrain }

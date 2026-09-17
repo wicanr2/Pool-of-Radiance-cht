@@ -682,6 +682,8 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 	if int(target) >= len(state.HitPoints) {
 		return
 	}
+	// 一擊斃命（spec 141）：施法者是隊員、豁免後傷害仍大於 0 時歸零。
+	damage = a.cheatDamage(state, state.Mover, target, damage)
 	state.HitPoints[target] -= damage
 	if state.HitPoints[target] > 0 {
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHit),

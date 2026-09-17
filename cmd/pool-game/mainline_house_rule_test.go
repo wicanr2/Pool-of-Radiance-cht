@@ -346,10 +346,19 @@ func (d *mainlineDriver) fightNorris() {
 	norris := func(x, y int) bool { return d.terrainCode(x, y) == 12 }
 	trace := d.trace
 	d.trace = true
+	// #43：只在這一場用作弊選單打開鎖 HP 與一擊斃命，打完關掉（spec 141）。
+	if probeCheatAtNorris {
+		d.setCheats(true, true)
+	}
 	if !d.walkAllowing("Norris", norris, d.kutoSafe, false) {
 		d.fatalf("fightNorris: cannot reach Norris's hall")
 	}
 	d.settle()
+	if probeCheatAtNorris {
+		d.setCheats(false, false)
+		d.note("fightNorris: cheats off; restores in combat %d, out of combat %d, revived %d",
+			a.cheatRestores.inCombat, a.cheatRestores.outOfCombat, a.cheatRestores.revived)
+	}
 	d.trace = trace
 	d.restIfHurt()
 	d.note("fightNorris: 4A24=%02X slot0=%02X 4A0F=%d at (%d,%d) text=%q",

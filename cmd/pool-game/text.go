@@ -741,4 +741,17 @@ const (
 	// 恢復術（spec 097 的 `2C01h`）：還了一級，或身上沒有欠帳。
 	msgCastRestored
 	msgCastNothingToRestore
+	// 作弊選單（spec 141）。
+	msgCheatMenuTitle
+	msgCheatMenuLockHP
+	msgCheatMenuOneHitKill
+	msgCheatMenuNote
+	msgCheatMenuClose
+	msgCheatLockHPName
+	msgCheatOneHitKillName
+	msgCheatToggled
+	msgCheatMark
+	msgCheatUsedMark
+	msgHelpPageHint
+	msgCheatMarkSeparator
 )

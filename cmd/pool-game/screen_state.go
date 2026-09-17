@@ -24,7 +24,13 @@ import (
 // （（說明頁、面板），再問主畫面。
 func (a *app) screenName() string {
 	if a.help {
+		if a.helpPage == 1 {
+			return "help-2"
+		}
 		return "help"
+	}
+	if a.cheatOpen {
+		return "cheat-menu"
 	}
 	switch a.mode {
 	case modeTitle:
