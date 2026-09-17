@@ -2,6 +2,18 @@
 
 更新日期：2026-09-17。
 
+## 2026-09-17 兩邊都作弊跑到結局，逐段對照沒有未開 issue 的主線不一致（#5）
+
+- **remake**：`TestMainlineProbeCheatMenuToEnding`（F6 鎖 HP、一擊斃命，seed 142）從標題跑到結局，收據 `docs/audit/remake-cheat-playthrough.json`。
+- **原版**：dosgolem `shots -serve` 常駐駕駛（`tools/dosgolem-cheat-playthrough.py`），扣血入口攔截＋穿牆，從貧民窟跑到結局，
+  收據 `docs/audit/dosgolem-cheat-playthrough.json`（整合工具 `tools/dosgolem-cheat-receipt.py`）。
+- **對照**（`tools/cheat-playthrough-compare.py` → `docs/audit/cheat-playthrough-compare.md`）：六段必經區塊與段末主線旗標一致；
+  兩項差異已開 issue：#44 索寇回程船的落點（remake 錯，exact）、#45 結局頁數（待量）。細節在 playtest 補十五。
+- **穿牆**：使用者執行中追加「兩版都可穿牆，這樣有對照起來就 ok」。remake 作弊選單加 `W`（spec 141〈穿牆〉）；
+  原版駕駛只在被擋住的那一步清 `DS:69BAh` 的牆 nibble、踏過去再寫回，每次記進收據。CLAUDE.md §3 已寫入。
+- **攔截的漏網**：城堡毒荊棘的「D DIES.」不經過 `2266h`（spec 084）。
+- dosgolem `pool-parity` 分支新增 `57454c4`（`-serve`），**只在本機，推送前要問**。
+
 ## 2026-09-17 主線收據的口徑改成作弊通關（使用者決定，#5）
 
 - 使用者判定作弊驗證算成功，決定：

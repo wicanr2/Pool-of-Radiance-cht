@@ -180,6 +180,8 @@
       "ui.cheatMenuClose": "ESC 或 F6：關閉",
       "ui.cheatLockHPName": "鎖 HP",
       "ui.cheatOneHitKillName": "一擊斃命",
+      "ui.cheatMenuWalkThroughWalls": "W　穿牆：%s",
+      "ui.cheatWalkThroughWallsName": "穿牆",
       "ui.cheatToggled": "作弊：%s %s（原版沒有）",
       "ui.cheatMark": "作弊：%s",
       "ui.cheatUsedMark": "開過作弊",

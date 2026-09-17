@@ -148,11 +148,11 @@
 | [134](134-spell-list-layout.md) | 原版的法術清單版面 | READY＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/spell_page_test.go` |
 | [135](135-camp-screen-layout.md) | 原版紮營畫面的版面 | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/icon_menu.go` 等 7 個 | `cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go`、`cmd/pool-game/mainline_rest_test.go` 等 5 個 |
 | [136](136-slum-encounter-staging.md) | 貧民窟走一步會遇到什麼 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/intro.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_probe_test.go`、`cmd/pool-game/wandering_encounter_e2e_test.go` 等 5 個 |
-| [137](137-mainline-route.md) | 主線必經路徑——從標題到結局要走過哪些區塊 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` | `cmd/pool-game/foe_routing_test.go`、`cmd/pool-game/house_rule_test.go`、`cmd/pool-game/hp_lock_test.go` 等 15 個 |
+| [137](137-mainline-route.md) | 主線必經路徑——從標題到結局要走過哪些區塊 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` | `cmd/pool-game/cheat_playthrough_test.go`、`cmd/pool-game/foe_routing_test.go`、`cmd/pool-game/house_rule_test.go` 等 15 個 |
 | [138](138-combat-bandage.md) | 戰鬥裡的 B）ANDAGE——止血，不看距離 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go` | `cmd/pool-game/bandage_test.go`、`cmd/pool-game/tactical_pilot_test.go` |
 | [139](139-quick-auto-combat.md) | Q）UICK 自動戰鬥與 M）OVE 的兩層按鍵 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go`、`internal/save/state.go` | `cmd/pool-game/quick_test.go` |
 | [140](140-house-rule-commission-experience.md) | 自訂規則——委任獎賞折算經驗值（預設關） | CONFORMED＋READY | `cmd/pool-game/main.go`、`cmd/pool-game/party_menu.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` |
-| [141](141-cheat-menu.md) | 作弊選單——鎖 HP、一擊斃命（預設關） | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/cheats.go`、`cmd/pool-game/main.go` 等 6 個 | `cmd/pool-game/cheats_test.go`、`cmd/pool-game/hp_lock_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 5 個 |
+| [141](141-cheat-menu.md) | 作弊選單——鎖 HP、一擊斃命、穿牆（預設關） | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/cheats.go`、`cmd/pool-game/main.go` 等 6 個 | `cmd/pool-game/cheat_playthrough_test.go`、`cmd/pool-game/cheats_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 5 個 |
 
 ## `cmd/` 底下的工具
 

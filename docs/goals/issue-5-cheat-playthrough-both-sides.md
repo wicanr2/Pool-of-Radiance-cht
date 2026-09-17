@@ -12,6 +12,8 @@
   把 dosgolem 擴充成能在原版裡鎖 HP，跑同一條路線，兩邊逐段對照必經區塊與旗標。
 - **不開作弊的正常強度通關**：改為可選（#22）。
 - **仍然不能用的捷徑**：作弊選單以外的傳送、注入旗標／座標／時鐘／金錢／經驗值。
+- **穿牆可以**（使用者 2026-09-17 執行中追加：「兩版都可穿牆，這樣有對照起來就 ok，我們可以控制 dosgolem 記憶體 & remake 規則」）：
+  remake 作弊選單加 `W`；原版駕駛只在被擋住的那一步清 `DS:69BAh` 指到的牆 nibble，踏過去再寫回，記進收據（spec 141〈穿牆〉）。
 
 ## 現況（2026-09-17，`04255a2` 之後）
 
@@ -144,3 +146,19 @@
 - **兩邊的時刻不同**：市政廳晚上鎖門、斯托亞諾夫城門的馬車商人晚上不出現，兩邊都要睡到早上。原版的休息流程要另外寫。
 - **#42**：remake 在導覽結束那一格休息完會重複印一句，走這條路線時留意，不要誤判成卡點。
 - **dosgolem 分支**：`pool-parity` 落後 dosgolem main 22 個 commit，這一輪不合併。
+
+## 2026-09-17 收在哪
+
+- **A（remake）**：`TestMainlineProbeCheatMenuToEnding` 通過，收據 `docs/audit/remake-cheat-playthrough.json`；治具版已刪（上一輪）。
+  執行中使用者追加穿牆，作弊選單加了 `W`（spec 141〈穿牆〉，`TestCheatWalkThroughWallsPassesAWallFromKeys`）。
+- **B（原版）**：
+  - 第 5、6 步在上一輪完成（`-intercept-damage`，dosgolem `9c78f9c`）。
+  - 第 7 步：dosgolem 加 `shots -serve`（`57454c4`，本機 commit，**未推送**），駕駛 `tools/dosgolem-cheat-playthrough.py`
+    從貧民窟跑到結局，六段都 `done`；整合收據 `tools/dosgolem-cheat-receipt.py` → `docs/audit/dosgolem-cheat-playthrough.json`
+    （generator revision、原版 EXE SHA-256、每段鍵序、狀態檔 SHA-256、穿牆與攔截紀錄）。
+  - 開場沿用 #41 的狀態檔，鍵序在收據 `boot`；貧民窟段是六次接續，最早幾次早於收據檔，只有日誌的 checkpoint。
+- **C（對照）**：`tools/cheat-playthrough-compare.py` → `docs/audit/cheat-playthrough-compare.md`。沒開 issue 的主線不一致 0 段；
+  #44（索寇回程船落點，remake 錯）、#45（結局頁數，待量）。
+- 沒有碰到停止線：原版單段最長是索寇要塞重跑 402 秒；結局段的接續 9 次都是新畫面，不是同一種做法重試。
+- 攔截漏網：城堡毒荊棘的即死（spec 084），駕駛改答 NO。
+

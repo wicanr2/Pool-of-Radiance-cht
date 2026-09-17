@@ -349,7 +349,7 @@ func TestCheatsRoundTripAndOldSavesReadAsOff(t *testing.T) {
 		t.Fatalf("舊存檔讀回來作弊開著：%+v used=%t", got.Cheats, got.CheatsUsed)
 	}
 	cheated := plain
-	cheated.Cheats = Cheats{LockHP: true}
+	cheated.Cheats = Cheats{LockHP: true, WalkThroughWalls: true}
 	cheated.CheatsUsed = true
 	cheatedPath := filepath.Join(dir, "cheated.json")
 	if err := WriteAtomic(cheatedPath, cheated); err != nil {

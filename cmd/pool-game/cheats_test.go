@@ -279,3 +279,47 @@ func TestHelpPagesListTheCheatKeyAndFitTheBox(t *testing.T) {
 		}
 	}
 }
+
+// 穿牆（spec 141〈穿牆〉）：同一道牆，關著時撞牆、開了走過去；從 `Update()` 送鍵。
+func TestCheatWalkThroughWallsPassesAWallFromKeys(t *testing.T) {
+	a := bootCityParty(t, dosZIPForTests)
+	step := func(key ebiten.Key) {
+		t.Helper()
+		if err := press(a, key); err != nil {
+			t.Fatal(err)
+		}
+	}
+	grid := a.initialMap.Grid
+	x, y := int(a.spawn.X), int(a.spawn.Y)
+	wall := -1
+	for facing := 0; facing < 4; facing++ {
+		nx, ny := x+exploreDeltas[facing][0], y+exploreDeltas[facing][1]
+		if nx < 0 || nx > 15 || ny < 0 || ny > 15 {
+			continue
+		}
+		if w, _ := grid.WallWrapped(x, y, facing*2); w != 0 && !grid.CanMoveDungeonWrapped(x, y, facing*2) {
+			wall = facing
+			break
+		}
+	}
+	if wall < 0 {
+		t.Fatalf("開局那一格 (%d,%d) 四面沒有地圖內的牆，換一格當測試點", x, y)
+	}
+	for turns := 0; turns < 8 && int(a.spawn.Facing) != wall; turns++ {
+		step(ebiten.KeyArrowRight)
+	}
+	start := a.spawn
+	step(ebiten.KeyArrowUp)
+	if a.spawn != start {
+		t.Fatalf("負對照：沒開穿牆卻走過了牆 %+v → %+v", start, a.spawn)
+	}
+	toggleCheats(t, step, a, ebiten.KeyW)
+	if !a.state.Cheats.WalkThroughWalls || !a.state.CheatsUsed || !strings.Contains(a.cheatMark(), a.text(msgCheatWalkThroughWallsName)) {
+		t.Fatalf("W 沒有打開穿牆：%+v used=%t mark=%q", a.state.Cheats, a.state.CheatsUsed, a.cheatMark())
+	}
+	step(ebiten.KeyArrowUp)
+	want := [2]int{x + exploreDeltas[wall][0], y + exploreDeltas[wall][1]}
+	if got := [2]int{int(a.spawn.X), int(a.spawn.Y)}; got != want || a.spawn.Map != start.Map {
+		t.Fatalf("開了穿牆朝 %d 走一步到了 %+v，要 %v", wall, a.spawn, want)
+	}
+}

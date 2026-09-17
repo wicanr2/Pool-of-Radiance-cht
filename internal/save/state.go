@@ -200,6 +200,9 @@ type Cheats struct {
 	LockHP bool `json:"lock_hp,omitempty"`
 	// OneHitKill 為真時，隊員造成的傷害改成目標剩下的 HP。
 	OneHitKill bool `json:"one_hit_kill,omitempty"`
+	// WalkThroughWalls 為真時，隊伍往前走不看 GEO 的牆與鎖門（原版那一側由駕駛清掉記憶體裡的牆
+	// nibble 對應，#5）。
+	WalkThroughWalls bool `json:"walk_through_walls,omitempty"`
 }
 
 // HouseRules 是可切換、改變原版規則狀態的選項（CLAUDE.md §3：這種東西必須是

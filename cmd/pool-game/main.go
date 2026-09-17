@@ -1247,7 +1247,10 @@ func (a *app) moveInitialDungeonForward() error {
 		a.eventMachine.Memory[wildernessFacing] = wildernessFacingIndex(a.spawn.Facing)
 		a.eventMachine.Memory[wildernessRefuse] = 0
 	}
-	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) {
+	// 作弊的穿牆（spec 141）把牆與鎖門都當成開著：原版那一側是清掉記憶體裡的牆 nibble，
+	// 程式看到的是一步沒被擋住的前進，所以這裡也走一般的前進，不走被擋住的那一支。
+	if !a.initialMap.Grid.CanMoveDungeonWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction()) &&
+		!a.state.Cheats.WalkThroughWalls {
 		handled, err := a.runBlockedInitialCellEntry(dx, dy)
 		if err != nil {
 			return err

@@ -104,6 +104,11 @@ overlay-25 的 stub segment 是 `(14FCh − ACh − 3B0h) ÷ 16 = 010Ah`（spec 
 `[sp+4]` 傷害、`[sp+6]`／`[sp+8]` 目標，就能鎖住隊員的 HP、讓怪物一擊斃命（#5）。
 戰鬥中陣營看 `+10Eh`：衛兵攔截那一場量到隊員 `0`、怪物 `1`（`docs/audit/dosgolem-intercept-damage.json`）。
 
+**不經過這個入口的死亡**（2026-09-17，實跑）：城堡內部（`ecl5/5`）的毒荊棘樹籬答 YES 砍過去，隊員被刺中直接
+「D DIES.」，攔截沒有攔到任何一筆——那是另一條直接寫狀態的路徑，還沒定位。所以「所有扣血都經過
+`010Ah:00ACh`」只涵蓋 HP 的減少，不涵蓋毒與即死；鎖 HP 的駕駛遇到這類問句要答不觸發的那一項
+（`tools/dosgolem-cheat-playthrough.py` 的 `ending_policy`）。
+
 ## 訊息
 
 overlay-03 的字串：`" is hit for "`、`" points of damage."`、`" dies. "`。

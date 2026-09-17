@@ -221,7 +221,14 @@ remake 擺上盤面的 `NORRIS ac7/thac0 14`、`LIZARDMAN ac4/thac0 16` 與記�
 | 覲見廳 | 8 級戰士 9 回合、Tyranthraxus 5 回合；`4ABA = FE`，結局 3 頁 |
 
 每換一個 ECL 區塊記一筆 checkpoint（區塊、地圖、座標、時鐘、段落旗標、委任槽），測試通過時寫成
-`docs/audit/remake-cheat-playthrough.json`，是原版那一側逐段對照的依據。交件與港務長兩道閘門依賴載入區塊的清除
+`docs/audit/remake-cheat-playthrough.json`，是原版那一側逐段對照的依據。
+
+**原版那一側也作弊跑到結局**（dosgolem `57454c4`，`tools/dosgolem-cheat-playthrough.py`；收據
+`docs/audit/dosgolem-cheat-playthrough.json`）：扣血入口攔截（spec 084）加穿牆（spec 141〈穿牆〉），
+六段依序是貧民窟（`4ABB = FE`）、交件（`4AC1 = 1`）、波多廣場（`4AB0 = FF`）、諾里斯（`4AA6 = FF`）、
+索寇要塞（`4AA7 = FF`）、東航線到覲見廳（`4ABA = FE`）。兩邊的逐段對照在 `docs/audit/cheat-playthrough-compare.md`：
+必經區塊與段末主線旗標一致；差異兩項已開 issue——#44 索寇回程船落點（`ecl4/21 9989h SAVE 3 @6E12; NEWECL 0`，
+原版落 ECL3/0 (15,1)，remake 落 ECL2/20）、#45 結局頁數。原版量到的操作與漏網在 playtest 補十五。交件與港務長兩道閘門依賴載入區塊的清除
 （spec 106）：`4A01` 是區塊暫存，走出市政廳或任何一棟有自己區塊的建築就回到 0。這條路線最早由 #40 的測試治具
 （每個 tick 補 HP）走通，治具已由這條測試取代。
 

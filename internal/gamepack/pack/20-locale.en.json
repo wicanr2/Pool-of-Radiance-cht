@@ -180,6 +180,8 @@
       "ui.cheatMenuClose": "ESC OR F6: CLOSE",
       "ui.cheatLockHPName": "LOCK HP",
       "ui.cheatOneHitKillName": "ONE-HIT KILL",
+      "ui.cheatMenuWalkThroughWalls": "W  WALK THROUGH WALLS: %s",
+      "ui.cheatWalkThroughWallsName": "WALK THROUGH WALLS",
       "ui.cheatToggled": "CHEAT: %s %s (NOT IN THE ORIGINAL)",
       "ui.cheatMark": "CHEAT: %s",
       "ui.cheatUsedMark": "CHEATS USED",

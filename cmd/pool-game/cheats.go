@@ -1,6 +1,6 @@
 package main
 
-// 作弊選單（spec 141）：鎖 HP、一擊斃命。原版沒有，預設關；打開過一次就在存檔記
+// 作弊選單（spec 141）：鎖 HP、一擊斃命、穿牆。原版沒有，預設關；打開過一次就在存檔記
 // `CheatsUsed`，畫面上一直標著。開過作弊的路線不算原版驗收，也不算 #5 的收據。
 //
 // app 上的欄位：`helpPage` 是 F1 說明頁的第幾頁（0 起算），`cheatOpen` 是選單開著，
@@ -46,6 +46,8 @@ func (a *app) cheatInput() (bool, error) {
 		a.setCheat(&a.state.Cheats.LockHP, msgCheatLockHPName)
 	case a.justPressed(ebiten.KeyO):
 		a.setCheat(&a.state.Cheats.OneHitKill, msgCheatOneHitKillName)
+	case a.justPressed(ebiten.KeyW):
+		a.setCheat(&a.state.Cheats.WalkThroughWalls, msgCheatWalkThroughWallsName)
 	}
 	return true, nil
 }
@@ -148,6 +150,9 @@ func (a *app) cheatMark() string {
 	if a.state.Cheats.OneHitKill {
 		on = append(on, a.text(msgCheatOneHitKillName))
 	}
+	if a.state.Cheats.WalkThroughWalls {
+		on = append(on, a.text(msgCheatWalkThroughWallsName))
+	}
 	if len(on) != 0 {
 		return fmt.Sprintf(a.text(msgCheatMark), strings.Join(on, a.text(msgCheatMarkSeparator)))
 	}
@@ -159,7 +164,7 @@ func (a *app) cheatMark() string {
 
 // drawCheatMenu 畫作弊選單。
 func drawCheatMenu(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
-	for y := 120; y < 280; y++ {
+	for y := 120; y < 304; y++ {
 		for x := 96; x < 544; x++ {
 			screen.Set(x, y, background)
 		}
@@ -174,6 +179,7 @@ func drawCheatMenu(screen *ebiten.Image, a *app, background, foreground, accent 
 	}
 	drawText(screen, fmt.Sprintf(a.text(msgCheatMenuLockHP), state(a.state.Cheats.LockHP)), 128, 184, foreground)
 	drawText(screen, fmt.Sprintf(a.text(msgCheatMenuOneHitKill), state(a.state.Cheats.OneHitKill)), 128, 208, foreground)
-	drawText(screen, a.text(msgCheatMenuNote), 128, 240, accent)
-	drawText(screen, a.text(msgCheatMenuClose), 128, 264, foreground)
+	drawText(screen, fmt.Sprintf(a.text(msgCheatMenuWalkThroughWalls), state(a.state.Cheats.WalkThroughWalls)), 128, 232, foreground)
+	drawText(screen, a.text(msgCheatMenuNote), 128, 264, accent)
+	drawText(screen, a.text(msgCheatMenuClose), 128, 288, foreground)
 }

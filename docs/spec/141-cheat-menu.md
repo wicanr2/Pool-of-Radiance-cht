@@ -1,7 +1,7 @@
-# Spec 141：作弊選單——鎖 HP、一擊斃命（預設關）
+# Spec 141：作弊選單——鎖 HP、一擊斃命、穿牆（預設關）
 
-狀態：READY（開關、存檔、標示、傷害路徑、說明頁分頁、實作與測試；這是 remake 自己的功能，沒有原版行為可對）。
-日期：2026-09-17。主台帳：GitHub issue #43。
+狀態：READY（開關、存檔、標示、傷害路徑、穿牆、說明頁分頁、實作與測試；這是 remake 自己的功能，沒有原版行為可對）。
+日期：2026-09-17。主台帳：GitHub issue #43（穿牆：#5）。
 
 ## 一句話
 
@@ -25,7 +25,7 @@ CLAUDE.md §3／§6 規定原版忠實是驗收基準、主線驗收不得依賴
 | 項 | 內容 |
 |---|---|
 | 開選單 | 冒險模式（含戰鬥畫面）按 `F6`；說明、攻略、商店等覆蓋層開著時不開 |
-| 選單內 | `L` 切鎖 HP，`O` 切一擊斃命，`ESC` 或 `F6` 關閉；選單開著時其他按鍵一律不作用 |
+| 選單內 | `L` 切鎖 HP，`O` 切一擊斃命，`W` 切穿牆，`ESC` 或 `F6` 關閉；選單開著時其他按鍵一律不作用 |
 | 畫面識別字 | `cheat-menu`（`-screen-state`） |
 | 切換提示 | 狀態列印一句，例如「作弊：鎖 HP 開（原版沒有）」 |
 
@@ -39,6 +39,7 @@ CLAUDE.md §3／§6 規定原版忠實是驗收基準、主線驗收不得依賴
 |---|---|---|
 | `Cheats.LockHP` | `cheats.lock_hp` | 鎖 HP |
 | `Cheats.OneHitKill` | `cheats.one_hit_kill` | 一擊斃命 |
+| `Cheats.WalkThroughWalls` | `cheats.walk_through_walls` | 穿牆 |
 | `CheatsUsed` | `cheats_used` | 打開過任何一個就是真，不會回到假 |
 
 都有 `omitempty`，舊存檔讀得回來（全部是假）。存檔 schema 版本不變：這幾個欄位缺席時就是
@@ -77,6 +78,19 @@ CLAUDE.md §3／§6 規定原版忠實是驗收基準、主線驗收不得依賴
 戰術盤的 `PartySlot[index] >= 0`。**目前 remake 沒有其他會讓敵人 HP 減少的路徑**；之後新增的傷害
 路徑要回到這張表登記。
 
+## 穿牆
+
+使用者 2026-09-17 決定（#5）：兩邊作弊通關時都可以暫時穿牆，只要逐段對照得起來。
+
+- **remake**：開著時 `moveInitialDungeonForward` 不看 `CanMoveDungeonWrapped`，牆與鎖門一律當開著，
+  走一般的前進那一支（跑入口 0、換圖旗標照常），不走「被擋住仍跑入口 0」的 `runBlockedInitialCellEntry`。
+- **原版（dosgolem 駕駛）**：`tools/dosgolem-cheat-playthrough.py` 只在一步被擋住時，把 `DS:69BAh` 指到的 GEO 牆資料
+  （spec 078：`+0` 北高／東低 nibble、`+100h` 南高／西低 nibble）在這一格朝前與鄰格朝回來的那一面清成 0，
+  踏過去再寫回原值，每一次記進收據的 `wall_clears`。程式看到的同樣是一步沒被擋住的前進。
+  那份記憶體等於目前 GEO 的核對：貧民窟狀態下地形面逐位元組相同、256 格的牆位置全對（exact）。
+- 兩邊的差別：remake 開著時每一步都不看牆；原版駕駛先照牆規劃，走不到才穿。路線不同不影響對照——
+  對照的是必經區塊與段末旗標，不是步數（goal 第 8 步）。
+
 ## 說明頁
 
 F1 說明頁原本就放不下：鍵說明 11 行、英文指令 3 行、出處 5～7 行，每行 22 像素、從 y=100 起畫，
@@ -109,7 +123,7 @@ F1 說明頁原本就放不下：鍵說明 11 行、英文指令 3 行、出處 
 
 ## 實作與測試
 
-- `cmd/pool-game/cheats.go`：`cheatInput`（F6、L、O、ESC）、`setCheat`（寫 `CheatsUsed`）、
+- `cmd/pool-game/cheats.go`：`cheatInput`（F6、L、O、W、ESC）、`setCheat`（寫 `CheatsUsed`）、
   `applyCheatLockHP`（`Update()` 開頭 `defer`）、`restorePartyHitPoints`（治具共用）、`cheatDamage`、
   `cheatMark`、`drawCheatMenu`。
 - 掛點：`resolveTacticalAttack` 的每一下傷害、`applySpellDamage` 的開頭；冒險畫面、戰鬥畫面、隊伍選單的標示；
@@ -122,5 +136,6 @@ F1 說明頁原本就放不下：鍵說明 11 行、英文指令 3 行、出處 
   - `TestCheatOneHitKillCoversPartySpellsButNotFoes`：法術路徑與敵人造成的傷害，直接呼叫。手動建的隊伍只記催眠術，
     按鍵走不到施法傷害那一支。
   - `TestHelpPagesListTheCheatKeyAndFitTheBox`：中英兩頁不超出框，第 1 頁有 F6。
+  - `TestCheatWalkThroughWallsPassesAWallFromKeys`：開局那一格朝一道地圖內的牆，關著撞牆、按 W 之後走過去。
   - `TestCheatsRoundTripAndOldSavesReadAsOff`（`internal/save`）：舊存檔讀回來全關，新欄位往返。
   - `TestMainlineProbeHouseRuleCheatAtNorris`：探針只在諾里斯那一場開作弊（playtest 補十四）。
