@@ -49,9 +49,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **ECL7/17（遊牧營地）的格子事件在探索器裡無限迴圈。** 探索器 log 在 GEO7/17 (7,15) 連續七趟「格子事件 300000」一步不走。
       **驗收**：最小重現＋修正；探索器在該區能走動。
       **討論**：[#23](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/23)
-- [ ] **載入 ECL 區塊時清 class 0 `4A00..4A1F` 與 class 1 `6E79..6E82`。** 原版 overlay-07 entry 3（`01C8h`）在 `[4959h] == 0` 時清這兩段（spec 106〈載入區塊時清掉的兩段〉；dosgolem 收據 `docs/audit/dosgolem-4a01-block-load-clear.json`）。remake 的區塊切換沒有這一步，`4A01` 帶到城區：職員走 BACK SO SOON、港務長不開口。
-      **驗收**：換區時兩段歸零、讀檔後第一次載入不清（`4959h` 語意）；有單元測試與 dosgolem 同一條走法的對照；`applySokalHandInTicketState` 與 spec 137 死路表標 remake 的四列移除；`TestMainlineProbeHPLockedRouteA` 過了港務長。
-      **討論**：[#41](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/41)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -77,9 +74,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟。** spec 102〈晚上鎖門與城衛隊〉的分支與比較方向已對過原版；原版晚上站上鎖門格的畫面沒拍，地形 0 牆型 9 的十一個門面沒對到建築。不擋主線。
       **驗收**：dosgolem 原版晚上在 (3,4) 朝東的鎖門問句畫面與 `6E7D = 8`；十一個門面對到建築名寫進 spec 102 並拿掉 OPEN 那一條。
       **討論**：[#39](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/39)
-- [ ] **HP 鎖定診斷通關：路線 (a) 從標題按鍵跑到結局。** 使用者 2026-09-17 決定以 HP 鎖定強制通關，驗證路線 (a)、旗標、換圖與結局鏈。依 CLAUDE.md §3／§6 這是診斷收據，不取代 #5 的正常強度收據。#41 接上之後 `TestMainlineProbeHPLockedRouteA`（seed 142）從標題跑到結局：`4ABA = FE`、結局 3 頁（playtest 補十三）。
-      **驗收**：HP 鎖定探針從標題以正常按鍵跑到結局（泰倫斯拉克斯、`4ABA = FEh`、結局頁），收據列每段入口／出口旗標、等級、時刻、HP 寫回次數與每場回合數；非戰力的卡點都有修正或 issue。
-      **討論**：[#40](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/40)
 - [ ] **導覽結束那一格紮營休息完，又印一次導覽結尾句。** 新遊戲導覽結束後在城區 (0,4) 休息 2 小時，收尾停在格子文字「OUR TOUR IS ENDED...」，發行包對拍在 field-cast 之前停下。v.1.1.5 的對拍走得完；與 #41 無關（拿掉區塊載入寫入結果相同）。原版同一格休息完的畫面還沒量。
       **驗收**：dosgolem 量原版在同一格休息 2 小時後的畫面；remake 從 Update() 送鍵的結果一致並有測試；發行包對拍走完 35 張。
       **討論**：[#42](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/42)

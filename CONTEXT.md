@@ -5,8 +5,8 @@
 ## 2026-09-17 載入 ECL 區塊時的寫入接上；HP 鎖定探針從標題跑到結局（#41、#40）
 
 - 共用 engine 加 `eclvm.BlockSession.SetBlockLoadWrites`／`ApplyBlockLoadWrites`：以資料宣告，
-  `SwitchBlock` 之後、新區塊第一個入口之前套用；不收 callback，未宣告時行為不變（engine 分支
-  `block-load-writes`，`f9c0ae7`）。CoAB 以 `7a81a33` 與 `f9c0ae7` 各跑一次全套測試，60 個套件
+  `SwitchBlock` 之後、新區塊第一個入口之前套用；不收 callback，未宣告時行為不變（engine main
+  `f9c0ae7`，Pool `go.mod` 已鎖這一版）。CoAB 以 `7a81a33` 與 `f9c0ae7` 各跑一次全套測試，60 個套件
   都綠，紅燈名單相同；CoAB 檔案沒有改。
 - Pool 的宣告是 `gamepack.BlockLoadWrites()`：overlay-07 entry 3 的五個附帶寫入（`6DE1=FF`、
   `6DD2`／`6DD3=0`、`49E5=0`、`49E6=1`）加兩段清除。每個建 session 的建構子都接；新遊戲前端

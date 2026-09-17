@@ -142,8 +142,8 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
 
 ## 2026-09-17 收在哪
 
-第 1～7 步做完，#40 的探針從標題跑到結局；**push、engine 併回 main、Pool `go.mod` 鎖版還沒做，等使用者決定**，
-所以 #41、#40 的 issue 先不關。
+第 1～8 步做完，#40 的探針從標題跑到結局。使用者確認後 engine `block-load-writes` fast-forward 併進 main
+（`f9c0ae7`）並推送，Pool `go.mod` 鎖這一版（`cebe5ad`，無 replace、`-mod=readonly` 建過），#41、#40 關閉。
 
 - **第 1 步（原版收據）**：`tools/dosgolem-block-load-clear-cases.py` → `docs/audit/dosgolem-block-load-clear-cases.json`（ok）。
   跨 archive（貧民窟 → 城區）class 0 `4A00 FF→00 ← 1997:02FE`、class 1 `6E7D 0B→00 ← 1997:0323`，之後城區入口才寫
@@ -151,7 +151,7 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
   entry 3 另外五個附帶寫入（`6DE1=FF`、`6DD2`／`6DD3=0`、`49E5=0`、`49E6=1`）位元組 exact，remake 原本一個都沒有做——
   同一個宣告表達得了，併進這一條；`49E6 = 1` 原本只在新遊戲手寫一次。
 - **第 2 步（engine）**：分支 `block-load-writes`，`f9c0ae7`：`MemoryFill`、`SetBlockLoadWrites`、`ApplyBlockLoadWrites`；
-  `SwitchBlock` 之後、第一個入口之前套用，Clone 帶著，範圍碰到程式碼窗就拒絕。engine 全套測試綠。未推送。
+  `SwitchBlock` 之後、第一個入口之前套用，Clone 帶著，範圍碰到程式碼窗就拒絕。engine 全套測試綠。
 - **第 3 步（CoAB 唯讀回歸）**：`git archive` 匯出 `7a81a33` 與 `f9c0ae7`，臨時 modfile 以 replace 指過去，各跑一次 CoAB
   全套測試：兩次都是 60 個套件全綠，紅燈名單相同（零條）；CoAB 工作樹零變更。
 - **第 4 步（Pool adapter）**：`internal/gamepack/block_load.go`，三個建構子都宣告；新遊戲前端改呼叫
@@ -166,7 +166,7 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
   （變好 0、變差 0、不變 33）；`docs/audit/dos-parity-sample.*` 沒有覆寫。
 - **第 7 步（文件）**：spec 106 狀態 CONFORMED、附帶寫入表與收據；spec 102 刪掉只在 remake 成立的順序限制；
   spec 137 死路表刪四列、鎖血診斷節改成走到結局；CONTEXT、playtest 補十三。
-- **第 8 步（台帳）**：開 #42；worklist 加 #42、更新 #40。#41 的 verify 已經回「可能已完成」，關 issue 與移除鏡像等推送。
+- **第 8 步（台帳）**：開 #42；#41、#40 推送後關閉並從鏡像移除；#26、#22、#5 各留狀態。
 
 ## 已知風險與待決
 
