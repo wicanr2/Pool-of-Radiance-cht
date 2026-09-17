@@ -49,9 +49,10 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
 清除接上之後，這一支應該可以拿掉。
 
 **engine repo 的狀態**：
-- 工作樹在分支 `postwall-black-only-note`，比 origin/main（`c207368`）多 12 個 commit，包含 Pool 需要的 `7a81a33`。
-- Pool 的 `go.mod` 鎖 `c207368`；本機建置由 `tools/go.sh` 以 replace 指到本機 engine。
-- CoAB 也鎖 `c207368`，用的是 `tools/engine-proxy.sh` 的檔案型 proxy。
+- `main` 已 fast-forward 到 `7a81a33` 並推送，原本 `postwall-black-only-note` 分支上的 12 個 commit 都在裡面。
+- Pool 的 `go.mod` 還鎖 `c207368`；本機建置由 `tools/go.sh` 以 replace 指到本機 engine。
+- CoAB 也還鎖 `c207368`（檔案型 proxy `tools/engine-proxy.sh`）。它對新 engine 的抽驗登記在
+  [CoAB #1](https://github.com/wicanr2/Curse-of-the-Azure-Bonds-cht/issues/1)。
 
 **全套紅燈六條**（`c70b611`）：
 - `TestSokalKeepOpensTheOtherBoatRoutes`
@@ -85,7 +86,7 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
 >    remake 換區後各是什麼值、由誰寫。有差異的先開 issue 帶證據，不要併進這一條，除非證據 exact、
 >    而且同一個宣告就能表達。
 > 2. **engine：作品中立的區塊載入宣告。**
->    - 在 `golden-box-remake-engine` 目前的工作分支上，加一個向後相容的 `BlockSession` 設定。
+>    - 在 `golden-box-remake-engine` 的 `main`（`7a81a33`）上開分支，加一個向後相容的 `BlockSession` 設定。
 >      名字自己取，語意是：「每次 `NEWECL` 成功換區、`SwitchBlock` 之後、第一個入口跑之前，把宣告的位址設成宣告的值」。
 >    - 預設不宣告時行為完全不變。
 >    - 用資料表達（位址範圍＋值），不收 callback，保住「callback 不改 VM 狀態」的契約。
@@ -94,7 +95,7 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
 >    - 合成 fixture 的單元測試要涵蓋：換區後清掉；入口在清除之後寫的值留得住；未宣告時不動；Clone 帶得過去。
 >    - engine 自己的測試全綠。
 > 3. **CoAB 唯讀回歸。**
->    - 不改 CoAB 任何檔案。先用舊 engine（目前 commit）跑一次 CoAB 現行測試記基準，再指向新 engine commit
+>    - 不改 CoAB 任何檔案。先用 `7a81a33` 跑一次 CoAB 現行測試記基準（CoAB #1 的結果能直接用就沿用），再指向新 engine commit
 >      （臨時 modfile 或 engine-proxy，產物放 `workplace/`）跑一次。
 >    - 兩次的紅燈名單要逐條相同；不同就停下來查，不要改 CoAB。
 > 4. **Pool adapter 接上。**
@@ -151,5 +152,5 @@ HP 鎖定探針（`TestMainlineProbeHPLockedRouteA`）已經走通這幾段：�
   或轉紅都算到 #41 頭上。
 - **自然強度的牆沒變**：諾里斯約 15% 勝率，索寇 (8,5) 19 個 seed 全滅。這一輪就算鎖血跑到結局，也只是 #40 的
   診斷收據，#5 維持 open。
-- **engine 分支**：新 API 疊在 `postwall-black-only-note` 上，而 Pool／CoAB 的 `go.mod` 還鎖 main 的 `c207368`。
-  正式鎖定版本之前，engine 要先合併進 main 並推送，這一步要使用者決定。
+- **engine 分支**：新 API 從 `main` 開分支做，併回 `main` 要使用者決定。Pool 與 CoAB 的 `go.mod` 都還鎖 `c207368`：
+  CoAB 升版走 CoAB #1；Pool 升版時要一起確認 `7a81a33` 與新 API 兩段。
