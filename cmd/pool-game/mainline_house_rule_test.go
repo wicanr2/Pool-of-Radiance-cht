@@ -612,5 +612,8 @@ func (d *mainlineDriver) partyLine() string {
 			strings.TrimSpace(member.Name), strings.Join(levels, "/"), member.Experience,
 			member.CurrentHP, member.MaxHP, member.Money[3], member.Money[4]))
 	}
-	return strings.Join(parts, "; ")
+	// 時刻一起印：城區過了十四點會鎖門（spec 102），路線表要知道每一段花幾小時。
+	clock := d.a.gameTime
+	return strings.Join(parts, "; ") + fmt.Sprintf(" | day %d %02d:%d%d", clock[gamepack.TimeDigitDay],
+		clock[gamepack.TimeDigitHour], clock[gamepack.TimeDigitMinuteTens], clock[gamepack.TimeDigitMinuteOnes])
 }

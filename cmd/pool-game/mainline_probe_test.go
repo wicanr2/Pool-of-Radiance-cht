@@ -52,9 +52,10 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 // 古托井打諾里斯（槽 0）換獎賞，交件、訓練所升級，再回索寇要塞。
 // 每一段記等級、XP、金幣（`partyLine`）。
 //
-// 骰子 seed 用 137 不用 136：諾里斯那一場對一級隊伍是擲骰（136／138 全滅、137 贏，
-// 六隻被催眠、剩諾里斯與一名 AC 4 的蜥蜴人，全隊十三回合只命中四次），收據要的是
-// 後面那一段——交件折算經驗、訓練所升級、職員清 `4A00`——跑得到。勝率記在
+// 骰子 seed 用 143：諾里斯那一場對一級隊伍是擲骰，而駕駛一改骰流就跟著變。
+// 2026-09-17 掃 136..150 只有 143 打贏諾里斯（136／139／141／148 輸在諾里斯、
+// 七個死在貧民窟、三個卡在「往西去古托井卻回到城區」），收據要的是後面那一段——
+// 交件折算經驗、訓練所升級、買板甲——跑得到。各 seed 的結局記在
 // `docs/playtest/mainline-end-to-end.md`。
 func TestMainlineProbeHouseRuleCommissionExperience(t *testing.T) {
 	runMainlineProbe(t, true, 143)
@@ -682,14 +683,33 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 				beforeSlots = append(beforeSlots, address)
 			}
 		}
+		// 晚上市政廳的門是鎖的（`ecl3/0 9920h`，spec 102）：問句答 NO，然後去旅店
+		// 睡到早上再走回來。答 YES 是 38 隻城衛隊（seed 143 就死在這裡）。
+		lockedOut := 0
 		for guard := 0; guard < 20000; guard++ {
 			active := pendingCommission(application) || application.shopActive ||
 				application.treasureActive || application.cellWaitingMenu ||
-				application.cellEventPending
+				application.cellEventPending || application.tactical != nil ||
+				application.combatActive
 			if !active {
 				break
 			}
 			switch {
+			case application.tactical != nil || application.combatActive:
+				outfitter.settle()
+			case application.cellWaitingMenu && strings.Contains(application.eventText, "DO YOU WANT TO BREAK IN"):
+				outfitter.answerCityWatch()
+				outfitter.settle()
+				lockedOut++
+				if lockedOut > 3 {
+					t.Fatalf("City Hall stayed locked after sleeping %d times (hour %d)", lockedOut-1,
+						application.gameTime[gamepack.TimeDigitHour])
+				}
+				if !outfitter.sleepUntilHour(restMorningHour) {
+					t.Fatalf("City Hall is locked at hour %d and the party cannot sleep until morning at %+v",
+						application.gameTime[gamepack.TimeDigitHour], application.spawn)
+				}
+			case application.cellWaitingMenu && outfitter.answerCityWatch():
 			case application.shopActive:
 				step(ebiten.KeyEscape)
 			case application.treasureActive && outfitter.reward != nil && outfitter.reward():

@@ -128,7 +128,7 @@ func TestGameClockProjectsIntoECLMemory(t *testing.T) {
 		t.Fatalf("開場的小時是 %d，該是 0", got)
 	}
 	// 推到 14:00——腳本的白天判斷用的就是這個門檻（`ecl3/0 9BAEh`、
-	// `ecl3/0 ADAAh` 的馬車商人、`ecl4/21 AE48h`）。
+	// `ecl2/9 ADAAh` 的馬車商人、`ecl3/0 9920h` 的晚上鎖門、`ecl4/21 AE48h`）。
 	for minutes := 0; minutes < 14*60; minutes++ {
 		application.advanceGameTime(1)
 	}

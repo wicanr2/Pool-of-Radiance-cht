@@ -1,5 +1,7 @@
 # Goal：城區 (3,4) 全滅的觸發鏈對回原版，探針走到索寇要塞（GitHub #22、#26 → #5）
 
+狀態：**這一份做完到停止線**（2026-09-17）。#22、#26 仍開著；收在哪見〈2026-09-17 收在哪〉。
+
 主台帳：[issue #22](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/22)（策略層）、
 [issue #26](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/26)（路線與建議順序），
 兩條做完後回 [issue #5](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/5)。
@@ -106,6 +108,29 @@ ADDF..AE08  LOAD MONSTER 94×2、84×12、53×12、40×12 → COMBAT    ; 38 隻
 >    `gh issue list --state open`，兩邊對齊。
 > 9. **停止線：** 第 1 步的觸發點不在表上；同一場、同一死因第三次；要動 `internal/combat`
 >    的判定才過得去；或一條探針超過 60 秒——停下來回報。
+
+## 2026-09-17 收在哪
+
+1. **重現**：暫時的 log 印出 (3,4) 22 點「BREAK IN?」答了 YES、「RESPONDS TO THE NOISE」答了 STAY，
+   開打之後 `handInPending` 不處理戰鬥，全滅。與〈現況〉表的第一條相同。
+2. **機制**（spec 102〈晚上鎖門與城衛隊〉）：比較方向是 `49C9 >= 14`，dosgolem 對過原版
+   （開局 0 點、城區走一步 `6E7D = 11`，正對照 `49FE` 9 → 10；
+   `tools/dosgolem-city-night-flag.py` → `docs/audit/dosgolem-city-night-flag.json`）。三組門：
+   地形 26 牆型 11 是市政廳 (4,3)／(3,4)／(5,4)，地形 0 牆型 9 有十一個門面（未對名字），
+   地形 4 牆型 7 在 GEO3/0 掃不到。`9E9Ah` 是 LEAVE／FORCE YOUR WAY PAST、`A828h` 是 STAY／RUN；
+   第 0 項會開打的只有鎖門與兩個 STAY／RUN。remake 跑的是同一份位元組、同一個比較方向，沒有
+   要開的產品 issue。原版晚上站上那一格的畫面沒拍（strong inference）。
+3. **前提文字**：四個檔案六處程式註解、spec 069／114／137、playtest 補八改掉；`ADAAh` 是 `ecl2/9` 的
+   馬車商人。推翻紀錄在 `CONTEXT.md` 2026-09-17。seed 註解改成 143 與掃描結果。
+4. **駕駛**：`cityWatchAnswer`（`settle`、`handInPending`、推主線的探索器都先問它）、
+   `sleepUntilHour`、`clearRestDuration`。最後一個是順帶找到的：紮營只把天數欄歸零，上一次的
+   小時數會進位，井底休息醒在 22 點——那才是 143 晚上到市政廳的原因。三條最小重現在
+   `city_watch_test.go`。三條探索器測試有踩到這些問句，但仍紅，失敗形狀與基準相同（走路迴圈）。
+5. **探針**：house rule 143 走完交件（A 1633 XP）→ A 升二級 → B 買板甲 → 上船 → 索寇 (8,5)
+   4 回合全滅。seed 136..150 與 HEAD 逐 seed 對過，只有 143 變；原版規則探針不變
+   （playtest 補九）。
+6. **時刻**：spec 137 補表——交件、訓練、買甲共 1 小時 13 分，醒在 6 點就夠；第 3、5 段沒跑。
+7. **停止線**：索寇要塞 (8,5)，依第 9 步停。
 
 ## 已知風險與待決
 

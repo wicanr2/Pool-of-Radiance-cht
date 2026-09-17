@@ -128,8 +128,9 @@ func (d *mainlineDriver) busy() bool {
 		a.endingActive || a.gameOver
 }
 
-// settle 把等待中的事件按完。選單挑 prefer 裡認得的第一項，都不認得就選
-// 第一項；戰鬥交給戰術駕駛；鎖住的門一律 EXIT（主線上沒有要撬的門）。
+// settle 把等待中的事件按完。城衛隊的問句先照 `cityWatchAnswer` 答（第 0 項
+// 都是會開打的那個，`city_watch_test.go`）；其餘選單挑 prefer 裡認得的第一項，
+// 都不認得就選第一項；戰鬥交給戰術駕駛；鎖住的門一律 EXIT（主線上沒有要撬的門）。
 // guard 給寬：一場戰鬥就是幾百個 tick。
 func (d *mainlineDriver) settle(prefer ...string) {
 	d.t.Helper()
@@ -188,6 +189,7 @@ func (d *mainlineDriver) settle(prefer ...string) {
 		case a.door != nil && !a.cellEventPending:
 			dismissDoorMenu(a)
 			a.keys = nil
+		case a.cellWaitingMenu && d.answerCityWatch():
 		case a.cellWaitingMenu && len(a.cellMenuOptions) != 0:
 			pick := 0
 			for _, label := range prefer {

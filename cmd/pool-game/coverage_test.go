@@ -1510,6 +1510,19 @@ walk:
 						}
 					}
 				}
+				// 推主線時不招惹城衛隊（`city_watch_test.go`）：晚上的鎖門不破、
+				// 被驅趕就走、神殿衛兵擋門就離開、衛兵趕到就跑。那一場 38 隻
+				// （含 12 名六級戰士）是玩家選了才開打，而上面那幾條輪流試選項
+				// 的規則會把每一個都試到。
+				if flags != nil {
+					if answer, ok := cityWatchAnswer(application.eventText, application.cellMenuOptions); ok {
+						for index, option := range application.cellMenuOptions {
+							if strings.EqualFold(option, answer) {
+								want = index
+							}
+						}
+					}
+				}
 				for _, option := range application.cellMenuOptions {
 					if strings.EqualFold(option, "SOKAL") {
 						t.Logf("碼頭選單 GEO%d/%d (%d,%d) 選 %d／%v",

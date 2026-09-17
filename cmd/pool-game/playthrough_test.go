@@ -246,8 +246,9 @@ func pressTowardTheSlums(application *app) (error, bool) {
 
 // equipForFirstCombat 給治具的隊伍鏈甲、盾與長劍——**原版玩家的第一件事就是
 // 去武具店買裝備**（`outfitParty` 走的也是這條路），而這個治具的隊伍本來什麼
-// 都沒有：AC 10、空手 1d2。時鐘接上 ECL 之後（#20）城裡十四點就宵禁，它不能
-// 再像以前那樣在城裡繞 900 步才找到一場架，得真的打一場自然遭遇——而貧民窟的
+// 都沒有：AC 10、空手 1d2。時鐘接上 ECL 之後（#20）城裡過了十四點就有門上鎖、
+// 答錯就招來城衛隊（`city_watch_test.go`），它不能再像以前那樣在城裡繞 900 步
+// 才找到一場架，得真的打一場自然遭遇——而貧民窟的
 // 隨機遭遇隻數會跟著隊伍強度放大（實測 12～16 隻），空手打不贏。
 //
 // 直接塞進背包再標成已裝備，不走商店：這個治具要量的是 Q）UICK 與經驗值，
@@ -336,10 +337,12 @@ func newGameAtFirstCombat(t *testing.T, party []poolsave.Character) *app {
 				err = press(application, ebiten.KeyEnter)
 			}
 		default:
-			// 先走出城區再找架。城裡沒有打得起的固定戰鬥，唯一會開打的是
-			// **十四點的宵禁**（衛兵 38 隻，含 12 名六級戰士）——時鐘接上 ECL
-			// 之後（#20）在城裡漫無目的地走滿十四小時就一定撞上它，以前時鐘
-			// 凍在午夜才碰不到。原版玩家的第一場架在貧民窟（spec 137 第 2 段：
+			// 先走出城區再找架。城裡沒有打得起的固定戰鬥，會開打的是**城衛隊**
+			// （38 隻，含 12 名六級戰士，`ecl3/0 ADDFh`）——要玩家自己選才來：
+			// 晚上（`49C9 >= 14`）破門、被驅趕不走、硬闖神殿、鬥毆後留下
+			// （`city_watch_test.go`）。時鐘接上 ECL 之後（#20）在城裡漫無目的地
+			// 走過十四點就會撞上鎖門，而這裡的「按 ENTER」答的是第 0 項（YES／STAY）；
+			// 以前時鐘凍在午夜才碰不到。原版玩家的第一場架在貧民窟（spec 137 第 2 段：
 			// 城區 (0,4) 往西出界）。規劃不出路就照舊亂走。
 			if application.spawn.Map.Archive == 3 && application.spawn.Map.BlockID == 0 {
 				if pressed, handled := pressTowardTheSlums(application); handled {

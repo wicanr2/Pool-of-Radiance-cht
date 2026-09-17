@@ -327,17 +327,98 @@ ADD6  EXIT
 出要塞時通過守衛要用。
 
 
+## 晚上鎖門與城衛隊
+
+城區入口 0（每一步都跑）開頭先判斷是不是晚上，再決定面前那道門開不開。
+城衛隊那一場 38 隻**不是到點出兵**，每一條進去的路都要玩家選。
+
+### 入口 0 的晚上判斷（exact）
+
+`ecl3.dax` block 0（SHA-256 `b0fe79c5…`，`cmd/pool-ecl-trace -archive 3 -block 0`）：
+
+```
+9914  SAVE 0 → @6E7B ; SAVE 11 → @6E7D
+9920  COMPARE @49C9, 14 ; IF >= ; SAVE 8 → @6E7D
+992D  SAVE @6E7D → @49FD ; SAVE 10 → @49FE
+993A  COMPARE @6DD5, 0 ; IF = ; GOTO 9965h     ; 6DD5 另一支（NEWECL 20），不在本節
+9965  AND 127, @C04F → @6E82
+996E  COMPARE @4ABA, 254 ; IF >= ; EXIT         ; 通關之後不鎖
+9976  COMPARE @6E7D, 8 ; IF <> ; EXIT           ; 白天到此為止
+997E  COMPARE AND @6E82, 0,  @C04E, 9  ; IF = ; GOTO 99AFh
+998E  COMPARE AND @6E82, 4,  @C04E, 7  ; IF = ; GOTO 99AFh
+999E  COMPARE AND @6E82, 26, @C04E, 11 ; IF = ; GOTO 99AFh
+99AE  EXIT
+99AF  PRINTCLEAR "THE DOOR IS LOCKED.  DO YOU WANT TO BREAK IN?"
+99D4  GOSUB AE5Ah（YES／NO）→ 99D8 ON GOTO [AD82h ← YES, 99E4h ← NO]
+99E4  SAVE 255 → @6DC9 ; EXIT
+```
+
+**比較的方向對過原版**：engine 把 `COMPARE a, b` 讀成「a 對 b」，所以 `9920h` 是
+`49C9 >= 14`；反過來讀是 `14 >= 49C9`。開局時鐘 0，兩種讀法在城區走一步之後寫進
+`6E7D` 的值不同（11 對 8）。dosgolem 在原版從貧民窟走回城區，進城那一步
+`49FE` 從 9 變成 10（正對照：位址換算對），同一步 `6E7D = 11`、`49FD = 11`、
+`49C9 = 0`——是 engine 的讀法。收據 `docs/audit/dosgolem-city-night-flag.json`，
+重生用 `tools/dosgolem-city-night-flag.py`。
+
+`C04E` 是面前那道牆、`C04F` 是這一格的地形（spec 015）。三組條件在 GEO3/0 上
+（以格子自己的 `WallDirections` 掃）：
+
+| 地形 | 牆型 | 格子（朝向）| 地點 |
+|---:|---:|---|---|
+| 26 | 11 | (4,3) 南、(3,4) 東、(5,4) 西 | 市政廳的門（索引 26 是門口的布告，本表上方）|
+| 0 | 9 | (14,8) 東、(11,9) 南、(12,9) 南、(13,9) 北、(10,10) 西、(7,11) 東、(10,11) 東、(8,12) 南、(9,12) 北、(10,12) 東與南 | 未對名字 |
+| 4 | 7 | 沒有 | —— |
+
+地點名與「牆型 9 的門是哪幾棟」是 `unknown`；地形 4 牆型 7 掃不到，而 remake 投影
+`C04E` 用的是 `WallWrapped`（spec 015），是否含相鄰格那一側的牆沒另外掃——
+`hypothesis`：那一組在這張圖上不會成立。
+
+remake 實跑（`cmd/pool-game/city_watch_test.go`）：20 點在 (3,4) 朝東踏一步出現
+鎖門問句、答 NO 不開打也不進市政廳；6 點同一步直接進 ECL3/8；答 YES 出現
+`AD82h` 的城衛隊問句。原版晚上站上那一格的畫面還沒拍，所以「晚上會鎖市政廳」
+這一句在原版 runtime 上是 `strong inference`（靜態分支 exact ＋ 比較方向 exact）。
+
+### 城衛隊那一場的五條進入邊（exact）
+
+`ADDFh..AE08h`：`LOAD MONSTER` 94×2、84×12、53×12、40×12 → `COMBAT`
+（remake 顯示為 LEVEL 3 MU×2／6TH LVL FIGHTER×12／AIDES×12／NOMAD×12）。
+進去的路只有這五條，都是玩家選了才開打。鎖門（YES）與兩個 `STAY／RUN`（STAY）
+**第 0 項是開打的那個**，按 ENTER 就開打；驅趕與神殿的第 0 項是安全的，但輪流試
+選項的駕駛照樣會試到：
+
+| 來源 | 問句 | 開打 | 不開打 |
+|---|---|---|---|
+| `99D8h` | 晚上的鎖門 BREAK IN? | YES → `AD82h` | NO → `99E4h` |
+| `9AE6h` | 休息被驅趕（入口 3，spec 114）| STAY → `ADDFh` | GO → `AE6Ah` |
+| `9E9Ah` | 神殿衛兵擋主教 | FORCE YOUR WAY PAST → `AD82h` | LEAVE → `A059h` |
+| `A828h` | 酒館鬥毆後 CITY WATCH CHARGES IN | STAY → `AD82h` | RUN → `AEF4h` |
+| `AFDCh` | 瘋子發作 | 直接 `GOTO AD82h` | —— |
+
+`AD82h` 再問一次 `STAY／RUN`（`ADC3h`）：STAY → `ADDFh` 開打，RUN → `AEF4h`。
+`AEF4h` 是 `RANDOM 3`、兩張 `GETTABLE`（`B617h`／`B61Bh`）、`CALL 2C90h`——隨機
+搬到三個地點之一。打完 `AE13h` 寫 `4AC0 = 1`；緊接著的 `AE1Ah` 是另一支的
+"DUE TO YOUR VICIOUS ATTACK… WE REFUSE YOU ALL SERVICE."，誰讀 `4AC0`、誰跳到
+`AE1Ah` 沒有讀（`unknown`）。
+
+時刻相關的腳本讀同一個門檻：`ecl3/0 9BAEh`（碼頭的圖）、`ecl2/9 ADAAh`（斯托亞諾夫
+城門的馬車商人 `49C9 >= 14` 就 `EXIT`）、`ecl4/21 AE48h`（索寇要塞）。
+
 ## 驗收
 
 `TestNormalKeysBuyAndEquipFromTheWeaponShop`（`cmd/pool-game`）只用按鍵從
 標題走到武具店：建角拿到金幣 → 走到 (8,11) → 買 → 按 I 裝上。它同時是這張
 索引表的實測——路線是照索引 22 的五格規劃的，走到就代表索引讀對了。
 
+晚上鎖門：`TestCityHallIsLockedAtNightAndNoKeepsThePeace`、負對照
+`TestCityHallIsOpenInTheMorning`、正對照
+`TestBreakingIntoCityHallCallsTheWatchAndRunAvoidsTheFight`（`city_watch_test.go`，
+都從 `Update()` 送鍵）；比較方向的原版收據 `docs/audit/dosgolem-city-night-flag.json`。
+
 ## OPEN
 
 - 索引 28..35 那 12 格由誰處理。同一張 GEO 上還有 ECL3/8（市政廳）與
   ECL3/11（競技場），兩者都是 `NEWECL` 換進來的，它們自己的入口 1 還沒讀過。
-- 索引 3、8、25、26、27 之外的「沒有地點」索引（0、4、11–16、18）在入口 0
-  另有門的判別（`99AFh` 的 `THE DOOR IS LOCKED.`），那一段還沒逐條讀。
+- 牆型 9 的那十一個門面是哪幾棟建築；原版晚上站上鎖門格的畫面（目前只有靜態分支
+  與比較方向的 runtime 證據，見〈晚上鎖門與城衛隊〉）。
 - 其他區（貧民窟、要塞…）是不是同一套分派。ecl2/20 與 ecl4/21 的入口 1
   還沒逐條讀過。

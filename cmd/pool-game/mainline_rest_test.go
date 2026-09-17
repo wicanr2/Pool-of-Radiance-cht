@@ -107,15 +107,14 @@ func (d *mainlineDriver) restUntilHealed() {
 				application.door != nil, application.shopActive, application.campFromProgram, application.eventText)
 		}
 		step(ebiten.KeyR)
+		d.clearRestDuration()
 		step(ebiten.KeyY)
-		for guard := 0; guard < 64 && !application.restDuration.IsZero(); guard++ {
-			step(ebiten.KeyD)
-		}
 		for day := 0; day < days; day++ {
 			step(ebiten.KeyI)
 		}
-		// 睡到隔天早上。時鐘接上 ECL 之後（#20）城裡十四點就宵禁——衛兵 38 隻
-		// （含 12 名六級戰士）——而天數不會改變醒來的時刻，所以要另外補小時。
+		// 睡到隔天早上。時鐘接上 ECL 之後（#20）城區過了十四點市政廳與幾道門
+		// 會鎖上（`ecl3/0 9920h`，spec 102），而天數不會改變醒來的時刻，所以要
+		// 另外補小時。
 		// `H` 是切到小時那一欄（`camp.go` 的紮營鍵表）。
 		if hours := hoursUntilMorning(application.gameTime); hours != 0 {
 			step(ebiten.KeyH)
@@ -309,8 +308,9 @@ func (d *mainlineDriver) walkBackFrom(origin gamepack.MapKey) {
 	d.note("walkBackFrom: back in the slums at (%d,%d)", a.spawn.X, a.spawn.Y)
 }
 
-// restMorningHour 是「睡到早上」的目標時刻：原版城裡十四點開始宵禁
-// （`ecl3/0 ADAAh` 那一類比 `49C9 >= 14`），六點起床離它最遠。
+// restMorningHour 是「睡到早上」的目標時刻。腳本把 `49C9 >= 14` 當晚上：城區
+// 入口 0 `ecl3/0 9920h` 晚上鎖市政廳與幾道門，斯托亞諾夫城門的馬車商人
+// `ecl2/9 ADAAh` 晚上不出現（spec 102、137）。醒在六點，離十四點還有八小時。
 const restMorningHour = 6
 
 // hoursUntilMorning 是從現在睡到隔天早上要幾個小時。已經是早上就回 0。

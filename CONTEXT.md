@@ -1,6 +1,24 @@
 # Pool of Radiance remake 現況
 
-更新日期：2026-09-16。
+更新日期：2026-09-17。
+
+## 2026-09-17 城衛隊是玩家選了才開打；市政廳晚上鎖門
+
+- 城區入口 0 `ecl3/0 9920h` 把 `49C9 >= 14` 當晚上（`6E7D = 8`，否則 11），晚上面向
+  特定牆型的門出現 "THE DOOR IS LOCKED. DO YOU WANT TO BREAK IN?"——市政廳那三格
+  （地形 26、牆型 11）在內。比較方向對過原版：dosgolem 開局時鐘 0、城區走一步
+  `6E7D = 11`，正對照 `49FE` 進城那一步 9 → 10（`docs/audit/dosgolem-city-night-flag.json`）。
+- 38 隻那一場（`ADDFh..AE08h`）的五條進入邊都要玩家選：鎖門 YES、驅趕 STAY、神殿
+  FORCE YOUR WAY PAST、鬥毆後 STAY、瘋子發作。鎖門與兩個 STAY／RUN 的第 0 項就是開打
+  的那個（spec 102〈晚上鎖門與城衛隊〉）。
+- 已推翻：「城裡十四點宵禁、到點出兵 38 隻」。證據原本引用 `ecl3/0 9BAEh`（碼頭的圖）與
+  `ecl3/0 ADAAh`；後者在 `ecl3/0` 落在一句 PRINTCLEAR 的字串中間，馬車商人是
+  `ecl2/9 ADAAh`。
+- house rule 探針 seed 143 在市政廳門口全滅的成因：駕駛兩次答第 0 項，而 `handInPending`
+  不處理戰鬥。再往前一層是駕駛的紮營只把天數欄歸零，上一次的小時數會進位，井底休息醒在
+  22 點。治具加 `cityWatchAnswer`／`sleepUntilHour`／`clearRestDuration` 之後，143 走完交件、
+  A 升二級、B 買板甲，停在索寇要塞 (8,5) 全滅（playtest 補九）。seed 136..150 與 HEAD 逐 seed
+  對過，只有 143 的結局變了；原版規則探針不變。產品碼沒動。
 
 ## 2026-09-16 部署換成原版的：樣板填寫者、兩邊的偏移與遭遇距離都讀出來了
 

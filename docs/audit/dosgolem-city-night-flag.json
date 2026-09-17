@@ -1,0 +1,255 @@
+{
+ "schema": "pool-dosgolem-city-night-flag/1",
+ "generator": "dosgolem",
+ "generator_revision": "9bd269a",
+ "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+ "walk_out_keys": "rep:9:Space,Return,Return,c,rep:6:Return,y,A,Return,k,e,y,c,rep:6:Return,y,B,Return,k,e,y,c,rep:6:Return,y,C,Return,k,e,y,c,rep:6:Return,y,D,Return,k,e,y,c,rep:6:Return,y,E,Return,k,e,y,c,rep:6:Return,y,F,Return,k,e,y,a,End,a,End,a,End,a,End,a,End,a,e,b,rep:14:Return,Up,Up,Up",
+ "walk_back_keys": "Right,Right,Up,Up,Up,Up",
+ "pointers": {
+  "class0_DS_4933": "2EA2:0000",
+  "class1_DS_4937": "2F22:0000"
+ },
+ "peek": {
+  "clock": "2EA2:018C:14",
+  "49FD_49FE": "2EA2:01FA:4",
+  "6E7B_6E7F": "2F22:06F6:10"
+ },
+ "positive_control": "49FE 在 Up 那一步從 9 變成 10（城區入口 0 `9934h`）",
+ "city_step": {
+  "label": "Up",
+  "x": 0,
+  "y": 4,
+  "facing_0_7": 2,
+  "wall_C04E": 0,
+  "terrain_C04F": 25,
+  "clock_49C6_49CC": [
+   0,
+   2,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "hour_49C9": 0,
+  "49FD": 11,
+  "49FE": 10,
+  "6E7B_6E7F": [
+   0,
+   0,
+   11,
+   0,
+   0
+  ],
+  "6E7D": 11,
+  "frame_sha256": "a5b409924bab76516f6ac2c590c36de2c970eebd8f59899e9ef574a0c4ac8d2c"
+ },
+ "engine_reading_expects_6E7D": 11,
+ "reversed_reading_expects_6E7D": 8,
+ "verdict": "engine 讀法（49C9 ≥ 14）",
+ "frames": [
+  {
+   "label": "loaded",
+   "x": 14,
+   "y": 4,
+   "facing_0_7": 6,
+   "wall_C04E": 14,
+   "terrain_C04F": 0,
+   "clock_49C6_49CC": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hour_49C9": 0,
+   "49FD": 11,
+   "49FE": 9,
+   "6E7B_6E7F": [
+    0,
+    0,
+    11,
+    0,
+    0
+   ],
+   "6E7D": 11,
+   "frame_sha256": "60688c35a83d6297b78d408b477610a5d3c80497af39ada42aed076d353dfcd5"
+  },
+  {
+   "label": "Right",
+   "x": 14,
+   "y": 4,
+   "facing_0_7": 0,
+   "wall_C04E": 14,
+   "terrain_C04F": 0,
+   "clock_49C6_49CC": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hour_49C9": 0,
+   "49FD": 11,
+   "49FE": 9,
+   "6E7B_6E7F": [
+    0,
+    0,
+    11,
+    0,
+    0
+   ],
+   "6E7D": 11,
+   "frame_sha256": "466104f09a63dce8f26936f17f5a6ee1ab673f7927a85eb3ffabdf723718c09f"
+  },
+  {
+   "label": "Right",
+   "x": 14,
+   "y": 4,
+   "facing_0_7": 2,
+   "wall_C04E": 0,
+   "terrain_C04F": 0,
+   "clock_49C6_49CC": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hour_49C9": 0,
+   "49FD": 11,
+   "49FE": 9,
+   "6E7B_6E7F": [
+    0,
+    0,
+    11,
+    0,
+    0
+   ],
+   "6E7D": 11,
+   "frame_sha256": "544bb9ec70fdfa2e7305fdb5597583fa3fd4d2ea81d393d8a8e2f28a8df96e56"
+  },
+  {
+   "label": "Up",
+   "x": 15,
+   "y": 4,
+   "facing_0_7": 2,
+   "wall_C04E": 11,
+   "terrain_C04F": 0,
+   "clock_49C6_49CC": [
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hour_49C9": 0,
+   "49FD": 11,
+   "49FE": 9,
+   "6E7B_6E7F": [
+    0,
+    0,
+    11,
+    0,
+    0
+   ],
+   "6E7D": 11,
+   "frame_sha256": "d54b7ac0dfac065f64be883807590a107564a8d92ca912353a9823893de4fb2e"
+  },
+  {
+   "label": "Up",
+   "x": 0,
+   "y": 4,
+   "facing_0_7": 2,
+   "wall_C04E": 0,
+   "terrain_C04F": 25,
+   "clock_49C6_49CC": [
+    0,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hour_49C9": 0,
+   "49FD": 11,
+   "49FE": 10,
+   "6E7B_6E7F": [
+    0,
+    0,
+    11,
+    0,
+    0
+   ],
+   "6E7D": 11,
+   "frame_sha256": "a5b409924bab76516f6ac2c590c36de2c970eebd8f59899e9ef574a0c4ac8d2c"
+  },
+  {
+   "label": "Up",
+   "x": 1,
+   "y": 4,
+   "facing_0_7": 2,
+   "wall_C04E": 0,
+   "terrain_C04F": 0,
+   "clock_49C6_49CC": [
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hour_49C9": 0,
+   "49FD": 11,
+   "49FE": 10,
+   "6E7B_6E7F": [
+    0,
+    0,
+    11,
+    0,
+    0
+   ],
+   "6E7D": 11,
+   "frame_sha256": "363e3c6b5d4323908f294a361f68e1ef184b9fe4d9ce73c8aaee0ad491a06989"
+  },
+  {
+   "label": "Up",
+   "x": 2,
+   "y": 4,
+   "facing_0_7": 2,
+   "wall_C04E": 0,
+   "terrain_C04F": 0,
+   "clock_49C6_49CC": [
+    0,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "hour_49C9": 0,
+   "49FD": 11,
+   "49FE": 10,
+   "6E7B_6E7F": [
+    0,
+    0,
+    11,
+    0,
+    0
+   ],
+   "6E7D": 11,
+   "frame_sha256": "df19f7cbfee92af0f5b28f9d5534bcdd83b4143adecdefd79d06913b176c3eb1"
+  }
+ ]
+}
