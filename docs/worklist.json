@@ -11,8 +11,8 @@
       "id": "main-line-end-to-end",
       "layer": "verification",
       "title": "主線從開場到結局連續跑過一次",
-      "body": "路線層（spec 137）已用明確的狀態機從標題按到結局。自然建角的兩條探針（原版規則、house rule seed 143）都走到索寇要塞 (8,5) 那一場 50 隻全滅（2026-09-17，`docs/playtest/mainline-end-to-end.md` 補九）。",
-      "acceptance": "一次不中斷的實跑，每一個必經 block 都留下經過紀錄；中途卡住的地方寫成可重跑的測試。",
+      "body": "使用者 2026-09-17 決定：主線收據改成「用產品的作弊選單（spec 141）從標題以正常按鍵跑到結局」，原版那一側用 dosgolem 鎖 HP 跑同一條路線，逐段對照必經區塊與旗標。不開作弊的正常強度改為可選（#22）。remake 那一側已有治具版鎖血跑到結局（playtest 補十三）。",
+      "acceptance": "TestMainlineProbeCheatMenuToEnding 開產品作弊選單從標題跑到結局；dosgolem 作弊跑同一條路線到結局；docs/audit/cheat-playthrough-compare.md 逐段對照沒有未開 issue 的不一致。",
       "verify": {
         "kind": "present",
         "paths": [
@@ -21,8 +21,7 @@
         "pattern": "下一步（尚未做）",
         "note": "實跑紀錄還掛著「下一步（尚未做）」那一節就代表主線還沒連續走完；走完時把那一節改成收據"
       },
-      "github_issue": 5,
-      "blocked_by": "索寇要塞 (8,5) 避不掉（#37），要的是等級與戰術（#22）。"
+      "github_issue": 5
     },
     {
       "id": "real-machine-startup",
@@ -104,22 +103,6 @@
         "note": "要先寫最小重現才有機器訊號"
       },
       "github_issue": 23
-    },
-    {
-      "id": "mainline-route-levels",
-      "layer": "verification",
-      "title": "主線路線表補委任獎賞、建議等級與順序",
-      "body": "使用者選路線 (a)：貧民窟 25 場交件 → 職員列出波多廣場 → 拍賣喬裝、WAIT FOR WINNER 結案 → 升級 → 諾里斯 → 索寇。鎖血診斷（#40，playtest 補十二）實跑過貧民窟 25 場、交件、職員列出波多廣場、拍賣結案不開戰；之後的交件與港務長被 #41 擋住。索寇 (8,5) 正常強度 19 個 seed 全滅（補十一）。",
-      "acceptance": "spec 137〈建議順序〉照 (a) 改寫並以 #40 的實跑數字取代 hypothesis；拍賣結案有實跑收據；正常強度下貧民窟 24／33／34 的勝率另記。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/spec/137-mainline-route.md"
-        ],
-        "pattern": "勝負與建議強度仍是 hypothesis",
-        "note": "建議順序的標題還寫著其餘段落是 hypothesis 就是還沒做；路線 (a) 自然強度跑完再改標題"
-      },
-      "github_issue": 26
     },
     {
       "id": "city-night-lock-original-receipt",
