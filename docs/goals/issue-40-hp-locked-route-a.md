@@ -95,6 +95,31 @@ MONSTERS.（`@B255` 得 1），地形碼 1 → STAND AND LISTEN → WAIT FOR WIN
 >    敵方打不到或打不死）；要改 `internal/combat` 或產品碼才過得去；單一段超過 60 秒或整條探針超過 10 分鐘；
 >    或發現需要注入旗標才走得下去——停下來回報。
 
+## 2026-09-17 收在哪
+
+**停在第 9 步的停止線：要改產品程式才過得去。** 第 1～4 步走通，第 5 步走到諾里斯，之後的交件與索寇的票
+被 remake 的一個缺陷擋住，開 #41。#40 維持 open，等 #41 修好後重跑同一條探針。
+
+- **第 1 步（鎖）**：`cmd/pool-game/hp_lock_test.go`，`afterTick` 鉤子每個 tick 補戰鬥中隊員的 HP 並計數；
+  `press`／`step`／`idle`／`scriptedChars` 各呼叫一次 `runAfterTick`。`TestHPLockTurnsTheSlumsGuardsWipeIntoAWin`
+  （seed 136 地形 13）不鎖全滅、鎖了 `6DC7 = 0`。鎖血時回合帳的 DEFEAT 是誤判，勝負看 `6DC7`。
+  產品碼 `git diff` 為空。
+- **第 2 步（貧民窟 25 場）**：隨機 15 ＋ 固定 9 到 `18h`，攤位（地形 19 ATTACK）補第 25 場到 `FE`
+  （`slumsBoothFight`）；log 每次計數印 `slums count 4ABB=…`。交件 `4ABB = FF`。
+- **第 3 步（職員）**：交件後 `4AB0 = 01`，照正常按鍵聽清單。
+- **第 4 步（拍賣）**：陸路進波多廣場，喬裝 → 聽 → 等得標者，`4AB0 = FE`，全程沒有開戰（`podolRouteA`）。
+  spec 137 那一半從「只有靜態」改成有實跑收據。
+- **第 5 步卡住**：回城交件時 `4A01 = 3`、找過職員後 `4A01 = 1`，職員走 BACK SO SOON、港務長 `9C4Bh` 不開口。
+  追下去是原版在載入 ECL 區塊時清 `4A00..4A1F`／`6E79..6E82`（overlay-07 entry 3 位元組 exact；dosgolem
+  寫入監看 `01→00 ← 1997:02FE`，`docs/audit/dosgolem-4a01-block-load-clear.json`），remake 沒有這一步。
+  修正要動 Pool adapter 或 engine 的區塊載入 hook——超出本 goal 的界線，開 #41 帶證據。
+  探針現在以 `route (a) blocked by #41` 在約 8 秒內停下；補血 88 次全在戰鬥中、死亡復活 0、全滅畫面 0。
+- **文件**：spec 106 多〈載入區塊時清掉的兩段〉並推翻「class 0 不隨 NEWECL 重設」；spec 102 改寫清票與
+  「先說謊」段；spec 137 死路表四列標 remake、多〈路線 (a) 的 HP 鎖定診斷〉；CONTEXT.md；playtest 補十二。
+- **dosgolem**：`cmd/shots` 加 `-watch lo-hi` 寫入監看（dosgolem repo 本機 commit `b4d5a3f`，未推送；
+  收據記錄了這個 revision）。
+- **下一輪**：#41 修好 → 重跑 `TestMainlineProbeHPLockedRouteA` 從交件接著走第 5～6 步。
+
 ## 已知風險與待決
 
 - **鎖定的時機。** 一次 `Update()` 裡可能連續結算多下傷害，隊員在同一 tick 內就從滿血掉到死亡；每 tick 寫回

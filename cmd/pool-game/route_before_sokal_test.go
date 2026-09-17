@@ -242,3 +242,123 @@ func (d *mainlineDriver) riverDetour() {
 		a.eventSession.CurrentBlockID(), a.spawn, a.eventMachine.Memory[wildernessX],
 		a.eventMachine.Memory[wildernessY], partyHP(a))
 }
+
+// probeRouteA 打開時主線探針走 #26 的路線 (a)（#40）：貧民窟打滿 25 場（不避開 24／33／34）
+// → 交件 → 職員列出波多廣場 → 拍賣喬裝進場、WAIT FOR WINNER 結案 → 交件 → 諾里斯 → 索寇。
+// 預設關。
+var probeRouteA = false
+
+// podolRouteA 是路線 (a) 的中段：交貧民窟的件、確認職員列出波多廣場（`4AB0 = 1`，
+// `ecl3/8 AA2Ah`），走陸路去波多廣場把拍賣結案（spec 137〈波多廣場的委任要先接〉），
+// 再走回市政廳交件。從城區出發、回到城區。
+func (d *mainlineDriver) podolRouteA(walkThroughBoundary func(gamepack.MapKey), ready func(*app) bool, handIn func()) {
+	a := d.a
+	d.t.Helper()
+	city := gamepack.MapKey{Archive: 3, BlockID: 0}
+	memory := a.eventMachine.Memory
+	if !ready(a) {
+		d.fatalf("route (a): the slums are cleared but there is nothing to hand in (4ABB=%02X 4A01=%d)", memory[0x4ABB], memory[0x4A01])
+	}
+	handIn()
+	d.note("route (a): slums handed in 4ABB=%02X 4AC1=%d 4AB0=%02X 4A01=%d at %+v ECL%d/%d %s", memory[0x4ABB], memory[0x4AC1], memory[0x4AB0],
+		memory[0x4A01], a.spawn, a.eclArchive, a.eventSession.CurrentBlockID(), d.partyLine())
+	if memory[0x4AB0] != 1 {
+		d.fatalf("route (a): the clerk did not list Podol Plaza (4AB0=%02X, want 1)", memory[0x4AB0])
+	}
+
+	// 去波多廣場：城區西出 → 貧民窟 → 古托井西緣。
+	if a.spawn.Map == city {
+		walkThroughBoundary(city)
+	}
+	d.note("route (a): left the city 4A01=%d at %+v ECL%d/%d", memory[0x4A01], a.spawn, a.eclArchive, a.eventSession.CurrentBlockID())
+	d.crossSlums(false)
+	westEdge := func(x, y int) bool { return x == 0 && a.initialMap.Grid.CanMoveDungeonWrapped(x, y, 6) }
+	if !westEdge(int(a.spawn.X), int(a.spawn.Y)) && !d.walkAllowing("route (a): Kuto west edge", westEdge, d.kutoSafe, false) {
+		d.fatalf("route (a): cannot reach Kuto's Well west edge")
+	}
+	previous := d.prefer
+	defer func() { d.prefer = previous }()
+	// 進場選單（`9A36h`）答喬裝；拍賣兩層選單答 STAND AND LISTEN、WAIT FOR WINNER。
+	d.prefer = []string{"DISGUISE PARTY AS MONSTERS.", "STAND AND LISTEN", "WAIT FOR WINNER"}
+	d.settle()
+	d.face(3)
+	d.step(ebiten.KeyArrowUp)
+	d.settle()
+	if a.spawn.Map != (gamepack.MapKey{Archive: 1, BlockID: 18}) {
+		d.fatalf("route (a): Kuto's west edge led to %+v, not Podol Plaza", a.spawn.Map)
+	}
+	// 接了委任，入口 4（`9971h`，載入時跑）寫 `4A35 = 0`；進場選單（`9A2Eh` 在 `4A35 == 0`
+	// 時問）是入口 0 的一段，進場之後**下一步**才出現，`walkAllowing` 的 `settle` 照 prefer 答喬裝。
+	d.note("route (a): Podol Plaza at (%d,%d) 4A35=%02X 4AB0=%02X", a.spawn.X, a.spawn.Y, memory[0x4A35], memory[0x4AB0])
+	if memory[0x4A35] != 0 {
+		d.fatalf("route (a): entered Podol with 4A35=%02X, entry 4 `9998h` writes 0 when 4AB0 == 1", memory[0x4A35])
+	}
+	auction := func(x, y int) bool { return d.terrainCode(x, y) == 1 }
+	// 廣場裡任何格子都可以走：落點 (15,4) 四周是地形 9 與 11。HP 鎖住，路上的事件打起來也不會
+	// 卡住；換圖只在邊緣，不在地形格上。
+	plaza := func(int, int) bool { return true }
+	if !d.walkAllowing("route (a): the auction", auction, plaza, false) && memory[0x4AB0] != 0xFE {
+		d.fatalf("route (a): cannot reach the auction (terrain 1) from (%d,%d)", a.spawn.X, a.spawn.Y)
+	}
+	d.settle()
+	d.note("route (a): disguise answered? 4A35=%02X", memory[0x4A35])
+	d.note("route (a): auction over 4A35=%02X 4AB0=%02X at (%d,%d)", memory[0x4A35], memory[0x4AB0], a.spawn.X, a.spawn.Y)
+	if memory[0x4AB0] != 0xFE {
+		d.fatalf("route (a): the auction did not close the commission (4AB0=%02X 4A35=%02X text=%q)",
+			memory[0x4AB0], memory[0x4A35], a.eventText)
+	}
+	d.prefer = previous
+
+	// 回市政廳：波多廣場東緣 → 古托井 → 貧民窟 → 城區。
+	eastEdge := func(x, y int) bool { return x == 15 && a.initialMap.Grid.CanMoveDungeonWrapped(x, y, 2) }
+	anywhere := func(int, int) bool { return true }
+	d.leaveMap("route (a): Podol → Kuto", eastEdge, anywhere, false, 1)
+	d.crossKutoEast()
+	d.crossSlums(true)
+	if !ready(a) {
+		// remake 載入區塊時不清 `4A00..4A1F`（#41）：波多廣場的隨機遭遇把 `4A01` 當暫存
+		// 留成非 0，職員 `9BA1h` 走 BACK SO SOON。原版出了任何一次換區就是 0。記下來往下走。
+		if memory[0x4AB0] != uint16(gamepack.CityHallSlotPending) {
+			d.fatalf("route (a): back in the city with nothing to hand in (4AB0=%02X 4A01=%d at %+v)", memory[0x4AB0], memory[0x4A01], a.spawn)
+		}
+		d.note("route (a): Podol hand-in blocked by 4A01=%d (#41), slot 10 stays FE", memory[0x4A01])
+		return
+	}
+	handIn()
+	d.note("route (a): Podol handed in 4AB0=%02X 4AC1=%d %s", memory[0x4AB0], memory[0x4AC1], d.partyLine())
+}
+
+// TestMainlineProbeHPLockedRouteA 是 #40 的診斷收據：HP 鎖定、house rule、路線 (a)，
+// 從標題以正常按鍵跑到結局。**不證明打得贏**——那是 #22／#5。
+func TestMainlineProbeHPLockedRouteA(t *testing.T) {
+	lock := &hpLock{}
+	defer lock.install()()
+	probeRouteA = true
+	defer func() { probeRouteA = false }()
+	defer func() { t.Log(lock.line()) }()
+	runMainlineProbe(t, true, 142)
+}
+
+// slumsBoothFight 打貧民窟那個「沒貨可賣」的攤位（地形 19，`ecl2/20 AE1Eh`）：
+// LEAVE／ATTACK／SPEAK 答 ATTACK → "THE MAN RUNS SCREAMING INTO THE BACK OF THE BOOTH."
+// → 7×4、6×15 → 只要潛在委託人那一支沒走完（`4A81 != 255`）就 `GOSUB B69Ch` 計數。
+// 前提是 `4A81 < 250`、`4A1D == 0`（沒打過）。
+func (d *mainlineDriver) slumsBoothFight() {
+	a := d.a
+	d.t.Helper()
+	memory := a.eventMachine.Memory
+	before := memory[0x4ABB]
+	if memory[0x4A81] >= 250 || memory[0x4A1D] != 0 {
+		d.note("slums booth: not available (4A81=%02X 4A1D=%d)", memory[0x4A81], memory[0x4A1D])
+		return
+	}
+	booth := func(x, y int) bool { return d.terrainCode(x, y) == 19 }
+	previous := d.prefer
+	d.prefer = []string{"ATTACK"}
+	defer func() { d.prefer = previous }()
+	if !d.walkAllowing("slums booth", booth, d.slumsSafe, true) {
+		d.fatalf("slums booth: cannot reach terrain 19")
+	}
+	d.settle()
+	d.note("slums booth: 4ABB %02X → %02X 4A1D=%d at (%d,%d)", before, memory[0x4ABB], memory[0x4A1D], a.spawn.X, a.spawn.Y)
+}

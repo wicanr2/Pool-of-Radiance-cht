@@ -183,6 +183,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		if err := application.Update(); err != nil {
 			t.Fatal(err)
 		}
+		runAfterTick(application)
 	}
 	idle := func() {
 		t.Helper()
@@ -191,6 +192,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		if err := application.Update(); err != nil {
 			t.Fatal(err)
 		}
+		runAfterTick(application)
 	}
 
 	outfitter := buildManualParty(t, application, step, idle, houseRule)
@@ -842,7 +844,13 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	// 貧民窟一級隊伍打得起的只有 20 場（實跑紀錄「補四」）：連續三趟 `4ABB`
 	// 沒動就收手，先去做索寇要塞，回頭再補。
 	stalled, lastCount := 0, uint16(0)
-	for patrol := 0; patrol < 40 && application.eventMachine.Memory[0x4ABB] != 0xFE && stalled < 3; patrol++ {
+	// 路線 (a)（#40）要把 25 場湊滿：不避開大場、多給幾趟。
+	stallLimit, patrolLimit := 3, 40
+	if probeRouteA {
+		stallLimit, patrolLimit = 8, 80
+	}
+	slumsCount := application.eventMachine.Memory[0x4ABB]
+	for patrol := 0; patrol < patrolLimit && application.eventMachine.Memory[0x4ABB] != 0xFE && stalled < stallLimit; patrol++ {
 		if count := application.eventMachine.Memory[0x4ABB]; count == lastCount {
 			stalled++
 		} else {
@@ -868,7 +876,9 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 				}
 				switch cell.Terrain & 0x7F {
 				case 9, 13, 15:
-					avoid[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] = true
+					if !probeRouteA {
+						avoid[[3]int{int(slums.Archive), int(slums.BlockID), y*100 + x}] = true
+					}
 				}
 			}
 		}
@@ -904,6 +914,13 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 				if a.tactical != nil && a.tactical.Status != lastStatus {
 					lastStatus = a.tactical.Status
 					t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
+				}
+				if a.eventMachine != nil && a.eventMachine.Memory[0x4ABB] != slumsCount {
+					// 哪一場讓計數加一（`ecl2/20 B69Ch`）：印事件文字、位置與地形碼。
+					slumsCount = a.eventMachine.Memory[0x4ABB]
+					cell, _ := a.initialMap.Grid.Cell(int(a.spawn.X), int(a.spawn.Y))
+					t.Logf("slums count 4ABB=%02X at (%d,%d) terrain %d 4A80=%02X text=%q", slumsCount,
+						a.spawn.X, a.spawn.Y, cell.Terrain&0x7F, a.eventMachine.Memory[0x4A80], firstLine(a.eventText))
 				}
 				return a.eventMachine != nil && (a.eventMachine.Memory[0x4ABB] == 0xFE || hurt(a))
 			}, false)
@@ -952,6 +969,14 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			}
 		}
 	}
+	if probeRouteA && application.eventMachine.Memory[0x4ABB] != 0xFE {
+		// 探索器把選單輪流答，攤位那一場（地形 19）多半答成 LEAVE／SPEAK；
+		// 路線 (a) 在這裡明確去打（`ecl2/20 AEC8h` ATTACK → `AF7Ah` 計數）。
+		if application.spawn.Map != slums {
+			walkThroughBoundary(application.spawn.Map)
+		}
+		outfitter.slumsBoothFight()
+	}
 	slumsCleared := application.eventMachine.Memory[0x4ABB] == 0xFE
 	t.Logf("slums phase ended at 4ABB=%02X (cleared=%t) at %+v; continuing to the city",
 		application.eventMachine.Memory[0x4ABB], slumsCleared, application.spawn)
@@ -963,7 +988,14 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		t.Fatalf("east slums exit reached %+v, want %+v", application.spawn.Map, city)
 	}
 	application.keys = text
-	if houseRule && !slumsCleared {
+	if probeRouteA {
+		if !slumsCleared {
+			t.Fatalf("route (a) needs the slums cleared: 4ABB=%02X 4A80=%02X at %+v",
+				application.eventMachine.Memory[0x4ABB], application.eventMachine.Memory[0x4A80], application.spawn)
+		}
+		outfitter.podolRouteA(walkThroughBoundary, readyToHandIn, handInPending)
+	}
+	if houseRule && (!slumsCleared || probeRouteA) {
 		// 一級隊伍打得起的委任：圖書館的書拿得到但帶不出去（幽靈，
 		// `TestLibraryBooksSummonTheSpectreOnTheWayOut`）；剩下的是古托井的
 		// 諾里斯（槽 0：250 金＋200 白金 → 每人 1250 XP）。路線：城區 (0,4) 西出
@@ -976,9 +1008,17 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		t.Logf("house rule detour: after Norris %s", outfitter.partyLine())
 		outfitter.crossKutoEast()
 		outfitter.crossSlums(true)
+		handInBlocked := false
 		if !readyToHandIn(application) {
-			t.Fatalf("back in the city with nothing to hand in: slot0=%02X 4A01=%d",
-				application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4A01])
+			// 路線 (a)：remake 載入區塊時不清 `4A00..4A1F`（#41），`4A01` 會留著非 0，
+			// 職員走 BACK SO SOON 不掃獎賞。記下來往下走，交件留到索寇（那一次 adapter 清）。
+			if !probeRouteA || !pendingCommission(application) {
+				t.Fatalf("back in the city with nothing to hand in: slot0=%02X 4A01=%d",
+					application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4A01])
+			}
+			handInBlocked = true
+			outfitter.note("route (a): Norris hand-in blocked by 4A01=%d (#41); slot0=%02X 4AB0=%02X",
+				application.eventMachine.Memory[0x4A01], application.eventMachine.Memory[0x4AA6], application.eventMachine.Memory[0x4AB0])
 		}
 		// 獎金 250 金＋200 白金分六份沒有人付得起 1000 金學費（spec 097）：寶物畫面先 Pool
 		// 再 Take 200 白金給經驗值過門檻的第一個人（house rule 的 XP 在畫面打開時就記上了），
@@ -994,7 +1034,9 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			}
 			return outfitter.takeRewardTo(trainee, 200)
 		}
-		handInPending()
+		if !handInBlocked {
+			handInPending()
+		}
 		outfitter.reward = nil
 		t.Logf("house rule detour: after hand-in %s pool=%v", outfitter.partyLine(), application.state.PooledMoney)
 		if outfitter.canTrain() {
@@ -1025,8 +1067,9 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		}
 	}
 	for guard := 0; guard < 5000 && slumsCleared; guard++ {
+		// 路線 (a) 另外交過波多廣場（與諾里斯），公告進度不只 1（spec 041）。
 		settled := application.eventMachine.Memory[0x4ABB] == 0xFF &&
-			application.eventMachine.Memory[0x4AC1] == 1
+			(application.eventMachine.Memory[0x4AC1] == 1 || probeRouteA && application.eventMachine.Memory[0x4AC1] >= 1)
 		if settled && !application.treasureActive && !application.cellEventPending &&
 			!application.cellWaitingMenu {
 			break
@@ -1130,6 +1173,13 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		if application.gameOver {
 			t.Fatalf("the party was destroyed on the way to Sokal Keep: %q at %+v (%s)", application.eventText,
 				application.spawn, tally.line())
+		}
+		// 路線 (a)：還沒拿到索寇的船、`4A01 == 1` 時港務長 `9C4Bh` 不開口，而原版出了
+		// 市政廳就會把它清成 0（#41）。探索器只會在市政廳裡繞，直接報原因。
+		if probeRouteA && application.eventMachine.Memory[0x4AA7] == 0 && application.eventMachine.Memory[0x4A01] == 1 &&
+			application.spawn.Map.Archive != 4 {
+			t.Fatalf("route (a) blocked by #41: 4A01=1 after a City Hall visit, the harbor master will not give the Sokal ticket (at %+v ECL%d/%d); %s",
+				application.spawn, application.eclArchive, application.eventSession.CurrentBlockID(), strings.Join(outfitter.log, " | "))
 		}
 		// 受傷或催眠用完就地紮營（要塞裡也一樣），再繼續探索。
 		restUntilHealed()

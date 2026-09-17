@@ -109,15 +109,15 @@
       "id": "mainline-route-levels",
       "layer": "verification",
       "title": "主線路線表補委任獎賞、建議等級與順序",
-      "body": "使用者選路線 (a)：貧民窟 25 場交件 → 職員列出波多廣場 → 拍賣喬裝、WAIT FOR WINNER 結案 → 升級 → 諾里斯 → 索寇（HP 鎖定診斷通關在 #40）。波多廣場的拍賣要先接委任（exact 靜態）；索寇 (8,5) 正常強度 19 個 seed 全滅（補十一）。",
+      "body": "使用者選路線 (a)：貧民窟 25 場交件 → 職員列出波多廣場 → 拍賣喬裝、WAIT FOR WINNER 結案 → 升級 → 諾里斯 → 索寇。鎖血診斷（#40，playtest 補十二）實跑過貧民窟 25 場、交件、職員列出波多廣場、拍賣結案不開戰；之後的交件與港務長被 #41 擋住。索寇 (8,5) 正常強度 19 個 seed 全滅（補十一）。",
       "acceptance": "spec 137〈建議順序〉照 (a) 改寫並以 #40 的實跑數字取代 hypothesis；拍賣結案有實跑收據；正常強度下貧民窟 24／33／34 的勝率另記。",
       "verify": {
         "kind": "present",
         "paths": [
           "docs/spec/137-mainline-route.md"
         ],
-        "pattern": "hypothesis，待探針實跑",
-        "note": "建議順序還標著待實跑就是還沒做；探針照順序跑完再把那個標記拿掉"
+        "pattern": "勝負與其餘段落仍是 hypothesis",
+        "note": "建議順序的標題還寫著其餘段落是 hypothesis 就是還沒做；路線 (a) 自然強度跑完再改標題"
       },
       "github_issue": 26
     },
@@ -141,13 +141,30 @@
       "id": "hp-locked-route-a-diagnostic",
       "layer": "verification",
       "title": "HP 鎖定診斷通關：路線 (a) 從標題按鍵跑到結局",
-      "body": "使用者 2026-09-17 決定以 HP 鎖定強制通關，驗證路線 (a)、旗標、換圖與結局鏈。依 CLAUDE.md §3／§6 這是診斷收據，不取代 #5 的正常強度收據；HP 鎖定只在測試治具、每次寫回都計數，不注入旗標座標金錢、不 forced-win、不改 internal/combat。",
+      "body": "使用者 2026-09-17 決定以 HP 鎖定強制通關，驗證路線 (a)、旗標、換圖與結局鏈。依 CLAUDE.md §3／§6 這是診斷收據，不取代 #5 的正常強度收據。`TestMainlineProbeHPLockedRouteA`（seed 142）走到諾里斯，交件與港務長被 #41 擋住（playtest 補十二）。",
       "acceptance": "HP 鎖定探針從標題以正常按鍵跑到結局（泰倫斯拉克斯、`4ABA = FEh`、結局頁），收據列每段入口／出口旗標、等級、時刻、HP 寫回次數與每場回合數；非戰力的卡點都有修正或 issue。",
       "verify": {
         "kind": "manual",
-        "note": "訊號是 HP 鎖定探針那條測試是否從標題跑到結局而通過；那條測試還沒寫，寫好之後把這一條改成綁它"
+        "note": "訊號是 `TestMainlineProbeHPLockedRouteA` 從標題跑到結局而通過；它現在停在 #41，不能拿「那段 fatal 不見了」當完成"
       },
-      "github_issue": 40
+      "github_issue": 40,
+      "blocked_by": "remake 載入 ECL 區塊時不清 `4A00..4A1F`（#41）。"
+    },
+    {
+      "id": "ecl-block-load-scratch-clear",
+      "layer": "feature",
+      "title": "載入 ECL 區塊時清 class 0 `4A00..4A1F` 與 class 1 `6E79..6E82`",
+      "body": "原版 overlay-07 entry 3（`01C8h`）在 `[4959h] == 0` 時清這兩段（spec 106〈載入區塊時清掉的兩段〉；dosgolem 收據 `docs/audit/dosgolem-4a01-block-load-clear.json`）。remake 的區塊切換沒有這一步，`4A01` 帶到城區：職員走 BACK SO SOON、港務長不開口。",
+      "acceptance": "換區時兩段歸零、讀檔後第一次載入不清（`4959h` 語意）；有單元測試與 dosgolem 同一條走法的對照；`applySokalHandInTicketState` 與 spec 137 死路表標 remake 的四列移除；`TestMainlineProbeHPLockedRouteA` 過了港務長。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/mainline_probe_test.go"
+        ],
+        "pattern": "route \\(a\\) blocked by #41",
+        "note": "探針裡這道自承的 fatal 還在就是沒修；修好時一起拿掉"
+      },
+      "github_issue": 41
     }
   ]
 }

@@ -44,6 +44,7 @@ func slumsWallFightWith(t *testing.T, seed int64, terrain int, onBattleStart fun
 		if err := application.Update(); err != nil {
 			t.Fatal(err)
 		}
+		runAfterTick(application)
 	}
 	idle := func() {
 		t.Helper()
@@ -52,6 +53,7 @@ func slumsWallFightWith(t *testing.T, seed int64, terrain int, onBattleStart fun
 		if err := application.Update(); err != nil {
 			t.Fatal(err)
 		}
+		runAfterTick(application)
 	}
 	driver := buildManualParty(t, application, step, idle, false)
 	driver.hurt, driver.rest = partyHurt, driver.restUntilHealed

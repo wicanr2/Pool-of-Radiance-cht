@@ -1,0 +1,456 @@
+{
+ "schema": "pool-dosgolem-4a01-block-load-clear/1",
+ "generator": "dosgolem",
+ "generator_revision": "b4d5a3f",
+ "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+ "overlay07_sha256": "a59f9d16a1d186bbd3806865ffe55de4be5b58484287237fb73872295da778ae",
+ "walk_out_keys": "rep:9:Space,Return,Return,c,rep:6:Return,y,A,Return,k,e,y,c,rep:6:Return,y,B,Return,k,e,y,c,rep:6:Return,y,C,Return,k,e,y,c,rep:6:Return,y,D,Return,k,e,y,c,rep:6:Return,y,E,Return,k,e,y,c,rep:6:Return,y,F,Return,k,e,y,a,End,a,End,a,End,a,End,a,End,a,e,b,rep:14:Return,Up,Up,Up",
+ "route": [
+  [
+   "Right",
+   ""
+  ],
+  [
+   "Right",
+   ""
+  ],
+  [
+   "Up",
+   "slums (15,4)"
+  ],
+  [
+   "Up",
+   "city (0,4)"
+  ],
+  [
+   "Up",
+   ""
+  ],
+  [
+   "Up",
+   ""
+  ],
+  [
+   "Up",
+   "city hall door (3,4)"
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Up",
+   "hall (4,4)"
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Up",
+   "hall (4,5)"
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Left",
+   ""
+  ],
+  [
+   "Up",
+   "clerk (5,5)"
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Return",
+   ""
+  ],
+  [
+   "Left",
+   ""
+  ],
+  [
+   "Left",
+   ""
+  ],
+  [
+   "Up",
+   "hall (4,5)"
+  ],
+  [
+   "Right",
+   ""
+  ],
+  [
+   "Up",
+   "hall (4,4)"
+  ],
+  [
+   "Left",
+   ""
+  ],
+  [
+   "Up",
+   "out to city (3,4)"
+  ],
+  [
+   "Return",
+   ""
+  ]
+ ],
+ "watch_linear": "2EC22-2EC23",
+ "class0_pointer": "2EA2:0000 (DS:4933h)",
+ "address_4A01": "2EA2:0202",
+ "segment_1997_is_overlay07": true,
+ "writes": [
+  {
+   "step": 5770565825,
+   "linear": "2EC22",
+   "old": "00",
+   "new": "01",
+   "cs": "1997",
+   "ip": "0CBF"
+  },
+  {
+   "step": 6383096713,
+   "linear": "2EC22",
+   "old": "01",
+   "new": "00",
+   "cs": "1997",
+   "ip": "02FE"
+  }
+ ],
+ "frames": [
+  {
+   "key": "Right",
+   "label": "",
+   "step": 5220400000,
+   "x": 14,
+   "y": 4,
+   "facing_0_7": 0,
+   "terrain_C04F": 0,
+   "4A01": 0,
+   "frame_sha256": "466104f09a63dce8f26936f17f5a6ee1ab673f7927a85eb3ffabdf723718c09f"
+  },
+  {
+   "key": "Right",
+   "label": "",
+   "step": 5260800000,
+   "x": 14,
+   "y": 4,
+   "facing_0_7": 2,
+   "terrain_C04F": 0,
+   "4A01": 0,
+   "frame_sha256": "544bb9ec70fdfa2e7305fdb5597583fa3fd4d2ea81d393d8a8e2f28a8df96e56"
+  },
+  {
+   "key": "Up",
+   "label": "slums (15,4)",
+   "step": 5301500000,
+   "x": 15,
+   "y": 4,
+   "facing_0_7": 2,
+   "terrain_C04F": 0,
+   "4A01": 0,
+   "frame_sha256": "d54b7ac0dfac065f64be883807590a107564a8d92ca912353a9823893de4fb2e"
+  },
+  {
+   "key": "Up",
+   "label": "city (0,4)",
+   "step": 5354600000,
+   "x": 0,
+   "y": 4,
+   "facing_0_7": 2,
+   "terrain_C04F": 25,
+   "4A01": 0,
+   "frame_sha256": "a5b409924bab76516f6ac2c590c36de2c970eebd8f59899e9ef574a0c4ac8d2c"
+  },
+  {
+   "key": "Up",
+   "label": "",
+   "step": 5395100000,
+   "x": 1,
+   "y": 4,
+   "facing_0_7": 2,
+   "terrain_C04F": 0,
+   "4A01": 0,
+   "frame_sha256": "363e3c6b5d4323908f294a361f68e1ef184b9fe4d9ce73c8aaee0ad491a06989"
+  },
+  {
+   "key": "Up",
+   "label": "",
+   "step": 5435600000,
+   "x": 2,
+   "y": 4,
+   "facing_0_7": 2,
+   "terrain_C04F": 0,
+   "4A01": 0,
+   "frame_sha256": "df19f7cbfee92af0f5b28f9d5534bcdd83b4143adecdefd79d06913b176c3eb1"
+  },
+  {
+   "key": "Up",
+   "label": "city hall door (3,4)",
+   "step": 5486300000,
+   "x": 3,
+   "y": 4,
+   "facing_0_7": 2,
+   "terrain_C04F": 26,
+   "4A01": 0,
+   "frame_sha256": "4995e58490aa0eb0e9855f6a5bc46c90aa9de59a60b4c68f5843eb58169540d0"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 5539400000,
+   "x": 3,
+   "y": 4,
+   "facing_0_7": 2,
+   "terrain_C04F": 26,
+   "4A01": 0,
+   "frame_sha256": "55d50685a10e208957691637417299578cfa93243249c3ada41290a8c3a19dfd"
+  },
+  {
+   "key": "Up",
+   "label": "hall (4,4)",
+   "step": 5595700000,
+   "x": 4,
+   "y": 4,
+   "facing_0_7": 4,
+   "terrain_C04F": 155,
+   "4A01": 0,
+   "frame_sha256": "d62747cb68ecb52b50322d61ac339832ae6d95a08760e219853d8ab48759aba8"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 5635700000,
+   "x": 4,
+   "y": 4,
+   "facing_0_7": 4,
+   "terrain_C04F": 155,
+   "4A01": 0,
+   "frame_sha256": "d62747cb68ecb52b50322d61ac339832ae6d95a08760e219853d8ab48759aba8"
+  },
+  {
+   "key": "Up",
+   "label": "hall (4,5)",
+   "step": 5688600000,
+   "x": 4,
+   "y": 5,
+   "facing_0_7": 4,
+   "terrain_C04F": 156,
+   "4A01": 0,
+   "frame_sha256": "2c97159dab81b38d202cbed04ff0cc1df2e1c67e9d1a9dc267328c4708d4405d"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 5728600000,
+   "x": 4,
+   "y": 5,
+   "facing_0_7": 4,
+   "terrain_C04F": 156,
+   "4A01": 0,
+   "frame_sha256": "2c97159dab81b38d202cbed04ff0cc1df2e1c67e9d1a9dc267328c4708d4405d"
+  },
+  {
+   "key": "Left",
+   "label": "",
+   "step": 5769100000,
+   "x": 4,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 156,
+   "4A01": 0,
+   "frame_sha256": "25ea7a1607854d8b2e608a98b5df2b4d2c00e5a7c553499e5242d92bccf2adaa"
+  },
+  {
+   "key": "Up",
+   "label": "clerk (5,5)",
+   "step": 5830000000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "d4e4b0325b3011e6fcc81e001887f0f35dde07c367e61bd4933f4658b6596e3f"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 5883700000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "0cc19c801376114ae5176895a9c1530c44bcb48f6181788b708920eac6de2a00"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 5932000000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "deb867e5f27da0f7e80d399eeffa96344adc56deb721488cc0886e634ffab5d3"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 5977600000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "15e2a5368fbd244c15f2c5e185b4c8978ff4f39db37c009d4558af0b34df9caa"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 6039700000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "496575c2d2aee4c3b646ff62ffa2be552a651888481042b0b87158333835e6c3"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 6087100000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "cee28954494a2d216a76825d509523a048e8889cf6b934ed77b7b43d14c4b6f2"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 6127100000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 2,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "cee28954494a2d216a76825d509523a048e8889cf6b934ed77b7b43d14c4b6f2"
+  },
+  {
+   "key": "Left",
+   "label": "",
+   "step": 6167600000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 0,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "9841450fbf680c9c18d3cd802af69e116596c92b54762ef1d78ae023d566270d"
+  },
+  {
+   "key": "Left",
+   "label": "",
+   "step": 6208200000,
+   "x": 5,
+   "y": 5,
+   "facing_0_7": 6,
+   "terrain_C04F": 157,
+   "4A01": 1,
+   "frame_sha256": "ca2c37ca12cf9ac3685fcda296a69681cf6adb5eea06ed5f6b307a17c13aac91"
+  },
+  {
+   "key": "Up",
+   "label": "hall (4,5)",
+   "step": 6261100000,
+   "x": 4,
+   "y": 5,
+   "facing_0_7": 6,
+   "terrain_C04F": 156,
+   "4A01": 1,
+   "frame_sha256": "c5f2eeeb51a680c1c6f5f61120377df84fc6d0090c2d08c39ac5da74a9afde46"
+  },
+  {
+   "key": "Right",
+   "label": "",
+   "step": 6301500000,
+   "x": 4,
+   "y": 5,
+   "facing_0_7": 0,
+   "terrain_C04F": 156,
+   "4A01": 1,
+   "frame_sha256": "7fd1f3a917fc6f7fe5ca381615f6467ae2d271166b4ed773d582339d9f28d5e3"
+  },
+  {
+   "key": "Up",
+   "label": "hall (4,4)",
+   "step": 6342100000,
+   "x": 0,
+   "y": 0,
+   "facing_0_7": 0,
+   "terrain_C04F": 0,
+   "4A01": 1,
+   "frame_sha256": "0deae2f1eae18848d7cd19a95179c23bc7baa68be75ce5b38480228a4bf8124c"
+  },
+  {
+   "key": "Left",
+   "label": "",
+   "step": 6382500000,
+   "x": 4,
+   "y": 4,
+   "facing_0_7": 6,
+   "terrain_C04F": 155,
+   "4A01": 1,
+   "frame_sha256": "c45d3c52a95f83e53d12775c6579450332e95d1338f7a314c0a75c416872baf5"
+  },
+  {
+   "key": "Up",
+   "label": "out to city (3,4)",
+   "step": 6435500000,
+   "x": 3,
+   "y": 4,
+   "facing_0_7": 6,
+   "terrain_C04F": 26,
+   "4A01": 0,
+   "frame_sha256": "019bb0793ab121d913fee20dab46ace9764956d10d0f2f58120a819515e7ed12"
+  },
+  {
+   "key": "Return",
+   "label": "",
+   "step": 6475500000,
+   "x": 3,
+   "y": 4,
+   "facing_0_7": 6,
+   "terrain_C04F": 26,
+   "4A01": 0,
+   "frame_sha256": "019bb0793ab121d913fee20dab46ace9764956d10d0f2f58120a819515e7ed12"
+  }
+ ],
+ "verdict": "ok",
+ "problems": []
+}

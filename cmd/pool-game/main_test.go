@@ -54,7 +54,9 @@ func scriptedChars(text string) *scriptedTextKeys {
 
 func press(application *app, key ebiten.Key) error {
 	application.keys = scriptedKeys{key: true}
-	return application.Update()
+	err := application.Update()
+	runAfterTick(application)
+	return err
 }
 
 func TestSokalHandInClearsTheCityBoatTicket(t *testing.T) {

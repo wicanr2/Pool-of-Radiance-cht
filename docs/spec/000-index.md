@@ -52,7 +52,7 @@
 | [038](038-graveyard-commission-state-producers.md) | 墓園委託旗標 producer 清冊 | CONFORMED＋DRAFT | `cmd/pool-ecl-memory-audit/main.go` | `cmd/pool-ecl-memory-audit/main_test.go`、`cmd/pool-game/coverage_test.go` |
 | [039](039-graveyard-seven-pool-treasure.md) | 墓園七種戰利品累積池 | READY | `cmd/pool-ecl-memory-audit/main.go` | `internal/gamepack/treasure_test.go` |
 | [040](040-seven-currency-pool-take-share.md) | 七種貨幣的 View／Take／Pool／Share | READY | `cmd/pool-game/appraise.go`、`internal/character/export.go`、`internal/gamepack/movement.go` 等 4 個 | `internal/treasure/money_test.go` |
-| [041](041-city-hall-completion-notification-table.md) | City Hall 完成通知狀態表 | READY＋DRAFT | `internal/gamepack/cityhall.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/playthrough_test.go` 等 4 個 |
+| [041](041-city-hall-completion-notification-table.md) | City Hall 完成通知狀態表 | READY＋DRAFT | `internal/gamepack/cityhall.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` 等 5 個 |
 | [042](042-dos-ecl-archive-catalog-and-slums-counter.md) | DOS ECL archive catalog 與 Slums 完成計數 | READY＋DRAFT | `internal/gamepack/intro.go` | `internal/gamepack/ecl_catalog_test.go` |
 | [043](043-load-files-and-three-wall-slots.md) | LOAD FILES 與三個 WALLDEF slot | READY | `cmd/pool-game/main.go`、`cmd/pool-world-cell-sweep/main.go`、`internal/gamepack/geometry.go` 等 4 個 | `cmd/pool-game/main_test.go`、`internal/gamepack/walls_test.go` |
 | [044](044-ecl-archive-campaign-save.md) | ECL archive campaign 存檔 | CONFORMED＋READY | `internal/save/state.go` | `internal/save/state_test.go` |
@@ -148,7 +148,7 @@
 | [134](134-spell-list-layout.md) | 原版的法術清單版面 | READY＋DRAFT | `cmd/pool-game/field_cast.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/spell_page_test.go` |
 | [135](135-camp-screen-layout.md) | 原版紮營畫面的版面 | READY | `cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/icon_menu.go` 等 7 個 | `cmd/pool-game/camp_screen_test.go`、`cmd/pool-game/inn_test.go`、`cmd/pool-game/mainline_rest_test.go` 等 5 個 |
 | [136](136-slum-encounter-staging.md) | 貧民窟走一步會遇到什麼 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/intro.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_probe_test.go`、`cmd/pool-game/wandering_encounter_e2e_test.go` 等 5 個 |
-| [137](137-mainline-route.md) | 主線必經路徑——從標題到結局要走過哪些區塊 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` | `cmd/pool-game/foe_routing_test.go`、`cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_castle_probe_test.go` 等 13 個 |
+| [137](137-mainline-route.md) | 主線必經路徑——從標題到結局要走過哪些區塊 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` | `cmd/pool-game/foe_routing_test.go`、`cmd/pool-game/house_rule_test.go`、`cmd/pool-game/hp_lock_test.go` 等 15 個 |
 | [138](138-combat-bandage.md) | 戰鬥裡的 B）ANDAGE——止血，不看距離 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go` | `cmd/pool-game/bandage_test.go`、`cmd/pool-game/tactical_pilot_test.go` |
 | [139](139-quick-auto-combat.md) | Q）UICK 自動戰鬥與 M）OVE 的兩層按鍵 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go`、`internal/save/state.go` | `cmd/pool-game/quick_test.go` |
 | [140](140-house-rule-commission-experience.md) | 自訂規則——委任獎賞折算經驗值（預設關） | CONFORMED＋READY | `cmd/pool-game/main.go`、`cmd/pool-game/party_menu.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` |

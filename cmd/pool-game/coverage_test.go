@@ -868,8 +868,8 @@ walk:
 				avoid[key] = true
 			}
 		}
-		// boat：**測試治具**，不是遊玩。港務長那一段目前推不動（船票旗標
-		// `4A01` 沒有人清回去，spec 102 的 OPEN），而碼頭的船照著 `4AC4`
+		// boat：**測試治具**，不是遊玩。港務長那一段目前推不動（原版載入區塊時
+		// 清 `4A01`，remake 還沒有，#41），而碼頭的船照著 `4AC4`
 		// 決定去哪。把那三個值直接寫進去，就能把主線之後的區域先走一遍，
 		// 找出那些區域自己的問題——走得到不走得到是另一個問題。
 		if boat != noBoatOverride && application.eventMachine != nil {
@@ -1186,6 +1186,7 @@ walk:
 					failures = append(failures, fmt.Sprintf("第 %d 步：%v", step, err))
 					break walk
 				}
+				runAfterTick(application)
 				continue
 			}
 			if err := press(application, ebiten.KeyEnter); err != nil {
@@ -1323,9 +1324,9 @@ walk:
 					}
 				}
 				// 同一條路上要走到亡魂那一段：登陸的遭遇選「交涉」，Ferran
-				// 問話必須先說謊、再說實話（spec 102）。第一次說謊把船票
-				// `4A01` 清成 255，但不完成 `4A26`／`4AA7`；探索器留在要塞
-				// 再觸發一次，說實話才完成亡魂委託並保留已清掉的船票。
+				// 問話必須先說謊、再說實話（spec 102；只在 remake 還沒有載入區塊的
+				// 清除時才要，#41）。第一次說謊把船票 `4A01` 清成 255，但不完成
+				// `4A26`／`4AA7`；探索器留在要塞再觸發一次，說實話才完成亡魂委託並保留已清掉的船票。
 				if flags != nil {
 					// 港務長的完整航線選單：SOKAL 是回索寇要塞（已經走過），
 					// NONE 是不上船，所以在 EAST／WEST／BAY 之間輪流挑。
@@ -2583,7 +2584,7 @@ func chooseAreaExit(application *app, exitUses map[[4]int]int) (areaExit, bool) 
 }
 
 // 世界巡迴：**測試治具**，不是玩家路徑。港務長那一段目前推不動
-//（船票旗標 `4A01` 沒有人清回去，spec 102 的 OPEN），所以主線之後的區域
+//（原版載入區塊時清船票旗標 `4A01`，remake 還沒有，#41），所以主線之後的區域
 // 一直沒有被真的跑過——只有 spec 103 的入口掃描碰過它們，而那是乾淨變數的
 // 靜態掃描，沒有前端、沒有戰鬥、沒有選單。
 //
