@@ -85,8 +85,8 @@
       "id": "explorer-player-strategy",
       "layer": "verification",
       "title": "探索器測試的玩家策略層：休息／治療／訓練",
-      "body": "策略層已有：包紮、催眠、集火、旅店休息並睡到早上、城衛隊問句照安全選項答、交件集中獎金、訓練所、隊伍 pool 買甲。兩條主線探針停在索寇要塞 (8,5) 全滅；house rule seed 136..150 只有 143 打贏諾里斯；三條探索器測試卡在走路迴圈（2026-09-17 補九）。",
-      "acceptance": "貧民窟不因睡不成而死（屋內或旅店挑近的；白金用完明確停下）；探針依 #26 順序多拿等級再量索寇 (8,5)；三條探索器測試回綠或改成記錄停在哪；多 seed 結局表。",
+      "body": "策略層已有：包紮、催眠、集火、貧民窟就近進屋休息（只挑不會開打的房間）或旅店、睡到早上、城衛隊問句照安全選項答、交件集中獎金、訓練所、隊伍 pool 買甲；睡不成而有人倒地就在原地報原因。house rule seed 136..150：九個走到古托井、諾里斯 7 場贏 1 場、索寇 (8,5) 沒有 seed 走到；三條探索器測試卡在走路迴圈（2026-09-17 補十）。",
+      "acceptance": "貧民窟不因睡不成而死（屋內或旅店挑近的；付不出房錢明確停下）；探針依 #26 順序多拿等級再量索寇 (8,5)；三條探索器測試回綠或改成記錄停在哪；多 seed 結局表。",
       "verify": {
         "kind": "manual",
         "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestRandomWalkReachesKnownContentWithoutFailing|TestSokalKeepOpensTheOtherBoatRoutes|TestWorldTourReachesTheAreasBehindTheHarbour|TestPlayingTheWorldCompletesCommissionsOnItsOwn'` 是否全綠，工具不跑測試"
@@ -109,7 +109,7 @@
       "id": "mainline-route-levels",
       "layer": "verification",
       "title": "主線路線表補委任獎賞、建議等級與順序",
-      "body": "委任只給錢不給經驗值（`ecl3/8 9EC2h`，exact）。建議順序第 1、2 段與進城辦事的時刻已實跑（seed 143：市政廳 `49C9 >= 14` 鎖門，spec 102），第 3、5 段沒跑；第 4 段的索寇要塞 (8,5) 全滅。",
+      "body": "委任只給錢不給經驗值（exact）。第 3 段在索寇之前有陸路，但波多廣場的拍賣要先接委任，而職員要貧民窟、索寇、書至少交過一條才列出它（spec 137，exact 靜態）；斯托揚諾河沒實跑。第 4 段索寇 (8,5) 全滅。",
       "acceptance": "建議順序第 3 段（斯托揚諾河、波多廣場隨機場）由探針實跑並記等級、XP、時刻、最大一場與結果；第 4 段索寇 (8,5) 用之後的等級再量；spec 137 拿掉「hypothesis，待探針實跑」。",
       "verify": {
         "kind": "present",

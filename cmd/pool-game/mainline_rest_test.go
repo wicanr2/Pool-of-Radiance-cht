@@ -74,14 +74,28 @@ func (d *mainlineDriver) restUntilHealed() {
 	// 才寫 0／0，hypothesis）。挑地方睡是玩家策略層的事，見 #22。
 	origin := application.spawn.Map
 	if err := application.runRestEntry(); err == nil && application.restInterruption().Period != 0 {
-		// 睡不成就去旅店開房間（#38）。房間開好之後這一格是 0／0，下面那段
-		// 排時間的流程照跑；睡完再走回原來那張圖，不然呼叫端的路線就斷了。
-		if !d.restAtTheInn() {
+		// 睡不成就找地方：貧民窟的屋內（0／0，不用錢）或旅店（#38），挑近的。
+		// 2026-09-17 量過 139 次：屋內平均 8.7 步、旅店單程 19.7 步，屋內近的佔 81%。
+		// 旅店房間開好之後這一格是 0／0，下面那段排時間的流程照跑；睡完再走回原來
+		// 那張圖，不然呼叫端的路線就斷了。
+		if indoor, inn := d.measureRestOptions(); indoor >= 0 && (inn < 0 || indoor <= inn) && d.restIndoors() {
+			// 屋內睡得成，就地往下排時間。
+		} else if !d.restAtTheInn() {
 			d.note("restUntilHealed: %+v interrupts rest (%d／%d) and the inn is out of reach",
 				application.spawn, application.restInterruption().Period, application.restInterruption().Threshold)
+			// 有人倒地又睡不成，就停在這裡報原因。以前記一行就往下走，貧民窟階段
+			// 帶著倒地的隊伍收場，後面才報成「沒走進古托井」——報錯離成因很遠
+			// （seed 137／142／144：白金在倒地的人身上，醒著的人付不出來）。只看倒地、不看「HP 不到一半」：
+			// seed 143 在古托井地面睡不成時 B 是 3/7，照樣打贏諾里斯。
+			if down := partyDown(application); down != "" && !d.tolerateDefeat {
+				d.fatalf("restUntilHealed: cannot rest at %+v with %s down: platinum=%d 4ABB=%02X party=%s",
+					application.spawn, down, partyPlatinum(application),
+					application.eventMachine.Memory[0x4ABB], partyHP(application))
+			}
 			return
+		} else {
+			defer d.walkBackFrom(origin)
 		}
-		defer d.walkBackFrom(origin)
 	}
 	for attempt := 0; attempt < 8 && (partyHurt(application) || pendingMemorisation(application)); attempt++ {
 		settle()
@@ -144,6 +158,126 @@ func (d *mainlineDriver) restUntilHealed() {
 	}
 }
 
+// measureRestOptions 量「屋內最近幾步、旅店幾步」（goal issue-22-26-levels-before-sokal 第 3 步，
+// 先量分布再決定走法）。只記一行，不改行為。貧民窟入口 2 `ecl2/20 9A24h` 只比
+// `@6E82 == 0`，所以地形碼不為 0 的格子都睡得成；排除 3（潛在委託人，答 LEAVE 會把
+// 隊伍搬到門口）與 9／13／15（20 隻以上的固定戰鬥）。
+func (d *mainlineDriver) measureRestOptions() (indoor, inn int) {
+	a := d.a
+	if a.spawn.Map != slumsMap {
+		return -1, -1
+	}
+	edge := func(x, y int) bool {
+		return x == 15 && a.initialMap.Grid.CanMoveDungeonWrapped(x, y, 2)
+	}
+	steps := func(wanted func(x, y int) bool) int {
+		if wanted(int(a.spawn.X), int(a.spawn.Y)) {
+			return 0
+		}
+		if plan := planAllowing(a, wanted, d.slumsSafe, true); len(plan) != 0 {
+			return len(plan)
+		}
+		return -1
+	}
+	indoor = steps(d.slumsIndoor)
+	if inn = steps(edge); inn >= 0 {
+		inn += innStepsFromTheGate
+	}
+	d.note("restOptions: at (%d,%d) indoor=%d inn=%d down=%q platinum=%d",
+		a.spawn.X, a.spawn.Y, indoor, inn, partyDown(a), partyPlatinum(a))
+	return indoor, inn
+}
+
+// slumsMap 是貧民窟（ECL2/20、GEO2/20）。
+var slumsMap = gamepack.MapKey{Archive: 2, BlockID: 20}
+
+// innStepsFromTheGate 是城門 (0,4) 走街道到旅店的步數（spec 114）。
+const innStepsFromTheGate = 12
+
+// slumsIndoor 是貧民窟裡睡得成、走進去也不會開打的格子。
+//
+// 睡得成：入口 2 `ecl2/20 9A24h` 只比 `@6E82 == 0`（地形碼 0 是街上），地形碼不為 0
+// 的都是 0／0。**但那些格子本身是入口 1 的事件**（`99C9h ON GOTO` 以地形碼分派），
+// 傷兵走進一間還沒打過的房間就是一場架——2026-09-17 第一版只看步數、最近的是地形碼 1
+// 的獸人房（(13,1) 那一帶），15 個 seed 裡 10 個死在去屋內休息的那一段。所以只收兩種
+// （`99C9h` 21 支從入口沿控制流走到底，含 GOSUB 與 IF 的跳過）：
+//
+//   - 整支沒有 `COMBAT`：4（髒房間）、7、11（儲藏室）、17（只印一句）；
+//   - 只有一場、開頭 `COMPARE flag, 255 ; IF = ; EXIT`，而那個旗標已經是 255。
+//
+// 5／10／16 的判斷不是單純的 255，0／3／8／18／19 接到共用的隨機遭遇，都不收；
+// 9／13／15 本來就是 `slumsSafe` 不走的大場。
+func (d *mainlineDriver) slumsIndoor(x, y int) bool {
+	code := d.terrainCode(x, y)
+	switch code {
+	case 4, 7, 11, 17:
+		return true
+	}
+	flag, ok := slumsFightRoomDone[code]
+	return ok && d.a.eventMachine.Memory[flag] == 255
+}
+
+// slumsFightRoomDone 是只有一場架的房間與它「打過了」的旗標（`ecl2/20` 入口 1 各支開頭）。
+var slumsFightRoomDone = map[int]uint16{
+	1: 0x4ACA, 2: 0x4ACB, 6: 0x4A85, 12: 0x4AD6, 14: 0x4AD0, 20: 0x4AD9,
+}
+
+// restIndoors 走進貧民窟最近的屋內格，事件按完之後再跑一次入口 2；回 true 表示
+// 這一格是 0／0、可以就地排時間。走不到、被事件搬走或打輸都回 false，讓呼叫端
+// 改走旅店。
+func (d *mainlineDriver) restIndoors() bool {
+	a := d.a
+	if a.spawn.Map != slumsMap {
+		return false
+	}
+	if !d.slumsIndoor(int(a.spawn.X), int(a.spawn.Y)) &&
+		!d.walkAllowing("indoors to rest", d.slumsIndoor, d.slumsSafe, true) {
+		return false
+	}
+	d.settle()
+	if a.gameOver || a.spawn.Map != slumsMap || !d.slumsIndoor(int(a.spawn.X), int(a.spawn.Y)) {
+		return false
+	}
+	if err := a.runRestEntry(); err != nil || a.restInterruption().Period != 0 {
+		d.note("restIndoors: (%d,%d) terrain %d still interrupts (%d／%d)", a.spawn.X, a.spawn.Y,
+			d.terrainCode(int(a.spawn.X), int(a.spawn.Y)), a.restInterruption().Period, a.restInterruption().Threshold)
+		return false
+	}
+	d.note("restIndoors: (%d,%d) terrain %d", a.spawn.X, a.spawn.Y, d.terrainCode(int(a.spawn.X), int(a.spawn.Y)))
+	return true
+}
+
+// partyDown 列出倒地的隊員（昏迷、瀕死，或狀態正常但 HP 歸零），沒有就回空字串。
+// 死亡不算：那要神殿，不是休息。
+func partyDown(a *app) string {
+	names := []string{}
+	for _, member := range a.state.Party {
+		if member.Status == 4 || member.Status == 5 || (member.Status == 0 && member.CurrentHP <= 0) {
+			names = append(names, strings.TrimSpace(member.Name))
+		}
+	}
+	return strings.Join(names, ",")
+}
+
+// partyPlatinum 是全隊身上的白金總數（旅店一晚一枚）。
+func partyPlatinum(a *app) int {
+	total := 0
+	for _, member := range a.state.Party {
+		total += int(member.Money[pooltreasure.Platinum])
+	}
+	return total
+}
+
+// partyHP 是六人的 HP 與狀態，報錯用。
+func partyHP(a *app) string {
+	parts := []string{}
+	for _, member := range a.state.Party {
+		parts = append(parts, fmt.Sprintf("%s %d/%d st%d", strings.TrimSpace(member.Name),
+			member.CurrentHP, member.MaxHP, member.Status))
+	}
+	return strings.Join(parts, " ")
+}
+
 // innTerrain 是城區地形索引 9——旅店那七格（spec 102；GEO3/0 的 `89h`：
 // (4,12) (6,12) (4,13) (6,13) (0,14) (1,14) (2,14)）。
 const innTerrain = 9
@@ -178,7 +312,10 @@ func (d *mainlineDriver) restAtTheInn() bool {
 		}
 	}
 	if payer < 0 {
-		d.note("restAtTheInn: nobody has a platinum piece")
+		// 只讓醒著的人付：原版 `WHO` 的挑人範圍（overlay-25 entry 42 `2C81h`）含不含
+		// 倒下的人沒讀（spec 090 OPEN），腳本 `A1B4h` 自己只擋 NPC 與白金不夠。
+		// 醒著的人付，兩種讀法都合法。
+		d.note("restAtTheInn: nobody conscious has a platinum piece (party holds %d)", partyPlatinum(a))
 		return false
 	}
 	inn := func(x, y int) bool { return d.terrain(x, y) == innTerrain }

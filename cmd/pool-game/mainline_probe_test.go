@@ -52,13 +52,13 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 // 古托井打諾里斯（槽 0）換獎賞，交件、訓練所升級，再回索寇要塞。
 // 每一段記等級、XP、金幣（`partyLine`）。
 //
-// 骰子 seed 用 143：諾里斯那一場對一級隊伍是擲骰，而駕駛一改骰流就跟著變。
-// 2026-09-17 掃 136..150 只有 143 打贏諾里斯（136／139／141／148 輸在諾里斯、
-// 七個死在貧民窟、三個卡在「往西去古托井卻回到城區」），收據要的是後面那一段——
-// 交件折算經驗、訓練所升級、買板甲——跑得到。各 seed 的結局記在
-// `docs/playtest/mainline-end-to-end.md`。
+// 骰子 seed 用 142：諾里斯那一場對一級隊伍是擲骰，而駕駛一改骰流就跟著變。
+// 2026-09-17 貧民窟改成就近進屋休息之後掃 136..150，只有 142 打贏諾里斯（六個輸在
+// 諾里斯、兩個在古托井地面倒地又睡不成、五個死在貧民窟、一個付不出旅店錢），
+// 收據要的是後面那一段——交件折算經驗、訓練所升級、買板甲、上船——跑得到。
+// 各 seed 的結局記在 `docs/playtest/mainline-end-to-end.md` 補十。
 func TestMainlineProbeHouseRuleCommissionExperience(t *testing.T) {
-	runMainlineProbe(t, true, 143)
+	runMainlineProbe(t, true, 142)
 }
 
 // buildManualParty 從標題開始：照說明書 p.13 建六個人、重擲、（自訂規則按 H）、
@@ -1130,6 +1130,16 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		}
 		// 受傷或催眠用完就地紮營（要塞裡也一樣），再繼續探索。
 		restUntilHealed()
+		// 要塞裡巡邏還在時是 2／1（spec 114），旅店又不在這張圖上：睡不成而 `hurt`
+		// 還成立（`partyHurt` 含「催眠術用完」），下面那一趟一步都不會走就收工。以前
+		// 這樣空轉滿 24 趟才報「沒交件」（2026-09-17 seed 142：HP 全滿、催眠用完）；
+		// 在這裡就報原因。
+		if hurt(application) && application.eventMachine.Memory[0x4AA7] != 0xFF && !readyToHandIn(application) {
+			t.Fatalf("cannot rest in Sokal Keep at %+v (interruption %d／%d): sleepReady=%t unmemorised=%t party=%s",
+				application.spawn, application.restInterruption().Period,
+				application.restInterruption().Threshold, sleepReady(application),
+				pendingMemorisation(application), partyHP(application))
+		}
 		_, reachable = exploreWorldWithFlags(t, zipPath, int64(136+pass), pass%4, 8, 300000,
 			map[[3]int]bool{}, map[[3]int]bool{}, transitionUses, menuTurn, exitUses,
 			visited, maps, blocks, flags, noBoatOverride, &failures, nil,
