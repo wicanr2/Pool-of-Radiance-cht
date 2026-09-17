@@ -153,7 +153,7 @@
   執行中使用者追加穿牆，作弊選單加了 `W`（spec 141〈穿牆〉，`TestCheatWalkThroughWallsPassesAWallFromKeys`）。
 - **B（原版）**：
   - 第 5、6 步在上一輪完成（`-intercept-damage`，dosgolem `9c78f9c`）。
-  - 第 7 步：dosgolem 加 `shots -serve`（`57454c4`，本機 commit，**未推送**），駕駛 `tools/dosgolem-cheat-playthrough.py`
+  - 第 7 步：dosgolem 加 `shots -serve`（`57454c4`，`pool-parity` 已推送），駕駛 `tools/dosgolem-cheat-playthrough.py`
     從貧民窟跑到結局，六段都 `done`；整合收據 `tools/dosgolem-cheat-receipt.py` → `docs/audit/dosgolem-cheat-playthrough.json`
     （generator revision、原版 EXE SHA-256、每段鍵序、狀態檔 SHA-256、穿牆與攔截紀錄）。
   - 開場沿用 #41 的狀態檔，鍵序在收據 `boot`；貧民窟段是六次接續，最早幾次早於收據檔，只有日誌的 checkpoint。
