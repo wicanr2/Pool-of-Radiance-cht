@@ -67,12 +67,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟。** spec 102〈晚上鎖門與城衛隊〉的分支與比較方向已對過原版；原版晚上站上鎖門格的畫面沒拍，地形 0 牆型 9 的十一個門面沒對到建築。不擋主線。
       **驗收**：dosgolem 原版晚上在 (3,4) 朝東的鎖門問句畫面與 `6E7D = 8`；十一個門面對到建築名寫進 spec 102 並拿掉 OPEN 那一條。
       **討論**：[#39](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/39)
-- [ ] **導覽結束那一格紮營休息完，又印一次導覽結尾句。** 新遊戲導覽結束後在城區 (0,4) 休息 2 小時，收尾停在格子文字「OUR TOUR IS ENDED...」，發行包對拍在 field-cast 之前停下。v.1.1.5 的對拍走得完；與 #41 無關（拿掉區塊載入寫入結果相同）。原版同一格休息完的畫面還沒量。
-      **驗收**：dosgolem 量原版在同一格休息 2 小時後的畫面；remake 從 Update() 送鍵的結果一致並有測試；發行包對拍走完 35 張。
-      **討論**：[#42](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/42)
-- [ ] **索寇要塞回程船：remake 落在貧民窟 ECL2/20，原版是城區碼頭 ECL3/0。** 兩邊作弊通關對照（#5）抓到：ecl4/21 9977h..998Fh 寫 C04B=15、C04C=1、朝向 3、SAVE 3 @6E12、NEWECL 0，原版落 ECL3/0 (15,1)；remake 的 checkpoint 是 ECL2/20／GEO2/20 (15,1)。
-      **驗收**：索寇邊界答 YES 之後 eclArchive=3、區塊 0、GEO3/0 (15,1) 朝西，測試從 Update() 送鍵；重跑 TestMainlineProbeCheatMenuToEnding 與 tools/cheat-playthrough-compare.py，sokal 段不再有出口不同。
-      **討論**：[#44](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/44)
 - [ ] **結局頁數：remake 3 頁，原版駕駛只攔到 1 頁。** ecl5/7 A815h SAVE FE → A82Ah PROGRAM 8 → A82Dh PRINTCLEAR。原版駕駛在 4ABA=FE 之後只看到 A82Dh 那一頁；PROGRAM 8 的過場有幾頁、是否等鍵還沒量，不確定差異在哪一側。
       **驗收**：dosgolem 從 workplace/dosgolem-cheat/ending-hall.state 逐幀量 PROGRAM 8 的頁數；確認偏差側並修正或修正駕駛；對照報表的結局頁數一列相同。
       **討論**：[#45](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/45)

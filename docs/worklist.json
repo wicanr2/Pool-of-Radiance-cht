@@ -105,34 +105,6 @@
       "github_issue": 39
     },
     {
-      "id": "rest-after-intro-repeats-tour-text",
-      "layer": "verification",
-      "title": "導覽結束那一格紮營休息完，又印一次導覽結尾句",
-      "body": "新遊戲導覽結束後在城區 (0,4) 休息 2 小時，收尾停在格子文字「OUR TOUR IS ENDED...」，發行包對拍在 field-cast 之前停下。v.1.1.5 的對拍走得完；與 #41 無關（拿掉區塊載入寫入結果相同）。原版同一格休息完的畫面還沒量。",
-      "acceptance": "dosgolem 量原版在同一格休息 2 小時後的畫面；remake 從 Update() 送鍵的結果一致並有測試；發行包對拍走完 35 張。",
-      "verify": {
-        "kind": "manual",
-        "note": "要原版收據與對拍重跑，沒有程式內的自承訊號"
-      },
-      "github_issue": 42
-    },
-    {
-      "id": "sokal-return-boat-landing",
-      "layer": "verification",
-      "title": "索寇要塞回程船：remake 落在貧民窟 ECL2/20，原版是城區碼頭 ECL3/0",
-      "body": "兩邊作弊通關對照（#5）抓到：ecl4/21 9977h..998Fh 寫 C04B=15、C04C=1、朝向 3、SAVE 3 @6E12、NEWECL 0，原版落 ECL3/0 (15,1)；remake 的 checkpoint 是 ECL2/20／GEO2/20 (15,1)。",
-      "acceptance": "索寇邊界答 YES 之後 eclArchive=3、區塊 0、GEO3/0 (15,1) 朝西，測試從 Update() 送鍵；重跑 TestMainlineProbeCheatMenuToEnding 與 tools/cheat-playthrough-compare.py，sokal 段不再有出口不同。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/audit/cheat-playthrough-compare.md"
-        ],
-        "pattern": "ECL4/21 之後 remake 進 ECL2/20",
-        "note": "對照報表還寫著這一句出口差異就代表還沒修；報表由 tools/cheat-playthrough-compare.py 重生"
-      },
-      "github_issue": 44
-    },
-    {
       "id": "ending-pages-count",
       "layer": "verification",
       "title": "結局頁數：remake 3 頁，原版駕駛只攔到 1 頁",
