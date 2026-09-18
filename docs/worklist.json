@@ -163,6 +163,38 @@
         "note": "spec 084 還寫著「還沒定位」就代表寫入者沒找到"
       },
       "github_issue": 46
+    },
+    {
+      "id": "treasure-screen-parity",
+      "layer": "presentation",
+      "title": "戰利品畫面：看不到金額、VIEW 不是人物頁、沒有畫面識別字",
+      "body": "使用者 2026-09-18：Share 的規則已有（overlay-21），缺的是畫面。原版 TAKE 列出每種幣與數量、VIEW 是人物頁（VIEW:TRADE DROP EXIT）；remake 的 View 只把名稱串成一行，Pool／Share 只印一句狀態列，screenName() 也沒有戰利品的識別字。",
+      "acceptance": "原版三張畫面的收據（docs/audit/dos-treasure-screens.json）；remake 補上金額、分錢結果與人物頁；-screen-state 認得戰利品；Share 與 Take 有從 Update() 送鍵的測試並對上原版量到的錢包數字。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game/screen_state.go"
+        ],
+        "pattern": "treasure",
+        "note": "screen_state.go 還沒有戰利品的識別字就代表這一條沒做"
+      },
+      "github_issue": 47
+    },
+    {
+      "id": "password-hint-toggle",
+      "layer": "feature",
+      "title": "密語提示改成作弊選單的開關（預設開，不寫 CheatsUsed）",
+      "body": "cmd/pool-game/ecl_input.go 的 enterECLInput 無條件把答案接在問句後面。使用者 2026-09-18 決定改成 F6 作弊選單的開關，預設開、可以關；關掉不算作弊。範圍只有打字的密語（10h INPUT STRING）。",
+      "acceptance": "作弊選單多一個開關，預設開；關掉時問句與原版逐字相同且 CheatsUsed 不變；存讀檔記得；ECL 的 INPUT STRING 答案表進 spec 087。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game/cheats.go"
+        ],
+        "pattern": "密語提示",
+        "note": "cheats.go 還沒有這個開關就代表這一條沒做"
+      },
+      "github_issue": 48
     }
   ]
 }

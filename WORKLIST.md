@@ -49,6 +49,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **ECL7/17（遊牧營地）的格子事件在探索器裡無限迴圈。** 探索器 log 在 GEO7/17 (7,15) 連續七趟「格子事件 300000」一步不走。
       **驗收**：最小重現＋修正；探索器在該區能走動。
       **討論**：[#23](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/23)
+- [ ] **密語提示改成作弊選單的開關（預設開，不寫 CheatsUsed）。** cmd/pool-game/ecl_input.go 的 enterECLInput 無條件把答案接在問句後面。使用者 2026-09-18 決定改成 F6 作弊選單的開關，預設開、可以關；關掉不算作弊。範圍只有打字的密語（10h INPUT STRING）。
+      **驗收**：作弊選單多一個開關，預設開；關掉時問句與原版逐字相同且 CheatsUsed 不變；存讀檔記得；ECL 的 INPUT STRING 答案表進 spec 087。
+      **討論**：[#48](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/48)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -86,6 +89,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **卡在**：先完成 DOS sprite inventory 與三組可丟棄 prototype，再依 grilling 流程逐題確認視覺聖經與資產範圍。
       **驗收**：完整 inventory 與 DOS archive／consumer 對得上；使用者確認單一視覺聖經；正式 sprite 風格一致且語意可追溯；每張有來源與權利紀錄；原版與現代主題可切換；所有主要正常玩家路徑與發行包抽測無缺圖、越界、裁切或風格混用。
       **討論**：[#17](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/17)
+- [ ] **戰利品畫面：看不到金額、VIEW 不是人物頁、沒有畫面識別字。** 使用者 2026-09-18：Share 的規則已有（overlay-21），缺的是畫面。原版 TAKE 列出每種幣與數量、VIEW 是人物頁（VIEW:TRADE DROP EXIT）；remake 的 View 只把名稱串成一行，Pool／Share 只印一句狀態列，screenName() 也沒有戰利品的識別字。
+      **驗收**：原版三張畫面的收據（docs/audit/dos-treasure-screens.json）；remake 補上金額、分錢結果與人物頁；-screen-state 認得戰利品；Share 與 Take 有從 Update() 送鍵的測試並對上原版量到的錢包數字。
+      **討論**：[#47](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/47)
 
 <!-- worklist:end -->
 
