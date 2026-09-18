@@ -128,6 +128,12 @@ func TestTheWildernessCaveRerollReachesTheEasternOutpost(t *testing.T) {
 			dice := rand.New(rand.NewSource(11))
 			caves := 0
 			for step := 0; step < 30000; step++ {
+				// **回標題了就這一趟結束**（#54）：全滅之後按任何一個鍵都會回標題，
+				// 那時 session 已經拆掉，再問它區塊編號會 nil panic。隊伍死了也就
+				// 沒有覆蓋可以量（CLAUDE.md §6：記錄，不強化隊伍）。
+				if application.gameOver || application.eventSession == nil {
+					t.Skipf("第 %d 步全滅，這一趟量不到洞穴", step)
+				}
 				if application.inWildernessOverland() &&
 					int(application.eventSession.CurrentBlockID()) == want.sheet &&
 					len(wildernessRoute(application, here(), want.target, nil)) != 0 {
@@ -184,10 +190,19 @@ func TestTheNomadCampOnTheMiddleWildernessSheet(t *testing.T) {
 	here := func() [2]int {
 		return [2]int{int(memory[wildernessX]), int(memory[wildernessY])}
 	}
-	block := func() int { return int(application.eventSession.CurrentBlockID()) }
+	// **回標題了就這一趟結束**（#54）：全滅之後按任何一個鍵都會回標題，那時
+	// session 已經拆掉；回 -1 讓呼叫端看得出來，而不是 nil panic。
+	block := func() int {
+		if application.eventSession == nil {
+			return -1
+		}
+		return int(application.eventSession.CurrentBlockID())
+	}
 	walkTo := func(target [2]int, enter bool) bool {
 		for step := 0; step < 400 && here() != target; step++ {
-			if !application.inWildernessOverland() {
+			// 全滅就走不動了，別再往下按（同上）。
+			if application.gameOver || application.eventSession == nil ||
+				!application.inWildernessOverland() {
 				return false
 			}
 			route := wildernessRoute(application, here(), target, nil)
@@ -312,10 +327,19 @@ func TestTheOutpostOnTheWesternWildernessSheet(t *testing.T) {
 	here := func() [2]int {
 		return [2]int{int(memory[wildernessX]), int(memory[wildernessY])}
 	}
-	block := func() int { return int(application.eventSession.CurrentBlockID()) }
+	// **回標題了就這一趟結束**（#54）：全滅之後按任何一個鍵都會回標題，那時
+	// session 已經拆掉；回 -1 讓呼叫端看得出來，而不是 nil panic。
+	block := func() int {
+		if application.eventSession == nil {
+			return -1
+		}
+		return int(application.eventSession.CurrentBlockID())
+	}
 	walkTo := func(target [2]int, settle func(*app)) bool {
 		for step := 0; step < 400 && here() != target; step++ {
-			if !application.inWildernessOverland() {
+			// 全滅就走不動了，別再往下按（同上）。
+			if application.gameOver || application.eventSession == nil ||
+				!application.inWildernessOverland() {
 				return false
 			}
 			route := wildernessRoute(application, here(), target, nil)

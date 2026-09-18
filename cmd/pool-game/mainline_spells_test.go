@@ -30,6 +30,12 @@ func (d *mainlineDriver) memoriseSpells() int {
 		ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6}
 	total := 0
 	for index := range a.state.Party {
+		// 法術頁只有 `1`..`6` 六個鍵，而隊伍可以有第七個人（NPC 會加入，spec 091）。
+		// 先前這裡直接用 index 取鍵，第七個人一進隊就越界 panic——探索器接上休息
+		// 策略之後才走得到這一步（#22）。
+		if index >= len(memberKeys) {
+			break
+		}
 		d.step(memberKeys[index])
 		maxima, used, ok := a.spellMemberSlots(index)
 		if !ok {

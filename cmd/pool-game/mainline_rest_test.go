@@ -64,6 +64,12 @@ func (d *mainlineDriver) restUntilHealed() {
 			step(ebiten.KeyEnter)
 		}
 		if application.gameOver {
+			// 量牆與探索那幾條測試把全滅當成合法結果（`tolerateDefeat`）：
+			// 睡到一半被打光就記一行交還，呼叫端自己收（CLAUDE.md §6）。
+			if d.tolerateDefeat {
+				d.note("休息中被打光：%q", application.eventText)
+				return
+			}
 			d.fatalf("the party was destroyed while resting: %q", application.eventText)
 		}
 	}

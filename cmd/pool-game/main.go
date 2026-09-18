@@ -672,18 +672,19 @@ func (a *app) justPressed(key ebiten.Key) bool {
 
 // anyKeyJustPressed 是「Press any key」那種等待：字母、數字、ENTER、空白與 ESC。
 func (a *app) anyKeyJustPressed() bool {
-	for key := ebiten.KeyA; key <= ebiten.KeyZ; key++ {
+	// **畫面上寫「Press any key to continue」，那就要真的是任何一個鍵**（#54）。
+	// 先前只認 `A`..`Z`、`0`..`9`、ENTER、SPACE、ESC——方向鍵按下去沒有反應，
+	// 而那是玩家在地圖上手最順的鍵。症狀在治具裡更明顯：探索器全滅之後一路按
+	// 方向鍵，十八萬圈原地不動，報表只寫「走完預算」。
+	//
+	// 原版那一頁吃不吃方向鍵目前量不到（dosgolem 推不動，#53），所以依據是
+	// **畫面上自己寫的字**，不是原版證據。
+	for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
 		if a.justPressed(key) {
 			return true
 		}
 	}
-	for key := ebiten.KeyDigit0; key <= ebiten.KeyDigit9; key++ {
-		if a.justPressed(key) {
-			return true
-		}
-	}
-	return a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) ||
-		a.justPressed(ebiten.KeyEscape)
+	return false
 }
 
 // returnToTitleAfterGameOver 把冒險狀態放掉、回到標題。隊伍（已死）與存檔都

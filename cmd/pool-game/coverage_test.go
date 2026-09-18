@@ -696,6 +696,10 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	pilot := &tacticalPilot{}
 	stuck, hops, moved := 0, 0, 0
 	reason := "走完預算"
+	// healing 擋住重入：休息要走路去找床，而走路每一步又會問「受傷了沒」。
+	healing := false
+	// restTried 記「這個位置＋這組血量試過幾次休息」，見下面的註解。
+	restTried := map[string]int{}
 	spin := map[string]int{}
 	// 一場架卡住的話，整趟的預算會全部花在戰術地圖上——實測 60 萬個 tick
 	// 裡有 59 萬 9 千個在那裡。停在同一個（回合、行動者）太久就當它卡住，
@@ -1102,6 +1106,45 @@ walk:
 			application.templeActive || application.tactical != nil ||
 			application.campOpen || application.parlay != nil ||
 			application.whoPending || application.mode != modeAdventure
+		// **受傷就回頭補血**（#22 的策略層）。主線探針早就有這一套（找屋內或旅店睡、
+		// 睡不成就報原因），探索器先前完全沒有——戰後生命值寫回接上之後（#19），
+		// 一級隊伍在城區撐不到走完，每一趟都全滅，而報表只寫「走完預算」。
+		//
+		// 這裡共用同一份策略：包一個 `mainlineDriver` 在同一個 app 上，
+		// `tolerateDefeat` 打開（全滅是合法結果，記錄就好，不強化隊伍）。
+		// 睡不成的地方不要一直重試：索寇要塞那種地方（打斷週期 2／1、旅店走不到）
+		// `restUntilHealed` 會記一行就交還，而隊伍還是傷的——不擋就每一圈都叫它一次，
+		// 主線探針因此跑到逾時（實測 115 秒後被砍）。**同一個位置、同一組血量只試一次**；
+		// 走到別處或血量變了才會再試。
+		restKey := fmt.Sprintf("%d/%d(%d,%d)%s", application.spawn.Map.Archive,
+			application.spawn.Map.BlockID, application.spawn.X, application.spawn.Y,
+			partyHP(application))
+		// 同一個位置最多試三次：睡得成不成帶點隨機（打斷是擲出來的），只試一次會
+		// 把後面真的睡得成的那幾次擋掉；而完全不擋，索寇要塞那種睡不成的地方會
+		// 無限重試——主線探針因此跑到逾時（實測 115 秒後被砍）。
+		const restAttemptsPerSpot = 3
+		if !busy && !healing && restTried[restKey] >= restAttemptsPerSpot {
+			// 這個位置＋這組血量試過三次都沒治好，往下走。
+		} else if !busy && !healing && partyHurt(application) {
+			healing = true
+			healer := &mainlineDriver{t: t, a: application, tolerateDefeat: true,
+				step: func(key ebiten.Key) {
+					if err := press(application, key); err != nil {
+						t.Fatalf("休息時按鍵失敗：%v", err)
+					}
+				}}
+			healer.hurt, healer.rest = partyHurt, healer.restUntilHealed
+			healer.restUntilHealed()
+			healing = false
+			// **只在「沒治好」的時候記**。記成「試過就不再試」會擋掉之後真的
+			// 睡得成的那幾次——六條測試因此又全紅。
+			if partyHurt(application) {
+				restTried[restKey]++
+			}
+			spin["休息"]++
+			plan = nil
+			continue
+		}
 		if application.programManaging {
 			// 地圖上的隊伍管理畫面吃掉方向鍵。原版按 B 回地圖。
 			plan = nil
