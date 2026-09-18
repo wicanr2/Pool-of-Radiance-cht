@@ -1087,6 +1087,15 @@ walk:
 			spin["走路"]++
 			menuStall, eventStall, doorTurns = 0, 0, 0
 		}
+		if application.gameOver {
+			// **全滅是終點，不是慢**。先前這裡沒有判斷：隊伍死了之後探索器照樣按
+			// 方向鍵，十八萬圈原地不動，報表只寫「走完預算」——看起來像走得慢，
+			// 其實是走不動（#22）。
+			reason = fmt.Sprintf("全滅於 GEO%d/%d (%d,%d)",
+				application.spawn.Map.Archive, application.spawn.Map.BlockID,
+				application.spawn.X, application.spawn.Y)
+			break walk
+		}
 		busy := application.encounter != nil || application.cellWaitingMenu ||
 			application.cellEventPending || application.combatActive ||
 			application.shopActive || application.treasureActive ||
@@ -2177,7 +2186,7 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	// （spec 100），每一趟很快就走出去，不會把一張圖踩滿。換來的是走得到的
 	// 區域從兩個 archive 變成六個。
 	if len(maps) < 3 {
-		t.Errorf("只走到 %d 張地圖，先前量到 3 張（訓練所那一區、貧民窟、索寇要塞）", len(maps))
+		t.Errorf("只走到 %d 張地圖（全滅是策略層缺治療／休息，#22；理由見上面），先前量到 3 張（訓練所那一區、貧民窟、索寇要塞）", len(maps))
 	}
 	if len(blocks) < 5 {
 		t.Errorf("只走到 %d 個 ECL block，先前量到 5 個", len(blocks))
@@ -2695,7 +2704,12 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 	// ——把門檻頂到實測值等於再做一次單一亂數對齊的快照，下一個會改變抽籤
 	// 次數的修改又會紅。
 	if len(blocks) < 15 {
-		t.Errorf("只走到 %d 個 ECL block：%v", len(blocks), blockIDs)
+		// 每一趟的結束理由印在上面。**「全滅於 …」是目前的常態**：戰後生命值寫回
+		// 接上之後（#19），一級隊伍在城區撐不到走完——探索器還沒有治療／休息的
+		// 策略（#22 剩下的那一段）。以前看不出來，因為全滅之後它照樣按方向鍵，
+		// 整包預算靜靜被吃掉，報表只寫「走完預算」。
+		t.Errorf("只走到 %d 個 ECL block：%v（每一趟的結束理由見上面；全滅是策略層缺治療／休息，#22）",
+			len(blocks), blockIDs)
 	}
 }
 

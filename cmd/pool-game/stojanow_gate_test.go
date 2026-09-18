@@ -334,6 +334,11 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 	blocks := map[int]bool{}
 	maps := map[string]bool{}
 	record := func(a *app) {
+		// 全滅之後按任何一個鍵都會回標題，那時 session 已經拆掉——問它區塊編號
+		// 會 nil panic。走到那一步就沒有覆蓋可以記了。
+		if a.eventSession == nil {
+			return
+		}
 		blocks[int(a.eventSession.CurrentBlockID())] = true
 		maps[fmt.Sprintf("GEO%d/%d", a.spawn.Map.Archive, a.spawn.Map.BlockID)] = true
 	}
@@ -352,6 +357,13 @@ func TestTheCastleBehindStojanowGateHasContent(t *testing.T) {
 		tried := map[[4]int]bool{}
 		last := -1
 		for round := 0; round < 3000; round++ {
+			// 全滅之後按任何一個鍵都會回標題（`anyKeyJustPressed`），那時 session
+			// 已經拆掉——再問它區塊編號會 nil panic。**這一輪到此為止**：
+			// 死了就沒有覆蓋可以量了（CLAUDE.md §6：記錄，不強化隊伍）。
+			if application.gameOver || application.eventSession == nil {
+				t.Logf("輪替 %d 第 %d 圈全滅，這一輪到此為止", rotate, round)
+				break
+			}
 			record(application)
 			if id := int(application.eventSession.CurrentBlockID()); id != last {
 				last = id

@@ -46,9 +46,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 ### 一、玩家會撞到的功能缺口
 
-- [ ] **ECL7/17（遊牧營地）的格子事件在探索器裡無限迴圈。** 探索器 log 在 GEO7/17 (7,15) 連續七趟「格子事件 300000」一步不走。
-      **驗收**：最小重現＋修正；探索器在該區能走動。
-      **討論**：[#23](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/23)
+- [ ] **全滅畫面寫著 Press any key，但方向鍵不算。** anyKeyJustPressed 只認 A-Z、0-9、ENTER、SPACE、ESC。探索器因此在全滅後按方向鍵十八萬圈原地不動。改成認任何鍵之後，session 會被拆掉，141 處治具呼叫 CurrentBlockID 有兩條當場 nil panic——治具要先改成「回標題就這一趟結束」。
+      **驗收**：anyKeyJustPressed 認任何鍵；治具不再在 session 拆掉後繼續呼叫；全套紅燈不因此增加。
+      **討論**：[#54](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/54)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -73,6 +73,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **即死路徑不經過扣血入口 2266h（城堡毒荊棘）。** 原版城堡內部毒荊棘答 YES：「D DIES.」，-intercept-damage 零筆攔截。寫入者還沒定位；重現狀態檔 workplace/dosgolem-cheat/ending-hedge.state。
       **驗收**：對 +10Ch 設寫入監看量出寫入者的 overlay／entry 並寫進 spec 084；決定攔截是否涵蓋、remake 的即死是否一致。
       **討論**：[#46](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/46)
+- [ ] **dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）。** 量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。
+      **驗收**：照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。
+      **討論**：[#53](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/53)
 
 ### 三、版面與資料的差距
 

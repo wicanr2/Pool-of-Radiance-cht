@@ -77,18 +77,6 @@
       "github_issue": 22
     },
     {
-      "id": "ecl7-17-event-loop",
-      "layer": "feature",
-      "title": "ECL7/17（遊牧營地）的格子事件在探索器裡無限迴圈",
-      "body": "探索器 log 在 GEO7/17 (7,15) 連續七趟「格子事件 300000」一步不走。",
-      "acceptance": "最小重現＋修正；探索器在該區能走動。",
-      "verify": {
-        "kind": "manual",
-        "note": "要先寫最小重現才有機器訊號"
-      },
-      "github_issue": 23
-    },
-    {
       "id": "city-night-lock-original-receipt",
       "layer": "verification",
       "title": "城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟",
@@ -167,6 +155,34 @@
         "note": "docs/screenshots 還沒有 treasure 就代表沒做"
       },
       "github_issue": 52
+    },
+    {
+      "id": "dosgolem-wipe-screen-keys",
+      "layer": "verification",
+      "title": "dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）",
+      "body": "量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。",
+      "acceptance": "照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。",
+      "verify": {
+        "kind": "manual",
+        "note": "要改 dosgolem 並重跑，沒有機器可判訊號"
+      },
+      "github_issue": 53
+    },
+    {
+      "id": "gameover-any-key-arrows",
+      "layer": "feature",
+      "title": "全滅畫面寫著 Press any key，但方向鍵不算",
+      "body": "anyKeyJustPressed 只認 A-Z、0-9、ENTER、SPACE、ESC。探索器因此在全滅後按方向鍵十八萬圈原地不動。改成認任何鍵之後，session 會被拆掉，141 處治具呼叫 CurrentBlockID 有兩條當場 nil panic——治具要先改成「回標題就這一趟結束」。",
+      "acceptance": "anyKeyJustPressed 認任何鍵；治具不再在 session 拆掉後繼續呼叫；全套紅燈不因此增加。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game/main.go"
+        ],
+        "pattern": "key <= ebiten.KeyMax",
+        "note": "main.go 還沒有『掃全部鍵』的寫法就代表這一條沒做"
+      },
+      "github_issue": 54
     }
   ]
 }
