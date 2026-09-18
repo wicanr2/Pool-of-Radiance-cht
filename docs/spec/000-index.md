@@ -102,7 +102,7 @@
 | [088](088-ecl-rob-opcode.md) | `28h ROB` | READY＋DRAFT | `cmd/pool-game/rob.go`、`internal/gamepack/intro.go`、`internal/gamepack/rob.go` | `internal/gamepack/rob_test.go` |
 | [089](089-ecl-protection-opcode.md) | `3Ch PROTECTION` | READY＋DRAFT | `cmd/pool-game/protection.go`、`internal/gamepack/ecl_operands.go`、`internal/gamepack/intro.go` | `cmd/pool-game/protection_test.go` |
 | [090](090-ecl-who-opcode.md) | `39h WHO` 與「目前角色」 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_rest_test.go` |
-| [091](091-ecl-add-npc-opcode.md) | `36h ADD NPC` | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/main_test.go` |
+| [091](091-ecl-add-npc-opcode.md) | `36h ADD NPC` | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_spells_test.go` |
 | [092](092-ecl-checkparty-opcode.md) | `1Eh CHECKPARTY` | READY | `cmd/pool-game/checkparty.go`、`internal/gamepack/checkparty.go`、`internal/gamepack/intro.go` | `internal/gamepack/checkparty_test.go` |
 | [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-ecl-trace/main.go`、`cmd/pool-game/ecl_clock.go`、`cmd/pool-game/ecl_party_queries.go` 等 8 個 | `cmd/pool-ecl-audit/main_test.go` |
 | [094](094-ecl-spell-search-opcode.md) | `3Bh SPELL` | READY＋DRAFT | `cmd/pool-game/spell_search.go`、`internal/gamepack/intro.go`、`internal/gamepack/memorised_spells.go` | `internal/gamepack/memorised_spells_test.go` |
