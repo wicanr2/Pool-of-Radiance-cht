@@ -633,6 +633,33 @@ func exploreWorld(t *testing.T, zipPath string, seed int64, rotate, rewalkLimit,
 // noBoatOverride 關掉航線覆寫（見 exploreWorldWithFlags 的 boat 參數）。
 const noBoatOverride = -1
 
+// explorerForceCheats 為真時，探索器一開場就用作弊選單打開鎖 HP 與一擊斃命
+// （spec 141，使用者 2026-09-19 決定）。
+//
+// 探索器量的是**世界有多少走得到**，而世界有一部分要打得贏才走得到：市政廳與
+// 神殿的守衛、貧民窟的扒手。一級六人隊伍打不贏他們，於是每一趟都在同樣那幾格
+// 全滅，覆蓋率量到的其實是「一級隊伍打得贏多少」，不是「走得到多少」。
+// 開作弊把戰鬥這個變因拿掉，量回原本要量的東西。
+//
+// **這不是主線收據**：CLAUDE.md §3 的正常強度通關與 #5 的收據走的是另一條路
+// （`runMainlineProbe`，不開作弊），這個旗標一律不碰那一邊。
+var explorerForceCheats = false
+
+// explorerEnableCheats 用正常按鍵打開鎖 HP 與一擊斃命，不直接寫旗標——
+// 走不到選單本身就是缺陷，直接寫旗標會把它蓋掉。
+func explorerEnableCheats(t *testing.T, a *app) {
+	t.Helper()
+	for _, key := range []ebiten.Key{ebiten.KeyF6, ebiten.KeyL, ebiten.KeyO, ebiten.KeyEscape} {
+		if err := press(a, key); err != nil {
+			t.Fatalf("開作弊時按 %v 失敗：%v", key, err)
+		}
+	}
+	if a.cheatOpen || !a.state.Cheats.LockHP || !a.state.Cheats.OneHitKill {
+		t.Fatalf("作弊沒開起來：選單開著=%t cheats=%+v 畫面=%s",
+			a.cheatOpen, a.state.Cheats, a.screenName())
+	}
+}
+
 // explorerCellKey 是「哪一張圖的哪一格」。
 func explorerCellKey(a *app) string {
 	return fmt.Sprintf("%d/%d/%d,%d", a.spawn.Map.Archive, a.spawn.Map.BlockID,
@@ -697,6 +724,9 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 			}
 			application.keys = scriptedKeys{}
 			application.Update()
+		}
+		if explorerForceCheats {
+			explorerEnableCheats(t, application)
 		}
 	}
 
@@ -2172,6 +2202,8 @@ walk:
 // 「remake 走不進去」。這一條量的是**世界有多少走得到**——主線要能破關，
 // 第一件事是玩家真的走得到那些地方。
 func TestDirectedExplorationReachesMaps(t *testing.T) {
+	explorerForceCheats = true
+	defer func() { explorerForceCheats = false }()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	avoid := map[[3]int]bool{}
 	transitionUses := map[[3]int]int{}
@@ -2254,6 +2286,8 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 // **主線推得動嗎**：對費蘭說 LUX 再選 TELL THE TRUTH（`ecl4/21 AD9Ah`），`DS:4AA7h`
 // 才會被寫成 254，碼頭才會從「唯一的船是去索寇要塞的」變成五個選項。
 func TestSokalKeepOpensTheOtherBoatRoutes(t *testing.T) {
+	explorerForceCheats = true
+	defer func() { explorerForceCheats = false }()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	avoid := map[[3]int]bool{}
 	transitionUses := map[[3]int]int{}
@@ -2688,6 +2722,8 @@ func tourWorldStates() []map[uint16]uint16 {
 }
 
 func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
+	explorerForceCheats = true
+	defer func() { explorerForceCheats = false }()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	maps := map[string]bool{}
 	blocks := map[int]bool{}
@@ -2775,6 +2811,8 @@ func TestWorldTourReachesTheAreasBehindTheHarbour(t *testing.T) {
 // 走完看有幾個委任槽被寫成 `FEh`。與世界巡迴那一支的差別正在這裡——
 // 那一支會把 26 槽全部預設成 `FEh` 去解鎖內容，所以它量不到這件事。
 func TestPlayingTheWorldCompletesCommissionsOnItsOwn(t *testing.T) {
+	explorerForceCheats = true
+	defer func() { explorerForceCheats = false }()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	completed := map[uint16]bool{}
 	visited := map[[3]int]bool{}

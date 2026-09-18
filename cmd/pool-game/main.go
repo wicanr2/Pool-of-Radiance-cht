@@ -138,6 +138,8 @@ type app struct {
 	helpPage        int
 	cheatOpen       bool
 	cheatRestores   cheatRestoreCounts
+	// eclClockDepth 是目前疊了幾層 `34h ECL CLOCK`（見 ecl_clock.go）。
+	eclClockDepth   int
 	tacticalPreview bool
 	language        language
 	gameText        *gametext.Catalogue
@@ -1362,6 +1364,25 @@ func (a *app) moveInitialDungeonForward() error {
 	return nil
 }
 
+// exitRowIsEmpty 說「換圖表這一列是空的」：目的區塊與目的封存檔都是 0。
+//
+// 換圖表是一列四格、依朝向索引的（`ecl2/15` 的 `9AEFh`／`9AF9h` 兩張
+// `GETTABLE` 就是這個形狀）。那一張表**只填走得出去的那幾面**：GEO2/15
+// 的兩張表是 `1D 00 00 02`（北 → block 29）與 `08 00 00 04`（北 → 封存檔 8），
+// 東與南兩格都是 `00 00`——原版靠 GEO 的牆擋住那兩面（(15,1) 朝東是牆型 12），
+// 所以那兩列永遠讀不到。
+//
+// remake 在被牆擋住時**照樣跑入口 0**（spec 101：有些樓梯與出口刻意朝著牆面），
+// 於是會讀到那兩列，然後拿 `block 0、封存檔 0` 去換區塊——封存檔 0 是「不換」，
+// 而野外那幾份沒有 block 0，`switchTo` 就報「target block 0x0 is unavailable」。
+// 那不是缺陷，是**原版走不到的那一列**，與 `errNoSuchECLArchive` 同一族。
+func (a *app) exitRowIsEmpty() bool {
+	if a.eventMachine == nil {
+		return false
+	}
+	return a.eventMachine.Memory[0x6E7F] == 0 && a.eventMachine.Memory[0x6E12] == 0
+}
+
 // runBlockedInitialCellEntry 讓「目前地形＋目前朝向」的入口先判斷一次，再把
 // 普通實牆交回碰牆／門處理。Pool 有些樓梯與出口刻意朝著 GEO 牆面；若先以
 // CanMoveDungeonWrapped 返回，ECL 的方向表永遠看不到該輸入（spec 101）。
@@ -1383,10 +1404,15 @@ func (a *app) runBlockedInitialCellEntry(dx, dy int) (bool, error) {
 		return false, fmt.Errorf("dispatch blocked Pool initial cell: %w", err)
 	}
 	result, err = a.consumeInitialTransitionResources(result)
-	if errors.Is(err, errNoSuchECLArchive) {
-		// 換圖表指到不存在的封存檔，而 GEO 這一面本來就是牆：這一步就是撞牆。
-		// 腳本在 `NEWECL` 之前已經 `CALL C01Eh` 把座標繞到對邊，要放回來。
+	if err != nil && (errors.Is(err, errNoSuchECLArchive) || a.exitRowIsEmpty()) {
+		// 換圖表這一列是空的（或指到不存在的封存檔），而 GEO 這一面本來就是牆：
+		// 這一步就是撞牆。腳本在 `NEWECL` 之前已經 `CALL C01Eh` 把座標繞到對邊，
+		// **spawn 與 ECL 記憶體兩份都要放回來**——只放回一份的話，兩邊從此不同步，
+		// 而不同步的症狀出現在很後面的某一格（腳本讀 `@C04B` 決定要不要換圖）。
 		a.spawn = origin
+		a.eventMachine.Memory[0xC04B] = uint16(origin.X)
+		a.eventMachine.Memory[0xC04C] = uint16(origin.Y)
+		a.recalculateTerrainCache()
 		a.eventMachine.Memory[0x6E12] = uint16(a.eclArchive)
 		a.eventMachine.Memory[mapExitFlagAddress] = 0
 		return false, nil
@@ -2981,9 +3007,28 @@ func (a *app) applyScriptCall(selector uint16) {
 	case 3:
 		a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)-1, geometry.Width))
 	}
-	// 旗標只對「這一步」有效。不清的話換區之後的入口 0 還看得到 1，
-	// 於是又換一次區——實測會在城區與貧民窟之間換到邊界上限。
+	// 座標要寫回 ECL 記憶體。`C04Bh + n` 就是 `DS:6A0Bh + n`（spec 106），
+	// 而原版的 `1A17h` 加減的正是那幾個 DS 變數本身——腳本下一條讀 `@C04B`
+	// 讀到的就是走完之後的位置。只搬 `a.spawn` 的話，**在同一次腳本執行裡
+	// 連走好幾步的那幾支會一直讀到出發點**：遊牧營地 `ecl7/17 9CFFh` 是
+	// 「查表拿方向 → `CALL C01Eh` 走一格 → 跳回去再查一次」的迴圈，索引由
+	// `@C04C × 12 + @C04B` 算出來，座標不動就永遠查到同一格、永遠走不到
+	// 表尾的 255。症狀是 `fatal error: stack overflow`（每走一步疊一層
+	// `applyECLClock`），離成因很遠。
 	if a.eventMachine != nil {
+		a.eventMachine.Memory[0xC04B] = uint16(a.spawn.X)
+		a.eventMachine.Memory[0xC04C] = uint16(a.spawn.Y)
+		// `1A81h` 走完一步會重算地形與牆的暫存，所以這裡跟著重算。
+		a.recalculateTerrainCache()
+		if a.initialMap != nil {
+			wall, ok := a.initialMap.Grid.WallWrapped(int(a.spawn.X), int(a.spawn.Y), a.spawn.Direction())
+			if !ok {
+				wall = 0
+			}
+			a.eventMachine.Memory[0xC04E] = uint16(wall)
+		}
+		// 旗標只對「這一步」有效。不清的話換區之後的入口 0 還看得到 1，
+		// 於是又換一次區——實測會在城區與貧民窟之間換到邊界上限。
 		a.eventMachine.Memory[mapExitFlagAddress] = 0
 	}
 	a.cellMovedByScript = true
