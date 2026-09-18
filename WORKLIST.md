@@ -44,12 +44,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 <!-- worklist:begin 這一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改 -->
 
-### 一、玩家會撞到的功能缺口
-
-- [ ] **全滅畫面寫著 Press any key，但方向鍵不算。** anyKeyJustPressed 只認 A-Z、0-9、ENTER、SPACE、ESC。探索器因此在全滅後按方向鍵十八萬圈原地不動。改成認任何鍵之後，session 會被拆掉，141 處治具呼叫 CurrentBlockID 有兩條當場 nil panic——治具要先改成「回標題就這一趟結束」。
-      **驗收**：anyKeyJustPressed 認任何鍵；治具不再在 session 拆掉後繼續呼叫；全套紅燈不因此增加。
-      **討論**：[#54](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/54)
-
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。

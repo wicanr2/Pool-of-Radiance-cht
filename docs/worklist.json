@@ -119,22 +119,6 @@
         "note": "要改 dosgolem 並重跑，沒有機器可判訊號"
       },
       "github_issue": 53
-    },
-    {
-      "id": "gameover-any-key-arrows",
-      "layer": "feature",
-      "title": "全滅畫面寫著 Press any key，但方向鍵不算",
-      "body": "anyKeyJustPressed 只認 A-Z、0-9、ENTER、SPACE、ESC。探索器因此在全滅後按方向鍵十八萬圈原地不動。改成認任何鍵之後，session 會被拆掉，141 處治具呼叫 CurrentBlockID 有兩條當場 nil panic——治具要先改成「回標題就這一趟結束」。",
-      "acceptance": "anyKeyJustPressed 認任何鍵；治具不再在 session 拆掉後繼續呼叫；全套紅燈不因此增加。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "cmd/pool-game/main.go"
-        ],
-        "pattern": "key <= ebiten.KeyMax",
-        "note": "main.go 還沒有『掃全部鍵』的寫法就代表這一條沒做"
-      },
-      "github_issue": 54
     }
   ]
 }
