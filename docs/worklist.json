@@ -49,18 +49,6 @@
       "github_issue": 21
     },
     {
-      "id": "explorer-player-strategy",
-      "layer": "verification",
-      "title": "探索器測試的玩家策略層：休息／治療／訓練",
-      "body": "策略層已有：包紮、催眠、集火、貧民窟就近進屋休息（只挑不會開打的房間）或旅店、睡到早上、城衛隊問句照安全選項答、交件集中獎金、訓練所、隊伍 pool 買甲；受傷會回頭補血（同位置＋同血量最多試三次，睡不成的地方不無限重試）。市政廳的四萬圈空轉已修：腳本踏上職員格 `SAVE 1 @4A01` 之後 `9BA8h` 就跳過逐槽掃描，`cityHallPlan` 的交差那一支因此要先看這個條件。現在每一趟走 109～161 步就結束，位置集中在 (5,5)／(4,6) 市政廳的 guarded door、(10,5) 神殿守衛、(10,8) 扒手——一級隊伍打不贏。house rule seed 136..475：諾里斯約 15% 勝率，19 個走到索寇 (8,5) 全數全滅（A 二級、其餘一級）。",
-      "acceptance": "三條探索器測試與三條探針測試回綠，或把覆蓋斷言改成「記錄停在哪」並寫明它證明什麼（走得到哪、停在哪一步）；避開會開打的格子與先升級兩條路擇一並寫下理由；多 seed 結局表。",
-      "verify": {
-        "kind": "manual",
-        "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestRandomWalkReachesKnownContentWithoutFailing|TestSokalKeepOpensTheOtherBoatRoutes|TestWorldTourReachesTheAreasBehindTheHarbour|TestPlayingTheWorldCompletesCommissionsOnItsOwn'` 是否全綠，工具不跑測試"
-      },
-      "github_issue": 22
-    },
-    {
       "id": "city-night-lock-original-receipt",
       "layer": "verification",
       "title": "城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟",
@@ -119,6 +107,18 @@
         "note": "要改 dosgolem 並重跑，沒有機器可判訊號"
       },
       "github_issue": 53
+    },
+    {
+      "id": "explorer-coverage-below-baseline",
+      "layer": "verification",
+      "title": "探索器的覆蓋面低於 2026-09-05 的量測：世界巡迴 10 < 15、委任 4 < 5",
+      "body": "開作弊之後每一趟都走得完了（#22 已關），但覆蓋面比 2026-09-05 低：世界巡迴 10 個 ECL block（門檻 15，當時 17）、委任 4 條（門檻 5）。那個基準與現在可比——當時還沒有戰後生命值寫回，隊伍等於不會死，就是今天鎖 HP 的狀態。已排除：只開鎖 HP 更差（8 個）、重走上限改 8 反而更差（8 個）。線索是索寇那一條走得到世界巡迴缺的 21／22／23／16／17／27，而 34 趟裡 57 次結束理由是「這一張沒有沒踩過的格子，也沒有走得到的出口」。",
+      "acceptance": "兩條回綠（世界巡迴 ≥ 15 個 block、委任 ≥ 5 條），或查清楚為什麼走不到再據以改門檻——不要為了變綠而改數字。",
+      "verify": {
+        "kind": "manual",
+        "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestWorldTourReachesTheAreasBehindTheHarbour|TestPlayingTheWorldCompletesCommissionsOnItsOwn'` 是否全綠，工具不跑測試"
+      },
+      "github_issue": 55
     }
   ]
 }

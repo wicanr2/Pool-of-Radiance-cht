@@ -152,7 +152,7 @@
 | [138](138-combat-bandage.md) | 戰鬥裡的 B）ANDAGE——止血，不看距離 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go` | `cmd/pool-game/bandage_test.go`、`cmd/pool-game/tactical_pilot_test.go` |
 | [139](139-quick-auto-combat.md) | Q）UICK 自動戰鬥與 M）OVE 的兩層按鍵 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go`、`internal/save/state.go` | `cmd/pool-game/quick_test.go` |
 | [140](140-house-rule-commission-experience.md) | 自訂規則——委任獎賞折算經驗值（預設關） | CONFORMED＋READY | `cmd/pool-game/main.go`、`cmd/pool-game/party_menu.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` |
-| [141](141-cheat-menu.md) | 作弊選單——鎖 HP、一擊斃命、穿牆（預設關）、密語提示（預設開） | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/cheats.go`、`cmd/pool-game/ecl_input.go` 等 8 個 | `cmd/pool-game/cheat_playthrough_test.go`、`cmd/pool-game/cheats_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 6 個 |
+| [141](141-cheat-menu.md) | 作弊選單——鎖 HP、一擊斃命、穿牆（預設關）、密語提示（預設開） | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/cheats.go`、`cmd/pool-game/ecl_input.go` 等 8 個 | `cmd/pool-game/cheat_playthrough_test.go`、`cmd/pool-game/cheats_test.go`、`cmd/pool-game/coverage_test.go` 等 7 個 |
 
 ## `cmd/` 底下的工具
 
