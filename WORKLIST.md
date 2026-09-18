@@ -55,9 +55,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **戰後生命值寫回與全滅收場：對照原版驗證回標題、狀態碼名稱與 4961h。** commit c713d2c 依 overlay-05 `04ADh`／`14CAh` 補上寫回、`6DC7` 與 The END!；全滅後回標題、狀態 4 的名稱、`81h` 被打退的觸發條件都還是 hypothesis。
-      **驗收**：三條各有一筆 dosgolem 或 trace 證據；`main.go` 裡「那一段的消費者還沒讀」改成定論。
-      **討論**：[#19](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/19)
 - [ ] **腳本在走一步的入口 0 裡搬座標之後，remake 還會再走原本那一步。** 上樓落點腳本寫 (5,7)，remake 得到 (6,7)；原版順序未證。
       **驗收**：一筆原版落點證據；spec 137 第 10 段的 hypothesis 改成定論。
       **討論**：[#21](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/21)
@@ -67,12 +64,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟。** spec 102〈晚上鎖門與城衛隊〉的分支與比較方向已對過原版；原版晚上站上鎖門格的畫面沒拍，地形 0 牆型 9 的十一個門面沒對到建築。不擋主線。
       **驗收**：dosgolem 原版晚上在 (3,4) 朝東的鎖門問句畫面與 `6E7D = 8`；十一個門面對到建築名寫進 spec 102 並拿掉 OPEN 那一條。
       **討論**：[#39](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/39)
-- [ ] **結局頁數：remake 3 頁，原版駕駛只攔到 1 頁。** ecl5/7 A815h SAVE FE → A82Ah PROGRAM 8 → A82Dh PRINTCLEAR。原版駕駛在 4ABA=FE 之後只看到 A82Dh 那一頁；PROGRAM 8 的過場有幾頁、是否等鍵還沒量，不確定差異在哪一側。
-      **驗收**：dosgolem 從 workplace/dosgolem-cheat/ending-hall.state 逐幀量 PROGRAM 8 的頁數；確認偏差側並修正或修正駕駛；對照報表的結局頁數一列相同。
-      **討論**：[#45](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/45)
-- [ ] **即死路徑不經過扣血入口 2266h（城堡毒荊棘）。** 原版城堡內部毒荊棘答 YES：「D DIES.」，-intercept-damage 零筆攔截。寫入者還沒定位；重現狀態檔 workplace/dosgolem-cheat/ending-hedge.state。
-      **驗收**：對 +10Ch 設寫入監看量出寫入者的 overlay／entry 並寫進 spec 084；決定攔截是否涵蓋、remake 的即死是否一致。
-      **討論**：[#46](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/46)
 - [ ] **dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）。** 量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。
       **驗收**：照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。
       **討論**：[#53](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/53)
