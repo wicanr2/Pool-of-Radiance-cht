@@ -107,3 +107,21 @@ spec 034（戰後戰利品選單邊界）。
 - **密語全集**：`eclInputAnswer` 只往後掃 64 條指令。掃全部 `INPUT STRING` 時若有超過這個距離的寫法，要嘛放寬，
   要嘛列成例外，不能默默漏掉（沉默不等於沒有）。
 - **#45**（結局頁數）與 **#46**（毒荊棘即死不經過 `2266h`）還開著，與這一輪無關，別順手做。
+
+## 2026-09-18 收在哪
+
+- **A（原版基準）**：`tools/dosgolem-treasure-screens.py` → `docs/audit/dos-treasure-screens.json`（六張畫面的色號陣列與
+  SHA-256、鍵序、狀態檔雜湊，分錢前後逐人錢包與 pool）。量到的關鍵事實兩條：`VIEW` 是人物頁（spec 040 原本寫錯）、
+  五個人分 250 金是每人 50 金 10 白金、珠寶 1 給最前面那一位、**除不盡的不留在 pool**。
+- **B（#47 戰利品畫面）**：頂層選項依錢與物品的有無組成、`View` 走既有人物頁、`Take: Money` 列出每一種幣、
+  `Pool`／`Share` 之後寫出誰拿到多少與 pool 餘額；`screenName()` 補八個識別字。
+  測試 `cmd/pool-game/treasure_screen_test.go` 五條，全部從 `Update()` 送鍵，分錢那一條拿 A 量到的數字當裁判。
+- **C（#48 密語提示）**：作弊選單 `P`，預設開，關掉問句與原版逐字相同，**不寫 `CheatsUsed`**；
+  存檔欄位存「關掉」那一側，舊存檔讀回來是開。測試 `TestPasswordHintToggleDefaultsOnAndDoesNotCountAsCheating`。
+  第 10 步的全集掃描做成 `cmd/pool-password-audit`（→ `docs/audit/dos-password-prompts.json`）：
+  **20 處、19 處解得出答案**，剩下那一處原版就沒有答案。掃描過程修掉三個「自洽但錯」的坑（spec 087 有表），
+  並順帶修掉 `eclInstruction` 用 engine 底稿指令表解碼（`34h` 差一個運算元）。
+- **D（文件）**：spec 034、040、087、141；README、CONTEXT、playtest 補十六；規格索引重生。
+- **對拍**：`v.1.1.12-20260918 patch zh` 連跑兩次，數字逐項相同；腳本仍停在 #42 那一點，`field-cast` 兩張未量，
+  報表由手動跑 `tools/dos-parity-compare.py` 產生。與 `docs/audit/dos-parity-sample.md` 那張基準表有十項對不上
+  （兩項「視野」100.00%→91.27%），**不是這一輪造成的、但以前沒有人比對過表**，開 #51 追。

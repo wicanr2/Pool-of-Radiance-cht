@@ -323,3 +323,42 @@ func TestCheatWalkThroughWallsPassesAWallFromKeys(t *testing.T) {
 		t.Fatalf("開了穿牆朝 %d 走一步到了 %+v，要 %v", wall, a.spawn, want)
 	}
 }
+
+// 密語提示（spec 141〈密語提示〉，#48）：預設開、F6 進去按 P 關掉，關掉不算作弊。
+func TestPasswordHintToggleDefaultsOnAndDoesNotCountAsCheating(t *testing.T) {
+	a := bootCityParty(t, dosZIPForTests)
+	step := func(key ebiten.Key) {
+		t.Helper()
+		if err := press(a, key); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if a.state.Cheats.HidePasswordHints {
+		t.Fatal("新遊戲就把密語提示關掉了，預設要開")
+	}
+	if got := a.passwordHintSuffix("LUX"); got != "（LUX）" {
+		t.Fatalf("預設的提示是 %q，要附在問句後面", got)
+	}
+	toggleCheats(t, step, a, ebiten.KeyP)
+	if !a.state.Cheats.HidePasswordHints {
+		t.Fatalf("P 沒有關掉密語提示：%+v", a.state.Cheats)
+	}
+	if got := a.passwordHintSuffix("LUX"); got != "" {
+		t.Fatalf("關掉之後還印 %q，問句要與原版逐字相同", got)
+	}
+	// 關掉只是回到原版，不是作弊：標示與 CheatsUsed 都不能動。
+	if a.state.CheatsUsed || a.cheatMark() != "" {
+		t.Fatalf("關掉密語提示卻記成作弊：used=%t mark=%q", a.state.CheatsUsed, a.cheatMark())
+	}
+	if !strings.Contains(a.statusLine, a.text(msgCheatPasswordHintName)) {
+		t.Fatalf("狀態列沒說切了哪一個：%q", a.statusLine)
+	}
+	toggleCheats(t, step, a, ebiten.KeyP)
+	if a.state.Cheats.HidePasswordHints || a.state.CheatsUsed {
+		t.Fatalf("再按一次沒有開回來：%+v used=%t", a.state.Cheats, a.state.CheatsUsed)
+	}
+	// 解不出答案時本來就不印。
+	if got := a.passwordHintSuffix(""); got != "" {
+		t.Fatalf("沒有答案卻印了 %q", got)
+	}
+}

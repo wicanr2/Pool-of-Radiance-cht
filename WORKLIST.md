@@ -49,9 +49,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **ECL7/17（遊牧營地）的格子事件在探索器裡無限迴圈。** 探索器 log 在 GEO7/17 (7,15) 連續七趟「格子事件 300000」一步不走。
       **驗收**：最小重現＋修正；探索器在該區能走動。
       **討論**：[#23](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/23)
-- [ ] **密語提示改成作弊選單的開關（預設開，不寫 CheatsUsed）。** cmd/pool-game/ecl_input.go 的 enterECLInput 無條件把答案接在問句後面。使用者 2026-09-18 決定改成 F6 作弊選單的開關，預設開、可以關；關掉不算作弊。範圍只有打字的密語（10h INPUT STRING）。
-      **驗收**：作弊選單多一個開關，預設開；關掉時問句與原版逐字相同且 CheatsUsed 不變；存讀檔記得；ECL 的 INPUT STRING 答案表進 spec 087。
-      **討論**：[#48](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/48)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -82,6 +79,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **即死路徑不經過扣血入口 2266h（城堡毒荊棘）。** 原版城堡內部毒荊棘答 YES：「D DIES.」，-intercept-damage 零筆攔截。寫入者還沒定位；重現狀態檔 workplace/dosgolem-cheat/ending-hedge.state。
       **驗收**：對 +10Ch 設寫入監看量出寫入者的 overlay／entry 並寫進 spec 084；決定攔截是否涵蓋、remake 的即死是否一致。
       **討論**：[#46](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/46)
+- [ ] **對拍數字與 dos-parity-sample.md 的基準表對不上十項（紮營・調整／速度的「視野」100.00%→91.27%）。** 2026-09-18 以 v.1.1.12-20260918 patch zh 連跑兩次，兩次逐項相同，但與 v.1.1.5 產的基準表有十項差；兩項「視野」從 100.00% 掉到 91.27%，不是四捨五入。歷輪 commit 只與『上一次跑的結果』比，所以漂移不會開口。
+      **驗收**：二分出是哪一版開始變的；判定該是 100.00% 還是 91.27% 並修正；重生 dos-parity-sample.md／json；對拍腳本加一道與表比對的檢查。
+      **討論**：[#51](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/51)
 
 ### 三、版面與資料的差距
 
@@ -89,9 +89,15 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **卡在**：先完成 DOS sprite inventory 與三組可丟棄 prototype，再依 grilling 流程逐題確認視覺聖經與資產範圍。
       **驗收**：完整 inventory 與 DOS archive／consumer 對得上；使用者確認單一視覺聖經；正式 sprite 風格一致且語意可追溯；每張有來源與權利紀錄；原版與現代主題可切換；所有主要正常玩家路徑與發行包抽測無缺圖、越界、裁切或風格混用。
       **討論**：[#17](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/17)
-- [ ] **戰利品畫面：看不到金額、VIEW 不是人物頁、沒有畫面識別字。** 使用者 2026-09-18：Share 的規則已有（overlay-21），缺的是畫面。原版 TAKE 列出每種幣與數量、VIEW 是人物頁（VIEW:TRADE DROP EXIT）；remake 的 View 只把名稱串成一行，Pool／Share 只印一句狀態列，screenName() 也沒有戰利品的識別字。
-      **驗收**：原版三張畫面的收據（docs/audit/dos-treasure-screens.json）；remake 補上金額、分錢結果與人物頁；-screen-state 認得戰利品；Share 與 Take 有從 Update() 送鍵的測試並對上原版量到的錢包數字。
-      **討論**：[#47](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/47)
+- [ ] **README 的進度與自評分數更新（主線已連續跑通）。** 使用者 2026-09-18 指派。README 仍寫著「主線沒有從開場到結局連續跑過一次」，而 #5 已以兩邊作弊通關的收據關閉；六條功能缺口要從程式往回核實，自評分數與區間重寫，驗證缺口那一段跟著更新。
+      **驗收**：README 每一條缺口都指得到程式或 issue、沒有過期條目；自評段落與 WORKLIST／GitHub open issues 對得起來；CONTEXT 補一行。
+      **討論**：[#49](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/49)
+- [ ] **遊戲考古：怪物戰場 sprite 圖鑑與人物肖像圖鑑（圖文並茂）。** 使用者 2026-09-18 指派。怪物：戰場 sprite 逐隻匯出，附名稱、HD／HP／AC／THAC0／傷害、特殊攻擊與出現區塊，再用白話寫特性。肖像：CHEAD／BODY／CBODY 逐張對出「誰是誰」與在劇情裡的角色，NPC 要指回 ECL 出處。兩份都要可重生的匯出流程與收據。
+      **驗收**：docs/archaeology/monsters.md 與 portraits.md 有圖有文；圖片數量與資產盤點對得上；每一項有出處與推論等級；沒查到的寫「未查」。
+      **討論**：[#50](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/50)
+- [ ] **拿發行包拍 remake 的戰利品畫面，與原版六張並列。** #47 的畫面與測試已完成，缺截圖。tools/capture-treasure.sh 已能走到遭遇並開打，但一人隊伍在同一個 tick 內全滅回到標題（鎖 HP 的寫回在 tick 結束才做）。下一步假設：六人隊伍、不走 QUICK、或改用市政廳交件的獎金（與原版基準同一筆，最接近 same-state）。
+      **驗收**：docs/screenshots/treasure/ 有 remake 四張與原版並列；差異寫進 spec 034。
+      **討論**：[#52](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/52)
 
 <!-- worklist:end -->
 

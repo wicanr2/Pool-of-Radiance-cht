@@ -182,6 +182,8 @@
       "ui.cheatOneHitKillName": "ONE-HIT KILL",
       "ui.cheatMenuWalkThroughWalls": "W  WALK THROUGH WALLS: %s",
       "ui.cheatWalkThroughWallsName": "WALK THROUGH WALLS",
+      "ui.cheatMenuPasswordHint": "P  PASSWORD HINTS: %s",
+      "ui.cheatPasswordHintName": "PASSWORD HINTS",
       "ui.cheatToggled": "CHEAT: %s %s (NOT IN THE ORIGINAL)",
       "ui.cheatMark": "CHEAT: %s",
       "ui.cheatUsedMark": "CHEATS USED",

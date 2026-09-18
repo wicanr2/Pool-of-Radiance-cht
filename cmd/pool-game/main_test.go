@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -429,10 +430,11 @@ func TestGraveyardTreasureRequestEntersFiveItemService(t *testing.T) {
 	if err := application.enterTreasure([]eclvm.TreasureRequest{{ItemBlock: 0x33}}); err != nil {
 		t.Fatal(err)
 	}
-	if !application.treasureActive || application.treasureStage != treasureMain || !application.cellEventPending || !application.cellWaitingMenu || len(application.treasureItems) != 5 || !reflect.DeepEqual(application.cellMenuOptions, []string{"View", "Take", "Pool", "Share", "Exit"}) {
+	// 主選單依錢與物品的有無組（spec 034 `0E85h`）：這一場只有物品、沒有錢，所以沒有 `Share`。
+	if !application.treasureActive || application.treasureStage != treasureMain || !application.cellEventPending || !application.cellWaitingMenu || len(application.treasureItems) != 5 || !reflect.DeepEqual(application.cellMenuOptions, []string{"View", "Take", "Pool", "Exit"}) {
 		t.Fatalf("treasure service=%+v options=%v", application, application.cellMenuOptions)
 	}
-	application.cellMenuCursor = 4
+	application.cellMenuCursor = slices.Index(application.cellMenuOptions, "Exit")
 	if err := application.selectTreasureOption(); err != nil || application.treasureStage != treasureConfirmExit || !strings.Contains(application.eventText, "still treasure") {
 		t.Fatalf("leave confirmation stage=%d text=%q err=%v", application.treasureStage, application.eventText, err)
 	}

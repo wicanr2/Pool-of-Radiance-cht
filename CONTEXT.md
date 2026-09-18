@@ -2,7 +2,22 @@
 
 更新日期：2026-09-18。
 
-## 2026-09-18 下一輪：戰利品畫面與密語提示的開關（#47、#48）
+## 2026-09-18 戰利品畫面補到原版的口徑；密語提示成為可以關的開關（#47、#48）
+
+- **原版基準先做**：`tools/dosgolem-treasure-screens.py` 從市政廳交件那一刻抓六張畫面與分錢前後的錢包，
+  收據 `docs/audit/dos-treasure-screens.json`。**`VIEW` 是人物頁不是幣別清單**（spec 040 原本寫錯，已改），
+  幣別數量在 `TAKE` 那一層；五個人分 250 金是每人 50 金 10 白金，珠寶 1 給最前面那一位，pool 歸零
+  ——**除不盡的不是留在 pool**。
+- **remake**：頂層選項依有沒有錢與物品組成、`View` 走人物頁、`Take: Money` 列出每一種幣、
+  `Pool`／`Share` 之後寫出誰拿到多少與 pool 餘額；`screenName()` 補八個戰利品識別字。
+- **密語提示**：作弊選單 `P`，**預設開**，關掉問句與原版逐字相同，**關掉不寫 `CheatsUsed`**。
+- **密語全集**：`cmd/pool-password-audit` 掃全部 `10h INPUT STRING`：**20 處、19 處解得出答案**，
+  剩下那一處原版就沒有答案（巨人，ecl5/5 `9E08h`）。收據 `docs/audit/dos-password-prompts.json`。
+  解析修掉三個「自洽但錯」：`COMPARE` 運算元次序、直線往下讀撿到隔壁的答案、`IF` 後面的 `GOTO` 是有條件的。
+- **順帶修**：`cmd/pool-game` 的 `eclInstruction` 一直用 engine 底稿的指令表，`34h ECL CLOCK` 少算一個運算元
+  會讓之後每一條錯位（spec 093）；已改成帶 `gamepack.PoolCommandTable()`。
+
+## 2026-09-18 上一輪的起點：戰利品畫面與密語提示的開關（#47、#48）
 
 - 使用者的原話：「remake 需要實作 share 喔，另外 remake 密語 or 答案直接放在對話後面」。查下來兩件事都已經有規則或行為，缺的是畫面與開關：
   - **#47 戰利品畫面**：`ShareMoney`／`PoolMoney` 已對過 overlay-21，但畫面看不到金額、`View` 只把名稱串成一行（原版是人物頁）、

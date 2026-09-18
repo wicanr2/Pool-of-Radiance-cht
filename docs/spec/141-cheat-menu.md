@@ -1,4 +1,4 @@
-# Spec 141：作弊選單——鎖 HP、一擊斃命、穿牆（預設關）
+# Spec 141：作弊選單——鎖 HP、一擊斃命、穿牆（預設關）、密語提示（預設開）
 
 狀態：READY（開關、存檔、標示、傷害路徑、穿牆、說明頁分頁、實作與測試；這是 remake 自己的功能，沒有原版行為可對）。
 日期：2026-09-17。主台帳：GitHub issue #43（穿牆：#5）。
@@ -25,7 +25,7 @@ CLAUDE.md §3／§6 規定原版忠實是驗收基準、主線驗收不得依賴
 | 項 | 內容 |
 |---|---|
 | 開選單 | 冒險模式（含戰鬥畫面）按 `F6`；說明、攻略、商店等覆蓋層開著時不開 |
-| 選單內 | `L` 切鎖 HP，`O` 切一擊斃命，`W` 切穿牆，`ESC` 或 `F6` 關閉；選單開著時其他按鍵一律不作用 |
+| 選單內 | `L` 切鎖 HP，`O` 切一擊斃命，`W` 切穿牆，`P` 切密語提示，`ESC` 或 `F6` 關閉；選單開著時其他按鍵一律不作用 |
 | 畫面識別字 | `cheat-menu`（`-screen-state`） |
 | 切換提示 | 狀態列印一句，例如「作弊：鎖 HP 開（原版沒有）」 |
 
@@ -40,6 +40,7 @@ CLAUDE.md §3／§6 規定原版忠實是驗收基準、主線驗收不得依賴
 | `Cheats.LockHP` | `cheats.lock_hp` | 鎖 HP |
 | `Cheats.OneHitKill` | `cheats.one_hit_kill` | 一擊斃命 |
 | `Cheats.WalkThroughWalls` | `cheats.walk_through_walls` | 穿牆 |
+| `Cheats.HidePasswordHints` | `cheats.hide_password_hints` | 密語提示**關掉**才寫真 |
 | `CheatsUsed` | `cheats_used` | 打開過任何一個就是真，不會回到假 |
 
 都有 `omitempty`，舊存檔讀得回來（全部是假）。存檔 schema 版本不變：這幾個欄位缺席時就是
@@ -91,6 +92,22 @@ CLAUDE.md §3／§6 規定原版忠實是驗收基準、主線驗收不得依賴
 - 兩邊的差別：remake 開著時每一步都不看牆；原版駕駛先照牆規劃，走不到才穿。路線不同不影響對照——
   對照的是必經區塊與段末旗標，不是步數（goal 第 8 步）。
 
+## 密語提示（預設開，#48）
+
+原版有 20 處要玩家打字（spec 087 的盤點）。那些字是 NPC 說過、或說明書寫的，隔了幾十格，
+忘了就過不去——使用者 2026-09-17 決定 remake 直接把答案附在問句後面，**預設開，F6 可以關**。
+
+- 開著時：問句尾巴接一個全形括號，例如 `WHAT DO YOU SAY? (TYPE A SINGLE WORD)（LUX）`。
+  同一處有兩個可能答案時兩個都列，中間用「／」（ecl4/21 依 `4A26h` 二選一）。
+- 關著時：`passwordHintSuffix` 回空字串，問句與原版**逐字相同**。
+- 解不出答案時本來就不接（巨人那一處原版就沒有答案，見 spec 087）。
+
+**關掉密語提示不寫 `CheatsUsed`**，這是它與另外三個開關的差別：另外三個是往原版沒有的方向加東西，
+這一個是把 remake 自己加的東西拿掉，往原版靠。把「回到原版」記成作弊，會讓標示的意思反過來。
+
+欄位存的是**關掉**那一側（`HidePasswordHints`），所以舊存檔讀回來是「提示開著」，
+與新遊戲一致。
+
 ## 說明頁
 
 F1 說明頁原本就放不下：鍵說明 11 行、英文指令 3 行、出處 5～7 行，每行 22 像素、從 y=100 起畫，
@@ -136,6 +153,8 @@ F1 說明頁原本就放不下：鍵說明 11 行、英文指令 3 行、出處 
   - `TestCheatOneHitKillCoversPartySpellsButNotFoes`：法術路徑與敵人造成的傷害，直接呼叫。手動建的隊伍只記催眠術，
     按鍵走不到施法傷害那一支。
   - `TestHelpPagesListTheCheatKeyAndFitTheBox`：中英兩頁不超出框，第 1 頁有 F6。
+  - `TestPasswordHintToggleDefaultsOnAndDoesNotCountAsCheating`：預設帶答案、`P` 關掉、關掉不寫 `CheatsUsed`、狀態列有名字。
+  - `TestPasswordSitesAgainstRealCorpus`（`cmd/pool-password-audit`）：20 處輸入、19 處解得出答案，八處逐字釘住。
   - `TestCheatWalkThroughWallsPassesAWallFromKeys`：開局那一格朝一道地圖內的牆，關著撞牆、按 W 之後走過去。
   - `TestCheatsRoundTripAndOldSavesReadAsOff`（`internal/save`）：舊存檔讀回來全關，新欄位往返。
   - `TestMainlineProbeHouseRuleCheatAtNorris`：探針只在諾里斯那一場開作弊（playtest 補十四）。

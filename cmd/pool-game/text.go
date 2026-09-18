@@ -756,4 +756,6 @@ const (
 	msgCheatMarkSeparator
 	msgCheatMenuWalkThroughWalls
 	msgCheatWalkThroughWallsName
+	msgCheatMenuPasswordHint
+	msgCheatPasswordHintName
 )

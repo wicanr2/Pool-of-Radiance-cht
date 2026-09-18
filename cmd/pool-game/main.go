@@ -1090,6 +1090,10 @@ func (a *app) Update() error {
 					}
 					return nil
 				}
+				// 人物頁（`View`）關掉之後回主選單：那一頁自己有一套鍵，關掉時沒有別人會把選單擺回來。
+				if a.treasureActive && a.treasureStage == treasureView && !a.viewSheetOpen {
+					a.enterTreasureMain()
+				}
 				if a.treasureActive && a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {
 					if a.treasureStage == treasureMoneyAmount {
 						if a.justPressed(ebiten.KeyEscape) {
@@ -2049,9 +2053,20 @@ func (a *app) awardCommissionExperience(pooled [7]uint32) {
 	a.statusLine = fmt.Sprintf(a.text(msgHouseRuleCommissionXP), value)
 }
 
+// enterTreasureMain 依錢與物品的有無組主選單（spec 034 `0E85h`）。原版實測：錢分完、沒有物品時
+// 只剩 `VIEW POOL EXIT`（`docs/audit/dos-treasure-screens.json` 的 `after-share`）。
 func (a *app) enterTreasureMain() {
 	a.treasureStage = treasureMain
-	a.cellMenuOptions, a.cellMenuCursor = []string{"View", "Take", "Pool", "Share", "Exit"}, 0
+	options := []string{"View"}
+	if a.hasPooledMoney() || len(a.treasureItems) != 0 {
+		options = append(options, "Take")
+	}
+	options = append(options, "Pool")
+	if a.hasPooledMoney() {
+		options = append(options, "Share")
+	}
+	options = append(options, "Exit")
+	a.cellMenuOptions, a.cellMenuCursor = options, 0
 	a.eventText = "The party has found treasure!"
 	a.eventLabel = a.cellMenuLabel()
 }
@@ -2061,22 +2076,11 @@ func (a *app) selectTreasureOption() error {
 	case treasureMain:
 		switch a.cellMenuOptions[a.cellMenuCursor] {
 		case "View":
+			// 原版的 `VIEW` 是人物頁（底列 `VIEW:TRADE DROP EXIT`），不是把名稱列出來
+			// （`docs/audit/dos-treasure-screens.json` 的 `view`）。這裡開的是 spec 130 那一頁，
+			// 與探索畫面的 `V)IEW` 同一支；ESC 回戰利品選單。
 			a.treasureStage = treasureView
-			names := make([]string, 0, 7+len(a.treasureItems))
-			for currency, amount := range a.state.PooledMoney {
-				if amount != 0 {
-					names = append(names, fmt.Sprintf("%s %d", pooltreasure.Names[currency], amount))
-				}
-			}
-			for index := range a.treasureItems {
-				names = append(names, a.treasureItems[index].Name)
-			}
-			if len(names) == 0 {
-				names = append(names, "Nothing")
-			}
-			a.eventText = strings.Join(names, " / ")
-			a.cellMenuOptions, a.cellMenuCursor = []string{"Return"}, 0
-			a.eventLabel = a.cellMenuLabel()
+			a.openViewSheet()
 			return nil
 		case "Take":
 			hasMoney := a.hasPooledMoney()
@@ -2109,9 +2113,6 @@ func (a *app) selectTreasureOption() error {
 			a.eventLabel = a.cellMenuLabel()
 			return nil
 		}
-	case treasureView:
-		a.enterTreasureMain()
-		return nil
 	case treasureTake:
 		switch a.cellMenuOptions[a.cellMenuCursor] {
 		case "Money":
@@ -2199,9 +2200,22 @@ func (a *app) enterTreasureMoneyCurrencies() error {
 	}
 	a.cellMenuOptions = append(a.cellMenuOptions, "Exit")
 	a.cellMenuCursor = 0
-	a.eventText = "Take: Money"
+	// 原版這一頁把每一種幣與數量列在畫面上（`GOLD 250`／`PLATINUM 50`／`JEWELRY 1`，底列
+	// `SELECT TYPE OF COIN EXIT`）。選項也帶數量，但文字框要看得到整份清單。
+	a.eventText = "Take: Money\n" + strings.Join(a.pooledMoneyLines(), "\n")
 	a.eventLabel = a.cellMenuLabel()
 	return nil
+}
+
+// pooledMoneyLines 是 pool 裡每一種非零貨幣的「名稱 數量」，順序照七欄。
+func (a *app) pooledMoneyLines() []string {
+	lines := make([]string, 0, 7)
+	for currency, amount := range a.state.PooledMoney {
+		if amount != 0 {
+			lines = append(lines, fmt.Sprintf("%s %d", pooltreasure.Names[currency], amount))
+		}
+	}
+	return lines
 }
 
 func (a *app) currencyForMenuIndex(menuIndex int) int {
@@ -2245,6 +2259,7 @@ func (a *app) applyTreasureMoneyService(service func(*poolsave.State) error, mes
 		a.statusLine = err.Error()
 		return nil
 	}
+	message += " " + treasureMoneyDelta(a.state, next)
 	if a.saveState == nil {
 		return fmt.Errorf("Pool save writer is not configured")
 	}
@@ -2255,6 +2270,39 @@ func (a *app) applyTreasureMoneyService(service func(*poolsave.State) error, mes
 	a.statusLine = message
 	a.enterTreasureMain()
 	return nil
+}
+
+// treasureMoneyDelta 把 Pool／Share 的結果寫成一句：誰的錢包多了什麼、pool 剩下什麼。
+// 原版沒有這一句（它只是換選單），所以放在狀態列——那一行本來就是 remake 自己的。
+func treasureMoneyDelta(before, after poolsave.State) string {
+	parts := []string{}
+	for index := range after.Party {
+		if index >= len(before.Party) {
+			break
+		}
+		gains := []string{}
+		for currency := range after.Party[index].Money {
+			if delta := int(after.Party[index].Money[currency]) - int(before.Party[index].Money[currency]); delta != 0 {
+				gains = append(gains, fmt.Sprintf("%+d %s", delta, pooltreasure.Names[currency]))
+			}
+		}
+		if len(gains) != 0 {
+			parts = append(parts, strings.TrimSpace(after.Party[index].Name)+" "+strings.Join(gains, " "))
+		}
+	}
+	left := []string{}
+	for currency, amount := range after.PooledMoney {
+		if amount != 0 {
+			left = append(left, fmt.Sprintf("%s %d", pooltreasure.Names[currency], amount))
+		}
+	}
+	if len(left) == 0 {
+		left = append(left, "nothing")
+	}
+	if len(parts) == 0 {
+		return "No wallet changed; pool holds " + strings.Join(left, ", ") + "."
+	}
+	return strings.Join(parts, "; ") + "; pool holds " + strings.Join(left, ", ") + "."
 }
 
 func (a *app) rebuildTreasureItemMenu() error {

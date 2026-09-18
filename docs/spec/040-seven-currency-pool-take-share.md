@@ -1,6 +1,6 @@
 # Spec 040：七種貨幣的 View／Take／Pool／Share
 
-狀態：READY。日期：2026-09-01。
+狀態：READY。日期：2026-09-01（2026-09-18 以原版實測修正 `VIEW` 那一段，並補分錢的量測）。
 
 ## 範圍與證據
 
@@ -61,8 +61,29 @@
 ## View 與主選單
 
 Spec 034 已證明主選單依 money／item presence 組成 `View Take Pool Share` 等原順序；
-`0F2Bh..0F79h` 對七個 32-bit pool 與 item chain 分開判斷。View 必須依固定七欄順序顯示
-名稱與非零數量；它不改 state。Take 同時有 Money／Items 時先顯示該二級選單。
+`0F2Bh..0F79h` 對七個 32-bit pool 與 item chain 分開判斷。Take 同時有 Money／Items 時
+先顯示該二級選單。
+
+**`VIEW` 不是幣別清單。** 這一份原本寫「View 必須依固定七欄順序顯示名稱與非零數量」，
+2026-09-18 用 dosgolem 在原版量到的是**人物頁**（屬性、`GOLD 110`、`LEVEL`／`EXP`、
+`AC`／`THAC0`／`ENCUMBRANCE`、`STATUS OKAY`，底列 `VIEW:TRADE DROP EXIT`）；
+逐幣別的數量出現在 **`TAKE`** 那一層（`GOLD 250`／`PLATINUM 50`／`JEWELRY 1`，
+底列 `SELECT TYPE OF COIN EXIT`）。收據：[`docs/audit/dos-treasure-screens.json`](../audit/dos-treasure-screens.json)。
+
+## 原版實測：五個人分 250 金（2026-09-18）
+
+狀態檔 `workplace/dosgolem-cheat/handin-slums-stuck.state`（市政廳交完貧民窟的件、職員給獎金那一刻），
+按 `S` 分錢前後逐一讀隊伍鏈（`DS:5CF4h`，下一個在 `+104h`，**far pointer**：offset 在前、segment 在後；
+錢包 `+88h` 起七個 uint16，pool 在 `DS:6752h` 起七個 uint32）：
+
+| 項 | 分錢前 pool | 每人拿到 | 分錢後 pool |
+|---|---|---|---|
+| 金幣 | 250 | 50 | 0 |
+| 白金 | 50 | 10 | 0 |
+| 珠寶 | 1 | 第一位 1 | 0 |
+
+**除不盡的那一份不是留在 pool，是給排在前面的人**（珠寶 1 除以 5）。分完之後頂層選單少掉
+`TAKE` 與 `SHARE`，剩 `VIEW POOL EXIT`——選項依「還有沒有錢」組成，與 `0F2Bh..0F79h` 的判斷一致。
 
 ## 存檔與驗收
 

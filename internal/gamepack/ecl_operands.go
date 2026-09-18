@@ -99,6 +99,18 @@ const (
 	// ParlayResultOperand 是「結果寫進哪個 ECL 變數」那個運算元的序號。
 	ParlayResultOperand = 6
 
+	// FirstIfOpcode／LastIfOpcode 圈出 `16h IF =`..`1Bh IF >=`。條件不成立時它們
+	// **跳過下一條指令**，所以緊接在 `IF` 後面的 `GOTO` 是有條件的。
+	FirstIfOpcode = 0x16
+	LastIfOpcode  = 0x1b
+	// ExitOpcode 是 `00h EXIT`：這一段結束，回到引擎。
+	ExitOpcode = 0x00
+	// GotoOpcode 是 `01h GOTO`：無條件跳到運算元 1 的位址。
+	GotoOpcode = 0x01
+	// ReturnOpcode 是 `13h RETURN`：從 `02h GOSUB` 回去。
+	ReturnOpcode = 0x13
+	// PoolCodeAddressBase 是 payload 第 0 個位元組對應的位址（spec 002）。
+	PoolCodeAddressBase = 0x9900
 	// SaveOpcode 是 `09h SAVE`：把運算元 1 的值寫進運算元 2 指的位址。
 	// 索寇要塞的密碼先用它把字面存進字串變數，再拿變數去比對。
 	SaveOpcode = 0x09

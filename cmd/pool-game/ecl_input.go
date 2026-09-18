@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -59,76 +58,27 @@ func (a *app) enterECLInput(event eclvm.Event) error {
 	// 那些字是遊戲內 NPC 說過的，但隔了很多格，忘了就過不去。答案本來就寫在
 	// 原版資料的 `03h COMPARE` 裡，直接附在問句後面。
 	// **這是 remake 的擴充，不是原版行為**（原版沒有這個括號）。
-	if answer := a.eclInputAnswer(instruction.Next, address); answer != "" {
-		a.eventText = strings.TrimRight(a.eventText, " ") + "（" + answer + "）"
+	if suffix := a.passwordHintSuffix(a.eclInputAnswer(instruction.Next, address)); suffix != "" {
+		a.eventText = strings.TrimRight(a.eventText, " ") + suffix
 	}
 	a.eventLabel = a.eclInputLabel()
 	a.statusLine = a.text(msgEclInputPrompt)
 	return nil
 }
 
-// eclInputAnswer 找出這次輸入之後拿來比對的字面。原版有兩種寫法：
-//
-//	ecl7/23  A4A1 INPUT STRING #6 6E79h
-//	         A4CA COMPARE 6E79h "NOKNOK"        ← 直接比字面
-//
-//	ecl4/21  9E80 INPUT STRING #7 982Ch
-//	         9E8D SAVE "SAMOSUD" 9890h          ← 先存進字串變數
-//	         9E9A SAVE "SHESTNI" 9890h          ← 依 4A26h 二選一
-//	         9EA6 COMPARE 982Ch 9890h           ← 比的是變數
-//
-// 所以掃的時候順便記下 `09h SAVE <字面> → <位址>`，遇到比對變數的
-// `COMPARE` 就把該位址收到的字面全部拿出來。同一個位址被寫過兩次時兩個
-// 都列——玩家當下需要哪一個，靜態分不出來，不猜。
-//
-// 只往後掃固定步數，找不到就不顯示。
-func (a *app) eclInputAnswer(pc int, address uint16) string {
-	const scanLimit = 64
-	saved := map[uint16][]string{}
-	for offset, scanned := pc, 0; scanned < scanLimit; scanned++ {
-		instruction, err := a.eclInstruction(offset)
-		if err != nil {
-			return ""
-		}
-		operands := instruction.Operands
-		switch {
-		case instruction.Command.Opcode == gamepack.SaveOpcode && len(operands) == 2 &&
-			ecl.IsText(operands[0]):
-			destination, err := ecl.WordAddress(operands[1])
-			if err != nil {
-				break
-			}
-			value, err := ecl.TextValue(operands[0], nil)
-			if err != nil {
-				break
-			}
-			if value = strings.TrimSpace(value); value != "" && !slices.Contains(saved[destination], value) {
-				saved[destination] = append(saved[destination], value)
-			}
-		case instruction.Command.Opcode == gamepack.CompareOpcode && len(operands) == 2:
-			compared, err := ecl.WordAddress(operands[0])
-			if err != nil || compared != address {
-				break
-			}
-			if ecl.IsText(operands[1]) && operands[1].Code == 0x80 {
-				if answer, err := ecl.TextValue(operands[1], nil); err == nil {
-					if answer = strings.TrimSpace(answer); answer != "" {
-						return answer
-					}
-				}
-			}
-			if source, err := ecl.WordAddress(operands[1]); err == nil {
-				if answers := saved[source]; len(answers) != 0 {
-					return strings.Join(answers, "／")
-				}
-			}
-		}
-		if instruction.Next <= offset {
-			return ""
-		}
-		offset = instruction.Next
+// passwordHintSuffix 是接在問句後面的括號。作弊選單的「密語提示」關掉時（`HidePasswordHints`）回空字串，
+// 那時的問句與原版逐字相同（spec 141〈密語提示〉）。解不出答案時也是空字串。
+func (a *app) passwordHintSuffix(answer string) string {
+	if answer == "" || a.state.Cheats.HidePasswordHints {
+		return ""
 	}
-	return ""
+	return "（" + answer + "）"
+}
+
+// eclInputAnswer 把往後掃答案那一段交給 `gamepack.InputAnswer`（spec 087），
+// audit 工具 `cmd/pool-password-audit` 走同一支，兩邊不會各自漂走。
+func (a *app) eclInputAnswer(pc int, address uint16) string {
+	return gamepack.InputAnswer(a.eclInstruction, pc, address)
 }
 
 // eclInputLabel 是輸入列本身。

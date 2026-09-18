@@ -48,6 +48,15 @@ func (a *app) cheatInput() (bool, error) {
 		a.setCheat(&a.state.Cheats.OneHitKill, msgCheatOneHitKillName)
 	case a.justPressed(ebiten.KeyW):
 		a.setCheat(&a.state.Cheats.WalkThroughWalls, msgCheatWalkThroughWallsName)
+	case a.justPressed(ebiten.KeyP):
+		// 密語提示與上面三個不同：**預設就是開的**，關掉只是回到原版的問句，所以不寫 `CheatsUsed`，
+		// 畫面上也不標（spec 141〈密語提示〉）。存的是「關掉」那一邊。
+		a.state.Cheats.HidePasswordHints = !a.state.Cheats.HidePasswordHints
+		state := msgHouseRuleOn
+		if a.state.Cheats.HidePasswordHints {
+			state = msgHouseRuleOff
+		}
+		a.statusLine = fmt.Sprintf(a.text(msgCheatToggled), a.text(msgCheatPasswordHintName), a.text(state))
 	}
 	return true, nil
 }
@@ -164,7 +173,7 @@ func (a *app) cheatMark() string {
 
 // drawCheatMenu 畫作弊選單。
 func drawCheatMenu(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
-	for y := 120; y < 304; y++ {
+	for y := 120; y < 328; y++ {
 		for x := 96; x < 544; x++ {
 			screen.Set(x, y, background)
 		}
@@ -180,6 +189,7 @@ func drawCheatMenu(screen *ebiten.Image, a *app, background, foreground, accent 
 	drawText(screen, fmt.Sprintf(a.text(msgCheatMenuLockHP), state(a.state.Cheats.LockHP)), 128, 184, foreground)
 	drawText(screen, fmt.Sprintf(a.text(msgCheatMenuOneHitKill), state(a.state.Cheats.OneHitKill)), 128, 208, foreground)
 	drawText(screen, fmt.Sprintf(a.text(msgCheatMenuWalkThroughWalls), state(a.state.Cheats.WalkThroughWalls)), 128, 232, foreground)
-	drawText(screen, a.text(msgCheatMenuNote), 128, 264, accent)
-	drawText(screen, a.text(msgCheatMenuClose), 128, 288, foreground)
+	drawText(screen, fmt.Sprintf(a.text(msgCheatMenuPasswordHint), state(!a.state.Cheats.HidePasswordHints)), 128, 256, foreground)
+	drawText(screen, a.text(msgCheatMenuNote), 128, 288, accent)
+	drawText(screen, a.text(msgCheatMenuClose), 128, 312, foreground)
 }

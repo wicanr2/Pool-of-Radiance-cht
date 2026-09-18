@@ -203,6 +203,9 @@ type Cheats struct {
 	// WalkThroughWalls 為真時，隊伍往前走不看 GEO 的牆與鎖門（原版那一側由駕駛清掉記憶體裡的牆
 	// nibble 對應，#5）。
 	WalkThroughWalls bool `json:"walk_through_walls,omitempty"`
+	// HidePasswordHints 為真時，打字的密語問句後面**不**附答案。預設（假）是附上去——那是 remake 一直以來的
+	// 行為（#48）；想要原版體驗的人在作弊選單關掉。存的是「關掉」這一邊，舊存檔讀回來就是預設的附上去。
+	HidePasswordHints bool `json:"hide_password_hints,omitempty"`
 }
 
 // HouseRules 是可切換、改變原版規則狀態的選項（CLAUDE.md §3：這種東西必須是

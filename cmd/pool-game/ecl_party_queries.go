@@ -41,7 +41,10 @@ func (a *app) eclInstruction(pc int) (ecl.Instruction, error) {
 		return ecl.Instruction{}, fmt.Errorf("Pool ECL block %d is shorter than its two-byte prefix",
 			a.eventSession.CurrentBlockID())
 	}
-	return ecl.DecodeInstruction(block[2:], pc)
+	// **指令表要帶著走**（CLAUDE.md §9）：`34h ECL CLOCK` 在 Pool 只吃一個運算元，
+	// engine 底稿寫兩個。退回底稿時，這一條之後的每一條都會錯位——而錯位長得像
+	// 「掃不到」，不像解錯（spec 093）。
+	return ecl.DecodeInstructionWithCommands(block[2:], pc, gamepack.PoolCommandTable())
 }
 
 // applyPartyQuery 依 opcode 分派，做完讓 ECL 繼續。

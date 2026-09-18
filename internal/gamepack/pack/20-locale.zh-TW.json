@@ -182,6 +182,8 @@
       "ui.cheatOneHitKillName": "一擊斃命",
       "ui.cheatMenuWalkThroughWalls": "W　穿牆：%s",
       "ui.cheatWalkThroughWallsName": "穿牆",
+      "ui.cheatMenuPasswordHint": "P　密語提示：%s",
+      "ui.cheatPasswordHintName": "密語提示",
       "ui.cheatToggled": "作弊：%s %s（原版沒有）",
       "ui.cheatMark": "作弊：%s",
       "ui.cheatUsedMark": "開過作弊",

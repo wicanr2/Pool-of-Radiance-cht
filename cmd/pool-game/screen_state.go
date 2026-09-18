@@ -105,6 +105,26 @@ func (a *app) screenName() string {
 			return "journal-" + string(a.journal.currentKind())
 		}
 		return "journal"
+	case a.treasureActive:
+		// 戰利品是冒險畫面上的一層選單（spec 034）。`View` 那一步開的是人物頁，
+		// 上面 `a.viewSheetOpen` 那一支已經先報 `view-pick`／`view-sheet`。
+		switch a.treasureStage {
+		case treasureTake:
+			return "treasure-take"
+		case treasureMoneyCurrency:
+			return "treasure-take-money"
+		case treasureMoneyCharacter:
+			return "treasure-take-who"
+		case treasureMoneyAmount:
+			return "treasure-take-amount"
+		case treasureItems:
+			return "treasure-items"
+		case treasureCharacter:
+			return "treasure-items-who"
+		case treasureConfirmExit:
+			return "treasure-confirm-exit"
+		}
+		return "treasure"
 	case a.equipmentOpen:
 		return "equipment"
 	case a.spellsOpen:

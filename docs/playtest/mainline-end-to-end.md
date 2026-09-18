@@ -786,6 +786,43 @@ HP 鎖定與補十二相同，只在治具裡；產品碼這一輪改的是區�
 - 市政廳的獎金要在戰利品選單按 SHARE 平分，否則東航線的船票付不起（`YOU DON'T HAVE ENOUGH PLATINUM`）。
 - dosgolem `shots -serve` 長時間駕駛要清連接埠寫入紀錄，不然野外那一段會把 4 GB 吃光、行程無聲結束。
 
+## 2026-09-18 補十六：戰利品畫面對著原版補齊，密語提示變成可以關（#47、#48）
+
+**原版那一側（dosgolem）**：狀態檔 `workplace/dosgolem-cheat/handin-slums-stuck.state`
+（市政廳交完貧民窟的件、職員給獎金那一刻），`tools/dosgolem-treasure-screens.py` 抓六張畫面
+與分錢前後的錢包，收據 `docs/audit/dos-treasure-screens.json`。
+
+| 畫面 | 底列 |
+|---|---|
+| 頂層 | `VIEW TAKE POOL SHARE EXIT` |
+| `TAKE` | `SELECT TYPE OF COIN EXIT`（`GOLD 250`／`PLATINUM 50`／`JEWELRY 1`）|
+| `VIEW` | `VIEW:TRADE DROP EXIT`——**人物頁**，不是幣別清單 |
+| `SHARE` 之後 | `VIEW POOL EXIT`（錢分完，兩個選項消失）|
+
+五個人分 250 金：每人 50 金、10 白金，珠寶 1 給排在最前面的那一位，pool 歸零。
+**除不盡的那一份不是留在 pool**——這一條是量出來的，不是推的，`TestTreasureShareFromKeysMatchesTheOriginalSplit`
+拿它當裁判。
+
+spec 040 原本寫「View 依固定七欄順序顯示名稱與數量」，實測是人物頁；那一段已改，
+逐幣別的數量在 `TAKE` 那一層。
+
+**remake 那一側**：頂層選項改成依「有沒有錢、有沒有物品」組成（原版 `0E85h` 的判斷），
+`View` 走既有的人物資料頁，`Take: Money` 列出每一種幣與數量，`Pool`／`Share` 之後在狀態列
+寫出每個人拿到多少、pool 剩多少。`screenName()` 補了八個識別字，截圖與對拍腳本從此等得到這些畫面。
+
+**密語提示（#48）**：作弊選單加 `P`。預設**開**（問句後面接括號答案），按 `P` 關掉之後問句與原版逐字相同。
+關掉**不寫 `CheatsUsed`**——那是往原版靠，不是加東西。
+
+全部 `10h INPUT STRING` 掃過一遍（`cmd/pool-password-audit`，收據
+`docs/audit/dos-password-prompts.json`）：**20 處，19 處解得出答案**。剩下那一處是巨人問口令
+（ecl5/5 `9E08h`），原版打什麼都錯，提示不出現是對的。
+
+掃描本身修掉三個會產生「自洽但錯」結果的地方（spec 087 有表）：`COMPARE` 兩個運算元的次序不固定
+（漏掉 13／20）、直線往下讀會撿到隔壁那一段的答案（巨人那一處會顯示假的 `TYRANTHRAXUS`）、
+緊接在 `IF` 後面的 `GOTO` 是有條件的（跟著跳會把 `NOKNOK` 掃丟）。順帶查出 `cmd/pool-game` 的
+`eclInstruction` 一直用 engine 底稿的指令表解碼，`34h` 的運算元個數差一個——掃過它之後整段錯位，
+已改成帶 `gamepack.PoolCommandTable()`。
+
 ## 下一步（尚未做）
 
 - **正常強度**（#5、#22）：鎖血診斷已經從標題走到結局，非戰鬥閘門沒有剩下的卡點；自然強度的隊伍

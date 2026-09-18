@@ -23,6 +23,23 @@
 回報成功後才移除節點。因此 remake 在解出該 helper 前不得先刪 loot、也不得假定任何
 角色都能無條件取得物品。
 
+## 原版版面（dosgolem 實測，2026-09-18）
+
+收據 [`docs/audit/dos-treasure-screens.json`](../audit/dos-treasure-screens.json)（六張畫面的
+色號陣列與 SHA-256、鍵序、狀態檔雜湊；產生器 `tools/dosgolem-treasure-screens.py`）：
+
+| 畫面 | 底列 | 內容 |
+|---|---|---|
+| 頂層 | `VIEW TAKE POOL SHARE EXIT` | 左邊圖框、右邊隊伍欄（`NAME AC HP`） |
+| `TAKE` | `SELECT TYPE OF COIN EXIT` | 逐行列出每一種幣與數量：`GOLD 250`／`PLATINUM 50`／`JEWELRY 1` |
+| `VIEW` | `VIEW:TRADE DROP EXIT` | **人物頁**（不是幣別清單，見 spec 040） |
+| `SHARE` 之後的頂層 | `VIEW POOL EXIT` | 錢分完，`TAKE`／`SHARE` 消失 |
+
+remake 照這個版面補齊（#47）：頂層與 `Take` 看得到每一種幣與數量、`View` 走既有的人物資料頁、
+`Pool`／`Share` 之後把「誰拿到多少、pool 剩多少」寫出來、選項依有沒有錢與物品組成。
+畫面識別字 `treasure`、`treasure-take`、`treasure-take-money`、`treasure-take-who`、
+`treasure-take-amount`、`treasure-items`、`treasure-items-who`、`treasure-confirm-exit`。
+
 ## 後續實作閘門
 
 1. 追 `0C18h` 的 far-call target，固定接收成功／失敗條件及玩家可見訊息。

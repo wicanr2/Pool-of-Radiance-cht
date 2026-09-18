@@ -344,4 +344,6 @@ var messageKeys = map[messageID]string{
 	msgCheatMarkSeparator:        "ui.cheatMarkSeparator",
 	msgCheatMenuWalkThroughWalls: "ui.cheatMenuWalkThroughWalls",
 	msgCheatWalkThroughWallsName: "ui.cheatWalkThroughWallsName",
+	msgCheatMenuPasswordHint:     "ui.cheatMenuPasswordHint",
+	msgCheatPasswordHintName:     "ui.cheatPasswordHintName",
 }

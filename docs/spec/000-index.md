@@ -13,7 +13,7 @@
 | # | 標題 | 狀態 | 實作 | 測試 |
 |---|---|---|---|---|
 | [001](001-dos-title-picture.md) | DOS TITLE DAX 圖像 | CONFORMED | `cmd/export-title/main.go` | `cmd/export-title/main_test.go` |
-| [002](002-dos-ecl-code-base-and-parser-gap.md) | DOS ECL 位址基準與 parser 缺口 | DRAFT | `cmd/pool-ecl-audit/main.go`、`cmd/pool-ecl-frontier/main.go`、`cmd/pool-text-inventory/main.go` 等 5 個 | `cmd/pool-ecl-audit/main_test.go` |
+| [002](002-dos-ecl-code-base-and-parser-gap.md) | DOS ECL 位址基準與 parser 缺口 | DRAFT | `cmd/pool-ecl-audit/main.go`、`cmd/pool-ecl-frontier/main.go`、`cmd/pool-password-audit/main.go` 等 7 個 | `cmd/pool-ecl-audit/main_test.go` |
 | [003](003-dos-character-creation-flow.md) | DOS 建角流程 | READY | `cmd/pool-game/dos_export.go`、`cmd/pool-game/icon_menu.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-game/icon_menu_test.go`、`cmd/pool-game/main_test.go`、`internal/gamepack/weapon_stats_test.go` |
 | [004](004-dos-character-roll-fields.md) | DOS 角色擲值與持久欄位 | READY | `internal/creation/rolls.go` | `internal/gamepack/monster_test.go` |
 | [005](005-first-remake-executable.md) | 第一支 remake executable | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go` |
@@ -45,7 +45,7 @@
 | [031](031-level-one-party-strength-projection.md) | 一級新角色的 `PARTYSTRENGTH` 投影 | CONFORMED＋DRAFT | `internal/gamepack/intro.go` | `internal/gamepack/eclvm_test.go` |
 | [032](032-treasure-vm-contract.md) | `27h TREASURE` 八欄請求與墓園順序 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | `internal/gamepack/eclvm_test.go` |
 | [033](033-item3-block33-record-shape.md) | `ITEM3.DAX/33h` 五筆 63-byte 物品紀錄 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/gamepack/shop.go` | `internal/gamepack/treasure_test.go` |
-| [034](034-postcombat-treasure-menu-boundary.md) | 戰後戰利品選單與物品鏈移除邊界 | READY＋DRAFT | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go` |
+| [034](034-postcombat-treasure-menu-boundary.md) | 戰後戰利品選單與物品鏈移除邊界 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/treasure_screen_test.go` |
 | [035](035-character-item-receive-and-carry.md) | 角色接收物品、16 格上限與力量負重 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go`、`internal/character/carry.go`、`internal/gamepack/weapon_stats.go` | `internal/character/carry_test.go` |
 | [036](036-combat-postcombat-treasure-dispatch.md) | `24h COMBAT` 的戰鬥／神殿／戰後服務分派 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go` |
 | [037](037-campaign-save-and-ecl-session.md) | 戰役存檔、地圖位置與 ECL session 續點 | CONFORMED＋DRAFT | 共用 engine | `cmd/pool-game/main_test.go`、`internal/save/state_test.go` |
@@ -98,13 +98,13 @@
 | [084](084-ecl-damage-opcode.md) | `2Eh DAMAGE` | READY＋DRAFT | `cmd/pool-game/damage.go`、`internal/gamepack/damage.go`、`internal/gamepack/ending_scene.go` 等 4 個 | `cmd/pool-game/main_test.go`、`internal/assets/ending_test.go` |
 | [085](085-ecl-party-query-opcodes.md) | 三條對隊伍發問的 opcode（`32h`、`22h`、`23h`） | READY | `cmd/pool-game/ecl_party_queries.go`、`internal/gamepack/ecl_party_queries.go`、`internal/gamepack/intro.go` | `internal/gamepack/ecl_party_queries_test.go` |
 | [086](086-ecl-parlay-opcode.md) | `2Ch PARLAY` | READY | `cmd/pool-game/main.go`、`cmd/pool-game/parlay.go`、`internal/gamepack/ecl_operands.go` 等 4 個 | `cmd/pool-game/main_test.go` |
-| [087](087-ecl-input-opcodes.md) | `0Fh INPUT NUMBER` 與 `10h INPUT STRING` | READY | `cmd/pool-game/ecl_input.go`、`cmd/pool-game/main.go`、`internal/gamepack/ecl_operands.go` 等 4 個 | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go` |
+| [087](087-ecl-input-opcodes.md) | `0Fh INPUT NUMBER` 與 `10h INPUT STRING` | READY | `cmd/pool-game/ecl_input.go`、`cmd/pool-game/main.go`、`cmd/pool-password-audit/main.go` 等 6 個 | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go` |
 | [088](088-ecl-rob-opcode.md) | `28h ROB` | READY＋DRAFT | `cmd/pool-game/rob.go`、`internal/gamepack/intro.go`、`internal/gamepack/rob.go` | `internal/gamepack/rob_test.go` |
 | [089](089-ecl-protection-opcode.md) | `3Ch PROTECTION` | READY＋DRAFT | `cmd/pool-game/protection.go`、`internal/gamepack/ecl_operands.go`、`internal/gamepack/intro.go` | `cmd/pool-game/protection_test.go` |
 | [090](090-ecl-who-opcode.md) | `39h WHO` 與「目前角色」 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_rest_test.go` |
 | [091](091-ecl-add-npc-opcode.md) | `36h ADD NPC` | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/main_test.go` |
 | [092](092-ecl-checkparty-opcode.md) | `1Eh CHECKPARTY` | READY | `cmd/pool-game/checkparty.go`、`internal/gamepack/checkparty.go`、`internal/gamepack/intro.go` | `internal/gamepack/checkparty_test.go` |
-| [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-ecl-trace/main.go`、`cmd/pool-game/ecl_clock.go`、`cmd/pool-game/main.go` 等 7 個 | `cmd/pool-ecl-audit/main_test.go` |
+| [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-ecl-trace/main.go`、`cmd/pool-game/ecl_clock.go`、`cmd/pool-game/ecl_party_queries.go` 等 8 個 | `cmd/pool-ecl-audit/main_test.go` |
 | [094](094-ecl-spell-search-opcode.md) | `3Bh SPELL` | READY＋DRAFT | `cmd/pool-game/spell_search.go`、`internal/gamepack/intro.go`、`internal/gamepack/memorised_spells.go` | `internal/gamepack/memorised_spells_test.go` |
 | [095](095-thief-skills.md) | 角色記錄的八個賊技能 | CONFORMED | `cmd/pool-game/checkparty.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 10 個 | `cmd/pool-game/thief_skills_test.go`、`internal/gamepack/thief_skills_build_test.go` |
 | [096](096-monster-ai-structure.md) | 怪物 AI 的骨架（overlay-09） | CONFORMED＋READY | `cmd/pool-game/tactical.go`、`internal/gamepack/tactic_offsets.go`、`internal/gamepack/turn_undead_resolve.go` | `cmd/pool-game/foe_walk_receipt_test.go`、`internal/gamepack/tactic_offsets_test.go` |
@@ -152,7 +152,7 @@
 | [138](138-combat-bandage.md) | 戰鬥裡的 B）ANDAGE——止血，不看距離 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go` | `cmd/pool-game/bandage_test.go`、`cmd/pool-game/tactical_pilot_test.go` |
 | [139](139-quick-auto-combat.md) | Q）UICK 自動戰鬥與 M）OVE 的兩層按鍵 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`cmd/pool-game/text.go`、`internal/save/state.go` | `cmd/pool-game/quick_test.go` |
 | [140](140-house-rule-commission-experience.md) | 自訂規則——委任獎賞折算經驗值（預設關） | CONFORMED＋READY | `cmd/pool-game/main.go`、`cmd/pool-game/party_menu.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/house_rule_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` |
-| [141](141-cheat-menu.md) | 作弊選單——鎖 HP、一擊斃命、穿牆（預設關） | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/cheats.go`、`cmd/pool-game/main.go` 等 6 個 | `cmd/pool-game/cheat_playthrough_test.go`、`cmd/pool-game/cheats_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 5 個 |
+| [141](141-cheat-menu.md) | 作弊選單——鎖 HP、一擊斃命、穿牆（預設關）、密語提示（預設開） | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/cheats.go`、`cmd/pool-game/ecl_input.go` 等 8 個 | `cmd/pool-game/cheat_playthrough_test.go`、`cmd/pool-game/cheats_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 6 個 |
 
 ## `cmd/` 底下的工具
 
@@ -180,6 +180,7 @@
 | `pool-monster-thac0-scan` | 把八個 MONnCHA.DAX 的樣板記錄裡跟命中有關的幾格列出來（#36／#31，spec 063）：`+110h`（執行期 THAC0 欄）、`+2Dh`（基礎 THAC0）、`+111h` （AC）、`+2Fh`（職業碼）、`+96h..+9Dh`（八個職業等級）、`+0CCh`（備妥武器的遠指標，樣板裡通常是 0）、`+0A0h..+0A7h`（攻擊次數與傷害骰的來源欄） | — | 063 |
 | `pool-name-audit` | 把說明書定案的專有名詞回對原版資料自己的字串 | 有 | — |
 | `pool-ovr-manifest` | 產生 docs/audit/dos-ovr-manifest.json：38 顆 overlay 的位置、長度、重定位表與各自的 SHA-256，是所有 overlay 反查的起點 | 有 | — |
+| `pool-password-audit` | 盤點原版每一處 `10h INPUT STRING`（spec 087）：玩家在哪裡被要求打字、問句是什麼、比對的答案是什麼 | 有 | 002、087、141 |
 | `pool-portrait-audit` | measures Pool's HEAD/BODY archives through the reusable engine picture decoder | 有 | 006 |
 | `pool-spell-dispatch` | 把 overlay-22 的法術效果派發表 dump 成 JSON，供 spec 073 引用，也當作後續逐支解讀處理常式的工作清單 | 有 | 070、073 |
 | `pool-text-inventory` | 盤點原版 ECL 裡所有玩家看得到的敘述文字 | 有 | 002 |
