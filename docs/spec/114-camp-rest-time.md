@@ -103,6 +103,31 @@ INCREASE 增加，DECREASE 減少，當時間調整好了之後，按下 R 鍵�
 與「你高興休息到什麼時候就待到什麼時候」——**安全與不限時長，不是免費回滿**。
 回血一樣照二十四小時一點算。
 
+## 打斷之後畫面怎麼收（2026-09-18 實測，#42）
+
+原版在導覽終點那一格（城區 GEO3/0 `(0,4)`）排兩小時的休息，**第五分鐘就被城衛隊攔下來**：
+
+```
+YOU ARE ROUSTED BY THE CITY WATCH AND TOLD TO MOVE ALONG.  WHAT DO YOU DO
+底列：GO STAY
+```
+
+`STAY` 會開打（`DS:4954h` 變 5），`GO` 就走人。收據
+[`docs/audit/dos-tour-cell-rest.json`](../audit/dos-tour-cell-rest.json)（八個畫面的色號陣列與
+SHA-256、鍵序、時鐘與 `6DD5`，產生器 `tools/dosgolem-tour-cell-rest.py`）。
+
+remake 先前停在**上一則文字**（導覽的結尾句），玩家看起來像休息什麼都沒發生。
+成因不在休息本身：入口 3 跑了五步之後停在 `3Ah DELAY`（城區入口 3 的 `AF4Dh`），
+而 remake 的「只是呈現、可以接著跑」那一列沒有 `3Ah`——腳本因此停在那裡，
+文字框留著舊的一頁。`3Ah` 原版是停一小段時間**自己往下跑**，不等玩家，所以
+把它加進 `presentationBoundary`（`cmd/pool-game/main.go`）。測試
+`TestRestingAtTheTourCellIsInterruptedByTheWatch` 從 `Update()` 送
+`e`→`r`→`h`→`i`→`i`→`r`，斷言城衛隊那一問、`GO`／`STAY` 兩個選項與時鐘 00:05。
+
+**城區街上記不成法術**：打斷把兩小時砍成五分鐘，而記一條一級法術要一小時。
+發行包對拍那條路因此拍不到「野外施法・法術頁」，那一張現在記成「未量」
+（spec 126 的對拍報表與 `cmd/pool-parity-check`）。要拍到它得找一個不會被攔的地方休息。
+
 ## 休息的主迴圈與打斷
 
 **entry 3（`0C45h`）**是整段休息：清掉每人的 `DS:6CC3h` 計數、開視窗、畫面、

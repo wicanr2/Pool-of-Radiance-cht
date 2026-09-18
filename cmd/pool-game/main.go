@@ -1895,7 +1895,11 @@ func presentationBoundary(result eclvm.Result) bool {
 	}
 	switch result.Events[0].Opcode {
 	case gamepack.PrintOpcode, gamepack.PrintClearOpcode,
-		gamepack.PictureOpcode, gamepack.ApproachOpcode:
+		gamepack.PictureOpcode, gamepack.ApproachOpcode,
+		// `3Ah DELAY` 原版是停一小段時間再自己往下跑，**不等玩家**。不放進來的話
+		// 腳本就停在那裡，而畫面上留著上一則文字——紮營被城衛隊打斷那一支
+		// （城區入口 3 的 `AF4Dh`）因此停在導覽的結尾句，休息完好像什麼都沒發生（#42）。
+		gamepack.DelayOpcode:
 		return true
 	}
 	return false

@@ -131,6 +131,8 @@ const (
 	// ApproachOpcode 是 `0Dh APPROACH`（spec 117）：把接近距離減一再重畫
 	// 那張半身像。**只是重畫，不等玩家**——overlay-03 `07E1h` 做完就返回。
 	ApproachOpcode = 0x0D
+	// DelayOpcode 是 `3Ah DELAY`：原版停一小段時間再自己往下跑，不等玩家按鍵。
+	DelayOpcode = 0x3A
 	// PictureOpcode 是 `0Eh PICTURE`（spec 117）：換一張圖，同樣不等玩家
 	// （overlay-03 `0822h`）。
 	PictureOpcode = 0x0E

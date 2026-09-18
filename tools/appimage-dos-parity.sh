@@ -438,13 +438,42 @@ pulse h
 pulse i
 pulse i
 pulse r
-await adventure-move 60
-step c field-cast
-sleep 0.5
-shot remake-field-cast
-step Return field-cast-spell
-sleep 0.5
-shot remake-field-cast-spell
+# **城區街上休息會被城衛隊攔下來**（原版就是這樣，收據
+# `docs/audit/dos-tour-cell-rest.json`：排兩小時，00:05 被打斷，選項 GO／STAY）。
+# 攔下來時畫面是 `adventure-cell-menu`；答 `GO`（走人，原版 STAY 會開打）。
+# **選單是方向鍵移游標、ENTER 選**，不是按首字母——按 `g` 什麼都不會發生。
+# `GO` 是第一個選項，所以游標不用動。
+n=0
+while test "$(screen)" = adventure-cell-menu; do
+  n=$((n+1)); test "$n" -lt 10 || die "城衛隊那一問答不掉"
+  pulse Return; sleep 0.3
+done
+await_adventure 60
+# 休息被攔就記不成法術，`C）施法` 那一頁因此可能開不起來。開不起來就**跳過這兩張**
+# ——比對程式會把它們記成「未量」，不會把整份報表弄丟（#42／#51）。
+# 要拍到它們得找一個不會被攔的地方休息（貧民窟的房間），那是另一件事。
+n=0
+while test "$(screen)" != field-cast; do
+  n=$((n+1))
+  if test "$n" -gt 6; then echo "沒有拍到野外施法那兩張（休息被城衛隊攔下來，記不成法術）"; break; fi
+  pulse c; sleep 0.3
+done
+if test "$(screen)" = field-cast; then
+  sleep 0.5
+  shot remake-field-cast
+  # 挑人那一頁開得起來，**法術清單那一頁要真的有記好的法術**才開得了；
+  # 休息被城衛隊攔掉就沒有。開不了就只少這一張。
+  n=0
+  while test "$(screen)" != field-cast-spell; do
+    n=$((n+1))
+    if test "$n" -gt 6; then echo "沒有拍到法術清單那一張（沒有記好的法術）"; break; fi
+    pulse Return; sleep 0.3
+  done
+  if test "$(screen)" = field-cast-spell; then
+    sleep 0.5
+    shot remake-field-cast-spell
+  fi
+fi
 
 python3 /tools/dos-parity-compare.py /ref /out /ref-cityhall /ref-campquit /ref-temple /ref-shop /ref-spells
 '
@@ -455,9 +484,11 @@ echo "報告 → $OUT"
 # 擷圖停在半路時上面那段會非零退出，所以這一步照樣要能單獨跑：
 #   tools/go.sh run ./cmd/pool-parity-check -run <OUT>/parity.json
 if [[ -f "$OUT/parity.json" ]]; then
-  "$ROOT/tools/go.sh" run ./cmd/pool-parity-check -run "$OUT/parity.json" || {
+  # `tools/go.sh` 在容器裡跑，看得到的是 repo 相對路徑；傳絕對主機路徑會
+  # 「no such file」。
+  "$ROOT/tools/go.sh" run ./cmd/pool-parity-check -run "${OUT#$ROOT/}/parity.json" || {
     echo "與基準表對不上（上面列出哪幾欄）。確認是改好還是改壞之後，" >&2
-    echo "用 tools/go.sh run ./cmd/pool-parity-check -run $OUT/parity.json -write 更新表。" >&2
+    echo "用 tools/go.sh run ./cmd/pool-parity-check -run ${OUT#$ROOT/}/parity.json -write 更新表。" >&2
     exit 1; }
 else
   echo "沒有 $OUT/parity.json，這一次沒有對到基準表。" >&2
