@@ -371,6 +371,14 @@ func cityHallPlan(application *app, rotate int) []exploreStep {
 	// 仍是 block 0。只看地圖鍵會把已進門的隊伍又帶回入口，形成 (3,4)／
 	// (4,4) 往返。
 	if insideClerk {
+		// **已經在裡面、而且 reward scan 會被跳過，就不要再排計畫了。**
+		// 第一次踏上職員格時 `9BACh SAVE 1 @4A01`；之後 `9BA8h` 看到 `4A01 > 0`
+		// 就 `GOTO A7FDh`，跳過那一段逐槽掃描（spec 041 的 `9D63h ON GOSUB`），
+		// 所以待交的槽永遠不會被 acknowledge。治具先前照樣重排，於是在
+		// (4,5)↔(5,5) 之間來回——世界巡迴四萬多圈都花在這裡（#22）。
+		if application.eventMachine.Memory[0x4A01] != 0 && !clearedSokalTicket {
+			return nil
+		}
 		if application.eventMachine.Memory[0x4A06] != 0 {
 			return planToCells(application, 0, func(x, y int) bool { return x == 4 && y == 5 })
 		}
