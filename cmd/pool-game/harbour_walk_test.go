@@ -232,7 +232,15 @@ func sailEastIntoTheWilderness(t *testing.T) *app {
 }
 
 // 野外的地點表（spec 105）真的會派工：踏進圖 27 的 (9,29)（地點 3）會問
-// 「要不要搭船回文明區」，答 YES 就換到 ECL block 20。
+// 「要不要搭船回文明區」，答 YES 就回**城區碼頭**。
+//
+// 原版 `ecl8/27` 的 YES 分支（exact）：
+//
+//	9E5B SAVE 15 @C04B ; SAVE 1 @C04C ; SAVE 3 @6E12 ; NEWECL 0
+//
+// 這一條以前寫的是「換到 ECL block 20」——那是 remake 的缺陷被當成斷言釘住了
+// （#44）：落到城區 (15,1) 之後，換圖旗標 `6DD5` 還立著，城區入口 0 的
+// `993Ah` 就再換一次到貧民窟。旗標的清除時機修好之後，兩處搭船都停在碼頭。
 func TestAWildernessLocationDispatchesItsScript(t *testing.T) {
 	application := sailEastIntoTheWilderness(t)
 	memory := application.eventMachine.Memory
@@ -257,7 +265,10 @@ func TestAWildernessLocationDispatchesItsScript(t *testing.T) {
 	if !asked {
 		t.Fatalf("地點 3 沒有問話：最後的文字是 %q", application.eventText)
 	}
-	if got := application.eventSession.CurrentBlockID(); got != 20 {
-		t.Fatalf("答應搭船之後停在 ECL block %d，要 20", got)
+	if got := application.eventSession.CurrentBlockID(); got != 0 || application.eclArchive != 3 {
+		t.Fatalf("答應搭船之後停在 ECL%d/%d，原版寫的是 ECL3/0", application.eclArchive, got)
+	}
+	if application.spawn.X != 15 || application.spawn.Y != 1 {
+		t.Fatalf("落點是 (%d,%d)，原版寫的是 (15,1)", application.spawn.X, application.spawn.Y)
 	}
 }

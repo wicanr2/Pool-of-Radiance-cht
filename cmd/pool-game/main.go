@@ -1727,7 +1727,25 @@ func (a *app) beginCampInterruption() error {
 	return a.consumeInitialSearch(result)
 }
 
+// continueInitialSearch 在玩家回答之後把腳本接著跑下去。
+//
+// **接著跑之前要把「正要走出這一區」（`6DD5h`）清成 0**，因為原版的等待就是這樣：
+// 腳本停在選單時控制權回到 overlay-03 的主迴圈，而主迴圈頂端 `363Ch` 是
+// `xor ax,ax` + `mov es:[di+5AA], ax`（`5AAh` 就是 `6DD5h`）——**等一次玩家輸入，
+// 旗標就被清一次**（spec 100）。
+//
+// 分得出來的兩種路徑：
+//
+//   - 索寇要塞的回程船（`ecl4/21`）在 `9973h` 先 `GOSUB AE0Eh`（等玩家按鍵）才
+//     `SAVE 3 @6E12` + `NEWECL 0`。那一下等待把旗標清掉，所以落地的城區入口 0
+//     （`ecl3/0 993Ah`）看到的是 0，隊伍留在碼頭。不清的話它會立刻再換一次到
+//     貧民窟——玩家出現在貧民窟東北角（#44）。
+//   - 城堡外圈那一串（block 9 → 6 → 3）中間**沒有**等待，旗標要跨得過 `NEWECL`，
+//     下一個區塊的入口才接得下去。所以清的時機是「等玩家」，不是「換區塊」。
 func (a *app) continueInitialSearch(selection *uint16) error {
+	if a.eventMachine != nil {
+		a.eventMachine.Memory[mapExitFlagAddress] = 0
+	}
 	var selections []uint16
 	if selection != nil {
 		selections = []uint16{*selection}
