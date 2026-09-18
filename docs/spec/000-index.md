@@ -73,7 +73,7 @@
 | [059](059-reaction-attack-gate.md) | 離開威脅區的反應攻擊閘門 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/character/export.go`、`internal/combat/nearby.go` 等 5 個 | `internal/gamepack/effect_list_test.go` |
 | [060](060-tactical-map-generation.md) | 戰術地圖的生成 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/assets/combat_terrain.go`、`internal/combat/indoormap.go` 等 4 個 | `cmd/pool-game/playthrough_test.go` |
 | [061](061-deployment-and-occupancy.md) | 戰鬥部署與佔用格重建 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/encounter.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/deployment_templates_receipt_test.go`、`cmd/pool-game/mainline_walls_test.go`、`cmd/pool-game/norris_fight_receipt_test.go` 等 6 個 |
-| [062](062-combat-round-loop.md) | 戰鬥回合迴圈與結束條件 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/round.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/playthrough_test.go`、`cmd/pool-game/tactical_pilot_test.go` 等 4 個 |
+| [062](062-combat-round-loop.md) | 戰鬥回合迴圈與結束條件 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/round.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/playthrough_test.go`、`cmd/pool-game/tactical_pilot_test.go` 等 5 個 |
 | [063](063-character-base-combat-stats.md) | 角色的基礎 AC、THAC0、移動與武器攻擊數值 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/dos_export.go`、`cmd/pool-game/tactical.go` 等 14 個 | `cmd/pool-game/dos_export_test.go`、`cmd/pool-game/main_test.go`、`cmd/pool-game/monster_thac0_receipt_test.go` 等 7 個 |
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | `internal/journal/journal_test.go` |
 | [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
@@ -180,6 +180,7 @@
 | `pool-monster-thac0-scan` | 把八個 MONnCHA.DAX 的樣板記錄裡跟命中有關的幾格列出來（#36／#31，spec 063）：`+110h`（執行期 THAC0 欄）、`+2Dh`（基礎 THAC0）、`+111h` （AC）、`+2Fh`（職業碼）、`+96h..+9Dh`（八個職業等級）、`+0CCh`（備妥武器的遠指標，樣板裡通常是 0）、`+0A0h..+0A7h`（攻擊次數與傷害骰的來源欄） | — | 063 |
 | `pool-name-audit` | 把說明書定案的專有名詞回對原版資料自己的字串 | 有 | — |
 | `pool-ovr-manifest` | 產生 docs/audit/dos-ovr-manifest.json：38 顆 overlay 的位置、長度、重定位表與各自的 SHA-256，是所有 overlay 反查的起點 | 有 | — |
+| `pool-parity-check` | 把一次對拍跑出來的 parity.json 拿去對**基準表** （`docs/audit/dos-parity-sample.json`），而不是對上一次跑的結果 | 有 | — |
 | `pool-password-audit` | 盤點原版每一處 `10h INPUT STRING`（spec 087）：玩家在哪裡被要求打字、問句是什麼、比對的答案是什麼 | 有 | 002、087、141 |
 | `pool-portrait-audit` | measures Pool's HEAD/BODY archives through the reusable engine picture decoder | 有 | 006 |
 | `pool-spell-dispatch` | 把 overlay-22 的法術效果派發表 dump 成 JSON，供 spec 073 引用，也當作後續逐支解讀處理常式的工作清單 | 有 | 070、073 |

@@ -412,7 +412,19 @@ def main():
         info = matches[0]
         raw = open(os.path.join(item_dir, info["path"].replace(".png", ".idx")), "rb").read()
         reference = bytes(v & 0x0F for v in raw)
-        actual = load_remake(os.path.join(out_dir, item["remake"]))
+        # 擷圖那一段停在半路時（目前是 #42，導覽那一格休息完會多印一句），後面
+        # 幾張根本沒拍到。以前這裡直接 FileNotFoundError，於是**前面量到的數字
+        # 也一起不見**——報表沒寫出來，parity.json 也沒寫。缺席記成缺席，
+        # 已經拍到的照樣量完。
+        remake_path = os.path.join(out_dir, item["remake"])
+        if not os.path.exists(remake_path):
+            print(f"{item['name']:14} 未量（沒有 {item['remake']}）")
+            report["screens"].append({
+                "name": item["name"], "kind": item["kind"],
+                "remake": item["remake"], "captured": False, "note": item["note"],
+            })
+            continue
+        actual = load_remake(remake_path)
 
         rl, rt, w, h = item.get("ref_box", [0, 0, WIDTH, HEIGHT])
         ml, mt, _, _ = item.get("remake_box", [0, 0, WIDTH, HEIGHT])

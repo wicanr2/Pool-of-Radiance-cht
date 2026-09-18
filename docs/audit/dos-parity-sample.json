@@ -2,6 +2,7 @@
   "screens": [
     {
       "name": "title",
+      "label": "標題",
       "kind": "pixel-parity",
       "reference": "06-Space.png",
       "reference_step": 26500000,
@@ -13,17 +14,19 @@
     },
     {
       "name": "first-person",
+      "label": "第一人稱框",
       "kind": "pixel-parity",
       "reference": "51-Return.png",
       "reference_step": 423600000,
       "remake": "remake-first-person.png",
       "same": 7744,
       "total": 7744,
-      "ratio": 1.0,
+      "ratio": 1,
       "note": "第一人稱框內的 88x88。remake 的框在畫面上比原版低 11 列。"
     },
     {
       "name": "menu-empty",
+      "label": "人物管理選擇項（空隊伍）",
       "kind": "layout",
       "reference": "10-Return.png",
       "reference_step": 46200000,
@@ -34,10 +37,11 @@
       "note": "人物管理選擇項，空隊伍",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "race",
+      "label": "種族",
       "kind": "layout",
       "reference": "12-c.png",
       "reference_step": 52800000,
@@ -48,10 +52,11 @@
       "note": "種族",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "gender",
+      "label": "性別",
       "kind": "layout",
       "reference": "13-Return.png",
       "reference_step": 55900000,
@@ -62,10 +67,11 @@
       "note": "性別",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "class",
+      "label": "職業",
       "kind": "layout",
       "reference": "14-Return.png",
       "reference_step": 59000000,
@@ -76,10 +82,11 @@
       "note": "職業",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "alignment",
+      "label": "陣營",
       "kind": "layout",
       "reference": "15-Return.png",
       "reference_step": 62300000,
@@ -90,10 +97,11 @@
       "note": "陣營",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "sheet",
+      "label": "人物資料頁",
       "kind": "layout",
       "reference": "16-Return.png",
       "reference_step": 67000000,
@@ -104,10 +112,11 @@
       "note": "人物資料頁（KEEP THIS CHARACTER?）",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "name",
+      "label": "姓名輸入",
       "kind": "layout",
       "reference": "19-y.png",
       "reference_step": 76800000,
@@ -122,6 +131,7 @@
     },
     {
       "name": "portrait",
+      "label": "肖像編輯器",
       "kind": "layout",
       "reference": "24-Return.png",
       "reference_step": 92500000,
@@ -132,10 +142,11 @@
       "note": "肖像編輯器（原版底下是 HEAD BODY KEEP）",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "icon",
+      "label": "戰鬥造形設計",
       "kind": "layout",
       "reference": "25-k.png",
       "reference_step": 96500000,
@@ -146,10 +157,11 @@
       "note": "戰鬥造形設計（原版是 OLD／NEW 四格加底部指令列）",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "menu-party",
+      "label": "人物管理選擇項（有隊伍）",
       "kind": "layout",
       "reference": "30-e.png",
       "reference_step": 113100000,
@@ -160,10 +172,11 @@
       "note": "人物管理選擇項，隊伍裡有人",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "intro",
+      "label": "按下 B 的第一幕",
       "kind": "layout",
       "reference": "31-b.png",
       "reference_step": 150200000,
@@ -177,10 +190,11 @@
       "frame_ratio": 0.9404,
       "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 1.0
+      "view_ratio": 1
     },
     {
       "name": "combat",
+      "label": "戰鬥畫面",
       "kind": "layout",
       "reference": "85-c.png",
       "reference_step": 2438600000,
@@ -191,10 +205,11 @@
       "note": "戰鬥畫面（spec 129）。原版那一側是第一場遭遇，remake 這一側是 F5 叫出來的同一支繪製——盤面內容本來就不同，這一項看的是版面",
       "frame_same": 9152,
       "frame_total": 9152,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "adventure-map",
+      "label": "平面圖",
       "kind": "layout",
       "reference": "59-a.png",
       "reference_step": 447900000,
@@ -208,10 +223,11 @@
       "frame_ratio": 0.9758,
       "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 1.0
+      "view_ratio": 1
     },
     {
       "name": "view-sheet",
+      "label": "檢視人物",
       "kind": "layout",
       "reference": "61-v.png",
       "reference_step": 455800000,
@@ -222,10 +238,11 @@
       "note": "檢視人物：整張人物資料頁。原版底下那一列是 VIEW: TRADE DROP EXIT，remake 目前是 ESC 返回",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "camp",
+      "label": "紮營・最外層",
       "kind": "layout",
       "reference": "63-e.png",
       "reference_step": 609800000,
@@ -239,10 +256,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 1.0
+      "view_ratio": 1,
+      "view_alternatives": [
+        7068
+      ]
     },
     {
       "name": "camp-rest",
+      "label": "紮營・休息",
       "kind": "layout",
       "reference": "64-r.png",
       "reference_step": 613000000,
@@ -256,10 +277,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7068,
       "view_total": 7744,
-      "view_ratio": 0.9127
+      "view_ratio": 0.9127,
+      "view_alternatives": [
+        7744
+      ]
     },
     {
       "name": "camp-alter",
+      "label": "紮營・調整",
       "kind": "layout",
       "reference": "66-a.png",
       "reference_step": 913000000,
@@ -273,10 +298,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7068,
       "view_total": 7744,
-      "view_ratio": 0.9127
+      "view_ratio": 0.9127,
+      "view_alternatives": [
+        7744
+      ]
     },
     {
       "name": "camp-speed",
+      "label": "紮營・速度",
       "kind": "layout",
       "reference": "67-s.png",
       "reference_step": 987700000,
@@ -290,10 +319,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7068,
       "view_total": 7744,
-      "view_ratio": 0.9127
+      "view_ratio": 0.9127,
+      "view_alternatives": [
+        7744
+      ]
     },
     {
       "name": "camp-pics",
+      "label": "紮營・圖片",
       "kind": "layout",
       "reference": "69-p.png",
       "reference_step": 1287700000,
@@ -307,10 +340,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 1.0
+      "view_ratio": 1,
+      "view_alternatives": [
+        7068
+      ]
     },
     {
       "name": "camp-icon",
+      "label": "紮營・戰鬥造形",
       "kind": "layout",
       "reference": "25-k.png",
       "reference_step": 96500000,
@@ -325,6 +362,7 @@
     },
     {
       "name": "camp-order-select",
+      "label": "紮營・選擇排序人物",
       "kind": "layout",
       "reference": "74-o.png",
       "reference_step": 1595200000,
@@ -338,10 +376,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 1.0
+      "view_ratio": 1,
+      "view_alternatives": [
+        7068
+      ]
     },
     {
       "name": "camp-order-place",
+      "label": "紮營・放置排序人物",
       "kind": "layout",
       "reference": "75-1.png",
       "reference_step": 1745200000,
@@ -355,10 +397,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7068,
       "view_total": 7744,
-      "view_ratio": 0.9127
+      "view_ratio": 0.9127,
+      "view_alternatives": [
+        7744
+      ]
     },
     {
       "name": "camp-drop",
+      "label": "紮營・丟棄確認",
       "kind": "layout",
       "reference": "78-d.png",
       "reference_step": 1972400000,
@@ -372,10 +418,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7068,
       "view_total": 7744,
-      "view_ratio": 0.9127
+      "view_ratio": 0.9127,
+      "view_alternatives": [
+        7744
+      ]
     },
     {
       "name": "camp-quit",
+      "label": "紮營・退出確認",
       "kind": "layout",
       "reference": "82-a.png",
       "reference_step": 2280100000,
@@ -389,10 +439,14 @@
       "frame_ratio": 0.9404,
       "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 1.0
+      "view_ratio": 1,
+      "view_alternatives": [
+        7068
+      ]
     },
     {
       "name": "temple",
+      "label": "Sune 神殿",
       "kind": "layout",
       "reference": "64-y.png",
       "reference_step": 474200000,
@@ -410,6 +464,7 @@
     },
     {
       "name": "shop",
+      "label": "菲蘭武具店",
       "kind": "layout",
       "reference": "79-y.png",
       "reference_step": 527300000,
@@ -427,6 +482,7 @@
     },
     {
       "name": "spells",
+      "label": "神術一級法術頁",
       "kind": "layout",
       "reference": "57-m.png",
       "reference_step": 614900000,
@@ -441,6 +497,7 @@
     },
     {
       "name": "equipment",
+      "label": "裝備頁",
       "kind": "layout",
       "reference": "61-v.png",
       "reference_step": 455800000,
@@ -455,6 +512,7 @@
     },
     {
       "name": "field-cast",
+      "label": "地圖施法・挑人",
       "kind": "layout",
       "reference": "57-m.png",
       "reference_step": 614900000,
@@ -469,6 +527,7 @@
     },
     {
       "name": "field-cast-spell",
+      "label": "地圖施法・法術頁",
       "kind": "layout",
       "reference": "57-m.png",
       "reference_step": 614900000,
@@ -483,6 +542,7 @@
     },
     {
       "name": "icon-confirm",
+      "label": "戰鬥造形設計・確認",
       "kind": "layout",
       "reference": "26-e.png",
       "reference_step": 99600000,
@@ -493,10 +553,11 @@
       "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成 IS THIS ICON OK? YES NO。截圖腳本一直有拍這一張，2026-09-10 之前 plan 沒有這一項——拍了沒人看",
       "frame_same": 7936,
       "frame_total": 7936,
-      "frame_ratio": 1.0
+      "frame_ratio": 1
     },
     {
       "name": "city-hall-1",
+      "label": "市政廳外・第一段",
       "kind": "layout",
       "reference": "60-Up.png",
       "reference_step": 463100000,
@@ -504,7 +565,7 @@
       "same": 50306,
       "total": 64000,
       "ratio": 0.786,
-      "note": "市政廳外第一段：文字框三行，框外那一列是原版自己的 PRESS <ENTER>/<RETURN> TO CONTINUE（overlay-03 118Ah），不是腳本給的那一條",
+      "note": "市政廳外第一段：文字框三行，框外那一列是原版自己的 PRESS \u003cENTER\u003e/\u003cRETURN\u003e TO CONTINUE（overlay-03 118Ah），不是腳本給的那一條",
       "frame_same": 7463,
       "frame_total": 7936,
       "frame_ratio": 0.9404,
@@ -514,6 +575,7 @@
     },
     {
       "name": "city-hall-2",
+      "label": "市政廳外・第二段",
       "kind": "layout",
       "reference": "61-Return.png",
       "reference_step": 479300000,

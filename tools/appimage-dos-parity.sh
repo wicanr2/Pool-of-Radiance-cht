@@ -59,10 +59,17 @@ test -f "$APPIMAGE"
 # 檔案——改完程式碼直接跑對拍，量到的是上一版，數字看起來正常，結論整份是空的。
 # 基準那一側早就有產地證明閘門（下面那段），這一側先前沒有：2026-09-10 因此
 # 拿 9/9 建的包量了一整輪，還把別的 commit 的升幅記到這一輪頭上。
+# 二分舊版時要**故意**量舊包（#51），所以留一個明講的出口：`POOL_PARITY_ALLOW_STALE=1`。
+# 預設仍然拒跑——這道閘門擋的是「改完程式碼忘了重新打包」，不是「我知道自己在量哪一版」。
+if [[ "${POOL_PARITY_ALLOW_STALE:-0}" == 1 ]]; then
+  echo "POOL_PARITY_ALLOW_STALE=1：略過「發行包比原始碼舊」的檢查，量的是 $VERSION 這一包。" >&2
+  STALE_SOURCE=""
+else
 STALE_SOURCE="$(docker run --rm --network none --memory 128m --cpus 1 --pids-limit 32 \
   -v "$ROOT:/src:ro" -v "$ENGINE_DIR:/engine:ro" -v "$APPIMAGE:/game.AppImage:ro" \
   debian:bookworm-slim sh -c \
   "find /src/cmd /src/internal /engine -name '*.go' -newer /game.AppImage -print -quit 2>/dev/null" || true)"
+fi
 [[ -z "$STALE_SOURCE" ]] || {
   echo "發行包比原始碼舊（$STALE_SOURCE 改過之後沒有重新打包）。" >&2
   echo "先跑 tools/package-release.sh $VERSION 再對拍。" >&2; exit 2; }
@@ -442,3 +449,17 @@ shot remake-field-cast-spell
 python3 /tools/dos-parity-compare.py /ref /out /ref-cityhall /ref-campquit /ref-temple /ref-shop /ref-spells
 '
 echo "報告 → $OUT"
+
+# **比較的對象是基準表，不是上一次跑的結果。** 與上一次比在每一輪都成立，卻永遠
+# 不會發現「表上的數字與現在的程式差了十項」（2026-09-18 就是這樣漂開的，#51）。
+# 擷圖停在半路時上面那段會非零退出，所以這一步照樣要能單獨跑：
+#   tools/go.sh run ./cmd/pool-parity-check -run <OUT>/parity.json
+if [[ -f "$OUT/parity.json" ]]; then
+  "$ROOT/tools/go.sh" run ./cmd/pool-parity-check -run "$OUT/parity.json" || {
+    echo "與基準表對不上（上面列出哪幾欄）。確認是改好還是改壞之後，" >&2
+    echo "用 tools/go.sh run ./cmd/pool-parity-check -run $OUT/parity.json -write 更新表。" >&2
+    exit 1; }
+else
+  echo "沒有 $OUT/parity.json，這一次沒有對到基準表。" >&2
+  exit 1
+fi
