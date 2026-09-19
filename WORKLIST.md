@@ -58,9 +58,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）。** 量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。
       **驗收**：照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。
       **討論**：[#53](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/53)
-- [ ] **探索器的覆蓋面低於 2026-09-05 的量測：世界巡迴 10 < 15、委任 4 < 5。** 開作弊之後每一趟都走得完了（#22 已關），但覆蓋面比 2026-09-05 低：世界巡迴 10 個 ECL block（門檻 15，當時 17）、委任 4 條（門檻 5）。那個基準與現在可比——當時還沒有戰後生命值寫回，隊伍等於不會死，就是今天鎖 HP 的狀態。已排除：只開鎖 HP 更差（8 個）、重走上限改 8 反而更差（8 個）。線索是索寇那一條走得到世界巡迴缺的 21／22／23／16／17／27，而 34 趟裡 57 次結束理由是「這一張沒有沒踩過的格子，也沒有走得到的出口」。
-      **驗收**：兩條回綠（世界巡迴 ≥ 15 個 block、委任 ≥ 5 條），或查清楚為什麼走不到再據以改門檻——不要為了變綠而改數字。
-      **討論**：[#55](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/55)
 
 ### 三、版面與資料的差距
 
