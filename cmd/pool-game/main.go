@@ -140,6 +140,11 @@ type app struct {
 	cheatRestores   cheatRestoreCounts
 	// eclClockDepth 是目前疊了幾層 `34h ECL CLOCK`（見 ecl_clock.go）。
 	eclClockDepth   int
+	// cellPendingStep 是「入口 0 停下來問玩家，答完之後才要走的那一步」（#21）。
+	cellPendingStep   *[2]int
+	cellPendingOrigin [2]uint8
+	cellPendingMap    gamepack.MapKey
+	cellPendingBlock  uint16
 	tacticalPreview bool
 	language        language
 	gameText        *gametext.Catalogue
@@ -1283,6 +1288,7 @@ func (a *app) moveInitialDungeonForward() error {
 	a.door = nil
 	if a.eventMachine != nil {
 		a.cellMovedByScript = false
+		a.cellPendingStep = nil
 		origin := a.spawn
 		a.setMapExitFlag(dx, dy)
 		result, err := gamepack.RunInitialSessionCellEntry(a.eventSession, a.initialMap.Grid, a.spawn)
@@ -1326,6 +1332,19 @@ func (a *app) moveInitialDungeonForward() error {
 		}
 		if !result.Exited || result.WaitingForMenu ||
 			(len(result.Events) != 0 && !presentationBoundary(result)) {
+			// **這一步還沒走，記下來。** 入口 0 跑在移動之前（spec 100：`6DD5`
+			// 這個「這一步會走出去嗎」的旗標就是為此存在，spec 101 的城門也是拿
+			// 移動**前**的 `C04C` 比的），所以腳本在這裡停下來問玩家時，玩家按的
+			// 那一步還沒發生。答完之後腳本沒把人搬走，就由引擎補走（見
+			// `applyPendingCellStep`）。
+			//
+			// 不記的話那一步會整個消失：上樓的落點 (5,7) 正好是下樓梯那一格，
+			// 每次要走開都先問「DO YOU WANT TO GO DOWN THESE STAIRS?」，答 NO
+			// 之後人不動——**玩家被困在樓梯上**（#21 把落點改對之後才露出來）。
+			step := [2]int{dx, dy}
+			a.cellPendingStep = &step
+			a.cellPendingOrigin = [2]uint8{origin.X, origin.Y}
+			a.cellPendingMap, a.cellPendingBlock = origin.Map, a.eventSession.CurrentBlockID()
 			return a.pauseInitialCellResult(result)
 		}
 		// **印完字之後才寫的座標也要套用。** 「YOU GO UPSTAIRS.」那一段是
@@ -1344,12 +1363,20 @@ func (a *app) moveInitialDungeonForward() error {
 			a.eventMachine.Memory[wildernessX] = a.eventMachine.Memory[wildernessNextX]
 			a.eventMachine.Memory[wildernessY] = a.eventMachine.Memory[wildernessNextY]
 		}
-		// 腳本自己用 `CALL C01Eh` 走掉這一步（換區）就不再走一次——但要**真的
-		// 走掉了**才算：古托井的入口 0（`ecl8/29 99DAh`）每一步都先 `CALL C01Eh`
-		// 往前看一格、再把 `C04B`／`C04C` 寫回原值，人沒動，這一步還是要由引擎
-		// 走。只看旗標的話那張圖一步都走不動（spec 104）。`SAVE → C04B` 的傳送
-		// 照舊加這一步：原版加不加是 #21 的問題，這裡不改它的答案。
-		if !a.cellMovedByScript || (a.spawn.X == origin.X && a.spawn.Y == origin.Y) {
+		// **腳本把人搬走了，引擎就不再走一步**（#21）。判準是位置有沒有真的變，
+		// 不是腳本用哪一支搬的：`CALL C01Eh`（換區那一種）與 `SAVE → C04B／C04C`
+		// （傳送那一種）都算。
+		//
+		// 「真的變了」這個條件不能省：古托井的入口 0（`ecl8/29 99DAh`）每一步都先
+		// `CALL C01Eh` 往前看一格、再把 `C04B`／`C04C` 寫回原值，人沒動，這一步還是
+		// 要由引擎走。只看旗標的話那張圖一步都走不動（spec 104）。
+		//
+		// 依據是兩邊作弊通關的逐筆對照（`docs/audit/cheat-playthrough-compare.md`）：
+		// 17 種換區塊落點裡，只有 `ECL5/5 → ECL5/7`（`A467h`「YOU GO UPSTAIRS.」
+		// 寫 `SAVE 5 → C04B`、`SAVE 7 → C04C` 再 `NEWECL 7`）對不上——原版落在
+		// (5,7)，remake 多走一步落在 (6,7)。其餘每一種都是 `CALL C01Eh` 走的，
+		// 兩邊逐格相同。
+		if a.spawn.X == origin.X && a.spawn.Y == origin.Y {
 			a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+dx, geometry.Width))
 			a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+dy, geometry.Height))
 			a.advanceGameMinute()
@@ -1827,7 +1854,7 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			if result.Exited {
 				// 印完就結束的那一種：字留在框裡，回自由移動。
 				a.finishCellBlockKeepingText()
-				return nil
+				return a.applyPendingCellStep()
 			}
 			next, err := a.eventSession.RunUntilEvent(4096, nil, true)
 			if err != nil {
@@ -1843,10 +1870,10 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			// remake 先前在這裡把框清空，玩家等於少看一段。
 			if a.eventText != "" {
 				a.finishCellBlockKeepingText()
-				return nil
+				return a.applyPendingCellStep()
 			}
 			a.finishCellBlock()
-			return nil
+			return a.applyPendingCellStep()
 		}
 		if a.isSuneTempleBoundary(result) {
 			return a.enterSuneTemple()
@@ -2719,6 +2746,38 @@ func (a *app) leaveSuneTemple() error {
 // handler（spec 081）。
 // finishCellBlockKeepingText 是「腳本結束，但文字留在框裡」——原版一格事件
 // 等過一次之後就是這樣：玩家可以直接走開，那幾行字留到下一件事把框換掉。
+// applyPendingCellStep 把「被入口 0 的問句擋下來的那一步」補走（#21）。
+//
+// 只有三件事同時成立才補：真的有一步在等、腳本自己沒把人搬走（位置還在出發格）、
+// 而且還在同一張圖同一個區塊。腳本搬過人就是它接手了這一步（上樓、換區都算），
+// 再補一次會多走一格——那正是 #21 原本的症狀。
+func (a *app) applyPendingCellStep() error {
+	step := a.cellPendingStep
+	a.cellPendingStep = nil
+	if step == nil || a.eventMachine == nil {
+		return nil
+	}
+	if a.spawn.X != a.cellPendingOrigin[0] || a.spawn.Y != a.cellPendingOrigin[1] {
+		return nil
+	}
+	if a.spawn.Map != a.cellPendingMap || a.eventSession == nil ||
+		a.eventSession.CurrentBlockID() != a.cellPendingBlock {
+		// 換了圖或換了區塊就是腳本接手了這一步，即使座標數字剛好一樣。
+		return nil
+	}
+	// **腳本可以回絕這一步**：`SAVE 255 → @6DC9`。晚上市政廳的鎖門問句答 NO 走的
+	// 就是這一支（`ecl3/0 99E4h`，spec 102），野外拒絕位移也是同一個位址
+	// （`wildernessRefuse`）。不看它的話，答 NO 反而會走進去——門鎖著卻進得去。
+	if a.eventMachine.Memory[wildernessRefuse] == 255 {
+		a.eventMachine.Memory[wildernessRefuse] = 0
+		return nil
+	}
+	a.spawn.X = uint8(geometry.WrapCoordinate(int(a.spawn.X)+step[0], geometry.Width))
+	a.spawn.Y = uint8(geometry.WrapCoordinate(int(a.spawn.Y)+step[1], geometry.Height))
+	a.advanceGameMinute()
+	return a.beginInitialSearch()
+}
+
 func (a *app) finishCellBlockKeepingText() {
 	text := a.eventText
 	// 手冊提示跟著文字一起留下來：那幾則引用還在框裡寫著，按下去要翻得到

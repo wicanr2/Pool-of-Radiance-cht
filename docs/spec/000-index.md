@@ -17,7 +17,7 @@
 | [003](003-dos-character-creation-flow.md) | DOS 建角流程 | READY | `cmd/pool-game/dos_export.go`、`cmd/pool-game/icon_menu.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-game/icon_menu_test.go`、`cmd/pool-game/main_test.go`、`internal/gamepack/weapon_stats_test.go` |
 | [004](004-dos-character-roll-fields.md) | DOS 角色擲值與持久欄位 | READY | `internal/creation/rolls.go` | `internal/gamepack/monster_test.go` |
 | [005](005-first-remake-executable.md) | 第一支 remake executable | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go` |
-| [006](006-dos-portrait-archives.md) | DOS 建角 portrait archive 形狀 | READY | `cmd/pool-portrait-audit/main.go` | `cmd/pool-portrait-audit/main_test.go` |
+| [006](006-dos-portrait-archives.md) | DOS 建角 portrait archive 形狀 | READY | `cmd/pool-portrait-atlas/main.go`、`cmd/pool-portrait-audit/main.go` | `cmd/pool-portrait-audit/main_test.go` |
 | [007](007-dos-combat-icons.md) | DOS 戰鬥圖示 | READY | `cmd/pool-game/icon_menu.go` | `cmd/pool-combat-icon-audit/main_test.go` |
 | [008](008-character-library-and-party-menu.md) | 建角完成、角色庫與 Party Creation Menu | CONFORMED＋READY | `cmd/pool-game/party_menu.go`、`cmd/pool-game/training.go`、`cmd/pool-game/training_gate.go` 等 4 個 | `cmd/pool-game/party_menu_test.go` |
 | [009](009-dos-geo-map-inventory.md) | DOS GEO 地圖盤點與 Phlan 入口 | CONFORMED＋READY＋DRAFT | `internal/gamepack/geometry.go` | `cmd/pool-geo-audit/main_test.go` |
@@ -59,7 +59,7 @@
 | [045](045-cross-archive-newecl.md) | 跨 archive NEWECL 與 New Phlan→Slums | READY＋DRAFT | `internal/gamepack/intro.go` | `cmd/pool-game/main_test.go` |
 | [046](046-encounter-roster-and-combat-continuation.md) | 遭遇名冊與 COMBAT 續跑契約 | READY＋DRAFT | `cmd/pool-game/tactical.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/tactical_test.go` |
 | [047](047-shared-first-person-inset-fill.md) | 共用第一人稱內框填滿 | READY | `cmd/pool-game/first_person_inset.go`、`cmd/pool-game/main.go`、`internal/assets/camp_fire.go` 等 4 個 | `cmd/pool-game/main_test.go` |
-| [048](048-monster-record-and-precombat-staging.md) | 怪物角色記錄與戰鬥前 staging | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`internal/gamepack/monster.go` | `internal/gamepack/monster_test.go` |
+| [048](048-monster-record-and-precombat-staging.md) | 怪物角色記錄與戰鬥前 staging | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-monster-atlas/main.go`、`internal/gamepack/monster.go` | `internal/gamepack/monster_test.go` |
 | [049](049-pool-character-combat-fields.md) | Pool 285-byte 角色／怪物戰鬥欄位 | READY＋DRAFT | `internal/gamepack/class_thac0.go`、`internal/gamepack/cloud.go` | `internal/gamepack/cloud_test.go` |
 | [050](050-basic-attack-and-damage-roll.md) | Pool 基礎命中與傷害骰 primitive | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go` | `cmd/pool-game/dos_combat_parity_test.go`、`internal/combat/rules_test.go` |
 | [051](051-attack-slot-phase-count.md) | Pool 雙攻擊槽與半回合攻擊次數 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/gamepack/monster.go`、`internal/gamepack/saving_throw_table.go` | `cmd/pool-game/attack_forms_test.go`、`cmd/pool-game/main_test.go`、`internal/gamepack/monster_test.go` |
@@ -128,7 +128,7 @@
 | [114](114-camp-rest-time.md) | 遊戲時鐘與紮營的休息時間（overlay-20） | CONFORMED | `cmd/pool-game/camp.go`、`cmd/pool-game/main.go`、`cmd/pool-game/text.go` 等 6 個 | `cmd/pool-disp-scan/main_test.go`、`cmd/pool-game/camp_interruption_test.go`、`cmd/pool-game/camp_screen_test.go` 等 9 個 |
 | [115](115-temple-services.md) | 神殿的九項服務（overlay-04） | READY | `cmd/pool-game/main.go`、`internal/save/state.go` | `cmd/pool-game/main_test.go` |
 | [116](116-appraise-and-sell.md) | 估價與販賣寶石珠寶（overlay-21 entry 19） | CONFORMED＋READY＋OPEN | `cmd/pool-game/appraise.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/camp_test.go`、`cmd/pool-game/mainline_reward_test.go`、`cmd/pool-game/shop_test.go` |
-| [117](117-npc-approach-portrait.md) | APPROACH 的 NPC 半身像 | READY＋DRAFT | `cmd/pool-game/main.go`、`internal/assets/camp_fire.go`、`internal/assets/npc_portrait.go` 等 5 個 | `cmd/pool-disp-scan/main_test.go`、`internal/gamepack/intro_test.go` |
+| [117](117-npc-approach-portrait.md) | APPROACH 的 NPC 半身像 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-portrait-atlas/main.go`、`internal/assets/camp_fire.go` 等 6 個 | `cmd/pool-disp-scan/main_test.go`、`internal/gamepack/intro_test.go` |
 | [118](118-adventure-status-line-and-clock.md) | 冒險畫面的狀態列與遊戲時鐘 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go`、`internal/save/state.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/party_panel_test.go`、`internal/gamepack/effect_time_test.go` |
 | [119](119-adventure-command-bar.md) | 冒險畫面的指令列與平面全圖 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go` 等 8 個 | `cmd/pool-game/area_map_test.go`、`cmd/pool-game/field_cast_test.go` |
 | [120](120-wall-symbol-bands.md) | 8×8 符號的五帶 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` 等 5 個 | `cmd/pool-game/first_person_inset_test.go` |
@@ -177,11 +177,13 @@
 | `pool-inventory` | performs a read-only shape audit of a DOS game ZIP | 有 | — |
 | `pool-journal-corpus` | 把轉錄好的《探險者手冊》上冊切成遊戲內可查的條目 | 有 | 054、064 |
 | `pool-map-names` | 把「換圖的目的地區塊」與「同一段腳本剛印出來的字」配成對，用來替每一張地圖找出**原版自己給的名字** | 有 | 055、102、124 |
+| `pool-monster-atlas` | 匯出怪物圖鑑（issue #50 前半）要用的資料與戰場 sprite 圖片 | — | 048 |
 | `pool-monster-thac0-scan` | 把八個 MONnCHA.DAX 的樣板記錄裡跟命中有關的幾格列出來（#36／#31，spec 063）：`+110h`（執行期 THAC0 欄）、`+2Dh`（基礎 THAC0）、`+111h` （AC）、`+2Fh`（職業碼）、`+96h..+9Dh`（八個職業等級）、`+0CCh`（備妥武器的遠指標，樣板裡通常是 0）、`+0A0h..+0A7h`（攻擊次數與傷害骰的來源欄） | — | 063 |
 | `pool-name-audit` | 把說明書定案的專有名詞回對原版資料自己的字串 | 有 | — |
 | `pool-ovr-manifest` | 產生 docs/audit/dos-ovr-manifest.json：38 顆 overlay 的位置、長度、重定位表與各自的 SHA-256，是所有 overlay 反查的起點 | 有 | — |
 | `pool-parity-check` | 把一次對拍跑出來的 parity.json 拿去對**基準表** （`docs/audit/dos-parity-sample.json`），而不是對上一次跑的結果 | 有 | — |
 | `pool-password-audit` | 盤點原版每一處 `10h INPUT STRING`（spec 087）：玩家在哪裡被要求打字、問句是什麼、比對的答案是什麼 | 有 | 002、087、141 |
+| `pool-portrait-atlas` | 把人物肖像圖鑑要用的 PNG 與收據匯出到磁碟 | — | 006、117 |
 | `pool-portrait-audit` | measures Pool's HEAD/BODY archives through the reusable engine picture decoder | 有 | 006 |
 | `pool-spell-dispatch` | 把 overlay-22 的法術效果派發表 dump 成 JSON，供 spec 073 引用，也當作後續逐支解讀處理常式的工作清單 | 有 | 070、073 |
 | `pool-text-inventory` | 盤點原版 ECL 裡所有玩家看得到的敘述文字 | 有 | 002 |

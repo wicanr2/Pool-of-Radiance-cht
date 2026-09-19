@@ -606,8 +606,13 @@ func (d *mainlineDriver) audienceHall() (sawTyranthraxus, sawEnding bool, pages 
 	beside := func(x, y int) bool {
 		return (x == 4 && y == 8) || (x == 3 && y == 7)
 	}
+	// **`NO` 要在 prefer 裡**：上樓的落點 (5,7) 就是下樓梯那一格（地形索引 1），
+	// 踏出去的每一步都先問「DO YOU WANT TO GO DOWN THESE STAIRS?」。不答 NO 的話
+	// `settle` 挑第 0 項（YES），隊伍當場又下樓，看起來像「走不到覲見廳」。
+	// 玩家在這裡做的也是同一件事。（#21 把落點從 (6,7) 改成原版的 (5,7) 之後才會遇到；
+	// (6,7) 不是樓梯格，所以先前不問。）
 	if !d.walkTo("beside the audience hall", beside,
-		func(x, y int) bool { return d.terrain(x, y) != 0 && !beside(x, y) }, "ATTACK") {
+		func(x, y int) bool { return d.terrain(x, y) != 0 && !beside(x, y) }, "ATTACK", "NO") {
 		d.fatalf("audienceHall: cannot reach a cell beside (3,8)")
 	}
 	d.settle("ATTACK")
