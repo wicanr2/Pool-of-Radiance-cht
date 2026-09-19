@@ -1,0 +1,1592 @@
+{
+  "tool": "pool-portrait-atlas",
+  "zip": "Pool of Radiance (1988).zip",
+  "zip_sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633",
+  "archives": 16,
+  "blocks": 109,
+  "raw_portraits": [
+    {
+      "source": "BODY1.DAX",
+      "kind": "body",
+      "archive": 1,
+      "block_id": 3,
+      "block_id_hex": "0x03",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body1-03.png",
+        "sha256": "3a02380cad108783f2abdeed5be10e41a0c36525565e17663221b8b630e5ba3c"
+      }
+    },
+    {
+      "source": "BODY1.DAX",
+      "kind": "body",
+      "archive": 1,
+      "block_id": 7,
+      "block_id_hex": "0x07",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body1-07.png",
+        "sha256": "7a7088fd6ec15d72e4f91bd4cb166da17be82b1acdd75278e19afcc06bf93813"
+      }
+    },
+    {
+      "source": "BODY1.DAX",
+      "kind": "body",
+      "archive": 1,
+      "block_id": 25,
+      "block_id_hex": "0x19",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body1-19.png",
+        "sha256": "2bbaba48e8f0af496d1303e87073f6b65074f43c19c81745b01a0fe26df3f930"
+      }
+    },
+    {
+      "source": "BODY2.DAX",
+      "kind": "body",
+      "archive": 2,
+      "block_id": 2,
+      "block_id_hex": "0x02",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body2-02.png",
+        "sha256": "77b8cabf684fd2baae56791800af99cfde2610c2af072f4f2c3edc756fb0040d"
+      }
+    },
+    {
+      "source": "BODY2.DAX",
+      "kind": "body",
+      "archive": 2,
+      "block_id": 3,
+      "block_id_hex": "0x03",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body2-03.png",
+        "sha256": "3a02380cad108783f2abdeed5be10e41a0c36525565e17663221b8b630e5ba3c"
+      }
+    },
+    {
+      "source": "BODY2.DAX",
+      "kind": "body",
+      "archive": 2,
+      "block_id": 5,
+      "block_id_hex": "0x05",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body2-05.png",
+        "sha256": "3d70b36c946d20e4564993f91143079cd0344277f7f85c25729501af9804c177"
+      }
+    },
+    {
+      "source": "BODY2.DAX",
+      "kind": "body",
+      "archive": 2,
+      "block_id": 9,
+      "block_id_hex": "0x09",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body2-09.png",
+        "sha256": "28fd5a6fc97c9aef030f719917b7bc04274804459992635c77853c5c005071c2"
+      }
+    },
+    {
+      "source": "BODY2.DAX",
+      "kind": "body",
+      "archive": 2,
+      "block_id": 13,
+      "block_id_hex": "0x0D",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body2-0d.png",
+        "sha256": "0e545d84cf5639db99616c2345b5d3c4857e75c7981170a91507cb0fcc447e0d"
+      }
+    },
+    {
+      "source": "BODY2.DAX",
+      "kind": "body",
+      "archive": 2,
+      "block_id": 31,
+      "block_id_hex": "0x1F",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body2-1f.png",
+        "sha256": "e6af1e2d3acb2af9fe2440a1fc182950b1550e4b8265c9ea2ac7f775c44c4467"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 1,
+      "block_id_hex": "0x01",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-01.png",
+        "sha256": "aa4e254c69690e22dcf1f117d0b7b1ebdee67d1b1b2e113b7d809634bc9fd6a9"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 2,
+      "block_id_hex": "0x02",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-02.png",
+        "sha256": "77b8cabf684fd2baae56791800af99cfde2610c2af072f4f2c3edc756fb0040d"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 3,
+      "block_id_hex": "0x03",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-03.png",
+        "sha256": "3a02380cad108783f2abdeed5be10e41a0c36525565e17663221b8b630e5ba3c"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 4,
+      "block_id_hex": "0x04",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-04.png",
+        "sha256": "09497c83dbbf521fcbe4b945066289ab364df21fcd043a4ca08b4427791c9185"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 7,
+      "block_id_hex": "0x07",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-07.png",
+        "sha256": "7a7088fd6ec15d72e4f91bd4cb166da17be82b1acdd75278e19afcc06bf93813"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 8,
+      "block_id_hex": "0x08",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-08.png",
+        "sha256": "3e43cf97443895df47e006fd5941ec1e35fb9dd04108c01331391812075821e2"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 9,
+      "block_id_hex": "0x09",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-09.png",
+        "sha256": "28fd5a6fc97c9aef030f719917b7bc04274804459992635c77853c5c005071c2"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 18,
+      "block_id_hex": "0x12",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-12.png",
+        "sha256": "ed7394931686b92db5fdb28811d271b97a0f67ef009591f0605d31d8020355f5"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 24,
+      "block_id_hex": "0x18",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-18.png",
+        "sha256": "0e545d84cf5639db99616c2345b5d3c4857e75c7981170a91507cb0fcc447e0d"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 26,
+      "block_id_hex": "0x1A",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-1a.png",
+        "sha256": "90c987013c40bd97e6d8f6b7ba7af0517332ff1a416c15383d6357fffb8494fd"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 31,
+      "block_id_hex": "0x1F",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-1f.png",
+        "sha256": "e6af1e2d3acb2af9fe2440a1fc182950b1550e4b8265c9ea2ac7f775c44c4467"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 32,
+      "block_id_hex": "0x20",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-20.png",
+        "sha256": "200d1c2b173b9c92292c84c10506e02c923ae3073e9b1f0fca35fded7fc23b62"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 33,
+      "block_id_hex": "0x21",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-21.png",
+        "sha256": "cb2620875d8c292e2ac69d52f11bff55ed5f1d251131a006e3fd9ea69eb3429a"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 34,
+      "block_id_hex": "0x22",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-22.png",
+        "sha256": "6f3812e0b6c76826fc749557dcf735ef6e2545a2d37425596001a51eb7586ae7"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 35,
+      "block_id_hex": "0x23",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-23.png",
+        "sha256": "765a60a1e9388688c2ec8a1560363900698c8ecbf905e07b52ffb6b5eb75aaf6"
+      }
+    },
+    {
+      "source": "BODY3.DAX",
+      "kind": "body",
+      "archive": 3,
+      "block_id": 37,
+      "block_id_hex": "0x25",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body3-25.png",
+        "sha256": "e192873ad7b33fcc039dbacfb65d46a6f7ea15d8448a668523dd0fedb464d196"
+      }
+    },
+    {
+      "source": "BODY4.DAX",
+      "kind": "body",
+      "archive": 4,
+      "block_id": 2,
+      "block_id_hex": "0x02",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body4-02.png",
+        "sha256": "77b8cabf684fd2baae56791800af99cfde2610c2af072f4f2c3edc756fb0040d"
+      }
+    },
+    {
+      "source": "BODY4.DAX",
+      "kind": "body",
+      "archive": 4,
+      "block_id": 3,
+      "block_id_hex": "0x03",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body4-03.png",
+        "sha256": "3a02380cad108783f2abdeed5be10e41a0c36525565e17663221b8b630e5ba3c"
+      }
+    },
+    {
+      "source": "BODY4.DAX",
+      "kind": "body",
+      "archive": 4,
+      "block_id": 8,
+      "block_id_hex": "0x08",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body4-08.png",
+        "sha256": "3e43cf97443895df47e006fd5941ec1e35fb9dd04108c01331391812075821e2"
+      }
+    },
+    {
+      "source": "BODY5.DAX",
+      "kind": "body",
+      "archive": 5,
+      "block_id": 1,
+      "block_id_hex": "0x01",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body5-01.png",
+        "sha256": "aa4e254c69690e22dcf1f117d0b7b1ebdee67d1b1b2e113b7d809634bc9fd6a9"
+      }
+    },
+    {
+      "source": "BODY5.DAX",
+      "kind": "body",
+      "archive": 5,
+      "block_id": 7,
+      "block_id_hex": "0x07",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body5-07.png",
+        "sha256": "7a7088fd6ec15d72e4f91bd4cb166da17be82b1acdd75278e19afcc06bf93813"
+      }
+    },
+    {
+      "source": "BODY5.DAX",
+      "kind": "body",
+      "archive": 5,
+      "block_id": 8,
+      "block_id_hex": "0x08",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body5-08.png",
+        "sha256": "3e43cf97443895df47e006fd5941ec1e35fb9dd04108c01331391812075821e2"
+      }
+    },
+    {
+      "source": "BODY5.DAX",
+      "kind": "body",
+      "archive": 5,
+      "block_id": 9,
+      "block_id_hex": "0x09",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body5-09.png",
+        "sha256": "28fd5a6fc97c9aef030f719917b7bc04274804459992635c77853c5c005071c2"
+      }
+    },
+    {
+      "source": "BODY5.DAX",
+      "kind": "body",
+      "archive": 5,
+      "block_id": 30,
+      "block_id_hex": "0x1E",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body5-1e.png",
+        "sha256": "4e8c48108a89edaa198b834652dbe16751b17e5bc408237b0f66806a87e4f358"
+      }
+    },
+    {
+      "source": "BODY5.DAX",
+      "kind": "body",
+      "archive": 5,
+      "block_id": 31,
+      "block_id_hex": "0x1F",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body5-1f.png",
+        "sha256": "e6af1e2d3acb2af9fe2440a1fc182950b1550e4b8265c9ea2ac7f775c44c4467"
+      }
+    },
+    {
+      "source": "BODY6.DAX",
+      "kind": "body",
+      "archive": 6,
+      "block_id": 1,
+      "block_id_hex": "0x01",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body6-01.png",
+        "sha256": "aa4e254c69690e22dcf1f117d0b7b1ebdee67d1b1b2e113b7d809634bc9fd6a9"
+      }
+    },
+    {
+      "source": "BODY6.DAX",
+      "kind": "body",
+      "archive": 6,
+      "block_id": 3,
+      "block_id_hex": "0x03",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body6-03.png",
+        "sha256": "3a02380cad108783f2abdeed5be10e41a0c36525565e17663221b8b630e5ba3c"
+      }
+    },
+    {
+      "source": "BODY6.DAX",
+      "kind": "body",
+      "archive": 6,
+      "block_id": 5,
+      "block_id_hex": "0x05",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body6-05.png",
+        "sha256": "3d70b36c946d20e4564993f91143079cd0344277f7f85c25729501af9804c177"
+      }
+    },
+    {
+      "source": "BODY6.DAX",
+      "kind": "body",
+      "archive": 6,
+      "block_id": 6,
+      "block_id_hex": "0x06",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body6-06.png",
+        "sha256": "1cf93c83b1dd052745d93ea5440df479264118233e84fcf56e6361982a980313"
+      }
+    },
+    {
+      "source": "BODY6.DAX",
+      "kind": "body",
+      "archive": 6,
+      "block_id": 9,
+      "block_id_hex": "0x09",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body6-09.png",
+        "sha256": "28fd5a6fc97c9aef030f719917b7bc04274804459992635c77853c5c005071c2"
+      }
+    },
+    {
+      "source": "BODY7.DAX",
+      "kind": "body",
+      "archive": 7,
+      "block_id": 2,
+      "block_id_hex": "0x02",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body7-02.png",
+        "sha256": "77b8cabf684fd2baae56791800af99cfde2610c2af072f4f2c3edc756fb0040d"
+      }
+    },
+    {
+      "source": "BODY7.DAX",
+      "kind": "body",
+      "archive": 7,
+      "block_id": 6,
+      "block_id_hex": "0x06",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body7-06.png",
+        "sha256": "1cf93c83b1dd052745d93ea5440df479264118233e84fcf56e6361982a980313"
+      }
+    },
+    {
+      "source": "BODY7.DAX",
+      "kind": "body",
+      "archive": 7,
+      "block_id": 8,
+      "block_id_hex": "0x08",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body7-08.png",
+        "sha256": "3e43cf97443895df47e006fd5941ec1e35fb9dd04108c01331391812075821e2"
+      }
+    },
+    {
+      "source": "BODY7.DAX",
+      "kind": "body",
+      "archive": 7,
+      "block_id": 30,
+      "block_id_hex": "0x1E",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body7-1e.png",
+        "sha256": "4e8c48108a89edaa198b834652dbe16751b17e5bc408237b0f66806a87e4f358"
+      }
+    },
+    {
+      "source": "BODY8.DAX",
+      "kind": "body",
+      "archive": 8,
+      "block_id": 1,
+      "block_id_hex": "0x01",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body8-01.png",
+        "sha256": "aa4e254c69690e22dcf1f117d0b7b1ebdee67d1b1b2e113b7d809634bc9fd6a9"
+      }
+    },
+    {
+      "source": "BODY8.DAX",
+      "kind": "body",
+      "archive": 8,
+      "block_id": 6,
+      "block_id_hex": "0x06",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body8-06.png",
+        "sha256": "1cf93c83b1dd052745d93ea5440df479264118233e84fcf56e6361982a980313"
+      }
+    },
+    {
+      "source": "BODY8.DAX",
+      "kind": "body",
+      "archive": 8,
+      "block_id": 37,
+      "block_id_hex": "0x25",
+      "width": 88,
+      "height": 48,
+      "png": {
+        "path": "docs/archaeology/img/portraits/body8-25.png",
+        "sha256": "e192873ad7b33fcc039dbacfb65d46a6f7ea15d8448a668523dd0fedb464d196"
+      }
+    },
+    {
+      "source": "HEAD1.DAX",
+      "kind": "head",
+      "archive": 1,
+      "block_id": 6,
+      "block_id_hex": "0x06",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head1-06.png",
+        "sha256": "6a424d5320ea5654b7c49893756fe3c55a7bc9a64bbfdf2fca1d004235e3fb20"
+      }
+    },
+    {
+      "source": "HEAD1.DAX",
+      "kind": "head",
+      "archive": 1,
+      "block_id": 13,
+      "block_id_hex": "0x0D",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head1-0d.png",
+        "sha256": "47e5a6f7d685f5afdf2c35270b8984be4b10c2b1afd62a6733a904cd9855646d"
+      }
+    },
+    {
+      "source": "HEAD1.DAX",
+      "kind": "head",
+      "archive": 1,
+      "block_id": 48,
+      "block_id_hex": "0x30",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head1-30.png",
+        "sha256": "7a574939a59c012de689e1f7b3e7db7344763e4301e39d18f821bb6a7ce3c83d"
+      }
+    },
+    {
+      "source": "HEAD2.DAX",
+      "kind": "head",
+      "archive": 2,
+      "block_id": 5,
+      "block_id_hex": "0x05",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head2-05.png",
+        "sha256": "71f5bf6e3d9882971700833874a399bebec0946f53b5da6858008d468e041a1e"
+      }
+    },
+    {
+      "source": "HEAD2.DAX",
+      "kind": "head",
+      "archive": 2,
+      "block_id": 8,
+      "block_id_hex": "0x08",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head2-08.png",
+        "sha256": "b2c02fe8ae08b36061301e305aa65f4876b7dd6c0bf3f3276f71362a92f3980b"
+      }
+    },
+    {
+      "source": "HEAD2.DAX",
+      "kind": "head",
+      "archive": 2,
+      "block_id": 11,
+      "block_id_hex": "0x0B",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head2-0b.png",
+        "sha256": "eb1b74c6202157d9d50af25209fd49201e990c59b2d673eedc968293f56a5311"
+      }
+    },
+    {
+      "source": "HEAD2.DAX",
+      "kind": "head",
+      "archive": 2,
+      "block_id": 25,
+      "block_id_hex": "0x19",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head2-19.png",
+        "sha256": "9b7c07d2fb9929ca8b15203642f4dce905e11161bc5257b6505a30f15a5653eb"
+      }
+    },
+    {
+      "source": "HEAD2.DAX",
+      "kind": "head",
+      "archive": 2,
+      "block_id": 52,
+      "block_id_hex": "0x34",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head2-34.png",
+        "sha256": "5af78ed2095a0b39b0baa40d78587e023169fee230242a1eeeb5f38d40eb15d0"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 0,
+      "block_id_hex": "0x00",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-00.png",
+        "sha256": "83f4b5688867ffcd4951535d35fe7804dc731b95378bb011c1f485e392af6e8e"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 8,
+      "block_id_hex": "0x08",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-08.png",
+        "sha256": "b2c02fe8ae08b36061301e305aa65f4876b7dd6c0bf3f3276f71362a92f3980b"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 9,
+      "block_id_hex": "0x09",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-09.png",
+        "sha256": "4a100d2950c858bfd09c259f1bf7c6767ac7498905b411b441e54c88a926ac18"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 13,
+      "block_id_hex": "0x0D",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-0d.png",
+        "sha256": "47e5a6f7d685f5afdf2c35270b8984be4b10c2b1afd62a6733a904cd9855646d"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 16,
+      "block_id_hex": "0x10",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-10.png",
+        "sha256": "2379e741cae9238ea8496281feba0ea5c6d74ad066086424ace93ae779c2dc45"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 18,
+      "block_id_hex": "0x12",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-12.png",
+        "sha256": "a206b94f035256fd061f0a3d114db2c12fd1eb9e25e934a00bbdd78b6c1ef9d2"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 22,
+      "block_id_hex": "0x16",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-16.png",
+        "sha256": "289b36bfbc95381cb14d5e1fdaf4f55c317411fb71e72194a51b5405a245996e"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 24,
+      "block_id_hex": "0x18",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-18.png",
+        "sha256": "341d98f6fe641dd866ae3157c13f6f98d9c8afee0663850ca750dd814b3cc0ea"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 32,
+      "block_id_hex": "0x20",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-20.png",
+        "sha256": "687ecabb8d26604472a19aab16906374c68717731f1333bbc1600c7950ae424e"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 34,
+      "block_id_hex": "0x22",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-22.png",
+        "sha256": "79ffa7b0e0dda77091347b06e47e0f632f00087f314d6101f5470e30cf80f587"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 42,
+      "block_id_hex": "0x2A",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-2a.png",
+        "sha256": "63c8aa83eace19352b95e7534af63a08cf082f9592f33ad334ea6820967bfeb4"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 44,
+      "block_id_hex": "0x2C",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-2c.png",
+        "sha256": "7b6a117d3b20e17da80c490986a1727fdb1de8f5410c9b94417ead7e386b8021"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 45,
+      "block_id_hex": "0x2D",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-2d.png",
+        "sha256": "25e04897b11aa536560d724c653c79ff20ba68424edc40bb5ad064fb13c7ce75"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 51,
+      "block_id_hex": "0x33",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-33.png",
+        "sha256": "118a4b97d0a89f136078eb6e8e78677518a60aa1ea57351eb0a51c96ddbbeacd"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 53,
+      "block_id_hex": "0x35",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-35.png",
+        "sha256": "51b13abc5d70005d377334dd310c5362b2868ce10d6264a7a6c04be5b1ed7cb5"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 55,
+      "block_id_hex": "0x37",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-37.png",
+        "sha256": "b25e82e5edaaff32240c16705b83b99556118c4c5a49e8b57730b9c4db1b8902"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 57,
+      "block_id_hex": "0x39",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-39.png",
+        "sha256": "3a701c9a04e8d299f7e99bc0d3d272d2e621babbe9c052d23651b621ca4f2218"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 63,
+      "block_id_hex": "0x3F",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-3f.png",
+        "sha256": "7c9110dae35823a45c864d065454bb5f3c442a2e0590724408846c0549ebdbce"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 67,
+      "block_id_hex": "0x43",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-43.png",
+        "sha256": "670152eefecd830a1bd408936eb67229e361585aee3e93d7511bc417d78019ea"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 68,
+      "block_id_hex": "0x44",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-44.png",
+        "sha256": "308df42c6ddb4fabcc5577e8518df613b293dda69a4407ac5948c2c9cbdb194c"
+      }
+    },
+    {
+      "source": "HEAD3.DAX",
+      "kind": "head",
+      "archive": 3,
+      "block_id": 71,
+      "block_id_hex": "0x47",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head3-47.png",
+        "sha256": "7fe1b6dd2116516fae74dad5dd63b5031365a088cc64042596a04e77c7c01ba6"
+      }
+    },
+    {
+      "source": "HEAD4.DAX",
+      "kind": "head",
+      "archive": 4,
+      "block_id": 0,
+      "block_id_hex": "0x00",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head4-00.png",
+        "sha256": "83f4b5688867ffcd4951535d35fe7804dc731b95378bb011c1f485e392af6e8e"
+      }
+    },
+    {
+      "source": "HEAD4.DAX",
+      "kind": "head",
+      "archive": 4,
+      "block_id": 32,
+      "block_id_hex": "0x20",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head4-20.png",
+        "sha256": "687ecabb8d26604472a19aab16906374c68717731f1333bbc1600c7950ae424e"
+      }
+    },
+    {
+      "source": "HEAD4.DAX",
+      "kind": "head",
+      "archive": 4,
+      "block_id": 52,
+      "block_id_hex": "0x34",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head4-34.png",
+        "sha256": "5af78ed2095a0b39b0baa40d78587e023169fee230242a1eeeb5f38d40eb15d0"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 9,
+      "block_id_hex": "0x09",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-09.png",
+        "sha256": "4a100d2950c858bfd09c259f1bf7c6767ac7498905b411b441e54c88a926ac18"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 12,
+      "block_id_hex": "0x0C",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-0c.png",
+        "sha256": "36d942b753d9d9a47522cb805431b861d2d42d7768c517d2d2ac57ff78c85b5e"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 13,
+      "block_id_hex": "0x0D",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-0d.png",
+        "sha256": "47e5a6f7d685f5afdf2c35270b8984be4b10c2b1afd62a6733a904cd9855646d"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 14,
+      "block_id_hex": "0x0E",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-0e.png",
+        "sha256": "dafa62072bf285c256fec32d43251933eecf271f6479387c1229d0613f2c7c13"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 52,
+      "block_id_hex": "0x34",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-34.png",
+        "sha256": "5af78ed2095a0b39b0baa40d78587e023169fee230242a1eeeb5f38d40eb15d0"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 53,
+      "block_id_hex": "0x35",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-35.png",
+        "sha256": "51b13abc5d70005d377334dd310c5362b2868ce10d6264a7a6c04be5b1ed7cb5"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 54,
+      "block_id_hex": "0x36",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-36.png",
+        "sha256": "9985fa7426960b10a496e2993e4dff79d267a410d3d969fd0dc9f064973757f4"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 55,
+      "block_id_hex": "0x37",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-37.png",
+        "sha256": "b25e82e5edaaff32240c16705b83b99556118c4c5a49e8b57730b9c4db1b8902"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 59,
+      "block_id_hex": "0x3B",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-3b.png",
+        "sha256": "7a87ac69c4e4e4e75f8b3c0a457d1a4e2ba213e22bc855566438f297e4e892e5"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 70,
+      "block_id_hex": "0x46",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-46.png",
+        "sha256": "f37467530d63ae5e07f1d5522f73a228b3290f38cbba1bb29824c01e8e8d6887"
+      }
+    },
+    {
+      "source": "HEAD5.DAX",
+      "kind": "head",
+      "archive": 5,
+      "block_id": 72,
+      "block_id_hex": "0x48",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head5-48.png",
+        "sha256": "091c09381d87707c585ea3db5ce135ea012631bab82f155643a08d4e8fd6c1cf"
+      }
+    },
+    {
+      "source": "HEAD6.DAX",
+      "kind": "head",
+      "archive": 6,
+      "block_id": 1,
+      "block_id_hex": "0x01",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head6-01.png",
+        "sha256": "406d3aaea49ef24826dd5e44dd134b62ed460893075fd2065133c2892a32d657"
+      }
+    },
+    {
+      "source": "HEAD6.DAX",
+      "kind": "head",
+      "archive": 6,
+      "block_id": 3,
+      "block_id_hex": "0x03",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head6-03.png",
+        "sha256": "16acb56f962fd1fc2dddf8bbcfa1db2b8e114b9359ca45a6e49bb4ed23149035"
+      }
+    },
+    {
+      "source": "HEAD6.DAX",
+      "kind": "head",
+      "archive": 6,
+      "block_id": 6,
+      "block_id_hex": "0x06",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head6-06.png",
+        "sha256": "6a424d5320ea5654b7c49893756fe3c55a7bc9a64bbfdf2fca1d004235e3fb20"
+      }
+    },
+    {
+      "source": "HEAD6.DAX",
+      "kind": "head",
+      "archive": 6,
+      "block_id": 9,
+      "block_id_hex": "0x09",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head6-09.png",
+        "sha256": "4a100d2950c858bfd09c259f1bf7c6767ac7498905b411b441e54c88a926ac18"
+      }
+    },
+    {
+      "source": "HEAD6.DAX",
+      "kind": "head",
+      "archive": 6,
+      "block_id": 10,
+      "block_id_hex": "0x0A",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head6-0a.png",
+        "sha256": "d671478b620a20652448b3b48ea184372d2ba3f76f50a639de8874ac41183eb3"
+      }
+    },
+    {
+      "source": "HEAD6.DAX",
+      "kind": "head",
+      "archive": 6,
+      "block_id": 13,
+      "block_id_hex": "0x0D",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head6-0d.png",
+        "sha256": "47e5a6f7d685f5afdf2c35270b8984be4b10c2b1afd62a6733a904cd9855646d"
+      }
+    },
+    {
+      "source": "HEAD6.DAX",
+      "kind": "head",
+      "archive": 6,
+      "block_id": 57,
+      "block_id_hex": "0x39",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head6-39.png",
+        "sha256": "3a701c9a04e8d299f7e99bc0d3d272d2e621babbe9c052d23651b621ca4f2218"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 6,
+      "block_id_hex": "0x06",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-06.png",
+        "sha256": "6a424d5320ea5654b7c49893756fe3c55a7bc9a64bbfdf2fca1d004235e3fb20"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 11,
+      "block_id_hex": "0x0B",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-0b.png",
+        "sha256": "eb1b74c6202157d9d50af25209fd49201e990c59b2d673eedc968293f56a5311"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 13,
+      "block_id_hex": "0x0D",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-0d.png",
+        "sha256": "47e5a6f7d685f5afdf2c35270b8984be4b10c2b1afd62a6733a904cd9855646d"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 16,
+      "block_id_hex": "0x10",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-10.png",
+        "sha256": "2379e741cae9238ea8496281feba0ea5c6d74ad066086424ace93ae779c2dc45"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 54,
+      "block_id_hex": "0x36",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-36.png",
+        "sha256": "9985fa7426960b10a496e2993e4dff79d267a410d3d969fd0dc9f064973757f4"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 56,
+      "block_id_hex": "0x38",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-38.png",
+        "sha256": "407a30c2d34d49a623f4a18ab0c53aa76eadf9a34986234c066bc30de8f31673"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 57,
+      "block_id_hex": "0x39",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-39.png",
+        "sha256": "3a701c9a04e8d299f7e99bc0d3d272d2e621babbe9c052d23651b621ca4f2218"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 61,
+      "block_id_hex": "0x3D",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-3d.png",
+        "sha256": "1e0df64d4f530c5519473506de88e1d6929bad1191f3b642558f46de0b8a9bfe"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 62,
+      "block_id_hex": "0x3E",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-3e.png",
+        "sha256": "19d410724fdf7e7ddf222aa62415788e1ea43666a53e119e250bc9860c131cba"
+      }
+    },
+    {
+      "source": "HEAD7.DAX",
+      "kind": "head",
+      "archive": 7,
+      "block_id": 74,
+      "block_id_hex": "0x4A",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head7-4a.png",
+        "sha256": "d0d5e307af95a9e3c5a40ac4e31c1bc64a77660c97d4292b0ce5e414f13d6066"
+      }
+    },
+    {
+      "source": "HEAD8.DAX",
+      "kind": "head",
+      "archive": 8,
+      "block_id": 10,
+      "block_id_hex": "0x0A",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head8-0a.png",
+        "sha256": "d671478b620a20652448b3b48ea184372d2ba3f76f50a639de8874ac41183eb3"
+      }
+    },
+    {
+      "source": "HEAD8.DAX",
+      "kind": "head",
+      "archive": 8,
+      "block_id": 67,
+      "block_id_hex": "0x43",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head8-43.png",
+        "sha256": "670152eefecd830a1bd408936eb67229e361585aee3e93d7511bc417d78019ea"
+      }
+    },
+    {
+      "source": "HEAD8.DAX",
+      "kind": "head",
+      "archive": 8,
+      "block_id": 69,
+      "block_id_hex": "0x45",
+      "width": 88,
+      "height": 40,
+      "png": {
+        "path": "docs/archaeology/img/portraits/head8-45.png",
+        "sha256": "0ed373822c1e6d8c98a3add155862f57032d6475986979cf1968893784cd38f1"
+      }
+    }
+  ],
+  "overview_png": {
+    "path": "docs/archaeology/img/portraits/overview.png",
+    "sha256": "2e8b383cdab91414630100b70f8b6caf5c5d8423b321236260e5ba9174f8130c"
+  },
+  "creation_grid": {
+    "png": {
+      "path": "docs/archaeology/img/portraits/creation-grid.png",
+      "sha256": "3aee5b7c900a0e02d5af4135b7edcf8ec4952baba8da9deec1a4fc53587266d0"
+    },
+    "archive": 3,
+    "head_selectors": [
+      {
+        "selector": 1,
+        "block_id": 0,
+        "block_id_hex": "0x00"
+      },
+      {
+        "selector": 2,
+        "block_id": 8,
+        "block_id_hex": "0x08"
+      },
+      {
+        "selector": 3,
+        "block_id": 9,
+        "block_id_hex": "0x09"
+      },
+      {
+        "selector": 4,
+        "block_id": 13,
+        "block_id_hex": "0x0D"
+      },
+      {
+        "selector": 5,
+        "block_id": 16,
+        "block_id_hex": "0x10"
+      },
+      {
+        "selector": 6,
+        "block_id": 18,
+        "block_id_hex": "0x12"
+      },
+      {
+        "selector": 7,
+        "block_id": 22,
+        "block_id_hex": "0x16"
+      },
+      {
+        "selector": 8,
+        "block_id": 34,
+        "block_id_hex": "0x22"
+      },
+      {
+        "selector": 9,
+        "block_id": 45,
+        "block_id_hex": "0x2D"
+      },
+      {
+        "selector": 10,
+        "block_id": 51,
+        "block_id_hex": "0x33"
+      },
+      {
+        "selector": 11,
+        "block_id": 53,
+        "block_id_hex": "0x35"
+      },
+      {
+        "selector": 12,
+        "block_id": 57,
+        "block_id_hex": "0x39"
+      },
+      {
+        "selector": 13,
+        "block_id": 67,
+        "block_id_hex": "0x43"
+      },
+      {
+        "selector": 14,
+        "block_id": 68,
+        "block_id_hex": "0x44"
+      }
+    ],
+    "body_selectors": [
+      {
+        "selector": 1,
+        "block_id": 1,
+        "block_id_hex": "0x01"
+      },
+      {
+        "selector": 2,
+        "block_id": 2,
+        "block_id_hex": "0x02"
+      },
+      {
+        "selector": 3,
+        "block_id": 3,
+        "block_id_hex": "0x03"
+      },
+      {
+        "selector": 4,
+        "block_id": 4,
+        "block_id_hex": "0x04"
+      },
+      {
+        "selector": 5,
+        "block_id": 7,
+        "block_id_hex": "0x07"
+      },
+      {
+        "selector": 6,
+        "block_id": 8,
+        "block_id_hex": "0x08"
+      },
+      {
+        "selector": 7,
+        "block_id": 18,
+        "block_id_hex": "0x12"
+      },
+      {
+        "selector": 8,
+        "block_id": 24,
+        "block_id_hex": "0x18"
+      },
+      {
+        "selector": 9,
+        "block_id": 26,
+        "block_id_hex": "0x1A"
+      },
+      {
+        "selector": 10,
+        "block_id": 33,
+        "block_id_hex": "0x21"
+      },
+      {
+        "selector": 11,
+        "block_id": 35,
+        "block_id_hex": "0x23"
+      },
+      {
+        "selector": 12,
+        "block_id": 37,
+        "block_id_hex": "0x25"
+      }
+    ],
+    "evidence": "exact",
+    "source": "docs/spec/006-dos-portrait-archives.md；internal/assets/portrait.go"
+  },
+  "known_npc_portraits": [
+    {
+      "name": "Rolf",
+      "archive": 3,
+      "head_block": 8,
+      "body_block": 9,
+      "png": {
+        "path": "docs/archaeology/img/portraits/npc-rolf-archive3-head08-body09.png",
+        "sha256": "62daea492944b07f309a0517ab13a805968115c7065b3e82a17e0ede4c77d898"
+      },
+      "evidence": "exact",
+      "source": "docs/spec/117-npc-approach-portrait.md；internal/assets/npc_portrait_test.go"
+    }
+  ],
+  "notes": [
+    "raw_portraits 涵蓋 16 個 archive 的全部 109 個 block，逐張未裁切、未合成。",
+    "creation_grid 是唯一已驗證的建角組合（spec 006），只用 archive 3 的 HEAD／BODY。",
+    "known_npc_portraits 目前只有 Rolf 一筆——spec 117 記載其餘 NPC 的 head 選擇子（+5C2h）producer 尚未找到，沒有第二筆能同等確認的組合。"
+  ]
+}

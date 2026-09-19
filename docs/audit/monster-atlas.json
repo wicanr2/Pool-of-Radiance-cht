@@ -1,0 +1,7103 @@
+{
+ "schema": "pool-monster-atlas/2",
+ "generated_by": "cmd/pool-monster-atlas",
+ "zip_path": "Pool of Radiance (1988).zip",
+ "zip_sha256": "1a7386c3842d3c6b0d02d9e607af249b2b452adb396a17f0971d09b2346b1633",
+ "member_sha256": {
+  "CBODY.DAX": "9928778ce936d070675233abeb008b27656838b0b41bc5a398a62f9b42151601",
+  "CHEAD.DAX": "aecd2ebbcd0f6c9d6fe7fb490591ea0357c1ced8917be059cfd4e60e60d701d4",
+  "COMSPR.DAX": "6bff177f6776339a627be3c0199518a41330f01f462e8994f649804e488a86d5",
+  "ICON.DAX": "6ca4bce61eb5c31cf01ca1538dfa60401f24f286ba29d60926e4fd07cd7809eb",
+  "MON1CHA.DAX": "304cf750bac1474a3c5a1a15570795da598157e8e2da9f219cbc2ca0e4097225",
+  "MON2CHA.DAX": "30ba6c43886dcf9ac661b5c1870862da95c00e38040dbbe58d077d2fead3a2a0",
+  "MON2SPC.DAX": "8ab7c7a7593466eb269a9ea5fb1a48e08c5707cec0fb24aaaa1c36d3711645f8",
+  "MON3CHA.DAX": "bfcea37ee0ebb7549036e9815c367ccd6ffa4368c63945b0510ecc021ded0600",
+  "MON4CHA.DAX": "e6f6de26dcd8880d169667bf1fb2780409686e32a58be54624085a79e2fd715e",
+  "MON4SPC.DAX": "4e87bb3aeb9d6a8750dfad5d0fe5a416c5d921dac9a7f36dfce91492dda99343",
+  "MON5CHA.DAX": "dd8bc74ea450a581a1f7cacd4afc5c823bb0990ea6e5aa753d50619e21706d82",
+  "MON5SPC.DAX": "d711f338646c474afce4da37a7b0513f657e199e0b1a98c34d662d0a620f845c",
+  "MON6CHA.DAX": "2ad12c6a1f3b1f8a11fa39fa4752814dae0f9296fb032121913b06341624b53b",
+  "MON6SPC.DAX": "c3304d4a8b5fad3ce02917079453ae567a22e188c1121e92a3c0e33ffa6a37ff",
+  "MON7CHA.DAX": "af406dd08cd0e4b07069c9bfd2eade739628e565b87c981eb857f8d46ff36e36",
+  "MON7SPC.DAX": "e068cfe5d81874f8099944930b49d69460a031d70d779f846385a0e4aee2a5e5",
+  "MON8CHA.DAX": "3d47476ed41519a0adc730ff58f7787bc71aadd566c9a7459dee2c4b30c7fe83",
+  "MON8SPC.DAX": "b5d80a56634e30b764e1d2a032d8d1ce767b20b7f9bb1e5fc7f65cf67737df37"
+ },
+ "monsters": [
+  {
+   "archive": 1,
+   "block": 2,
+   "name": "GOBLIN GUARD",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 4,
+   "armor_class": 7,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 3,
+   "name": "GOBLIN LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 7,
+   "armor_class": 5,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 4,
+   "name": "ORC",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 5,
+   "name": "ORC LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 8,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 28,
+   "experience_per_hit_point": 2,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 6,
+   "name": "HOBGOBLIN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 5,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 7,
+   "name": "HOBGOBLIN LDR",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 5,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 8,
+   "name": "OGRE",
+   "creature_type_raw": 1,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 21,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 9,
+   "name": "OGRE LEADER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 32,
+   "armor_class": 3,
+   "thac0_surface": 2,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 225,
+   "experience_per_hit_point": 8,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 22,
+   "name": "GIANT SKELETON",
+   "creature_type_raw": 4,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 28,
+   "armor_class": 2,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 4,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 130,
+   "experience_per_hit_point": 5,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 23,
+   "name": "VAMPIRE",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 43,
+   "armor_class": 1,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 4,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 3800,
+   "experience_per_hit_point": 12,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 33,
+   "name": "MACE",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 17,
+   "max_hit_points": 25,
+   "armor_class": 7,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 215,
+   "experience_per_hit_point": 0,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 30,
+   "armor_class": 8,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 44,
+   "name": "ORC",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 1,
+   "block": 107,
+   "name": "DIRTEN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 26,
+   "armor_class": 9,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 2,
+   "block": 0,
+   "name": "KOBOLD",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 3,
+   "armor_class": 7,
+   "thac0_surface": 21,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 5,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 1,
+   "name": "KOBOLD LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 4,
+   "armor_class": 7,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 8,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 2,
+   "name": "GOBLIN GUARD",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 4,
+   "armor_class": 7,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 3,
+   "name": "GOBLIN LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 7,
+   "armor_class": 5,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 4,
+   "name": "ORC",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 5,
+   "name": "ORC LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 8,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 28,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 6,
+   "name": "HOBGOBLIN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 5,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 7,
+   "name": "HOBGOBLIN LDR",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 5,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 8,
+   "name": "OGRE",
+   "creature_type_raw": 1,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 21,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 11,
+   "name": "KOBOLD LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 4,
+   "armor_class": 7,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 8,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 12,
+   "name": "GOBLIN LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 7,
+   "armor_class": 5,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 13,
+   "name": "ORC",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 14,
+   "name": "ORC LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 8,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 28,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 15,
+   "name": "ORC LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 8,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 28,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 17,
+   "name": "SPECTRE",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 38,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 30,
+   "experience_base": 1650,
+   "experience_per_hit_point": 10,
+   "effects": [
+    {
+     "code": 109,
+     "code_hex": "6Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 111,
+     "code_hex": "6Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 108,
+     "code_hex": "6Ch",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 86,
+     "code_hex": "56h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 119,
+     "code_hex": "77h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON2SPC.DAX"
+  },
+  {
+   "archive": 2,
+   "block": 24,
+   "name": "LEVEL 6 MU",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 23,
+   "armor_class": 9,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 25,
+   "name": "MAD MAN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 7,
+   "armor_class": 4,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 26,
+   "name": "BASILISK",
+   "creature_type_raw": 11,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 31,
+   "armor_class": 4,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 1000,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 127,
+     "code_hex": "7Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 83,
+     "code_hex": "53h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON2SPC.DAX"
+  },
+  {
+   "archive": 2,
+   "block": 31,
+   "name": "TROLL",
+   "creature_type_raw": 10,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 36,
+   "armor_class": 4,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 4,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 525,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 100,
+     "code_hex": "64h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 101,
+     "code_hex": "65h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON2SPC.DAX"
+  },
+  {
+   "archive": 2,
+   "block": 53,
+   "name": "AIDES",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 18,
+   "armor_class": 8,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 55,
+   "name": "HILL GIANT",
+   "creature_type_raw": 2,
+   "body_size_raw": 130,
+   "dexterity": 0,
+   "max_hit_points": 41,
+   "armor_class": 4,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 1400,
+   "experience_per_hit_point": 12,
+   "effects": [
+    {
+     "code": 120,
+     "code_hex": "78h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON2SPC.DAX"
+  },
+  {
+   "archive": 2,
+   "block": 63,
+   "name": "BUGBEAR",
+   "creature_type_raw": 1,
+   "body_size_raw": 129,
+   "dexterity": 10,
+   "max_hit_points": 16,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 135,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 71,
+   "name": "ETTIN",
+   "creature_type_raw": 1,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 50,
+   "armor_class": 3,
+   "thac0_surface": 10,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 1950,
+   "experience_per_hit_point": 14,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 73,
+   "name": "GNOLL",
+   "creature_type_raw": 1,
+   "body_size_raw": 2,
+   "dexterity": 10,
+   "max_hit_points": 10,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 28,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 82,
+   "name": "LEVEL 6 MU",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 23,
+   "armor_class": 9,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 89,
+   "name": "5TH LVL MU",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 20,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 2,
+   "block": 94,
+   "name": "LEVEL 3 MU",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 9,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 50,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON2SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 3,
+   "block": 36,
+   "name": "SWORDSMAN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 18,
+   "armor_class": 8,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 40,
+   "name": "NOMAD",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 30,
+   "armor_class": 8,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 45,
+   "name": "1ST LVL THIEF",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 4,
+   "armor_class": 6,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 51,
+   "name": "6TH LVL THIEF",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 28,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 8,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 53,
+   "name": "AIDES",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 18,
+   "armor_class": 8,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 54,
+   "name": "CORPORAL",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 13,
+   "armor_class": 6,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 83,
+   "name": "7TH LVL CLERIC",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 42,
+   "armor_class": 8,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 350,
+   "experience_per_hit_point": 8,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 84,
+   "name": "6TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 85,
+   "name": "8TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 87,
+   "armor_class": 6,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 3,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 500,
+   "experience_per_hit_point": 10,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 94,
+   "name": "LEVEL 3 MU",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 9,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 50,
+   "experience_per_hit_point": 3,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 103,
+   "name": "WARRIOR",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 13,
+   "armor_class": 10,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 106,
+   "name": "WOLF",
+   "creature_type_raw": 15,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 18,
+   "armor_class": 7,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 1,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 18,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 107,
+   "name": "DIRTEN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 26,
+   "armor_class": 9,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 108,
+   "name": "ACOLYTE",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 8,
+   "armor_class": 10,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 109,
+   "name": "HERO",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 17,
+   "max_hit_points": 35,
+   "armor_class": 7,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 110,
+   "name": "THEURGIST",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 13,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 75,
+   "experience_per_hit_point": 4,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 111,
+   "name": "ROBBER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 16,
+   "armor_class": 6,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 112,
+   "name": "CURATE",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 26,
+   "armor_class": 9,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 3,
+   "block": 122,
+   "name": "EVOKER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "無 MONxSPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 4,
+   "name": "ORC",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 5,
+   "name": "ORC LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 8,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 28,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 6,
+   "name": "HOBGOBLIN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 5,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 7,
+   "name": "HOBGOBLIN LDR",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 5,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 8,
+   "name": "OGRE",
+   "creature_type_raw": 1,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 21,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 17,
+   "name": "SPECTRE",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 38,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 30,
+   "experience_base": 1650,
+   "experience_per_hit_point": 10,
+   "effects": [
+    {
+     "code": 109,
+     "code_hex": "6Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 111,
+     "code_hex": "6Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 108,
+     "code_hex": "6Ch",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 86,
+     "code_hex": "56h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 119,
+     "code_hex": "77h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 18,
+   "name": "LARGE SCORPION",
+   "creature_type_raw": 14,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 10,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 1,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 9,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects": [
+    {
+     "code": 66,
+     "code_hex": "42h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 19,
+   "name": "FERRAN MARTINEZ",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 38,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 30,
+   "experience_base": 1650,
+   "experience_per_hit_point": 10,
+   "effects": [
+    {
+     "code": 109,
+     "code_hex": "6Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 111,
+     "code_hex": "6Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 108,
+     "code_hex": "6Ch",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 86,
+     "code_hex": "56h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 119,
+     "code_hex": "77h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 20,
+   "name": "WIGHT",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 23,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 540,
+   "experience_per_hit_point": 5,
+   "effects": [
+    {
+     "code": 96,
+     "code_hex": "60h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 109,
+     "code_hex": "6Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 111,
+     "code_hex": "6Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 108,
+     "code_hex": "6Ch",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 85,
+     "code_hex": "55h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 21,
+   "name": "WRAITH",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 24,
+   "armor_class": 4,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 24,
+   "experience_base": 575,
+   "experience_per_hit_point": 6,
+   "effects": [
+    {
+     "code": 85,
+     "code_hex": "55h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 111,
+     "code_hex": "6Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 109,
+     "code_hex": "6Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 108,
+     "code_hex": "6Ch",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 123,
+     "code_hex": "7Bh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 22,
+   "name": "GIANT SKELETON",
+   "creature_type_raw": 4,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 28,
+   "armor_class": 2,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 4,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 130,
+   "experience_per_hit_point": 5,
+   "effects": [
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 125,
+     "code_hex": "7Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 115,
+     "code_hex": "73h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 23,
+   "name": "VAMPIRE",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 43,
+   "armor_class": 1,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 4,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 3800,
+   "experience_per_hit_point": 12,
+   "effects": [
+    {
+     "code": 84,
+     "code_hex": "54h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 118,
+     "code_hex": "76h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 114,
+     "code_hex": "72h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 126,
+     "code_hex": "7Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 125,
+     "code_hex": "7Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 119,
+     "code_hex": "77h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 103,
+     "code_hex": "67h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 98,
+     "code_hex": "62h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 86,
+     "code_hex": "56h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 24,
+   "name": "LEVEL 6 MU",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 23,
+   "armor_class": 9,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 27,
+   "name": "SKULLCRUSHER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 16,
+   "max_hit_points": 39,
+   "armor_class": 8,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 1,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 28,
+   "name": "GRISHNAK",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 13,
+   "max_hit_points": 24,
+   "armor_class": 5,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 275,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 29,
+   "name": "JUJU ZOMBIE",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 24,
+   "armor_class": 6,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 110,
+   "experience_per_hit_point": 4,
+   "effects": [
+    {
+     "code": 119,
+     "code_hex": "77h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 94,
+     "code_hex": "5Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 93,
+     "code_hex": "5Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 91,
+     "code_hex": "5Bh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 125,
+     "code_hex": "7Dh",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 34,
+   "name": "SKELETON",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 7,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 14,
+   "experience_per_hit_point": 1,
+   "effects": [
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 125,
+     "code_hex": "7Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 115,
+     "code_hex": "73h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 35,
+   "name": "ZOMBIE",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 0,
+   "max_hit_points": 10,
+   "armor_class": 8,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects": [
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 125,
+     "code_hex": "7Dh",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 38,
+   "name": "POISONOUS FROG",
+   "creature_type_raw": 11,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 4,
+   "armor_class": 8,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 1,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 9,
+   "experience_base": 35,
+   "experience_per_hit_point": 1,
+   "effects": [
+    {
+     "code": 65,
+     "code_hex": "41h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 39,
+   "name": "HUGE SCORPION",
+   "creature_type_raw": 14,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 20,
+   "armor_class": 4,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects": [
+    {
+     "code": 64,
+     "code_hex": "40h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 70,
+   "name": "EFREETI",
+   "creature_type_raw": 7,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 55,
+   "armor_class": 2,
+   "thac0_surface": 10,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 24,
+   "experience_base": 1950,
+   "experience_per_hit_point": 14,
+   "effects": [
+    {
+     "code": 113,
+     "code_hex": "71h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 72,
+   "name": "GHOUL",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 10,
+   "armor_class": 6,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 9,
+   "experience_base": 65,
+   "experience_per_hit_point": 2,
+   "effects": [
+    {
+     "code": 108,
+     "code_hex": "6Ch",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 68,
+     "code_hex": "44h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 104,
+   "name": "PRINCESS FATIMA",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 33,
+   "armor_class": 6,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 105,
+   "name": "VAMPIRE",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 15,
+   "armor_class": 1,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 4,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 3800,
+   "experience_per_hit_point": 12,
+   "effects": [
+    {
+     "code": 0,
+     "code_hex": "00h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 118,
+     "code_hex": "76h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 114,
+     "code_hex": "72h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 84,
+     "code_hex": "54h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 125,
+     "code_hex": "7Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 119,
+     "code_hex": "77h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 126,
+     "code_hex": "7Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 98,
+     "code_hex": "62h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 86,
+     "code_hex": "56h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 4,
+   "block": 106,
+   "name": "WOLF",
+   "creature_type_raw": 15,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 18,
+   "armor_class": 7,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 1,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 18,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON4SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 4,
+   "block": 114,
+   "name": "MUMMY",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 33,
+   "armor_class": 3,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 12,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 1150,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 117,
+     "code_hex": "75h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 122,
+     "code_hex": "7Ah",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 110,
+     "code_hex": "6Eh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 125,
+     "code_hex": "7Dh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 119,
+     "code_hex": "77h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 116,
+     "code_hex": "74h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 87,
+     "code_hex": "57h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 82,
+     "code_hex": "52h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON4SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 26,
+   "name": "BASILISK",
+   "creature_type_raw": 11,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 31,
+   "armor_class": 4,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 1000,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 127,
+     "code_hex": "7Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 83,
+     "code_hex": "53h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 31,
+   "name": "TROLL",
+   "creature_type_raw": 10,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 36,
+   "armor_class": 4,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 4,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 525,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 100,
+     "code_hex": "64h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 101,
+     "code_hex": "65h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 30,
+   "armor_class": 8,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 45,
+   "name": "1ST LVL THIEF",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 4,
+   "armor_class": 6,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 49,
+   "name": "MEDUSA",
+   "creature_type_raw": 17,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 30,
+   "armor_class": 5,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 9,
+   "experience_base": 725,
+   "experience_per_hit_point": 6,
+   "effects": [
+    {
+     "code": 64,
+     "code_hex": "40h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 127,
+     "code_hex": "7Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 83,
+     "code_hex": "53h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 55,
+   "name": "HILL GIANT",
+   "creature_type_raw": 2,
+   "body_size_raw": 130,
+   "dexterity": 0,
+   "max_hit_points": 41,
+   "armor_class": 4,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 1400,
+   "experience_per_hit_point": 12,
+   "effects": [
+    {
+     "code": 120,
+     "code_hex": "78h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 56,
+   "name": "FIRE GIANT",
+   "creature_type_raw": 2,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 59,
+   "armor_class": 3,
+   "thac0_surface": 9,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 5,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 2700,
+   "experience_per_hit_point": 16,
+   "effects": [
+    {
+     "code": 120,
+     "code_hex": "78h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 112,
+     "code_hex": "70h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 60,
+   "name": "GIANT SNAKE",
+   "creature_type_raw": 14,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 25,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 6,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 135,
+   "experience_per_hit_point": 5,
+   "effects": [
+    {
+     "code": 64,
+     "code_hex": "40h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 66,
+   "name": "TYRANITHRAXUS",
+   "creature_type_raw": 3,
+   "body_size_raw": 132,
+   "dexterity": 19,
+   "max_hit_points": 80,
+   "armor_class": 0,
+   "thac0_surface": 5,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 4,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 24,
+   "experience_base": 2550,
+   "experience_per_hit_point": 14,
+   "effects": [
+    {
+     "code": 24,
+     "code_hex": "18h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 106,
+     "code_hex": "6Ah",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 79,
+     "code_hex": "4Fh",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 81,
+     "code_hex": "51h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 89,
+     "code_hex": "59h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 88,
+     "code_hex": "58h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 5,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 84,
+   "name": "6TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 85,
+   "name": "8TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 87,
+   "armor_class": 6,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 3,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 500,
+   "experience_per_hit_point": 10,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 86,
+   "name": "AL-HYAM DAZID",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 22,
+   "armor_class": 9,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 350,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 87,
+   "name": "ENVOY",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 11,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 88,
+   "name": "GENHEERIS",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 22,
+   "armor_class": 9,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 350,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 90,
+   "name": "1ST LVL CLERIC",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 8,
+   "armor_class": 10,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 91,
+   "name": "LEVEL 5 CLERIC",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 29,
+   "armor_class": 10,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 130,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 92,
+   "name": "TYRANITHRAXUS",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 40,
+   "armor_class": 6,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 375,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON5SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 5,
+   "block": 93,
+   "name": "6TH LVL THIEF",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 28,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 72,
+     "code_hex": "48h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON5SPC.DAX"
+  },
+  {
+   "archive": 6,
+   "block": 10,
+   "name": "QUICKLINGS",
+   "creature_type_raw": 7,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 7,
+   "armor_class": -3,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 6,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 96,
+   "experience_base": 200,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 30,
+   "armor_class": 8,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 45,
+   "name": "1ST LVL THIEF",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 4,
+   "armor_class": 6,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 48,
+   "name": "DWARVEN FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 50,
+   "armor_class": 8,
+   "thac0_surface": 14,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 50,
+   "name": "COMMANDANT",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 16,
+   "max_hit_points": 100,
+   "armor_class": 5,
+   "thac0_surface": 10,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 3,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 600,
+   "experience_per_hit_point": 12,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 51,
+   "name": "6TH LVL THIEF",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 28,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 53,
+   "name": "AIDES",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 18,
+   "armor_class": 8,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 54,
+   "name": "CORPORAL",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 13,
+   "armor_class": 6,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 60,
+   "name": "GIANT SNAKE",
+   "creature_type_raw": 14,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 25,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 6,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 135,
+   "experience_per_hit_point": 5,
+   "effects": [
+    {
+     "code": 64,
+     "code_hex": "40h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON6SPC.DAX"
+  },
+  {
+   "archive": 6,
+   "block": 65,
+   "name": "AHNKHEG",
+   "creature_type_raw": 16,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 40,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 390,
+   "experience_per_hit_point": 1,
+   "effects": [
+    {
+     "code": 80,
+     "code_hex": "50h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 121,
+     "code_hex": "79h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON6SPC.DAX"
+  },
+  {
+   "archive": 6,
+   "block": 67,
+   "name": "CENTAUR",
+   "creature_type_raw": 15,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 20,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 18,
+   "experience_base": 85,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 74,
+   "name": "GIANT MANTIS",
+   "creature_type_raw": 0,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 55,
+   "armor_class": 3,
+   "thac0_surface": 10,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 1350,
+   "experience_per_hit_point": 14,
+   "effects": [
+    {
+     "code": 77,
+     "code_hex": "4Dh",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON6SPC.DAX"
+  },
+  {
+   "archive": 6,
+   "block": 86,
+   "name": "AL-HYAM DAZID",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 22,
+   "armor_class": 9,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 350,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 96,
+   "name": "GUARD",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 4,
+   "armor_class": 10,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 97,
+   "name": "BANDIT",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 99,
+   "name": "BUCCANEER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 4,
+   "armor_class": 10,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 100,
+   "name": "3RD LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 18,
+   "armor_class": 8,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 101,
+   "name": "5TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 15,
+   "max_hit_points": 39,
+   "armor_class": 9,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 102,
+   "name": "CAPTAIN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 17,
+   "max_hit_points": 110,
+   "armor_class": 7,
+   "thac0_surface": 10,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 3,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 900,
+   "experience_per_hit_point": 14,
+   "effects_source": "MON6SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 6,
+   "block": 118,
+   "name": "THRI-KREEN",
+   "creature_type_raw": 16,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 33,
+   "armor_class": 5,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 8,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 1,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 18,
+   "experience_base": 800,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 104,
+     "code_hex": "68h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 67,
+     "code_hex": "43h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON6SPC.DAX"
+  },
+  {
+   "archive": 6,
+   "block": 119,
+   "name": "TIGER",
+   "creature_type_raw": 15,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 38,
+   "armor_class": 6,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 1,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 6,
+   "effects": [
+    {
+     "code": 73,
+     "code_hex": "49h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON6SPC.DAX"
+  },
+  {
+   "archive": 6,
+   "block": 120,
+   "name": "WILD BOAR",
+   "creature_type_raw": 15,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 18,
+   "armor_class": 7,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 15,
+   "experience_base": 85,
+   "experience_per_hit_point": 4,
+   "effects": [
+    {
+     "code": 99,
+     "code_hex": "63h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON6SPC.DAX"
+  },
+  {
+   "archive": 7,
+   "block": 0,
+   "name": "KOBOLD",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 3,
+   "armor_class": 7,
+   "thac0_surface": 21,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 5,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 1,
+   "name": "KOBOLD LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 4,
+   "armor_class": 7,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 8,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 40,
+   "name": "NOMAD",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 41,
+   "name": "4TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 30,
+   "armor_class": 8,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 42,
+   "name": "HASSAD",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 43,
+   "name": "SHAMAN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 20,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 44,
+   "name": "ORC",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 53,
+   "name": "AIDES",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 14,
+   "max_hit_points": 18,
+   "armor_class": 8,
+   "thac0_surface": 18,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 35,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 57,
+   "name": "LIZARDMAN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 11,
+   "armor_class": 4,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 2,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 6,
+   "experience_base": 65,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 58,
+   "name": "MUTANT LIZ-MAN ",
+   "creature_type_raw": 11,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 18,
+   "armor_class": 3,
+   "thac0_surface": 14,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 6,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 61,
+   "name": "STIRGE",
+   "creature_type_raw": 12,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 5,
+   "armor_class": 8,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 18,
+   "experience_base": 36,
+   "experience_per_hit_point": 2,
+   "effects": [
+    {
+     "code": 76,
+     "code_hex": "4Ch",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON7SPC.DAX"
+  },
+  {
+   "archive": 7,
+   "block": 62,
+   "name": "MINOTAUR",
+   "creature_type_raw": 17,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 33,
+   "armor_class": 6,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 400,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 68,
+   "name": "DISPLACER BEAST",
+   "creature_type_raw": 17,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 30,
+   "armor_class": 2,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 2,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 15,
+   "experience_base": 475,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 69,
+   "name": "DRIDER",
+   "creature_type_raw": 16,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 36,
+   "armor_class": 3,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 875,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 69,
+     "code_hex": "45h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON7SPC.DAX"
+  },
+  {
+   "archive": 7,
+   "block": 75,
+   "name": "6TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 150,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 76,
+   "name": "7TH LVL DW FIGH",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 50,
+   "armor_class": 4,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 77,
+   "name": "7TH LVL THIEF",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 28,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 78,
+   "name": "2ND LVL CLERIC",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 8,
+   "armor_class": 10,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 20,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 79,
+   "name": "DIANE",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 20,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 80,
+   "name": "7TH LVL FIGHTER",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 50,
+   "armor_class": 8,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 81,
+   "name": "YARASH",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 27,
+   "armor_class": 9,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 600,
+   "experience_per_hit_point": 12,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 97,
+   "name": "BANDIT",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 98,
+   "name": "MERCHANT",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 6,
+   "armor_class": 6,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 10,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 7,
+   "block": 123,
+   "name": "KOBOLD",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 3,
+   "armor_class": 7,
+   "thac0_surface": 21,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 5,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON7SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 0,
+   "name": "KOBOLD",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 3,
+   "armor_class": 7,
+   "thac0_surface": 21,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 5,
+   "experience_per_hit_point": 1,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 1,
+   "name": "KOBOLD LEADER",
+   "creature_type_raw": 1,
+   "body_size_raw": 1,
+   "dexterity": 12,
+   "max_hit_points": 4,
+   "armor_class": 7,
+   "thac0_surface": 19,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 6,
+   "experience_base": 8,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 31,
+   "name": "TROLL",
+   "creature_type_raw": 10,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 36,
+   "armor_class": 4,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 4,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 525,
+   "experience_per_hit_point": 8,
+   "effects": [
+    {
+     "code": 100,
+     "code_hex": "64h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 101,
+     "code_hex": "65h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON8SPC.DAX"
+  },
+  {
+   "archive": 8,
+   "block": 32,
+   "name": "NORRIS THE GRAY",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 17,
+   "max_hit_points": 25,
+   "armor_class": 7,
+   "thac0_surface": 14,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 215,
+   "experience_per_hit_point": 0,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 57,
+   "name": "LIZARDMAN",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 11,
+   "armor_class": 4,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 2,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 6,
+   "experience_base": 65,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 59,
+   "name": "GIANT LIZARD",
+   "creature_type_raw": 11,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 16,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 15,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 62,
+   "name": "MINOTAUR",
+   "creature_type_raw": 17,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 33,
+   "armor_class": 6,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 12,
+   "experience_base": 400,
+   "experience_per_hit_point": 8,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 72,
+   "name": "GHOUL",
+   "creature_type_raw": 4,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 10,
+   "armor_class": 6,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 9,
+   "experience_base": 65,
+   "experience_per_hit_point": 2,
+   "effects": [
+    {
+     "code": 108,
+     "code_hex": "6Ch",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 68,
+     "code_hex": "44h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON8SPC.DAX"
+  },
+  {
+   "archive": 8,
+   "block": 73,
+   "name": "GNOLL",
+   "creature_type_raw": 1,
+   "body_size_raw": 2,
+   "dexterity": 10,
+   "max_hit_points": 10,
+   "armor_class": 5,
+   "thac0_surface": 16,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 9,
+   "experience_base": 28,
+   "experience_per_hit_point": 2,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 87,
+   "name": "ENVOY",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 45,
+   "armor_class": 2,
+   "thac0_surface": 11,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 8,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 225,
+   "experience_per_hit_point": 6,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 94,
+   "name": "LEVEL 3 MU",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 9,
+   "armor_class": 9,
+   "thac0_surface": 20,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 2,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 50,
+   "experience_per_hit_point": 3,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 95,
+   "name": "DRYTHH",
+   "creature_type_raw": 11,
+   "body_size_raw": 1,
+   "dexterity": 10,
+   "max_hit_points": 18,
+   "armor_class": 3,
+   "thac0_surface": 11,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 6,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 104,
+   "name": "PRINCESS FATIMA",
+   "creature_type_raw": 0,
+   "body_size_raw": 1,
+   "dexterity": 18,
+   "max_hit_points": 33,
+   "armor_class": 6,
+   "thac0_surface": 17,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 3,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 12,
+   "experience_base": 90,
+   "experience_per_hit_point": 5,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 113,
+   "name": "HIPPOGRIFF",
+   "creature_type_raw": 0,
+   "body_size_raw": 131,
+   "dexterity": 10,
+   "max_hit_points": 18,
+   "armor_class": 5,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 4,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 10,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 36,
+   "experience_base": 60,
+   "experience_per_hit_point": 4,
+   "effects_source": "MON8SPC.DAX（此 block 無節點）"
+  },
+  {
+   "archive": 8,
+   "block": 116,
+   "name": "PHASE SPIDER",
+   "creature_type_raw": 0,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 35,
+   "armor_class": 7,
+   "thac0_surface": 13,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 6,
+   "experience_base": 700,
+   "experience_per_hit_point": 6,
+   "effects": [
+    {
+     "code": 37,
+     "code_hex": "25h",
+     "payload_hex": "0000FF00"
+    },
+    {
+     "code": 70,
+     "code_hex": "46h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON8SPC.DAX"
+  },
+  {
+   "archive": 8,
+   "block": 120,
+   "name": "WILD BOAR",
+   "creature_type_raw": 15,
+   "body_size_raw": 3,
+   "dexterity": 10,
+   "max_hit_points": 18,
+   "armor_class": 7,
+   "thac0_surface": 15,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 4,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 15,
+   "experience_base": 85,
+   "experience_per_hit_point": 4,
+   "effects": [
+    {
+     "code": 99,
+     "code_hex": "63h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON8SPC.DAX"
+  },
+  {
+   "archive": 8,
+   "block": 121,
+   "name": "WYVERN",
+   "creature_type_raw": 17,
+   "body_size_raw": 132,
+   "dexterity": 10,
+   "max_hit_points": 42,
+   "armor_class": 3,
+   "thac0_surface": 12,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 2,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 2,
+     "dice_count": 1,
+     "dice_sides": 6,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    }
+   ],
+   "movement": 24,
+   "experience_base": 925,
+   "experience_per_hit_point": 10,
+   "effects": [
+    {
+     "code": 64,
+     "code_hex": "40h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON8SPC.DAX"
+  },
+  {
+   "archive": 8,
+   "block": 124,
+   "name": "EFREETI",
+   "creature_type_raw": 7,
+   "body_size_raw": 130,
+   "dexterity": 10,
+   "max_hit_points": 55,
+   "armor_class": 2,
+   "thac0_surface": 10,
+   "attacks": [
+    {
+     "slot": 1,
+     "attack_rate_raw": 2,
+     "dice_count": 3,
+     "dice_sides": 8,
+     "dice_bonus": 0,
+     "has_no_damage": false
+    },
+    {
+     "slot": 2,
+     "attack_rate_raw": 0,
+     "dice_count": 0,
+     "dice_sides": 0,
+     "dice_bonus": 0,
+     "has_no_damage": true
+    }
+   ],
+   "movement": 24,
+   "experience_base": 1950,
+   "experience_per_hit_point": 14,
+   "effects": [
+    {
+     "code": 113,
+     "code_hex": "71h",
+     "payload_hex": "0000FF00"
+    }
+   ],
+   "effects_source": "MON8SPC.DAX"
+  }
+ ],
+ "bodies": {
+  "description": "怪物在戰場上的實際造形：CBODY.DAX 的三十二種身體各配同一顆頭（CHEAD.DAX block 1），配色沿用 drawMonsterOverview 的預設六組。",
+  "body_member": "CBODY.DAX",
+  "body_sha256": "9928778ce936d070675233abeb008b27656838b0b41bc5a398a62f9b42151601",
+  "head_member": "CHEAD.DAX",
+  "head_sha256": "aecd2ebbcd0f6c9d6fe7fb490591ea0357c1ced8917be059cfd4e60e60d701d4",
+  "head_used": 1,
+  "colours": [
+   [
+    1,
+    9
+   ],
+   [
+    2,
+    10
+   ],
+   [
+    3,
+    11
+   ],
+   [
+    4,
+    12
+   ],
+   [
+    6,
+    14
+   ],
+   [
+    7,
+    15
+   ]
+  ],
+  "bodies": [
+   {
+    "body": 0,
+    "body_block_hex": "40h",
+    "head_block_hex": "41h",
+    "file": "cbody-00.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 1,
+    "body_block_hex": "41h",
+    "head_block_hex": "41h",
+    "file": "cbody-01.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 2,
+    "body_block_hex": "42h",
+    "head_block_hex": "41h",
+    "file": "cbody-02.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 3,
+    "body_block_hex": "43h",
+    "head_block_hex": "41h",
+    "file": "cbody-03.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 4,
+    "body_block_hex": "44h",
+    "head_block_hex": "41h",
+    "file": "cbody-04.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 5,
+    "body_block_hex": "45h",
+    "head_block_hex": "41h",
+    "file": "cbody-05.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 6,
+    "body_block_hex": "46h",
+    "head_block_hex": "41h",
+    "file": "cbody-06.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 7,
+    "body_block_hex": "47h",
+    "head_block_hex": "41h",
+    "file": "cbody-07.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 8,
+    "body_block_hex": "48h",
+    "head_block_hex": "41h",
+    "file": "cbody-08.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 9,
+    "body_block_hex": "49h",
+    "head_block_hex": "41h",
+    "file": "cbody-09.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 10,
+    "body_block_hex": "4Ah",
+    "head_block_hex": "41h",
+    "file": "cbody-10.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 11,
+    "body_block_hex": "4Bh",
+    "head_block_hex": "41h",
+    "file": "cbody-11.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 12,
+    "body_block_hex": "4Ch",
+    "head_block_hex": "41h",
+    "file": "cbody-12.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 13,
+    "body_block_hex": "4Dh",
+    "head_block_hex": "41h",
+    "file": "cbody-13.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 14,
+    "body_block_hex": "4Eh",
+    "head_block_hex": "41h",
+    "file": "cbody-14.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 15,
+    "body_block_hex": "4Fh",
+    "head_block_hex": "41h",
+    "file": "cbody-15.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 16,
+    "body_block_hex": "50h",
+    "head_block_hex": "41h",
+    "file": "cbody-16.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 17,
+    "body_block_hex": "51h",
+    "head_block_hex": "41h",
+    "file": "cbody-17.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 18,
+    "body_block_hex": "52h",
+    "head_block_hex": "41h",
+    "file": "cbody-18.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 19,
+    "body_block_hex": "53h",
+    "head_block_hex": "41h",
+    "file": "cbody-19.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 20,
+    "body_block_hex": "54h",
+    "head_block_hex": "41h",
+    "file": "cbody-20.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 21,
+    "body_block_hex": "55h",
+    "head_block_hex": "41h",
+    "file": "cbody-21.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 22,
+    "body_block_hex": "56h",
+    "head_block_hex": "41h",
+    "file": "cbody-22.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 23,
+    "body_block_hex": "57h",
+    "head_block_hex": "41h",
+    "file": "cbody-23.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 24,
+    "body_block_hex": "58h",
+    "head_block_hex": "41h",
+    "file": "cbody-24.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 25,
+    "body_block_hex": "59h",
+    "head_block_hex": "41h",
+    "file": "cbody-25.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 26,
+    "body_block_hex": "5Ah",
+    "head_block_hex": "41h",
+    "file": "cbody-26.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 27,
+    "body_block_hex": "5Bh",
+    "head_block_hex": "41h",
+    "file": "cbody-27.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 28,
+    "body_block_hex": "5Ch",
+    "head_block_hex": "41h",
+    "file": "cbody-28.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 29,
+    "body_block_hex": "5Dh",
+    "head_block_hex": "41h",
+    "file": "cbody-29.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 30,
+    "body_block_hex": "5Eh",
+    "head_block_hex": "41h",
+    "file": "cbody-30.png",
+    "width": 24,
+    "height": 24
+   },
+   {
+    "body": 31,
+    "body_block_hex": "5Fh",
+    "head_block_hex": "41h",
+    "file": "cbody-31.png",
+    "width": 24,
+    "height": 24
+   }
+  ]
+ },
+ "sprites": {
+  "comspr": {
+   "description": "戰鬥特效與狀態圖示（箭、飛斧、擲石、閃光、爆炸等），不是怪物造形——實際怪物造形見 bodies 區塊的 CBODY.DAX 匯出。",
+   "member": "COMSPR.DAX",
+   "sha256": "6bff177f6776339a627be3c0199518a41330f01f462e8994f649804e488a86d5",
+   "blocks": [
+    {
+     "id": 0,
+     "hex": "00h",
+     "pose": "stand",
+     "stand_id": 0,
+     "file": "comspr-00-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 1,
+     "hex": "01h",
+     "pose": "stand",
+     "stand_id": 1,
+     "file": "comspr-01-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 2,
+     "hex": "02h",
+     "pose": "stand",
+     "stand_id": 2,
+     "file": "comspr-02-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 3,
+     "hex": "03h",
+     "pose": "stand",
+     "stand_id": 3,
+     "file": "comspr-03-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 4,
+     "hex": "04h",
+     "pose": "stand",
+     "stand_id": 4,
+     "file": "comspr-04-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 5,
+     "hex": "05h",
+     "pose": "stand",
+     "stand_id": 5,
+     "file": "comspr-05-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 6,
+     "hex": "06h",
+     "pose": "stand",
+     "stand_id": 6,
+     "file": "comspr-06-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 7,
+     "hex": "07h",
+     "pose": "stand",
+     "stand_id": 7,
+     "file": "comspr-07-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 8,
+     "hex": "08h",
+     "pose": "stand",
+     "stand_id": 8,
+     "file": "comspr-08-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 9,
+     "hex": "09h",
+     "pose": "stand",
+     "stand_id": 9,
+     "file": "comspr-09-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 10,
+     "hex": "0Ah",
+     "pose": "stand",
+     "stand_id": 10,
+     "file": "comspr-0a-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 11,
+     "hex": "0Bh",
+     "pose": "stand",
+     "stand_id": 11,
+     "file": "comspr-0b-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 25,
+     "hex": "19h",
+     "pose": "stand",
+     "stand_id": 25,
+     "file": "comspr-19-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 128,
+     "hex": "80h",
+     "pose": "action",
+     "stand_id": 0,
+     "file": "comspr-00-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 129,
+     "hex": "81h",
+     "pose": "action",
+     "stand_id": 1,
+     "file": "comspr-01-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 130,
+     "hex": "82h",
+     "pose": "action",
+     "stand_id": 2,
+     "file": "comspr-02-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 131,
+     "hex": "83h",
+     "pose": "action",
+     "stand_id": 3,
+     "file": "comspr-03-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 132,
+     "hex": "84h",
+     "pose": "action",
+     "stand_id": 4,
+     "file": "comspr-04-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 133,
+     "hex": "85h",
+     "pose": "action",
+     "stand_id": 5,
+     "file": "comspr-05-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 134,
+     "hex": "86h",
+     "pose": "action",
+     "stand_id": 6,
+     "file": "comspr-06-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 135,
+     "hex": "87h",
+     "pose": "action",
+     "stand_id": 7,
+     "file": "comspr-07-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 136,
+     "hex": "88h",
+     "pose": "action",
+     "stand_id": 8,
+     "file": "comspr-08-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 137,
+     "hex": "89h",
+     "pose": "action",
+     "stand_id": 9,
+     "file": "comspr-09-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 138,
+     "hex": "8Ah",
+     "pose": "action",
+     "stand_id": 10,
+     "file": "comspr-0a-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 139,
+     "hex": "8Bh",
+     "pose": "action",
+     "stand_id": 11,
+     "file": "comspr-0b-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 153,
+     "hex": "99h",
+     "pose": "action",
+     "stand_id": 25,
+     "file": "comspr-19-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    }
+   ]
+  },
+  "icon": {
+   "description": "戰鬥特效與狀態圖示，性質同 COMSPR.DAX，不是怪物造形。",
+   "member": "ICON.DAX",
+   "sha256": "6ca4bce61eb5c31cf01ca1538dfa60401f24f286ba29d60926e4fd07cd7809eb",
+   "blocks": [
+    {
+     "id": 0,
+     "hex": "00h",
+     "pose": "stand",
+     "stand_id": 0,
+     "file": "icon-00-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 1,
+     "hex": "01h",
+     "pose": "stand",
+     "stand_id": 1,
+     "file": "icon-01-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 2,
+     "hex": "02h",
+     "pose": "stand",
+     "stand_id": 2,
+     "file": "icon-02-stand.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 128,
+     "hex": "80h",
+     "pose": "action",
+     "stand_id": 0,
+     "file": "icon-00-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 129,
+     "hex": "81h",
+     "pose": "action",
+     "stand_id": 1,
+     "file": "icon-01-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    },
+    {
+     "id": 130,
+     "hex": "82h",
+     "pose": "action",
+     "stand_id": 2,
+     "file": "icon-02-action.png",
+     "width": 24,
+     "height": 24,
+     "item_count": 1
+    }
+   ]
+  }
+ },
+ "overview_image": "overview.png",
+ "overview_grid_order": [
+  "COMSPR.DAX/comspr-00-stand.png",
+  "COMSPR.DAX/comspr-01-stand.png",
+  "COMSPR.DAX/comspr-02-stand.png",
+  "COMSPR.DAX/comspr-03-stand.png",
+  "COMSPR.DAX/comspr-04-stand.png",
+  "COMSPR.DAX/comspr-05-stand.png",
+  "COMSPR.DAX/comspr-06-stand.png",
+  "COMSPR.DAX/comspr-07-stand.png",
+  "COMSPR.DAX/comspr-08-stand.png",
+  "COMSPR.DAX/comspr-09-stand.png",
+  "COMSPR.DAX/comspr-0a-stand.png",
+  "COMSPR.DAX/comspr-0b-stand.png",
+  "COMSPR.DAX/comspr-19-stand.png",
+  "COMSPR.DAX/comspr-00-action.png",
+  "COMSPR.DAX/comspr-01-action.png",
+  "COMSPR.DAX/comspr-02-action.png",
+  "COMSPR.DAX/comspr-03-action.png",
+  "COMSPR.DAX/comspr-04-action.png",
+  "COMSPR.DAX/comspr-05-action.png",
+  "COMSPR.DAX/comspr-06-action.png",
+  "COMSPR.DAX/comspr-07-action.png",
+  "COMSPR.DAX/comspr-08-action.png",
+  "COMSPR.DAX/comspr-09-action.png",
+  "COMSPR.DAX/comspr-0a-action.png",
+  "COMSPR.DAX/comspr-0b-action.png",
+  "COMSPR.DAX/comspr-19-action.png",
+  "ICON.DAX/icon-00-stand.png",
+  "ICON.DAX/icon-01-stand.png",
+  "ICON.DAX/icon-02-stand.png",
+  "ICON.DAX/icon-00-action.png",
+  "ICON.DAX/icon-01-action.png",
+  "ICON.DAX/icon-02-action.png"
+ ],
+ "body_overview_image": "cbody-overview.png",
+ "counts": {
+  "cbody_bodies": 32,
+  "monster_records": 172,
+  "sprite_blocks": 32,
+  "unique_names": 103
+ },
+ "notes": [
+  "怪物在戰場上的實際造形是 CBODY.DAX 的三十二種身體配固定的頭（cmd/pool-game/sprite_overview.go 的 drawMonsterOverview 已經這樣畫），見 bodies 區塊；COMSPR.DAX／ICON.DAX 是戰鬥特效與狀態圖示，不是怪物造形，見 sprites 區塊各自的 description。internal/assets/monster_sprite.go 檔頭的舊註解仍把 COMSPR.DAX 稱作怪物圖形，待那邊自行更新，這份收據不依賴那個說法。",
+  "THAC0 的樣板欄 +110h 多半是殘值，這裡的 thac0_surface 一律用 CombatThac0Internal()（+2Dh 再加力量修正）換算，理由見 internal/gamepack/monster.go。",
+  "MON1SPC.DAX／MON3SPC.DAX 在原版 ZIP 裡不存在；這兩個 archive 的怪物 effects_source 一律是「無 MONxSPC.DAX」，不是掃描遺漏。"
+ ]
+}
