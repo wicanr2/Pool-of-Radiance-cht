@@ -49,12 +49,12 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **腳本在走一步的入口 0 裡搬座標之後，remake 還會再走原本那一步。** 上樓落點腳本寫 (5,7)，remake 得到 (6,7)；原版順序未證。
-      **驗收**：一筆原版落點證據；spec 137 第 10 段的 hypothesis 改成定論。
-      **討論**：[#21](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/21)
 - [ ] **dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）。** 量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。
       **驗收**：照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。
       **討論**：[#53](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/53)
+- [ ] **要塞上層是朝向閘門的迷宮：探針走不到覲見廳。** #21 把上樓落點改成原版的 (5,7) 之後露出來的。`ecl5/7` 入口 0（`9971h`）拿三張八格的表比對「地點索引 ＋ 朝向」，兩個都對上才分派；(5,7) 索引 1、南面實牆，只有下樓與北面那道 `4A6C & 8` 的閘門兩條路，而那個位元由 `9AFFh` 起的逐人技能檢定打開。先前會過是因為落點錯在 (6,7)——那一格沒有閘門。
+      **驗收**：讀完 `4A6C` 四個位元各自的檢查點與設定點、畫出上層通行圖，讓 `TestCastleStairsLeadToTheAudienceHall` 與 `TestMainlineProbeCheatMenuToEnding` 回綠。
+      **討論**：[#56](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/56)
 
 ### 三、版面與資料的差距
 
@@ -62,9 +62,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
       **卡在**：先完成 DOS sprite inventory 與三組可丟棄 prototype，再依 grilling 流程逐題確認視覺聖經與資產範圍。
       **驗收**：完整 inventory 與 DOS archive／consumer 對得上；使用者確認單一視覺聖經；正式 sprite 風格一致且語意可追溯；每張有來源與權利紀錄；原版與現代主題可切換；所有主要正常玩家路徑與發行包抽測無缺圖、越界、裁切或風格混用。
       **討論**：[#17](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/17)
-- [ ] **遊戲考古：怪物戰場 sprite 圖鑑與人物肖像圖鑑（圖文並茂）。** 使用者 2026-09-18 指派。怪物：戰場 sprite 逐隻匯出，附名稱、HD／HP／AC／THAC0／傷害、特殊攻擊與出現區塊，再用白話寫特性。肖像：CHEAD／BODY／CBODY 逐張對出「誰是誰」與在劇情裡的角色，NPC 要指回 ECL 出處。兩份都要可重生的匯出流程與收據。
-      **驗收**：docs/archaeology/monsters.md 與 portraits.md 有圖有文；圖片數量與資產盤點對得上；每一項有出處與推論等級；沒查到的寫「未查」。
-      **討論**：[#50](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/50)
 - [ ] **拿發行包拍 remake 的戰利品畫面，與原版六張並列。** #47 的畫面與測試已完成，缺截圖。tools/capture-treasure.sh 已能走到遭遇並開打，但一人隊伍在同一個 tick 內全滅回到標題（鎖 HP 的寫回在 tick 結束才做）。下一步假設：六人隊伍、不走 QUICK、或改用市政廳交件的獎金（與原版基準同一筆，最接近 same-state）。
       **驗收**：docs/screenshots/treasure/ 有 remake 四張與原版並列；差異寫進 spec 034。
       **討論**：[#52](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/52)

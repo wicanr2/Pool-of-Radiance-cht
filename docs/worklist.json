@@ -33,38 +33,6 @@
       "github_issue": 17
     },
     {
-      "id": "script-teleport-extra-step",
-      "layer": "verification",
-      "title": "腳本在走一步的入口 0 裡搬座標之後，remake 還會再走原本那一步",
-      "body": "上樓落點腳本寫 (5,7)，remake 得到 (6,7)；原版順序未證。",
-      "acceptance": "一筆原版落點證據；spec 137 第 10 段的 hypothesis 改成定論。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/spec/137-mainline-route.md"
-        ],
-        "pattern": "hypothesis（落點是否再加一步）",
-        "note": "spec 還標 hypothesis 就是還沒驗"
-      },
-      "github_issue": 21
-    },
-    {
-      "id": "archaeology-monster-and-portrait-guides",
-      "layer": "presentation",
-      "title": "遊戲考古：怪物戰場 sprite 圖鑑與人物肖像圖鑑（圖文並茂）",
-      "body": "使用者 2026-09-18 指派。怪物：戰場 sprite 逐隻匯出，附名稱、HD／HP／AC／THAC0／傷害、特殊攻擊與出現區塊，再用白話寫特性。肖像：CHEAD／BODY／CBODY 逐張對出「誰是誰」與在劇情裡的角色，NPC 要指回 ECL 出處。兩份都要可重生的匯出流程與收據。",
-      "acceptance": "docs/archaeology/monsters.md 與 portraits.md 有圖有文；圖片數量與資產盤點對得上；每一項有出處與推論等級；沒查到的寫「未查」。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "docs/spec/000-index.md"
-        ],
-        "pattern": "archaeology",
-        "note": "規格索引裡還沒有 archaeology 的工具或文件就代表這一條沒做"
-      },
-      "github_issue": 50
-    },
-    {
       "id": "treasure-screenshots-from-release",
       "layer": "presentation",
       "title": "拿發行包拍 remake 的戰利品畫面，與原版六張並列",
@@ -91,6 +59,18 @@
         "note": "要改 dosgolem 並重跑，沒有機器可判訊號"
       },
       "github_issue": 53
+    },
+    {
+      "id": "keep-upper-floor-facing-gates",
+      "layer": "verification",
+      "title": "要塞上層是朝向閘門的迷宮：探針走不到覲見廳",
+      "body": "#21 把上樓落點改成原版的 (5,7) 之後露出來的。`ecl5/7` 入口 0（`9971h`）拿三張八格的表比對「地點索引 ＋ 朝向」，兩個都對上才分派；(5,7) 索引 1、南面實牆，只有下樓與北面那道 `4A6C & 8` 的閘門兩條路，而那個位元由 `9AFFh` 起的逐人技能檢定打開。先前會過是因為落點錯在 (6,7)——那一格沒有閘門。",
+      "acceptance": "讀完 `4A6C` 四個位元各自的檢查點與設定點、畫出上層通行圖，讓 `TestCastleStairsLeadToTheAudienceHall` 與 `TestMainlineProbeCheatMenuToEnding` 回綠。",
+      "verify": {
+        "kind": "manual",
+        "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestCastleStairsLeadToTheAudienceHall|TestMainlineProbeCheatMenuToEnding'` 是否全綠，工具不跑測試"
+      },
+      "github_issue": 56
     }
   ]
 }
