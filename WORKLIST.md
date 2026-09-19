@@ -52,9 +52,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **腳本在走一步的入口 0 裡搬座標之後，remake 還會再走原本那一步。** 上樓落點腳本寫 (5,7)，remake 得到 (6,7)；原版順序未證。
       **驗收**：一筆原版落點證據；spec 137 第 10 段的 hypothesis 改成定論。
       **討論**：[#21](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/21)
-- [ ] **城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟。** spec 102〈晚上鎖門與城衛隊〉的分支與比較方向已對過原版；原版晚上站上鎖門格的畫面沒拍，地形 0 牆型 9 的十一個門面沒對到建築。不擋主線。
-      **驗收**：dosgolem 原版晚上在 (3,4) 朝東的鎖門問句畫面與 `6E7D = 8`；十一個門面對到建築名寫進 spec 102 並拿掉 OPEN 那一條。
-      **討論**：[#39](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/39)
 - [ ] **dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）。** 量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。
       **驗收**：照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。
       **討論**：[#53](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/53)

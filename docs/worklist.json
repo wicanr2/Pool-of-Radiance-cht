@@ -49,22 +49,6 @@
       "github_issue": 21
     },
     {
-      "id": "city-night-lock-original-receipt",
-      "layer": "verification",
-      "title": "城區晚上鎖門：原版實拍與牆型 9 的十一個門面對到哪幾棟",
-      "body": "spec 102〈晚上鎖門與城衛隊〉的分支與比較方向已對過原版；原版晚上站上鎖門格的畫面沒拍，地形 0 牆型 9 的十一個門面沒對到建築。不擋主線。",
-      "acceptance": "dosgolem 原版晚上在 (3,4) 朝東的鎖門問句畫面與 `6E7D = 8`；十一個門面對到建築名寫進 spec 102 並拿掉 OPEN 那一條。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/spec/102-city-location-dispatch.md"
-        ],
-        "pattern": "牆型 9 的那十一個門面是哪幾棟建築",
-        "note": "spec 102 OPEN 還列著這一條就代表還沒做"
-      },
-      "github_issue": 39
-    },
-    {
       "id": "archaeology-monster-and-portrait-guides",
       "layer": "presentation",
       "title": "遊戲考古：怪物戰場 sprite 圖鑑與人物肖像圖鑑（圖文並茂）",
