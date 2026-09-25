@@ -169,18 +169,6 @@
       "github_issue": 77
     },
     {
-      "id": "aim-modes-0a-and-8",
-      "layer": "feature",
-      "title": "瞄準層還缺模式 0Ah（0F35h 範圍）與 8（2919h 射線）",
-      "body": "ov13 20AEh 四條路已接，模式 0Ah 與 8 未讀。",
-      "acceptance": "兩種模式 exact 並接進共用瞄準層，送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 78
-    },
-    {
       "id": "pool-money-edges",
       "layer": "verification",
       "title": "公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款",
@@ -203,6 +191,30 @@
         "note": "要人判"
       },
       "github_issue": 80
+    },
+    {
+      "id": "side-spell-effects",
+      "layer": "feature",
+      "title": "祝福、詛咒、急速、緩速只收人沒有效果",
+      "body": "0Ah 分支只數人數印訊息，沒照 08BCh 0A3Dh 掛效果碼；2724h 後段 002Fh(目標,12h) 未讀。",
+      "acceptance": "效果碼與持續時間掛上，命中／AC／先攻／攻擊次數實際改變，送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 81
+    },
+    {
+      "id": "ray-breath-and-6039h",
+      "layer": "verification",
+      "title": "射線的兩個原版細節：吐息呼叫 2919h 與 DS:6039h",
+      "body": "ov22 31A3h／31B8h 疑似吐息呼叫 2919h 未接；被射線打倒的人何時離開 DS:6039h 未追。",
+      "acceptance": "兩條附位址與證據等級打勾，吐息確認就接上並測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 82
     }
   ]
 }
