@@ -107,6 +107,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **怪物戰場圖示的配色來源沒定位：boardIconFor 給寫死的預設配色。** - `cmd/pool-game/sprite_overview.go:195`：「原版把哥布林那一類畫成紅色是換了配色，**配色從哪來還沒定位**。」 - `tactical.go` 的 `boardIconFor` 對怪物用固定的預設六組顏色；README 第 325 行、WORKLIST 第 101 行同一件事。
       **驗收**：配色來源 exact，戰場怪物配色與原版同狀態截圖一致。
       **討論**：[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)
+- [ ] **商店畫面照原版版面：店主肖像、隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT。** 發行包對拍商店整張 85.50%、視野 48.98%。原版左上店主肖像、右上隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT；remake 是自排的貨品清單頁。
+      **驗收**：版面照原版，對拍商店那一張整張與視野上升。
+      **討論**：[#70](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/70)
 
 <!-- worklist:end -->
 

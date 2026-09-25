@@ -267,6 +267,22 @@
         "note": "四條各自在 issue 打勾"
       },
       "github_issue": 69
+    },
+    {
+      "id": "shop-original-layout",
+      "layer": "presentation",
+      "title": "商店畫面照原版版面：店主肖像、隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT",
+      "body": "發行包對拍商店整張 85.50%、視野 48.98%。原版左上店主肖像、右上隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT；remake 是自排的貨品清單頁。",
+      "acceptance": "版面照原版，對拍商店那一張整張與視野上升。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/067-shop-service-and-stock.md"
+        ],
+        "pattern": "原版商店選單的版面",
+        "note": "spec 067 DRAFT 還列著"
+      },
+      "github_issue": 70
     }
   ]
 }
