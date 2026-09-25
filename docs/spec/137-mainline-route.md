@@ -328,7 +328,11 @@ remake 擺上盤面的 `NORRIS ac7/thac0 14`、`LIZARDMAN ac4/thac0 16` 與記�
 STAND AND LISTEN → WAIT FOR WINNER → `A60Ch` "GOING... GOING... GONE!" → `A865h SAVE 254 @4A35`、
 `A86Bh SAVE 254 @4AB0`。從 `A60Ch` 沿控制流走到底（含 GOSUB 與 IF 的跳過）12 條指令、沒有
 `COMBAT`；對照組 LEAVE（`A67Ah`）可達 `9DEDh` 的一場。出價、靠近、離開那幾支會叫 `A875h`：
-喬裝每次 1/5 被識破、偷溜一律 `4A35 = FF`。實跑（remake，`TestMainlineProbeCheatMenuToEnding` seed 142，
+喬裝每次 1/5 被識破、偷溜一律 `4A35 = FF`。被識破不是死路：離開廣場再進來，區塊載入
+入口 `998Dh` 在 `4AB0 == 1` 時把 `4A35` 寫回 0、進場選單重新出現，可以再喬裝一次
+（駕駛 `podolRouteA` 照做，guard 8 次；2026-09-26 seed 142 第一次被識破、第二次結案）。
+城門的馬車商人只在白天出現（`ecl2/9 ADAAh`：`49C9 >= 14` 就結束），到得晚就紮營睡到早上
+（`sleepUntilMorning`）。實跑（remake，`TestMainlineProbeCheatMenuToEnding` seed 142，
 playtest 補十二）：交完貧民窟的件職員寫 `4AB0 = 1`，進廣場 `4A35 = 00`，喬裝→聽→等得標者之後
 `4A35 = FE`、`4AB0 = FE`，拍賣格上沒有開戰。
 

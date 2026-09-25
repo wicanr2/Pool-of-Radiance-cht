@@ -142,7 +142,7 @@ func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 	}
 	spell := chosen.Spell
 	label := a.spellLabel(spell)
-	target, picked, found, err := a.foeSpellTargets(state, mover, spell, caster)
+	targets, found, err := a.foeSpellTargets(state, mover, spell, caster)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 		level:     foeCasterLevel(a.spellParameters[spell], caster),
 		consume:   spend,
 	}
-	return a.castSpell(state, casting, castOption{Slot: -1, ID: spell, Label: label}, target, picked)
+	return a.castSpell(state, casting, castOption{Slot: -1, ID: spell, Label: label}, targets)
 }
 
 // spendFoeItem 是 gamepack.SpendAIItemUse 加上「用完就拿掉」（overlay-25 entry 17

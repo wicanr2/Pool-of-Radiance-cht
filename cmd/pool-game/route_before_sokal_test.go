@@ -286,38 +286,51 @@ func (d *mainlineDriver) podolRouteA(walkThroughBoundary func(gamepack.MapKey), 
 	defer func() { d.prefer = previous }()
 	// 進場選單（`9A36h`）答喬裝；拍賣兩層選單答 STAND AND LISTEN、WAIT FOR WINNER。
 	d.prefer = []string{"DISGUISE PARTY AS MONSTERS.", "STAND AND LISTEN", "WAIT FOR WINNER"}
-	d.settle()
-	d.face(3)
-	d.step(ebiten.KeyArrowUp)
-	d.settle()
-	if a.spawn.Map != (gamepack.MapKey{Archive: 1, BlockID: 18}) {
-		d.fatalf("route (a): Kuto's west edge led to %+v, not Podol Plaza", a.spawn.Map)
-	}
-	// 接了委任，入口 4（`9971h`，載入時跑）寫 `4A35 = 0`；進場選單（`9A2Eh` 在 `4A35 == 0`
-	// 時問）是入口 0 的一段，進場之後**下一步**才出現，`walkAllowing` 的 `settle` 照 prefer 答喬裝。
-	d.note("route (a): Podol Plaza at (%d,%d) 4A35=%02X 4AB0=%02X", a.spawn.X, a.spawn.Y, memory[0x4A35], memory[0x4AB0])
-	if memory[0x4A35] != 0 {
-		d.fatalf("route (a): entered Podol with 4A35=%02X, entry 4 `9998h` writes 0 when 4AB0 == 1", memory[0x4A35])
-	}
+	eastEdge := func(x, y int) bool { return x == 15 && a.initialMap.Grid.CanMoveDungeonWrapped(x, y, 2) }
+	anywhere := func(int, int) bool { return true }
 	auction := func(x, y int) bool { return d.terrainCode(x, y) == 1 }
-	// 廣場裡任何格子都可以走：落點 (15,4) 四周是地形 9 與 11。HP 鎖住，路上的事件打起來也不會
-	// 卡住；換圖只在邊緣，不在地形格上。
-	plaza := func(int, int) bool { return true }
-	if !d.walkAllowing("route (a): the auction", auction, plaza, false) && memory[0x4AB0] != 0xFE {
-		d.fatalf("route (a): cannot reach the auction (terrain 1) from (%d,%d)", a.spawn.X, a.spawn.Y)
-	}
-	d.settle()
-	d.note("route (a): disguise answered? 4A35=%02X", memory[0x4A35])
-	d.note("route (a): auction over 4A35=%02X 4AB0=%02X at (%d,%d)", memory[0x4A35], memory[0x4AB0], a.spawn.X, a.spawn.Y)
-	if memory[0x4AB0] != 0xFE {
-		d.fatalf("route (a): the auction did not close the commission (4AB0=%02X 4A35=%02X text=%q)",
-			memory[0x4AB0], memory[0x4A35], a.eventText)
+	// 喬裝可能被識破：喬裝狀態下走在廣場裡，`A875h` 每一步擲 `RANDOM 5`，擲到 0 就
+	// `SAVE 255 → 4A35`、印「YOUR COVER IS BLOWN.」，拍賣關上。原版玩家的出路是離開
+	// 廣場再進來——區塊載入入口 `998Dh` 在 `4AB0 == 1` 時把 `4A35` 寫回 0，進場選單
+	// 重新出現（`9A2Eh`）。駕駛照做；guard 給寬，每一次都記下來。
+	for attempt := 1; ; attempt++ {
+		d.settle()
+		d.face(3)
+		d.step(ebiten.KeyArrowUp)
+		d.settle()
+		if a.spawn.Map != (gamepack.MapKey{Archive: 1, BlockID: 18}) {
+			d.fatalf("route (a): Kuto's west edge led to %+v, not Podol Plaza", a.spawn.Map)
+		}
+		// 接了委任，入口 4（`9971h`，載入時跑）寫 `4A35 = 0`；進場選單（`9A2Eh` 在 `4A35 == 0`
+		// 時問）是入口 0 的一段，進場之後**下一步**才出現，`walkAllowing` 的 `settle` 照 prefer 答喬裝。
+		d.note("route (a): Podol Plaza attempt %d at (%d,%d) 4A35=%02X 4AB0=%02X", attempt, a.spawn.X, a.spawn.Y, memory[0x4A35], memory[0x4AB0])
+		if memory[0x4A35] != 0 {
+			d.fatalf("route (a): entered Podol with 4A35=%02X, entry 4 `9998h` writes 0 when 4AB0 == 1", memory[0x4A35])
+		}
+		// 廣場裡任何格子都可以走：落點 (15,4) 四周是地形 9 與 11。HP 鎖住，路上的事件打起來也不會
+		// 卡住；換圖只在邊緣，不在地形格上。
+		if !d.walkAllowing("route (a): the auction", auction, anywhere, false) && memory[0x4AB0] != 0xFE &&
+			memory[0x4A35] != 0xFF {
+			d.fatalf("route (a): cannot reach the auction (terrain 1) from (%d,%d)", a.spawn.X, a.spawn.Y)
+		}
+		d.settle()
+		d.note("route (a): attempt %d over 4A35=%02X 4AB0=%02X at (%d,%d)", attempt, memory[0x4A35], memory[0x4AB0], a.spawn.X, a.spawn.Y)
+		if memory[0x4AB0] == 0xFE {
+			break
+		}
+		if memory[0x4A35] != 0xFF || memory[0x4AB0] != 1 || attempt >= 8 {
+			d.fatalf("route (a): the auction did not close the commission (4AB0=%02X 4A35=%02X text=%q, attempt %d)",
+				memory[0x4AB0], memory[0x4A35], a.eventText, attempt)
+		}
+		d.note("route (a): cover blown on attempt %d; leaving the plaza to come back", attempt)
+		d.leaveMap("route (a): Podol → Kuto after the cover was blown", eastEdge, anywhere, false, 1)
+		if !westEdge(int(a.spawn.X), int(a.spawn.Y)) && !d.walkAllowing("route (a): Kuto west edge again", westEdge, d.kutoSafe, false) {
+			d.fatalf("route (a): cannot get back to Kuto's Well west edge")
+		}
 	}
 	d.prefer = previous
 
 	// 回市政廳：波多廣場東緣 → 古托井 → 貧民窟 → 城區。
-	eastEdge := func(x, y int) bool { return x == 15 && a.initialMap.Grid.CanMoveDungeonWrapped(x, y, 2) }
-	anywhere := func(int, int) bool { return true }
 	d.leaveMap("route (a): Podol → Kuto", eastEdge, anywhere, false, 1)
 	d.crossKutoEast()
 	d.crossSlums(true)

@@ -456,6 +456,43 @@ func (d *mainlineDriver) walkBackFrom(origin gamepack.MapKey) {
 // `ecl2/9 ADAAh` 晚上不出現（spec 102、137）。醒在六點，離十四點還有八小時。
 const restMorningHour = 6
 
+// sleepUntilMorning 就地紮營睡到早上 `restMorningHour`，按鍵與 `restUntilHealed` 同一套
+// （E 開營地、R 休息、清掉時長、H 切到小時那一欄、I 加時、R 開始）。休息可能被遭遇
+// 打斷，所以跑到時刻落在白天為止，guard 給寬。回傳醒來時是不是白天（`49C9 < 14`）。
+func (d *mainlineDriver) sleepUntilMorning(why string) bool {
+	d.t.Helper()
+	a := d.a
+	for attempt := 0; attempt < 8 && d.scriptNight(); attempt++ {
+		d.settle()
+		before := a.gameTime
+		d.step(ebiten.KeyE)
+		if !a.campOpen {
+			d.fatalf("sleepUntilMorning (%s): E did not open the camp at %+v: %q", why, a.spawn, a.statusLine)
+		}
+		d.step(ebiten.KeyR)
+		d.clearRestDuration()
+		d.step(ebiten.KeyY)
+		if hours := hoursUntilMorning(a.gameTime); hours != 0 {
+			d.step(ebiten.KeyH)
+			for hour := 0; hour < hours; hour++ {
+				d.step(ebiten.KeyI)
+			}
+		}
+		d.step(ebiten.KeyR)
+		for guard := 0; guard < 8 && (a.campOpen || a.campFromProgram); guard++ {
+			d.step(ebiten.KeyEscape)
+		}
+		d.settle()
+		d.note("sleepUntilMorning (%s): clock %v → %v at %+v", why, before, a.gameTime, a.spawn)
+	}
+	return !d.scriptNight()
+}
+
+// scriptNight 是腳本眼中的晚上：`49C9 >= 14`（`ecl3/0 9920h`、`ecl2/9 ADAAh`）。
+func (d *mainlineDriver) scriptNight() bool {
+	return d.a.gameTime[gamepack.TimeDigitHour] >= 14
+}
+
 // hoursUntilMorning 是從現在睡到隔天早上要幾個小時。已經是早上就回 0。
 func hoursUntilMorning(clock gamepack.GameTime) int {
 	hour := clock[gamepack.TimeDigitHour]

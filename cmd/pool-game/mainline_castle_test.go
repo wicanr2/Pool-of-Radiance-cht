@@ -423,6 +423,11 @@ func (d *mainlineDriver) stojanowGate() {
 		d.fatalf("stojanowGate: entry state already rules the wagon out")
 	}
 	guards := func(x, y int) bool { return d.terrain(x, y) == 3 }
+	// 馬車商人只在白天出現：`ecl2/9 ADAAh` 比 `49C9 >= 14` 就結束（spec 101／137）。
+	// 走到這裡已經過了兩點的話，照玩家的做法紮營睡到隔天早上。
+	if d.scriptNight() && !d.sleepUntilMorning("the wagon trader only comes by day") {
+		d.fatalf("stojanowGate: still night after resting (clock %v)", a.gameTime)
+	}
 	if !d.walkTo("wagon trader (terrain 9)", func(x, y int) bool { return d.terrain(x, y) == 9 }, guards) {
 		d.fatalf("stojanowGate: cannot reach the wagon trader")
 	}
