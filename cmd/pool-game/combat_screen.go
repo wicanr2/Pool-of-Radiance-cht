@@ -120,10 +120,11 @@ func outlineCombatCell(screen *ebiten.Image, column, row int, ink color.Color) {
 
 // combatCommandBar 依原版的條件組出最下面那一列（spec 129 的表）。
 //
-// **兩道閘還沒接**：`Cast ` 的 `es:[di+108h]+1` 與 `ds:4933h+1CAh`、
-// `Turn ` 的 `es:[di+108h]+11h`，那三個欄位的語意還沒解出來（spec 129 標 DRAFT）。
-// 現在接的是解出來的那幾道；沒接的那幾道只會讓指令**多出現**，不會少，
-// 所以不會發生「原版有而 remake 沒有」。
+// `Cast ` 的 `es:[di+108h]+1` 是 runtime +1「這一回合還能施法」（spec 096〈entry 4〉），
+// 受過傷、沉默或咳嗽就清 0——接上了（castingDisrupted）。
+// **兩道閘還沒接**：`Cast ` 的 `ds:4933h+1CAh`（ECL `@49E5`，這一版恆為 0）、
+// `Turn ` 的 `es:[di+108h]+11h`（spec 129 標 DRAFT）。沒接的那幾道只會讓指令
+// **多出現**，不會少，所以不會發生「原版有而 remake 沒有」。
 func (a *app) combatCommandBar() string {
 	segments := a.combatCommands
 	if len(segments) == 0 {
@@ -141,6 +142,10 @@ func (a *app) combatCommandBar() string {
 		case gamepack.CombatCommandCast:
 			// 記錄 `+17h` 起 21 格任何一格非零：記著任何一條法術。
 			if !isParty || !hasMemorisedSpell(member.Memorised) {
+				continue
+			}
+			// overlay-08 `072Fh`：runtime +1 為 0 就不接。
+			if a.tactical != nil && a.tactical.castingDisrupted(int(a.tactical.Mover)) {
 				continue
 			}
 		case gamepack.CombatCommandTurn:

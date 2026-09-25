@@ -320,6 +320,9 @@ type app struct {
 	castManual           bool
 	castManualX, castManualY int
 	castPending         castOption
+	// castAim 是施法瞄準那一層的進度（overlay-13 `20AEh`，spell_targets.go）：
+	// 要挑幾個、挑到哪些、是不是開始施法之後的放出、有沒有在問 Abort Spell。
+	castAim *castAim
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
 	// thiefSkillTables 是賊技能的基礎、種族與敏捷三張表（spec 095），建角要用。

@@ -30,6 +30,12 @@ type tacticalPilot struct {
 	// castID 是這一回合按 C 之後要挑的法術；castCycles 是移游標的 guard。
 	castID     uint8
 	castCycles int
+	// spellAimPresses 是施法瞄準那一步按了幾下（#73）。超出射程、挑到重複的那一格
+	// 按 ENTER 不會離開瞄準，所以交替按 N 換人，按夠了就 ESC（再答 Y 放棄）。
+	spellAimPresses int
+	// spellCentre 是催眠術要瞄的那一隻：以牠為中心的範圍裡沒有自己人（#73：範圍法術
+	// 不分敵我，原版 AI 的 `0255h` 也是這樣挑）。
+	spellCentre uint8
 	// distance 是這一個回合的步數表（到任一「貼著敵人的空格」幾步），
 	// 每一 tick 重算會讓探索的時間全花在廣度優先上。
 	distance map[int]int
@@ -73,6 +79,24 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 		return ebiten.KeyEnter
 	}
 	if app.castTargeting {
+		if app.castAim != nil && !app.castTargetingAttack {
+			// 施法的瞄準：第一下 ENTER 打預設那一個（最近的敵人）；停在原地就是
+			// 超出射程或挑過了，換下一個再試。guard 給到每個候選都試過兩輪。
+			pilot.spellAimPresses++
+			if pilot.spellAimPresses > 4*len(app.castTargets)+4 {
+				return ebiten.KeyEscape
+			}
+			if pilot.spellCentre != 0 && pilot.spellAimPresses <= 2*len(app.castTargets) {
+				if app.castTargets[app.castTargetCursor] != pilot.spellCentre {
+					return ebiten.KeyN
+				}
+				return ebiten.KeyEnter
+			}
+			if pilot.spellAimPresses%2 == 0 {
+				return ebiten.KeyN
+			}
+			return ebiten.KeyEnter
+		}
 		// 集火：游標預設停在最近的敵人，N 往下一個，轉到想打的那一隻再 ENTER。
 		if pilot.aim != 0 && len(app.castTargets) > 0 && pilot.aimCycles < len(app.castTargets) &&
 			app.castTargets[app.castTargetCursor] != pilot.aim {
@@ -80,6 +104,11 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 			return ebiten.KeyN
 		}
 		return ebiten.KeyEnter
+	}
+	pilot.spellAimPresses = 0
+	if app.castAborting() {
+		// 瞄不到任何人：放棄這個法術（原版 "Abort Spell?" 答 Y）。
+		return ebiten.KeyY
 	}
 	if state.Mover == 0 || int(state.Mover) >= len(state.Friendly) ||
 		!state.Friendly[state.Mover] {
@@ -90,6 +119,7 @@ func (pilot *tacticalPilot) key(app *app) ebiten.Key {
 		pilot.tried, pilot.moves = false, 0
 		pilot.aim, pilot.aimCycles = 0, 0
 		pilot.castID, pilot.castCycles = 0, 0
+		pilot.spellCentre = 0
 		pilot.distance, pilot.stepped = nil, false
 	}
 	here := state.Roster[state.Mover]
@@ -160,6 +190,10 @@ func (pilot *tacticalPilot) spellToCast(app *app) (uint8, bool) {
 	if !ok || index >= len(app.state.Party) {
 		return 0, false
 	}
+	// 這一回合挨過打的指令列上沒有 Cast（overlay-08 `072Fh`），玩家不會去按它。
+	if state.castingDisrupted(int(state.Mover)) {
+		return 0, false
+	}
 	hasSleep := false
 	for _, option := range app.spellOptionsFor(app.state.Party[index]) {
 		if option.ID == gamepack.SpellIDSleep {
@@ -182,7 +216,30 @@ func (pilot *tacticalPilot) spellToCast(app *app) (uint8, bool) {
 	if awake < 3 {
 		return 0, false
 	}
-	return gamepack.SpellIDSleep, true
+	// 範圍不分敵我：找一隻醒著、周圍（預算 +6 & 7）沒有自己人的當中心，找不到就不放。
+	if int(gamepack.SpellIDSleep) >= len(app.spellParameters) {
+		return 0, false
+	}
+	budget := app.spellParameters[gamepack.SpellIDSleep].TargetPlan().AreaBudget
+	for foe := 1; foe < len(state.Roster); foe++ {
+		if !standing(state, foe) || state.Friendly[foe] == state.Friendly[state.Mover] ||
+			state.hasEffect(foe, gamepack.SleepEffectCode) {
+			continue
+		}
+		members, err := state.spellAreaMembers(int(state.Roster[foe].X), int(state.Roster[foe].Y), budget)
+		if err != nil {
+			continue
+		}
+		crowded := false
+		for _, member := range members {
+			crowded = crowded || state.Friendly[member] == state.Friendly[state.Mover]
+		}
+		if !crowded {
+			pilot.spellCentre = uint8(foe)
+			return gamepack.SpellIDSleep, true
+		}
+	}
+	return 0, false
 }
 
 // standing 說第 index 格還在場上（體型類別非 0）。

@@ -123,26 +123,36 @@ func (a *app) manualAimInput() (bool, error) {
 
 // confirmManualAim 是原版 `2C17h` 那一步：游標停的那一格上要真的有人，
 // 才收成目標。沒有人就什麼都不做，游標留著——原版是把回傳旗標清成 0。
+//
+// **範圍法術例外**（`2DD3h` 的 `30DEh`）：`1E09h` 帶進來的第三個引數為 1 時，
+// 空格子也選得到，那一格就是範圍的中心（spell_targets.go 的 confirmSpellCell）。
 func (a *app) confirmManualAim() error {
 	state := a.tactical
 	if state == nil {
 		a.castManual = false
 		return nil
 	}
+	occupant := uint8(0)
 	for index := 1; index < len(state.Roster); index++ {
 		cell := state.Roster[index]
 		if cell.FootprintClass == 0 {
 			continue
 		}
-		if int(cell.X) != a.castManualX || int(cell.Y) != a.castManualY {
-			continue
+		if int(cell.X) == a.castManualX && int(cell.Y) == a.castManualY {
+			occupant = uint8(index)
+			break
 		}
-		a.castManual, a.castTargeting = false, false
-		if a.castTargetingAttack {
-			a.castTargetingAttack = false
-			return a.resolveAimedAttack(uint8(index))
-		}
-		return a.finishCast(a.castPending, uint8(index), true)
 	}
-	return nil
+	if a.castAim != nil && !a.castTargetingAttack {
+		return a.confirmSpellCell(a.castManualX, a.castManualY, occupant)
+	}
+	if occupant == 0 {
+		return nil
+	}
+	a.castManual, a.castTargeting = false, false
+	if a.castTargetingAttack {
+		a.castTargetingAttack = false
+		return a.resolveAimedAttack(occupant)
+	}
+	return a.finishCast(a.castPending, occupant, true)
 }

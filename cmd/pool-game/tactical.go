@@ -133,12 +133,16 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 
 	// 最下面那一列。挑目標的時候換成瞄準列——同一條基線，兩者不會同時出現。
-	if !a.castTargeting || len(a.castTargets) == 0 {
+	if (!a.castTargeting || len(a.castTargets) == 0) && !a.castAborting() {
 		line := a.combatCommandBar()
 		if a.tactical.Prompt {
 			line = a.text(msgTacticalPrompt)
 		}
 		drawText(screen, line, 0, footerBaseline, accent)
+	}
+	if a.castAborting() {
+		// overlay-22 `0EC6h` 的 "Abort Spell? " 占的是同一條基線。
+		drawText(screen, a.text(msgCastAbortPrompt), 0, footerBaseline, accent)
 	}
 	drawCastMenu(screen, a, foreground, accent)
 	drawCastTargeting(screen, a, accent)
@@ -1717,8 +1721,15 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
+	// 開始施法之後又輪到這一位：先放出去（overlay-08 `031Bh`，spell_targets.go）。
+	if handled, err := a.pendingSpellTurn(state); handled || err != nil {
+		return err
+	}
 	if a.castTargeting {
 		return a.castTargetingInput()
+	}
+	if a.castAborting() {
+		return a.castAbortInput()
 	}
 	if a.castOpen {
 		return a.castInput()

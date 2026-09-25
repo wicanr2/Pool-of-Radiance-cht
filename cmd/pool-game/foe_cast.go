@@ -327,9 +327,10 @@ func foeCasterLevel(params gamepack.SpellParameters, caster foeSpellcaster) int 
 }
 
 // foeReleaseSpell 是 overlay-22 entry 5（`0C14h`）的 AI 那一側：挑目標（`DS:6A78h`
-// 在戰鬥中指到 overlay-13 entry 18 `20AEh`），挑不到就不施（記憶也不動），挑到了
-// 就把那一格從記憶裡清掉（overlay-25 entry 16 `14ECh`）再派發效果。兩種結果都用掉
-// 這個行動（overlay-13 `24DAh` 的 entry 34）。
+// 在戰鬥中指到 overlay-13 entry 18 `20AEh`），挑到了就把那一格從記憶裡清掉
+// （overlay-25 entry 16 `14ECh`）再派發效果。挑不到時 `0EC0h` 的旗標非 0（AI）直接
+// 跳 `0EE7h`：印 "Spell Aborted"，同樣以 `14ECh` 把法術清掉。兩種結果都用掉這個行動
+// （overlay-13 `24DAh` 的 entry 34）。
 func (a *app) foeReleaseSpell(state *tacticalState, mover uint8, spell uint8) error {
 	caster, ok := a.foeSpellcasterFor(state, mover)
 	if !ok {
@@ -337,12 +338,13 @@ func (a *app) foeReleaseSpell(state *tacticalState, mover uint8, spell uint8) er
 		return nil
 	}
 	label := a.spellLabel(spell)
-	target, chosen, found, err := a.foeSpellTargets(state, mover, spell, caster)
+	targets, found, err := a.foeSpellTargets(state, mover, spell, caster)
 	if err != nil {
 		return err
 	}
 	if !found {
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), label))
+		a.foeForgetSpell(state, caster, spell)
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAborted), mover))
 		state.FoeLog = state.Status
 		state.endTurnAfterAction(a.rollDice)
 		return nil
@@ -358,7 +360,7 @@ func (a *app) foeReleaseSpell(state *tacticalState, mover uint8, spell uint8) er
 	if caster.party >= 0 {
 		casting.member = &a.state.Party[caster.party]
 	}
-	return a.castSpell(state, casting, castOption{Slot: -1, ID: spell, Label: label}, target, chosen)
+	return a.castSpell(state, casting, castOption{Slot: -1, ID: spell, Label: label}, targets)
 }
 
 // foeForgetSpell 是 overlay-25 entry 16（`14ECh`）：在陣列裡清掉**第一個**等於這個
@@ -377,31 +379,30 @@ func (a *app) foeForgetSpell(state *tacticalState, caster foeSpellcaster, spell 
 }
 
 // foeSpellTargets 是 overlay-13 entry 18（`20AEh`）在 AI 那一側怎麼挑目標，依參數表
-// `+6` 的低四位（spec 074）：
+// `+6`（gamepack.SpellTargetPlan，與玩家的瞄準層同一份）：
 //
 //	0         打施法者自己，不挑（`20FDh`）
 //	0Fh       `1E09h` 挑一個（`211Ah`）
-//	8..0Eh    `1E09h` 挑一個，再以它為中心收範圍（`220Fh`）
+//	8..0Eh    `1E09h` 挑一個，再以它為中心、預算 +6 & 7 收範圍（`220Fh`）
 //	其餘      `1E09h` 挑 (模式 & 3) + 1 個，重複的不算（`22BEh..23BEh`）
 //
-// castSpell 一次只作用在一個目標上（玩家那一側也是），所以多挑的那幾個照樣擲骰
-// 但只交第一個出去。chosen 為 false 代表「打自己、不必指定」。
+// 收到的整張表交給 castSpell（定身術逐一丟豁免、範圍法術逐一吃傷害）。
+// Chosen 為 false 代表「打自己、不必指定」。
 func (a *app) foeSpellTargets(state *tacticalState, mover, spell uint8,
-	caster foeSpellcaster) (target uint8, chosen, found bool, err error) {
-	params := a.spellParameters[spell]
-	mode := params.TargetMode()
-	if mode == gamepack.SpellTargetSelf {
-		return 0, false, true, nil
+	caster foeSpellcaster) (spellTargets, bool, error) {
+	plan := a.spellParameters[spell].TargetPlan()
+	if plan.Kind == gamepack.SpellTargetKindSelf {
+		return spellTargets{}, true, nil
 	}
 	count := 1
-	if mode < 8 {
-		count = int(mode&3) + 1
+	if plan.Kind == gamepack.SpellTargetKindCount {
+		count = plan.Count
 	}
 	var picked []uint8
 	for ; count > 0; count-- {
 		pick, ok, err := a.foeSpellTarget(state, mover, spell, caster)
 		if err != nil {
-			return 0, false, false, err
+			return spellTargets{}, false, err
 		}
 		if !ok {
 			continue
@@ -415,9 +416,18 @@ func (a *app) foeSpellTargets(state *tacticalState, mover, spell uint8,
 		}
 	}
 	if len(picked) == 0 {
-		return 0, false, false, nil
+		return spellTargets{}, false, nil
 	}
-	return picked[0], true, true, nil
+	targets := state.singleSpellTarget(picked[len(picked)-1])
+	targets.List = picked
+	if plan.Kind == gamepack.SpellTargetKindArea {
+		members, err := state.spellAreaMembers(targets.X, targets.Y, plan.AreaBudget)
+		if err != nil {
+			return spellTargets{}, false, err
+		}
+		targets.List, targets.Area = members, true
+	}
+	return targets, true, nil
 }
 
 // foeSpellTarget 是 overlay-13 `1E09h` 的 AI 那一支（旗標 `[bp+0Ch]` 非 0）：

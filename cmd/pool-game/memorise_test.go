@@ -199,7 +199,9 @@ func TestCastMagicMissileInCombat(t *testing.T) {
 			continue
 		}
 		target, found := state.nearestReachableOpposing(mover)
-		if !found {
+		// 這一回合挨過打的不能施法（runtime +1 為 0，overlay-08 `072Fh`）：
+		// 指令列沒有 Cast，等下一回合。
+		if !found || state.castingDisrupted(int(mover)) {
 			if err := press(application, ebiten.KeyEnter); err != nil {
 				t.Fatal(err)
 			}

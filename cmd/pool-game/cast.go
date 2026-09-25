@@ -16,9 +16,10 @@ import (
 // **只列得出已經讀過處理常式的法術**（`SpellIsImplemented`）。沒讀過的不列，
 // 而不是列了之後失敗——玩家看得到的清單就是實際做得到的事。
 //
-// **選目標是 remake 自己的作法**：傷害法術打「繞得過去的最近敵人」、
-// 治療打自己、整邊的效果作用在自己這邊。原版讓玩家自己瞄（overlay-08 的
-// `View Aim` 指令），那條還沒讀。
+// **施法時間與瞄準照原版**（spec 098〈施法時間與打斷〉〈收目標〉，spell_targets.go）：
+// 施法時間不為 0 的先「開始施法」，輪到下一次才瞄準、放出去；瞄準照參數表 `+6`
+// 分成挑一個、逐個挑 (模式 & 3) + 1 個、挑一點收範圍三種（overlay-13 `20AEh`）。
+// 模式 0Ah（整邊）與 8（閃電束的射線）還是 remake 自己決定作用在誰身上。
 
 type castOption struct {
 	// Slot 是記憶陣列裡的位置，施完要清掉那一格。
@@ -38,6 +39,12 @@ func (a *app) openCastMenu() {
 	index, ok := a.moverPartyIndex(state.Mover)
 	if !ok {
 		a.tacticalStatus(state, a.text(msgCastNotACaster))
+		return
+	}
+	// overlay-08 `072Fh`：runtime +1（這一回合還能施法）為 0 的，指令列不接 "Cast "。
+	// 受過傷、沉默或咳嗽都會清它（spec 096〈entry 4〉）。
+	if state.castingDisrupted(int(state.Mover)) {
+		a.tacticalStatus(state, a.text(msgCastCannotNow))
 		return
 	}
 	options := a.spellOptionsFor(a.state.Party[index])
@@ -218,6 +225,10 @@ func (a *app) castTargetingInput() error {
 		// 讓目前這個目標落在正中央（餘裕 0），選到誰不變。
 		a.centreOnTarget()
 	case a.justPressed(ebiten.KeyEscape):
+		if a.castAim != nil && !a.castTargetingAttack {
+			// 施法的瞄準按 Exit：`1E09h` 回 0，交給 `20AEh` 的計數或 Abort Spell。
+			return a.cancelSpellPick()
+		}
 		a.castTargeting, a.castTargetingAttack, a.castManual = false, false, false
 	case a.justPressed(ebiten.KeyP), a.justPressed(ebiten.KeyArrowLeft),
 		a.justPressed(ebiten.KeyArrowUp):
@@ -226,8 +237,14 @@ func (a *app) castTargetingInput() error {
 		a.justPressed(ebiten.KeyArrowDown):
 		a.castTargetCursor = (a.castTargetCursor + 1) % len(a.castTargets)
 	case a.justPressed(ebiten.KeyEnter), a.justPressed(ebiten.KeySpace):
-		a.castTargeting = false
 		target := a.castTargets[a.castTargetCursor]
+		if a.castAim != nil && !a.castTargetingAttack {
+			// 施法照 `20AEh` 收目標：射程、重複與還要挑幾個都在那一支判斷，
+			// 過不了就停在瞄準裡。
+			cell := a.tactical.Roster[target]
+			return a.confirmSpellCell(int(cell.X), int(cell.Y), target)
+		}
+		a.castTargeting = false
 		if a.castTargetingAttack {
 			a.castTargetingAttack = false
 			return a.resolveAimedAttack(target)
@@ -248,19 +265,31 @@ func (a *app) resolveCast() error {
 	if _, ok := a.moverPartyIndex(state.Mover); !ok {
 		return nil
 	}
-	// 要挑目標的那幾種模式先進選目標那一步。
-	switch a.spellParameters[option.ID].TargetMode() {
-	case gamepack.SpellTargetSingle, gamepack.SpellTargetHold,
-		gamepack.SpellTargetHoldAlt, gamepack.SpellTargetPick:
-		if a.beginCastTargeting(option) {
-			return nil
+	if int(option.ID) < len(a.spellParameters) {
+		// overlay-13 `24AAh`：施法時間 = 參數表 +0Ch ÷ 3。不為 0 就先開始施法，
+		// 目標與記憶都留到輪到下一次放出去的時候（spell_targets.go）。
+		if cost := a.spellParameters[option.ID].CastingCost(); cost > 0 {
+			return a.beginPlayerCasting(option, cost)
 		}
 	}
-	return a.finishCast(option, 0, false)
+	return a.aimSpell(option, false)
 }
 
 // finishCast 真的把法術施出去。chosen 為真時 target 是玩家挑的那一個。
 func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
+	state := a.tactical
+	if state == nil {
+		return nil
+	}
+	targets := spellTargets{}
+	if chosen {
+		targets = state.singleSpellTarget(target)
+	}
+	return a.finishCastTargets(option, targets)
+}
+
+// finishCastTargets 是 finishCast 帶整份目標表的那一支（overlay-13 `20AEh` 收好的）。
+func (a *app) finishCastTargets(option castOption, targets spellTargets) error {
 	state := a.tactical
 	if state == nil {
 		return nil
@@ -284,7 +313,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			member.Memorised[option.Slot] = 0
 			syncTrainedLibraryCharacter(&a.state, *member)
 		},
-	}, option, target, chosen); err != nil {
+	}, option, targets); err != nil {
 		return err
 	}
 	if state.Finished {
@@ -312,7 +341,8 @@ type spellCasting struct {
 // 行動。玩家與 AI 走同一支，所以法術效果只有這一份。戰鬥打完（state.Finished）
 // 由呼叫端收：玩家那一側是 finishCast，AI 那一側是 foeTurn 的呼叫端。
 func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOption,
-	target uint8, chosen bool) error {
+	targets spellTargets) error {
+	target, chosen := targets.first()
 	member := caster.member
 	casterLevel := caster.level
 	if state.isFriendly(state.Mover) {
@@ -361,10 +391,9 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	// 記憶的那一格用掉了，不論打不打得中——原版也是先耗掉才判定。
 	caster.consume()
 
-	// 挑目標照原版的模式（參數表 `+6` 的低四位，spec 074）：模式 0 作用在
-	// 施法者自己、模式 0Ah 作用在整邊、模式 8／9／0Bh 是範圍。
-	// **模式 4 那三十支原版是讓玩家自己瞄**（overlay-13 `1E09h`），
-	// 那條還沒讀，所以這裡治療打自己、傷害打繞得過去的最近敵人。
+	// 目標是 overlay-13 `20AEh` 收好的那一份（spell_targets.go，玩家瞄、AI 擲骰）：
+	// 模式 0 作用在施法者自己、模式 0Ah 作用在整邊、模式 8／9／0Bh 是範圍。
+	// 沒挑過（targets.Chosen 為假）的照舊：治療打自己、傷害打繞得過去的最近敵人。
 	mode := a.spellParameters[option.ID].TargetMode()
 	// 緩毒術那一類：把倒在 0 的人墊回 1。原版問的是選中的目標。
 	if effect.MinimumHitPoints > 0 {
@@ -409,11 +438,18 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	case effect.EffectCode == gamepack.HoldPersonEffectCode:
 		// 定身術：規則 1（豁免成功完全無效，spec 074）。中了就照參數表的
 		// 持續回合數定住，那一格輪到就直接結束回合。
-		picked, found := target, chosen
-		if !found {
-			picked, found = state.nearestReachableOpposing(state.Mover)
+		//
+		// `1650h` 逐一走 `20AEh` 收好的那張表（`DS:6B85h`，定身術 3 個、定身
+		// 怪物 4 個），每一個各丟一次豁免。沒挑過（remake 自己挑）時是最近的敵人。
+		victims := targets.List
+		if !chosen {
+			if picked, found := state.nearestReachableOpposing(state.Mover); found {
+				victims = []uint8{picked}
+			} else {
+				victims = nil
+			}
 		}
-		if !found {
+		if len(victims) == 0 {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
 			break
 		}
@@ -421,24 +457,29 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		if rounds < 1 {
 			rounds = 1
 		}
-		// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
-		if effect.PersonOnly && !state.affectsPerson(picked) {
-			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNotPerson),
-				picked, option.Label))
-			break
-		}
-		// 豁免修正看這一次選了幾個目標。remake 一次只瞄一個，所以是 1 個
-		// 那一格：定身術 −2、定身怪物 −3（overlay-22 `1656h`）。
+		// 豁免修正看這一次選了幾個目標（overlay-22 `1656h`）：1 個時定身術 −2、
+		// 定身怪物 −3，2 個 −1，3 或 4 個 0。
 		modifier := 0
 		if effect.SaveModifierByTargetCount {
-			modifier = gamepack.HoldPersonSaveModifier(option.ID, 1)
+			modifier = gamepack.HoldPersonSaveModifier(option.ID, len(victims))
 		}
-		if a.savedAgainstSpellWithModifier(state, picked, option.ID, modifier) {
-			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
-			break
+		for _, picked := range victims {
+			if int(picked) >= len(state.Roster) || state.Roster[picked].FootprintClass == 0 {
+				continue
+			}
+			// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
+			if effect.PersonOnly && !state.affectsPerson(picked) {
+				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNotPerson),
+					picked, option.Label))
+				continue
+			}
+			if a.savedAgainstSpellWithModifier(state, picked, option.ID, modifier) {
+				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
+				continue
+			}
+			state.addEffect(int(picked), gamepack.HoldPersonEffectCode, rounds, casterLevel)
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), picked, rounds))
 		}
-		state.addEffect(int(picked), gamepack.HoldPersonEffectCode, rounds, casterLevel)
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), picked, rounds))
 	case effect.StrengthValue > 0 || effect.StrengthFromTarget:
 		// 力量那一組（變大術、力量術、編號 59）走同一支
 		// overlay-24 entry 18：只往上調，調不動就什麼都不做。
@@ -504,7 +545,12 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCharmed),
 			strings.TrimSpace(caster.name), 1))
 	case effect.SleepBudget > 0:
-		a.applySleep(state, caster.name, option.Label, effect.SleepBudget, casterLevel)
+		// 瞄過一點的（`20AEh` 收好的表）走那張表；沒瞄過的照舊走整個敵方。
+		var candidates []uint8
+		if targets.Area && chosen {
+			candidates = targets.List
+		}
+		a.applySleep(state, caster.name, option.Label, effect.SleepBudget, casterLevel, candidates)
 	case effect.Heal > 0:
 		healed := state.Mover
 		if chosen {
@@ -519,7 +565,10 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		// 蓋成地形 `1Eh`；效果碼 `1Eh` 掛在**當下站在那四格裡的人**身上，
 		// 之後每次輪到他行動就結算一次（stinkingCloudTurn）。
 		centreX, centreY := int(state.Roster[state.Mover].X), int(state.Roster[state.Mover].Y)
-		if chosen && int(target) < len(state.Roster) {
+		if targets.Area && chosen {
+			// 雲心是瞄準選的那一點（`DS:6CADh`／`6CAEh`），可以是空格子。
+			centreX, centreY = targets.X, targets.Y
+		} else if chosen && int(target) < len(state.Roster) {
 			centreX, centreY = int(state.Roster[target].X), int(state.Roster[target].Y)
 		} else if picked, ok := state.nearestReachableOpposing(state.Mover); ok {
 			centreX, centreY = int(state.Roster[picked].X), int(state.Roster[picked].Y)
@@ -609,11 +658,41 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			return a.roller.Roll(1, 100)
 		})
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDispelled), picked, removed))
+	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea() &&
+		targets.Area && chosen && mode != gamepack.SpellTargetBolt:
+		// 範圍：`20AEh` 以瞄準的那一點收好的表，**不分敵我**每一個都吃一份
+		// （`08BCh` 的 `090Ch..0A62h` 逐一走 `DS:6B85h`）。火球術在 `@49E6` 為 0 時
+		// 以同一點、預算 2 重收一次（overlay-22 `2661h..26DAh`）。
+		victims := targets.List
+		walkFlag := uint8(0)
+		if a.eventMachine != nil && a.eventMachine.Memory[encounterWalkFlagAddress] != 0 {
+			walkFlag = 1
+		}
+		if budget := gamepack.FireballOutdoorAreaBudget(option.ID, walkFlag); budget > 0 {
+			members, err := state.spellAreaMembers(targets.X, targets.Y, budget)
+			if err != nil {
+				return err
+			}
+			victims = members
+		}
+		hit := 0
+		for _, index := range victims {
+			if int(index) >= len(state.Roster) || state.Roster[index].FootprintClass == 0 {
+				continue
+			}
+			a.applySpellDamage(state, index, a.damageAfterSave(state, index, option.ID, effect.Damage))
+			hit++
+		}
+		if hit == 0 {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+		} else {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastArea),
+				option.Label, hit, effect.Damage))
+		}
 	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea():
-		// 範圍：對面每一個都吃一份。原版是以一格為中心算範圍
-		// （overlay-31 `0138h:003Eh`）：中心是挑中的目標（overlay-13 `2222h`
-		// 拿 `1E09h` 寫進 `DS:6CADh`／`6CAEh` 的座標，spec 096 的 AI 施法）。
-		// 玩家這一側還沒有瞄範圍法術的那一層，沒挑目標時中心退回施法者自己。
+		// 沒瞄過的範圍（閃電束的射線、remake 自己挑的）：對面每一個都吃一份。
+		// 原版是以一格為中心算範圍（overlay-31 `0138h:003Eh`）：中心是挑中的目標，
+		// 沒挑目標時中心退回施法者自己。
 		centre := state.Mover
 		if chosen && int(target) < len(state.Roster) {
 			centre = target
@@ -793,15 +872,24 @@ func (a *app) applyCharmByHitPoints(state *tacticalState, caster string,
 		strings.TrimSpace(caster), charmed))
 }
 
-// applySleep 依額度逐個放倒對面的人（spec 098）。
+// applySleep 依額度逐個放倒目標（spec 098）。
 //
-// 原版走的是這一次施法挑出來的目標清單（`DS:6B85h`），這裡沒有瞄準那一層，
-// 所以走整個敵方，順序就是位置順序。花費照 `SleepHitDiceCost`。
-func (a *app) applySleep(state *tacticalState, caster, label string, budget, casterLevel int) {
+// 原版走的是這一次施法收出來的目標清單（`DS:6B85h`，overlay-22 `152Ch` 起），
+// 表上的人不分敵我。candidates 就是那張表；nil 代表沒瞄過，照舊走整個敵方，
+// 順序就是位置順序。花費照 `SleepHitDiceCost`。
+func (a *app) applySleep(state *tacticalState, caster, label string, budget, casterLevel int,
+	candidates []uint8) {
+	if candidates == nil {
+		for index := 1; index < len(state.Roster); index++ {
+			if state.Friendly[index] != state.Friendly[state.Mover] {
+				candidates = append(candidates, uint8(index))
+			}
+		}
+	}
 	slept := 0
-	for index := 1; index < len(state.Roster); index++ {
-		if state.Roster[index].FootprintClass == 0 ||
-			state.Friendly[index] == state.Friendly[state.Mover] ||
+	for _, cell := range candidates {
+		index := int(cell)
+		if index <= 0 || index >= len(state.Roster) || state.Roster[index].FootprintClass == 0 ||
 			state.hasEffect(index, gamepack.SleepEffectCode) {
 			continue
 		}
