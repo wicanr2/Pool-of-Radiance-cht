@@ -153,18 +153,6 @@
       "github_issue": 70
     },
     {
-      "id": "ai-turn-undead-and-items",
-      "layer": "feature",
-      "title": "AI 的轉變不死生物（entry 2）與 QUICK 隊員用物品（entry 3）未接",
-      "body": "overlay-09 entry 1 依序是 entry 3 用物品 → 放出施法中 → entry 2 轉變不死生物 → entry 4 挑法術。remake 的 entry 3 只擲次數骰，物品鏈與 entry 2 都沒接。",
-      "acceptance": "entry 2／3 照 spec 096／111 接上，骰流與 d7 d7 對齊，送鍵測試覆蓋。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判：entry 2／3 接上與否"
-      },
-      "github_issue": 71
-    },
-    {
       "id": "player-casting-time",
       "layer": "feature",
       "title": "玩家施法沒有施法時間與受傷打斷",
@@ -187,6 +175,42 @@
         "note": "要人判"
       },
       "github_issue": 73
+    },
+    {
+      "id": "morale-and-flee",
+      "layer": "feature",
+      "title": "士氣與逃跑未實作：被轉變的不死生物、士氣失敗的怪物照常行動",
+      "body": "士氣 entry 8 10FFh、entry 5 逃跑迴圈 0B9Fh、07E8h 逃跑分支（d2 模式骰）、overlay-13 entry 7 0C6Ch 脫離判定；後兩段未讀。",
+      "acceptance": "四段讀完寫進 spec 096，逃跑照原版，骰流對齊。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 74
+    },
+    {
+      "id": "player-turn-and-use-commands",
+      "layer": "feature",
+      "title": "玩家戰鬥指令 T）urn 與 U）se 未接",
+      "body": "overlay-08 0427h 的 Turn 與 Use 玩家按不動；AI 側的轉變與用物品可共用。",
+      "acceptance": "T、U 照原版條件出現並能執行，tacticalInput 送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 75
+    },
+    {
+      "id": "monster-item-chains",
+      "layer": "feature",
+      "title": "怪物的物品鏈沒有載入",
+      "body": "怪物記錄 +C8h 起的物品串列未載入，entry 3 對怪物挑不到物品；0C14h 施法者等級來源與物品 +3Eh 待讀。",
+      "acceptance": "怪物物品來源 exact 並載入，會用物品的怪物照 entry 3 用。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 76
     }
   ]
 }

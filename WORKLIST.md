@@ -55,15 +55,21 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **物品選單的 I）d 鑑定服務（200 gp）。** overlay-19 entry 17（1F52h）物品選單的 I）d，收 200 gp 鑑定；remake 沒有。
       **驗收**：條件、費用、效果 exact 寫進 spec 067；remake 接上並有 Update() 送鍵測試。
       **討論**：[#68](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/68)
-- [ ] **AI 的轉變不死生物（entry 2）與 QUICK 隊員用物品（entry 3）未接。** overlay-09 entry 1 依序是 entry 3 用物品 → 放出施法中 → entry 2 轉變不死生物 → entry 4 挑法術。remake 的 entry 3 只擲次數骰，物品鏈與 entry 2 都沒接。
-      **驗收**：entry 2／3 照 spec 096／111 接上，骰流與 d7 d7 對齊，送鍵測試覆蓋。
-      **討論**：[#71](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/71)
 - [ ] **玩家施法沒有施法時間與受傷打斷。** 原版施法時間 = +0Ch÷3，不為 0 先 Begins Casting、下一次輪到才放；放之前受傷丟失。remake 玩家施法當場放；overlay-08 072Fh 未讀。
       **驗收**：玩家施法照原版的施法時間與打斷，072Fh 寫進 spec 098，送鍵測試覆蓋。
       **討論**：[#72](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/72)
 - [ ] **多目標法術與範圍法術的瞄準層。** AI 施法 (模式&3)+1 個目標只交第一個給 castSpell；玩家的範圍法術沒有挑中心點的瞄準層。
       **驗收**：多目標逐個套效果；範圍法術有瞄準層，AI 與玩家共用，寫進 spec 098。
       **討論**：[#73](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/73)
+- [ ] **士氣與逃跑未實作：被轉變的不死生物、士氣失敗的怪物照常行動。** 士氣 entry 8 10FFh、entry 5 逃跑迴圈 0B9Fh、07E8h 逃跑分支（d2 模式骰）、overlay-13 entry 7 0C6Ch 脫離判定；後兩段未讀。
+      **驗收**：四段讀完寫進 spec 096，逃跑照原版，骰流對齊。
+      **討論**：[#74](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/74)
+- [ ] **玩家戰鬥指令 T）urn 與 U）se 未接。** overlay-08 0427h 的 Turn 與 Use 玩家按不動；AI 側的轉變與用物品可共用。
+      **驗收**：T、U 照原版條件出現並能執行，tacticalInput 送鍵測試。
+      **討論**：[#75](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/75)
+- [ ] **怪物的物品鏈沒有載入。** 怪物記錄 +C8h 起的物品串列未載入，entry 3 對怪物挑不到物品；0C14h 施法者等級來源與物品 +3Eh 待讀。
+      **驗收**：怪物物品來源 exact 並載入，會用物品的怪物照 entry 3 用。
+      **討論**：[#76](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/76)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
