@@ -49,30 +49,6 @@
       "github_issue": 52
     },
     {
-      "id": "dosgolem-wipe-screen-keys",
-      "layer": "verification",
-      "title": "dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）",
-      "body": "量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。",
-      "acceptance": "照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。",
-      "verify": {
-        "kind": "manual",
-        "note": "要改 dosgolem 並重跑，沒有機器可判訊號"
-      },
-      "github_issue": 53
-    },
-    {
-      "id": "keep-upper-floor-facing-gates",
-      "layer": "verification",
-      "title": "要塞上層是朝向閘門的迷宮：探針走不到覲見廳",
-      "body": "#21 把上樓落點改成原版的 (5,7) 之後露出來的。`ecl5/7` 入口 0（`9971h`）拿三張八格的表比對「地點索引 ＋ 朝向」，兩個都對上才分派；(5,7) 索引 1、南面實牆，只有下樓與北面那道 `4A6C & 8` 的閘門兩條路，而那個位元由 `9AFFh` 起的逐人技能檢定打開。先前會過是因為落點錯在 (6,7)——那一格沒有閘門。",
-      "acceptance": "讀完 `4A6C` 四個位元各自的檢查點與設定點、畫出上層通行圖，讓 `TestCastleStairsLeadToTheAudienceHall` 與 `TestMainlineProbeCheatMenuToEnding` 回綠。",
-      "verify": {
-        "kind": "manual",
-        "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestCastleStairsLeadToTheAudienceHall|TestMainlineProbeCheatMenuToEnding'` 是否全綠，工具不跑測試"
-      },
-      "github_issue": 56
-    },
-    {
       "id": "natural-strength-playthrough",
       "layer": "verification",
       "title": "不開作弊、以原版規則強度從標題通關到結局",
@@ -83,86 +59,6 @@
         "note": "要從標題不開作弊實跑到結局或寫明全滅卡點；沒有機器訊號"
       },
       "github_issue": 57
-    },
-    {
-      "id": "reaction-attack-on-disengage",
-      "layer": "feature",
-      "title": "脫離鄰接沒有反應攻擊：LeavingOpponentsAfterStep 與 reaction.go 在 cmd/ 沒有呼叫點",
-      "body": "原版 overlay-13 entry 6：角色移動離開敵人鄰接格時，敵方會得到一次反應攻擊。 - `internal/combat/nearby.go` 的 `LeavingOpponentsAfterStep`，以及 `internal/combat/reaction.go` 的 `ReactionFacings`、`SelectReactionAttackSlot`、`IsReactionDisabled` 都已實作。 - `cmd/` 內沒有任何非測試呼叫點。README 第 152 行自承「反應攻擊接進移動提交也還沒接上」。",
-      "acceptance": "移動提交結算反應攻擊，Update() 送鍵的測試覆蓋脫離／未鄰接／例外三種。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "cmd/pool-game"
-        ],
-        "pattern": "LeavingOpponentsAfterStep",
-        "note": "cmd/pool-game 出現呼叫點才算接上"
-      },
-      "github_issue": 58
-    },
-    {
-      "id": "outdoor-tactical-grid",
-      "layer": "feature",
-      "title": "野外戰鬥一律用室內戰場：NewOutdoorTacticalGrid 沒有呼叫點（spec 060）",
-      "body": "- `cmd/pool-game/tactical.go:738` 不分室內野外，一律呼叫 `combat.GenerateIndoorTacticalGrid`。 - `internal/combat/tacticalmap.go` 的 `NewOutdoorTacticalGrid`（overlay-10 `1255h` 第一步）沒有呼叫點；檔頭自承「挑背景並跑四支細節建構器，那一段尚未閉合（spec 060）」。",
-      "acceptance": "spec 060 READY，野外遭遇走野外戰場，對拍一場野外戰鬥。",
-      "verify": {
-        "kind": "absent",
-        "paths": [
-          "cmd/pool-game"
-        ],
-        "pattern": "NewOutdoorTacticalGrid",
-        "note": "cmd/pool-game 出現呼叫點才算接上"
-      },
-      "github_issue": 59
-    },
-    {
-      "id": "shop-sell",
-      "layer": "feature",
-      "title": "商店不能賣出物品（spec 067：賣價公式還沒讀）",
-      "body": "- `docs/spec/067-shop-service-and-stock.md:85`：「不做賣出。原版有，但賣價的公式還沒讀」。 - `cmd/pool-game/shop.go` 只有 Buy、Appraise、G、J，沒有 Sell。 - 同一份 spec 的「多幣別付款」已由 `treasure/payment.go` 的 `PayInCoins` 接上，那一段已過期，要一併更正。",
-      "acceptance": "賣價公式 exact，商店有 Sell，同一件物品賣價與原版一致。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/spec/067-shop-service-and-stock.md"
-        ],
-        "pattern": "不做賣出",
-        "note": "spec 067 還自承不做賣出"
-      },
-      "github_issue": 60
-    },
-    {
-      "id": "party-strength-from-persistent-state",
-      "layer": "feature",
-      "title": "PARTYSTRENGTH 把全隊當一級：initialPartyStrengthResolver 不看等級與裝備",
-      "body": "- `internal/gamepack/intro.go:474` 註解：「**這是暫時的**：訓練與裝備接上之後要改由持久的角色狀態算，不能永遠把所有人當成一級。」 - `intro.go:401`、`intro.go:470`、`ecl_catalog.go:131` 都還在設這個 resolver。 - 訓練與裝備早已接上，腳本讀到的隊伍強度因此一直偏低，影響遭遇編成與分支。",
-      "acceptance": "resolver 讀持久角色狀態，讀檔／升級／換裝有測試，對一組原版存檔。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "internal/gamepack/intro.go"
-        ],
-        "pattern": "這是暫時的",
-        "note": "intro.go 的 resolver 註解還自承暫時"
-      },
-      "github_issue": 61
-    },
-    {
-      "id": "combat-foe-name",
-      "layer": "presentation",
-      "title": "戰鬥資訊欄輪到怪物時印「敵方」，原版印怪物名",
-      "body": "- `cmd/pool-game/text.go:308`：「原版放怪物名（`\"OGRE\" G.R.X`），remake 還沒有把名字接到戰術格上。」 - `combat_screen.go` 輪到怪物時一律用 `msgCombatFoe`。",
-      "acceptance": "資訊欄照原版印怪物名，對拍戰鬥畫面。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "cmd/pool-game/text.go"
-        ],
-        "pattern": "還沒有把名字接到戰術格上",
-        "note": "text.go 還自承怪物名沒接"
-      },
-      "github_issue": 62
     },
     {
       "id": "monster-palette-source",

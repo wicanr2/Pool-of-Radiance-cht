@@ -46,18 +46,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 ### 一、玩家會撞到的功能缺口
 
-- [ ] **脫離鄰接沒有反應攻擊：LeavingOpponentsAfterStep 與 reaction.go 在 cmd/ 沒有呼叫點。** 原版 overlay-13 entry 6：角色移動離開敵人鄰接格時，敵方會得到一次反應攻擊。 - `internal/combat/nearby.go` 的 `LeavingOpponentsAfterStep`，以及 `internal/combat/reaction.go` 的 `ReactionFacings`、`SelectReactionAttackSlot`、`IsReactionDisabled` 都已實作。 - `cmd/` 內沒有任何非測試呼叫點。README 第 152 行自承「反應攻擊接進移動提交也還沒接上」。
-      **驗收**：移動提交結算反應攻擊，Update() 送鍵的測試覆蓋脫離／未鄰接／例外三種。
-      **討論**：[#58](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/58)
-- [ ] **野外戰鬥一律用室內戰場：NewOutdoorTacticalGrid 沒有呼叫點（spec 060）。** - `cmd/pool-game/tactical.go:738` 不分室內野外，一律呼叫 `combat.GenerateIndoorTacticalGrid`。 - `internal/combat/tacticalmap.go` 的 `NewOutdoorTacticalGrid`（overlay-10 `1255h` 第一步）沒有呼叫點；檔頭自承「挑背景並跑四支細節建構器，那一段尚未閉合（spec 060）」。
-      **驗收**：spec 060 READY，野外遭遇走野外戰場，對拍一場野外戰鬥。
-      **討論**：[#59](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/59)
-- [ ] **商店不能賣出物品（spec 067：賣價公式還沒讀）。** - `docs/spec/067-shop-service-and-stock.md:85`：「不做賣出。原版有，但賣價的公式還沒讀」。 - `cmd/pool-game/shop.go` 只有 Buy、Appraise、G、J，沒有 Sell。 - 同一份 spec 的「多幣別付款」已由 `treasure/payment.go` 的 `PayInCoins` 接上，那一段已過期，要一併更正。
-      **驗收**：賣價公式 exact，商店有 Sell，同一件物品賣價與原版一致。
-      **討論**：[#60](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/60)
-- [ ] **PARTYSTRENGTH 把全隊當一級：initialPartyStrengthResolver 不看等級與裝備。** - `internal/gamepack/intro.go:474` 註解：「**這是暫時的**：訓練與裝備接上之後要改由持久的角色狀態算，不能永遠把所有人當成一級。」 - `intro.go:401`、`intro.go:470`、`ecl_catalog.go:131` 都還在設這個 resolver。 - 訓練與裝備早已接上，腳本讀到的隊伍強度因此一直偏低，影響遭遇編成與分支。
-      **驗收**：resolver 讀持久角色狀態，讀檔／升級／換裝有測試，對一組原版存檔。
-      **討論**：[#61](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/61)
 - [ ] **怪物 AI 與 QUICK 自動戰鬥都不施法（spec 139 的 Magic On/Off）。** - `docs/spec/139-quick-auto-combat.md:5`：「remake 的 AI 還不施法」。 - `cmd/` 內找不到怪物或 QUICK 模式的施法路徑。
       **驗收**：會施法的怪物施法、QUICK 的 Magic On/Off 生效，骰流重播抽樣。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
@@ -73,12 +61,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **dosgolem 推不動原版全滅那一頁（consumed 0／queued 183）。** 量 #19 第 1 條時卡住：全滅後的 PRESS ANY KEY TO CONTINUE，dosgolem 送的鍵一個都沒被讀走，cs:ip=1FFE:FDF7。狀態檔 workplace/dosgolem-cheat/wipe.state。
-      **驗收**：照 DOSBox-X 原始碼把 dosgolem 補到能推過那一頁，重跑 tools/dosgolem-party-wipe.py 量出 4961h 的消費者與下一個畫面。
-      **討論**：[#53](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/53)
-- [ ] **要塞上層是朝向閘門的迷宮：探針走不到覲見廳。** #21 把上樓落點改成原版的 (5,7) 之後露出來的。`ecl5/7` 入口 0（`9971h`）拿三張八格的表比對「地點索引 ＋ 朝向」，兩個都對上才分派；(5,7) 索引 1、南面實牆，只有下樓與北面那道 `4A6C & 8` 的閘門兩條路，而那個位元由 `9AFFh` 起的逐人技能檢定打開。先前會過是因為落點錯在 (6,7)——那一格沒有閘門。
-      **驗收**：讀完 `4A6C` 四個位元各自的檢查點與設定點、畫出上層通行圖，讓 `TestCastleStairsLeadToTheAudienceHall` 與 `TestMainlineProbeCheatMenuToEnding` 回綠。
-      **討論**：[#56](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/56)
 - [ ] **不開作弊、以原版規則強度從標題通關到結局。** README（第 17、24–27、381–383 行）與 spec 137 第 5 行都寫著「不開作弊、以原版強度通關仍未做」，引用的是 #19、#22，但這兩個 issue 已經關閉，這項工作因此沒有 open issue 追蹤。 - 主線收據的口徑是作弊選單（spec 141）跑通，見 #5、#40。 - 自然強度的隊伍在 spec 137 的路線上走不到終點。
       **驗收**：關閉作弊選單從標題跑到結局的收據，或逐段真實全滅卡點紀錄。
       **討論**：[#57](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/57)
@@ -101,9 +83,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **拿發行包拍 remake 的戰利品畫面，與原版六張並列。** #47 的畫面與測試已完成，缺截圖。tools/capture-treasure.sh 已能走到遭遇並開打，但一人隊伍在同一個 tick 內全滅回到標題（鎖 HP 的寫回在 tick 結束才做）。下一步假設：六人隊伍、不走 QUICK、或改用市政廳交件的獎金（與原版基準同一筆，最接近 same-state）。
       **驗收**：docs/screenshots/treasure/ 有 remake 四張與原版並列；差異寫進 spec 034。
       **討論**：[#52](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/52)
-- [ ] **戰鬥資訊欄輪到怪物時印「敵方」，原版印怪物名。** - `cmd/pool-game/text.go:308`：「原版放怪物名（`"OGRE" G.R.X`），remake 還沒有把名字接到戰術格上。」 - `combat_screen.go` 輪到怪物時一律用 `msgCombatFoe`。
-      **驗收**：資訊欄照原版印怪物名，對拍戰鬥畫面。
-      **討論**：[#62](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/62)
 - [ ] **怪物戰場圖示的配色來源沒定位：boardIconFor 給寫死的預設配色。** - `cmd/pool-game/sprite_overview.go:195`：「原版把哥布林那一類畫成紅色是換了配色，**配色從哪來還沒定位**。」 - `tactical.go` 的 `boardIconFor` 對怪物用固定的預設六組顏色；README 第 325 行、WORKLIST 第 101 行同一件事。
       **驗收**：配色來源 exact，戰場怪物配色與原版同狀態截圖一致。
       **討論**：[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)
