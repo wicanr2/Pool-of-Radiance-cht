@@ -97,10 +97,25 @@ func (a *app) foeTurnUndeadPhase(state *tacticalState, mover uint8, mode int) (b
 	if !ok || caster.levels[0] <= 0 {
 		return false, nil
 	}
-	// 1352h 的名單是 `010Ah:00C0h(記錄, 0FFh)`：射程不限的對面，依直線追蹤成本排。
-	opposing, err := state.opposingWithin(mover, 0xFF, false)
+	opposing, candidates, err := a.turnUndeadCandidates(state, mover)
 	if err != nil {
 		return false, err
+	}
+	if _, ok := gamepack.SelectTurnUndeadTarget(candidates); !ok {
+		return false, nil
+	}
+	state.setTacticMode(mover, mode)
+	a.turnUndead(state, mover, caster.levels[0], opposing, candidates)
+	return true, nil
+}
+
+// turnUndeadCandidates 是 1352h 看的名單：`010Ah:00C0h(記錄, 0FFh)`，射程不限的對面，
+// 依直線追蹤成本排。
+func (a *app) turnUndeadCandidates(state *tacticalState, mover uint8) (
+	[]uint8, []gamepack.TurnUndeadCandidate, error) {
+	opposing, err := state.opposingWithin(mover, 0xFF, false)
+	if err != nil {
+		return nil, nil, err
 	}
 	candidates := make([]gamepack.TurnUndeadCandidate, len(opposing))
 	for position, other := range opposing {
@@ -109,16 +124,20 @@ func (a *app) foeTurnUndeadPhase(state *tacticalState, mover uint8, mode int) (b
 			Turned: state.Undead.Turned[int(other)],
 		}
 	}
-	if _, ok := gamepack.SelectTurnUndeadTarget(candidates); !ok {
-		return false, nil
-	}
+	return opposing, candidates, nil
+}
 
-	state.setTacticMode(mover, mode)
+// turnUndead 是 entry 12（`116Ah`）本身，AI（entry 2 `0241h`）與玩家的 T（overlay-08
+// `0427h`）共用：`11AAh` 立 runtime +11h、擲額度與點數、逐隻轉變或摧毀，最後 entry 34
+// 結束行動（`133Fh`）。挑不到任何一隻也照樣擲骰、印 "Nothing Happens"、用掉行動。
+func (a *app) turnUndead(state *tacticalState, mover uint8, clericLevel int,
+	opposing []uint8, candidates []gamepack.TurnUndeadCandidate) {
+	index := int(mover)
 	if state.Undead.Tried == nil {
 		state.Undead.Tried = map[int]bool{}
 	}
 	state.Undead.Tried[index] = true
-	result := gamepack.ResolveTurnUndead(*a.turnUndeadTable, caster.levels[0], candidates, a.roller)
+	result := gamepack.ResolveTurnUndead(*a.turnUndeadTable, clericLevel, candidates, a.roller)
 	var lines []string
 	for _, event := range result.Events {
 		other := opposing[event.Index]
@@ -139,7 +158,6 @@ func (a *app) foeTurnUndeadPhase(state *tacticalState, mover uint8, mode int) (b
 	state.FoeLog = state.say(msgFoeTurnsUndead, mover) + " " + strings.Join(lines, " ")
 	a.tacticalStatus(state, state.FoeLog)
 	state.endTurnAfterAction(a.rollDice)
-	return true, nil
 }
 
 // destroyTurnedUndead 是 116Ah 的摧毀那一支（`12CEh..12E5h`）：overlay-32 entry 20

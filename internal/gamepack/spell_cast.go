@@ -196,10 +196,11 @@ func SleepHitDiceCost(hitDice int, fifthBandFlag uint8) int {
 }
 
 // CasterLevelFor 是 overlay-25 `26F8h`：參數表 `+0` 決定讀哪一個職業等級，
-// 物品效果一律 12 級；`DS:6CB3h` 非零時（人物檢視畫面，也就是戰術地圖之外）
-// 等級一律當成 6。
+// 物品效果一律 12 級；`DS:6CB3h` 非零時等級一律當成 6。`6CB3h` 是「法術從物品放出」：
+// overlay-19 entry 8（用物品，`1AE2h`／`1BBDh` 立、`1BDDh` 清）在戰鬥中與戰鬥外都立它，
+// 從記憶施法的兩條路（戰鬥 overlay-13 entry 19、營地）都不立（spec 098，issue #75）。
 func CasterLevelFor(parameters SpellParameters, clericLevel, magicUserLevel int,
-	outsideCombat bool) int {
+	fromItem bool) int {
 	level := 0
 	switch parameters.Source() {
 	case SpellSourceCleric:
@@ -209,7 +210,7 @@ func CasterLevelFor(parameters SpellParameters, clericLevel, magicUserLevel int,
 	case SpellSourceItem:
 		return 12
 	}
-	if outsideCombat {
+	if fromItem {
 		return 6
 	}
 	return level

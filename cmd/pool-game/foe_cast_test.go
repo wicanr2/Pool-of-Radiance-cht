@@ -147,7 +147,12 @@ func TestFoeLosesAPendingSpellWhenHit(t *testing.T) {
 	if state.Casting.Pending[2] == 0 {
 		t.Fatal("fireball did not start casting")
 	}
+	// 經傷害入口扣血：runtime +1 清掉、開始施法的那一條當場丟失（damage_interrupt.go）。
 	state.HitPoints[2] -= 3
+	application.woundCombatant(state, 2, 3)
+	if state.Casting.Pending[2] != 0 {
+		t.Fatal("the pending fireball survived the wound")
+	}
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}

@@ -1,11 +1,11 @@
 # Spec 098：施法的共用機制（擲骰、施法者等級、處理常式的呼叫慣例）
 
 狀態：CONFORMED（擲骰常式與引數順序、施法者等級的取法與那個覆寫旗標、
-處理常式呼叫 `08BCh` 的形狀；施法時間、打斷與 `20AEh` 收目標，以及模式 0Ah 的分邊與
-模式 8 的射線，見文末各節）；
+處理常式呼叫 `08BCh` 的形狀；施法時間、打斷與 `20AEh` 收目標，模式 0Ah 的分邊與
+模式 8 的射線，受傷打斷的兩個入口與用物品放法術，見文末各節）；
 DRAFT（`08BCh` 自己在做什麼、四個覆寫參數的語意、各法術的傷害）。
-日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）；2026-09-26 模式 0Ah 分邊
-與模式 8 射線（issue #78）。
+日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）、模式 0Ah 分邊與模式 8
+射線（issue #78）、受傷打斷與用物品（issue #75／#77）。
 
 ## 擲骰：overlay-24 的兩支
 
@@ -43,11 +43,12 @@ Pascal 由左往右推，所以 `[bp+8]` 是**先推的**、`[bp+6]` 是後推�
 2752  mov  byte ptr [bp-1], 6          ; → 等級一律當成 6
 ```
 
-`DS:6CB3h` 由 **overlay-19**（人物檢視畫面：`Weapon`／`AC`／`THAC0`／
-`Items`／`Spells`／`in Memory`／`in Spell Book`／`on Scroll`）在 `1AE2h`
-與 `1BBDh` 設為 1、在 `1BDDh` 清回 0；overlay-22 的派發表初始化
-（`33E1h`）也把它清成 0。所以**從人物畫面施法（戰術地圖之外）時，
-施法者等級一律當成 6**，戰鬥中才用真正的職業等級。
+`DS:6CB3h` 是「這一條法術從物品放出」（exact，全部 overlay 掃 `C6 06 B3 6C`）：
+只有 overlay-19 entry 8（用物品，`1A86h`）在 `1A91h` 清、`1AE2h` 與 `1BBDh` 設為 1、
+呼叫 overlay-22 entry 5 之後在 `1BDDh` 清回 0，另外 overlay-22 的派發表初始化
+（`33E1h`）清成 0。entry 8 在戰鬥中與戰鬥外都走（戰鬥的 U）se 與 AI 的 entry 3，
+見〈用物品放法術〉），所以**用物品放的牧師／法師法術一律當成 6 級、物品效果 12 級**；
+從記憶施法的幾條路（overlay-13 entry 19 與營地）不碰它，用真正的職業等級。
 
 ## 處理常式怎麼呼叫 `08BCh`，四個覆寫參數各是什麼
 
@@ -751,7 +752,7 @@ remake 這一邊已經照上面接完了（spec 121）：`gamepack.CloudList` �
 | overlay-13 `24BFh..24E5h` | `9A 39 00 E2 00` / `9A CA 00 0A 01` | 時間 0：overlay-22 entry 5 當場放，接著 entry 34 結束行動 | exact |
 | overlay-13 `24E7h..2552h` | `26 C6 05 01`、`26 88 05`（`2519h`）、`26 28 45 03` | 時間非 0：結果 = 1、印 "Begins Casting"、runtime `+0` = 法術、先攻 `+3` 大於時間就扣、否則寫 1；**不呼叫 entry 34** | exact |
 | overlay-08 `031Bh..0365h` | `26 80 3D 00 76 3F`、`26 C6 05 00`（`033Fh`）、`9A 39 00 E2 00`（`0352h`）、`9A CA 00 0A 01` | 輪到玩家時 runtime `+0` 非零：先清成 0，再 overlay-22 entry 5 `(法術, 0, 1, &結果)` 放出去，接著 entry 34。指令列不出現 | exact |
-| overlay-13 `04E8h..054Bh` | `80 7E 0A 00 76 66`、`26 C6 45 01 00`（`04F6h`）、`26 80 3D 00 76 44`、`BF B0 02`、`9A 70 00 0A 01`（`053Ah`）、`26 C6 05 00` | 傷害 > 0：runtime `+1` 清 0；`+0` 非零就印 "lost a spell"、以 overlay-25 entry 16（`14ECh`）把那一格從記憶清掉、`+0` 清 0。這一支（overlay-13 entry 4 `02FEh` 起）是套用傷害的共用常式 | 位元組 exact；「所有傷害都走這一支」strong inference |
+| overlay-13 `04E8h..054Bh` | `80 7E 0A 00 76 66`、`26 C6 45 01 00`（`04F6h`）、`26 80 3D 00 76 44`、`BF B0 02`、`9A 70 00 0A 01`（`053Ah`）、`26 C6 05 00` | 傷害 > 0：runtime `+1` 清 0；`+0` 非零就印 "lost a spell"、以 overlay-25 entry 16（`14ECh`）把那一格從記憶清掉、`+0` 清 0。這一支（overlay-13 entry 4 `02FEh` 起）是攻擊那一側的傷害常式；法術與效果那一側是 overlay-24 entry 19，做同一件事 | exact（兩個入口與例外見〈受傷打斷〉）|
 | overlay-08 `072Fh` | `26 80 7D 01 00 74 34` | runtime `+1` 為 0 的回合，指令列不接 "Cast "（spec 129 那一格的②） | exact |
 
 所以：
@@ -764,11 +765,10 @@ remake 這一邊已經照上面接完了（spec 121）：`gamepack.CloudList` �
   就這樣消失，記憶不動。
 
 remake：`cmd/pool-game/spell_targets.go` 的 `beginCasting`（`24E7h..2552h`）、
-`pendingSpellTurn`（`031Bh` 與受傷丟失）與 `cast.go` 的 `resolveCast`（施法時間）、
+`pendingSpellTurn`（`031Bh`）與 `cast.go` 的 `resolveCast`（施法時間）、
 `openCastMenu`／`combat_screen.go` 的 `Cast ` 閘（`072Fh`）。runtime `+0` 與 AI 共用
-`Casting.Pending`；`+1` 的受傷那一半與 AI 共用 `woundedThisRound`——**受傷的判斷
-在輪到時才做**（比回合開頭的生命值），不是在受傷當下，與 spec 096〈remake 的對應〉
-記的同一個近似：清掉的格子與之後的行動相同，差在 "lost a spell" 印出來的時機。
+`Casting.Pending`；`+1` 的受傷那一半與 AI 共用 `Casting.Wounded`，**在傷害入口當下寫**
+（`damage_interrupt.go` 的 `woundCombatant`，見〈受傷打斷〉）。
 
 ### 瞄不到目標：Abort Spell（exact）
 
@@ -864,7 +864,6 @@ overlay-22 entry 5 呼叫 `[6A78h]` 之後看結果（`0D6Ah`：`26 80 3D 00 75 
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| 受傷當下丟失開始施法的法術 | 輪到時比回合開頭的生命值 | 與 AI 同一個近似（spec 096）|
 | 放出去之前印 "casts"（`0D23h`）| 沒有這一句 | 狀態列只有一行，留給結果 |
 | Next／Prev 自動跳過 `1087h` 不合格的目標 | 候選是盤面上每一個站著的 | 施法那一條沒有接 `1087h`，與 spec 127 相同 |
 
@@ -1024,3 +1023,78 @@ remake：`combat.TraceSpellRay`（`2919h`）、`combat.StrikeSpellRayCell`（`28
 AI 擲到的目標（`foeSpellTargets`）都進同一支（`TestSpellRay*`、`TestLightningBolt*`、
 `TestFoeLightningBoltUsesTheSameRay`）。overlay-22 `31A3h`／`31B8h` 還有第三個呼叫端
 （推 `2919h(0Ah, 記錄 +32h, 3, 0)`，在效果碼處理常式那一段），不屬於法術派發表，沒有接。
+
+## 受傷打斷（2026-09-26，issue #77）
+
+輸入：`overlay-12.bin`、`overlay-13.bin` `4d53df20…2390`、`overlay-24.bin`、`overlay-25.bin`
+`9fede24b…0c0e`（SHA-256 見 `docs/audit/dos-ovr-manifest.json`）；工具同上一節，
+far call 照 spec 109 換算（`(可執行檔位移 − stub 位移 − 3B0h) ÷ 16`）。
+
+原版有**兩個**套用傷害的常式，兩個在傷害大於 0 的當下做同一件事：
+
+| 入口 | 位址與位元組 | 做什麼 | 證據 |
+|---|---|---|---|
+| overlay-13 entry 4（`02FEh`）| `04E8h` `80 7E 0A 00 76 66`（傷害 `[bp+0Ah]` 為 0 跳過）、`048Dh` `9A AC 00 0A 01`（overlay-25 entry 28 `2266h` 扣 `+11Bh`）、`04F6h` `26 C6 45 01 00`、`0503h` `26 80 3D 00 76 44`、`053Ah` `9A 70 00 0A 01`、`0547h` `26 C6 05 00` | 攻擊的傷害：runtime `+1` 清 0；`+0` 非零印 "lost a spell"（`02B0h`）、`14ECh` 清記憶、`+0` 清 0 | exact |
+| overlay-24 entry 19（`133Ah`）| `137Ah` `80 3E 76 67 00 77 03`（豁免後的傷害 `DS:6776h` 為 0 整支跳過）、`14FBh` `9A AC 00 0A 01`、`1500h` `80 3E 54 49 05 75 59`（戰鬥中才做）、`150Fh` `26 C6 45 01 00`、`151Ch` `26 80 3D 00 76 3E`、`154Fh` `9A 70 00 0A 01`、`155Ch` `26 C6 05 00` | 法術與效果的傷害：同上，"lost a spell" 是 `12EAh` 那一份字串 | exact |
+
+誰呼叫它們（全部 overlay 掃 far call 與 near call，exact）：
+
+- overlay-13 entry 4 沒有任何 far 呼叫端（`9A 34 00 96 00` 零筆），只有攻擊常式
+  `1404h` 裡三個 near call：`14C1h`（`E8 3A EE`，傷害 = 目標 `+11Bh` + 5 的那一擊）、
+  `1732h`（`E8 C9 EB`，每一個攻擊形態命中的傷害 `DS:6776h`）、`1796h`（`E8 65 EB`，
+  全部落空，傷害 0）。
+- overlay-24 entry 19（`9A 7F 00 00 01`）九處：overlay-22 `0A03h`（entry 15，共用施法常式
+  `08BCh` 那一段）與 `2901h`（entry 58），overlay-12 的效果處理常式 `0636h`、`11B9h`、
+  `186Eh`、`1A5Fh`、`1A94h`、`2D19h`、`3118h`（entry 17、43、68、72、73、115、123）。
+- 扣生命值的 overlay-25 entry 28（`2266h`，`9A AC 00 0A 01`）只有三個呼叫端：上面兩支，
+  加上 overlay-03 `2A71h`（ECL `DAMAGE`，spec 084，戰鬥外）。
+
+不經這兩支、直接寫 `+11Bh` 的（位元組掃 `[reg+11Bh]` 再逐一讀）：
+
+| 位址 | 做什麼 | 對打斷的影響 |
+|---|---|---|
+| overlay-12 entry 78 `2272h` `26 FE 8D 1B 01` | 吸取等級：`+32h`、`+B1h`、`+11Bh` 逐級減一（spec 112）| 不清 `+1`。它由一下命中造成傷害之後派發（群組 2／3），那一下已經經過 entry 4——所以結果相同（strong inference：傷害為 0 的命中是否也派發沒讀）|
+| overlay-12 entry 4 `00B6h`、overlay-24 entry 11 `0F7Eh` `26 C6 85 1B 01 00` | 改狀態並把 `+10Dh` 清 0（離場）| 目標已離場，不再行動 |
+| overlay-04 entry 7 `06FEh`／`070Ah` `26 28 85 1B 01` | 神殿的 Raise Dead（spec 115）把 `+32h` 與 `+11Bh` 一起減掉算出來的量 | 戰鬥外 |
+| overlay-12 `036Ch`／`26FBh`／`271Ch`、overlay-22 `1892h`／`2C4Ah`、overlay-24 `17CFh`／`17EFh`／`18B4h`、overlay-25 `2328h`／`2359h`、overlay-16 八處 | 補血、封頂、建角與 entry 28 本身 | 不是傷害 |
+
+所以「傷害大於 0 的當下清 `+1`」對戰鬥中每一種傷害都成立（exact），例外只有上表第一列
+（結果相同）。
+
+remake：`cmd/pool-game/damage_interrupt.go` 的 `woundCombatant` 是兩支共同的那一段，
+`resolveAttackSwings`（每一下命中，對上 `1732h`）與 `applySpellDamage`（對上 overlay-24
+entry 19）在扣血之後各呼叫一次；remake 戰鬥中扣生命值的只有這兩處加上吸取等級。
+"lost a spell" 接在傷害那一行後面（`announceLostSpells`）。`Casting.Wounded` 每回合開頭
+清空（entry 1 `001Eh`）。玩家與 AI 同一份。
+
+## 用物品放法術（2026-09-26，issue #75）
+
+輸入：`overlay-19.bin` `4694cb51…dca9`、`overlay-22.bin` `967065cc…dda8`、`overlay-25.bin`。
+
+overlay-19 entry 8（`1A86h`，spec 096〈entry 3〉已讀過 AI 那一側）是玩家的 U）se 與 AI 共用的
+一支；兩者差在 overlay-22 entry 5 的第二個引數（記錄 `+10Fh`，玩家是 0，由玩家自己瞄）：
+
+```
+1A91  C6 06 B3 6C 00      DS:6CB3h = 0
+1AA0  9A 3E 00 E2 00      overlay-22 entry 6：是卷軸 → 1AC6 overlay-19 entry 12 挑卷軸上的一條
+1ACE  26 80 7D 3D 00      否則 +3Dh > 0 而且 +3Eh < 80h（1AD8）→ 1AE2 DS:6CB3h = 1、法術 = +3Dh
+1AF1  80 7E FF 00         法術為 0 → 結果 0，結束
+1B23  80 7E FF 38         > 38h 減 17h
+1B3A  BF 73 1A            印 "<名字> uses an item"；戰鬥中再印 "Item:" 與物品名（1B64 BF 80 1A）
+1BBD  C6 06 B3 6C 01      DS:6CB3h = 1
+1BD8  9A 39 00 E2 00      overlay-22 entry 5（法術, 記錄 +10Fh, 0, &結果）
+1BDD  C6 06 B3 6C 00      DS:6CB3h = 0
+1BF4  80 BD 9F 31 00      戰鬥中而且參數表 +0Bh 非 0 → 1C03 9A CA 00 0A 01 entry 34，結果 = 1
+1C0E  結果非 0 → 卷軸 overlay-22 entry 7（3243h）抹掉那一條；否則 1C42..1C7B 記帳（gamepack.SpendAIItemUse）
+```
+
+`6CB3h` 在 overlay-22 entry 5 裡擋掉三處 `14ECh`（`0CB2h` 之前的 `0C49h`、`0E82h`、`0EFBh`）：
+**用物品放的法術不動記憶**，放棄瞄準（"Spell Aborted"）也不清；回到 entry 8 之後 `1BF4h`
+照樣 entry 34、結果 1，所以**放棄也記帳**。等級見〈施法者等級〉：6CB3h 立著，牧師／法師
+法術當 6 級、物品效果 12 級。
+
+remake：`cmd/pool-game/combat_commands.go`（玩家）與 `foe_items.go`（AI）共用 `itemSpender`
+（記帳）與 `itemCasterLevel`（等級）；玩家瞄準走施法同一層（`aimSpell`），收尾由
+`finishCombatItem` 接手、放棄由 `abortCombatItem` 接手。還沒接的：卷軸（overlay-19 entry 12
+挑一條、overlay-22 entry 7 抹掉）、參數表 `+0Bh` 為 0 的法術在戰鬥中的結果（entry 5 的回傳
+沒讀）；AI 用物品瞄準時的射程仍用職業等級（`foeSpellTargets`）。

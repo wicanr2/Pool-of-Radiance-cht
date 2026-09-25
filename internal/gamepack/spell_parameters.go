@@ -161,8 +161,8 @@ func (p SpellParameters) RequiresAttackRoll() bool {
 // Range 是射程，單位是格。`0723h` 那一段算的是 `+2 + +3 × 施法者等級`，
 // 算出來是 0 而 `+6` 非零就墊成 1，FFh 也是 1（碰觸）。
 //
-// 原版在戰術地圖外把施法者等級當成 6（`ds:6CB3h` 那個分支），所以戰鬥外
-// 呼叫時要傳 6，不是角色的真實等級。
+// 用物品放的法術，原版把施法者等級當成 6（`ds:6CB3h` 那個分支，CasterLevelFor），
+// 所以那時要傳 6，不是角色的真實等級。
 func (p SpellParameters) Range(casterLevel int) int {
 	value := (int(p.Raw[spellParameterBaseRange]) + int(p.Raw[spellParameterLevelRange])*casterLevel) & 0xff
 	if value == 0 && p.Raw[spellParameterRangeFloor] != 0 {

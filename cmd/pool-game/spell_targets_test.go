@@ -162,8 +162,8 @@ func TestPlayerLosesAPendingSpellWhenWounded(t *testing.T) {
 	if state.Casting.Pending[1] == 0 {
 		t.Fatal("fireball did not begin casting")
 	}
+	// 受傷的當下就丟失（overlay-24 entry 19 `150Fh..155Ch`），不等輪到。
 	application.applySpellDamage(state, 1, 3)
-	pressAll(t, application, ebiten.KeyEnter)
 	if !strings.Contains(state.Status, "LOST A SPELL") || len(state.Casting.Pending) != 0 {
 		t.Fatalf("the wounded caster kept the spell: status %q pending %v", state.Status, state.Casting.Pending)
 	}

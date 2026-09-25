@@ -34,8 +34,8 @@ import (
 // AI 不問，直接 "Spell Aborted" 並清掉。兩者之後都由 entry 34 結束行動。
 //
 // remake 這一側與 AI 共用 foe_cast.go 的 `Casting.Pending`（runtime +0）與
-// `woundedThisRound`（runtime +1 的受傷那一半）：開始施法、輪到時放出或丟失都
-// 讀寫同一份。
+// `Casting.Wounded`（runtime +1 的受傷那一半，傷害入口當下寫，damage_interrupt.go）：
+// 開始施法、輪到時放出、受傷丟失都讀寫同一份。
 
 // 這一段訊息另開 `iota + 1720`（#72），在 init 登記進 messageKeys，重號直接 panic。
 const (
@@ -169,8 +169,9 @@ func (a *app) casterLevelOf(state *tacticalState, id uint8) int {
 		return 0
 	}
 	levels := memberClassLevels(a.state.Party[index])
+	// 用物品時 `DS:6CB3h` 是 1（overlay-19 `1BBDh`），等級照物品算（combat_commands.go）。
 	return gamepack.CasterLevelFor(a.spellParameters[id],
-		int(levels[gamepack.ClassSlotCleric]), int(levels[gamepack.ClassSlotMagicUser]), false)
+		int(levels[gamepack.ClassSlotCleric]), int(levels[gamepack.ClassSlotMagicUser]), a.combatItem != nil)
 }
 
 // aimSpell 是 overlay-22 entry 5 呼叫 `20AEh` 那一步的玩家這一側。
@@ -317,8 +318,11 @@ func (a *app) abortSpell() error {
 	if state == nil || aim == nil {
 		return nil
 	}
-	if caster, ok := a.foeSpellcasterFor(state, state.Mover); ok {
-		a.foeForgetSpell(state, caster, aim.option.ID)
+	// `0EFBh`：`DS:6CB3h`（用物品）非 0 就不清記憶，那一件照樣記帳（combat_commands.go）。
+	if !a.abortCombatItem() {
+		if caster, ok := a.foeSpellcasterFor(state, state.Mover); ok {
+			a.foeForgetSpell(state, caster, aim.option.ID)
+		}
 	}
 	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAborted), state.Mover))
 	state.endTurnAfterAction(a.rollDice)
@@ -410,7 +414,7 @@ func (a *app) beginPlayerCasting(option castOption, cost uint8) error {
 //
 // 放出去之前受過傷：原版在受傷那一刻（overlay-13 `0509h..0547h`）就印 "lost a spell"、
 // 清掉記憶與 +0，所以輪到時 +0 已經是 0，這一格照常出指令列（而 "Cast " 因為 +1 是 0
-// 不會出現）。remake 的受傷判斷與 AI 同一支（woundedThisRound），在輪到時才看。
+// 不會出現）。remake 同樣在傷害入口當下做（damage_interrupt.go 的 woundCombatant）。
 func (a *app) pendingSpellTurn(state *tacticalState) (bool, error) {
 	mover := state.Mover
 	if mover == 0 || a.castAim != nil || a.castTargeting || a.castOpen {
@@ -424,13 +428,6 @@ func (a *app) pendingSpellTurn(state *tacticalState) (bool, error) {
 		return false, nil
 	}
 	delete(state.Casting.Pending, int(mover))
-	if state.woundedThisRound(int(mover)) {
-		if caster, ok := a.foeSpellcasterFor(state, mover); ok {
-			a.foeForgetSpell(state, caster, spell)
-		}
-		a.tacticalStatus(state, state.say(msgFoeLostSpell, mover))
-		return true, nil
-	}
 	return true, a.aimSpell(castOption{Slot: -1, ID: spell, Label: a.spellLabel(spell)}, true)
 }
 

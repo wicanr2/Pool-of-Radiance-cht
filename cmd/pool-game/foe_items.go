@@ -132,14 +132,7 @@ func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 	member := &a.state.Party[slot]
 	name := strings.TrimSpace(member.Inventory[chosen.Index].Name)
 	state.FoeLog = state.say(msgFoeUsesItem, mover, name)
-	spent := false
-	spend := func() {
-		if spent {
-			return
-		}
-		spent = true
-		a.spendFoeItem(slot, chosen.Index)
-	}
+	spend := a.itemSpender(slot, chosen.Index)
 	spell := chosen.Spell
 	label := a.spellLabel(spell)
 	targets, found, err := a.foeSpellTargets(state, mover, spell, caster)
@@ -157,8 +150,9 @@ func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 		name:      caster.name,
 		member:    member,
 		partySlot: slot,
-		level:     foeCasterLevel(a.spellParameters[spell], caster),
-		consume:   spend,
+		// `1BBDh` 立 `DS:6CB3h` 之後才進 overlay-22 entry 5：物品的等級（combat_commands.go）。
+		level:   itemCasterLevel(a.spellParameters[spell], caster.levels),
+		consume: spend,
 	}
 	return a.castSpell(state, casting, castOption{Slot: -1, ID: spell, Label: label}, targets)
 }

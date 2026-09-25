@@ -290,6 +290,10 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 
 // finishCastTargets 是 finishCast 帶整份目標表的那一支（overlay-13 `20AEh` 收好的）。
 func (a *app) finishCastTargets(option castOption, targets spellTargets) error {
+	// 用物品的那一件不動記憶陣列，交給 overlay-19 entry 8 的後半（combat_commands.go）。
+	if handled, err := a.finishCombatItem(option, targets); handled {
+		return err
+	}
 	state := a.tactical
 	if state == nil {
 		return nil
@@ -848,6 +852,9 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 	// 一擊斃命（spec 141）：施法者是隊員、豁免後傷害仍大於 0 時歸零。
 	damage = a.cheatDamage(state, state.Mover, target, damage)
 	state.HitPoints[target] -= damage
+	// overlay-24 entry 19 `1500h..155Fh`：傷害大於 0 的當下清 runtime +1、丟失施法中的。
+	a.woundCombatant(state, target, damage)
+	defer a.announceLostSpells(state)
 	if state.HitPoints[target] > 0 {
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHit),
 			target, damage, state.HitPoints[target]))

@@ -325,6 +325,10 @@ type app struct {
 	// castAim 是施法瞄準那一層的進度（overlay-13 `20AEh`，spell_targets.go）：
 	// 要挑幾個、挑到哪些、是不是開始施法之後的放出、有沒有在問 Abort Spell。
 	castAim *castAim
+	// combatItems 是戰鬥中開著的物品選單，combatItem 是正在瞄準的那一件
+	//（overlay-19 entry 6／8，combat_commands.go）。
+	combatItems *combatItemMenu
+	combatItem  *combatItemUse
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
 	// thiefSkillTables 是賊技能的基礎、種族與敏捷三張表（spec 095），建角要用。

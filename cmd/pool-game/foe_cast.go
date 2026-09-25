@@ -75,10 +75,12 @@ type foeCasting struct {
 	// Pending 是 runtime `+0`：開始施法、還沒放出去的法術（overlay-13 `2519h`
 	// 寫、overlay-09 `012Eh` 讀）。每回合開頭 overlay-13 entry 1 `0017h` 清成 0。
 	Pending map[int]uint8
-	// RoundHitPoints 是回合開頭的生命值，給 runtime `+1` 用：原版在受傷的那一刻
-	// （overlay-13 `04E8h..054Bh`）把 `+1` 清成 0，還有開始施法的就「lost a spell」。
-	// remake 的傷害分散在好幾支，這裡改成輪到牠時比一次生命值（見 castingDisrupted）。
-	RoundHitPoints []int
+	// Wounded 是 runtime `+1` 的受傷那一半：傷害大於 0 的當下（overlay-13 `04F6h`、
+	// overlay-24 `150Fh`）清成 0，還有開始施法的就當場「lost a spell」
+	// （damage_interrupt.go 的 woundCombatant）。回合開頭清空。
+	Wounded map[int]bool
+	// LostNotices 是這一次傷害裡丟失法術的訊息，傷害那一行印完才接上去。
+	LostNotices []string
 }
 
 // rememberSpellbook 在建 roster 時記下怪物的法術陣列、名字與施法等級。
@@ -94,18 +96,17 @@ func (state *tacticalState) rememberSpellbook(index int, record gamepack.Monster
 }
 
 // startCastingRound 是回合開頭 overlay-13 entry 1 對施法那兩格做的事：runtime `+0`
-// 清成 0（`0017h`）、`+1` 設成 1（`001Eh`）。`+1` 在 remake 由回合開頭的生命值代表。
+// 清成 0（`0017h`）、`+1` 設成 1（`001Eh`）。
 func (state *tacticalState) startCastingRound() {
 	state.Casting.Pending = nil
-	state.Casting.RoundHitPoints = append(state.Casting.RoundHitPoints[:0], state.HitPoints...)
+	state.Casting.Wounded = nil
 }
 
 // castingDisrupted 說這一格這一回合是不是已經不能施法（runtime `+1` 為 0）。
 // 三個來源：這一回合受過傷（overlay-13 `04F6h`）、身上有沉默（15h，overlay-12
 // `076Fh`）或咳嗽（1Eh，臭雲，overlay-12 `0AC0h`）。
 //
-// 受傷用「比回合開頭的生命值低」判斷：同一回合先被治療再受傷、傷沒有低過開頭那一格
-// 的，會被當成沒受傷（remake 的近似）。
+// 受傷那一半在傷害入口當下記下（woundCombatant），同一回合先補血再受傷也算。
 func (state *tacticalState) castingDisrupted(index int) bool {
 	if state.hasEffect(index, silenceEffectCode) || state.hasEffect(index, gamepack.StinkingCloudEffectCode) {
 		return true
@@ -116,10 +117,7 @@ func (state *tacticalState) castingDisrupted(index int) bool {
 // woundedThisRound 說這一格這一回合受過傷。**開始施法的那一條只有受傷會打斷**：
 // 沉默與咳嗽只清 `+1`，不動 `+0`，而 `012Eh` 放出去之前只看 `+0`。
 func (state *tacticalState) woundedThisRound(index int) bool {
-	if index < len(state.Casting.RoundHitPoints) && index < len(state.HitPoints) {
-		return state.HitPoints[index] < state.Casting.RoundHitPoints[index]
-	}
-	return false
+	return state.Casting.Wounded[index]
 }
 
 // toggleMagic 是戰鬥中的 `2`：`DS:6D23h` 反相，狀態列印 Magic On／Off（原版字串
@@ -185,19 +183,11 @@ func (a *app) foeCastPhase(state *tacticalState, mover uint8, mode int) (bool, e
 
 	index := int(mover)
 	if spell := state.Casting.Pending[index]; spell != 0 {
+		// `012Eh`：開始施法的那一條現在放出去，接著 entry 34 結束行動。施法中受傷的
+		// 在傷害入口當下就丟失、runtime +0 清成 0（woundCombatant），走不到這裡。
 		delete(state.Casting.Pending, index)
-		if !state.woundedThisRound(index) {
-			// `012Eh`：開始施法的那一條現在放出去，接著 entry 34 結束行動。
-			state.setTacticMode(mover, mode)
-			return true, a.foeReleaseSpell(state, mover, spell)
-		}
-		// 施法中受傷：原版在受傷那一刻印 "lost a spell"、把那一格從記憶裡清掉
-		// （overlay-13 `0509h..0547h`），這一隻後面照常走 entry 2／4 與接近迴圈。
-		if caster, ok := a.foeSpellcasterFor(state, mover); ok {
-			a.foeForgetSpell(state, caster, spell)
-		}
-		state.FoeLog = state.say(msgFoeLostSpell, mover)
-		state.Status = state.FoeLog
+		state.setTacticMode(mover, mode)
+		return true, a.foeReleaseSpell(state, mover, spell)
 	}
 
 	// entry 2（`0169h`）：轉變不死生物（foe_turn_undead.go）。

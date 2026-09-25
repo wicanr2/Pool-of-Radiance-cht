@@ -121,42 +121,47 @@ func outlineCombatCell(screen *ebiten.Image, column, row int, ink color.Color) {
 // combatCommandBar 依原版的條件組出最下面那一列（spec 129 的表）。
 //
 // `Cast ` 的 `es:[di+108h]+1` 是 runtime +1「這一回合還能施法」（spec 096〈entry 4〉），
-// 受過傷、沉默或咳嗽就清 0——接上了（castingDisrupted）。
-// **兩道閘還沒接**：`Cast ` 的 `ds:4933h+1CAh`（ECL `@49E5`，這一版恆為 0）、
-// `Turn ` 的 `es:[di+108h]+11h`（spec 129 標 DRAFT）。沒接的那幾道只會讓指令
-// **多出現**，不會少，所以不會發生「原版有而 remake 沒有」。
+// 受過傷、沉默或咳嗽就清 0——接上了（castingDisrupted）。`Turn ` 的 `+11h` 是
+// 「這一場轉過了」（`Undead.Tried`，overlay-13 `11AAh` 寫）。
+// **還沒接的一道**：`Cast ` 的 `ds:4933h+1CAh`（ECL `@49E5`，這一版恆為 0）。它只會讓
+// 指令**多出現**，不會少，所以不會發生「原版有而 remake 沒有」。
 func (a *app) combatCommandBar() string {
 	segments := a.combatCommands
 	if len(segments) == 0 {
 		return ""
 	}
-	member, isParty := a.combatMoverCharacter()
 	line := ""
 	for _, segment := range segments {
-		switch segment.Key {
-		case gamepack.CombatCommandUse:
-			// 記錄 `+0C7h` 大於 0：身上有東西才給 Use。
-			if !isParty || len(member.Inventory) == 0 {
-				continue
-			}
-		case gamepack.CombatCommandCast:
-			// 記錄 `+17h` 起 21 格任何一格非零：記著任何一條法術。
-			if !isParty || !hasMemorisedSpell(member.Memorised) {
-				continue
-			}
-			// overlay-08 `072Fh`：runtime +1 為 0 就不接。
-			if a.tactical != nil && a.tactical.castingDisrupted(int(a.tactical.Mover)) {
-				continue
-			}
-		case gamepack.CombatCommandTurn:
-			// 記錄 `+96h` 大於 0：牧師等級。
-			if !isParty || clericLevel(member) == 0 {
-				continue
-			}
+		if a.combatSegmentShown(segment.Key) {
+			line += a.gameText.Translate(segment.Text)
 		}
-		line += a.gameText.Translate(segment.Text)
 	}
 	return line
+}
+
+// combatSegmentShown 是指令列那一段接不接上（spec 129 的表）。按鍵也看同一份：
+// 原版的指令迴圈只收列上有的字母。
+func (a *app) combatSegmentShown(key gamepack.CombatCommandKey) bool {
+	member, isParty := a.combatMoverCharacter()
+	switch key {
+	case gamepack.CombatCommandUse:
+		// 記錄 `+0C7h` 大於 0：身上有東西才給 Use。
+		return isParty && len(member.Inventory) > 0
+	case gamepack.CombatCommandCast:
+		// 記錄 `+17h` 起 21 格任何一格非零：記著任何一條法術。
+		if !isParty || !hasMemorisedSpell(member.Memorised) {
+			return false
+		}
+		// overlay-08 `072Fh`：runtime +1 為 0 就不接。
+		return a.tactical == nil || !a.tactical.castingDisrupted(int(a.tactical.Mover))
+	case gamepack.CombatCommandTurn:
+		// `076Dh` 記錄 `+96h`（牧師等級）大於 0；`077Dh` runtime `+11h` 為 0。
+		if !isParty || clericLevel(member) == 0 {
+			return false
+		}
+		return a.tactical == nil || !a.tactical.Undead.Tried[int(a.tactical.Mover)]
+	}
+	return true
 }
 
 // hasMemorisedSpell 是原版那個掃描：任何一格非零就算。

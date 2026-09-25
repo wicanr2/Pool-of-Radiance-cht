@@ -133,7 +133,7 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 
 	// 最下面那一列。挑目標的時候換成瞄準列——同一條基線，兩者不會同時出現。
-	if (!a.castTargeting || len(a.castTargets) == 0) && !a.castAborting() {
+	if (!a.castTargeting || len(a.castTargets) == 0) && !a.castAborting() && a.combatItems == nil {
 		line := a.combatCommandBar()
 		if a.tactical.Prompt {
 			line = a.text(msgTacticalPrompt)
@@ -145,6 +145,7 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		drawText(screen, a.text(msgCastAbortPrompt), 0, footerBaseline, accent)
 	}
 	drawCastMenu(screen, a, foreground, accent)
+	drawCombatItems(screen, a, foreground, accent)
 	drawCastTargeting(screen, a, accent)
 }
 
@@ -1734,6 +1735,10 @@ func (a *app) tacticalInput() error {
 	if a.castOpen {
 		return a.castInput()
 	}
+	// T）URN 與 U）SE（overlay-08 `0427h`／`03E9h`，combat_commands.go）。
+	if handled, err := a.combatCommandInput(state); handled || err != nil {
+		return err
+	}
 	if a.justPressed(ebiten.KeyC) && state.Mover != 0 {
 		a.openCastMenu()
 		return nil
@@ -1924,6 +1929,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	}
 	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）。
 	state.turnToFace(target, attacker)
+	// 施法中被打斷的訊息接在命中那一行後面（damage_interrupt.go）。
+	defer a.announceLostSpells(state)
 	state.Activity.countAttack(state.isFriendly(attacker))
 	if len(swings) == 0 {
 		// 這一相位揮不出任何一下（編碼 3 的「每兩回合三次」在單數相位）。
@@ -1955,6 +1962,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		state.Activity.countHit(state.isFriendly(attacker))
 		total += damage
 		state.HitPoints[target] -= damage
+		// overlay-13 entry 4 `04E8h..054Bh`：傷害大於 0 的當下清 runtime +1。
+		a.woundCombatant(state, target, damage)
 		if state.HitPoints[target] <= 0 {
 			break
 		}
@@ -2085,6 +2094,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
 	a.castTargetingAttack = false
+	a.combatItems, a.combatItem = nil, nil
 	if outcome == combat.CombatOngoing {
 		// 僵局收場：雙方都還在，只是誰也碰不到誰。跟打輸一樣要把排好的遭遇
 		// 清掉，否則同一場架會被重新排出來。
