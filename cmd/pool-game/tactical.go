@@ -387,6 +387,9 @@ type tacticalState struct {
 	SaveBonus   []int
 	Dexterity     []uint8
 	Scores        []uint8
+	// Facings 是每個人在戰場上的朝向（原版 `+108h` 結構的 `+9`）。反應攻擊的朝向窗
+	// 以它為基準；在哪些時機改它見 `reaction_attack.go`（#58）。
+	Facings       []uint8
 	Budgets       []uint8
 	States        []uint8
 	DyingCounters []uint8
@@ -772,6 +775,10 @@ func (a *app) enterTacticalPreview() error {
 		if slot >= 0 && slot < len(a.state.Party) && a.state.Party[slot].Quick {
 			state.AIDriven[index] = true
 		}
+	}
+	state.Facings = make([]uint8, size)
+	for index := 1; index < size && index < len(friendly); index++ {
+		state.Facings[index] = deploymentFacing(a.spawn.Facing, friendly[index])
 	}
 	state.States = make([]uint8, size)
 	state.DyingCounters = make([]uint8, size)
@@ -1163,16 +1170,25 @@ func (a *app) foeTurn(state *tacticalState) error {
 			}
 		}
 
-		x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
-		if err != nil {
-			return err
-		}
 		budget, err := combat.SpendMovementStep(state.Budget(), direction)
 		if err != nil {
 			return err
 		}
 		if budget == state.Budget() {
 			break
+		}
+		// 怪物這一側一樣：overlay-09 `0AB3h` 轉向、`0ACBh` 呼叫 overlay-13 entry 6，
+		// 被打倒（`0AD3h` 看 `+10Dh`）就不走這一步（spec 059，#58）。
+		down, err := a.disengageReactions(state, mover, direction)
+		if err != nil {
+			return err
+		}
+		if down {
+			break
+		}
+		x, y, err := combat.AdvanceTacticalCoordinate(here.X, here.Y, direction)
+		if err != nil {
+			return err
 		}
 		state.Roster[mover].X, state.Roster[mover].Y = x, y
 		state.Budgets[mover] = budget
@@ -1741,6 +1757,20 @@ func (a *app) tacticalInput() error {
 		case outcome.Action == combat.MovementBlocked:
 			state.Status = state.say(msgStatusBlocked)
 		default:
+			// 離開威脅區的反應攻擊在提交這一步之前（overlay-08 `0BAEh` 轉向、
+			// `0C7Dh` 呼叫 overlay-13 entry 6，spec 059）。被打倒就不走這一步，
+			// 這一回合結束（`0C85h` 看 `+10Dh`）。
+			down, err := a.disengageReactions(state, state.Mover, uint8(direction))
+			if err != nil {
+				return err
+			}
+			if down {
+				state.endTurnAfterAction(a.rollDice)
+				if state.Finished {
+					return a.finishCombat(state.Outcome)
+				}
+				return nil
+			}
 			mover := state.Roster[state.Mover]
 			x, y, err := combat.AdvanceTacticalCoordinate(mover.X, mover.Y, uint8(direction))
 			if err != nil {
@@ -1790,6 +1820,17 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	if err != nil {
 		return err
 	}
+	return a.resolveAttackSwings(state, state.Mover, target, swings)
+}
+
+// resolveAttackSwings 讓 attacker 對 target 揮 swings 這幾下。一般攻擊與反應攻擊
+// （`reactionAttack`，spec 059）走同一支，原版兩者也都進同一個攻擊包裝。
+func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, swings []combat.DamageDice) error {
+	if int(target) >= len(state.HitPoints) || int(attacker) >= len(state.HitPoints) {
+		return fmt.Errorf("Pool attack %d → %d is outside the roster", attacker, target)
+	}
+	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）。
+	state.turnToFace(target, attacker)
 	if len(swings) == 0 {
 		// 這一相位揮不出任何一下（編碼 3 的「每兩回合三次」在單數相位）。
 		state.Status = state.say(msgStatusMissed, target, uint8(a.rollDice(1, 20)))
@@ -1799,7 +1840,7 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	var lastRoll uint8
 	for _, dice := range swings {
 		lastRoll = uint8(a.rollDice(1, 20))
-		hit, err := combat.ResolveHit(lastRoll, state.THAC0[state.Mover], state.ArmorClass[target], 0)
+		hit, err := combat.ResolveHit(lastRoll, state.THAC0[attacker], state.ArmorClass[target], 0)
 		if err != nil {
 			return err
 		}
@@ -1815,7 +1856,7 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 			return err
 		}
 		// 一擊斃命（spec 141）：隊員命中時傷害改成目標剩下的 HP；擲骰照常。
-		damage = a.cheatDamage(state, state.Mover, target, damage)
+		damage = a.cheatDamage(state, attacker, target, damage)
 		landed++
 		total += damage
 		state.HitPoints[target] -= damage
@@ -1825,7 +1866,7 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 		// 原版在每一下成功造成傷害之後，以「攻擊形態 + 1」派發群組 2／3。
 		// 55h／56h 同時在兩組裡，所以不論是哪一形態命中，都由攻擊者身上的
 		// MONnSPC 節點對目前目標吸取一級／兩級（spec 112）。
-		if a.applyEnergyDrainSpecialAttack(state, state.Mover, target) {
+		if a.applyEnergyDrainSpecialAttack(state, attacker, target) {
 			break
 		}
 	}
