@@ -127,14 +127,14 @@ func TestBlessKeepsOnlyUnengagedAlliesInTheArea(t *testing.T) {
 		}
 	}
 	castAndAimAtIndex(t, application, state, 2)
-	if !strings.Contains(strings.ToUpper(state.Status), "OVER 1 ALLIES") {
+	if !strings.Contains(strings.ToUpper(state.Status), "AFFECTING 1.") {
 		t.Fatalf("bless should keep only ally 2: status %q", state.Status)
 	}
 	// 反例：拿掉貼著隊友 3 的敵人，隊友 3 就收得到。
 	application, state = blessBoard(t, gamepack.SpellIDBless)
 	state.Roster[4] = combat.CombatantCell{X: 20, Y: 20, FootprintClass: 1}
 	castAndAimAtIndex(t, application, state, 2)
-	if !strings.Contains(strings.ToUpper(state.Status), "OVER 2 ALLIES") {
+	if !strings.Contains(strings.ToUpper(state.Status), "AFFECTING 2.") {
 		t.Fatalf("with no foe next to ally 3 bless should keep 2 and 3: status %q", state.Status)
 	}
 }
@@ -143,7 +143,7 @@ func TestBlessKeepsOnlyUnengagedAlliesInTheArea(t *testing.T) {
 func TestCurseKeepsOnlyTheOtherSide(t *testing.T) {
 	application, state := blessBoard(t, gamepack.SpellIDCurse)
 	castAndAimAtIndex(t, application, state, 2)
-	if !strings.Contains(strings.ToUpper(state.Status), "OVER 1 ALLIES") {
+	if !strings.Contains(strings.ToUpper(state.Status), "AFFECTING 1.") {
 		t.Fatalf("curse should keep only foe 6: status %q", state.Status)
 	}
 }

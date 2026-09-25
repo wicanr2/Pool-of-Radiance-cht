@@ -81,7 +81,7 @@
       "ui.castSleptNone": "%s puts nobody to sleep.",
       "ui.castStronger": "%s is stronger: %d/%02d.",
       "ui.castTookEffect": "%s casts %s.",
-      "ui.castWholeSide": "%s casts %s over %d allies.",
+      "ui.castWholeSide": "%s casts %s, affecting %d.",
       "ui.characterName": "CHARACTER NAME:",
       "ui.characterSheet": "CHARACTER SHEET",
       "ui.combatArmorClass": "AC",
