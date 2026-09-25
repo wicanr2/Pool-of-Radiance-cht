@@ -1691,6 +1691,11 @@ func (a *app) configureEventSession(session *eclvm.BlockSession) error {
 		return err
 	}
 	a.characterBinding = binding
+	// `PARTYSTRENGTH` 讀目前的隊伍，不讀建 session 那一刻的一級快照（#61）。
+	// 換區塊與讀回快照時 engine 會把 resolver 帶到新的 machine 上。
+	if machine := session.Machine(); machine != nil {
+		machine.SetPartyStrengthResolver(a.livePartyStrength)
+	}
 	// 換 machine 之後那七格時鐘是 0；不補就等於把時間倒回午夜，腳本的白天
 	// 判斷全部成立（#20，spec 069）。
 	if machine := session.Machine(); machine != nil {

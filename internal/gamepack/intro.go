@@ -472,8 +472,9 @@ func NewInitialEventSessionWithSeed(event InitialEvent, seed int64,
 }
 
 // initialPartyStrengthResolver 把隊伍投影成 `PARTYSTRENGTH` 的五欄（spec 030
-// 的公式、spec 031 的一級角色投影）。**這是暫時的**：訓練與裝備接上之後要改
-// 由持久的角色狀態算，不能永遠把所有人當成一級。
+// 的公式、spec 031 的一級角色投影）。這一份只看建 session 那一刻的快照，
+// 給直接建 session 的工具與測試用；遊戲本體在 `configureEventSession` 換成
+// 讀目前隊伍的 `livePartyStrength`（#61），升級、裝備與 HP 都算進去。
 func initialPartyStrengthResolver(characters []InitialCharacter) eclvm.PartyStrengthResolver {
 	snapshot := append([]InitialCharacter(nil), characters...)
 	return func() (uint8, error) {
