@@ -71,6 +71,158 @@
         "note": "訊號是 `tools/go.sh test ./cmd/pool-game -run 'TestCastleStairsLeadToTheAudienceHall|TestMainlineProbeCheatMenuToEnding'` 是否全綠，工具不跑測試"
       },
       "github_issue": 56
+    },
+    {
+      "id": "natural-strength-playthrough",
+      "layer": "verification",
+      "title": "不開作弊、以原版規則強度從標題通關到結局",
+      "body": "README（第 17、24–27、381–383 行）與 spec 137 第 5 行都寫著「不開作弊、以原版強度通關仍未做」，引用的是 #19、#22，但這兩個 issue 已經關閉，這項工作因此沒有 open issue 追蹤。 - 主線收據的口徑是作弊選單（spec 141）跑通，見 #5、#40。 - 自然強度的隊伍在 spec 137 的路線上走不到終點。",
+      "acceptance": "關閉作弊選單從標題跑到結局的收據，或逐段真實全滅卡點紀錄。",
+      "verify": {
+        "kind": "manual",
+        "note": "要從標題不開作弊實跑到結局或寫明全滅卡點；沒有機器訊號"
+      },
+      "github_issue": 57
+    },
+    {
+      "id": "reaction-attack-on-disengage",
+      "layer": "feature",
+      "title": "脫離鄰接沒有反應攻擊：LeavingOpponentsAfterStep 與 reaction.go 在 cmd/ 沒有呼叫點",
+      "body": "原版 overlay-13 entry 6：角色移動離開敵人鄰接格時，敵方會得到一次反應攻擊。 - `internal/combat/nearby.go` 的 `LeavingOpponentsAfterStep`，以及 `internal/combat/reaction.go` 的 `ReactionFacings`、`SelectReactionAttackSlot`、`IsReactionDisabled` 都已實作。 - `cmd/` 內沒有任何非測試呼叫點。README 第 152 行自承「反應攻擊接進移動提交也還沒接上」。",
+      "acceptance": "移動提交結算反應攻擊，Update() 送鍵的測試覆蓋脫離／未鄰接／例外三種。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game"
+        ],
+        "pattern": "LeavingOpponentsAfterStep",
+        "note": "cmd/pool-game 出現呼叫點才算接上"
+      },
+      "github_issue": 58
+    },
+    {
+      "id": "outdoor-tactical-grid",
+      "layer": "feature",
+      "title": "野外戰鬥一律用室內戰場：NewOutdoorTacticalGrid 沒有呼叫點（spec 060）",
+      "body": "- `cmd/pool-game/tactical.go:738` 不分室內野外，一律呼叫 `combat.GenerateIndoorTacticalGrid`。 - `internal/combat/tacticalmap.go` 的 `NewOutdoorTacticalGrid`（overlay-10 `1255h` 第一步）沒有呼叫點；檔頭自承「挑背景並跑四支細節建構器，那一段尚未閉合（spec 060）」。",
+      "acceptance": "spec 060 READY，野外遭遇走野外戰場，對拍一場野外戰鬥。",
+      "verify": {
+        "kind": "absent",
+        "paths": [
+          "cmd/pool-game"
+        ],
+        "pattern": "NewOutdoorTacticalGrid",
+        "note": "cmd/pool-game 出現呼叫點才算接上"
+      },
+      "github_issue": 59
+    },
+    {
+      "id": "shop-sell",
+      "layer": "feature",
+      "title": "商店不能賣出物品（spec 067：賣價公式還沒讀）",
+      "body": "- `docs/spec/067-shop-service-and-stock.md:85`：「不做賣出。原版有，但賣價的公式還沒讀」。 - `cmd/pool-game/shop.go` 只有 Buy、Appraise、G、J，沒有 Sell。 - 同一份 spec 的「多幣別付款」已由 `treasure/payment.go` 的 `PayInCoins` 接上，那一段已過期，要一併更正。",
+      "acceptance": "賣價公式 exact，商店有 Sell，同一件物品賣價與原版一致。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/067-shop-service-and-stock.md"
+        ],
+        "pattern": "不做賣出",
+        "note": "spec 067 還自承不做賣出"
+      },
+      "github_issue": 60
+    },
+    {
+      "id": "party-strength-from-persistent-state",
+      "layer": "feature",
+      "title": "PARTYSTRENGTH 把全隊當一級：initialPartyStrengthResolver 不看等級與裝備",
+      "body": "- `internal/gamepack/intro.go:474` 註解：「**這是暫時的**：訓練與裝備接上之後要改由持久的角色狀態算，不能永遠把所有人當成一級。」 - `intro.go:401`、`intro.go:470`、`ecl_catalog.go:131` 都還在設這個 resolver。 - 訓練與裝備早已接上，腳本讀到的隊伍強度因此一直偏低，影響遭遇編成與分支。",
+      "acceptance": "resolver 讀持久角色狀態，讀檔／升級／換裝有測試，對一組原版存檔。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "internal/gamepack/intro.go"
+        ],
+        "pattern": "這是暫時的",
+        "note": "intro.go 的 resolver 註解還自承暫時"
+      },
+      "github_issue": 61
+    },
+    {
+      "id": "combat-foe-name",
+      "layer": "presentation",
+      "title": "戰鬥資訊欄輪到怪物時印「敵方」，原版印怪物名",
+      "body": "- `cmd/pool-game/text.go:308`：「原版放怪物名（`\"OGRE\" G.R.X`），remake 還沒有把名字接到戰術格上。」 - `combat_screen.go` 輪到怪物時一律用 `msgCombatFoe`。",
+      "acceptance": "資訊欄照原版印怪物名，對拍戰鬥畫面。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/text.go"
+        ],
+        "pattern": "還沒有把名字接到戰術格上",
+        "note": "text.go 還自承怪物名沒接"
+      },
+      "github_issue": 62
+    },
+    {
+      "id": "monster-palette-source",
+      "layer": "presentation",
+      "title": "怪物戰場圖示的配色來源沒定位：boardIconFor 給寫死的預設配色",
+      "body": "- `cmd/pool-game/sprite_overview.go:195`：「原版把哥布林那一類畫成紅色是換了配色，**配色從哪來還沒定位**。」 - `tactical.go` 的 `boardIconFor` 對怪物用固定的預設六組顏色；README 第 325 行、WORKLIST 第 101 行同一件事。",
+      "acceptance": "配色來源 exact，戰場怪物配色與原版同狀態截圖一致。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game/sprite_overview.go"
+        ],
+        "pattern": "配色從哪來還沒定位",
+        "note": "sprite_overview.go 還自承配色來源未定位"
+      },
+      "github_issue": 63
+    },
+    {
+      "id": "ai-spellcasting",
+      "layer": "feature",
+      "title": "怪物 AI 與 QUICK 自動戰鬥都不施法（spec 139 的 Magic On/Off）",
+      "body": "- `docs/spec/139-quick-auto-combat.md:5`：「remake 的 AI 還不施法」。 - `cmd/` 內找不到怪物或 QUICK 模式的施法路徑。",
+      "acceptance": "會施法的怪物施法、QUICK 的 Magic On/Off 生效，骰流重播抽樣。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/139-quick-auto-combat.md"
+        ],
+        "pattern": "AI 還不施法",
+        "note": "spec 139 還自承 AI 不施法"
+      },
+      "github_issue": 64
+    },
+    {
+      "id": "enemy-ai-approximations",
+      "layer": "verification",
+      "title": "敵方 AI 仍有兩處近似，畫面標 PROVISIONAL AI：挑目標（0D97h）與繞路備案",
+      "body": "- `cmd/pool-game/tactical.go:1022`：「兩處仍是近似，畫面上還是標 PROVISIONAL AI：**挑哪個目標**（原版 `0D97h`…）」。 - `docs/spec/096` 的〈還沒讀〉還有三項。",
+      "acceptance": "0D97h 與繞路備案讀完，拿掉 PROVISIONAL AI，骰流重播三場。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "cmd/pool-game"
+        ],
+        "pattern": "PROVISIONAL AI",
+        "note": "畫面仍標 PROVISIONAL AI"
+      },
+      "github_issue": 65
+    },
+    {
+      "id": "minor-fidelity-gaps",
+      "layer": "verification",
+      "title": "雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊",
+      "body": "規模小、各自不阻擋主線，合併追蹤；任一條要動工時可拆成子 issue。 - [ ] `internal/gamepack/spell_cast.go:495`：Remove Curse 不清物品 `+36h`，remake 沒有詛咒欄位。 - [ ] `spell_cast.go:568`：射線幾何「先收整邊」，是近似。 - [ ] `internal/character/export.go:246`：`.CHA` 匯出不寫豁免表 `+6Dh..+71h` 與生命骰 `+73h`。 - [ ] `docs/spec/124`：二十幾個目的地區塊還沒逐一命名。 - [ ] `docs/spec/108`：`FINAL` 那幾張圖的調色仍是 DRAFT。 - [ ] `WORKLIST.md`：逐顆 overlay 命名與全模組函式清冊（依 CLAUDE.md §11，只做到能判定不阻擋玩家路徑即可）。",
+      "acceptance": "issue 內六條逐一打勾或寫明不做的理由。",
+      "verify": {
+        "kind": "manual",
+        "note": "六條雜項各自在 issue 裡打勾"
+      },
+      "github_issue": 66
     }
   ]
 }
