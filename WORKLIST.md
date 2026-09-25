@@ -49,18 +49,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **AI 施法的原版骰流收據：dosgolem 走到有施法怪物的遭遇，逐擲對照。** 功能已接上（entry 4、23F9h、Magic On/Off，與玩家共用 castSpell；d7 d7 與原版零錯位）。缺一場有施法怪物的 dosgolem 收據，挑法術與挑目標的 Roll(1,n) 只有程式碼證據。
       **驗收**：dosgolem 收據含施法怪物的回合，remake 逐擲重現；spec 096 的自承拿掉。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
-- [ ] **商店公款：進店清空、離店有錢會問。** 原版 overlay-06 0548h 進店把公款七欄清成 0（strong inference），04A4h 離店時公款有錢會問 you have left some money here。remake 跨店保留、離店不問。
-      **驗收**：兩處讀到 exact 寫進 spec 067；remake 照做，Update() 送鍵測試覆蓋。
-      **討論**：[#67](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/67)
-- [ ] **物品選單的 I）d 鑑定服務（200 gp）。** overlay-19 entry 17（1F52h）物品選單的 I）d，收 200 gp 鑑定；remake 沒有。
-      **驗收**：條件、費用、效果 exact 寫進 spec 067；remake 接上並有 Update() 送鍵測試。
-      **討論**：[#68](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/68)
-- [ ] **玩家施法沒有施法時間與受傷打斷。** 原版施法時間 = +0Ch÷3，不為 0 先 Begins Casting、下一次輪到才放；放之前受傷丟失。remake 玩家施法當場放；overlay-08 072Fh 未讀。
-      **驗收**：玩家施法照原版的施法時間與打斷，072Fh 寫進 spec 098，送鍵測試覆蓋。
-      **討論**：[#72](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/72)
-- [ ] **多目標法術與範圍法術的瞄準層。** AI 施法 (模式&3)+1 個目標只交第一個給 castSpell；玩家的範圍法術沒有挑中心點的瞄準層。
-      **驗收**：多目標逐個套效果；範圍法術有瞄準層，AI 與玩家共用，寫進 spec 098。
-      **討論**：[#73](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/73)
 - [ ] **士氣與逃跑未實作：被轉變的不死生物、士氣失敗的怪物照常行動。** 士氣 entry 8 10FFh、entry 5 逃跑迴圈 0B9Fh、07E8h 逃跑分支（d2 模式骰）、overlay-13 entry 7 0C6Ch 脫離判定；後兩段未讀。
       **驗收**：四段讀完寫進 spec 096，逃跑照原版，骰流對齊。
       **討論**：[#74](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/74)
@@ -70,6 +58,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **怪物的物品鏈沒有載入。** 怪物記錄 +C8h 起的物品串列未載入，entry 3 對怪物挑不到物品；0C14h 施法者等級來源與物品 +3Eh 待讀。
       **驗收**：怪物物品來源 exact 並載入，會用物品的怪物照 entry 3 用。
       **討論**：[#76](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/76)
+- [ ] **瞄準層還缺模式 0Ah（0F35h 範圍）與 8（2919h 射線）。** ov13 20AEh 四條路已接，模式 0Ah 與 8 未讀。
+      **驗收**：兩種模式 exact 並接進共用瞄準層，送鍵測試。
+      **討論**：[#78](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/78)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -82,6 +73,15 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **野外戰場的三個未閉合點：08B4h 不命中的地形碼、生成後寫 1Fh 的常式、35E2h 高 36 列。** #59 之後的缺口：08B4h 七個地形碼不命中（remake 暫用旗標 0）；(32,18) 原版 1Fh 由生成後另一支常式寫入（候選 ov10 1DDBh、ov12 0E5Ch、ov32 0FB9h）；DS:35E2h 高 36 列是 strong inference；斜帶與直立物兩支沒有原版收據。
       **驗收**：issue 內四條逐一附 dosgolem 收據或 overlay 位址打勾，寫進 spec 060。
       **討論**：[#69](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/69)
+- [ ] **受傷打斷仍是近似：runtime +1 該在傷害入口清掉。** 原版 ov13 04E8h..054Bh 傷害當下清 +1、施法中當下丟失；remake 輪到時比回合開頭生命值。
+      **驗收**：所有傷害入口當下清 +1，補血後再受傷仍被打斷的測試。
+      **討論**：[#77](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/77)
+- [ ] **公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款。** 四條邊角見 issue。
+      **驗收**：每條附位址與收據或測試打勾，寫進 spec 067。
+      **討論**：[#79](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/79)
+- [ ] **物品名稱：偵測魔法前綴與揭露藏字的原版收據。** 偵測魔法的 * 前綴未做；揭露藏字那一支沒原版收據。
+      **驗收**：前綴照原版；揭露藏字有原版收據且逐字相同。
+      **討論**：[#80](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/80)
 
 ### 三、版面與資料的差距
 

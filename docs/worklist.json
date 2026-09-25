@@ -93,38 +93,6 @@
       "github_issue": 66
     },
     {
-      "id": "shop-public-fund-lifecycle",
-      "layer": "feature",
-      "title": "商店公款：進店清空、離店有錢會問",
-      "body": "原版 overlay-06 0548h 進店把公款七欄清成 0（strong inference），04A4h 離店時公款有錢會問 you have left some money here。remake 跨店保留、離店不問。",
-      "acceptance": "兩處讀到 exact 寫進 spec 067；remake 照做，Update() 送鍵測試覆蓋。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/spec/067-shop-service-and-stock.md"
-        ],
-        "pattern": "進店清空公款",
-        "note": "spec 067 DRAFT 還列著"
-      },
-      "github_issue": 67
-    },
-    {
-      "id": "item-identify-service",
-      "layer": "feature",
-      "title": "物品選單的 I）d 鑑定服務（200 gp）",
-      "body": "overlay-19 entry 17（1F52h）物品選單的 I）d，收 200 gp 鑑定；remake 沒有。",
-      "acceptance": "條件、費用、效果 exact 寫進 spec 067；remake 接上並有 Update() 送鍵測試。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "docs/spec/067-shop-service-and-stock.md"
-        ],
-        "pattern": "I）d 鑑定服務",
-        "note": "spec 067 DRAFT 還列著"
-      },
-      "github_issue": 68
-    },
-    {
       "id": "outdoor-battlefield-open-points",
       "layer": "verification",
       "title": "野外戰場的三個未閉合點：08B4h 不命中的地形碼、生成後寫 1Fh 的常式、35E2h 高 36 列",
@@ -151,30 +119,6 @@
         "note": "spec 067 DRAFT 還列著"
       },
       "github_issue": 70
-    },
-    {
-      "id": "player-casting-time",
-      "layer": "feature",
-      "title": "玩家施法沒有施法時間與受傷打斷",
-      "body": "原版施法時間 = +0Ch÷3，不為 0 先 Begins Casting、下一次輪到才放；放之前受傷丟失。remake 玩家施法當場放；overlay-08 072Fh 未讀。",
-      "acceptance": "玩家施法照原版的施法時間與打斷，072Fh 寫進 spec 098，送鍵測試覆蓋。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 72
-    },
-    {
-      "id": "multi-target-and-area-aiming",
-      "layer": "feature",
-      "title": "多目標法術與範圍法術的瞄準層",
-      "body": "AI 施法 (模式&3)+1 個目標只交第一個給 castSpell；玩家的範圍法術沒有挑中心點的瞄準層。",
-      "acceptance": "多目標逐個套效果；範圍法術有瞄準層，AI 與玩家共用，寫進 spec 098。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 73
     },
     {
       "id": "morale-and-flee",
@@ -211,6 +155,54 @@
         "note": "要人判"
       },
       "github_issue": 76
+    },
+    {
+      "id": "damage-interrupt-at-source",
+      "layer": "verification",
+      "title": "受傷打斷仍是近似：runtime +1 該在傷害入口清掉",
+      "body": "原版 ov13 04E8h..054Bh 傷害當下清 +1、施法中當下丟失；remake 輪到時比回合開頭生命值。",
+      "acceptance": "所有傷害入口當下清 +1，補血後再受傷仍被打斷的測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 77
+    },
+    {
+      "id": "aim-modes-0a-and-8",
+      "layer": "feature",
+      "title": "瞄準層還缺模式 0Ah（0F35h 範圍）與 8（2919h 射線）",
+      "body": "ov13 20AEh 四條路已接，模式 0Ah 與 8 未讀。",
+      "acceptance": "兩種模式 exact 並接進共用瞄準層，送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 78
+    },
+    {
+      "id": "pool-money-edges",
+      "layer": "verification",
+      "title": "公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款",
+      "body": "四條邊角見 issue。",
+      "acceptance": "每條附位址與收據或測試打勾，寫進 spec 067。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 79
+    },
+    {
+      "id": "item-name-prefix-and-reveal",
+      "layer": "verification",
+      "title": "物品名稱：偵測魔法前綴與揭露藏字的原版收據",
+      "body": "偵測魔法的 * 前綴未做；揭露藏字那一支沒原版收據。",
+      "acceptance": "前綴照原版；揭露藏字有原版收據且逐字相同。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 80
     }
   ]
 }
