@@ -140,3 +140,57 @@ func TestFoeDropsAStickyTargetThatIsVetoed(t *testing.T) {
 		t.Fatalf("a vetoed sticky target %d was kept", got)
 	}
 }
+
+// `19h`：被打的一方身上有，而當下行動者沒有 18h 就否決（overlay-12 `0927h`，#65）。
+func TestVetoEffect19hNeedsTheActorToCarry18h(t *testing.T) {
+	state := foeTargetBoard(t, 20)
+	state.addEffect(1, vetoEffectProtected, 10, 1)
+	if !state.attackVetoed(1, 3) {
+		t.Fatal("19h on the target did not veto an actor without 18h")
+	}
+	state.addEffect(3, vetoEffectProtectedKey, 10, 1)
+	if state.attackVetoed(1, 3) {
+		t.Fatal("19h still vetoed after the actor gained 18h")
+	}
+}
+
+// `7Eh`：出手的一方身上有，看目標裝備中的物品（overlay-12 `2E50h`，#65）。
+func TestVetoEffect7EhReadsTheTargetsReadiedItems(t *testing.T) {
+	item := func(ready bool, at int, value, byte31 byte) []byte {
+		raw := make([]byte, 0x40)
+		if ready {
+			raw[itemReadyOffset] = 1
+		}
+		raw[at] = value
+		if at != 0x31 {
+			raw[0x31] = byte31
+		}
+		return raw
+	}
+	cases := []struct {
+		name string
+		raw  []byte
+		veto bool
+	}{
+		{"76h at +2Fh", item(true, 0x2F, 0x76, 0), true},
+		{"76h at +31h", item(true, 0x31, 0x76, 0), true},
+		{"76h but not readied", item(false, 0x2F, 0x76, 0), false},
+		{"98h with +31h FCh", item(true, 0x30, 0x98, 0xFC), true},
+		{"98h without +31h FCh", item(true, 0x30, 0x98, 0x00), false},
+		{"76h at +2Eh is outside i = 1..3", item(true, 0x2E, 0x76, 0), false},
+	}
+	for _, c := range cases {
+		state := foeTargetBoard(t, 20)
+		state.addEffect(3, vetoEffectTargetsItems, 10, 1)
+		raw := c.raw
+		state.ItemsOf = func(index int) [][]byte {
+			if index == 1 {
+				return [][]byte{raw}
+			}
+			return nil
+		}
+		if got := state.attackVetoed(1, 3); got != c.veto {
+			t.Errorf("%s: vetoed=%t, want %t", c.name, got, c.veto)
+		}
+	}
+}

@@ -58,32 +58,52 @@ func (state *tacticalState) turnToFace(index, other uint8) {
 }
 
 // 否決攻擊的效果代碼（overlay-13 `1087h`，spec 112〈`DS:677Ch` 是誰立起來的〉）。
-// 群組 1 問被打的一方，群組 0 問出手的一方。
+// 群組 1 問被打的一方，群組 0 問出手的一方。四個都不在 `014Dh` 的作用範圍集合
+// （`15h`／`2Dh`／`2Eh`／`31h`）裡，所以只看自己身上有沒有。
 const (
-	vetoEffectNeedsLeader  = 0x19 // 要看 `DS:5CF0h` 指的那一位有沒有 18h
+	vetoEffectProtected    = 0x19 // 當下行動者（`DS:5CF0h`）身上沒有 18h 就否決
+	vetoEffectProtectedKey = 0x18
 	vetoEffectInitiative   = 0x25 // runtime `+3`（先攻分數）大於 0 才否決
 	vetoEffectAlways       = 0x47
-	vetoEffectTargetsItems = 0x7E // 讀出手者當下目標的物品串列
+	vetoEffectTargetsItems = 0x7E // 讀出手者當下目標裝備中的物品
 	// overlay-25 entry 27 的兩個查詢碼（spec 059 閘門 4、5），有就不打。
 	reactionBlockedEffectA = 0x4B
 	reactionBlockedEffectB = 0x4A
 )
 
-// attackVetoed 是 overlay-13 `1087h`（mover 被打、opponent 出手）。
+// attackVetoed 是 overlay-13 `1087h`：attacker 能不能打 target（#65）。
 //
-// 四個會立起 `677Ch` 的代碼裡，`25h`、`47h` 的條件讀得完整。`19h` 要看 `DS:5CF0h`
-// 指到誰、`7Eh` 要看物品記錄 `+2Eh + i` 的 i 範圍，這兩處還沒讀，所以照 spec 059
-// 契約 6 **保守處理**：身上有就當成否決，不預設放行。
-func (state *tacticalState) attackVetoed(mover, opponent uint8) bool {
-	if mover == opponent {
+//   - `19h`（overlay-12 entry 25 `0927h`）：target 身上有，而當下行動者（戰鬥中的
+//     `DS:5CF0h`，spec 121／096；AI 挑目標與反應攻擊時都是 `state.Mover`）身上
+//     沒有 `18h`，就否決。
+//   - `25h`（entry 35 `0C40h`）：target 身上有，而且先攻分數還大於 0。
+//   - `47h`（entry 66 `1737h`）：target 身上有就否決。
+//   - `7Eh`（entry 120 `2E50h`，對 attacker 問、讀 attacker 當下的目標）：走 target
+//     的物品串列，只看裝備中的（`+34h != 0`），i = 1..3 任一個
+//     `+2Eh + i == 98h` 而且 `+31h == FCh`，或 `+2Eh + i == 76h`，就否決。
+func (state *tacticalState) attackVetoed(target, attacker uint8) bool {
+	if target == attacker {
 		return false
 	}
 	switch {
-	case state.hasEffect(int(mover), vetoEffectNeedsLeader),
-		state.hasEffect(int(mover), vetoEffectAlways),
-		state.hasEffect(int(mover), vetoEffectInitiative) && int(mover) < len(state.Scores) && state.Scores[mover] > 0,
-		state.hasEffect(int(opponent), vetoEffectTargetsItems):
+	case state.hasEffect(int(target), vetoEffectProtected) &&
+		!state.hasEffect(int(state.Mover), vetoEffectProtectedKey),
+		state.hasEffect(int(target), vetoEffectAlways),
+		state.hasEffect(int(target), vetoEffectInitiative) && int(target) < len(state.Scores) && state.Scores[target] > 0:
 		return true
+	}
+	if state.hasEffect(int(attacker), vetoEffectTargetsItems) && state.ItemsOf != nil {
+		for _, raw := range state.ItemsOf(int(target)) {
+			if len(raw) <= itemReadyOffset || raw[itemReadyOffset] == 0 {
+				continue
+			}
+			for i := 1; i <= 3; i++ {
+				value := raw[0x2E+i]
+				if value == 0x98 && raw[0x31] == 0xFC || value == 0x76 {
+					return true
+				}
+			}
+		}
 	}
 	return false
 }

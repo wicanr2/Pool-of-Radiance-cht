@@ -336,7 +336,6 @@
       "ui.tacticalNoMap": "DUNGEON MAP IS NOT LOADED",
       "ui.tacticalNoState": "TACTICAL STATE IS NOT BUILT",
       "ui.tacticalPrompt": "Y: FIGHT ON   N: END THE BATTLE",
-      "ui.tacticalProvisional": "PROVISIONAL: AI VETO CODES 19H, 7EH",
       "ui.tacticalRound": "ROUND %d  MOVER %d  SCORE %d  BUDGET %d (%s)  %s",
       "ui.tacticalTitle": "TACTICAL MAP PREVIEW",
       "ui.titleHint": "ENTER / SPACE",

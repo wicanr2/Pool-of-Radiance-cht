@@ -336,7 +336,6 @@
       "ui.tacticalNoMap": "地城地圖尚未載入",
       "ui.tacticalNoState": "戰場尚未建立",
       "ui.tacticalPrompt": "Y 繼續戰鬥　N 結束戰鬥",
-      "ui.tacticalProvisional": "暫定：敵方 AI 的兩個否決代碼（19h、7Eh）",
       "ui.tacticalRound": "回合 %d　行動者 %d　先攻 %d　步數 %d（%s）　%s",
       "ui.tacticalTitle": "戰術戰場",
       "ui.titleHint": "ENTER／空白鍵",

@@ -322,8 +322,8 @@ entry 5 用 `(記錄, 0FFh, 0, 0)`，走一步的那一支用 `(記錄, 0FFh, 1,
 
 remake 三點都接上了（#65）：目標存在 `tacticalState.FoeTargets`，沿用前過
 `attackVetoed`（`1087h`）；重挑用 `rollDice(1, n)`，劃掉過不了的、最多二十次；
-第一輪挑不到就以 `IgnoreTerrain`（`+6` 的放寬）再挑一輪。`1087h` 的 `19h`／`7Eh`
-兩個代碼仍保守當成否決（spec 059）。`0D97h` 搆得到時的 `骰(1, n)` 也接上了：
+第一輪挑不到就以 `IgnoreTerrain`（`+6` 的放寬）再挑一輪。`1087h` 的四個代碼都照原版
+（`attackVetoed`，spec 059）。`0D97h` 搆得到時的 `骰(1, n)` 也接上了：
 原版骰流收據（`dosgolem-deployment-peek-*.json`）裡 d20 前面緊接一擲 d1 的有 23 次，
 名單只剩一個人也照擲。
 

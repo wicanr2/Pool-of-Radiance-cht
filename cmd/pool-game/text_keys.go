@@ -262,7 +262,6 @@ var messageKeys = map[messageID]string{
 	msgTacticalNoMap: "ui.tacticalNoMap",
 	msgTacticalNoState: "ui.tacticalNoState",
 	msgTacticalPrompt: "ui.tacticalPrompt",
-	msgTacticalProvisional: "ui.tacticalProvisional",
 	msgTacticalRound: "ui.tacticalRound",
 	msgTacticalTitle: "ui.tacticalTitle",
 	msgTitleHint: "ui.titleHint",

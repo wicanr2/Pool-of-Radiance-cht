@@ -390,6 +390,9 @@ type tacticalState struct {
 	// Facings 是每個人在戰場上的朝向（原版 `+108h` 結構的 `+9`）。反應攻擊的朝向窗
 	// 以它為基準；在哪些時機改它見 `reaction_attack.go`（#58）。
 	Facings       []uint8
+	// ItemsOf 回傳某一格的人身上物品的原始記錄（否決代碼 `7Eh` 要讀，#65）。
+	// 隊員從隊伍取；怪物與測試盤面沒有就是 nil。
+	ItemsOf func(index int) [][]byte
 	Budgets       []uint8
 	States        []uint8
 	DyingCounters []uint8
@@ -776,6 +779,20 @@ func (a *app) enterTacticalPreview() error {
 		}
 	}
 	state.Facings = make([]uint8, size)
+	state.ItemsOf = func(index int) [][]byte {
+		if index < 0 || index >= len(state.PartySlot) {
+			return nil
+		}
+		slot := state.PartySlot[index]
+		if slot < 0 || slot >= len(a.state.Party) {
+			return nil
+		}
+		items := make([][]byte, 0, len(a.state.Party[slot].Inventory))
+		for _, item := range a.state.Party[slot].Inventory {
+			items = append(items, item.Raw)
+		}
+		return items
+	}
 	for index := 1; index < size && index < len(friendly); index++ {
 		state.Facings[index] = deploymentFacing(a.spawn.Facing, friendly[index])
 	}
@@ -1036,7 +1053,7 @@ func (state *tacticalState) attackRangeOf(index uint8) int {
 //
 // 挑目標照 overlay-09 `0D4Bh`／`0D97h`（搆得到的名單擲骰挑）與 overlay-13 `37B8h`
 // （追誰：沿用、劃掉重擲、二十次），可打判定是 `1087h`（`attackVetoed`，spec 112）。
-// `1087h` 的 `19h`／`7Eh` 兩個代碼仍是保守處理（見 `reaction_attack.go`）。
+// 四個否決代碼的條件見 `reaction_attack.go` 的 `attackVetoed`。
 func (a *app) foeTurn(state *tacticalState) error {
 	mover := state.Mover
 	snapshot, err := state.tacticalSnapshot()

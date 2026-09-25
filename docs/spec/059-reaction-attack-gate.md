@@ -131,8 +131,9 @@ mover 與 opponent 相同回 1。其餘情形把 `DS:677Ch` 當否決旗標清�
 `cmd/pool-game/reaction_attack.go`：`disengageReactions` 在玩家與怪物提交一步之前
 呼叫；閘門 2～6 在 `canReact`，否決查詢在 `attackVetoed`。與原版的差距：
 
-- 否決代碼 `19h`（要看 `DS:5CF0h`）與 `7Eh`（物品記錄 `+2Eh + i` 的 i 範圍）還沒讀，
-  依契約 6 **身上有就當成否決**。`25h` 看 `Scores`（runtime `+3`），`47h` 直接否決。
+- 否決查詢 `1087h` 四個代碼都照原版（#65，exact）：`19h` 看當下行動者（戰鬥中的
+  `DS:5CF0h`）有沒有 `18h`、`25h` 看 `Scores`（runtime `+3`）、`47h` 直接否決、`7Eh`
+  走目標裝備中的物品看 `+2Fh..+31h`（overlay-12 `2E50h`）。
 - `+108h` 的 `+3`／`+0Fh` 旁路旗標未讀，一律照朝向弧判定。
 - phase 計數 `+113h`／`+114h` 沒有逐次扣的那一份，以這一相位該揮幾下代替（hypothesis）。
 - 提交之後的 overlay-13 `0630h`（spec 053，看候選 runtime `+7`）是另一套機制，未接。
