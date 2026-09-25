@@ -2757,13 +2757,19 @@ func (a *app) applyPendingCellStep() error {
 	if step == nil || a.eventMachine == nil {
 		return nil
 	}
-	if a.spawn.X != a.cellPendingOrigin[0] || a.spawn.Y != a.cellPendingOrigin[1] {
-		return nil
-	}
 	if a.spawn.Map != a.cellPendingMap || a.eventSession == nil ||
 		a.eventSession.CurrentBlockID() != a.cellPendingBlock {
 		// 換了圖或換了區塊就是腳本接手了這一步，即使座標數字剛好一樣。
 		return nil
+	}
+	if a.spawn.X != a.cellPendingOrigin[0] || a.spawn.Y != a.cellPendingOrigin[1] {
+		// **腳本在同一區裡把人搬走了，落點一樣要跑入口 1**（#56）。不停下來問的
+		// 那條路徑（`moveInitialDungeonForward`）在腳本搬過人之後照樣
+		// `beginInitialSearch`；停下來問過的這一條原本直接結束，落點的事件就不跑。
+		// 要塞上層 (3,6) 朝南「DO YOU WANT TO GO DOWN THESE STAIRS?」答 YES 由
+		// `ecl5/7 9A9Dh` 寫 `C04B／C04C` 再 `CALL 2C90h` 落在覲見廳 (3,8)，覲見廳的
+		// 文字是入口 1 的 `A455h`——不跑的話隊伍站在廳裡什麼都沒發生。
+		return a.beginInitialSearch()
 	}
 	// **腳本可以回絕這一步**：`SAVE 255 → @6DC9`。晚上市政廳的鎖門問句答 NO 走的
 	// 就是這一支（`ecl3/0 99E4h`，spec 102），野外拒絕位移也是同一個位址

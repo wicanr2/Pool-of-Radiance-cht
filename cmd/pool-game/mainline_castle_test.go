@@ -592,6 +592,72 @@ func (d *mainlineDriver) castleUpstairs() {
 	}
 }
 
+// 三樓（`ecl5/7`，GEO5/7）的樓梯表（#56）。入口 0 拿「地點索引（`C04F & 7Fh`）
+// ＋朝向」比對 `99D8h`／`99E0h` 兩張八格表，對上的那一列再查 `99E8h` 分派；
+// 樓梯列答 YES 之後從 `9ACCh`／`9AD3h` 取目的地座標（`9A9Dh`），第 0 列另外
+// `NEWECL 5` 離開這一區。位元組以 `99D8h: 01 01 02 03 05 08 09 01`、
+// `9ADAh: 2F 01 6C 4A 00 08`（`AND @4A6C #8`）對過位址基準。
+//
+//	列  格（索引）  朝向  分派                  目的地
+//	0   (5,7)（1）  西    下樓 `9A52h`          離開到區塊 5 的 (13,15)
+//	1   (5,7)（1）  東    下樓 `9A52h`          (11,7)
+//	2   (5,6)（2）  北    上樓 `9A74h`          (5,4)
+//	3   (5,4)（3）  南    下樓 `9A52h`          (5,6)
+//	4   (11,7)（5） 西    上樓 `9A74h`          (5,7)
+//	5   (3,8)（8）  北    上樓 `9A74h`          (3,6)
+//	6   (3,6)（9）  南    下樓 `9A52h`          (3,8) 覲見廳
+//	7   (5,7)（1）  北    暗門 `9ADAh`
+//
+// 樓梯問句之前都先 `SAVE 255 → 6DC9`，答 NO 這一步就退回。GEO 在那幾面看起來
+// 走得通，所以只照 GEO 規劃的話會一直挑它們，探針原地打轉；從 (5,6) 那一側
+// 照 GEO 走到覲見廳旁邊，一定要經過 (5,7) 的西面或東面，也就是樓梯。
+// 正規路線是：暗門 → (5,6) 上樓 → (5,4) → (4,4)、(4,5)、(4,6) → (3,6) 下樓 → (3,8)。
+
+// leaveKeepLanding 走出上樓落點 (5,7)：唯一不是樓梯的出口是北面的暗門（第 7 列）。
+// `4A6C` 第 3 位沒開就退回；那一位只由入口 1（SearchLocation）的 `9AEBh` 設：
+// 逐人擲 `RANDOM 5`，過了就 `OR 4A6C #8` 並印「A SECRET DOOR IS FOUND」。
+// 上樓那一刻入口 1 已經跑過一次，常常就找到了；沒找到的話，玩家的做法是
+// 站在原地按 `L`）OOK 重跑入口 1，探針照做。guard 給寬：一次 LOOK 六個人
+// 各擲一次，但擲不過的次數沒有上限可推。
+func (d *mainlineDriver) leaveKeepLanding() {
+	d.t.Helper()
+	a := d.a
+	memory := a.eventMachine.Memory
+	d.settle("NO")
+	if a.spawn.X != 5 || a.spawn.Y != 7 {
+		d.fatalf("leaveKeepLanding: not on the keep landing (5,7) but (%d,%d)", a.spawn.X, a.spawn.Y)
+	}
+	d.face(0)
+	looks := 0
+	for ; memory[0x4A6C]&8 == 0 && looks < 200; looks++ {
+		d.step(ebiten.KeyL)
+		d.settle("NO")
+	}
+	if memory[0x4A6C]&8 == 0 {
+		d.fatalf("leaveKeepLanding: %d LOOKs at (5,7) never found the secret door", looks)
+	}
+	d.step(ebiten.KeyArrowUp)
+	d.settle("NO")
+	if a.spawn.X != 5 || a.spawn.Y != 6 {
+		d.fatalf("leaveKeepLanding: the secret door north of (5,7) did not let the party through (at (%d,%d))",
+			a.spawn.X, a.spawn.Y)
+	}
+	d.note("left the keep landing through the secret door after %d LOOK", looks)
+}
+
+// takeKeepStairs 站在目前這一格朝 facing 踏上樓梯並答 YES，期待落在 want。
+func (d *mainlineDriver) takeKeepStairs(facing uint8, want [2]int) {
+	d.t.Helper()
+	a := d.a
+	d.face(facing)
+	d.step(ebiten.KeyArrowUp)
+	d.settle("YES")
+	if got := [2]int{int(a.spawn.X), int(a.spawn.Y)}; got != want {
+		d.fatalf("takeKeepStairs: facing %d led to %v, want %v", facing, got, want)
+	}
+	d.note("keep stairs facing %d → %v", facing, want)
+}
+
 // mainlineAudienceHall 是第 11 段：GEO5/7 的 (3,8) 是覲見廳（地形 8）。
 // 衛兵那一場選 COMBAT，投票每個人都選 ATTACK，最後一戰交給戰術駕駛。
 // 回傳三個收據：看到過 TYRANITHRAXUS、進過結局過場、結局頁數。
@@ -599,31 +665,31 @@ func (d *mainlineDriver) audienceHall() (sawTyranthraxus, sawEnding bool, pages 
 	d.t.Helper()
 	a := d.a
 	memory := a.eventMachine.Memory
-	// 先走到 (3,8) 旁邊一格（(4,8) 或 (3,7)），最後一步自己踏：站上去之後
-	// 所有事件連在一起——覲見廳文字 → 衛兵 → 龍的說詞 → 投票 → 最後一戰 →
-	// 結局——收據要沿路記，不能交給 walkTo 的 settle 一口氣按完。
+	// 照上面那張樓梯表走到 (3,6)，最後一步自己踏：下樓落在 (3,8) 之後所有事件
+	// 連在一起——覲見廳文字 → 衛兵 → 龍的說詞 → 投票 → 最後一戰 → 結局——收據
+	// 要沿路記，不能交給 walkTo 的 settle 一口氣按完。
 	hall := [2]int{3, 8}
-	beside := func(x, y int) bool {
-		return (x == 4 && y == 8) || (x == 3 && y == 7)
+	d.leaveKeepLanding()
+	d.takeKeepStairs(0, [2]int{5, 4})
+	stairsDown := func(x, y int) bool { return x == 3 && y == 6 }
+	// 樓梯格一律繞開：踏上去的方向對上表就會被問，答 NO 就退回。規劃器只能
+	// 排除格子、不能排除方向，所以 (5,4) 朝南那一面（第 3 列）改成排除它通往的
+	// (5,5)；從 (5,4) 走 (4,4)、(4,5)、(4,6) 一樣到得了 (3,6)。
+	stairs := func(x, y int) bool {
+		switch [2]int{x, y} {
+		case [2]int{5, 7}, [2]int{5, 6}, [2]int{5, 5}, [2]int{5, 4}, [2]int{11, 7}, [2]int{3, 8}:
+			return true
+		}
+		return false
 	}
-	// **`NO` 要在 prefer 裡**：上樓的落點 (5,7) 就是下樓梯那一格（地形索引 1），
-	// 踏出去的每一步都先問「DO YOU WANT TO GO DOWN THESE STAIRS?」。不答 NO 的話
-	// `settle` 挑第 0 項（YES），隊伍當場又下樓，看起來像「走不到覲見廳」。
-	// 玩家在這裡做的也是同一件事。（#21 把落點從 (6,7) 改成原版的 (5,7) 之後才會遇到；
-	// (6,7) 不是樓梯格，所以先前不問。）
-	if !d.walkTo("beside the audience hall", beside,
-		func(x, y int) bool { return d.terrain(x, y) != 0 && !beside(x, y) }, "ATTACK", "NO") {
-		d.fatalf("audienceHall: cannot reach a cell beside (3,8)")
+	if !d.walkTo("the stairs down to the audience hall", stairsDown, stairs, "ATTACK", "NO") {
+		d.fatalf("audienceHall: cannot reach (3,6)")
 	}
-	d.settle("ATTACK")
-	if int(a.spawn.X) == 4 {
-		d.face(3)
-	} else {
-		d.face(2)
-	}
+	d.settle("ATTACK", "NO")
+	d.face(2)
 	d.step(ebiten.KeyArrowUp)
 	if got := [2]int{int(a.spawn.X), int(a.spawn.Y)}; got != hall && !d.busy() {
-		d.fatalf("audienceHall: the last step did not enter (3,8)")
+		d.fatalf("audienceHall: the stairs at (3,6) did not lead down to (3,8)")
 	}
 	battles := 0
 	tacticalTicks := 0
