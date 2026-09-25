@@ -70,9 +70,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **不開作弊、以原版規則強度從標題通關到結局。** README（第 17、24–27、381–383 行）與 spec 137 第 5 行都寫著「不開作弊、以原版強度通關仍未做」，引用的是 #19、#22，但這兩個 issue 已經關閉，這項工作因此沒有 open issue 追蹤。 - 主線收據的口徑是作弊選單（spec 141）跑通，見 #5、#40。 - 自然強度的隊伍在 spec 137 的路線上走不到終點。
-      **驗收**：關閉作弊選單從標題跑到結局的收據，或逐段真實全滅卡點紀錄。
-      **討論**：[#57](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/57)
 - [ ] **雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊。** 規模小、各自不阻擋主線，合併追蹤；任一條要動工時可拆成子 issue。 - [ ] `internal/gamepack/spell_cast.go:495`：Remove Curse 不清物品 `+36h`，remake 沒有詛咒欄位。 - [ ] `spell_cast.go:568`：射線幾何「先收整邊」，是近似。 - [ ] `internal/character/export.go:246`：`.CHA` 匯出不寫豁免表 `+6Dh..+71h` 與生命骰 `+73h`。 - [ ] `docs/spec/124`：二十幾個目的地區塊還沒逐一命名。 - [ ] `docs/spec/108`：`FINAL` 那幾張圖的調色仍是 DRAFT。 - [ ] `WORKLIST.md`：逐顆 overlay 命名與全模組函式清冊（依 CLAUDE.md §11，只做到能判定不阻擋玩家路徑即可）。
       **驗收**：issue 內六條逐一打勾或寫明不做的理由。
       **討論**：[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)

@@ -49,18 +49,6 @@
       "github_issue": 52
     },
     {
-      "id": "natural-strength-playthrough",
-      "layer": "verification",
-      "title": "不開作弊、以原版規則強度從標題通關到結局",
-      "body": "README（第 17、24–27、381–383 行）與 spec 137 第 5 行都寫著「不開作弊、以原版強度通關仍未做」，引用的是 #19、#22，但這兩個 issue 已經關閉，這項工作因此沒有 open issue 追蹤。 - 主線收據的口徑是作弊選單（spec 141）跑通，見 #5、#40。 - 自然強度的隊伍在 spec 137 的路線上走不到終點。",
-      "acceptance": "關閉作弊選單從標題跑到結局的收據，或逐段真實全滅卡點紀錄。",
-      "verify": {
-        "kind": "manual",
-        "note": "要從標題不開作弊實跑到結局或寫明全滅卡點；沒有機器訊號"
-      },
-      "github_issue": 57
-    },
-    {
       "id": "monster-palette-source",
       "layer": "presentation",
       "title": "怪物戰場圖示的配色來源沒定位：boardIconFor 給寫死的預設配色",
