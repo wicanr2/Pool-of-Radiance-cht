@@ -86,6 +86,14 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 			}
 		}
 	}
+	// 士氣（overlay-03 `2EFDh..2F25h`）：第二個運算元取低位元組、除以 2、立位元 7，
+	// 寫進記錄 `+84h`。士氣判定讀它（spec 096〈entry 8〉，foe_flee.go）；不寫的話
+	// NPC 留著怪物檔的 FFh（士氣 0），在隊伍那一側每一回合都過不了士氣。
+	morale, err := ecl.NumericValue(instruction.Operands[1], memory)
+	if err != nil {
+		return fmt.Errorf("Pool ADD NPC morale operand: %w", err)
+	}
+	member.Record[gamepack.MoraleOffset] = uint8(morale)/2 | gamepack.MoraleCheckedBit
 	if member.CurrentHP > member.MaxHP {
 		member.CurrentHP = member.MaxHP
 	}

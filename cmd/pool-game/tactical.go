@@ -462,6 +462,8 @@ type tacticalState struct {
 	Casting foeCasting
 	// Undead 是 AI 轉變不死生物的旗標與欄位，見 foe_turn_undead.go（spec 111，#71）。
 	Undead foeUndead
+	// Morale 是士氣判定要的每格 `+84h`／`+11h` 與兩個全域，見 foe_flee.go（spec 096，#74）。
+	Morale foeMorale
 	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
 	stallSignature string
 	stalledRounds  int
@@ -693,6 +695,8 @@ func (state *tacticalState) endTurnAfterAction(roll func(count, sides int) int) 
 // 原版另有一個不問的條件（`DS:4955h` 非 0），但全遊戲只有 overlay-11 `03C1h`
 // 的啟動設定寫它，寫的是 0——所以正常遊玩時一律會問，這裡照做（spec 062）。
 func (state *tacticalState) endRound(roll func(count, sides int) int) {
+	// `087Dh`：overlay-13 entry 25 重算敵方整體還剩幾成生命（士氣第二關用，foe_flee.go）。
+	state.refreshSideMorale()
 	for index := 1; index < len(state.Roster); index++ {
 		state.States[index], state.DyingCounters[index] =
 			combat.AdvanceDyingCounter(state.States[index], state.DyingCounters[index])
@@ -933,6 +937,7 @@ func (a *app) enterTacticalPreview() error {
 			record := monster.Record
 			state.rememberSpellbook(index, record)
 			state.rememberUndeadColumn(index, record)
+			state.rememberMorale(index, record.Raw[gamepack.MoraleOffset], record.Raw[gamepack.IntelligenceOffset])
 			state.Effects[index] = append(gamepack.EffectList(nil), monster.Effects...)
 			state.BaseMovement[index] = record.Movement()
 			// 先攻修正讀這一格（overlay-25 entry 11，spec 052）。
@@ -970,6 +975,8 @@ func (a *app) enterTacticalPreview() error {
 			}
 		}
 	}
+	// 戰鬥佈置的最後：隊伍 `+58Ch` 夾到 100、算第一次 `DS:6D22h`（foe_flee.go）。
+	a.setupMorale(state)
 	state.startRound(a.rollDice)
 	state.Status = state.say(msgStatusRound, state.Round)
 	a.tactical = state
@@ -1146,6 +1153,12 @@ func (a *app) foeTurn(state *tacticalState) error {
 	lastDirection := uint8(combat.DirectionAny)
 	stuck := 0
 	mode := state.tacticMode(mover, a.rollDice)
+	// overlay-09 entry 1 `00B5h`：士氣（entry 8，foe_flee.go）。投降的回合已經結束；
+	// 被轉變的與士氣崩了的這一回合 runtime `+14h` 立著，照樣先走用物品與施法。
+	fleeing, surrendered := a.foeMoralePhase(state, mover)
+	if surrendered {
+		return nil
+	}
 	// overlay-09 entry 1 `010Fh..0187h`：用物品、放開始施法的那一條、挑法術
 	// （foe_cast.go，spec 096 entry 4）。放了就不追人。
 	if acted, err := a.foeCastPhase(state, mover, mode); acted || err != nil {
@@ -1153,6 +1166,16 @@ func (a *app) foeTurn(state *tacticalState) error {
 	}
 
 	steps := 0
+	if fleeing {
+		// entry 5 `0B9Fh`：逃跑迴圈先跑（foe_flee.go）；回合沒結束的（腳程剛好用完、
+		// 卡住三次）照原版回到下面的接近迴圈。
+		run := foeFleeRun{mode: mode, lastDirection: lastDirection, stuck: stuck, target: target}
+		ended, err := a.foeFleeLoop(state, mover, &run, pickTarget)
+		if ended || err != nil {
+			return err
+		}
+		mode, lastDirection, stuck, target, steps = run.mode, run.lastDirection, run.stuck, run.target, run.steps
+	}
 	for round := 0; round < foeMaxRoundsPerTurn; round++ {
 		// 腳程剩不到一步就收工（`084Dh`：runtime +6 ÷ 2 <= 0 → entry 6）。原版顯示
 		// 給玩家的步數是 +6 ÷ 2，所以剩 1 點算零步；dosgolem 骰流收據（獸人家 24 號）
@@ -1392,6 +1415,7 @@ func applyNPCCombatStats(state *tacticalState, index int, member poolsave.Charac
 	var record gamepack.MonsterRecord
 	copy(record.Raw[:], member.Record)
 	record.Name = member.Name
+	state.rememberMorale(index, record.Raw[gamepack.MoraleOffset], record.Raw[gamepack.IntelligenceOffset])
 	state.BaseMovement[index] = record.Movement()
 	state.HitPoints[index] = int(record.CurrentHitPoints())
 	if index < len(state.MaxHitPoints) {
@@ -2090,6 +2114,8 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	if staged {
 		a.storeCombatHitPoints(a.tactical, outcome)
 	}
+	// 逃掉的敵方（`+10Ch == 3`）戰後不算經驗值（overlay-05 `0079h`，foe_flee.go）。
+	fled := a.fledFoeRecords(a.tactical)
 	a.tacticalPreview, a.tactical = false, nil
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
@@ -2122,7 +2148,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	if a.eventMachine != nil {
 		a.eventMachine.Memory[0x6DC7] = 0
 	}
-	a.awardCombatExperience()
+	a.awardCombatExperienceExcept(fled)
 	a.combatActive, a.combatMonsters = false, nil
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.eventText, a.eventLabel = "", ""
@@ -2303,6 +2329,12 @@ func (state *tacticalState) sideCounts() combat.SideCounts {
 // 的語意都還沒閉合，所以這裡讓全隊都分。倒下的成員在原版一樣分得到——
 // 它擋的不是死亡。
 func (a *app) awardCombatExperience() {
+	a.awardCombatExperienceExcept(nil)
+}
+
+// awardCombatExperienceExcept 同上，但 fled 那幾隻不算（逃掉的，`+10Ch == 3`，
+// overlay-05 entry 2 `0079h` 跳過）。
+func (a *app) awardCombatExperienceExcept(fled []gamepack.MonsterRecord) {
 	if len(a.state.Party) == 0 || len(a.combatMonsters) == 0 {
 		return
 	}
@@ -2310,6 +2342,13 @@ func (a *app) awardCombatExperience() {
 	for _, monster := range a.combatMonsters {
 		value := monster.Record.ExperienceValue(int(monster.Record.MaxHitPoints()))
 		total += value * uint32(monster.Spawn.Count)
+	}
+	for _, record := range fled {
+		value := record.ExperienceValue(int(record.MaxHitPoints()))
+		if value > total {
+			value = total
+		}
+		total -= value
 	}
 	share := gamepack.DivideExperience(total, len(a.state.Party))
 	if share == 0 {
@@ -2645,6 +2684,12 @@ func (state *tacticalState) animateDead(casterLevel int) int {
 			state.HitPoints[index] = state.MaxHitPoints[index]
 		}
 		state.States[index] = gamepack.AnimatedState
+		// `2138h`：士氣原本 > 7Fh 就設 0B2h，否則 0B3h（foe_flee.go 讀它）。
+		morale := uint8(0xB3)
+		if state.Morale.Raw[index] > 0x7F {
+			morale = 0xB2
+		}
+		state.rememberMorale(index, morale, state.Morale.Intelligence[index])
 		if index < len(state.DyingCounters) {
 			state.DyingCounters[index] = 0
 		}

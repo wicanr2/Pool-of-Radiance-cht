@@ -55,9 +55,9 @@ const animatedUndeadColumn = 2
 type foeUndead struct {
 	// Columns 是怪物記錄的 `+76h`（建 roster 時記下）。不是不死生物就是 0。
 	Columns map[int]int
-	// Turned 是 runtime `+10h`：被轉變了。entry 13 不再挑牠；原版 entry 8 讀到它就
-	// 讓牠逃（`10FFh` 寫 runtime +14h，entry 5 的 `0B9Fh` 逃跑迴圈與 `07E8h` 的逃跑
-	// 分支，spec 096）——**remake 的士氣與逃跑還沒接**，被轉變的照常行動。
+	// Turned 是 runtime `+10h`：被轉變了。entry 13 不再挑牠；entry 8 讀到它就讓牠逃
+	// （`10FFh` 寫 runtime +14h，entry 5 的 `0B9Fh` 逃跑迴圈與 `07E8h` 的逃跑分支，
+	// spec 096），見 foe_flee.go 的 foeMoralePhase。
 	Turned map[int]bool
 	// Tried 是 runtime `+11h`：這一場轉過了。
 	Tried map[int]bool
