@@ -88,6 +88,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊。** 規模小、各自不阻擋主線，合併追蹤；任一條要動工時可拆成子 issue。 - [ ] `internal/gamepack/spell_cast.go:495`：Remove Curse 不清物品 `+36h`，remake 沒有詛咒欄位。 - [ ] `spell_cast.go:568`：射線幾何「先收整邊」，是近似。 - [ ] `internal/character/export.go:246`：`.CHA` 匯出不寫豁免表 `+6Dh..+71h` 與生命骰 `+73h`。 - [ ] `docs/spec/124`：二十幾個目的地區塊還沒逐一命名。 - [ ] `docs/spec/108`：`FINAL` 那幾張圖的調色仍是 DRAFT。 - [ ] `WORKLIST.md`：逐顆 overlay 命名與全模組函式清冊（依 CLAUDE.md §11，只做到能判定不阻擋玩家路徑即可）。
       **驗收**：issue 內六條逐一打勾或寫明不做的理由。
       **討論**：[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)
+- [ ] **野外戰場的三個未閉合點：08B4h 不命中的地形碼、生成後寫 1Fh 的常式、35E2h 高 36 列。** #59 之後的缺口：08B4h 七個地形碼不命中（remake 暫用旗標 0）；(32,18) 原版 1Fh 由生成後另一支常式寫入（候選 ov10 1DDBh、ov12 0E5Ch、ov32 0FB9h）；DS:35E2h 高 36 列是 strong inference；斜帶與直立物兩支沒有原版收據。
+      **驗收**：issue 內四條逐一附 dosgolem 收據或 overlay 位址打勾，寫進 spec 060。
+      **討論**：[#69](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/69)
 
 ### 三、版面與資料的差距
 

@@ -255,6 +255,18 @@
         "note": "spec 067 DRAFT 還列著"
       },
       "github_issue": 68
+    },
+    {
+      "id": "outdoor-battlefield-open-points",
+      "layer": "verification",
+      "title": "野外戰場的三個未閉合點：08B4h 不命中的地形碼、生成後寫 1Fh 的常式、35E2h 高 36 列",
+      "body": "#59 之後的缺口：08B4h 七個地形碼不命中（remake 暫用旗標 0）；(32,18) 原版 1Fh 由生成後另一支常式寫入（候選 ov10 1DDBh、ov12 0E5Ch、ov32 0FB9h）；DS:35E2h 高 36 列是 strong inference；斜帶與直立物兩支沒有原版收據。",
+      "acceptance": "issue 內四條逐一附 dosgolem 收據或 overlay 位址打勾，寫進 spec 060。",
+      "verify": {
+        "kind": "manual",
+        "note": "四條各自在 issue 打勾"
+      },
+      "github_issue": 69
     }
   ]
 }
