@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/golden-box-remake-engine/eclvm"
@@ -37,6 +38,8 @@ type shopState struct {
 	sellItem  int
 	sellStage sellStage
 	sellPrice uint16
+	// leaving：公款還有錢時按 ESC，店主問要不要回去拿（overlay-06 `0684h..0722h`）。
+	leaving bool
 }
 
 // sellStage 是賣出那一頁等的是哪一個問題。
@@ -48,6 +51,9 @@ const (
 	sellScribe
 	// sellOffer：`I'll give you N gold pieces for your X` / `Is It a Deal?`（`1D55h`）。
 	sellOffer
+	// sellIdentify：`For 200 gold pieces I'll identify your X` / `Is It a Deal?`
+	//（overlay-19 entry 17 `1F7Ch..1FCAh`）。
+	sellIdentify
 )
 
 // isShopBoundary 判斷這個服務邊界是不是商店。
@@ -97,6 +103,9 @@ func (a *app) enterShop(requests []eclvm.TreasureRequest) error {
 	if len(stock) == 0 {
 		return fmt.Errorf("Pool shop service produced no stock")
 	}
+	// 進店先把公款七欄清成 0（overlay-06 `0548h..0554h`：`FillChar(DS:6752h, 1Ch, 0)`，
+	// spec 067〈公款〉）。上一家店離開時說「不拿了」留下的錢就在這裡消失。
+	a.state.PooledMoney = [pooltreasure.CurrencyCount]uint32{}
 	a.shop = &shopState{items: stock}
 	a.shopActive = true
 	a.cellEventPending, a.cellWaitingMenu = true, true
@@ -176,8 +185,24 @@ func (a *app) shopInput() error {
 		a.shopSellInput()
 		return nil
 	}
+	if state.leaving {
+		// `~Yes ~No`：選單回 1（No）就離店，錢留在公款裡；Yes 回到商店選單。
+		switch {
+		case a.justPressed(ebiten.KeyN):
+			state.leaving = false
+			return a.leaveShop()
+		case a.justPressed(ebiten.KeyY):
+			state.leaving, state.message = false, ""
+		}
+		return nil
+	}
 	switch {
 	case a.justPressed(ebiten.KeyEscape):
+		// overlay-06 `066Ch..0681h`：公款七欄有一欄非 0（overlay-21 entry 14）就先問。
+		if a.hasPooledMoney() {
+			state.leaving, state.message = true, a.text(msgShopLeaveMoney)
+			return nil
+		}
 		return a.leaveShop()
 	case a.justPressed(ebiten.KeyTab):
 		if len(a.state.Party) > 0 {
@@ -194,6 +219,10 @@ func (a *app) shopInput() error {
 		a.resolveShopAppraise(false)
 	case state.appraising && a.justPressed(ebiten.KeyK):
 		a.resolveShopAppraise(true)
+	case a.hasPooledMoney() && a.justPressed(ebiten.KeyS):
+		// S）hare 只在公款有錢時出現在選單上（`05B7h`：選單字串 `0460h`／`0487h`），
+		// 按下去走 overlay-21 entry 7，與戰利品的 Share 同一支（spec 040）。
+		a.shareShopPool()
 	case a.justPressed(ebiten.KeyG):
 		return a.offerShopAppraise(appraiseGem)
 	case a.justPressed(ebiten.KeyJ):
@@ -227,6 +256,16 @@ func (a *app) shopSellInput() {
 		return
 	}
 	inventory := a.state.Party[state.buyer].Inventory
+	if state.sellStage == sellIdentify {
+		// `1FCAh`：只有 Y 付錢，其他鍵都是不要。
+		switch {
+		case a.justPressed(ebiten.KeyY):
+			a.completeIdentify()
+		case a.justPressed(ebiten.KeyN), a.justPressed(ebiten.KeyEscape):
+			state.sellStage, state.message = sellPicking, ""
+		}
+		return
+	}
 	switch state.sellStage {
 	case sellScribe, sellOffer:
 		switch {
@@ -257,6 +296,81 @@ func (a *app) shopSellInput() {
 		}
 	case a.justPressed(ebiten.KeyS):
 		a.startSale()
+	case a.justPressed(ebiten.KeyI):
+		a.startIdentify()
+	}
+}
+
+// shareShopPool 是商店選單的 S）hare：公款平分給隊員（overlay-21 entry 7）。
+func (a *app) shareShopPool() {
+	next := cloneSaveState(a.state)
+	if err := pooltreasure.ShareMoney(&next); err != nil {
+		a.shop.message = err.Error()
+		return
+	}
+	a.state = next
+	a.shop.message = a.text(msgShopPoolShared)
+}
+
+// startIdentify 是物品選單的 I）d（overlay-19 entry 17 `1F52h`）。選項只看
+// `DS:4954h == 1`（在店裡），不像 Sell 還看角色（`1119h`）。名稱先重組一次再印
+//（`1F77h` 呼叫 overlay-25 entry 1）。
+func (a *app) startIdentify() {
+	state := a.shop
+	member := a.state.Party[state.buyer]
+	if len(member.Inventory) == 0 {
+		return
+	}
+	if state.sellItem >= len(member.Inventory) {
+		state.sellItem = 0
+	}
+	name, err := a.identifyName(member.Inventory[state.sellItem])
+	if err != nil {
+		state.message = err.Error()
+		return
+	}
+	state.sellStage = sellIdentify
+	state.message = fmt.Sprintf(a.text(msgShopIdentifyOffer), pooltreasure.IdentifyPrice, name)
+}
+
+// identifyName 是 overlay-25 entry 1 重組的名稱，去掉尾端空白。
+func (a *app) identifyName(item poolsave.Item) (string, error) {
+	if a.itemNames == nil {
+		return "", fmt.Errorf("Pool item name table is not loaded")
+	}
+	name, err := pooltreasure.ItemName(item.Raw, a.itemNames)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimRight(name, " "), nil
+}
+
+// completeIdentify 是按 Y（`1FD1h..20F4h`）：付 200 金，`+35h` 有藏字就清掉、
+// 名稱重組；沒有藏字照樣收錢。
+func (a *app) completeIdentify() {
+	state := a.shop
+	state.sellStage = sellPicking
+	if a.itemNames == nil {
+		state.message = "Pool item name table is not loaded"
+		return
+	}
+	before, err := a.identifyName(a.state.Party[state.buyer].Inventory[state.sellItem])
+	if err != nil {
+		state.message = err.Error()
+		return
+	}
+	result, err := pooltreasure.IdentifyItem(&a.state, state.buyer, state.sellItem, a.itemNames)
+	if err != nil {
+		state.message = err.Error()
+		return
+	}
+	switch result.Outcome {
+	case pooltreasure.IdentifyNotEnoughMoney:
+		state.message = a.text(msgShopIdentifyNoMoney)
+	case pooltreasure.IdentifyNothingNew:
+		state.message = fmt.Sprintf(a.text(msgShopIdentifyNothingNew), before)
+	default:
+		state.message = fmt.Sprintf(a.text(msgShopIdentifyRevealed), result.Name)
 	}
 }
 
@@ -462,6 +576,9 @@ func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color
 	drawText(screen, fmt.Sprintf(a.text(msgShopCount), state.cursor+1, len(state.items)),
 		shopTextLeft, 336, foreground)
 	footer := a.text(msgShopFooter)
+	if a.hasPooledMoney() {
+		footer = a.text(msgShopFooterPool)
+	}
 	if state.message != "" {
 		footer = state.message
 	}

@@ -538,6 +538,14 @@ const (
 	msgShopSellUnready
 	msgShopSellScribe
 	msgShopSellNotAllowed
+	// 公款（spec 067〈公款〉）與鑑定（spec 067〈鑑定〉）。
+	msgShopFooterPool
+	msgShopLeaveMoney
+	msgShopPoolShared
+	msgShopIdentifyOffer
+	msgShopIdentifyNoMoney
+	msgShopIdentifyNothingNew
+	msgShopIdentifyRevealed
 )
 
 // 裝備畫面的字串。

@@ -1,10 +1,11 @@
 # Spec 067：商店服務邊界與進貨清單
 
 狀態：CONFORMED（服務邊界的判別、四家店的存貨來源、價格欄、購買與付款、
-賣出的出價與收款——dosgolem 三筆收據逐欄相同）；DRAFT（原版商店選單的版面、
-進店清空公款與離店的「落下錢」提問、物品選單的 I）d 鑑定服務）。
+賣出的出價與收款、進店清空公款與離店的「落下錢」提問、物品選單的 I）d 鑑定——
+付款與公款的前後值有 dosgolem 收據）；DRAFT（原版商店選單的版面；鑑定揭露藏字那一支
+只有位元組與內嵌名稱的正對照，沒有原版實跑）。
 多幣別付款由 `treasure.PayInCoins` 接上（#30）。
-日期：2026-09-03（2026-09-25：賣出，#60）。
+日期：2026-09-03（2026-09-25：賣出，#60；2026-09-26：公款 #67、鑑定 #68）。
 
 ## 商店與戰利品是同一條邊界
 
@@ -180,15 +181,156 @@ overload 那一筆是 P）ool 全部進公款、公款付錢買板甲、S）hare
 `TestShopSaleMatchesTheDosgolemReceipt` 用同名存貨、同一個錢包從 `Update()` 按 V S Y，
 出價、五個錢欄與公款白金逐欄比對。
 
-### 進店清空公款（remake 未做）
+## 公款
 
-`0548h..0554h`（`BF 52 67 1E 57 B8 1C 00 50 B0 00 50 9A B5 16 BB 05`）把
-`DS:6752h`、長度 1Ch、值 0 交給 RTL 段 `05BBh:16B5h`——形狀是 Turbo Pascal 的
-`FillChar`（strong inference，RTL 那一支沒有另外讀），也就是進店把七欄公款清成 0。
-公款在進店之前有沒有被別處先發還，沒有追。離店時公款還有錢就問
-`As you leave the shopkeeper says, "Excuse me but you have left some money here."`
-／`Do you want to go back and get your money?`（`04A4h`）。remake 的公款跨店保留、
-離店不問，這一段未實作。
+輸入同〈賣出〉：overlay-06（`2db20078…`）、overlay-21（`8324f587…`）；START.EXE
+（`12811cbc…`）的 RTL 段 `05BBh` 以 MZ header `3B0h` 換算檔內位移。
+
+### 進店清成 0（exact）
+
+overlay-06 entry 1（`052Ah`）是商店本體，一進來先做：
+
+```
+0531  C6 06 54 49 01              mov [4954h], 1           ; 物品選單的商店模式
+0548  BF 52 67 1E 57              push ds:6752h            ; 公款七欄（spec 040）
+054D  B8 1C 00 50 B0 00 50        push 1Ch, push 0
+0554  9A B5 16 BB 05              call 05BBh:16B5h
+```
+
+`05BBh:16B5h`（START.EXE 檔內 `7615h`）是 `8B DC 36 C4 7F 08 36 8B 4F 06 36 8A 47 04
+FC F3 AA CA 08 00`：`les di,[bx+8]; mov cx,[bx+6]; mov al,[bx+4]; cld; rep stosb; retf 8`
+——Turbo Pascal 的 `FillChar(dest, count, value)`。所以進店把 `DS:6752h` 起 28 bytes
+（七個 longint）全部寫 0，**不發還給任何人**。同一個 `FillChar(DS:6752h, 1Ch, 0)` 的形狀
+另外出現在 overlay-03 `1357h` 與 overlay-04 `0D02h`，那兩處不在本規格範圍。
+
+remake：`enterShop` 把 `State.PooledMoney` 清成 0。
+
+### 離店時公款有錢就問（exact）
+
+商店選單迴圈（`05A8h..077Ah`）每一輪先呼叫 overlay-21 entry 14（`0F2Bh`）：七欄公款
+（`[6752h+4i]` 的高低字 `or`）有一欄非 0 就把旗標設 1。旗標決定選單字串：
+`0460h` `Buy View Take Pool Share Appraise Exit`（有錢）或 `0487h`
+`Buy View Pool Appraise Exit`（沒錢）。按 E（`0665h`）時：
+
+```
+0676  9A 66 00 D9 00      overlay-21 entry 14 → 旗標
+067B  80 7E D1 00 75 03   旗標 == 0 → 0724h：離開旗標 = 1（直接離店）
+0684  BF A3 04            選項 `~Yes ~No`
+06AF  BF AC 04            As you leave the shopkeeper says, "Excuse me but you have left some money here."
+06D5  BF FF 04            Do you want to go back and get your money?
+06FD  9A 89 00 45 00      overlay-07 entry 21：選單，回傳選項索引（spec 086）
+0705  80 7E CF 01 75 06   索引 == 1（No）→ 離開旗標 = 1
+0711..071D                否則（Yes）清掉文字區（overlay-37 entry 14），回到商店選單
+```
+
+離店那一條**不動公款**：錢留在 `DS:6752h`，直到下一次進店被 `0548h` 清掉。
+S）hare（`0648h` → overlay-21 entry 7）、T）ake（`062Ah` → entry 8）只在有錢的那一版
+選單上，與戰利品同一支（spec 040）。
+
+remake：`ESC` 時 `hasPooledMoney()` 為真就印這兩句、等 `Y`／`N`；`N` 離店、公款不動，
+`Y` 回到商店。`ESC` 在這個提問上不作用——overlay-07 entry 21 對 ESC 的回傳沒有讀，
+不猜。商店選單接上 `S` 平分公款（`ShareMoney`），讓「回去拿錢」有路可走；
+T）ake 挑幣別與數量那一段商店裡還沒有（戰利品畫面有）。
+
+### 原版對照（公款）
+
+dosgolem 收據 `docs/audit/dosgolem-shop-pool-identify.json`
+（`tools/dosgolem-shop-pool-identify.py`，前置角色與進店鍵序同〈賣出〉）：
+
+- `leave-yes`：P 之後公款白金 100，按 E 印出 `AS YOU LEAVE THE SHOPKEEPER SAYS "EXCUSE ME
+  BUT YOU HAVE LEFT SOME MONEY HERE." DO YOU WANT TO GO BACK AND GET YOUR MONEY?`，底列
+  `YES NO`；按 Y 回到 `BUY VIEW TAKE POOL SHARE APPRAISE EXIT`，公款不動。
+- `identify-pool` 的後段：公款白金 58 時 E → N，畫面回到城區 (8,11)，公款**仍是 58**；
+  往西退一格再走回來按 y 進店，那一步之後公款是 **0**。離店不清、進店才清，兩半都看到了。
+
+同一份收據裡，P 之後直接按 S（`leave-yes` 的 `p,s` 與 `y,s`）公款沒有動；〈賣出〉的
+overload 情境是買過一件之後按 S，錢有分下去。差別的成因沒有追，remake 的 S 照
+overlay-21 entry 7 的位元組做（spec 040）。
+
+## 鑑定
+
+輸入：overlay-19（`4694cb51…`）、overlay-25（`9fede24b…`）、START.EXE（`12811cbc…`）。
+
+### 選項與入口（exact）
+
+物品選單（overlay-19 entry 6）`1119h`：`[4954h] == 1` 就把 ` Id`（`0EB1h`）接進選項，
+**沒有**賣出那一條角色條件（`10C9h..10E8h` 只管 Sell）。按 I（`1456h`）呼叫 entry 17
+（`1F52h`），傳入選中的物品與一個「清單變了」旗標。
+
+### 流程（exact）
+
+```
+1F77  9A 25 00 0A 01      overlay-25 entry 1：依記錄重組名稱，寫回 +0
+1F94  BF C8 1E            For 200 gold pieces I'll identify your <名稱>
+1FB2  BF F0 1E            Is It a Deal?
+1FC5  9A 3E 00 1D 01      overlay-26 entry 6 取鍵；1FCA `3C 59`：不是 'Y' 就結束，不收錢
+1FDA  E8 C5 08            entry 11（28A2h）角色的金幣等值
+1FE3..1FF0                ≥ C8h（200）→ 1FF2：付了；1FF6 減 200；2002 overlay-21 entry 15 重鑄
+2009  BF 52 67 …          否則公款（overlay-21 entry 17）≥ 200 → 付了；2038 entry 16 重鑄
+203F  BF FF 1E            兩邊都不夠：Not Enough Money，結束
+205F  26 80 7D 35 00      付了錢：+35h == 0 →
+207E  BF 10 1F              I can't tell anything new about your <名稱>（錢不退）
+2099  26 C6 45 35 00      否則 +35h = 0
+20BB  9A 25 00 0A 01        重組名稱
+20D8  BF 36 1F              It looks like some sort of <名稱>
+20F1  26 C6 05 01           「清單變了」= 1
+```
+
+付款與購買同一條（spec 116〈付款〉，`treasure.PayGold`）：先看角色、不夠才看公款、
+不混付，付完五種硬幣重鑄成白金＋金。**鑑定只改 `+35h` 與名稱**，記錄其餘欄位不動。
+
+重鑄那兩支（overlay-21 entry 15／16，`retf 2`）只收一個 word，而 `1FFFh`／`2035h` 推的是
+32 位元餘額的低位字；餘額超過 65535 金會繞回。購買（overlay-06 `0435h`）同一個形狀。
+`PayGold` 目前沒有照這個截斷，影響購買與鑑定兩邊，另案處理。
+
+### 名稱怎麼組（exact）
+
+overlay-25 entry 1（`0441h..0753h`）。`+2Fh`／`+30h`／`+31h` 是三段字詞編號，查
+`DS:10BBh + 編號 × 15h`（`0610h..061Dh`；START.EXE 檔內 `10BBh + 30640`，256 格 × 21 bytes，
+例：`24h` Long Sword、`A2h` +1、`A7h` of、`B1h` Silver）：
+
+1. 數量 `+39h` 大於 0：先放 `Str(數量) + " "`（`0527h..056Bh`）。
+2. 遮罩（`0570h..05C6h`）：第 i 段（i = 1..3，對 `+2Eh+i`）非 0，而且
+   `(+35h >> (3−i)) & 1 == 0` 才算看得見——`+35h` 位元 2 藏 `+2Fh`、位元 1 藏 `+30h`、
+   位元 0 藏 `+31h`。
+3. 由 i = 3 往 1 排看得見的段，每段後面接 `" "`；數量 ≥ 2 而且還沒接過時，下列條件
+   成立的那一段改接 `"s "`（`066Bh..06D4h`）：只有這一段看得見；i = 1、遮罩 > 4、
+   型別 `+2Eh` ≠ 56h；i = 2 而 `+2Fh` 看不見；i = 3 而型別 == 56h；型別是 49h 或 1Ch
+   而 `+31h` ≠ B1h。
+4. 每寫一次都截到 40 字（RTL `064Eh` 的長度上限 28h）。
+
+另有兩個呈現用的前綴本規格不做：參數 `[bp+8]` 非 0 時的 ` Yes  `／` No   `（穿戴欄），
+以及隊伍有人帶效果 5（`21DCh`）而物品 `+32h`／`+33h` > 0 或 `+36h` ≠ 0 時的 `* `。
+鑑定呼叫時前者傳 0；後者 remake 還沒有對應的效果，一律當沒有。
+
+正對照：`ITEM*.DAX` 裡數量為 0 的記錄共 311 筆，內嵌名稱與重組結果除尾端空白外逐字
+相同（85 筆有藏字），例外是四筆手寫的名稱（兩筆 `…+3 vs. Undead`、一筆卷軸寫法術名、
+一筆項鍊前導空白）。數量大於 0 的記錄內嵌的是手寫的 `10 Arrow(s)`、`3 Potion`，執行時
+顯示的是這一支組出的 `10 Arrows `——`Boots` 也照樣接 `s`，得到 `Bootss`。
+
+### remake
+
+`treasure.ItemName`、`treasure.IdentifyItem`；字詞表 `gamepack.ReadDOSItemNameTable`。
+商店的物品頁（`V`）按 `I` 印出價、`Y` 付錢鑑定、`N`／`ESC` 不要。鑑定後記錄 `+35h` 是 0，
+名稱照原版帶尾端空白寫回記錄與 `Item.Name`（存檔要求兩者一致）；畫面上印的時候去掉。
+
+### 原版對照（鑑定）
+
+同一份 dosgolem 收據，買一把 PARTISAN（`+35h` 是 0）之後 V I I Y：
+
+| 情境 | 按 Y 前 | 按 Y 後 | remake |
+|---|---|---|---|
+| identify-paid | 錢包白金 98 | 白金 58 | 同 |
+| identify-short | 錢包白金 2、公款 0 | 不動 | 同 |
+| identify-pool | 錢包 0、公款白金 98 | 公款白金 58 | 同 |
+
+提示畫面是 `FOR 200 GOLD PIECES I'LL IDENTIFY YOUR PARTISAN` ／ `IS IT A DEAL? YES NO`。
+付完錢的那一句（`I can't tell anything new…` 或 `Not Enough Money`）在按 Y 之後那一幀
+已經換回物品選單，收據裡沒有拍到。**揭露藏字**（`+35h` 非 0 的物品）原版沒有實跑：
+武具店的存貨 `+35h` 全是 0，要有一件帶藏字的物品得先從戰利品拿到。
+
+`TestShopIdentifyMatchesTheDosgolemReceipt` 用同名存貨、同一個錢包與公款從 `Update()`
+按 V I Y，五個錢欄與公款逐欄比對。
 
 ## 店在哪一格
 
@@ -216,10 +358,20 @@ AND ARMOR」，`A919h` 就在它的 YES 分支底下）。geo3/0 裡索引 22 �
   `internal/treasure/sell_test.go`（除以 2、一疊除以 20、16 位元繞回、死分支、
   舊負重的超重判定）。
 
+- 公款與鑑定（`cmd/pool-game/shop_pool_identify_test.go`，全部從 `Update()` 送鍵）：
+  `TestLeavingTheShopWithPooledMoneyAsksFirst`（Y 回店、N 離店且公款不動）、
+  `TestLeavingTheShopWithAnEmptyPoolDoesNotAsk`、`TestSharingThePoolInTheShopThenLeaving`、
+  `TestIdentifyingThroughUpdateRevealsTheBonus`（`ITEM8.DAX/20h` 的長劍 → `Long Sword +1`，
+  再鑑定一次照收 200）、`TestIdentifyingWithoutMoneyIsRefused`、
+  `TestIdentifiedItemSurvivesSaveAndLoad`、`TestShopIdentifyMatchesTheDosgolemReceipt`；
+  進店清公款由 `TestNormalKeysBuyAndEquipFromTheWeaponShop` 走進武具店之後斷言。
+  規則在 `internal/treasure/identify_test.go`（311 筆內嵌名稱的正對照、`s ` 的分支、
+  付款順序與拒絕）。
+
 ## 不做
 
 - 不替 `6E6Ch`／`6EF6h` 取名。四家店都寫 1，目前只當邊界條件的一部分。
 - 商店畫面的版面是 remake 的呈現；原版商店選單的**按鍵與分派**已讀（〈賣出〉），
   版面不宣稱一致。
-- 物品選單的 I）d（overlay-19 entry 17 `1F52h`，`For 200 gold pieces I'll identify your`）
-  還沒做。
+- 名稱的 `* `（偵測魔法）與 ` Yes  `／` No   `（穿戴欄）前綴，見〈鑑定〉。
+- 商店裡的 T）ake（挑幣別與數量）還沒接，公款只能 S）hare 回來。

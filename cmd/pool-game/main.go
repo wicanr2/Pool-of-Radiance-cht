@@ -154,6 +154,8 @@ type app struct {
 	tactical        *tacticalState
 	journal         *journalState
 	itemTypes       *gamepack.ItemTypeTable
+	// itemNames 是物品名稱的字詞表（`DS:10BBh`），鑑定之後重組名稱用（spec 067）。
+	itemNames *gamepack.ItemNameTable
 	spellParameters []gamepack.SpellParameters
 	// turnUndeadTable 是 START.EXE `DS:45Bh` 的轉變表（spec 111），AI 的 entry 2 用。
 	turnUndeadTable *gamepack.TurnUndeadTable
@@ -501,6 +503,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.initialEvent = &initialEvent
 	application.itemTypes = itemTypes
+	itemNames, err := gamepack.ReadDOSItemNameTable(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.itemNames = &itemNames
 	application.savingThrows = savingThrows
 	levelUpTables, err := gamepack.ReadDOSLevelUpTables(zipPath)
 	if err != nil {

@@ -172,6 +172,9 @@ func TestNormalKeysBuyAndEquipFromTheWeaponShop(t *testing.T) {
 	t.Logf("開場結束時在 GEO%d/%d (%d,%d)", application.spawn.Map.Archive,
 		application.spawn.Map.BlockID, application.spawn.X, application.spawn.Y)
 
+	// 公款裡先放一筆錢：原版進店第一件事是把公款七欄清成 0
+	//（overlay-06 `0548h`，spec 067〈公款〉），走進店之後要看到它歸零。
+	application.state.PooledMoney[4] = 7
 	application.keys = scriptedKeys{}
 	if !walkToArmoury(t, application, 4000) {
 		t.Fatalf("沒走到武具店，最後在 %+v 狀態列 %q", application.spawn, application.statusLine)
@@ -179,6 +182,9 @@ func TestNormalKeysBuyAndEquipFromTheWeaponShop(t *testing.T) {
 	shop := application.shop
 	if shop == nil || len(shop.items) == 0 {
 		t.Fatal("店開了卻沒有庫存")
+	}
+	if application.state.PooledMoney != ([7]uint32{}) {
+		t.Fatalf("進店之後公款是 %v，原版在 0548h 清成 0", application.state.PooledMoney)
 	}
 	t.Logf("走到店裡：GEO%d/%d (%d,%d)，庫存 %d 件",
 		application.spawn.Map.Archive, application.spawn.Map.BlockID,
