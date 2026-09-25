@@ -23,9 +23,8 @@
 這已經是連續第二版發生同一件事（上一版是四條），所以核實的方向固定成
 「拿清單上的每一條去程式裡找實際生效的呼叫點」，不是從程式往外看。
 
-**壓住上限的是這幾條**，每一條都指得到 open issue：怪物施法還缺原版骰流收據（[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)）、
-戰鬥裡幾條還沒接的原版規則（轉變不死生物與用物品 [#71](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/71)、玩家施法時間 [#72](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/72)、多目標與範圍瞄準 [#73](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/73)）、
-Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)）。
+**壓住上限的是這幾條**，每一條都指得到 open issue：祝福／詛咒／急速／緩速還沒有效果（[#81](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/81)）、
+士氣與逃跑（[#74](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/74)）、怪物施法還缺原版骰流收據（[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)）、Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)）。
 估算依玩家垂直鏈與交付硬門檻，不是用規格文件數量換算；
 細節與未知項以 [CONTEXT.md](CONTEXT.md) 與 [WORKLIST.md](WORKLIST.md) 為準。
 
@@ -373,12 +372,10 @@ tools/go.sh test ./...
 **還沒完成的**（帶驗收條件的完整清單在 [WORKLIST.md](WORKLIST.md) 開頭，
 分三層，主台帳是 GitHub issues）：
 
-- **功能缺口**：AI 轉變不死生物與 QUICK 用物品（[#71](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/71)）、玩家施法時間與受傷打斷（[#72](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/72)）、
-  多目標與範圍法術瞄準（[#73](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/73)）、商店公款（[#67](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/67)）、物品鑑定（[#68](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/68)）。
-- **驗證缺口**：怪物施法的原版骰流收據（[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)）、野外戰場的未閉合點（[#69](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/69)）、雜項（[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)）、
-  Windows 與 macOS 的真機啟動（[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)）。
-- **版面缺口**：商店版面（[#70](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/70)）、怪物配色（[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)）、戰利品對照圖（[#52](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/52)）、
-  現代奇幻 sprite（[#17](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/17)）。
+- **功能缺口**：分邊法術的效果（[#81](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/81)）、士氣與逃跑（[#74](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/74)）、怪物的物品鏈（[#76](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/76)）。
+- **驗證缺口**：怪物施法的原版骰流收據（[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)）、野外戰場的未閉合點（[#69](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/69)）、射線的兩個原版細節（[#82](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/82)）、
+  公款與錢的邊角（[#79](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/79)）、物品名稱前綴與藏字收據（[#80](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/80)）、雜項（[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)）、Windows 與 macOS 的真機啟動（[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)）。
+- **版面缺口**：商店版面（[#70](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/70)）、怪物配色（[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)）、戰利品對照圖（[#52](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/52)）、現代奇幻 sprite（[#17](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/17)）。
 
 ## 授權、致謝與聲明
 
