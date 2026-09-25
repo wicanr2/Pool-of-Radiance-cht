@@ -223,6 +223,38 @@
         "note": "六條雜項各自在 issue 裡打勾"
       },
       "github_issue": 66
+    },
+    {
+      "id": "shop-public-fund-lifecycle",
+      "layer": "feature",
+      "title": "商店公款：進店清空、離店有錢會問",
+      "body": "原版 overlay-06 0548h 進店把公款七欄清成 0（strong inference），04A4h 離店時公款有錢會問 you have left some money here。remake 跨店保留、離店不問。",
+      "acceptance": "兩處讀到 exact 寫進 spec 067；remake 照做，Update() 送鍵測試覆蓋。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/067-shop-service-and-stock.md"
+        ],
+        "pattern": "進店清空公款",
+        "note": "spec 067 DRAFT 還列著"
+      },
+      "github_issue": 67
+    },
+    {
+      "id": "item-identify-service",
+      "layer": "feature",
+      "title": "物品選單的 I）d 鑑定服務（200 gp）",
+      "body": "overlay-19 entry 17（1F52h）物品選單的 I）d，收 200 gp 鑑定；remake 沒有。",
+      "acceptance": "條件、費用、效果 exact 寫進 spec 067；remake 接上並有 Update() 送鍵測試。",
+      "verify": {
+        "kind": "present",
+        "paths": [
+          "docs/spec/067-shop-service-and-stock.md"
+        ],
+        "pattern": "I）d 鑑定服務",
+        "note": "spec 067 DRAFT 還列著"
+      },
+      "github_issue": 68
     }
   ]
 }

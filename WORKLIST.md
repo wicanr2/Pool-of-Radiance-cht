@@ -61,6 +61,12 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **怪物 AI 與 QUICK 自動戰鬥都不施法（spec 139 的 Magic On/Off）。** - `docs/spec/139-quick-auto-combat.md:5`：「remake 的 AI 還不施法」。 - `cmd/` 內找不到怪物或 QUICK 模式的施法路徑。
       **驗收**：會施法的怪物施法、QUICK 的 Magic On/Off 生效，骰流重播抽樣。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
+- [ ] **商店公款：進店清空、離店有錢會問。** 原版 overlay-06 0548h 進店把公款七欄清成 0（strong inference），04A4h 離店時公款有錢會問 you have left some money here。remake 跨店保留、離店不問。
+      **驗收**：兩處讀到 exact 寫進 spec 067；remake 照做，Update() 送鍵測試覆蓋。
+      **討論**：[#67](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/67)
+- [ ] **物品選單的 I）d 鑑定服務（200 gp）。** overlay-19 entry 17（1F52h）物品選單的 I）d，收 200 gp 鑑定；remake 沒有。
+      **驗收**：條件、費用、效果 exact 寫進 spec 067；remake 接上並有 Update() 送鍵測試。
+      **討論**：[#68](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/68)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
