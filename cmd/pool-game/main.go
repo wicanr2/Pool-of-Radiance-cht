@@ -691,8 +691,9 @@ func (a *app) anyKeyJustPressed() bool {
 	// 而那是玩家在地圖上手最順的鍵。症狀在治具裡更明顯：探索器全滅之後一路按
 	// 方向鍵，十八萬圈原地不動，報表只寫「走完預算」。
 	//
-	// 原版那一頁吃不吃方向鍵目前量不到（dosgolem 推不動，#53），所以依據是
-	// **畫面上自己寫的字**，不是原版證據。
+	// 原版那一頁停在 Turbo Pascal CRT 的 `ReadKey`（執行期 `0622:031A`
+	// `int 16h AH=00h`，#53，`docs/re/dos-party-wipe-exit.md`）：任何一個鍵都收，
+	// 方向鍵那種延伸鍵也算。
 	for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
 		if a.justPressed(key) {
 			return true
@@ -785,9 +786,9 @@ func (a *app) Update() error {
 		return ebiten.Termination
 	}
 	if a.gameOver {
-		// 「Press any key to continue」：原版在 `198h:4Dh` 等一個鍵之後把
-		// `4961h` 設成 1 交回主迴圈；那一段的消費者還沒讀，這裡回標題畫面
-		// （hypothesis），玩家可以從那裡 L 讀回上一個存檔。
+		// 「Press any key to continue」：原版按一個鍵之後主迴圈返回、`Halt(0)`
+		// 結束程式回 DOS（#53 量到的，exact）。remake **刻意不照做**：回標題畫面，
+		// 玩家可以從那裡 L 讀回上一個存檔（使用者 2026-09-25 定案）。
 		if a.anyKeyJustPressed() {
 			a.returnToTitleAfterGameOver()
 		}

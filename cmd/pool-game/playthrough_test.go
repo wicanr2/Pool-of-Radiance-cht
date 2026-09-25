@@ -416,7 +416,9 @@ func TestPassiveCombatTerminates(t *testing.T) {
 				strings.TrimSpace(member.Name), member.CurrentHP, member.Status)
 		}
 	}
-	if err := press(application, ebiten.KeyEnter); err != nil {
+	// 原版那一頁是 CRT 的 ReadKey，方向鍵也算（#53）；按完回標題、可以 L 讀檔
+	//（使用者 2026-09-25 定案，原版是結束程式回 DOS）。
+	if err := press(application, ebiten.KeyArrowRight); err != nil {
 		t.Fatal(err)
 	}
 	if application.mode != modeTitle || application.gameOver {
