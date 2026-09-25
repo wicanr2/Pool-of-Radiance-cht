@@ -49,18 +49,15 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **AI 施法的原版骰流收據：dosgolem 走到有施法怪物的遭遇，逐擲對照。** 功能已接上（entry 4、23F9h、Magic On/Off，與玩家共用 castSpell；d7 d7 與原版零錯位）。缺一場有施法怪物的 dosgolem 收據，挑法術與挑目標的 Roll(1,n) 只有程式碼證據。
       **驗收**：dosgolem 收據含施法怪物的回合，remake 逐擲重現；spec 096 的自承拿掉。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
-- [ ] **士氣與逃跑未實作：被轉變的不死生物、士氣失敗的怪物照常行動。** 士氣 entry 8 10FFh、entry 5 逃跑迴圈 0B9Fh、07E8h 逃跑分支（d2 模式骰）、overlay-13 entry 7 0C6Ch 脫離判定；後兩段未讀。
-      **驗收**：四段讀完寫進 spec 096，逃跑照原版，骰流對齊。
-      **討論**：[#74](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/74)
-- [ ] **玩家戰鬥指令 T）urn 與 U）se 未接。** overlay-08 0427h 的 Turn 與 Use 玩家按不動；AI 側的轉變與用物品可共用。
-      **驗收**：T、U 照原版條件出現並能執行，tacticalInput 送鍵測試。
-      **討論**：[#75](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/75)
 - [ ] **怪物的物品鏈沒有載入。** 怪物記錄 +C8h 起的物品串列未載入，entry 3 對怪物挑不到物品；0C14h 施法者等級來源與物品 +3Eh 待讀。
       **驗收**：怪物物品來源 exact 並載入，會用物品的怪物照 entry 3 用。
       **討論**：[#76](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/76)
-- [ ] **祝福、詛咒、急速、緩速只收人沒有效果。** 0Ah 分支只數人數印訊息，沒照 08BCh 0A3Dh 掛效果碼；2724h 後段 002Fh(目標,12h) 未讀。
-      **驗收**：效果碼與持續時間掛上，命中／AC／先攻／攻擊次數實際改變，送鍵測試。
-      **討論**：[#81](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/81)
+- [ ] **戰鬥中物品選單還缺 Ready／Drop／Halve／Join、卷軸、+0Bh 為 0 的物品法術。** ov19 entry 6 其餘選項、entry 12 與 ov22 entry 7 的卷軸、ov22 entry 5 戰鬥中回傳。
+      **驗收**：三項照原版接上並有送鍵測試。
+      **討論**：[#84](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/84)
+- [ ] **效果群組 9／10／16／17 還沒接進戰鬥。** 命中群組 10 其餘碼與 16、士氣群組 17（ov09 1172h／11C5h）、免疫群組 9。
+      **驗收**：各條 exact 接上並有送鍵測試，寫進 spec 112。
+      **討論**：[#86](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/86)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -73,9 +70,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **野外戰場的三個未閉合點：08B4h 不命中的地形碼、生成後寫 1Fh 的常式、35E2h 高 36 列。** #59 之後的缺口：08B4h 七個地形碼不命中（remake 暫用旗標 0）；(32,18) 原版 1Fh 由生成後另一支常式寫入（候選 ov10 1DDBh、ov12 0E5Ch、ov32 0FB9h）；DS:35E2h 高 36 列是 strong inference；斜帶與直立物兩支沒有原版收據。
       **驗收**：issue 內四條逐一附 dosgolem 收據或 overlay 位址打勾，寫進 spec 060。
       **討論**：[#69](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/69)
-- [ ] **受傷打斷仍是近似：runtime +1 該在傷害入口清掉。** 原版 ov13 04E8h..054Bh 傷害當下清 +1、施法中當下丟失；remake 輪到時比回合開頭生命值。
-      **驗收**：所有傷害入口當下清 +1，補血後再受傷仍被打斷的測試。
-      **討論**：[#77](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/77)
 - [ ] **公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款。** 四條邊角見 issue。
       **驗收**：每條附位址與收據或測試打勾，寫進 spec 067。
       **討論**：[#79](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/79)
@@ -85,6 +79,12 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **射線的兩個原版細節：吐息呼叫 2919h 與 DS:6039h。** ov22 31A3h／31B8h 疑似吐息呼叫 2919h 未接；被射線打倒的人何時離開 DS:6039h 未追。
       **驗收**：兩條附位址與證據等級打勾，吐息確認就接上並測試。
       **討論**：[#82](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/82)
+- [ ] **士氣逃跑的原版收據與四處近似。** 缺敵方崩潰的 dosgolem 收據；接近迴圈先看腳程、腳程初值少兩項、離場沒跑收尾常式、1380h 跟隊非隊員、+3==14h 分支。
+      **驗收**：各條附位址與收據或測試打勾，寫進 spec 096。
+      **討論**：[#83](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/83)
+- [ ] **AI 物品瞄準射程與零傷害命中的吸取派發。** foeSpellTargets 射程該用 DS:6CB3h 物品等級；零傷害命中是否派發吸取未讀。
+      **驗收**：兩條附位址打勾，射程照原版改並測試。
+      **討論**：[#85](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/85)
 
 ### 三、版面與資料的差距
 
@@ -101,6 +101,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **商店畫面照原版版面：店主肖像、隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT。** 發行包對拍商店整張 85.50%、視野 48.98%。原版左上店主肖像、右上隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT；remake 是自排的貨品清單頁。
       **驗收**：版面照原版，對拍商店那一張整張與視野上升。
       **討論**：[#70](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/70)
+- [ ] **逐人效果訊息與編號 57 is Speedy。** 原版逐人印 is Blessed／ages／is Cured；編號 57 的呼叫端未找到。
+      **驗收**：逐人訊息照原版；編號 57 照原版或寫明走不到。
+      **討論**：[#87](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/87)
 
 <!-- worklist:end -->
 
