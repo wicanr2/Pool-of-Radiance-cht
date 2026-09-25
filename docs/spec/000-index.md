@@ -51,7 +51,7 @@
 | [037](037-campaign-save-and-ecl-session.md) | 戰役存檔、地圖位置與 ECL session 續點 | CONFORMED＋DRAFT | 共用 engine | `cmd/pool-game/main_test.go`、`internal/save/state_test.go` |
 | [038](038-graveyard-commission-state-producers.md) | 墓園委託旗標 producer 清冊 | CONFORMED＋DRAFT | `cmd/pool-ecl-memory-audit/main.go` | `cmd/pool-ecl-memory-audit/main_test.go`、`cmd/pool-game/coverage_test.go` |
 | [039](039-graveyard-seven-pool-treasure.md) | 墓園七種戰利品累積池 | READY | `cmd/pool-ecl-memory-audit/main.go` | `internal/gamepack/treasure_test.go` |
-| [040](040-seven-currency-pool-take-share.md) | 七種貨幣的 View／Take／Pool／Share | READY | `cmd/pool-game/appraise.go`、`internal/character/export.go`、`internal/gamepack/movement.go` 等 4 個 | `internal/treasure/money_test.go` |
+| [040](040-seven-currency-pool-take-share.md) | 七種貨幣的 View／Take／Pool／Share | READY | `cmd/pool-game/appraise.go`、`cmd/pool-game/shop.go`、`internal/character/export.go` 等 5 個 | `cmd/pool-game/shop_pool_identify_test.go`、`internal/treasure/money_test.go` |
 | [041](041-city-hall-completion-notification-table.md) | City Hall 完成通知狀態表 | READY＋DRAFT | `cmd/pool-game/battlefield.go`、`internal/gamepack/cityhall.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` 等 5 個 |
 | [042](042-dos-ecl-archive-catalog-and-slums-counter.md) | DOS ECL archive catalog 與 Slums 完成計數 | READY＋DRAFT | `internal/gamepack/intro.go` | `internal/gamepack/ecl_catalog_test.go` |
 | [043](043-load-files-and-three-wall-slots.md) | LOAD FILES 與三個 WALLDEF slot | READY | `cmd/pool-game/main.go`、`cmd/pool-world-cell-sweep/main.go`、`internal/gamepack/geometry.go` 等 4 個 | `cmd/pool-game/main_test.go`、`internal/gamepack/walls_test.go` |
@@ -78,7 +78,7 @@
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | `internal/journal/journal_test.go` |
 | [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/tactical.go` 等 8 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
 | [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | `cmd/pool-doc-index/main_test.go` |
-| [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go`、`cmd/pool-game/text.go`、`internal/treasure/sell.go` | `cmd/pool-game/mainline_outfit_test.go`、`cmd/pool-game/shop_sell_test.go`、`cmd/pool-game/shop_walk_test.go` |
+| [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/text.go` 等 6 個 | `cmd/pool-game/mainline_outfit_test.go`、`cmd/pool-game/shop_sell_test.go`、`cmd/pool-game/shop_walk_test.go` |
 | [068](068-spell-name-table.md) | 法術名稱表 | CONFORMED＋DRAFT | `cmd/pool-game/spells.go`、`internal/gamepack/spell_dispatch.go`、`internal/gamepack/spell_table.go` | `internal/gamepack/spell_table_test.go` |
 | [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 12 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
 | [070](070-memorised-spells.md) | 記憶法術陣列與 1-based 法術編號 | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/foe_cast.go`、`cmd/pool-game/spells.go` 等 8 個 | `cmd/pool-game/inn_test.go`、`cmd/pool-spell-dispatch/main_test.go`、`internal/gamepack/memorisation_test.go` |
