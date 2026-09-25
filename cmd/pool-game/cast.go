@@ -278,6 +278,43 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 	levels := memberClassLevels(*member)
 	casterLevel := gamepack.CasterLevelFor(a.spellParameters[option.ID],
 		int(levels[gamepack.ClassSlotCleric]), int(levels[gamepack.ClassSlotMagicUser]), false)
+	if err := a.castSpell(state, spellCasting{
+		name: member.Name, member: member, partySlot: index, level: casterLevel,
+		consume: func() {
+			member.Memorised[option.Slot] = 0
+			syncTrainedLibraryCharacter(&a.state, *member)
+		},
+	}, option, target, chosen); err != nil {
+		return err
+	}
+	if state.Finished {
+		return a.finishCombat(state.Outcome)
+	}
+	return nil
+}
+
+// spellCasting 是「誰在施法」：玩家下指令（finishCast）與 AI 施法（foe_cast.go）
+// 共用 castSpell 這一支，差別只在施法者是誰、記憶陣列哪一格要用掉。
+type spellCasting struct {
+	// name 是訊息裡的施法者名字。
+	name string
+	// member 是施法的隊員；怪物施法時是 nil。
+	member *poolsave.Character
+	// partySlot 是施法者的隊伍索引，怪物是 −1。
+	partySlot int
+	// level 是施法者等級（overlay-25 `26F8h`）。
+	level int
+	// consume 用掉記憶陣列裡的那一格。
+	consume func()
+}
+
+// castSpell 是施法的共用後半段：擲效果、用掉記憶的那一格、套用效果、結束這個
+// 行動。玩家與 AI 走同一支，所以法術效果只有這一份。戰鬥打完（state.Finished）
+// 由呼叫端收：玩家那一側是 finishCast，AI 那一側是 foeTurn 的呼叫端。
+func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOption,
+	target uint8, chosen bool) error {
+	member := caster.member
+	casterLevel := caster.level
 	effect, err := a.spellCaster.Cast(option.ID, a.spellParameters, casterLevel, a.roller)
 	if err != nil {
 		return err
@@ -288,14 +325,10 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		if slot, ok := a.moverPartyIndex(target); ok {
 			for _, node := range a.state.Party[slot].Effects {
 				if node.Code == effect.BlockedByEffect {
-					member.Memorised[option.Slot] = 0
-					syncTrainedLibraryCharacter(&a.state, *member)
+					caster.consume()
 					a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
 						option.Label, target))
 					state.endTurn(a.rollDice, false)
-					if state.Finished {
-						return a.finishCombat(state.Outcome)
-					}
 					return nil
 				}
 			}
@@ -315,20 +348,15 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			}
 		}
 		if !has {
-			member.Memorised[option.Slot] = 0
-			syncTrainedLibraryCharacter(&a.state, *member)
+			caster.consume()
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
 				option.Label, target))
 			state.endTurn(a.rollDice, false)
-			if state.Finished {
-				return a.finishCombat(state.Outcome)
-			}
 			return nil
 		}
 	}
 	// 記憶的那一格用掉了，不論打不打得中——原版也是先耗掉才判定。
-	member.Memorised[option.Slot] = 0
-	syncTrainedLibraryCharacter(&a.state, *member)
+	caster.consume()
 
 	// 挑目標照原版的模式（參數表 `+6` 的低四位，spec 074）：模式 0 作用在
 	// 施法者自己、模式 0Ah 作用在整邊、模式 8／9／0Bh 是範圍。
@@ -356,6 +384,11 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			if index, ok := a.moverPartyIndex(target); ok {
 				subject = &a.state.Party[index]
 			}
+		}
+		if subject == nil {
+			// 怪物施法而目標不是隊員：效果串列只存在隊員身上。
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
 		}
 		removed := 0
 		for _, code := range effect.RemoveEffects {
@@ -443,7 +476,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			strings.TrimSpace(subject.Name), value, percentile))
 	case effect.HitPointBudgetFromCaster:
 		// 迷蛇術：額度是施法者的目前生命值。
-		a.applyCharmByHitPoints(state, member.Name, effect,
+		a.applyCharmByHitPoints(state, caster.name, effect,
 			state.HitPoints[state.Mover], casterLevel)
 	case effect.PersonOnly:
 		// 魅惑人類：只對「人」有效，中了就不再行動。
@@ -466,9 +499,9 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		}
 		state.applyCharm(int(picked), casterLevel)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCharmed),
-			strings.TrimSpace(member.Name), 1))
+			strings.TrimSpace(caster.name), 1))
 	case effect.SleepBudget > 0:
-		a.applySleep(state, member.Name, option.Label, effect.SleepBudget, casterLevel)
+		a.applySleep(state, caster.name, option.Label, effect.SleepBudget, casterLevel)
 	case effect.Heal > 0:
 		healed := state.Mover
 		if chosen {
@@ -477,7 +510,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		before := state.HitPoints[healed]
 		state.HitPoints[healed] += effect.Heal
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
-			strings.TrimSpace(member.Name), option.Label, state.HitPoints[healed]-before))
+			strings.TrimSpace(caster.name), option.Label, state.HitPoints[healed]-before))
 	case effect.Cloud:
 		// 臭雲術（overlay-22 `1AF6h`，spec 121）：在盤上生一團 2×2 的雲，
 		// 蓋成地形 `1Eh`；效果碼 `1Eh` 掛在**當下站在那四格裡的人**身上，
@@ -502,15 +535,19 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			state.addEffect(cell, effect.EffectCode, 0, casterLevel)
 		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCloud),
-			strings.TrimSpace(member.Name)))
+			strings.TrimSpace(caster.name)))
 	case effect.Restore:
 		// 恢復術（overlay-22 `2C01h`）：把能量吸取的欠帳還一級。
 		// 沒欠就整支直接返回——原版的 `2C16h` 就是這樣。
-		slot := index
+		slot := caster.partySlot
 		if chosen {
 			if party, ok := a.moverPartyIndex(target); ok {
 				slot = party
 			}
+		}
+		if slot < 0 || slot >= len(a.state.Party) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
 		}
 		subject := &a.state.Party[slot]
 		levels := memberClassLevels(*subject)
@@ -571,7 +608,13 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDispelled), picked, removed))
 	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea():
 		// 範圍：對面每一個都吃一份。原版是以一格為中心算範圍
-		// （overlay-31 `0138h:003Eh`），那條還沒讀。
+		// （overlay-31 `0138h:003Eh`）：中心是挑中的目標（overlay-13 `2222h`
+		// 拿 `1E09h` 寫進 `DS:6CADh`／`6CAEh` 的座標，spec 096 的 AI 施法）。
+		// 玩家這一側還沒有瞄範圍法術的那一層，沒挑目標時中心退回施法者自己。
+		centre := state.Mover
+		if chosen && int(target) < len(state.Roster) {
+			centre = target
+		}
 		hit := 0
 		for index := 1; index < len(state.Roster); index++ {
 			if state.Roster[index].FootprintClass == 0 ||
@@ -580,7 +623,7 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			}
 			// 有讀出預算的就照原版收人：那個預算內走得到才算在範圍裡
 			// （`0912h` 把預算交給 `0419h` 當上限）。沒讀出來的先收整邊。
-			if effect.AreaBudget > 0 && !state.withinArea(state.Mover, uint8(index),
+			if effect.AreaBudget > 0 && !state.withinArea(centre, uint8(index),
 				uint16(effect.AreaBudget)) {
 				continue
 			}
@@ -616,15 +659,12 @@ func (a *app) finishCast(option castOption, target uint8, chosen bool) error {
 			affected++
 		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastWholeSide),
-			strings.TrimSpace(member.Name), option.Label, affected))
+			strings.TrimSpace(caster.name), option.Label, affected))
 	default:
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastTookEffect),
-			strings.TrimSpace(member.Name), option.Label))
+			strings.TrimSpace(caster.name), option.Label))
 	}
 	state.endTurnAfterAction(a.rollDice)
-	if state.Finished {
-		return a.finishCombat(state.Outcome)
-	}
 	return nil
 }
 

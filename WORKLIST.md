@@ -46,7 +46,7 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 ### 一、玩家會撞到的功能缺口
 
-- [ ] **怪物 AI 與 QUICK 自動戰鬥都不施法（spec 139 的 Magic On/Off）。** - `docs/spec/139-quick-auto-combat.md:5`：「remake 的 AI 還不施法」。 - `cmd/` 內找不到怪物或 QUICK 模式的施法路徑。
+- [ ] **怪物 AI 與 QUICK 自動戰鬥都不施法（spec 139 的 Magic On/Off）。** - 規則已讀（spec 096〈entry 4〉）、remake 已接（`cmd/pool-game/foe_cast.go`、Magic On/Off）。 - 剩下原版同狀態的骰流重播：還沒有一筆有施法怪物的 dosgolem 收據。
       **驗收**：會施法的怪物施法、QUICK 的 Magic On/Off 生效，骰流重播抽樣。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
 - [ ] **商店公款：進店清空、離店有錢會問。** 原版 overlay-06 0548h 進店把公款七欄清成 0（strong inference），04A4h 離店時公款有錢會問 you have left some money here。remake 跨店保留、離店不問。

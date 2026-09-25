@@ -449,6 +449,9 @@ type tacticalState struct {
 	Viewport combat.ViewportOrigin
 	// Icons 是每一格用哪一個戰鬥造形（spec 129 的 24×24，正好一格）。
 	Icons []boardIcon
+	// Casting 是 AI 施法跨行動記著的東西（Magic On、怪物的法術陣列、開始施法
+	// 還沒放出去的那一條），見 foe_cast.go（spec 096 entry 4、spec 139）。
+	Casting foeCasting
 	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
 	stallSignature string
 	stalledRounds  int
@@ -552,6 +555,7 @@ func (state *tacticalState) startRound(roll func(count, sides int) int) {
 		}
 		state.Scores[index] = score
 	}
+	state.startCastingRound()
 	state.selectActor(roll)
 }
 
@@ -917,6 +921,7 @@ func (a *app) enterTacticalPreview() error {
 		}
 		if monster, ok := a.stagedMonsterFor(index, friendly); ok {
 			record := monster.Record
+			state.rememberSpellbook(index, record)
 			state.Effects[index] = append(gamepack.EffectList(nil), monster.Effects...)
 			state.BaseMovement[index] = record.Movement()
 			// 先攻修正讀這一格（overlay-25 entry 11，spec 052）。
@@ -1119,6 +1124,11 @@ func (a *app) foeTurn(state *tacticalState) error {
 	lastDirection := uint8(combat.DirectionAny)
 	stuck := 0
 	mode := state.tacticMode(mover, a.rollDice)
+	// overlay-09 entry 1 `010Fh..0187h`：用物品、放開始施法的那一條、挑法術
+	// （foe_cast.go，spec 096 entry 4）。放了就不追人。
+	if acted, err := a.foeCastPhase(state, mover, mode); acted || err != nil {
+		return err
+	}
 
 	steps := 0
 	for round := 0; round < foeMaxRoundsPerTurn; round++ {
@@ -1670,6 +1680,13 @@ func (a *app) tacticalInput() error {
 		if a.releaseQuick(state) {
 			state.Status = state.say(msgStatusQuickOff)
 		}
+		return nil
+	}
+	// `2`：交給電腦的隊員放不放法術（spec 139）。原版在玩家指令迴圈（overlay-08
+	// `0490h`）與每一隻 AI 動之前的按鍵檢查（overlay-09 entry 7 `0FF4h`）都認它，
+	// 所以跟 SPACE 一樣排在 AI 分派前面。
+	if a.justPressed(ebiten.KeyDigit2) && !a.castOpen && !a.castTargeting && !state.Moving {
+		a.toggleMagic(state)
 		return nil
 	}
 	if state.Mover != 0 && state.aiDrives(int(state.Mover)) {

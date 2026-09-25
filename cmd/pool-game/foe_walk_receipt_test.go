@@ -10,8 +10,9 @@ package main
 // n 是對面還站著的人數。這裡對每一個原版走過的動作，把 remake 的盤擺成動作前那一幀、
 // 模式與目標照骰流設、卡住重挑的骰照原版餵，要求 `foeTurn` 停在原版停的那一格。模式與
 // 沿用的目標跨動作追蹤（remake 的 `TacticModes`／`FoeTargets`），骰流的形狀對不上追蹤
-// 的狀態時退回「模式與目標各試一遍」並另外計數。d7 那一對 remake 沒有對應的消費者，
-// d100 是選下一個行動者的決勝骰（spec 052），兩者不進走位。
+// 的狀態時退回「模式與目標各試一遍」並另外計數。d7 那一對是 overlay-09 entry 3（用物品）
+// 與 entry 4（挑法術）的次數骰，remake 由 foeCastPhase 照原版的位置擲（spec 096），這裡
+// 從骰流原樣餵進去；d100 是選下一個行動者的決勝骰（spec 052），不進走位。
 
 import (
 	"encoding/json"
@@ -265,7 +266,8 @@ func TestFoeWalkReproducesEveryOriginalAction(t *testing.T) {
 						state.Budgets[action.mover] = combat.InitialMovementBudgetBeforeEffects(state.BaseMovement[action.mover], false, 0)
 						state.setFoeTarget(action.mover, target)
 						state.setTacticMode(action.mover, tracked)
-						roller := &scriptedRoller{script: append(modeScript(tracked, candidate.mode, candidate.keep), plan.rePicks...)}
+						script := append(modeScript(tracked, candidate.mode, candidate.keep), plan.sevens...)
+						roller := &scriptedRoller{script: append(script, plan.rePicks...)}
 						application.roller = roller
 						if err := application.foeTurn(state); err != nil {
 							t.Fatalf("foeTurn %d: %v", action.mover, err)
@@ -305,7 +307,9 @@ type turnPlan struct {
 	modes   []modeCandidate
 	pick    int
 	rePicks []diceRoll
-	notes   []string
+	// sevens 是模式與挑目標之間那一對 d7（entry 3 與 entry 4 的次數骰）。
+	sevens []diceRoll
+	notes  []string
 }
 
 type modeCandidate struct {
@@ -375,6 +379,7 @@ func planTurn(dice []diceRoll, action originalAction, alive, tracked int) turnPl
 		return plan
 	}
 	i -= 2
+	plan.sevens = append([]diceRoll(nil), pre[i:i+2]...)
 	fresh := func(at int) (int, bool) {
 		// pre[at] 是 d8，pre[at+1] 是 d4 或 d2。
 		if at < 0 || at+1 >= len(pre) || pre[at].Sides != 8 {
