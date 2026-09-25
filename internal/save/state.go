@@ -79,7 +79,7 @@ type Character struct {
 	// 不同——匯出 `.CHA` 時空的不動記錄裡原本的位元組。
 	ThiefSkills []uint8 `json:"thief_skills,omitempty"`
 	// Memorised 是記憶法術陣列（spec 070，記錄 `+1Fh` 起 13 格）。
-	// `3Bh SPELL` 問的就是這個；法術還沒接上來所以目前是空的。
+	// `3Bh SPELL` 問的就是這個；記憶與紮營完成記憶會寫它（`camp.go`）。
 	Memorised []uint8 `json:"memorised,omitempty"`
 	// Spellbook 是會的法術編號（spec 110，記錄 `+32h + 編號`）。
 	// 記憶畫面只列書上有的；空的代表還沒算過，載入時會補。

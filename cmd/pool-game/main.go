@@ -279,7 +279,7 @@ type app struct {
 	// campFlowBackup 是 `ALTER → ICON` 借用 `flow` 之前的樣子。
 	campFlowBackup creation.Flow
 	// gameSpeed 是 `ALTER → SPEED` 的值（原版 `ds:4943h`，0 最快 9 最慢）。
-	// **remake 目前沒有逐字顯示，所以這個值還沒有作用**（spec 135 的 OPEN）。
+	// 目前用在導覽與訊息的等待拍數（`speedDelayTicks`）；逐字顯示見 spec 135 的 OPEN。
 	gameSpeed uint8
 	// monsterPicsHidden／portraitsHidden 是 `ALTER → PICS` 的兩個開關
 	//（原版 `ds:4957h`／`ds:4956h`）。**存的是「關掉了沒有」**，因為兩個

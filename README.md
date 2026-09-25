@@ -14,7 +14,7 @@
 | 分母 | 狀態 |
 |---|---|
 | 完整繁中 | 遊戲內文字 1,731 句 100%；**UI 補完**（十七張實機截圖逐張看過），字型缺字 0 |
-| 正常主線可破關 | 腳本層無阻塞；**從標題到結局已經連續跑通**（兩邊都開作弊，逐段對照必經區塊與旗標）；**不開作弊、以原版強度通關仍未做**，戰鬥數值也還沒逐項對過原版 |
+| 正常主線可破關 | 腳本層無阻塞；**從標題到結局已經連續跑通**（兩邊都開作弊，逐段對照必經區塊與旗標）；**不開作弊、以原版強度通關仍未做**（[#57](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/57)） |
 | 三平台可發行 | 發行包可重生；Linux 與 Wine 實測啟動，**Windows／macOS 真機驗收未做** |
 
 上一版寫 65～72%。往上挪的兩個理由：**主線通關的收據拿到了**（remake 與原版
@@ -24,8 +24,8 @@
 「拿清單上的每一條去程式裡找實際生效的呼叫點」，不是從程式往外看。
 
 **壓住上限的是這幾條**，每一條都指得到 open issue：不開作弊的原版強度通關
-（[#22](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/22)）、戰鬥數值
-沒有逐項對過原版（[#19](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/19)）、
+（[#57](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/57)）、戰鬥裡幾條還沒接的原版規則（反應攻擊 [#58](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/58)、
+野外戰場 [#59](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/59)、怪物施法 [#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)）、
 Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)）。
 估算依玩家垂直鏈與交付硬門檻，不是用規格文件數量換算；
 細節與未知項以 [CONTEXT.md](CONTEXT.md) 與 [WORKLIST.md](WORKLIST.md) 為準。
@@ -95,7 +95,7 @@ Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/
   怪物，戰後腳本接著跑。**敵方 AI 走的是原版的骨架**（spec 096）：先問武器
   搆得到誰，搆得到就打，搆不到才照戰術模式那一列的五個相對方向依序試、
   第一個進得去的就走；追誰會跨回合黏著，要換人才從候選名單裡擲骰隨機挑。
-  三處仍是近似並在畫面上標成 `PROVISIONAL AI`：候選名單的來源、五個方向多
+  幾處仍是近似並在畫面上標成 `PROVISIONAL AI`（[#65](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/65)）：候選名單的來源、五個方向多
   一道「要離目標更近」的閘門，以及全不合用時的繞路備案——後兩者原版沒有，
   它靠跨回合換模式脫困，照抄會讓怪物在死路裡卡上好幾回合。
 - **ECL 腳本層接完了**：61 條 opcode 在 29 個 block 裡沒有一條走不過去。
@@ -119,9 +119,9 @@ Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/
   typed adapter 匯出、2× 最近鄰呈現後，與原版標題逐像素 AE=`0`。
 - ECL payload 映射基準已由原版 loader／resolver 閉合為 `9900h`；`9914h` 是五個
   command-set headers 之後的第一條指令位址。勘誤後 26／29 blocks 可完整走圖、
-  14,724 條 reachable instructions 可解；其餘 3 筆仍待分類。正式玩家路徑已使用
-  同一 VM session 跨 ECL archive 執行目前需要的 blocks，不能把全 corpus 的三個
-  graph 缺口誤寫成「production VM 尚未接」。
+  14,724 條 reachable instructions 可解；之後 29／29 blocks 全部走得完
+  （見 WORKLIST.md 的 ECL 覆蓋節）。正式玩家路徑使用同一 VM session 跨 ECL archive
+  執行需要的 blocks。
 - 已有第一支可執行的 Ebitengine `cmd/pool-game`：讀取本機原版 ZIP 的 `TITLE.DAX`，
   可由標題以正常按鍵進入主選單並走完 Race→Gender→Class→Alignment→角色資料頁
   →姓名→原版 HEAD／BODY／KEEP 肖像編輯器→READY／ACTION 戰鬥圖示編輯器；
@@ -129,8 +129,8 @@ Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/
   CHEAD／CBODY，支援 Head、Weapon、Size、六部位雙色及 READY／ACTION 同時預覽。
   完成確認後會寫入版本化 remake 角色庫、回到原版順序的 Party Creation Menu；
   Add、六名玩家角色上限，以及穩定玩家邊界的 schema 6 F10／Load campaign round-trip
-  已接通；對話／服務／戰鬥中途續點尚未完成。DOS 285-byte CHA／SPC export
-  尚未完成。正常 `B` 已依原版 producer chain 接到 `GEO3/block 0, (15,1), facing 6`
+  已接通；對話／服務／戰鬥中途不能存檔，與原版一致。DOS 285-byte CHA／SPC
+  export 由 `dos_export.go` 產生（豁免表與生命骰兩欄見 [#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)）。正常 `B` 已依原版 producer chain 接到 `GEO3/block 0, (15,1), facing 6`
   的 typed geometry 與原版 `WALLDEF3/8X8D3` 第一人稱素材。正常 Begin 隨即依
   ECL3/block 0 進入 Rolf 導覽第一頁：首次旗標、`(15,1), facing 3`、monster 12、
   原版 ZIP packed text 與 Return 閘門已達 exact。Spec 011 另由四張原始 byte table
@@ -138,8 +138,8 @@ Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/
   `(0,4), facing 3` 走到 ECL `EXIT`。每步 delay 是可重現的約 150ms approximation；
   導覽結束後已可用方向鍵轉向，並以原始 GEO wall／door data 在 cardinal 朝向前進；
   每格 ECL dispatch 已從 Sune 神殿、City Hall 公告／委託走到跨 archive 的 Slums；
-  鎖門互動、全部地圖事件與完整 Pool 移動政策仍未閉合。視錐 traversal 仍是
-  跨作品共用引擎的 strong inference。
+  鎖門互動已依 spec 122 接上。視錐 traversal 仍是跨作品共用引擎的
+  strong inference。
 - 第一場 Slums 遭遇已從真實 ECL 載入 `MON2CHA.DAX` 的 `ORC ×1／ORC ×3`，並將
   ECL PC 停在戰後 continuation 前，不接受 Enter 假造勝利。Spec 048～053 已閉合
   285-byte 怪物戰鬥欄位、基礎命中／傷害、雙攻擊槽、先攻、移動預算、八方向步進與
@@ -148,11 +148,11 @@ Windows 與 macOS 的真機啟動沒有回填（[#6](https://github.com/wicanr2/
   回合、先攻、八方向移動、攻擊、傷害、倒地與勝敗都會實際跑，勝利後由停在
   `COMBAT` 邊界的 PC 續跑戰後腳本，戰敗則依 Spec 046 契約 5 不續跑。
   先攻輪到敵方時牠們會自己行動——挑目標用 Spec 056 的鄰近成本表、每一步過
-  目的格探測、撞上就攻擊，所以戰鬥是雙向的、也真的會輸。原版的怪物 AI 尚未
-  反組譯，「挑哪個目標、走哪一步」是暫定策略；反應攻擊接進移動提交也還沒接上。
+  目的格探測、撞上就攻擊，所以戰鬥是雙向的、也真的會輸。怪物 AI 的骨架依
+  spec 096 重現，近似的部分見上文；反應攻擊還沒接進移動提交（[#58](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/58)）。
   部署照原版的樣板填寫與逐人掃描（spec 061），敵方站在「朝向前方走得到的
-  格數」那一格（spec 078）；隊伍的 AC／THAC0／傷害骰仍是暫定值（角色記錄還沒有
-  那三項），標在畫面上。
+  格數」那一格（spec 078）；隊伍的 AC／THAC0／傷害骰由角色記錄、裝備與武器算出
+  （spec 065／079／080）。
 - 原版建角已走通 portrait 與 OLD／NEW READY／ACTION combat icon；六部位雙色、
   Head、Weapon、Size 的 285-byte CHA offsets 已由 UI 單變因差分閉合。六種族的
   原版職業清單已進 typed catalog，並有 Race→Gender→Class→Alignment＋ESC 狀態機。
@@ -322,7 +322,7 @@ ENTER 直接翻過去；四則公告一則一則翻完，才輪到「繼續」�
 第二頁是**戰場上的造形**：`CBODY.DAX` 的三十二種身體。**怪物與玩家角色共用
 這一組**——怪物記錄裡的造形欄位（`+BDh`..`+C6h`）全是 0，戰場上用哪一個由 ECL
 `LOAD MONSTER` 的第三個引數指定。圖上是玩家的預設配色；原版把哥布林那一類畫成
-紅色是換了配色，配色從哪來還沒定位。
+紅色是換了配色，配色從哪來還沒定位（[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)）。
 
 第三頁是 `COMSPR.DAX` 的十三組**戰鬥特效**：箭、飛斧、石頭、閃光、爆炸。
 那一份的檔名容易誤讀成「怪物」，它不是。
@@ -373,16 +373,16 @@ tools/go.sh test ./...
 主機 X11 socket 掛入開發容器，也不把只在背景 Xvfb 執行的入口寫成玩家啟動方式。
 
 **還沒完成的**（帶驗收條件的完整清單在 [WORKLIST.md](WORKLIST.md) 開頭，
-分三層）：**玩家會撞到的功能缺口已經清空**——2026-09-18 逐條回程式找反證，
-上一版列的六條都找得到實際生效的呼叫點（走路遭遇由 ECL 入口 1 擲、探索畫面的
-`C）施法`、法術派發表 67 格全覆蓋、訓練所升級會重算八格賊技能、能量吸取由怪物
-特殊攻擊叫得到、效果到期會跑收尾、隊員多次攻擊照職業等級表給的編碼揮）。
+分三層，主台帳是 GitHub issues）：
 
-**驗證缺口**是目前唯一的限制：不開作弊、以原版規則強度通關還沒做
-（[#22](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/22)）、戰鬥數值沒有
-逐項對過原版（[#19](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/19)）、
-Windows 與 macOS 的真機啟動還沒回填結果
-（[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)）。
+- **功能缺口**：脫離鄰接的反應攻擊（[#58](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/58)）、野外戰場（[#59](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/59)）、
+  商店賣出（[#60](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/60)）、隊伍強度 `PARTYSTRENGTH` 不看等級與裝備
+  （[#61](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/61)）、怪物施法（[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)）。
+- **驗證缺口**：不開作弊、以原版規則強度通關（[#57](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/57)）、敵方 AI 的近似
+  （[#65](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/65)）、要塞上層的朝向閘門（[#56](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/56)）、Windows 與 macOS 的
+  真機啟動（[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)）。
+- **版面缺口**：戰鬥資訊欄的怪物名（[#62](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/62)）、怪物配色（[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)）、
+  戰利品對照圖（[#52](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/52)），以及雜項（[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)）。
 
 ## 授權、致謝與聲明
 

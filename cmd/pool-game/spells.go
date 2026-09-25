@@ -12,8 +12,8 @@ import (
 
 // 法術一覽兼記憶畫面。施展只在戰鬥中接得起來（`cast.go`）：`SpellIsImplemented`
 // 認得 42 個編號，`*` 標的就是那些——選得到的都施得出來，不讓玩家選了才失敗。
-// 探索畫面那一列的 `CAST` 還沒有分派（`command_bar.go`），spec 073 的派發表
-// 也還有 67 格沒讀完。
+// 探索畫面那一列的 `CAST` 由 `command_bar.go` 的 `C` 開 `openFieldCast`；
+// 派發表 67 格見 spec 073。
 //
 // 表本身是原版 START.EXE 裡那 56 筆（spec 068），順序即原版的順序。
 const (

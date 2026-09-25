@@ -777,7 +777,7 @@ boundary 全部是 `exit` 或 `event`）。斯倫特貧民區的架在原版是�
   （`+BDh` head、`+BEh` weapon、`+C0h` size、`+C1h`..`+C6h` 六組配色）
   **全是 0**，所以造形不在記錄裡；戰場上用哪一個由 ECL `LOAD MONSTER` 的
   第三個引數（`MonsterSpawn.IconBlock`）指定。
-- **配色從哪來還沒定位。** 原版把哥布林那一類畫成紅色，而 `IconBlock` 只給
+- **配色從哪來還沒定位**（[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)）。原版把哥布林那一類畫成紅色，而 `IconBlock` 只給
   身體編號。
 
 素材總覽（`F4`）的第三頁畫的就是這一組特效。**不要把它叫成怪物。**
@@ -1398,7 +1398,7 @@ overlay 的 `0111h..02A0h`（「Mortally wounded, the dragon roars!」到
 ## 尚未知／不阻擋目前盤點
 
 - DOS 發行版精確 revision、compiler／linker／overlay 精確版本（family 已有強推論）。
-- 剩餘三個 ECL graph 失敗的 record／控制流成因，以及非 TITLE picture payload 語意。
+- 非 TITLE picture payload 語意（ECL 29／29 blocks 已全部走得完，見 WORKLIST.md）。
 - 歷史中文 RAR 的字碼、修改範圍、可執行檔差異與授權狀態。
 - D64 實際平台、檔案系統內容及其與 DOS 版的關係。
 

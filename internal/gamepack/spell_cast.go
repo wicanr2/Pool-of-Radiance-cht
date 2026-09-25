@@ -615,8 +615,7 @@ func SpellIsImplemented(id uint8) bool {
 //
 // 與 AD&D 逐項相同。後面的判斷會蓋掉前面的，所以多職業取最後一個成立的。
 //
-// **還沒接進施法**：`CastSpell` 目前只拿得到施法者的等級，而這一條看的是
-// 目標的職業。等施法的介面把目標傳進來再接。
+// 呼叫端是 `StrengthSpellResult`，由 `cmd/pool-game/cast.go` 傳入目標的職業等級。
 func StrengthSpellDie(levels [ClassThac0ClassCount]uint8) (count, sides int) {
 	count, sides = 0, 0
 	if levels[ClassSlotMagicUser] > 0 {

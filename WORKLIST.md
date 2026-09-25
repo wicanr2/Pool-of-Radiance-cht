@@ -219,7 +219,7 @@ PC 多跳三個位元組停在指令中間。**症狀延後發作**：這一條�
   `'ROGUES'`，說明書沒有這個詞，中譯待定。
 - [x] 上冊三章（線索報導 58、酒店傳言 23、議會公告 18，共 99 條）已接進遊戲內手冊：
   `J` 開啟，打編號跳條目。遊戲引用的每一個 `ENTRY N` 與市政廳實跑派發的九個公告
-  字號都有測試逐條核對得到。契約見 spec 064。下冊附錄的規則表尚未接進 UI。
+  字號都有測試逐條核對得到。契約見 spec 064。下冊附錄的規則表以 `journal.Appendix` 接進遊戲內手冊。
 - [x] UI 第一段接線：標題提示、人物管理選擇項、建角四個選單、人物資料頁與姓名輸入
   已用說明書用詞顯示中文，字型走 `internal/etenfont`，`-lang zh` 缺字型失敗即關閉。
   驗收：`tools/capture-chinese-menu.sh` 的四張實拍圖與 manifest。
@@ -261,7 +261,7 @@ PC 多跳三個位元組停在指令中間。**症狀延後發作**：這一條�
     **不宣稱小版本**——這幾條位元組分不出 5.0 與 5.5。
   - overlay 邊界：38 顆／774 個進入點由 `cmd/pool-ovr-manifest` 從 ZIP 重生，
     stub segment 對照表在 spec 109。
-  **還沒做**（另立）：逐顆 overlay 命名與全模組函式清冊。青色枷的 PC-98 符號表
+  **還沒做**（[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)）：逐顆 overlay 命名與全模組函式清冊。青色枷的 PC-98 符號表
   可以當對照，但**不是全域對應**——Pool 的 ECL 直譯器在 `overlay-03`，
   青色枷的 `INTERPET` 在 `overlay-02`，要一顆一顆用本作自己的證據認。
 - [x] 建立 DOSBox 正常啟動 oracle 與未縮放標題／主選單截圖。
@@ -284,7 +284,6 @@ PC 多跳三個位元組停在指令中間。**症狀延後發作**：這一條�
      Pool 這一側是 `gamepack.PoolCommandTable()`，只覆蓋 `34h` 這一條。
   `TestEveryECLBlockTracesEndToEnd` 與
   `TestPoolCommandTableMatchesTheMeasuredChain` 釘住這兩件事。
-  ⚠ engine 那兩個改動還沒 push（見「平台驗收的 workflow」那一項的授權說明）。
 
 ## P1：第一條玩家垂直鏈
 
@@ -1820,8 +1819,7 @@ PC 多跳三個位元組停在指令中間。**症狀延後發作**：這一條�
      （spec 046 契約 5 的「停止該玩家路徑」）。
   3. 寶物選單的 Exit 後面還有一句 Yes／No 確認——**這一條是測試自己的問題**，
      不是遊戲的：探索器原本一律選最後一項，最後一項是 No，於是選單原地重開。
-  **還沒補的**：戰鬥的生命值不會寫回隊伍，所以打完架隊伍永遠是滿血。
-  原版打完之後的生命值處理還沒讀。
+  戰後生命值由 `storeCombatHitPoints` 寫回隊伍（#19）。
 - [x] **`DS:6DD5h`：走出這一區**（2026-09-03 接上，spec 100）。貧民窟
   （`ecl3` block 0 `993Ah` → archive 2、`NEWECL 20`）與索寇要塞的回程船
   （`ecl4` block 21 `9918h`）**掛在同一個變數上**，`DS:6DD5h` 不是 0 才會
@@ -2340,9 +2338,8 @@ PC 多跳三個位元組停在指令中間。**症狀延後發作**：這一條�
       模式之後就畫得出來了：**7744/7744**。
       **那一項後來拿掉了**（2026-09-10）：一個畫面只留一組斷言，來源是
       dosgolem；兩組數字擺在一起，讀的人分不出哪一個是誰說的（AGENTS.md §7）。
-這四條（肖像編輯器、戰鬥造形的 OLD／NEW、攻略擴到其餘地圖、抽樣擴到還沒對拍
-的畫面）都在 [`docs/worklist.json`](docs/worklist.json) 的 `presentation` 層，
-連驗收條件由開頭那一節產生——**不在這裡再記一份**。
+仍未完成的版面工作只記在 GitHub issues 與 [`docs/worklist.json`](docs/worklist.json)
+的 `presentation` 層，由開頭那一節產生——**不在這裡再記一份**。
 
 **dosgolem 放在 `workplace/dosgolem`**（gitignore，使用者 2026-09-07 指定）。
 用 `master` 就好：Pool 的那一批（`cmd/shots`、

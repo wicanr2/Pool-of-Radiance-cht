@@ -112,7 +112,7 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 
 	// remake 自己加的一行：鍵位。原版沒有這一行，但拿掉的話玩家看得到指令名
-	// 卻不知道按什麼——remake 還沒有原版那套「先按 M 進移動模式」的子模式輸入。
+	// 卻不知道按什麼（`M` 進移動模式之後方向鍵才算走，見 `state.Moving`）。
 	//
 	// **「還是暫定的那幾項」不畫在這裡。** 那是 remake 對自己的狀態說明，
 	// 玩家在戰場上不需要知道；它移到 `F1` 的說明頁
@@ -708,13 +708,14 @@ func (state *tacticalState) endRound(roll func(count, sides int) int) {
 	state.Status = state.say(msgStatusRound, state.Round)
 }
 
-// placeholderBaseMovement 是隊伍成員的暫定移動值。remake 的角色記錄目前沒有
-// 這個欄位，原版是 285-byte record 的 +11Ch；在它接上來之前，這個數字只是
-// 讓移動判定可以被實際走一次，畫面上會標明它的來源。
+// placeholderBaseMovement 是戰場上沒有隊員記錄可讀時的移動值（原版是
+// 285-byte record 的 +11Ch）。有隊員記錄的格子會由 `memberDefenceStats` 蓋掉，
+// 畫面上會標明來源。
 const placeholderBaseMovement = 12
 
-// 隊伍成員的戰鬥數值暫定值。remake 的角色記錄目前只有 HP，沒有 AC、THAC0
-// 與傷害骰；原版那三項在 285-byte record 的 +110h／+111h／+115h..+119h。
+// 戰場格子的起始戰鬥數值。有隊員記錄的格子隨後由 `partyCombatStats`、
+// `memberDefenceStats` 與 `weaponCombatStats` 蓋掉（原版 +110h／+111h／
+// +115h..+119h），這組值只留給沒有記錄可讀的格子。
 // THAC0 與 AC 這裡存的是原版的內部編碼（60 減去顯示值），與 ResolveHit 一致。
 const (
 	placeholderHitPoints          = 8
