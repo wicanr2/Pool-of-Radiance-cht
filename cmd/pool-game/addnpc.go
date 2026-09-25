@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
@@ -93,11 +94,44 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 	if err != nil {
 		return fmt.Errorf("Pool ADD NPC morale operand: %w", err)
 	}
-	member.Record[gamepack.MoraleOffset] = uint8(morale)/2 | gamepack.MoraleCheckedBit
+	member.Record[gamepack.MoraleOffset] = gamepack.NPCMoraleByte(uint8(morale))
 	if member.CurrentHP > member.MaxHP {
 		member.CurrentHP = member.MaxHP
 	}
 	a.state.Party = append(a.state.Party, member)
 	a.eventText = fmt.Sprintf(a.text(msgNPCJoined), member.Name)
 	return a.continueInitialSearch(nil)
+}
+
+// migrateNPCMorale 把舊存檔裡士氣還是怪物檔原值（`FFh`）的隊伍 NPC 補回原版 ADD NPC
+// 會給的士氣（#74）。原版加入時一定覆寫 `+84h`；只有 #74 之前的 remake 沒寫，而那個值在
+// 隊伍這一側每回合都過不了士氣（兩關都不過就逃或投降）。以記錄 `+0` 的原文名字比對
+// 八個呼叫點的怪物記錄；對不上的不動，記一行狀態。
+func (a *app) migrateNPCMorale() {
+	if a.loadMonster == nil {
+		return
+	}
+	for index := range a.state.Party {
+		member := &a.state.Party[index]
+		if !member.NPC || len(member.Record) <= gamepack.MoraleOffset || member.Record[gamepack.MoraleOffset] != 0xFF {
+			continue
+		}
+		name := recordName(member.Record)
+		for _, source := range gamepack.NPCMoraleSources() {
+			record, err := a.loadMonster(source.Archive, source.Block)
+			if err != nil || strings.TrimSpace(record.Name) != name {
+				continue
+			}
+			member.Record[gamepack.MoraleOffset] = gamepack.NPCMoraleByte(source.Morale)
+			break
+		}
+	}
+}
+
+// recordName 是 285-byte 記錄 `+0` 的 Pascal 字串。
+func recordName(record []byte) string {
+	if len(record) == 0 || int(record[0])+1 > len(record) {
+		return ""
+	}
+	return strings.TrimSpace(string(record[1 : 1+int(record[0])]))
 }

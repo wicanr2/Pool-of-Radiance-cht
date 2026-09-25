@@ -2574,6 +2574,8 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	}
 	// Commit only after every catalog and snapshot check succeeds.
 	a.state = cloneSaveState(loaded)
+	// #74 之前寫出的存檔：隊伍 NPC 的士氣還是怪物檔的 FFh，補回原版的值。
+	a.migrateNPCMorale()
 	a.spawn = gamepack.Spawn{Map: key, X: campaign.X, Y: campaign.Y, Facing: campaign.Facing}
 	a.initialMap = &geometryMap
 	a.eclArchive = campaign.ECLArchive
