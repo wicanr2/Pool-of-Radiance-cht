@@ -985,13 +985,7 @@ const foeTargetRange = 0xFF
 // （衛兵那一場 34 號從 (23,4) 擲 1 追最近的 P3，dosgolem 骰流收據）。
 func (state *tacticalState) foeTargetCandidates(mover, side uint8) ([]uint8, error) {
 	for _, relaxed := range []bool{false, true} {
-		snapshot, err := state.tacticalSnapshot()
-		if err != nil {
-			return nil, err
-		}
-		snapshot.Map.IgnoreTerrain = relaxed
-		targets, err := combat.OpposingNearbyAt(snapshot, mover,
-			state.Roster[mover].X, state.Roster[mover].Y, foeTargetRange, 1-side, state.sideOf)
+		targets, err := state.foeTargetCandidatesAt(mover, side, relaxed)
 		if err != nil {
 			return nil, err
 		}
@@ -1002,10 +996,24 @@ func (state *tacticalState) foeTargetCandidates(mover, side uint8) ([]uint8, err
 	return nil, nil
 }
 
+// foeTargetCandidatesAt 是其中一輪的名單；relaxed 對應 `DS:6674h` 的 `+6`。
+func (state *tacticalState) foeTargetCandidatesAt(mover, side uint8, relaxed bool) ([]uint8, error) {
+	snapshot, err := state.tacticalSnapshot()
+	if err != nil {
+		return nil, err
+	}
+	snapshot.Map.IgnoreTerrain = relaxed
+	return combat.OpposingNearbyAt(snapshot, mover,
+		state.Roster[mover].X, state.Roster[mover].Y, foeTargetRange, 1-side, state.sideOf)
+}
+
 // foeMaxRoundsPerTurn 是接近迴圈一回合最多跑幾輪（原版 entry 5 `0C12h`：輪數超過
 // 14h 就收工，spec 096）。一輪是「搆得到就打，否則試一步」，五個方向全不通的那一輪
 // 不動但算一輪，所以它不等於步數。
 const foeMaxRoundsPerTurn = 20
+
+// foeTargetTries 是 `37B8h` 重挑時最多擲幾次（`3872h`：`次數 = 14h`）。
+const foeTargetTries = 20
 
 
 // attackRangeOf 是那一格搆得到幾格。原版 overlay-09 entry 5 的 `0C3Eh` 每一
@@ -1026,9 +1034,9 @@ func (state *tacticalState) attackRangeOf(index uint8) int {
 // 就打，搆不到才走一步；走的方向由戰術模式的五個相對偏移依序試，第一個進得去
 // 的就走。每一步過 ResolveDestination（spec 058），攻擊走 spec 050／051。
 //
-// 兩處仍是近似，畫面上還是標 PROVISIONAL AI：**挑哪個目標**（原版 `0D97h` 是
-// 從搆得到的名單裡擲骰隨機挑，追擊的目標則由 overlay-13 `37B8h` 決定，那一支
-// 還沒讀），以及五個方向全不通時的**繞路備案**（原版沒有，靠跨回合換模式脫困）。
+// 挑目標照 overlay-09 `0D4Bh`／`0D97h`（搆得到的名單擲骰挑）與 overlay-13 `37B8h`
+// （追誰：沿用、劃掉重擲、二十次），可打判定是 `1087h`（`attackVetoed`，spec 112）。
+// `1087h` 的 `19h`／`7Eh` 兩個代碼仍是保守處理（見 `reaction_attack.go`）。
 func (a *app) foeTurn(state *tacticalState) error {
 	mover := state.Mover
 	snapshot, err := state.tacticalSnapshot()
@@ -1048,16 +1056,31 @@ func (a *app) foeTurn(state *tacticalState) error {
 	// dosgolem 的骰流收據（`dosgolem-deployment-peek-*.json` 的 `dice`）量到兩件事：
 	// 骰面 n 就是對面還站著的人數（5 → 死一個變 4 → 3 → 2），而衛兵 34 號從 (23,4)
 	// 擲 1 追的是最近的 P3 不是索引最小的 P2——名單依距離排，不依索引。
-	// 原版挑到過不了 `1087h` 的會劃掉重擲，remake 沒有 `1087h`，第一擲就收。
+	// 挑到過不了 `1087h`（`attackVetoed`，#58）的劃掉重擲（`3925h`），劃掉的號碼
+	// 再擲到就重擲（`38B5h`），最多二十次（`3872h`），全部劃掉就是挑不到（#65）。
+	// 兩輪制（`3973h`）：第一輪一個都挑不到（名單空的或全部劃掉），把戰術地圖的
+	// 「放寬」打開（`DS:6674h` 的 `+6`，搜尋時跳過地形判定）再挑一輪。
 	pickTarget := func() (uint8, error) {
-		targets, err := state.foeTargetCandidates(mover, side)
-		if err != nil {
-			return 0, err
+		for _, relaxed := range []bool{false, true} {
+			targets, err := state.foeTargetCandidatesAt(mover, side, relaxed)
+			if err != nil {
+				return 0, err
+			}
+			struck := make([]bool, len(targets))
+			left := len(targets)
+			for tries := 0; tries < foeTargetTries && left > 0; tries++ {
+				slot := a.rollDice(1, len(targets)) - 1
+				if struck[slot] {
+					continue
+				}
+				if !state.attackVetoed(targets[slot], mover) {
+					return targets[slot], nil
+				}
+				struck[slot] = true
+				left--
+			}
 		}
-		if len(targets) == 0 {
-			return 0, nil
-		}
-		return targets[a.rollDice(1, len(targets))-1], nil
+		return 0, nil
 	}
 	target, ok := state.foeTarget(mover)
 	if !ok {
@@ -1102,7 +1125,10 @@ func (a *app) foeTurn(state *tacticalState) error {
 			return err
 		}
 		if len(reachable) != 0 {
-			if err := a.resolveTacticalAttack(state, reachable[0]); err != nil {
+			// 打誰是擲骰挑的（`0D97h`：`骰(1, n)` 取 `DS:[6CD7h + 號碼]`），這一步不過
+			// `1087h`；名單依直線追蹤的成本排（`0912h`）。以前固定打第一個（#65）。
+			victim := reachable[a.rollDice(1, len(reachable))-1]
+			if err := a.resolveTacticalAttack(state, victim); err != nil {
 				return err
 			}
 			state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
@@ -1384,6 +1410,10 @@ func (state *tacticalState) foeTarget(mover uint8) (uint8, bool) {
 	}
 	targetSide, ok := state.sideOf(target)
 	if !ok || targetSide == moverSide {
+		return 0, false
+	}
+	// 還要過得了 `1087h` 才沿用（`37B8h` 的 `3809h`，#65）。
+	if state.attackVetoed(target, mover) {
 		return 0, false
 	}
 	return target, true
