@@ -79,9 +79,9 @@
     {
       "id": "ai-spellcasting",
       "layer": "feature",
-      "title": "怪物 AI 與 QUICK 自動戰鬥都不施法（spec 139 的 Magic On/Off）",
-      "body": "- 規則已讀（spec 096〈entry 4〉）、remake 已接（`cmd/pool-game/foe_cast.go`、Magic On/Off）。 - 剩下原版同狀態的骰流重播：還沒有一筆有施法怪物的 dosgolem 收據。",
-      "acceptance": "會施法的怪物施法、QUICK 的 Magic On/Off 生效，骰流重播抽樣。",
+      "title": "AI 施法的原版骰流收據：dosgolem 走到有施法怪物的遭遇，逐擲對照",
+      "body": "功能已接上（entry 4、23F9h、Magic On/Off，與玩家共用 castSpell；d7 d7 與原版零錯位）。缺一場有施法怪物的 dosgolem 收據，挑法術與挑目標的 Roll(1,n) 只有程式碼證據。",
+      "acceptance": "dosgolem 收據含施法怪物的回合，remake 逐擲重現；spec 096 的自承拿掉。",
       "verify": {
         "kind": "present",
         "paths": [
