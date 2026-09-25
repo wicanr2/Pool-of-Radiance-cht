@@ -64,8 +64,8 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **不開作弊、以原版規則強度從標題通關到結局。** README（第 17、24–27、381–383 行）與 spec 137 第 5 行都寫著「不開作弊、以原版強度通關仍未做」，引用的是 #19、#22，但這兩個 issue 已經關閉，這項工作因此沒有 open issue 追蹤。 - 主線收據的口徑是作弊選單（spec 141）跑通，見 #5、#40。 - 自然強度的隊伍在 spec 137 的路線上走不到終點。
       **驗收**：關閉作弊選單從標題跑到結局的收據，或逐段真實全滅卡點紀錄。
       **討論**：[#57](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/57)
-- [ ] **敵方 AI 仍有兩處近似，畫面標 PROVISIONAL AI：挑目標（0D97h）與繞路備案。** - `cmd/pool-game/tactical.go:1022`：「兩處仍是近似，畫面上還是標 PROVISIONAL AI：**挑哪個目標**（原版 `0D97h`…）」。 - `docs/spec/096` 的〈還沒讀〉還有三項。
-      **驗收**：0D97h 與繞路備案讀完，拿掉 PROVISIONAL AI，骰流重播三場。
+- [ ] **否決查詢 1087h 的 19h（DS:5CF0h）與 7Eh（物品 +2Eh+i 的 i 範圍）未讀，保守當成否決。** 0D97h 擲骰、37B8h 的沿用／劃掉重擲／兩輪制都已接上。剩 1087h 的 19h 要看 DS:5CF0h 指到誰、7Eh 要看物品 +2Eh+i 的 i 範圍，目前身上有就否決（spec 059 契約 6），F1 暫定行只剩這一項。
+      **驗收**：兩個代碼的條件讀到 exact，attackVetoed 照做，F1 的暫定行拿掉。
       **討論**：[#65](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/65)
 - [ ] **雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊。** 規模小、各自不阻擋主線，合併追蹤；任一條要動工時可拆成子 issue。 - [ ] `internal/gamepack/spell_cast.go:495`：Remove Curse 不清物品 `+36h`，remake 沒有詛咒欄位。 - [ ] `spell_cast.go:568`：射線幾何「先收整邊」，是近似。 - [ ] `internal/character/export.go:246`：`.CHA` 匯出不寫豁免表 `+6Dh..+71h` 與生命骰 `+73h`。 - [ ] `docs/spec/124`：二十幾個目的地區塊還沒逐一命名。 - [ ] `docs/spec/108`：`FINAL` 那幾張圖的調色仍是 DRAFT。 - [ ] `WORKLIST.md`：逐顆 overlay 命名與全模組函式清冊（依 CLAUDE.md §11，只做到能判定不阻擋玩家路徑即可）。
       **驗收**：issue 內六條逐一打勾或寫明不做的理由。

@@ -95,16 +95,16 @@
     {
       "id": "enemy-ai-approximations",
       "layer": "verification",
-      "title": "敵方 AI 仍有兩處近似，畫面標 PROVISIONAL AI：挑目標（0D97h）與繞路備案",
-      "body": "- `cmd/pool-game/tactical.go:1022`：「兩處仍是近似，畫面上還是標 PROVISIONAL AI：**挑哪個目標**（原版 `0D97h`…）」。 - `docs/spec/096` 的〈還沒讀〉還有三項。",
-      "acceptance": "0D97h 與繞路備案讀完，拿掉 PROVISIONAL AI，骰流重播三場。",
+      "title": "否決查詢 1087h 的 19h（DS:5CF0h）與 7Eh（物品 +2Eh+i 的 i 範圍）未讀，保守當成否決",
+      "body": "0D97h 擲骰、37B8h 的沿用／劃掉重擲／兩輪制都已接上。剩 1087h 的 19h 要看 DS:5CF0h 指到誰、7Eh 要看物品 +2Eh+i 的 i 範圍，目前身上有就否決（spec 059 契約 6），F1 暫定行只剩這一項。",
+      "acceptance": "兩個代碼的條件讀到 exact，attackVetoed 照做，F1 的暫定行拿掉。",
       "verify": {
         "kind": "present",
         "paths": [
-          "cmd/pool-game"
+          "internal/gamepack/pack/20-locale.zh-TW.json"
         ],
-        "pattern": "PROVISIONAL AI",
-        "note": "畫面仍標 PROVISIONAL AI"
+        "pattern": "兩個否決代碼",
+        "note": "F1 暫定行還在"
       },
       "github_issue": 65
     },
