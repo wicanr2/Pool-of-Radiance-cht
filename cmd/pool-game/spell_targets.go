@@ -433,7 +433,7 @@ func (a *app) pendingSpellTurn(state *tacticalState) (bool, error) {
 
 // sideSpellTargets 是模式 0Ah 那四支的處理常式（overlay-22 `0F35h`／`2724h`）走一次
 // `20AEh` 收好的表：只留某一邊，祝福另外剔掉貼身有敵人的，急速與緩速最多施法者等級個、
-// 身上已經有的剔掉（gamepack.FilterSpellSide）。不是那四支就原表奉還。
+// 身上帶著相反效果的把它解掉、這次剔掉（gamepack.FilterSpellSide）。不是那四支就原表奉還。
 func (state *tacticalState) sideSpellTargets(spell uint8, list []uint8, casterLevel int) ([]uint8, error) {
 	filter, ok := gamepack.SpellSideFilterFor(spell)
 	if !ok {
@@ -450,7 +450,14 @@ func (state *tacticalState) sideSpellTargets(spell uint8, list []uint8, casterLe
 			near, err := state.opposingWithin(index, 1, false)
 			return len(near) > 0, err
 		},
-		HasEffect: func(index uint8, code uint8) bool { return state.hasEffect(int(index), code) },
+		// `0100h:006Bh`（overlay-24 entry 15）：有就摘掉最早的那一個、回 true。
+		CancelEffect: func(index uint8, code uint8) bool {
+			if !state.hasEffect(int(index), code) {
+				return false
+			}
+			state.removeEffect(int(index), code)
+			return true
+		},
 	})
 }
 

@@ -5,7 +5,8 @@
 模式 8 的射線，受傷打斷的兩個入口與用物品放法術，見文末各節）；
 DRAFT（`08BCh` 自己在做什麼、四個覆寫參數的語意、各法術的傷害）。
 日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）、模式 0Ah 分邊與模式 8
-射線（issue #78）、受傷打斷與用物品（issue #75／#77）。
+射線（issue #78）、受傷打斷與用物品（issue #75／#77）、模式 0Ah 的效果怎麼掛上去、在戰鬥裡
+改什麼（issue #81）。
 
 ## 擲骰：overlay-24 的兩支
 
@@ -170,7 +171,7 @@ Fireball（`262Eh`）先設 `DS:677Eh = 1`，然後分兩條：法術編號等�
 | `1Ch` | Spiritual Hammer | `19A8h` | 四個覆寫參數 `0／1／0／0`（生出鎚子那段未讀）|
 | `27h` | Cure Disease | `2300h` | 轉呼叫 `225Bh`：拿掉六個病痛類的效果碼 |
 | `2Ah` | Prayer | `249Dh` | `(哪一邊 << 4) + 等級` 推在等級覆寫那一格 |
-| `37h` | Slow | `2BC7h` | 推效果碼 `27h` 與 `23F5h(施法者)` 走 `2724h`（見〈模式 0Ah：分邊〉）|
+| `37h` | Slow | `2BC7h` | 推急速的碼 `27h`（要解掉的那一個）與 `23F5h(施法者)` 走 `2724h`，掛參數表的 `2Ah`（見〈模式 0Ah：分邊〉〈效果怎麼掛上去〉）|
 | `0Eh` | Friends | `13C8h` | `Roll(2, 4)` 加在記錄 `+15h`（魅力）上，上限 25 |
 | `25h` | Cure Blindness | `21E8h` | 解掉效果碼 `21h` |
 | `2Bh` | Remove Curse | `2508h` | 解掉效果碼 `24h`，並清掉物品的 `+36h` |
@@ -179,8 +180,8 @@ Fireball（`262Eh`）先設 `DS:677Eh = 1`，然後分兩條：法術編號等�
 | `43h` | Read Magic | `305Bh` | 就是泛型版型，只是法術編號推 `DS:6779h`、等級覆寫推 `FFh`、效果參數推 1 |
 | `0Ch` | Enlarge | `128Dh` | 效果碼 `12h`，強度依施法者等級查表（1／2／3／4／5／6 級 → `00h`／`01h`／`33h`／`4Ch`／`5Bh`／`64h`）|
 | `1Ah` | Slow Poison | `1846h` | 目前生命值是 0 就墊成 1，再走 `08BCh`（等級覆寫推 `FFh`）|
-| `30h` | Haste | `2852h` | 推效果碼 `2Ah` 與施法者的 `+10Eh` 走 `2724h`（見〈模式 0Ah：分邊〉），訊息 `is Hasted`（`2848h`）|
-| `39h` | （無名）| `2DB7h` | 中了效果 `2Ah`（＝急速）就不做，沒中才走泛型 |
+| `30h` | Haste | `2852h` | 推緩速的碼 `2Ah`（要解掉的那一個）與施法者的 `+10Eh` 走 `2724h`，掛參數表的 `27h`（見〈模式 0Ah：分邊〉〈效果怎麼掛上去〉），訊息 `is Hasted`（`2848h`）|
+| `39h` | （無名）| `2DB7h` | `0100h:006Bh(目標, 2Ah)`：身上有緩速就解掉、整支返回，沒有才走泛型（掛參數表的 `27h`，訊息 `is Speedy`）|
 | `3Ah` | （無名）| `2E02h` | 治療 `Roll(1, 4) ＋ 8`，並解掉 `16h` 與病痛那組 |
 | `3Eh` | （無名）| `2F85h` | 治療 `Roll(2, 4) ＋ 2` |
 | `42h` | （無名）| `3049h` | **整支是空的**：`push bp / mov bp,sp / mov sp,bp / pop bp / retf` |
@@ -911,14 +912,19 @@ overlay-22 entry 5 呼叫 `[6A78h]` 之後看結果（`0D6Ah`：`26 80 3D 00 75 
 277F  80 7E D6 00 / 76 3A       額度用完 → 清成 nil
 2785  FE 4E D6                  額度減一（先扣）
 279F  9A 6B 00 00 01 / 08 C0 / 74 15
-                                0100h:006Bh(表[i], 效果碼) 非 0（身上已經有）→ 清成 nil
+                                0100h:006Bh(表[i], 效果碼) 非 0 → 清成 nil
 27F2  E8 C7 E0                  08BCh(法術, 0, 0, 0, 0, 訊息)
 281F  B0 12 50 … 9A 2F 00 00 01 之後逐個留下的 0100h:002Fh(表[i], 12h)
 ```
 
-- 急速 `2858h`：`B0 2A 50 C4 3E F0 5C 26 8A 85 0E 01 50`——效果碼 `2Ah`、施法者這一邊。
-- 緩速 `2BCDh`：`B0 27 50 … 9A B6 00 0A 01 50`——效果碼 `27h`、對面。
-- 已經有那個效果的人**照樣扣額度**（`2785h` 在 `279Fh` 之前）。
+- 急速 `2858h`：`B0 2A 50 C4 3E F0 5C 26 8A 85 0E 01 50`——推 `2Ah`、施法者這一邊。
+- 緩速 `2BCDh`：`B0 27 50 … 9A B6 00 0A 01 50`——推 `27h`、對面。
+- 推進來的碼是**對面那一支的**：`0100h:006Bh` 是 overlay-24 entry 15（`107Bh`，exact）——
+  `010Ah:00A7h` 找到節點就印「<名字> is Cured」（字串 `1072h` `08 69 73 20 43 75 72 65 64`）、
+  `0028h` 摘掉、回 1。所以急速解掉緩速、緩速解掉急速，被解掉的那一個人這一次不受影響；
+  兩者互相抵銷。參數表 `+0Ah` 是急速 `27h`、緩速 `2Ah`（`START.EXE` DS:`3194h + 編號 × 16`，
+  `30h` 列 `01 03 06 00 03 01 0A 04 00 04 27 …`、`37h` 列 `01 03 09 01 03 01 0A 00 00 04 2A …`）。
+- 被解掉的人**照樣扣額度**（`2785h` 在 `279Fh` 之前）。
 
 remake：`gamepack.SpellSideFilterFor`／`FilterSpellSide` 是這兩支的表與迴圈，
 `tacticalState.sideSpellTargets` 把盤面的 `+10Eh`（`sideOf`）、entry 32（`opposingWithin`
@@ -927,9 +933,93 @@ remake：`gamepack.SpellSideFilterFor`／`FilterSpellSide` 是這兩支的表與
 （`TestFilterSpellSideFollowsTheHandlers`、`TestBlessKeepsOnlyUnengagedAlliesInTheArea`、
 `TestCurseKeepsOnlyTheOtherSide`）。
 
-還沒接的：`08BCh` 把參數表 `+0Ah` 的效果碼掛上去那一段（`0A3Dh`）與 `2724h` 之後的
-`0100h:002Fh(表[i], 12h)`（未讀，unknown）。remake 的模式 0Ah 那一支目前只數收到幾個、
-印一句話，不掛效果節點——四支的實際作用（命中、豁免、移動）都還沒生效。
+掛效果與它在戰鬥裡改的數值見下一節。
+
+## 模式 0Ah：效果怎麼掛上去（`08BCh` `0A08h`、overlay-24 entry 20，2026-09-26，issue #81）
+
+輸入同上一節，另加 overlay-12（`d1b05743…`）、overlay-13（`4d53df20…`）、overlay-24
+（`e878166e…`）與 `START.EXE`（`12811cbc…`，DS 檔案基準 30640，`DS:2880h` 讀到 `33 34 35 1F`
+為正對照）。以下除註明者外皆 exact（位元組逐條讀）。
+
+### `08BCh` 對表上每一格掛參數表 `+0Ah`
+
+```
+0A13  80 BD 9E 31 00 / 76 45    參數表 +0Ah 為 0 → 不掛
+0A35  E8 8F FD                  持續 = 07C7h(法術)
+0A39  8A 46 D6 50               等級 = [bp-2Ah]（等級覆寫為 0 時是 26F8h 的施法者等級）
+0A3D  8A 46 0E 50               [bp+0Eh]（第二個覆寫參數）
+0A4C  8A 85 9C 31 50            豁免規則（參數表 +8）
+0A51  8A 46 D0 50               這一格的豁免結果（`096Bh` 擲的）
+0A5A  9A 84 00 00 01            0100h:0084h（overlay-24 entry 20，`1656h`）
+```
+
+`07C7h(法術)`：法術 `28h`、`39h`／`3Dh`、`3Bh`、`3Fh`、`43h` 各有特例；其餘是
+`+4 + +5 × 26F8h(法術)`（`0875h..08AAh`）。祝福與詛咒是 6 回合，急速與緩速是 `3 + 等級`。
+
+**overlay-24 entry 20**（`1656h`，`retf 14h`）：
+
+```
+166F  DS:6775h = 碼；02E2h(9, 目標)       ; 群組 9：免疫會把 6775h 清成 0
+1682  6775h == 0 → 印 "is Unaffected"（1648h）、返回
+1689  豁免成功而且規則是 1 → 同一句、返回
+16C7  010Ah:00A7h(目標, 碼) 找最早的同碼節點
+16D3  它有計時而且新的持續比它長 → 0028h 摘掉
+16E6  新的持續是 0 → 摘掉
+1716  0E54h(目標, 碼, 持續, 等級, [bp+0Eh])  ; 無論如何都在尾端掛新的
+171F  訊息非空 → 印「<名字> <訊息>」
+```
+
+所以 `[bp+0Eh]` 是節點 `+4`（摘掉時要不要叫處理常式，spec 112）；魅惑推 1 正是因為它要還原陣營。
+四支的 `+8` 都是 0，不擲豁免；參數表 `+0Ah` 是祝福 `01h`、詛咒 `02h`、急速 `27h`、緩速 `2Ah`。
+同碼的舊節點剩得比新的多時兩個都留著，但效果系統每個群組對每個碼只問一次最早的那一個，
+修正不會疊加。
+
+### `2724h` 之後的 `0100h:002Fh(表[i], 12h)`
+
+`27F5h..2840h` 對表上每一個留下的人派發群組 18（spec 112）。群組 18 的三個碼：
+
+| 碼 | 處理常式 | 做什麼 |
+|---|---|---|
+| `27h` | overlay-12 entry 36 `0C67h` | 節點 `+3` 位元 4 沒立 → 立起、印「<名字> ages」（`0C62h`）、記錄 `+30h`（年齡）加一；然後 `DS:6778h` 左移一位 |
+| `2Ah` | overlay-12 entry 41 `10CAh` | `DS:6778h` 除以 2 |
+| `3Ah` | overlay-12 entry 53 `145Ah` | 目前目標 runtime `+6`（移動）清 0；`DS:677Bh` 非 0 時 `DS:6778h` 清 0 |
+
+`DS:6778h` 是回合初始化（overlay-13 entry 1）的工作值：`0045h` 放記錄 `+0A2h`（攻擊次數編碼）、
+`0DA2h` 放 `+113h`／`+0A1h`（第二槽，含遠程武器射速），各自派發群組 18 後交給 `0E58h`
+換算成這一相位的次數存進 `+114h`／`+113h`；`0150h` 放夾過、乘過 2 的移動、`DS:677Bh = 1`，
+派發後寫回 runtime `+6`。所以**急速讓攻擊次數與移動加倍、緩速減半，從下一個回合初始化起生效**；
+施放當下 `2835h` 那一次的 `DS:6778h` 是上一次留下的值、結果也沒寫回，看得見的只有急速的老化。
+
+### 祝福與詛咒改命中骰
+
+`01h`（overlay-12 entry 5 `010Fh`）：`80 06 83 67 05 / FE 06 80 67`——`DS:6783h` 加 5、命中骰
+`DS:6780h` 加 1。`02h`（entry 6 `0121h`）：`DS:6783h` 小於 5 就清 0、否則減 5；命中骰減 1。
+兩碼在群組 10（攻擊者）與群組 17（士氣那一段，overlay-09 `1172h`／`11C5h`）。群組 10 由近戰的
+命中擲骰 overlay-24 entry 6（`0CB5h`，呼叫端 overlay-13 `16D2h`、overlay-22 `09CEh`）呼叫：擲 1d20，
+1 以下落空、20 改寫成 100，**然後**問攻擊者的群組 10 與目標的群組 16，最後
+`6780h + THAC0 + 邊的加成 >= AC` 才中。所以祝福是出手的人命中 +1、詛咒 −1。
+`DS:6783h` 在群組 17 的意思是士氣累加格（strong inference：只讀了寫入端，讀它的 overlay-09 那兩處沒逐條讀）。
+
+### remake 的對應
+
+`internal/gamepack/spell_side_effects.go` 是規則（`HitRollEffectModifier`、`AttackRateAfterEffects`、
+`MovementAfterEffects`、`MarkHasteAged`、`ApplySpellEffectNode`），`cmd/pool-game/spell_side_effects.go`
+接盤面。`castSpell` 的模式 0Ah 那一支把參數表 `+0Ah` 掛到分邊後的每一個人；`FilterSpellSide` 的
+`CancelEffect` 是 entry 15（摘掉對面的碼）；`startRound` 對每一格派發群組 18（攻擊次數記在
+`RoundRates`、移動直接調 `Budgets`）；`resolveAttackSwings` 把群組 10 的修正傳給 `ResolveHit`。
+玩家與 AI 都走 `castSpell`。測試從 `Update()` 送鍵：`TestBlessRaisesTheHitRollUntilItExpires`、
+`TestCurseLowersTheOtherSidesHitRoll`、`TestHasteDoublesAttacksAndMovementFromTheNextRound`、
+`TestSlowHalvesAttacksAndMovementFromTheNextRound`、`TestHasteCancelsSlowInsteadOfHasting`、
+`TestBlessTwiceRefreshesInsteadOfStacking`。
+
+與原版不同、寫明的幾處：
+
+| 原版 | remake | 理由 |
+|---|---|---|
+| entry 20 先問群組 9（免疫）| 沒問 | 群組 9 的十個碼的處理常式還沒讀 |
+| 每個目標印「<名字> is Blessed」、急速印 "ages"、抵銷印 "is Cured" | 狀態列只留最後一句「作用在 N 人身上」| 狀態列只有一行 |
+| 群組 10 其餘七個碼、群組 16 的六個碼也改命中骰 | 只算 `01h`／`02h` | 其餘處理常式沒有逐條讀，不照 spec 112 機械抽出的表猜 |
+| 群組 17 的士氣 ±5 | 沒接 | 士氣的讀取端（overlay-09 `1172h`／`11C5h`）沒逐條讀 |
 
 ## 模式 8：射線（`2919h`，2026-09-26，issue #78）
 

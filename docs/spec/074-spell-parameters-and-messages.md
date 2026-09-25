@@ -269,8 +269,8 @@ Fireball、Lightning Bolt、Restoration。留下狀態的一個都不在裡面�
 非零的值就是掛進角色效果串列（spec 069）的效果碼：Bless `01h`、Curse `02h`、
 Detect Magic `05h`、Protection From Evil `08h`、Protection from Good `09h`、
 Hold Person `34h`、Sleep `35h`、Haste `27h`、Slow `2Ah`、Strength `26h`。
-掛之前先經過 overlay-22 的 `07C7h`（`08BCh` 在 `0A34h` 呼叫，帶編號與碼），
-那一支還沒讀完。
+`08BCh` 在 `0A35h` 呼叫的 overlay-22 `07C7h(法術)` 是持續回合數（上面 `+4`／`+5` 那一段，
+另有六個編號的特例），然後交給 overlay-24 entry 20 掛節點（spec 098〈模式 0Ah：效果怎麼掛上去〉）。
 
 ## 效果訊息
 

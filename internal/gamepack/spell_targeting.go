@@ -101,7 +101,9 @@ func FireballOutdoorAreaBudget(id uint8, walkFlag uint8) int {
 //	2724h(效果碼, 邊, 訊息)  急速 2858h 推 2Ah 與施法者 +10Eh、緩速 2BCDh 推 27h 與 23F5h(施法者)
 //	  273Dh  DS:677Eh = 1；額度 = 26F8h(法術)（施法者等級）
 //	  2775h  表[i] 的 +10Eh 等於「邊」而且額度 > 0：額度減一；
-//	  279Fh    0100h:006Bh(表[i], 效果碼) 非 0（身上已經有）→ 表[i] 清成 nil
+//	  279Fh    0100h:006Bh(表[i], 效果碼) 非 0 → 表[i] 清成 nil。entry 15（`107Bh`）是
+//	           「身上有就印 "is Cured"、摘掉、回 1」，而推進來的碼是**對面那一支**的
+//	           （急速推緩速的 2Ah、緩速推急速的 27h）：兩者互相抵銷，抵掉的那個人這次不受影響
 //	  27BFh  否則 表[i] 清成 nil
 //	  27F2h  08BCh(法術, 0, 0, 0, 0, 訊息)；之後逐個留下的 0100h:002Fh(表[i], 12h)
 
@@ -114,7 +116,7 @@ const (
 	// SpellSideBless 是 overlay-22 `0F35h`：只留同一邊，祝福另外剔掉貼身有敵人的。
 	SpellSideBless
 	// SpellSideQuota 是 overlay-22 `2724h`：只留同一邊、額度是施法者等級、
-	// 身上已經有那個效果的剔掉（額度照扣）。
+	// 身上帶著相反效果的把那個效果解掉、這一次剔掉（額度照扣）。
 	SpellSideQuota
 )
 
@@ -127,8 +129,9 @@ type SpellSideFilter struct {
 	// SkipEngaged 是 `0F81h..0FACh`：只有祝福（`DS:6779h == 1`）會剔掉旁邊一步內
 	// 有對面的人。
 	SkipEngaged bool
-	// EffectCode 是 `2724h` 查「已經有」的效果碼（急速 2Ah、緩速 27h）。
-	EffectCode uint8
+	// CancelCode 是 `2724h` 拿去問 `0100h:006Bh` 的碼：急速推緩速的 2Ah、
+	// 緩速推急速的 27h。身上有就解掉，這個人這一次不受影響。
+	CancelCode uint8
 }
 
 // SpellSideFilterFor 說這支法術的處理常式怎麼分邊；不是那四支回 false。
@@ -142,10 +145,10 @@ func SpellSideFilterFor(id uint8) (SpellSideFilter, bool) {
 		return SpellSideFilter{Routine: SpellSideBless}, true
 	case SpellIDHaste:
 		// 2858h：`B0 2A 50` 再推施法者的 +10Eh。
-		return SpellSideFilter{Routine: SpellSideQuota, CasterSide: true, EffectCode: HasteEffectCode}, true
+		return SpellSideFilter{Routine: SpellSideQuota, CasterSide: true, CancelCode: SlowEffectCode}, true
 	case SpellIDSlow:
 		// 2BCDh：`B0 27 50` 再推 23F5h(施法者)。
-		return SpellSideFilter{Routine: SpellSideQuota, EffectCode: SlowEffectCode}, true
+		return SpellSideFilter{Routine: SpellSideQuota, CancelCode: HasteEffectCode}, true
 	}
 	return SpellSideFilter{}, false
 }
@@ -156,8 +159,9 @@ type SpellSideQuery struct {
 	Side func(index uint8) (uint8, bool)
 	// Engaged 是 overlay-25 entry 32 `(那一格, 1)` 回非 0：旁邊一步內有對面的人。
 	Engaged func(index uint8) (bool, error)
-	// HasEffect 是 `0100h:006Bh(那一格, 碼)`。
-	HasEffect func(index uint8, code uint8) bool
+	// CancelEffect 是 `0100h:006Bh(那一格, 碼)`（overlay-24 entry 15）：身上有這個碼就
+	// 摘掉最早掛上的那一個、回 true。**它會改盤面**，分邊常式每一格只問一次。
+	CancelEffect func(index uint8, code uint8) bool
 }
 
 // FilterSpellSide 照 `0F35h`／`2724h` 把 `20AEh` 收好的表剔成處理常式真正作用的那幾個。
@@ -197,7 +201,7 @@ func FilterSpellSide(filter SpellSideFilter, list []uint8, casterSide uint8, cas
 				continue
 			}
 			quota--
-			if query.HasEffect != nil && query.HasEffect(index, filter.EffectCode) {
+			if query.CancelEffect != nil && query.CancelEffect(index, filter.CancelCode) {
 				continue
 			}
 		}

@@ -444,6 +444,12 @@ type tacticalState struct {
 	// PartyEffectTeardown 把戰場上的隊員效果到期同步回角色記錄。怪物與只改
 	// 戰術盤面的效果不走這一層；測試手工建立 tacticalState 時可留空。
 	PartyEffectTeardown func(index int, node gamepack.EffectNode)
+	// PartyAged 是急速的 `27h` 第一次被問到時讓那個人老一歲（記錄 `+30h`，spec 112）。
+	// 隊員寫回角色；怪物與測試盤面可留空。
+	PartyAged func(index int)
+	// RoundRates 是每一格在這一回合初始化時帶著群組 18 的哪幾個碼（急速、緩速），
+	// 攻擊次數照它調（attackRateThisRound）。nil 代表還沒有初始化過，照原值。
+	RoundRates []gamepack.RoundRateEffects
 	// Clouds 是盤面上的雲團物件（spec 121）。臭雲術不是對目標下效果，
 	// 是在盤上生一個活的物件；地形寫在 Grid.Terrain 裡，這條串列記著
 	// 每一團的雲心、蓋過哪幾格與那幾格原本的地形。
@@ -546,8 +552,14 @@ func (state *tacticalState) startRound(roll func(count, sides int) int) {
 	for index := 1; index < len(state.Effects); index++ {
 		state.tickEffects(index)
 	}
+	// 回合初始化（overlay-13 entry 1）對每一格派發群組 18：攻擊次數與移動都照它調
+	// （spec 112，issue #81）。
+	state.RoundRates = make([]gamepack.RoundRateEffects, len(state.Roster))
 	for index := 1; index < len(state.Roster); index++ {
-		state.Budgets[index] = combat.InitialMovementBudgetBeforeEffects(state.BaseMovement[index], false, 0)
+		state.RoundRates[index] = state.dispatchRateEffects(index)
+		state.Budgets[index] = gamepack.MovementAfterEffects(
+			combat.InitialMovementBudgetBeforeEffects(state.BaseMovement[index], false, 0),
+			state.RoundRates[index])
 		// 已經離場的（體型 0，對應原版記錄的 `+10Dh`）分數一律 0，而且**連骰
 		// 都不擲**。原版是 overlay-13 entry 1 的 `0084h`：`+10Dh` 為 0 就直接
 		// 跳到 `00FFh` 把 runtime `+3` 寫 0，中間那段擲骰整個跳過（spec 062）。
@@ -840,6 +852,7 @@ func (a *app) enterTacticalPreview() error {
 		}
 		a.expiredEffectTeardown(party, node, state.Effects[index])
 	}
+	state.PartyAged = a.agePartyMember(state)
 	state.Footprint = make([]uint8, size)
 	state.MaxHitPoints = make([]int, size)
 	for index := range roster {
@@ -1965,7 +1978,9 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	var lastRoll uint8
 	for _, dice := range swings {
 		lastRoll = uint8(a.rollDice(1, 20))
-		hit, err := combat.ResolveHit(lastRoll, state.THAC0[attacker], state.ArmorClass[target], 0)
+		// 命中骰擲出來之後先問效果系統（祝福 +1、詛咒 −1，overlay-24 entry 6，#81）。
+		hit, err := combat.ResolveHit(lastRoll, state.THAC0[attacker], state.ArmorClass[target],
+			state.hitRollEffectModifier(attacker, target))
 		if err != nil {
 			return err
 		}
@@ -2088,7 +2103,7 @@ func (a *app) attackSwingsThisPhase(state *tacticalState, mover uint8) ([]combat
 		if dice.Count == 0 || dice.Sides == 0 {
 			continue
 		}
-		count, err := combat.AttacksThisPhase(state.AttackRates[mover][slot-1], state.AttackPhase&1)
+		count, err := combat.AttacksThisPhase(state.attackRateThisRound(mover, slot-1), state.AttackPhase&1)
 		if err != nil {
 			return nil, err
 		}

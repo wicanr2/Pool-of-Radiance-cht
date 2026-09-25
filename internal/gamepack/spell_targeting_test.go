@@ -46,7 +46,7 @@ func TestFireballRecollectsOnlyWhenTheWalkFlagIsClear(t *testing.T) {
 }
 
 // 模式 0Ah 的四支分邊（overlay-22 `0F35h`／`2724h`）：祝福留施法者那一邊、剔掉貼身有
-// 敵人的；詛咒留對面；急速最多施法者等級個、身上已經有的剔掉但額度照扣。
+// 敵人的；詛咒留對面；急速最多施法者等級個、身上有緩速的解掉緩速、剔掉但額度照扣。
 func TestFilterSpellSideFollowsTheHandlers(t *testing.T) {
 	sides := map[uint8]uint8{2: 0, 3: 0, 4: 1, 5: 0, 6: 1, 7: 0}
 	query := SpellSideQuery{
@@ -54,8 +54,9 @@ func TestFilterSpellSideFollowsTheHandlers(t *testing.T) {
 			side, ok := sides[index]
 			return side, ok
 		},
-		Engaged:   func(index uint8) (bool, error) { return index == 3, nil },
-		HasEffect: func(index uint8, code uint8) bool { return index == 5 && code == HasteEffectCode },
+		Engaged: func(index uint8) (bool, error) { return index == 3, nil },
+		// 5 身上帶著緩速：急速的 `2724h` 推的是 2Ah，把它解掉、這次不加速。
+		CancelEffect: func(index uint8, code uint8) bool { return index == 5 && code == SlowEffectCode },
 	}
 	list := []uint8{2, 3, 4, 5, 6, 7, 9}
 	for _, check := range []struct {
@@ -66,7 +67,7 @@ func TestFilterSpellSideFollowsTheHandlers(t *testing.T) {
 	}{
 		{"祝福", SpellIDBless, 1, []uint8{2, 5, 7}},
 		{"詛咒", SpellIDCurse, 1, []uint8{4, 6}},
-		// 額度 3：2、3 各扣一，5 扣一但身上已經有，7 沒額度了。
+		// 額度 3：2、3 各扣一，5 扣一但緩速被解掉、這次不加速，7 沒額度了。
 		{"急速", SpellIDHaste, 3, []uint8{2, 3}},
 		{"緩速", SpellIDSlow, 1, []uint8{4}},
 	} {

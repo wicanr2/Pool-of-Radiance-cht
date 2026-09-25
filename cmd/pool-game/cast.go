@@ -19,7 +19,8 @@ import (
 // **施法時間與瞄準照原版**（spec 098〈施法時間與打斷〉〈收目標〉，spell_targets.go）：
 // 施法時間不為 0 的先「開始施法」，輪到下一次才瞄準、放出去；瞄準照參數表 `+6`
 // 分成挑一個、逐個挑 (模式 & 3) + 1 個、挑一點收範圍三種（overlay-13 `20AEh`）。
-// 模式 0Ah（整邊）與 8（閃電束的射線）還是 remake 自己決定作用在誰身上。
+// 模式 0Ah（祝福、詛咒、急速、緩速）以一點收再分邊，掛上參數表 `+0Ah` 的效果碼；
+// 模式 8（閃電束）沿射線打。
 
 type castOption struct {
 	// Slot 是記憶陣列裡的位置，施完要清掉那一格。
@@ -759,21 +760,39 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			a.damageAfterSave(state, picked, option.ID, effect.Damage))
 	case mode == gamepack.SpellTargetWholeSide:
 		// 模式 0Ah：`20AEh` 以瞄準的那一點、預算 2 收好表，處理常式（`0F35h`／`2724h`）
-		// 再從表裡分邊（sideSpellTargets）。沒瞄過（remake 自己挑）時照舊數施法者那一邊。
-		affected := 0
+		// 再從表裡分邊（sideSpellTargets），然後 `08BCh` 把參數表 `+0Ah` 的碼掛到每一個
+		// 留下的人身上（`0A5Ah` → overlay-24 entry 20）：持續是 `07C7h` 的
+		// `+4 + +5 × 等級`、節點等級是施法者等級、`+4` 是 0（不叫收尾常式）。四支的
+		// `+8` 都是 0，不擲豁免。效果本身在戰鬥計算當下才作用（spell_side_effects.go）。
+		//
+		// 沒瞄過（targets.Chosen 為假）就沒有表，原版的 `08BCh` 在 `DS:6B88h` 為 0 時
+		// 整段跳過，一個都不掛。
+		var kept []uint8
 		if chosen {
-			kept, err := state.sideSpellTargets(option.ID, targets.List, casterLevel)
+			var err error
+			kept, err = state.sideSpellTargets(option.ID, targets.List, casterLevel)
 			if err != nil {
 				return err
 			}
-			affected = len(kept)
-		} else {
-			for index := 1; index < len(state.Roster); index++ {
-				if state.Roster[index].FootprintClass == 0 ||
-					state.Friendly[index] != state.Friendly[state.Mover] {
-					continue
-				}
-				affected++
+		}
+		params := a.spellParameters[option.ID]
+		code, duration := params.EffectCode(), params.Duration(casterLevel)
+		affected := 0
+		for _, index := range kept {
+			if int(index) >= len(state.Roster) || state.Roster[index].FootprintClass == 0 {
+				continue
+			}
+			if code != 0 {
+				state.applySpellEffect(int(index), code, duration, casterLevel)
+			}
+			affected++
+		}
+		// 急速、緩速：`2724h` 在 `08BCh` 之後對每一個留下的人再派發一次群組 18
+		// （`281Fh..2835h`，`B0 12 50 … 9A 2F 00 00 01`）——急速的人當場老一歲。
+		if filter, ok := gamepack.SpellSideFilterFor(option.ID); ok &&
+			filter.Routine == gamepack.SpellSideQuota {
+			for _, index := range kept {
+				state.dispatchRateEffects(int(index))
 			}
 		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastWholeSide),

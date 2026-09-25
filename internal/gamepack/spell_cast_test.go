@@ -497,8 +497,9 @@ func TestHealAndGuardedHandlers(t *testing.T) {
 	}
 }
 
-// 急速術掛的效果碼，正好是編號 57 那一支在防的那個。
-// 兩邊各自從碼裡讀出來，對上同一個碼。
+// 急速術掛的是參數表 `+0Ah` 的 27h、緩速術掛 2Ah；編號 57（"is Speedy"）與急速同碼，
+// 它先問 `0100h:006Bh` 的 2Ah 是**緩速**——身上有就解掉、不加速（overlay-24 entry 15
+// `107Bh` 摘節點、印 "is Cured"；spec 098）。三處各自讀出來，對上同一組碼。
 func TestHasteAndItsGuardAgree(t *testing.T) {
 	parameters, err := ReadDOSSpellParameters(poolZipPath())
 	if err != nil {
@@ -511,10 +512,18 @@ func TestHasteAndItsGuardAgree(t *testing.T) {
 	if !haste.WholeSide || haste.EffectCode != HasteEffectCode {
 		t.Errorf("急速術應該是整邊、效果碼 %#02x，算出 %+v", HasteEffectCode, haste)
 	}
+	if got := parameters[SpellIDHaste].EffectCode(); got != HasteEffectCode {
+		t.Errorf("急速術的參數表 +0Ah 是 %#02x，常數是 %#02x", got, HasteEffectCode)
+	}
+	if got := parameters[SpellIDSlow].EffectCode(); got != SlowEffectCode {
+		t.Errorf("緩速術的參數表 +0Ah 是 %#02x，常數是 %#02x", got, SlowEffectCode)
+	}
+	if got := parameters[SpellIDGuardedGeneric].EffectCode(); got != HasteEffectCode {
+		t.Errorf("編號 57 的參數表 +0Ah 是 %#02x，應該與急速同碼", got)
+	}
 	guarded, _ := CastSpell(SpellIDGuardedGeneric, parameters, 6, maxRoller{})
-	if guarded.BlockedByEffect != haste.EffectCode {
-		t.Errorf("57 防的是 %#02x，急速術掛的是 %#02x——兩邊對不上",
-			guarded.BlockedByEffect, haste.EffectCode)
+	if guarded.BlockedByEffect != SlowEffectCode {
+		t.Errorf("57 先解掉的應該是緩速 %#02x，算出 %#02x", SlowEffectCode, guarded.BlockedByEffect)
 	}
 	// 參數表也把急速與緩速歸在同一個目標模式（整邊）。
 	if !parameters[SpellIDHaste].AffectsWholeSide() ||

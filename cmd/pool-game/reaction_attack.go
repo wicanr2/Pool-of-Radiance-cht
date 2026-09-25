@@ -177,7 +177,7 @@ func (state *tacticalState) canReact(mover, opponent uint8) bool {
 func (a *app) reactionAttack(state *tacticalState, attacker, target uint8) error {
 	var counts [2]uint8
 	for slot := 0; slot < 2; slot++ {
-		count, err := combat.AttacksThisPhase(state.AttackRates[attacker][slot], state.AttackPhase&1)
+		count, err := combat.AttacksThisPhase(state.attackRateThisRound(attacker, slot), state.AttackPhase&1)
 		if err != nil {
 			return err
 		}

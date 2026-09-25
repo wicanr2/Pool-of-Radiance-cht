@@ -48,8 +48,8 @@ type CastEffect struct {
 	// RemoveEffects 是要從目標身上拿掉的效果碼。解病術走的是這條路，
 	// 不掛新效果（overlay-22 `225Bh`）。
 	RemoveEffects []uint8
-	// BlockedByEffect 非零時代表：目標身上已經有這個效果就什麼都不做
-	// （處理常式先問 `0100h:006Bh`，回非零就直接返回）。
+	// BlockedByEffect 非零時代表：目標身上有這個效果就把它解掉、整支不再做
+	// （處理常式先問 `0100h:006Bh`＝overlay-24 entry 15：有就摘掉、回非零，然後直接返回）。
 	BlockedByEffect uint8
 	// AbilityBonus 是直接加在能力值上的法術（例如友誼術加魅力）。
 	AbilityBonus AbilityBonus
@@ -128,15 +128,20 @@ type AbilityBonus struct {
 // 它會傳給 `0419h` 當上限，所以「在範圍內」＝ 那個預算內走得到。
 const FireballAreaBudget = 2
 
-// HasteEffectCode 是急速術掛上去的效果碼（`2858h` 推的 2Ah）。
+// HasteEffectCode 是急速術掛上去的效果碼：參數表 `+0Ah` 是 `27h`（spec 074），
+// 處理常式 overlay-12 entry 36（`0C67h`）在群組 18 把攻擊次數與移動的工作值
+// `DS:6778h` 左移一位，第一次被問到時讓人老一歲（spec 112）。
 //
-// 它同時解釋了編號 57 那一支（`2DB7h`）在防什麼：那支的前提正是
-// 「目標身上有沒有 2Ah」——已經加速過就不再加。兩邊各自讀出來卻對上同一個碼。
-const HasteEffectCode = 0x2a
+// 急速的處理常式 `2858h` 推給 `2724h` 的 `2Ah` **不是**它自己的碼，是緩速的：
+// `2724h` 拿它問 `0100h:006Bh`（overlay-24 entry 15 `107Bh`：身上有就印
+// "is Cured"、摘掉、回 1），有的人緩速被解掉、這一次不加速（spec 098）。
+// 編號 57（`2DB7h`，"is Speedy"，參數表 `+0Ah` 也是 `27h`）是同一個形狀。
+const HasteEffectCode = 0x27
 
-// SlowEffectCode 是緩速術掛上去的效果碼（`2BCDh` 推的 27h）。
-// overlay-15 的名稱鏈沒有它，所以它沒有顯示名稱。
-const SlowEffectCode = 0x27
+// SlowEffectCode 是緩速術掛上去的效果碼：參數表 `+0Ah` 是 `2Ah`，處理常式
+// overlay-12 entry 41（`10CAh`）在群組 18 把 `DS:6778h` 除以 2。`2BCDh` 推的 `27h`
+// 同樣是對面那一個——被加速的人先被解掉加速。
+const SlowEffectCode = 0x2a
 
 // CureDiseaseEffectCodes 是解病術會拿掉的效果碼（overlay-22 `225Bh`）。
 // 2Ch 是致病、32h 是木乃伊惡疾、1Fh 是無助，與 overlay-15 的名稱鏈相符。
@@ -398,14 +403,14 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	1Ch Spiritual H.   19A8h  四個覆寫參數 0／1／0／0（生出鎚子那段未讀）
 //	0Ch Enlarge        128Dh  效果碼 12h，強度依施法者等級查表
 //	1Ah Slow Poison    1846h  目前生命值是 0 就墊成 1，再走 08BCh
-//	30h Haste          2852h  推效果碼 2Ah 走 2724h，整邊
-//	37h Slow           2BC7h  推效果碼 27h 走 2724h，範圍法術
+//	30h Haste          2852h  推對面的碼 2Ah（緩速）走 2724h，掛參數表的 27h
+//	37h Slow           2BC7h  推對面的碼 27h（急速）走 2724h，掛參數表的 2Ah
 //	15h Sleep          1513h  額度 Roll(4, 4) 生命骰，逐個目標依 HD 扣
 //	2Fh Fireball       262Eh  Roll(等級, 6)
 //	33h Lightning Bolt 2B75h  Roll(等級, 6)
 //	40h （無名）       262Eh  與火球術同一支
 //	41h （無名）       300Eh  Roll(2, 4) ＋ 2
-//	39h （無名）       2DB7h  中了效果 2Ah 就不做，沒中才走泛型
+//	39h （無名）       2DB7h  身上有緩速 2Ah 就解掉、不做，沒有才走泛型
 //	3Ah （無名）       2E02h  治療 Roll(1, 4) ＋ 8，並解掉 16h 與病痛那組
 //	3Eh （無名）       2F85h  治療 Roll(2, 4) ＋ 2
 //	42h （無名）       3049h  整支是空的：原版什麼都不做
@@ -495,13 +500,14 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.MinimumHitPoints = 1
 		effect.CasterLevelOverride = 0xff
 	case SpellIDHaste:
-		// `2858h` 推效果碼 2Ah 與施法者的 `+10Eh`（哪一邊）給 `2724h`，
+		// `2858h` 推緩速的碼 2Ah 與施法者的 `+10Eh`（哪一邊）給 `2724h`，
 		// 與緩速術同一支：只留那一邊、最多施法者等級個（SpellSideFilterFor）。
+		// 掛上去的是參數表 `+0Ah` 的 27h。
 		// 訊息是 "is Hasted"（`2848h` 的 `09 69 73 20 48 61 73 74 65 64`）。
 		effect.WholeSide, effect.EffectCode = true, HasteEffectCode
 	case SpellIDSlow:
-		// `2BCDh` 先推效果碼 27h 再走 `2724h`——那一支會設 `DS:677Eh = 1`，
-		// 是範圍法術。
+		// `2BCDh` 先推急速的碼 27h 再走 `2724h`——那一支會設 `DS:677Eh = 1`，
+		// 是範圍法術。掛上去的是參數表 `+0Ah` 的 2Ah。
 		effect.Area, effect.EffectCode = true, SlowEffectCode
 	case SpellIDFriends:
 		// `13D9h` 的 Roll(2, 4) 加在記錄 `+15h`（魅力）上，上限 19h ＝ 25
@@ -534,9 +540,9 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `3024h` 的 Roll(2, 4) 之後 `add $2`，第五個覆寫參數 8。
 		effect.Damage = roller.Roll(2, 4) + 2
 	case SpellIDGuardedGeneric:
-		// `2DC5h` 先問 `0100h:006Bh(目標, 2Ah)`；已經中了就整支返回，
-		// 沒中才走泛型那條（四個覆寫參數全是 0）。
-		effect.BlockedByEffect = 0x2a
+		// `2DC5h` 先問 `0100h:006Bh(目標, 2Ah)`：身上有緩速就解掉它、整支返回，
+		// 沒有才走泛型那條（四個覆寫參數全是 0，掛參數表的 `27h`）。
+		effect.BlockedByEffect = SlowEffectCode
 	case SpellIDGreaterHeal:
 		// `2E4Eh` 的 Roll(1, 4) ＋ 8 走治療常式 `0100h:0089h`。
 		// 前面還會解掉 16h，並走一次解病術那條鏈（`225Bh`）。
