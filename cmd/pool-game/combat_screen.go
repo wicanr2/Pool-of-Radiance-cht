@@ -192,9 +192,16 @@ func drawCombatInfo(screen *ebiten.Image, a *app, foreground, accent color.Color
 	if state == nil {
 		return
 	}
+	// 原版這一欄畫的是**行動者自己的記錄**，不分玩家或怪物（#62）：overlay-25
+	// entry 5（`09E8h`）拿傳進來的記錄遠指標逐行畫，第一行由 `1865h` 從記錄取
+	// 名字；overlay-13 `0C30h` 那個呼叫端只看記錄 `+10Dh`（還在戰場上）就畫。
+	// 怪物記錄與角色記錄同一份版面，所以輪到怪物時印的是怪物名。
 	name := a.text(msgCombatFoe)
 	if member, ok := a.combatMoverCharacter(); ok {
 		name = strings.TrimSpace(member.Name)
+	} else if monster, ok := a.stagedMonsterFor(int(state.Mover), state.Friendly); ok &&
+		strings.TrimSpace(monster.Record.Name) != "" {
+		name = strings.TrimSpace(a.monsterText.Translate(monster.Record.Name))
 	}
 	drawText(screen, name, combatInfoLeft, combatInfoLine1, accent)
 	mover := int(state.Mover)

@@ -304,8 +304,8 @@ const (
 	// 與隊伍面板的欄名同一個處理。
 	msgCombatHitPoints
 	msgCombatArmorClass
-	// 行動的是怪物時資訊欄第一行放什麼。原版放怪物名（`"OGRE" G.R.X`），
-	// remake 還沒有把名字接到戰術格上。
+	// 行動的是怪物、卻找不到牠的記錄時資訊欄第一行放什麼。有記錄就印怪物名
+	//（`drawCombatInfo`，#62）。
 	msgCombatFoe
 	// 外框上緣那一行。**原版沒有這一行**（見 `docs/audit/dos-parity-sample.md`
 	// 的 31-b），是 remake 自己加的識別，所以它走譯文表而不是寫死英文。
