@@ -44,3 +44,79 @@ func TestFireballRecollectsOnlyWhenTheWalkFlagIsClear(t *testing.T) {
 		t.Errorf("催眠術不重收，拿到 %d", got)
 	}
 }
+
+// 模式 0Ah 的四支分邊（overlay-22 `0F35h`／`2724h`）：祝福留施法者那一邊、剔掉貼身有
+// 敵人的；詛咒留對面；急速最多施法者等級個、身上已經有的剔掉但額度照扣。
+func TestFilterSpellSideFollowsTheHandlers(t *testing.T) {
+	sides := map[uint8]uint8{2: 0, 3: 0, 4: 1, 5: 0, 6: 1, 7: 0}
+	query := SpellSideQuery{
+		Side: func(index uint8) (uint8, bool) {
+			side, ok := sides[index]
+			return side, ok
+		},
+		Engaged:   func(index uint8) (bool, error) { return index == 3, nil },
+		HasEffect: func(index uint8, code uint8) bool { return index == 5 && code == HasteEffectCode },
+	}
+	list := []uint8{2, 3, 4, 5, 6, 7, 9}
+	for _, check := range []struct {
+		name  string
+		id    uint8
+		level int
+		want  []uint8
+	}{
+		{"祝福", SpellIDBless, 1, []uint8{2, 5, 7}},
+		{"詛咒", SpellIDCurse, 1, []uint8{4, 6}},
+		// 額度 3：2、3 各扣一，5 扣一但身上已經有，7 沒額度了。
+		{"急速", SpellIDHaste, 3, []uint8{2, 3}},
+		{"緩速", SpellIDSlow, 1, []uint8{4}},
+	} {
+		filter, ok := SpellSideFilterFor(check.id)
+		if !ok {
+			t.Fatalf("%s 沒有分邊常式", check.name)
+		}
+		got, err := FilterSpellSide(filter, list, 0, check.level, query)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(got) != len(check.want) {
+			t.Fatalf("%s 留下 %v，原版是 %v", check.name, got, check.want)
+		}
+		for index := range got {
+			if got[index] != check.want[index] {
+				t.Fatalf("%s 留下 %v，原版是 %v", check.name, got, check.want)
+			}
+		}
+	}
+	if _, ok := SpellSideFilterFor(SpellIDFireball); ok {
+		t.Fatal("火球術不走分邊常式")
+	}
+}
+
+// 閃電束是模式 8、瞄一點；編號 3Ch 走同一支射線，豁免類別與規則同參數表。
+func TestRaySpellsCarryTheHandlerLiterals(t *testing.T) {
+	parameters, err := ReadDOSSpellParameters(poolZipPath())
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	if got := parameters[SpellIDLightningBolt].TargetMode(); got != SpellTargetBolt {
+		t.Fatalf("閃電束的模式是 %#x", got)
+	}
+	bolt, err := CastSpell(SpellIDLightningBolt, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bolt.Ray == nil || *bolt.Ray != (SpellRayEffect{Length: 8, Damage: bolt.Damage,
+		SaveCategory: 4, Surcharge: true}) {
+		t.Fatalf("閃電束的射線 %+v（傷害 %d）", bolt.Ray, bolt.Damage)
+	}
+	ray, err := CastSpell(SpellIDRayDamage, parameters, 6, maxRoller{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ray.Ray == nil || *ray.Ray != (SpellRayEffect{Length: 3, Damage: 20, SaveCategory: 4}) {
+		t.Fatalf("編號 3Ch 的射線 %+v", ray.Ray)
+	}
+	if ray.Damage != 26 {
+		t.Fatalf("編號 3Ch 打瞄準那一格是 Roll(1, 6) + 20，最大 26，拿到 %d", ray.Damage)
+	}
+}

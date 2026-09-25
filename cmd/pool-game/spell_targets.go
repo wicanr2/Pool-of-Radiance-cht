@@ -175,9 +175,9 @@ func (a *app) casterLevelOf(state *tacticalState, id uint8) int {
 
 // aimSpell 是 overlay-22 entry 5 呼叫 `20AEh` 那一步的玩家這一側。
 //
-// 模式 0 不挑（`20FDh`）。**remake 另外兩種不挑**：模式 0Ah（整邊，`0F35h` 那一支的
-// 範圍沒讀）與模式 8（閃電束，`2B75h` 走 `2919h` 的射線，幾何沒逐格對過），效果那一側
-// 照舊自己決定作用在誰身上。
+// 模式 0 不挑（`20FDh`）。模式 8（閃電束）與 0Ah（祝福、詛咒、急速、緩速）和其他
+// 範圍法術一樣瞄一點（`220Fh`）：前者由那一點拉射線（castSpellRay），後者由處理常式
+// 從收好的表裡分邊（sideSpellTargets）。
 func (a *app) aimSpell(option castOption, release bool) error {
 	state := a.tactical
 	if state == nil {
@@ -188,9 +188,7 @@ func (a *app) aimSpell(option castOption, release bool) error {
 	}
 	params := a.spellParameters[option.ID]
 	plan := params.TargetPlan()
-	mode := params.TargetMode()
-	if plan.Kind == gamepack.SpellTargetKindSelf || mode == gamepack.SpellTargetBolt ||
-		mode == gamepack.SpellTargetWholeSide {
+	if plan.Kind == gamepack.SpellTargetKindSelf {
 		return a.releaseSpell(option, spellTargets{}, release)
 	}
 	reach := params.Range(a.casterLevelOf(state, option.ID))
@@ -434,4 +432,66 @@ func (a *app) pendingSpellTurn(state *tacticalState) (bool, error) {
 		return true, nil
 	}
 	return true, a.aimSpell(castOption{Slot: -1, ID: spell, Label: a.spellLabel(spell)}, true)
+}
+
+// sideSpellTargets 是模式 0Ah 那四支的處理常式（overlay-22 `0F35h`／`2724h`）走一次
+// `20AEh` 收好的表：只留某一邊，祝福另外剔掉貼身有敵人的，急速與緩速最多施法者等級個、
+// 身上已經有的剔掉（gamepack.FilterSpellSide）。不是那四支就原表奉還。
+func (state *tacticalState) sideSpellTargets(spell uint8, list []uint8, casterLevel int) ([]uint8, error) {
+	filter, ok := gamepack.SpellSideFilterFor(spell)
+	if !ok {
+		return list, nil
+	}
+	casterSide, ok := state.sideOf(state.Mover)
+	if !ok {
+		return nil, nil
+	}
+	return gamepack.FilterSpellSide(filter, list, casterSide, casterLevel, gamepack.SpellSideQuery{
+		Side: state.sideOf,
+		Engaged: func(index uint8) (bool, error) {
+			// overlay-25 entry 32 `(表[i], 1)`：以那一格自己的位置與體型、預算 1。
+			near, err := state.opposingWithin(index, 1, false)
+			return len(near) > 0, err
+		},
+		HasEffect: func(index uint8, code uint8) bool { return state.hasEffect(int(index), code) },
+	})
+}
+
+// castSpellRay 是閃電束（overlay-22 `2B75h`）與編號 3Ch（`2F02h`）：先 `287Ch` 打瞄準的
+// 那一格（DS:6CADh／6CAEh），再 `2919h` 從那一格往外拉射線逐格打（combat.TraceSpellRay）。
+// 每一格有人就各擲一次豁免（類別由處理常式推、規則寫死減半）。盤面每一步重建一次，
+// 前面打倒的人不再擋線。回傳打到幾次（同一個人被反彈回來再打到算兩次）。
+func (a *app) castSpellRay(state *tacticalState, effect gamepack.CastEffect, x, y int) (int, error) {
+	ray := effect.Ray
+	cellAt := func(cx, cy int) (uint8, uint8, error) {
+		snapshot, err := state.tacticalSnapshot()
+		if err != nil {
+			return 0, 0, err
+		}
+		return snapshot.SignedCellAt(cx, cy)
+	}
+	hits := 0
+	strike := func(damage int) func(uint8) error {
+		return func(occupant uint8) error {
+			if int(occupant) >= len(state.Roster) || state.Roster[occupant].FootprintClass == 0 {
+				return nil
+			}
+			dealt := damage
+			if a.savedAgainstCategory(state, occupant, ray.SaveCategory, 0) {
+				dealt = gamepack.DamageAfterSave(gamepack.SpellRaySaveRule, damage)
+			}
+			a.applySpellDamage(state, occupant, dealt)
+			hits++
+			return nil
+		}
+	}
+	if _, err := combat.StrikeSpellRayCell(state.Classes, cellAt, x, y, strike(effect.Damage)); err != nil {
+		return hits, err
+	}
+	caster := state.Roster[state.Mover]
+	err := combat.TraceSpellRay(combat.SpellRay{
+		CasterX: int(caster.X), CasterY: int(caster.Y), TargetX: x, TargetY: y,
+		Length: ray.Length, Surcharge: ray.Surcharge,
+	}, state.Classes, cellAt, strike(ray.Damage))
+	return hits, err
 }

@@ -392,7 +392,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	caster.consume()
 
 	// 目標是 overlay-13 `20AEh` 收好的那一份（spell_targets.go，玩家瞄、AI 擲骰）：
-	// 模式 0 作用在施法者自己、模式 0Ah 作用在整邊、模式 8／9／0Bh 是範圍。
+	// 模式 0 作用在施法者自己、模式 0Ah 以一點收再分邊、模式 8 是射線、9／0Bh 是範圍。
 	// 沒挑過（targets.Chosen 為假）的照舊：治療打自己、傷害打繞得過去的最近敵人。
 	mode := a.spellParameters[option.ID].TargetMode()
 	// 緩毒術那一類：把倒在 0 的人墊回 1。原版問的是選中的目標。
@@ -658,8 +658,31 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			return a.roller.Roll(1, 100)
 		})
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDispelled), picked, removed))
+	case effect.Ray != nil:
+		// 閃電束與編號 3Ch：由瞄準的那一點拉射線（spell_targets.go 的 castSpellRay）。
+		// 沒瞄過（remake 自己挑）時瞄繞得過去的最近敵人。
+		x, y, found := targets.X, targets.Y, chosen
+		if !found {
+			if picked, ok := state.nearestReachableOpposing(state.Mover); ok {
+				x, y, found = int(state.Roster[picked].X), int(state.Roster[picked].Y), true
+			}
+		}
+		if !found {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+			break
+		}
+		hit, err := a.castSpellRay(state, effect, x, y)
+		if err != nil {
+			return err
+		}
+		if hit == 0 {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
+		} else {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastArea),
+				option.Label, hit, effect.Damage))
+		}
 	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea() &&
-		targets.Area && chosen && mode != gamepack.SpellTargetBolt:
+		targets.Area && chosen:
 		// 範圍：`20AEh` 以瞄準的那一點收好的表，**不分敵我**每一個都吃一份
 		// （`08BCh` 的 `090Ch..0A62h` 逐一走 `DS:6B85h`）。火球術在 `@49E6` 為 0 時
 		// 以同一點、預算 2 重收一次（overlay-22 `2661h..26DAh`）。
@@ -690,7 +713,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 				option.Label, hit, effect.Damage))
 		}
 	case effect.Damage > 0 && a.spellParameters[option.ID].AffectsArea():
-		// 沒瞄過的範圍（閃電束的射線、remake 自己挑的）：對面每一個都吃一份。
+		// 沒瞄過的範圍（remake 自己挑的）：對面每一個都吃一份。
 		// 原版是以一格為中心算範圍（overlay-31 `0138h:003Eh`）：中心是挑中的目標，
 		// 沒挑目標時中心退回施法者自己。
 		centre := state.Mover
@@ -731,14 +754,23 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		a.applySpellDamage(state, picked,
 			a.damageAfterSave(state, picked, option.ID, effect.Damage))
 	case mode == gamepack.SpellTargetWholeSide:
-		// 模式 0Ah：整邊。原版走 0F35h，把效果掛給施法者那一邊的每個人。
+		// 模式 0Ah：`20AEh` 以瞄準的那一點、預算 2 收好表，處理常式（`0F35h`／`2724h`）
+		// 再從表裡分邊（sideSpellTargets）。沒瞄過（remake 自己挑）時照舊數施法者那一邊。
 		affected := 0
-		for index := 1; index < len(state.Roster); index++ {
-			if state.Roster[index].FootprintClass == 0 ||
-				state.Friendly[index] != state.Friendly[state.Mover] {
-				continue
+		if chosen {
+			kept, err := state.sideSpellTargets(option.ID, targets.List, casterLevel)
+			if err != nil {
+				return err
 			}
-			affected++
+			affected = len(kept)
+		} else {
+			for index := 1; index < len(state.Roster); index++ {
+				if state.Roster[index].FootprintClass == 0 ||
+					state.Friendly[index] != state.Friendly[state.Mover] {
+					continue
+				}
+				affected++
+			}
 		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastWholeSide),
 			strings.TrimSpace(caster.name), option.Label, affected))
@@ -783,7 +815,16 @@ func (a *app) savedAgainstSpellWithModifier(state *tacticalState,
 	if parameters.SaveRule() == gamepack.SaveRuleNone {
 		return false
 	}
-	category := parameters.SaveCategory()
+	return a.savedAgainstCategory(state, target, parameters.SaveCategory(), modifier)
+}
+
+// savedAgainstCategory 是 overlay-24 entry 7（`0100h:0043h(記錄, 類別, 修正)`）本身：
+// 類別直接由呼叫端給。射線（`287Ch`）推的是處理常式寫死的類別，不看參數表。
+func (a *app) savedAgainstCategory(state *tacticalState, target uint8,
+	category gamepack.SaveCategory, modifier int) bool {
+	if state == nil || int(target) >= len(state.SaveTargets) {
+		return false
+	}
 	if int(category) >= gamepack.SavingThrowCategories {
 		return false
 	}

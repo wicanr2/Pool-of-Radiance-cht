@@ -88,7 +88,26 @@ type CastEffect struct {
 	// 效果碼照樣從參數表來（臭雲術是 `1Eh`），但掛的時機不同：**誰站進去
 	// 誰才掛**，而不是施法當下挑一批目標。
 	Cloud bool
+	// Ray 非 nil 代表這一支是「先打瞄準的那一格、再沿射線逐格打」
+	// （overlay-22 `287Ch` 接 `2919h`，spec 098〈模式 8：射線〉）。Damage 是打
+	// 瞄準那一格的傷害，射線上每一格用 Ray.Damage。
+	Ray *SpellRayEffect
 }
+
+// SpellRayEffect 是處理常式推給 `287Ch`／`2919h` 的那幾個字面值。
+type SpellRayEffect struct {
+	// Length 是 `2919h` 的 `[bp+0Ch]`（剩餘 ＝ 長度 × 2，走訪器的半格成本）。
+	Length uint8
+	// Damage 是射線上每一格的傷害（`[bp+0Ah]`）。
+	Damage int
+	// SaveCategory 是 `287Ch` 的豁免類別；處置規則在 `28EBh` 寫死 2（減半）。
+	SaveCategory SaveCategory
+	// Surcharge 是 `[bp+6]`：第一次反彈時牆離施法者不超過 8 成本就多扣 8。
+	Surcharge bool
+}
+
+// SpellRaySaveRule 是 `287Ch` 的 `28EBh`（`B0 02 50`）：射線那一條一律豁免減半。
+const SpellRaySaveRule = SaveRuleHalves
 
 // AbilityBonus 是「把某個能力值加上去，加到上限為止」。
 type AbilityBonus struct {
@@ -407,8 +426,9 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 	}
 	switch id {
 	case SpellIDBless, SpellIDCurse:
-		// 兩支都走 0F35h 那條整邊的路，差別只在訊息（"is Blessed" 與
-		// "is Cursed"）與作用在哪一邊。
+		// 兩支都走 0F35h：從 `20AEh` 以一點收好的表（預算 2）裡只留某一邊，
+		// 差別在訊息（"is Blessed" 與 "is Cursed"）與留哪一邊；祝福另外剔掉
+		// 貼身有敵人的（SpellSideFilterFor）。
 		effect.WholeSide = true
 	case SpellIDCureLightWound:
 		effect.Heal = roller.Roll(1, 8)
@@ -475,7 +495,8 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.CasterLevelOverride = 0xff
 	case SpellIDHaste:
 		// `2858h` 推效果碼 2Ah 與施法者的 `+10Eh`（哪一邊）給 `2724h`，
-		// 與緩速術同一支。訊息是 "is Speedy"。
+		// 與緩速術同一支：只留那一邊、最多施法者等級個（SpellSideFilterFor）。
+		// 訊息是 "is Hasted"（`2848h` 的 `09 69 73 20 48 61 73 74 65 64`）。
 		effect.WholeSide, effect.EffectCode = true, HasteEffectCode
 	case SpellIDSlow:
 		// `2BCDh` 先推效果碼 27h 再走 `2724h`——那一支會設 `DS:677Eh = 1`，
@@ -563,10 +584,11 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `2F02h`（原版沒有名字）：先 `287Ch` 打中目標那一格
 		// ——傷害 `Roll(1, 6) + 20`、豁免類別 4、規則 2（減半）、
 		// 傷害種類 `DS:6777h = 0Ch`，走 overlay-24 entry 19 結算；
-		// 接著 `2919h(3, 20, 4, 0)` 設 `DS:677Eh = 1`，由施法者穿過目標
-		// 拉一條射線（長度因子 3 × 2），沿線逐格再打。
-		// 射線的幾何還沒逐條讀完，所以與閃電束同一個近似：先收整邊。
+		// 接著 `2F2Dh..2F3Ah` 的 `2919h(3, 14h, 4, 0)`（`B0 03 50 B0 14 50 B0 04 50
+		// B0 00 50`）由瞄準那一格往外拉射線：**射線上每一格是固定 20，不是
+		// 那一次擲出來的骰**，長度 3、不加價。幾何見 combat.TraceSpellRay。
 		effect.Damage, effect.Area = roller.Roll(1, 6)+20, true
+		effect.Ray = &SpellRayEffect{Length: 3, Damage: 20, SaveCategory: 4}
 	case SpellIDStinkingCloud:
 		// `1AF6h`：先數這個施法者身上已經有幾團雲（串列比對 `DS:5CF0h`），
 		// 再生一團 2×2 蓋成地形 `1Eh`。效果碼 `1Eh` 由參數表 `+0Ah` 帶進來，
@@ -574,8 +596,12 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// Damage／Area，只把旗標立起來，實際的格子由呼叫端擺。
 		effect.Cloud = true
 	case SpellIDLightningBolt:
-		// 閃電束走的是 `287Ch` 那條（目標模式 8＝直線），預算還沒讀。
-		effect.Damage, effect.Area = roller.Roll(casterLevel, 6), true
+		// `2B75h`：Roll(等級, 6) 擲一次（`2B7Fh..2B88h`），先 `287Ch(瞄準那一格,
+		// 傷害, 4)`，再 `2919h(8, 傷害, 4, 1)`（`B0 08 50 8A 46 FF 50 B0 04 50 B0 01 50`）：
+		// 射線上每一格吃同一個數字、長度 8、第一次反彈要加價。
+		damage := roller.Roll(casterLevel, 6)
+		effect.Damage, effect.Area = damage, true
+		effect.Ray = &SpellRayEffect{Length: 8, Damage: damage, SaveCategory: 4, Surcharge: true}
 	default:
 		return CastEffect{}, fmt.Errorf(
 			"Pool spell %d has no read handler; overlay-22 dispatch slot %d is still unread (spec 073)",

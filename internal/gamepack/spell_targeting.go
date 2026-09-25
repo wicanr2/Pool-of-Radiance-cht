@@ -85,3 +85,123 @@ func FireballOutdoorAreaBudget(id uint8, walkFlag uint8) int {
 	}
 	return FireballAreaBudget
 }
+
+// 模式 0Ah 的四支（祝福、詛咒、急速、緩速）瞄準時照 `220Fh` 挑一點、以預算 2 收人，
+// 收到的表**不分敵我**；分邊是處理常式自己再走一次表（spec 098〈模式 0Ah：分邊〉）。
+// 兩支分邊常式都是 overlay-22 內的 near call：
+//
+//	0F35h(邊, 訊息)  祝福 0FF5h 推施法者 +10Eh、詛咒 1026h 推 23F5h(施法者)
+//	  0F4Eh  DS:677Eh = 1
+//	  0F59h  for i := 1 to DS:6B88h：
+//	  0F77h    表[i] 的 +10Eh 不等於「邊」→ 表[i] 清成 nil
+//	  0F81h    等於，而且 DS:6779h == 1（祝福）、DS:4954h == 5（戰鬥中）：
+//	  0FA5h      010Ah:00C0h(表[i], 1)（overlay-25 entry 32，旁邊一步內的對面人數）
+//	           非 0 → 表[i] 清成 nil
+//	  0FE1h  08BCh(法術, 0, 0, 0, 0, 訊息)
+//	2724h(效果碼, 邊, 訊息)  急速 2858h 推 2Ah 與施法者 +10Eh、緩速 2BCDh 推 27h 與 23F5h(施法者)
+//	  273Dh  DS:677Eh = 1；額度 = 26F8h(法術)（施法者等級）
+//	  2775h  表[i] 的 +10Eh 等於「邊」而且額度 > 0：額度減一；
+//	  279Fh    0100h:006Bh(表[i], 效果碼) 非 0（身上已經有）→ 表[i] 清成 nil
+//	  27BFh  否則 表[i] 清成 nil
+//	  27F2h  08BCh(法術, 0, 0, 0, 0, 訊息)；之後逐個留下的 0100h:002Fh(表[i], 12h)
+
+// SpellSideRoutine 是模式 0Ah 那四支走哪一支分邊常式。
+type SpellSideRoutine uint8
+
+const (
+	// SpellSideNone 是不分邊（其他法術）。
+	SpellSideNone SpellSideRoutine = iota
+	// SpellSideBless 是 overlay-22 `0F35h`：只留同一邊，祝福另外剔掉貼身有敵人的。
+	SpellSideBless
+	// SpellSideQuota 是 overlay-22 `2724h`：只留同一邊、額度是施法者等級、
+	// 身上已經有那個效果的剔掉（額度照扣）。
+	SpellSideQuota
+)
+
+// SpellSideFilter 是一支模式 0Ah 法術的分邊方式。
+type SpellSideFilter struct {
+	Routine SpellSideRoutine
+	// CasterSide 為真代表留施法者自己那一邊（推 `+10Eh`），為假代表留對面
+	// （推 overlay-25 entry 30 `23F5h(施法者)`，spec 096：`+10Eh` 為 0 回 1，否則回 0）。
+	CasterSide bool
+	// SkipEngaged 是 `0F81h..0FACh`：只有祝福（`DS:6779h == 1`）會剔掉旁邊一步內
+	// 有對面的人。
+	SkipEngaged bool
+	// EffectCode 是 `2724h` 查「已經有」的效果碼（急速 2Ah、緩速 27h）。
+	EffectCode uint8
+}
+
+// SpellSideFilterFor 說這支法術的處理常式怎麼分邊；不是那四支回 false。
+func SpellSideFilterFor(id uint8) (SpellSideFilter, bool) {
+	switch id {
+	case SpellIDBless:
+		// 0FF5h：`C4 3E F0 5C 26 8A 85 0E 01 50` 推施法者的 +10Eh。
+		return SpellSideFilter{Routine: SpellSideBless, CasterSide: true, SkipEngaged: true}, true
+	case SpellIDCurse:
+		// 1026h：`9A B6 00 0A 01 50` 推 23F5h(施法者)。
+		return SpellSideFilter{Routine: SpellSideBless}, true
+	case SpellIDHaste:
+		// 2858h：`B0 2A 50` 再推施法者的 +10Eh。
+		return SpellSideFilter{Routine: SpellSideQuota, CasterSide: true, EffectCode: HasteEffectCode}, true
+	case SpellIDSlow:
+		// 2BCDh：`B0 27 50` 再推 23F5h(施法者)。
+		return SpellSideFilter{Routine: SpellSideQuota, EffectCode: SlowEffectCode}, true
+	}
+	return SpellSideFilter{}, false
+}
+
+// SpellSideQuery 是分邊常式要問盤面的三件事，由呼叫端（戰場）提供。
+type SpellSideQuery struct {
+	// Side 是那一格的 `+10Eh`；查不到回 false，那一格一律剔掉（失敗即關閉）。
+	Side func(index uint8) (uint8, bool)
+	// Engaged 是 overlay-25 entry 32 `(那一格, 1)` 回非 0：旁邊一步內有對面的人。
+	Engaged func(index uint8) (bool, error)
+	// HasEffect 是 `0100h:006Bh(那一格, 碼)`。
+	HasEffect func(index uint8, code uint8) bool
+}
+
+// FilterSpellSide 照 `0F35h`／`2724h` 把 `20AEh` 收好的表剔成處理常式真正作用的那幾個。
+// 順序照原表；被清成 nil 的直接拿掉（`08BCh` 走表時會跳過 nil 那一格）。
+// casterSide 是施法者的 `+10Eh`，casterLevel 是 `26F8h` 的等級（`2724h` 的額度）。
+func FilterSpellSide(filter SpellSideFilter, list []uint8, casterSide uint8, casterLevel int,
+	query SpellSideQuery) ([]uint8, error) {
+	side := casterSide
+	if !filter.CasterSide {
+		// 23F5h：`+10Eh` 為 0 回 1，否則回 0。
+		side = 0
+		if casterSide == 0 {
+			side = 1
+		}
+	}
+	quota := casterLevel
+	kept := make([]uint8, 0, len(list))
+	for _, index := range list {
+		own, ok := query.Side(index)
+		if !ok || own != side {
+			continue
+		}
+		switch filter.Routine {
+		case SpellSideBless:
+			if filter.SkipEngaged && query.Engaged != nil {
+				engaged, err := query.Engaged(index)
+				if err != nil {
+					return nil, err
+				}
+				if engaged {
+					continue
+				}
+			}
+		case SpellSideQuota:
+			// 額度是 byte，`277Fh` 的 `cmp [bp-2Ah], 0 / jbe` 用完就剔。
+			if quota <= 0 {
+				continue
+			}
+			quota--
+			if query.HasEffect != nil && query.HasEffect(index, filter.EffectCode) {
+				continue
+			}
+		}
+		kept = append(kept, index)
+	}
+	return kept, nil
+}
