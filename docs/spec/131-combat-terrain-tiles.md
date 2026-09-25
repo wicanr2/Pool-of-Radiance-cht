@@ -1,8 +1,8 @@
 # Spec 131：戰場的地形圖塊
 
 狀態：READY（三個圖塊集的檔名、形狀與 item 數；`PresentationCode` 就是圖塊集
-裡的序號；室內／野外兩段的切點）；DRAFT（切點由哪一段程式碼選、序號
-`19h..21h` 在室內段沒有 producer 的理由、色盤從哪裡取）。
+裡的序號；圖塊集由戰場模式選，見〈誰選圖塊集〉）；DRAFT（`149Ah` 兩個參數的
+確切語意、色盤從哪裡取）。
 日期：2026-09-08。
 
 ## 結論先講
@@ -34,20 +34,33 @@
 才是圖塊序號（spec 053 已把該欄位定位成「傳給 tactical tile drawing
 service」的 exact consumer；這裡補的是那個 service 的圖從哪裡來）。
 
-66 筆類別分兩段，**0..31 是室內、32..65 是野外**：
+66 筆類別依生成它的建構器分兩群：
 
-| 段 | 類別碼 | `PresentationCode` | 圖塊集 |
+| 群 | 類別碼 | `PresentationCode` | 誰寫 |
 |---|---|---|---|
-| 室內 | `00h..19h` | `00h..18h` | `DUNGCOM.DAX` item 0..24 |
-| 室內 | `1Ah..1Fh` | `22h..27h` | `RANDCOM.DAX` item 0..5 |
-| 野外 | `20h..41h` | `00h..21h` | `WILDCOM.DAX` item 0..33 |
+| 室內 | `00h..19h` | `00h..18h` | 室內四支建構器（spec 060） |
+| 隨機物件 | `1Ah..1Fh` | `22h..27h` | 室外 `0000h` 寫 `1Ah..1Dh` |
+| 野外 | `20h..41h` | `00h..21h` | 室外 `0C7Ah`／`0DB0h`／`0F3Fh` |
 
-切點是從序號範圍推的，不是從程式碼讀的：室內段的序號正好蓋滿 DUNGCOM 的
-25 個加 RANDCOM 的 6 個，野外段正好蓋滿 WILDCOM 的 34 個，**三個檔一個
-item 都不多不少**。序號 `19h..21h`（9 個）在室內段沒有出現，在野外段則是
-WILDCOM 自己的 item——這也是「兩段各有自己的序號空間」的旁證。
+外加兩邊共用的平地類別 `17h`（序號 `16h`）：室內西帶鋪地板、室外 FillChar
+整面填的都是它。
 
-哪一段由誰選還沒讀出來。
+### 誰選圖塊集
+
+overlay-10 `12E5h` 在配置戰術地圖之前先載圖塊，分岔條件與生成器是同一個
+`DS:495Bh == 1`（bytes exact，`docs/audit/ida-overlay10-tactical-map-build.json`）：
+
+| 位址 | 條件 | 字串（`12CDh` 起） | `149Ah` 參數 |
+|---|---|---|---|
+| `12F7h..1307h` | `495Bh == 1` | `DungCom` | `(0, 18h)` |
+| `1313h..1323h` | 其餘 | `WildCom` | `(0, 21h)` |
+| `132Dh..133Dh` | 兩邊都跑 | `RandCom` | `(22h, 5)` |
+
+所以序號 `00h..21h` 在室內戰場取 DUNGCOM、在野外戰場取 WILDCOM，`22h` 起一律
+取 RANDCOM 的 item（序號 − 22h）。同一個序號 `16h` 在室內是地城的黑地板、
+在野外是野外的平地。`149Ah` 兩個參數當「起點、終點」讀是 strong inference：
+DUNGCOM 25 個（0..18h）、WILDCOM 34 個（0..21h）正好對上；RANDCOM 的
+`(22h, 5)` 形狀不同，確切語意沒有讀。
 
 ## 交叉核對：通行性與圖的樣子
 
@@ -67,6 +80,7 @@ WILDCOM 自己的 item——這也是「兩段各有自己的序號空間」的�
 
 - `internal/assets/combat_terrain.go`：`ReadCombatTerrainTiles`，item 數不對
   就失敗，不拿別一款金盒子的圖塊頂上。
-- `cmd/pool-game/combat_screen.go`：`combatTerrainTile` 依上表挑圖塊，
+- `cmd/pool-game/combat_screen.go`：`combatTerrainTile` 依〈誰選圖塊集〉挑圖塊
+  （戰場模式記在 `combat.TacticalGrid.Outdoor`），
   `drawCombatBoard` 先鋪地再畫造形；載不出來退回色塊。
 - 換主題時 `switchTheme` 丟掉圖塊與造形的快取，否則會留在舊色盤上。

@@ -122,9 +122,14 @@ func CellClassAt(classes CellClasses, code uint8) (gamepack.CombatCellClass, err
 
 // TacticalGrid 是 overlay-31 `0419h` 收到的地圖：`+6` 非 0 時整段地形判定被跳過，
 // 格子自 `+7` 起、列距 50。
+//
+// Outdoor 記的是生成這張圖時 `DS:495Bh` 不等於 1（overlay-10 `12E5h` 走了
+// 室外 `1255h`）。同一個判斷也決定圖塊從 WildCom 還是 DungCom 取（`12EBh`），
+// 以及部署時查不查牆（`1609h`），所以跟著圖走。
 type TacticalGrid struct {
 	IgnoreTerrain bool
 	Terrain       []uint8
+	Outdoor       bool
 }
 
 // TacticalRowStride 是原版計算格子位址時用的列距（`arg_0 + y*32h + x + 7`）。

@@ -19,14 +19,13 @@ const OpenGroundCellClass = 0x17
 // OpenGroundCellClass，標頭的 `+4`、`+5`、`+6` 依 `12E5h` 分別設為 0、1、0。
 // `+6` 為 0 表示地形判定生效。
 //
-// 原版接著會依隊伍在大地圖的位置挑背景並跑四支細節建構器，那一段尚未閉合
-// （spec 060），所以這裡只產生平坦戰場。
+// 接下來挑背景並跑四支細節建構器的部分在 GenerateOutdoorTacticalGrid。
 func NewOutdoorTacticalGrid() TacticalGrid {
 	terrain := make([]uint8, TacticalMapCellCount)
 	for index := range terrain {
 		terrain[index] = OpenGroundCellClass
 	}
-	return TacticalGrid{IgnoreTerrain: false, Terrain: terrain}
+	return TacticalGrid{IgnoreTerrain: false, Terrain: terrain, Outdoor: true}
 }
 
 // TacticalMapHeader 是配置之後立刻寫下的三個標頭 byte。

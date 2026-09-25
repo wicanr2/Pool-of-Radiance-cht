@@ -302,6 +302,8 @@ type app struct {
 	// 狀態列的 `HH:MM` 就是它（spec 118）。
 	timeRadix gamepack.TimeRadix
 	gameTime  gamepack.GameTime
+	// wildernessTerrain 是野外戰場挑背景的 `DS:35E2h`（spec 060）。
+	wildernessTerrain *gamepack.WildernessTerrainTable
 	restField    gamepack.RestField
 	// 戰鬥中的施法清單（spec 098）。
 	castOpen    bool
@@ -545,6 +547,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.restDuration = gamepack.NewRestDuration(timeRadix)
+	wildernessTerrain, err := gamepack.ReadDOSWildernessTerrainTable(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.wildernessTerrain = &wildernessTerrain
 	application.timeRadix = timeRadix
 	application.restField = gamepack.RestFieldMinutes
 	application.saveState = func(state poolsave.State) error { return poolsave.WriteAtomic(statePath, state) }

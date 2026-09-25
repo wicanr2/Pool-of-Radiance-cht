@@ -246,7 +246,7 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
-	wall := geoWallProbe(a.initialMap.Grid, int(a.spawn.Y))
+	wall := a.deploymentWallProbe(grid)
 
 	place := func(slot int, isParty bool, side uint8) error {
 		index := uint8(len(cells))
@@ -739,8 +739,7 @@ func (a *app) enterTacticalPreview() error {
 	if a.initialMap == nil {
 		return fmt.Errorf("Pool dungeon map is not loaded")
 	}
-	grid, err := combat.GenerateIndoorTacticalGrid(int(a.spawn.X), int(a.spawn.Y),
-		geoWallProbe(a.initialMap.Grid, int(a.spawn.Y)))
+	grid, err := a.generateTacticalGrid()
 	if err != nil {
 		return err
 	}

@@ -60,18 +60,16 @@ func (a *app) boardSprite(index int) *ebiten.Image {
 	return icon
 }
 
-// 地形圖塊的分段（spec 131）。地圖裡存的是格位類別碼，類別表第四個欄位
-// `PresentationCode` 才是圖塊集裡的序號。
+// 地形圖塊的分段（spec 131、spec 060）。地圖裡存的是格位類別碼，類別表第四個
+// 欄位 `PresentationCode` 才是圖塊序號。
 //
-// 66 筆類別分兩段：**0..31 是室內、32..65 是野外**。這一刀是從序號範圍推的
-// ——前段的序號正好蓋滿 DUNGCOM 的 `00h..18h`（25 個）加 RANDCOM 的
-// `22h..27h`（6 個），後段正好蓋滿 WILDCOM 的 `00h..21h`（34 個），三個檔
-// 一個 item 都不多不少。哪一段由誰選還沒從程式碼讀出來。
-const (
-	combatIndoorClassLimit = 32
-	// combatRandomTileBase 是隨機遭遇那一組在序號空間裡的起點。
-	combatRandomTileBase = 0x22
-)
+// 哪一組圖塊由誰選，是 overlay-10 `12E5h` 決定的（exact）：`DS:495Bh` 等於 1
+// 時載 `DungCom`（`12F7h` 的字串在 `12CDh`，序號 0..18h），否則載 `WildCom`
+// （`12D5h`，0..21h）；兩邊之後都載 `RandCom`（`12DDh`，從 22h 起）。
+// 序號與檔案的對應（`149Ah` 的兩個參數是起點與終點）是 strong inference：
+// 三段正好蓋滿三個檔的 item 數，一個不多不少。所以同一個序號 16h 在室內是
+// 地城的地板、在室外是野外的平地——分段看的是戰場模式，不是類別碼。
+const combatRandomTileBase = 0x22
 
 // combatTerrainTile 取一格要鋪的圖塊。取不到就回 nil，由呼叫端退回色塊。
 func (a *app) combatTerrainTile(code uint8) *ebiten.Image {
@@ -80,13 +78,12 @@ func (a *app) combatTerrainTile(code uint8) *ebiten.Image {
 		return nil
 	}
 	presentation := int(state.Classes[code].PresentationCode)
-	name := assets.WildernessCombatTiles
-	item := presentation
-	if int(code) < combatIndoorClassLimit {
-		name = assets.DungeonCombatTiles
-		if presentation >= combatRandomTileBase {
-			name, item = assets.RandomCombatTiles, presentation-combatRandomTileBase
-		}
+	name, item := assets.DungeonCombatTiles, presentation
+	if state.Grid.Outdoor {
+		name = assets.WildernessCombatTiles
+	}
+	if presentation >= combatRandomTileBase {
+		name, item = assets.RandomCombatTiles, presentation-combatRandomTileBase
 	}
 	tiles, ok := a.combatTiles[name]
 	if !ok {
