@@ -315,6 +315,9 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	target uint8, chosen bool) error {
 	member := caster.member
 	casterLevel := caster.level
+	if state.isFriendly(state.Mover) {
+		state.Activity.PartyCasts++
+	}
 	effect, err := a.spellCaster.Cast(option.ID, a.spellParameters, casterLevel, a.roller)
 	if err != nil {
 		return err

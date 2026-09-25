@@ -46,8 +46,8 @@ func (d *mainlineDriver) setCheats(lockHP, oneHitKill bool) {
 // D 倒地、睡不成（12／12）停下。seed 136..150 的表在 playtest 補十四：走到諾里斯的 6 個全部打贏，
 // 之後三個停在古托井地面、三個死在索寇要塞中庭的巡邏；另外 9 個走不到諾里斯。
 func TestMainlineProbeHouseRuleCheatAtNorris(t *testing.T) {
-	probeCheatAtNorris = true
-	defer func() { probeCheatAtNorris = false }()
+	probeCheatAtNorris, probeRecordDefeat = true, true
+	defer func() { probeCheatAtNorris, probeRecordDefeat = false, false }()
 	runMainlineProbe(t, true, 142)
 }
 

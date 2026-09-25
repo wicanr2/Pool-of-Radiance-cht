@@ -183,6 +183,7 @@ func (a *app) reactionAttack(state *tacticalState, attacker, target uint8) error
 		}
 		counts[slot] = count
 	}
+	state.Activity.ReactionAttacks++
 	pick := combat.SelectReactionAttackSlot(state.AttackRates[attacker][0], counts)
 	dice := state.AttackForms[attacker][pick.Slot-1]
 	if dice.Count == 0 || dice.Sides == 0 {
@@ -193,4 +194,45 @@ func (a *app) reactionAttack(state *tacticalState, attacker, target uint8) error
 		swings[index] = dice
 	}
 	return a.resolveAttackSwings(state, attacker, target, swings)
+}
+
+// combatActivity 數一場裡實際發生的動作（#57）。收據用，遊戲本身不讀。
+type combatActivity struct {
+	PartyAttacks, PartyHits, FoeAttacks, FoeHits int
+	FoeSteps, FoeCasts, FoeCastsBegun            int
+	PartyCasts, ReactionAttacks                  int
+}
+
+func (activity *combatActivity) countAttack(party bool) {
+	if party {
+		activity.PartyAttacks++
+	} else {
+		activity.FoeAttacks++
+	}
+}
+
+func (activity *combatActivity) countHit(party bool) {
+	if party {
+		activity.PartyHits++
+	} else {
+		activity.FoeHits++
+	}
+}
+
+// add 把另一場加進來。
+func (activity *combatActivity) add(other combatActivity) {
+	activity.PartyAttacks += other.PartyAttacks
+	activity.PartyHits += other.PartyHits
+	activity.FoeAttacks += other.FoeAttacks
+	activity.FoeHits += other.FoeHits
+	activity.FoeSteps += other.FoeSteps
+	activity.FoeCasts += other.FoeCasts
+	activity.FoeCastsBegun += other.FoeCastsBegun
+	activity.PartyCasts += other.PartyCasts
+	activity.ReactionAttacks += other.ReactionAttacks
+}
+
+// isFriendly 是 index 那一格是不是隊伍這一邊。
+func (state *tacticalState) isFriendly(index uint8) bool {
+	return int(index) < len(state.Friendly) && state.Friendly[index]
 }

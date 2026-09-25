@@ -44,6 +44,8 @@ var manualPartyBuild = []struct {
 
 // TestMainlineProbeNaturalPartyFirstBattle 是 #5 的收據：原版規則，一級隊伍。
 func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
+	probeRecordDefeat = true
+	defer func() { probeRecordDefeat = false }()
 	runMainlineProbe(t, false, mainlineProbeSeed)
 }
 
@@ -58,6 +60,8 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 // 收據要的是後面那一段——交件折算經驗、訓練所升級、買板甲、上船——跑得到。
 // 各 seed 的結局記在 `docs/playtest/mainline-end-to-end.md` 補十。
 func TestMainlineProbeHouseRuleCommissionExperience(t *testing.T) {
+	probeRecordDefeat = true
+	defer func() { probeRecordDefeat = false }()
 	runMainlineProbe(t, true, 142)
 }
 
@@ -164,7 +168,33 @@ func buildManualParty(t *testing.T, application *app, step func(key ebiten.Key, 
 // mainlineProbeSeed 是原版規則那一條探針的骰子 seed。
 const mainlineProbeSeed = 136
 
+// probeRecordDefeat 為真時，全滅是記錄不是失敗（#57，使用者 2026-09-26）：開作弊通關
+// 算對拍，以原版強度通關改成可選的量測，真實全滅本來就是合法結果（CLAUDE.md §6）。
+// 卡死、找不到路、panic 這些硬失敗照樣是紅燈。全程作弊的主線探針不開這個。
+var probeRecordDefeat = false
+
+// probeDefeated 是記錄模式下全滅時拋出的值，由 runMainlineProbe 接住。
+type probeDefeated string
+
+// probeDefeat 是全滅那一刻：記錄模式就記下停在哪裡並結束這條探針，否則照舊失敗。
+func probeDefeat(t *testing.T, format string, args ...any) {
+	t.Helper()
+	if probeRecordDefeat {
+		panic(probeDefeated(fmt.Sprintf(format, args...)))
+	}
+	t.Fatalf(format, args...)
+}
+
 func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
+	defer func() {
+		if stopped := recover(); stopped != nil {
+			reason, ok := stopped.(probeDefeated)
+			if !ok {
+				panic(stopped)
+			}
+			t.Logf("以原版強度跑到這裡全滅（記錄，不是失敗；#57）：%s", reason)
+		}
+	}()
 	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
 	statePath := filepath.Join(t.TempDir(), "state.json")
 	application, err := newApp(zipPath, statePath)
@@ -263,7 +293,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 		}
 		for guard := 0; guard < 20000 && application.spawn.Map == from; guard++ {
 			if application.gameOver {
-				t.Fatalf("the party was destroyed while leaving %+v: %q (4ABB=%02X)", from,
+				probeDefeat(t, "the party was destroyed while leaving %+v: %q (4ABB=%02X)", from,
 					application.eventText, application.eventMachine.Memory[0x4ABB])
 			}
 			switch {
@@ -861,7 +891,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			stalled, lastCount = 0, count
 		}
 		if application.gameOver {
-			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X, patrol %d)",
+			probeDefeat(t, "the party was destroyed in the slums: %q (4ABB=%02X, patrol %d)",
 				application.eventText, application.eventMachine.Memory[0x4ABB], patrol)
 		}
 		restUntilHealed()
@@ -953,7 +983,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 			t.Logf("  unvisited: %v", unvisited)
 		}
 		if application.gameOver {
-			t.Fatalf("the party was destroyed in the slums: %q (4ABB=%02X)",
+			probeDefeat(t, "the party was destroyed in the slums: %q (4ABB=%02X)",
 				application.eventText, application.eventMachine.Memory[0x4ABB])
 		}
 		if application.eventMachine.Memory[0x4ABB] != 0xFE {
@@ -1164,7 +1194,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	for pass := 0; pass < 24 && application.eventMachine.Memory[0x4AA7] != 0xFF; pass++ {
 		sokalPasses++
 		if application.gameOver {
-			t.Fatalf("the party was destroyed on the way to Sokal Keep: %q at %+v (%s)", application.eventText,
+			probeDefeat(t, "the party was destroyed on the way to Sokal Keep: %q at %+v (%s)", application.eventText,
 				application.spawn, tally.line())
 		}
 		// 受傷或催眠用完就地紮營（要塞裡也一樣），再繼續探索。

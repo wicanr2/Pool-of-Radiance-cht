@@ -229,6 +229,7 @@ func (a *app) foeCastPhase(state *tacticalState, mover uint8, mode int) (bool, e
 		state.Scores[index] = score
 	}
 	state.FoeLog = state.say(msgFoeBeginsCasting, mover, a.spellLabel(spell))
+	state.Activity.FoeCastsBegun++
 	state.Status = state.FoeLog
 	state.Moving = false
 	state.selectActor(a.rollDice)
@@ -341,6 +342,7 @@ func (a *app) foeReleaseSpell(state *tacticalState, mover uint8, spell uint8) er
 		return nil
 	}
 	state.FoeLog = state.say(msgFoeCasts, mover, label)
+	state.Activity.FoeCasts++
 	casting := spellCasting{
 		name:      caster.name,
 		partySlot: caster.party,

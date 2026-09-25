@@ -390,6 +390,9 @@ type tacticalState struct {
 	// Facings 是每個人在戰場上的朝向（原版 `+108h` 結構的 `+9`）。反應攻擊的朝向窗
 	// 以它為基準；在哪些時機改它見 `reaction_attack.go`（#58）。
 	Facings       []uint8
+	// Activity 數這一場實際發生了什麼（#57）。作弊通關的收據拿它證明鎖 HP 與
+	// 一擊斃命之下，敵方 AI 與戰鬥機制照樣在跑；遊戲本身不讀它。
+	Activity combatActivity
 	// ItemsOf 回傳某一格的人身上物品的原始記錄（否決代碼 `7Eh` 要讀，#65）。
 	// 隊員從隊伍取；怪物與測試盤面沒有就是 nil。
 	ItemsOf func(index int) [][]byte
@@ -1166,6 +1169,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 			// 打誰是擲骰挑的（`0D97h`：`骰(1, n)` 取 `DS:[6CD7h + 號碼]`），這一步不過
 			// `1087h`；名單依直線追蹤的成本排（`0912h`）。以前固定打第一個（#65）。
 			victim := reachable[a.rollDice(1, len(reachable))-1]
+			state.Activity.FoeSteps += steps
 			if err := a.resolveTacticalAttack(state, victim); err != nil {
 				return err
 			}
@@ -1259,6 +1263,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 		steps++
 	}
 	state.setTacticMode(mover, mode)
+	state.Activity.FoeSteps += steps
 	state.FoeLog = state.say(msgFoeClosed, mover, steps, target)
 	state.endTurn(a.rollDice, false)
 	return nil
@@ -1905,6 +1910,7 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	}
 	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）。
 	state.turnToFace(target, attacker)
+	state.Activity.countAttack(state.isFriendly(attacker))
 	if len(swings) == 0 {
 		// 這一相位揮不出任何一下（編碼 3 的「每兩回合三次」在單數相位）。
 		state.Status = state.say(msgStatusMissed, target, uint8(a.rollDice(1, 20)))
@@ -1932,6 +1938,7 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		// 一擊斃命（spec 141）：隊員命中時傷害改成目標剩下的 HP；擲骰照常。
 		damage = a.cheatDamage(state, attacker, target, damage)
 		landed++
+		state.Activity.countHit(state.isFriendly(attacker))
 		total += damage
 		state.HitPoints[target] -= damage
 		if state.HitPoints[target] <= 0 {

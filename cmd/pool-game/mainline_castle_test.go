@@ -150,7 +150,8 @@ func (d *mainlineDriver) settle(prefer ...string) {
 				last = fmt.Sprintf("round %d: %s / %s; %s", d.lastBattle.Round, d.lastBattle.Status,
 					d.lastBattle.FoeLog, d.tally.line())
 			}
-			d.fatalf("the party was destroyed (%s)", last)
+			// 記錄模式（#57）下全滅是量測結果，交給 probeDefeat；否則照舊失敗。
+			probeDefeat(d.t, "the party was destroyed (%s)\n  at %s", last, d.flags())
 		}
 		if a.shopActive && d.wantShop {
 			return
