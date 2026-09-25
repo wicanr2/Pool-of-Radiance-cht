@@ -32,7 +32,23 @@ type shopState struct {
 	appraising    bool
 	appraiseKind  appraiseKind
 	appraiseValue int
+	// 賣出（spec 067〈賣出〉）：V 打開目前這個人的物品，S 出價，Y 成交。
+	selling   bool
+	sellItem  int
+	sellStage sellStage
+	sellPrice uint16
 }
+
+// sellStage 是賣出那一頁等的是哪一個問題。
+type sellStage int
+
+const (
+	sellPicking sellStage = iota
+	// sellScribe：卷軸上有人正要抄法術，先問丟不丟得（overlay-19 `0DD1h`）。
+	sellScribe
+	// sellOffer：`I'll give you N gold pieces for your X` / `Is It a Deal?`（`1D55h`）。
+	sellOffer
+)
 
 // isShopBoundary 判斷這個服務邊界是不是商店。
 //
@@ -156,6 +172,10 @@ func (a *app) buy() {
 
 func (a *app) shopInput() error {
 	state := a.shop
+	if state.selling {
+		a.shopSellInput()
+		return nil
+	}
 	switch {
 	case a.justPressed(ebiten.KeyEscape):
 		return a.leaveShop()
@@ -178,8 +198,134 @@ func (a *app) shopInput() error {
 		return a.offerShopAppraise(appraiseGem)
 	case a.justPressed(ebiten.KeyJ):
 		return a.offerShopAppraise(appraiseJewel)
+	case !state.appraising && a.justPressed(ebiten.KeyV):
+		a.openShopSell()
 	}
 	return nil
+}
+
+// openShopSell 是商店選單的 V）iew → I）tems。原版先開人物資料頁（overlay-19
+// entry 5）再按 I 進物品選單（entry 6）；remake 在商店裡沒有那一頁，所以 V 直接
+// 列出目前這個人的物品。物品選單的 S）ell 只在店裡出現（`DS:4954h == 1`）。
+func (a *app) openShopSell() {
+	state := a.shop
+	if len(a.state.Party) == 0 {
+		state.message = a.text(msgShopNoParty)
+		return
+	}
+	if state.buyer >= len(a.state.Party) {
+		state.buyer = 0
+	}
+	state.selling, state.sellItem, state.sellStage = true, 0, sellPicking
+	state.message = ""
+}
+
+func (a *app) shopSellInput() {
+	state := a.shop
+	if state.buyer >= len(a.state.Party) {
+		state.selling = false
+		return
+	}
+	inventory := a.state.Party[state.buyer].Inventory
+	switch state.sellStage {
+	case sellScribe, sellOffer:
+		switch {
+		case a.justPressed(ebiten.KeyY):
+			if state.sellStage == sellScribe {
+				a.offerSale()
+				return
+			}
+			a.completeSale()
+		case a.justPressed(ebiten.KeyN), a.justPressed(ebiten.KeyEscape):
+			state.sellStage, state.message = sellPicking, ""
+		}
+		return
+	}
+	switch {
+	case a.justPressed(ebiten.KeyEscape):
+		state.selling, state.message = false, ""
+	case a.justPressed(ebiten.KeyTab):
+		state.buyer = (state.buyer + 1) % len(a.state.Party)
+		state.sellItem, state.message = 0, ""
+	case a.justPressed(ebiten.KeyDown):
+		if len(inventory) > 0 {
+			state.sellItem = (state.sellItem + 1) % len(inventory)
+		}
+	case a.justPressed(ebiten.KeyUp):
+		if len(inventory) > 0 {
+			state.sellItem = (state.sellItem - 1 + len(inventory)) % len(inventory)
+		}
+	case a.justPressed(ebiten.KeyS):
+		a.startSale()
+	}
+}
+
+// shopCanSell 是物品選單放不放 `Sell` 的條件（overlay-19 `10C9h..10EFh`）：
+// 記錄 `+84h` 位元 7 沒立（不是帶士氣的 NPC）、或 `+10Dh == 0`、或 `+10Ch == 1`。
+// 玩家建的角色 `+84h` 是 0，一律可以賣；只有 ADD NPC 帶進來的記錄才看得到那三格。
+func shopCanSell(member poolsave.Character) bool {
+	if !member.NPC || len(member.Record) <= 0x10d {
+		return true
+	}
+	return member.Record[0x84] < 0x80 || member.Record[0x10d] == 0 || member.Status == 1
+}
+
+// startSale 是按 S：先過 entry 20（`0D72h`）的放手檢查，再出價。
+func (a *app) startSale() {
+	state := a.shop
+	member := a.state.Party[state.buyer]
+	if len(member.Inventory) == 0 {
+		return
+	}
+	if !shopCanSell(member) {
+		state.message = fmt.Sprintf(a.text(msgShopSellNotAllowed), member.Name)
+		return
+	}
+	if state.sellItem >= len(member.Inventory) {
+		state.sellItem = 0
+	}
+	item := member.Inventory[state.sellItem]
+	if pooltreasure.SellNeedsUnready(item.Raw) {
+		state.message = a.text(msgShopSellUnready)
+		return
+	}
+	if category, ok := a.itemCategory(item); ok && pooltreasure.SellNeedsScribeConfirm(item.Raw, category) {
+		state.sellStage = sellScribe
+		state.message = fmt.Sprintf(a.text(msgShopSellScribe), member.Name)
+		return
+	}
+	a.offerSale()
+}
+
+// offerSale 印出價，等 Y／N（entry 16 `1D55h..1DE3h`）。
+func (a *app) offerSale() {
+	state := a.shop
+	item := a.state.Party[state.buyer].Inventory[state.sellItem]
+	price, err := pooltreasure.SellOffer(item.Raw)
+	if err != nil {
+		state.sellStage, state.message = sellPicking, err.Error()
+		return
+	}
+	state.sellStage, state.sellPrice = sellOffer, price
+	state.message = fmt.Sprintf(a.text(msgShopSellOffer), price, item.Name)
+}
+
+// completeSale 是按 Y：`Sold!`，物品摘掉，錢照 entry 16 的分法進錢包或公款。
+func (a *app) completeSale() {
+	state := a.shop
+	result, err := pooltreasure.SellItem(&a.state, state.buyer, state.sellItem)
+	state.sellStage = sellPicking
+	if err != nil {
+		state.message = err.Error()
+		return
+	}
+	state.message = a.text(msgShopSellSold)
+	if result.Overloaded {
+		state.message += a.text(msgShopSellOverloaded)
+	}
+	if count := len(a.state.Party[state.buyer].Inventory); state.sellItem >= count && count > 0 {
+		state.sellItem = count - 1
+	}
 }
 
 // offerShopAppraise 是商店那一側的 A）ppraise 入口。規則與神殿同一份
@@ -288,13 +434,19 @@ func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color
 		}
 	}
 	drawText(screen, a.text(msgShopTitle), 280, 62, accent)
+	if state.selling {
+		drawShopSell(screen, a, foreground, accent)
+		return
+	}
 	if len(a.state.Party) > 0 {
 		if state.buyer >= len(a.state.Party) {
 			state.buyer = 0
 		}
 		buyer := a.state.Party[state.buyer]
 		drawText(screen, fmt.Sprintf(a.text(msgShopBuyer),
-			state.buyer+1, len(a.state.Party), buyer.Name, buyer.Money[pooltreasure.Gold]),
+			// 金幣等值（五種硬幣，entry 11）：付錢與賣出都把錢放在白金那一欄，
+			// 只印金幣欄會看起來錢沒動。
+			state.buyer+1, len(a.state.Party), buyer.Name, pooltreasure.GoldEquivalent(buyer.Money)),
 			shopTextLeft, 92, accent)
 	}
 	first, last := state.window(shopLineCount)
@@ -310,6 +462,43 @@ func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color
 	drawText(screen, fmt.Sprintf(a.text(msgShopCount), state.cursor+1, len(state.items)),
 		shopTextLeft, 336, foreground)
 	footer := a.text(msgShopFooter)
+	if state.message != "" {
+		footer = state.message
+	}
+	drawText(screen, footer, shopTextLeft, footerBaseline, accent)
+}
+
+// drawShopSell 畫賣出那一頁：目前這個人的物品，穿戴中的前面有標記。
+// 原版是人物資料頁上的物品選單（overlay-19 entry 6），版面是 remake 的呈現。
+func drawShopSell(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	state := a.shop
+	if state.buyer >= len(a.state.Party) {
+		return
+	}
+	member := a.state.Party[state.buyer]
+	drawText(screen, fmt.Sprintf(a.text(msgShopSellTitle), state.buyer+1, len(a.state.Party), member.Name),
+		shopTextLeft, 92, accent)
+	if len(member.Inventory) == 0 {
+		drawText(screen, a.text(msgShopSellNoItems), shopTextLeft, shopFirstLine, foreground)
+	}
+	first := 0
+	if state.sellItem >= shopLineCount {
+		first = state.sellItem - shopLineCount + 1
+	}
+	for index := first; index < len(member.Inventory) && index < first+shopLineCount; index++ {
+		item := member.Inventory[index]
+		cursor, ink := " ", foreground
+		if index == state.sellItem {
+			cursor, ink = ">", accent
+		}
+		marker := "  "
+		if pooltreasure.SellNeedsUnready(item.Raw) {
+			marker = a.text(msgEquipmentReadyMark)
+		}
+		drawText(screen, cursor+marker+item.Name, shopTextLeft,
+			shopFirstLine+(index-first)*shopLineHeight, ink)
+	}
+	footer := a.text(msgShopSellFooter)
 	if state.message != "" {
 		footer = state.message
 	}

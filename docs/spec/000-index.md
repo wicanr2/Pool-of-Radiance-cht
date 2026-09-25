@@ -44,7 +44,7 @@
 | [030](030-party-strength-vm-contract.md) | `1Dh PARTYSTRENGTH` VM 契約 | CONFORMED＋DRAFT | `internal/character/dos.go`、`internal/gamepack/intro.go` | `internal/character/export_test.go` |
 | [031](031-level-one-party-strength-projection.md) | 一級新角色的 `PARTYSTRENGTH` 投影 | CONFORMED＋DRAFT | `internal/gamepack/intro.go` | `internal/gamepack/eclvm_test.go` |
 | [032](032-treasure-vm-contract.md) | `27h TREASURE` 八欄請求與墓園順序 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | `internal/gamepack/eclvm_test.go` |
-| [033](033-item3-block33-record-shape.md) | `ITEM3.DAX/33h` 五筆 63-byte 物品紀錄 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/gamepack/shop.go` | `internal/gamepack/treasure_test.go` |
+| [033](033-item3-block33-record-shape.md) | `ITEM3.DAX/33h` 五筆 63-byte 物品紀錄 | CONFORMED＋DRAFT | `cmd/pool-game/tactical.go`、`internal/gamepack/shop.go`、`internal/treasure/sell.go` | `internal/gamepack/treasure_test.go` |
 | [034](034-postcombat-treasure-menu-boundary.md) | 戰後戰利品選單與物品鏈移除邊界 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/screen_state.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/treasure_screen_test.go` |
 | [035](035-character-item-receive-and-carry.md) | 角色接收物品、16 格上限與力量負重 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go`、`internal/character/carry.go`、`internal/gamepack/weapon_stats.go` | `internal/character/carry_test.go` |
 | [036](036-combat-postcombat-treasure-dispatch.md) | `24h COMBAT` 的戰鬥／神殿／戰後服務分派 | CONFORMED＋DRAFT | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go` |
@@ -78,7 +78,7 @@
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | `internal/journal/journal_test.go` |
 | [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
 | [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | `cmd/pool-doc-index/main_test.go` |
-| [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go` | `cmd/pool-game/mainline_outfit_test.go`、`cmd/pool-game/shop_walk_test.go` |
+| [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/shop.go`、`cmd/pool-game/text.go`、`internal/treasure/sell.go` | `cmd/pool-game/mainline_outfit_test.go`、`cmd/pool-game/shop_sell_test.go`、`cmd/pool-game/shop_walk_test.go` |
 | [068](068-spell-name-table.md) | 法術名稱表 | CONFORMED＋DRAFT | `cmd/pool-game/spells.go`、`internal/gamepack/spell_dispatch.go`、`internal/gamepack/spell_table.go` | `internal/gamepack/spell_table_test.go` |
 | [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 12 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
 | [070](070-memorised-spells.md) | 記憶法術陣列與 1-based 法術編號 | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/spells.go`、`cmd/pool-spell-dispatch/main.go` 等 6 個 | `cmd/pool-game/inn_test.go`、`cmd/pool-spell-dispatch/main_test.go`、`internal/gamepack/memorisation_test.go` |
@@ -90,7 +90,7 @@
 | [076](076-party-facing-convention.md) | 隊伍朝向的座標系 | CONFORMED | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 7 個 | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/party_panel_test.go`、`internal/gamepack/facing_test.go` 等 4 個 |
 | [077](077-ecl-opcode-dispatch.md) | ECL 指令的派發鏈與運算元個數 | CONFORMED＋DRAFT | `internal/gamepack/ecl_opcodes.go` | `internal/gamepack/ecl_opcodes_test.go` |
 | [078](078-encounter-menu-opcode.md) | `29h ENCOUNTER MENU` | CONFORMED＋READY＋DRAFT | `cmd/pool-game/encounter.go`、`cmd/pool-game/main.go`、`cmd/pool-game/tactical.go` 等 9 個 | `cmd/pool-game/door_test.go`、`cmd/pool-game/encounter_distance_test.go`、`internal/gamepack/encounter_test.go` |
-| [079](079-movement-rate.md) | 移動力 | CONFORMED | `cmd/pool-game/checkparty.go`、`cmd/pool-game/encounter.go`、`cmd/pool-game/tactical.go` 等 6 個 | `cmd/pool-game/equipment_test.go` |
+| [079](079-movement-rate.md) | 移動力 | CONFORMED | `cmd/pool-game/checkparty.go`、`cmd/pool-game/encounter.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/equipment_test.go` |
 | [080](080-armour-class-from-equipment.md) | 裝備算出來的護甲等級 | READY | `cmd/pool-game/party_panel.go`、`internal/gamepack/armour_class.go`、`internal/gamepack/record_recompute.go` | `internal/gamepack/armour_class_test.go` |
 | [081](081-ecl-program-opcode.md) | `38h PROGRAM` | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/program.go`、`internal/gamepack/ecl_operands.go` 等 5 個 | `cmd/pool-game/playthrough_test.go` |
 | [082](082-ecl-text-box-opcodes.md) | 文字框的四條 opcode（`11h`、`12h`、`33h`、`3Dh`） | READY | `cmd/pool-game/main.go`、`internal/gamepack/continue_prompt.go`、`internal/gamepack/ecl_operands.go` 等 4 個 | `cmd/pool-game/main_test.go`、`internal/gametext/catalogue_test.go` |

@@ -528,6 +528,16 @@ const (
 	msgShopNoGold
 	msgShopOverloaded
 	msgShopNoParty
+	// 賣出（spec 067〈賣出〉）。
+	msgShopSellTitle
+	msgShopSellFooter
+	msgShopSellNoItems
+	msgShopSellOffer
+	msgShopSellSold
+	msgShopSellOverloaded
+	msgShopSellUnready
+	msgShopSellScribe
+	msgShopSellNotAllowed
 )
 
 // 裝備畫面的字串。

@@ -1,0 +1,1530 @@
+{
+ "schema": "pool-dosgolem-shop-sell/1",
+ "generator": "dosgolem",
+ "original_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+ "base": "同 dosgolem-shop-payment.json（HUMAN.cha 只改五個錢欄）",
+ "approach_keys": "rep:9:Space,Return,Return,a,a,e,b,rep:27:Return,Right,Right,Up,Return,Right,rep:7:Up,Left,rep:7:Up,y",
+ "offer_note": "offer 由出價畫面人工讀出後填入；該幀的 sha256 在 frames 裡",
+ "scenarios": {
+  "partisan": {
+   "item": "Partisan",
+   "injected_money": {
+    "platinum": 100
+   },
+   "injected_character_sha256": "452f9e87c7f9f342e500dfab751a3a32aa4140acbbc411f62a37c56f7ef8d8e7",
+   "strength": 14,
+   "record": "3B80:0009",
+   "keys": "b,n,rep:4:End,Return,Escape,v,i,s,y,Return,Escape",
+   "offer_frame": "11-s.png",
+   "offer": 5,
+   "wallet_before_sale": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 98
+   },
+   "wallet_after_sale": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 99
+   },
+   "pool_platinum_before_sale": 0,
+   "pool_platinum_after_sale": 0,
+   "load_before_sale": 178,
+   "items_before_sale": 1,
+   "items_after_sale": 0,
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "bc422f5589b32fede71fe16c487bee9c83ae5c1318e6a9f62fd88807bbeada09"
+    },
+    {
+     "label": "b",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "4d5cbdcf50a8bbfcb2acea2a7a7ab4d7635ce2490050d8e0dac05b4e5bcfddf1"
+    },
+    {
+     "label": "n",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "95361af94a3ccf415a0f394427f574bd2b314e286e04251e7f76f116ce8dc0d3"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "5129f1d1bca1220f570888b025d90058c53da409cc32058ece50ed4535971b62"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "ddc4c14025264e383022edacd6e526fca6b28ce9c3dfaa30c5f3cb78d2fe9823"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "ccfa36f13db5ff2a818e2b2899fd0eeef5efb949de4240e945a7a683feb1d236"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "0c648d85d3d13b9e68f96161953102810348284d0539f2738958212927e2415b"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 180,
+     "items": 1,
+     "sha256_of_frame": "0c648d85d3d13b9e68f96161953102810348284d0539f2738958212927e2415b"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 180,
+     "items": 1,
+     "sha256_of_frame": "283034c746542b3d3c8be0997d5aed68f0180bd13ef11a35faf6a80696f8f8cb"
+    },
+    {
+     "label": "v",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 178,
+     "items": 1,
+     "sha256_of_frame": "bcdc502e094b45751c80b38901fd43e2eef19b090e0bb05e3f69df36315813cc"
+    },
+    {
+     "label": "i",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 178,
+     "items": 1,
+     "sha256_of_frame": "cd76a033d9f5606900cd8c59cdc2c4d0050d120b9e8840efccfe8720855d6928"
+    },
+    {
+     "label": "s",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 178,
+     "items": 1,
+     "sha256_of_frame": "53445dd65b74b1fd835cf676a9a03a9b98fe82e3cb990e9d90bc5643f971b63a"
+    },
+    {
+     "label": "y",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 99
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 99,
+     "items": 0,
+     "sha256_of_frame": "d3c7f87ea628ddcc3f8c61b0ef40e3b3f03461a55700fa51004446677185e0a1"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 99
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 99,
+     "items": 0,
+     "sha256_of_frame": "d3c7f87ea628ddcc3f8c61b0ef40e3b3f03461a55700fa51004446677185e0a1"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 99
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 99,
+     "items": 0,
+     "sha256_of_frame": "283034c746542b3d3c8be0997d5aed68f0180bd13ef11a35faf6a80696f8f8cb"
+    }
+   ]
+  },
+  "long-sword": {
+   "item": "Long Sword",
+   "injected_money": {
+    "platinum": 100
+   },
+   "injected_character_sha256": "452f9e87c7f9f342e500dfab751a3a32aa4140acbbc411f62a37c56f7ef8d8e7",
+   "strength": 14,
+   "record": "3B80:0009",
+   "keys": "b,n,rep:15:End,Return,Escape,v,i,s,y,Return,Escape",
+   "offer_frame": "22-s.png",
+   "offer": 7,
+   "wallet_before_sale": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 97
+   },
+   "wallet_after_sale": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 2,
+    "platinum": 98
+   },
+   "pool_platinum_before_sale": 0,
+   "pool_platinum_after_sale": 0,
+   "load_before_sale": 157,
+   "items_before_sale": 1,
+   "items_after_sale": 0,
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "bc422f5589b32fede71fe16c487bee9c83ae5c1318e6a9f62fd88807bbeada09"
+    },
+    {
+     "label": "b",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "4d5cbdcf50a8bbfcb2acea2a7a7ab4d7635ce2490050d8e0dac05b4e5bcfddf1"
+    },
+    {
+     "label": "n",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "95361af94a3ccf415a0f394427f574bd2b314e286e04251e7f76f116ce8dc0d3"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "5129f1d1bca1220f570888b025d90058c53da409cc32058ece50ed4535971b62"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "ddc4c14025264e383022edacd6e526fca6b28ce9c3dfaa30c5f3cb78d2fe9823"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "ccfa36f13db5ff2a818e2b2899fd0eeef5efb949de4240e945a7a683feb1d236"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "0c648d85d3d13b9e68f96161953102810348284d0539f2738958212927e2415b"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "81a08a68c865c4b81ac0117760486bedd80116208ae319b8837d5b3ccc4b3cda"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "d281ee996e033c91a3e186af35f47818b59aeeb974431e4a2d8f89c23b09a1f0"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "2f3baac08964c6c6531bd7904545af9cfcb9c6abd6e229a383ad7e9b304a12e9"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "e85d8578927740d4b96678822d29af27ee18688e16fc8cf722713d763d680f74"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "2f1750685710618ee9fda6c18c1e0126a1deb2d3887217a3e1a72b05038de171"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "237bd55e93512ca7ca16c07c8c59e4f0a44283e83d95ff1ab307afd764f5f431"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "6d32b3303aa806cb0f7e47a219c0d87e10327e378d6e3b2193d0a43c3b552f93"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "29f0ffaf95ea937265d637782c41ec51f36200b447b52f6a392da064adb0fa63"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "5318b72ba89da9340d05fa627a3ba69c73967f436878782d7febf18769f3bf41"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "6ff708c8995cbef1674c7cde1c1eb198b7767a7271ea08cd770d38467048b94f"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 100
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "e2dd589d002edb4b2c1300bacf89f1fd5a58d0b11ab54d99ee3fbaaeef66a5fc"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 97
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 160,
+     "items": 1,
+     "sha256_of_frame": "e2dd589d002edb4b2c1300bacf89f1fd5a58d0b11ab54d99ee3fbaaeef66a5fc"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 97
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 160,
+     "items": 1,
+     "sha256_of_frame": "283034c746542b3d3c8be0997d5aed68f0180bd13ef11a35faf6a80696f8f8cb"
+    },
+    {
+     "label": "v",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 97
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 157,
+     "items": 1,
+     "sha256_of_frame": "ce2edb874ea5aeff852862bfc1ea8e5f266cedf60db8240a5205b770241c13f0"
+    },
+    {
+     "label": "i",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 97
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 157,
+     "items": 1,
+     "sha256_of_frame": "bd66a5c429620c3e555d0378453ad8c68222ca4ca61e49a358730b472f2ff765"
+    },
+    {
+     "label": "s",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 97
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 157,
+     "items": 1,
+     "sha256_of_frame": "fbe1e3abeadb62be10337e433424becedd53fbb9515afd0125a6c17854a052c8"
+    },
+    {
+     "label": "y",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 2,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 100,
+     "items": 0,
+     "sha256_of_frame": "b46ad52a3f6d29c0b6e7b50cb45537d5d0ff6aa77da7ff74274f14de0f1a9e18"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 2,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 100,
+     "items": 0,
+     "sha256_of_frame": "b46ad52a3f6d29c0b6e7b50cb45537d5d0ff6aa77da7ff74274f14de0f1a9e18"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 2,
+      "platinum": 98
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 100,
+     "items": 0,
+     "sha256_of_frame": "283034c746542b3d3c8be0997d5aed68f0180bd13ef11a35faf6a80696f8f8cb"
+    }
+   ]
+  },
+  "overload": {
+   "item": "Plate Mail",
+   "injected_money": {
+    "platinum": 1500
+   },
+   "injected_character_sha256": "a1fbd5d2b274374298f79576e99b6939c9d714926a1d1aa5cdcb0d972b684216",
+   "strength": 14,
+   "record": "3B80:0009",
+   "keys": "p,b,n,n,rep:16:End,Return,Escape,s,v,i,s,y,Return,Escape",
+   "offer_frame": "26-s.png",
+   "offer": 200,
+   "wallet_before_sale": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 1250
+   },
+   "wallet_after_sale": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 1250
+   },
+   "pool_platinum_before_sale": 170,
+   "pool_platinum_after_sale": 210,
+   "load_before_sale": 1700,
+   "items_before_sale": 1,
+   "items_after_sale": 0,
+   "frames": [
+    {
+     "label": "loaded",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "load": 50,
+     "items": 0,
+     "sha256_of_frame": "bc422f5589b32fede71fe16c487bee9c83ae5c1318e6a9f62fd88807bbeada09"
+    },
+    {
+     "label": "p",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "c1c3799bd19bfe88a144b7ba7e90360cda98d249e147fa1065a5d04b6d6c81d3"
+    },
+    {
+     "label": "b",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "4d5cbdcf50a8bbfcb2acea2a7a7ab4d7635ce2490050d8e0dac05b4e5bcfddf1"
+    },
+    {
+     "label": "n",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "95361af94a3ccf415a0f394427f574bd2b314e286e04251e7f76f116ce8dc0d3"
+    },
+    {
+     "label": "n",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "07e124e60fd37bd61eaf53f4e92b7a515cae4c2a55d5833ebf49b1cb501eea20"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "3e86c96a4660c20704e6d8e2fd5c6c434108da0b3a0e2d20ec6a6eda504f0431"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 1375993856,
+      "platinum": 6647919
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "3471eb6553a0737fdd85d0a211e6d2c24ffc6610677392f2921b69266d917553"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "ee2750e45568796dac2330c806af31fa6272a139d314acbf398a50e89037d100"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "532a89e720074f648487a27ebf2e9e0d07af106c49ae50cfd4b5532bca8fd653"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "5740a083cb1ae8f9eea62defd77e2f9cf121f1e1c533020cdc1830a802c804b6"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "a60ebf92152e01fbda82ad48d6601c33c11dd724989706bc3af2e7bdbe302d7d"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "f9d0ca50359c9f4ccc44e18d7381732f43f7e7148164468cbce3cf2ba64edce7"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "4f1c1b34aa6d645228b91506ad5f4d197995d21022375bd07a67ca8d85555791"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "6aa90cbb0512a0054bb04b6f045eab421390c204369f502d83d9fe2044e89785"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "8e0dd91a97b44aa84096f1714b034221e94fe539e0dc9c2026692eac8f4a7824"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "9ea13af9d0ae3bde0a4dd2ff32d50d48356f6531d913574a58f52839ffaaab00"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "0883c9210531786f2dd73002ab4b85b5015948cdad047ef59e72538e700f0fe0"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "4e96beaec9458e521030d9df70dae6aee3781e629c4ffa8f3c26ead509d814df"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "db332e1d193f4d8eb525ed7665432ad2eb1ad4ab0eb19a9333a2a367f4b3cf5e"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "58aad4ba586e4d369901b9269c1ff4e585a1ecbf7cce4a0846b966f73450f661"
+    },
+    {
+     "label": "End",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1500
+     },
+     "load": 64086,
+     "items": 0,
+     "sha256_of_frame": "347b30ed8a2bc6bcbff525202353e4b20c9a0dda8ac54fb7bd7644b50c696839"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1420
+     },
+     "load": 450,
+     "items": 1,
+     "sha256_of_frame": "347b30ed8a2bc6bcbff525202353e4b20c9a0dda8ac54fb7bd7644b50c696839"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 0
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1420
+     },
+     "load": 450,
+     "items": 1,
+     "sha256_of_frame": "f6931a3001a4d2a5b9bbaf72d86bb6c7da560e04ff458e1c57fcbee06eb79dba"
+    },
+    {
+     "label": "s",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1250
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 170
+     },
+     "load": 1700,
+     "items": 1,
+     "sha256_of_frame": "f6931a3001a4d2a5b9bbaf72d86bb6c7da560e04ff458e1c57fcbee06eb79dba"
+    },
+    {
+     "label": "v",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1250
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 170
+     },
+     "load": 1700,
+     "items": 1,
+     "sha256_of_frame": "a5455c732dab7da981bd2e59140048058459c9e80f059f35b4ba36f4b2c23eb3"
+    },
+    {
+     "label": "i",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1250
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 170
+     },
+     "load": 1700,
+     "items": 1,
+     "sha256_of_frame": "037d8170df5ff7d6c1bf79881af0858663064de54eb1f993eb870fba0f39daf9"
+    },
+    {
+     "label": "s",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1250
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 170
+     },
+     "load": 1700,
+     "items": 1,
+     "sha256_of_frame": "b6adaac89daae9c0bf5b19000b3a16756aeedd69dea17dd19912b34a683a5bd1"
+    },
+    {
+     "label": "y",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1250
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 210
+     },
+     "load": 1250,
+     "items": 0,
+     "sha256_of_frame": "fe58da608a5ccb1742e8bf53cbf8806fcdd65017f16366ec0b0c655e7fa9bdae"
+    },
+    {
+     "label": "Return",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1250
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 210
+     },
+     "load": 1250,
+     "items": 0,
+     "sha256_of_frame": "fe58da608a5ccb1742e8bf53cbf8806fcdd65017f16366ec0b0c655e7fa9bdae"
+    },
+    {
+     "label": "Escape",
+     "wallet": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 1250
+     },
+     "pool": {
+      "copper": 0,
+      "silver": 0,
+      "electrum": 0,
+      "gold": 0,
+      "platinum": 210
+     },
+     "load": 1250,
+     "items": 0,
+     "sha256_of_frame": "f6931a3001a4d2a5b9bbaf72d86bb6c7da560e04ff458e1c57fcbee06eb79dba"
+    }
+   ]
+  }
+ },
+ "generator_revision": "2ab6f65"
+}
