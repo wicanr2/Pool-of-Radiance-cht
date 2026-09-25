@@ -455,6 +455,8 @@ type tacticalState struct {
 	// Casting 是 AI 施法跨行動記著的東西（Magic On、怪物的法術陣列、開始施法
 	// 還沒放出去的那一條），見 foe_cast.go（spec 096 entry 4、spec 139）。
 	Casting foeCasting
+	// Undead 是 AI 轉變不死生物的旗標與欄位，見 foe_turn_undead.go（spec 111，#71）。
+	Undead foeUndead
 	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
 	stallSignature string
 	stalledRounds  int
@@ -925,6 +927,7 @@ func (a *app) enterTacticalPreview() error {
 		if monster, ok := a.stagedMonsterFor(index, friendly); ok {
 			record := monster.Record
 			state.rememberSpellbook(index, record)
+			state.rememberUndeadColumn(index, record)
 			state.Effects[index] = append(gamepack.EffectList(nil), monster.Effects...)
 			state.BaseMovement[index] = record.Movement()
 			// 先攻修正讀這一格（overlay-25 entry 11，spec 052）。

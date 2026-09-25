@@ -178,9 +178,10 @@ func (a *app) foeSpellcasterFor(state *tacticalState, mover uint8) (foeSpellcast
 //
 // 原版在它前面還有 entry 8 的士氣、後面是 entry 9 與接近迴圈；它們不歸這一支。
 func (a *app) foeCastPhase(state *tacticalState, mover uint8, mode int) (bool, error) {
-	// entry 3 的次數骰（`03FFh`），在任何閘門之前。怪物的物品鏈 remake 還沒有
-	// （tacticalState.AttackRange 那則註解），隊員用物品也還沒接，所以擲完就走。
-	a.rollDice(1, 7)
+	// entry 3（`010Fh`）：次數骰（`03FFh`）在任何閘門之前；用了一件就結束（foe_items.go）。
+	if acted, err := a.foeUseItemPhase(state, mover, mode); acted || err != nil {
+		return acted, err
+	}
 
 	index := int(mover)
 	if spell := state.Casting.Pending[index]; spell != 0 {
@@ -197,6 +198,11 @@ func (a *app) foeCastPhase(state *tacticalState, mover uint8, mode int) (bool, e
 		}
 		state.FoeLog = state.say(msgFoeLostSpell, mover)
 		state.Status = state.FoeLog
+	}
+
+	// entry 2（`0169h`）：轉變不死生物（foe_turn_undead.go）。
+	if acted, err := a.foeTurnUndeadPhase(state, mover, mode); acted || err != nil {
+		return acted, err
 	}
 
 	spell, err := a.foeChooseSpell(state, mover)

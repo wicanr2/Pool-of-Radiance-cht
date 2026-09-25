@@ -148,6 +148,9 @@ overlay-09 entry 2（0203h）  f(記錄) → boolean
 | 列的折疊、門檻的正負號 | `TurnUndeadRow`、`TurnUndeadTable.Threshold`／`Outcome` |
 | entry 13（`1352h`）挑目標 | `gamepack.SelectTurnUndeadTarget` |
 | entry 12（`116Ah`）的整個迴圈 | `gamepack.ResolveTurnUndead` |
+| 敵方 AI 的 overlay-09 entry 2（`0203h`）| `cmd/pool-game/foe_turn_undead.go` 的 `foeTurnUndeadPhase`（#71）|
+
+玩家戰鬥指令的 `T`（overlay-08 `0427h`）remake 還沒接；AI 那一側與它共用上面兩支。
 
 一處刻意的收斂：entry 13 的欄位上界是 13（`[bp-4]` 初值 `0Dh`），而表只有
 10 欄，所以欄位 11 或 12 的目標會讓原版讀到 `4C8h` 之後的表外位元組。

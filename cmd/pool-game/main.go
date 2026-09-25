@@ -155,6 +155,8 @@ type app struct {
 	journal         *journalState
 	itemTypes       *gamepack.ItemTypeTable
 	spellParameters []gamepack.SpellParameters
+	// turnUndeadTable 是 START.EXE `DS:45Bh` 的轉變表（spec 111），AI 的 entry 2 用。
+	turnUndeadTable *gamepack.TurnUndeadTable
 	encounter       *encounterState
 	spells          *spellState
 	spellsOpen      bool
@@ -542,6 +544,11 @@ func newApp(zipPath, statePath string) (*app, error) {
 		return nil, err
 	}
 	application.spellParameters = spellParameters
+	turnUndeadTable, err := gamepack.ReadDOSTurnUndeadTable(zipPath)
+	if err != nil {
+		return nil, err
+	}
+	application.turnUndeadTable = &turnUndeadTable
 	timeRadix, err := gamepack.ReadDOSTimeRadix(zipPath)
 	if err != nil {
 		return nil, err

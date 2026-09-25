@@ -78,7 +78,19 @@ overlay-09 entry 1（`000Fh`），零走 overlay-08 `0307h` 的玩家指令迴�
 entry 2（`0203h`）是**轉變不死生物**那一支：runtime `+11h` 為 0（這一回合還沒
 試過）且記錄 `+96h`（牧師等級）大於 0 時，交給 overlay-13 entry 13（`1352h`）
 挑一隻要轉的目標，再由 entry 12（`116Ah`）擲骰執行。矩陣、列的折疊規則與
-判定寫在 [spec 111](111-turn-undead.md)。
+判定寫在 [spec 111](111-turn-undead.md)。runtime `+11h` 是**一場一次**：runtime 子結構在
+overlay-10 `13BCh` GetMem(16h)、`13D2h` FillChar 清 0，之後只有 `116Ah` 的 `11AAh` 寫它
+（exact；全部 overlay 掃 `es:[di+11h]` 的寫入只有這一處）。挑不到目標時整支不擲骰，
+所以敵方對隊伍（`+76h` 全是 0）時骰流不變。remake：`cmd/pool-game/foe_turn_undead.go`
+（`foeTurnUndeadPhase`，接在開始施法那一條之後、`foeChooseSpell` 之前），測試
+`foe_turn_undead_test.go`。
+
+被轉變的那一隻（runtime `+10h`）之後怎麼逃，原版的鏈是：entry 8 `10FFh` 讀到 `+10h`
+就寫 `+14h = 1`、印 `is forced to flee`；entry 5 `0B9Fh` 在 `+14h` 立著時反覆叫 `07E8h`；
+`07E8h` 的逃跑分支（`08C5h..091Fh`）每一步擲 `骰(1,2)` 當模式、基準方向由 `DS:6A0Dh`
+（隊伍朝向）算、隊伍那一側再加 4，`066Eh` 回報踏出盤面時交給 overlay-13 entry 7
+（`0C6Ch`，又有比較與 `骰(1,2)`）。後兩段沒讀完，remake 的士氣與逃跑都還沒接，
+所以**被轉變的目前照常行動**。
 
 ## 接近用的候選搜尋：`0912h` 早就解完了
 
@@ -256,6 +268,58 @@ overlay-19 `0F9Ch`）全都只跟 0 比。與 `DS:43A0h` 是同一個形狀—�
 人把它設起來。（唯一的例外是某個整塊複製，那與 spec 114 的 `+5A4h` 是同一
 個未解形狀。）
 
+### 挑哪一件、怎麼用、用完怎麼記（exact，2026-09-26，issue #71）
+
+輸入：`overlay-09.bin` SHA-256 `6b47e49d…9258`、`overlay-19.bin` `4694cb51…bca9`、
+`overlay-22.bin` `967065cc…dda8`、`overlay-25.bin` `9fede24b…0c0e`、`overlay-10.bin`；
+工具 `objdump -D -b binary -m i8086`（`coab-go-test:20260729`），overlay-local offset。
+far call 照 stub 換算：`00C9h:0048h` 是 overlay-19（`executable_file_offset` 1040h）entry 8
+`1A86h`；`010Ah:0075h` 是 overlay-25 entry 17 `156Ah`；`010Ah:00CAh` 是 overlay-25 entry 34
+`266Dh`；`00E2h:0039h` 是 overlay-22 entry 5 `0C14h`。
+
+entry 3 的閘門與迴圈（接上面那段）：
+
+```
+0407  runtime +2 == 0 → 返回                 ; 26 80 7D 02 00 / 75 03
+      ; +2 是這一回合的行動權：overlay-13 `1404h` 每回合設 1，全部 overlay 只有沉默
+      ; （overlay-12 `0762h`）與咳嗽（`0AB3h`）清成 0
+0440  次數 k = 1..骰(1,7)：                    ; [bp-16h] = 次數
+0458    還沒挑到才從串列頭（+C8h）掃，下一件是 +2Ah
+04D8    02EAh(記錄, 法術, 門檻) 成立 → 挑中     ; 0E E8 00 FE（near call，同一支挑法術）
+050B    門檻 −1                                ; FE 4E FE
+0519  挑中 → overlay-19 entry 8(物品, &結果)，回 1   ; 9A 48 00 C9 00
+```
+
+整支只有 `03FFh` 那一顆 `骰(1,7)`；`02EAh` 本身不擲骰。所以**用物品不改 `d7 d7` 的形狀**：
+挑中時 entry 1 在 `011Dh` 交給 entry 34，第二顆 d7（entry 4）不擲；沒挑中照常往下。
+entry 3 **沒有** `DS:6D23h`（Magic On／Off）那道閘，交給電腦的隊員預設就會用物品。
+
+overlay-19 entry 8（`1A86h`，`retf 8`：物品、結果）用的是 `DS:5CF0h` 的行動者：
+
+```
+1AA0  物品是卷軸（overlay-22 entry 6）→ 走 297Bh 挑卷軸上的法術   ; entry 3 不會送卷軸來
+1ACE  否則 +3Dh > 0 而且 +3Eh < 80h → DS:6CB3h = 1，法術 = +3Dh
+1AF1  法術為 0 → 結果 = 0，返回
+1B23  +3Dh > 38h → 減 17h（與 entry 3 的 04C7h 同形）
+1B3F  印 "<名字> uses an item"（cs:1A73h）；戰鬥中再印 "Item:"（1A80h）與物品名
+1BD8  overlay-22 entry 5（0C14h）(法術, 記錄 +10Fh, 0, &結果)
+      ; 與施法同一支。第三個引數 0：`0D23h` 不印 "casts"；+10Fh 非零時目標由 AI 挑
+1BE2  戰鬥中而且參數表 +0Bh（DS:319Fh）非零 → 結果 = entry 34（266Dh 恆回 1）
+1C0E  結果非零（非卷軸那一支）：
+1C3F    +3Ch == 0 → 不動                       ; 不會用完
+1C4C    +39h > 1  → +39h −1                    ; 一疊用掉一個
+1C5C    否則 +3Ch −1；減到 0 → overlay-25 entry 17（156Ah）從 +C8h 串列摘掉、FreeMem 3Fh
+```
+
+所以戰鬥中用了就記帳，**找不找得到目標都一樣**（entry 34 把結果蓋成 1）。
+施法者等級是行動者自己的（`0C14h` 從 `DS:5CF0h` 取人，與記憶施法同一支，strong inference：
+等級那一段沒有逐條追進 `0C14h`）。
+
+remake：`internal/gamepack/ai_items.go`（`AIItemSpell`、`ChooseAIItem`、`SpendAIItemUse`）、
+`cmd/pool-game/foe_items.go`（`foeUseItemPhase` 接在 `foeCastPhase` 開頭擲次數骰那一格）。
+效果交給 `castSpell`。測試 `cmd/pool-game/foe_items_test.go` 從 `Update()` 送鍵。
+怪物的物品鏈 remake 還沒載，所以目前只有隊員（Q、魅惑、NPC）會用到。
+
 ## entry 4（`053Eh`）是 AI 挑法術（2026-09-25，issue #64）
 
 輸入：`overlay-09.bin` SHA-256 `6b47e49d…9258`、`overlay-13.bin` `4d53df20…2390`、
@@ -395,14 +459,14 @@ overlay-13 entry 18 `20AEh`）挑目標，挑不到（輸出 0）就整段跳過
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| entry 3 擲完次數骰會掃物品鏈 | 只擲次數骰 | 怪物的物品鏈還沒載（`AttackRange` 那則註解），隊員用物品也還沒接 |
+| entry 3 擲完次數骰會掃物品鏈 | 隊員照掃（`foe_items.go`）；怪物的串列是空的 | 怪物的物品鏈還沒載（`AttackRange` 那則註解） |
 | runtime `+1` 在受傷當下清掉 | 輪到牠時比「回合開頭的生命值」 | remake 的傷害分散在好幾支；同一回合先補血再受傷、沒低過開頭的會漏 |
 | 開始施法中受傷，當下印 "lost a spell" | 輪到牠時才印、才清 | 同上；清掉的格子與之後的行動相同 |
 | 挑 `(模式 & 3) + 1` 個目標 | 骰照擲，只交第一個給 `castSpell` | 玩家那一側也一次只作用在一個目標上 |
 | 處理常式沒讀的也會放 | `SpellCaster.Implemented` 為否的當作 `02EAh` 不成立 | 施不出來；清單長度（骰面）不變 |
 | 第 7 位立著的格子拿去查表（讀到表外） | 當作不成立 | 表外那一格讀出什麼沒有追 |
 | `1BF0h` 的倒地那一支 | 不做 | `DS:6634h` 那張表 remake 沒有 |
-| entry 2 轉變不死生物在 entry 4 之前 | 沒有接 | AI 的轉變不死生物另案 |
+| entry 2 轉變之後，被轉變的那一隻由 entry 8 設 runtime `+14h` 逃跑 | 記下 `+10h`，被轉變的照常行動 | remake 的士氣（entry 8）與逃跑（`0B9Fh`、`07E8h` 的逃跑分支、overlay-13 entry 7）還沒接 |
 
 ## entry 5（`0B3Ch`）是接近迴圈
 
