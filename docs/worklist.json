@@ -93,22 +93,6 @@
       "github_issue": 64
     },
     {
-      "id": "enemy-ai-approximations",
-      "layer": "verification",
-      "title": "否決查詢 1087h 的 19h（DS:5CF0h）與 7Eh（物品 +2Eh+i 的 i 範圍）未讀，保守當成否決",
-      "body": "0D97h 擲骰、37B8h 的沿用／劃掉重擲／兩輪制都已接上。剩 1087h 的 19h 要看 DS:5CF0h 指到誰、7Eh 要看物品 +2Eh+i 的 i 範圍，目前身上有就否決（spec 059 契約 6），F1 暫定行只剩這一項。",
-      "acceptance": "兩個代碼的條件讀到 exact，attackVetoed 照做，F1 的暫定行拿掉。",
-      "verify": {
-        "kind": "present",
-        "paths": [
-          "internal/gamepack/pack/20-locale.zh-TW.json"
-        ],
-        "pattern": "兩個否決代碼",
-        "note": "F1 暫定行還在"
-      },
-      "github_issue": 65
-    },
-    {
       "id": "minor-fidelity-gaps",
       "layer": "verification",
       "title": "雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊",
@@ -179,6 +163,42 @@
         "note": "spec 067 DRAFT 還列著"
       },
       "github_issue": 70
+    },
+    {
+      "id": "ai-turn-undead-and-items",
+      "layer": "feature",
+      "title": "AI 的轉變不死生物（entry 2）與 QUICK 隊員用物品（entry 3）未接",
+      "body": "overlay-09 entry 1 依序是 entry 3 用物品 → 放出施法中 → entry 2 轉變不死生物 → entry 4 挑法術。remake 的 entry 3 只擲次數骰，物品鏈與 entry 2 都沒接。",
+      "acceptance": "entry 2／3 照 spec 096／111 接上，骰流與 d7 d7 對齊，送鍵測試覆蓋。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判：entry 2／3 接上與否"
+      },
+      "github_issue": 71
+    },
+    {
+      "id": "player-casting-time",
+      "layer": "feature",
+      "title": "玩家施法沒有施法時間與受傷打斷",
+      "body": "原版施法時間 = +0Ch÷3，不為 0 先 Begins Casting、下一次輪到才放；放之前受傷丟失。remake 玩家施法當場放；overlay-08 072Fh 未讀。",
+      "acceptance": "玩家施法照原版的施法時間與打斷，072Fh 寫進 spec 098，送鍵測試覆蓋。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 72
+    },
+    {
+      "id": "multi-target-and-area-aiming",
+      "layer": "feature",
+      "title": "多目標法術與範圍法術的瞄準層",
+      "body": "AI 施法 (模式&3)+1 個目標只交第一個給 castSpell；玩家的範圍法術沒有挑中心點的瞄準層。",
+      "acceptance": "多目標逐個套效果；範圍法術有瞄準層，AI 與玩家共用，寫進 spec 098。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 73
     }
   ]
 }

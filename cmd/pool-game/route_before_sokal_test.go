@@ -11,7 +11,10 @@ package main
 // （`4AA7 >= FEh` 才開）不是唯一的路。
 //
 // 從標題正常開局，全程從 `Update()` 送鍵；隊伍是 `bootCityParty` 的六名 60 HP 矮人
-// 穿上鏈甲、盾與長劍，這條測的是路通不通，不是一級隊伍打不打得過。
+// 穿上鏈甲、盾與長劍，這條測的是路通不通，不是一級隊伍打不打得過。所以出城前用
+// 產品自己的作弊選單（spec 141，F6／L／O）開鎖 HP 與一擊斃命，與探索器同一個做法
+// （#22）：沒開的時候，勝負跟著亂數流走——#64 讓每回合多擲原版那一對 `d7`，
+// 同一條路就在獸人那一場翻成全滅。
 
 import (
 	"fmt"
@@ -44,6 +47,7 @@ func walkToPodolPlaza(t *testing.T, entry string) *mainlineDriver {
 	if a.eclArchive != 3 || a.eventSession.CurrentBlockID() != 0 {
 		t.Skipf("開場沒有停在城區：ECL%d/%d", a.eclArchive, a.eventSession.CurrentBlockID())
 	}
+	d.setCheats(true, true)
 	street := func(x, y int) bool { return d.terrain(x, y) == 0 }
 	d.leaveMap("city → west", func(x, y int) bool { return x == 0 && y == 4 }, street, false, 3)
 	if a.spawn.Map != (gamepack.MapKey{Archive: 2, BlockID: 20}) {
@@ -129,6 +133,8 @@ func TestSlumsQuietRoomLetsThePartyRest(t *testing.T) {
 			}
 		}}
 	a := d.a
+	// 量的是腳本給的打斷設定，不是勝負：路上的戰鬥交給作弊選單（見檔頭）。
+	d.setCheats(true, true)
 	street := func(x, y int) bool { return d.terrain(x, y) == 0 }
 	d.leaveMap("city → west", func(x, y int) bool { return x == 0 && y == 4 }, street, false, 3)
 	if a.spawn.Map != slumsMap {

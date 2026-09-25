@@ -1037,6 +1037,34 @@ const foeMaxRoundsPerTurn = 20
 // foeTargetTries 是 `37B8h` 重挑時最多擲幾次（`3872h`：`次數 = 14h`）。
 const foeTargetTries = 20
 
+// rollFoeTarget 是 overlay-13 `37B8h` 的重挑（#65）：從 candidates(relaxed) 擲
+// `骰(1, n)`，過不了 `1087h` 的劃掉、劃掉的號碼再擲到就重擲，最多二十次；第一輪
+// 挑不到就放寬（`DS:6674h` 的 `+6`）再來一輪。追擊（`foeTurn`）與施法挑目標
+// （`foeRetarget`）走同一支，差別只在名單的射程。挑不到回 0。
+func (a *app) rollFoeTarget(state *tacticalState, mover uint8,
+	candidates func(relaxed bool) ([]uint8, error)) (uint8, error) {
+	for _, relaxed := range []bool{false, true} {
+		targets, err := candidates(relaxed)
+		if err != nil {
+			return 0, err
+		}
+		struck := make([]bool, len(targets))
+		left := len(targets)
+		for tries := 0; tries < foeTargetTries && left > 0; tries++ {
+			slot := a.rollDice(1, len(targets)) - 1
+			if struck[slot] {
+				continue
+			}
+			if !state.attackVetoed(targets[slot], mover) {
+				return targets[slot], nil
+			}
+			struck[slot] = true
+			left--
+		}
+	}
+	return 0, nil
+}
+
 
 // attackRangeOf 是那一格搆得到幾格。原版 overlay-09 entry 5 的 `0C3Eh` 每一
 // 輪都重算一次，所以走出去之後換武器也會跟著變；這裡的來源是建 roster 時填
@@ -1083,26 +1111,9 @@ func (a *app) foeTurn(state *tacticalState) error {
 	// 兩輪制（`3973h`）：第一輪一個都挑不到（名單空的或全部劃掉），把戰術地圖的
 	// 「放寬」打開（`DS:6674h` 的 `+6`，搜尋時跳過地形判定）再挑一輪。
 	pickTarget := func() (uint8, error) {
-		for _, relaxed := range []bool{false, true} {
-			targets, err := state.foeTargetCandidatesAt(mover, side, relaxed)
-			if err != nil {
-				return 0, err
-			}
-			struck := make([]bool, len(targets))
-			left := len(targets)
-			for tries := 0; tries < foeTargetTries && left > 0; tries++ {
-				slot := a.rollDice(1, len(targets)) - 1
-				if struck[slot] {
-					continue
-				}
-				if !state.attackVetoed(targets[slot], mover) {
-					return targets[slot], nil
-				}
-				struck[slot] = true
-				left--
-			}
-		}
-		return 0, nil
+		return a.rollFoeTarget(state, mover, func(relaxed bool) ([]uint8, error) {
+			return state.foeTargetCandidatesAt(mover, side, relaxed)
+		})
 	}
 	target, ok := state.foeTarget(mover)
 	if !ok {

@@ -457,22 +457,17 @@ func (a *app) foeSpellTarget(state *tacticalState, mover, spell uint8,
 
 // foeRetarget 是 overlay-13 `37B8h` 帶「強制重挑」：舊目標不看，從射程內的敵人
 // （`010Ah:00C0h(記錄, 射程)`，依直線追蹤成本排）擲 Roll(1, n) 挑一個，寫進 runtime
-// `+0Ah`——所以放完法術之後，這一隻追的就是法術打的那一個。一個都沒有時放寬地形
-// （`DS:6674h` 的 +6）再填一次。remake 沒有 `1087h` 的可打判定（spec 096），第一擲就收。
+// `+0Ah`——所以放完法術之後，這一隻追的就是法術打的那一個。劃掉、二十次與兩輪制
+// 與追擊共用 `rollFoeTarget`（含 `1087h`，#65）。
 func (a *app) foeRetarget(state *tacticalState, mover uint8, budget int) (uint8, bool, error) {
-	for _, relaxed := range []bool{false, true} {
-		targets, err := state.opposingWithin(mover, budget, relaxed)
-		if err != nil {
-			return 0, false, err
-		}
-		if len(targets) == 0 {
-			continue
-		}
-		target := targets[a.rollDice(1, len(targets))-1]
-		state.setFoeTarget(mover, target)
-		return target, true, nil
+	target, err := a.rollFoeTarget(state, mover, func(relaxed bool) ([]uint8, error) {
+		return state.opposingWithin(mover, budget, relaxed)
+	})
+	if err != nil || target == 0 {
+		return 0, false, err
 	}
-	return 0, false, nil
+	state.setFoeTarget(mover, target)
+	return target, true, nil
 }
 
 // opposingWithin 是 overlay-25 entry 32（`246Dh`）：以施法者的位置與體型，在 budget

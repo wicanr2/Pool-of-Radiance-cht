@@ -55,6 +55,15 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **物品選單的 I）d 鑑定服務（200 gp）。** overlay-19 entry 17（1F52h）物品選單的 I）d，收 200 gp 鑑定；remake 沒有。
       **驗收**：條件、費用、效果 exact 寫進 spec 067；remake 接上並有 Update() 送鍵測試。
       **討論**：[#68](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/68)
+- [ ] **AI 的轉變不死生物（entry 2）與 QUICK 隊員用物品（entry 3）未接。** overlay-09 entry 1 依序是 entry 3 用物品 → 放出施法中 → entry 2 轉變不死生物 → entry 4 挑法術。remake 的 entry 3 只擲次數骰，物品鏈與 entry 2 都沒接。
+      **驗收**：entry 2／3 照 spec 096／111 接上，骰流與 d7 d7 對齊，送鍵測試覆蓋。
+      **討論**：[#71](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/71)
+- [ ] **玩家施法沒有施法時間與受傷打斷。** 原版施法時間 = +0Ch÷3，不為 0 先 Begins Casting、下一次輪到才放；放之前受傷丟失。remake 玩家施法當場放；overlay-08 072Fh 未讀。
+      **驗收**：玩家施法照原版的施法時間與打斷，072Fh 寫進 spec 098，送鍵測試覆蓋。
+      **討論**：[#72](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/72)
+- [ ] **多目標法術與範圍法術的瞄準層。** AI 施法 (模式&3)+1 個目標只交第一個給 castSpell；玩家的範圍法術沒有挑中心點的瞄準層。
+      **驗收**：多目標逐個套效果；範圍法術有瞄準層，AI 與玩家共用，寫進 spec 098。
+      **討論**：[#73](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/73)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -64,9 +73,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **不開作弊、以原版規則強度從標題通關到結局。** README（第 17、24–27、381–383 行）與 spec 137 第 5 行都寫著「不開作弊、以原版強度通關仍未做」，引用的是 #19、#22，但這兩個 issue 已經關閉，這項工作因此沒有 open issue 追蹤。 - 主線收據的口徑是作弊選單（spec 141）跑通，見 #5、#40。 - 自然強度的隊伍在 spec 137 的路線上走不到終點。
       **驗收**：關閉作弊選單從標題跑到結局的收據，或逐段真實全滅卡點紀錄。
       **討論**：[#57](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/57)
-- [ ] **否決查詢 1087h 的 19h（DS:5CF0h）與 7Eh（物品 +2Eh+i 的 i 範圍）未讀，保守當成否決。** 0D97h 擲骰、37B8h 的沿用／劃掉重擲／兩輪制都已接上。剩 1087h 的 19h 要看 DS:5CF0h 指到誰、7Eh 要看物品 +2Eh+i 的 i 範圍，目前身上有就否決（spec 059 契約 6），F1 暫定行只剩這一項。
-      **驗收**：兩個代碼的條件讀到 exact，attackVetoed 照做，F1 的暫定行拿掉。
-      **討論**：[#65](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/65)
 - [ ] **雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊。** 規模小、各自不阻擋主線，合併追蹤；任一條要動工時可拆成子 issue。 - [ ] `internal/gamepack/spell_cast.go:495`：Remove Curse 不清物品 `+36h`，remake 沒有詛咒欄位。 - [ ] `spell_cast.go:568`：射線幾何「先收整邊」，是近似。 - [ ] `internal/character/export.go:246`：`.CHA` 匯出不寫豁免表 `+6Dh..+71h` 與生命骰 `+73h`。 - [ ] `docs/spec/124`：二十幾個目的地區塊還沒逐一命名。 - [ ] `docs/spec/108`：`FINAL` 那幾張圖的調色仍是 DRAFT。 - [ ] `WORKLIST.md`：逐顆 overlay 命名與全模組函式清冊（依 CLAUDE.md §11，只做到能判定不阻擋玩家路徑即可）。
       **驗收**：issue 內六條逐一打勾或寫明不做的理由。
       **討論**：[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)
