@@ -7,7 +7,7 @@ DRAFT（`08BCh` 自己在做什麼、四個覆寫參數的語意、各法術的�
 日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）、模式 0Ah 分邊與模式 8
 射線（issue #78）、受傷打斷與用物品（issue #75／#77）、模式 0Ah 的效果怎麼掛上去、在戰鬥裡
 改什麼（issue #81）；只掛效果的那一批與 `07C7h` 的特例（issue #89）；靈魂鎚、致病的收尾、傷害型
-碰觸法術與緩毒術的卡點（issue #99）。
+碰觸法術與緩毒術的卡點（issue #99）；營地施法走同一支 `08BCh`、表換成 `0A88h`（issue #100）。
 
 ## 擲骰：overlay-24 的兩支
 
@@ -1165,8 +1165,101 @@ entry 20 見上一節：群組 9 免疫 → 「豁免成功而且規則是 1」�
 |---|---|---|
 | 每一格印「<名字> <訊息>」 | 狀態列只留「作用在 N 人身上」 | 狀態列只有一行 |
 | 緩毒術之後叫 `4Eh`、掛 `0Fh` | 只掛 `16h` | 中毒逐時那一套 remake 沒有（見〈#99：收尾〉）|
-| 探索（營地）施法同樣走 `08BCh` | `field_cast.go` 只結算治療等幾種，不掛效果 | 不在 #89 範圍 |
 | 靈魂鎚的鎚子給怪物施法者 | 只給隊員 | remake 的怪物物品串列不跑效果收尾（見〈#99：收尾〉）|
+
+## 營地施法：同一支 `08BCh`，表換成 `0A88h`（2026-09-26，issue #100）
+
+輸入：`poolrad/game.ovr` 抽出的 overlay-22（SHA-256 `967065cc…`）、overlay-08（`932ce281…`）、
+overlay-15（`470de2bf…`），`coab-go-test:20260729` 的 GNU objdump 2.40（`-b binary -m i8086`），
+位址是 overlay 檔內位移；far call 以 `docs/audit/dos-ovr-manifest.json` 反查（overlay-22 段 `00E2h`、
+overlay-13 段 `0096h`）。參數表是 `START.EXE` DS:`3194h`（`docs/audit/pool-spell-dispatch.json`）。
+以下除註明者外皆 exact（位元組逐條讀）。
+
+### 同一支入口
+
+營地 C)AST 是 overlay-15 `0512h` `9A 39 00 E2 00`，推 `法術, 0, 1, &結果`——也就是 overlay-22
+entry 5（`0C14h`）的 `[bp+0Eh]` 法術、`[bp+0Ch]` 0（玩家）、`[bp+0Ah]` 1（印 "casts"）。
+entry 5 在戰鬥外只多兩段：
+
+```
+0C2A  80 3E 54 49 05 / 75 03          DS:4954h != 5（不在戰鬥）才往下
+0C3F  80 BD 9B 31 00 / 74 03          參數表 +7 為 0 → "is a combat-only spell..." / "Lose it? "
+                                      （記憶；物品是 "That Item"…"Use it? "），兩者都不放（spec 144）
+0D23  80 7E 0A 00 / 74 24             [bp+0Ah] 非 0 且不是物品 → 印「<名字> casts」（0BF2h）
+0D63  FF 1E 78 6A                     call dword ptr ds:6A78h(法術, [bp+0Ch], &結果)  ; 收表
+0D77  80 3E 54 49 05 / 74 03          戰鬥中才畫施法動畫（0D81h..0E74h）
+0E7D  9A 5C 00 00 01 / 0E8D 9A 70 00 0A 01   不是物品 → 從記憶清掉
+0EA3  FF 9D 78 6A                     派發處理常式（spec 073）
+```
+
+所以營地與戰鬥是同一條派發、同一支處理常式、同一支 `08BCh`。
+
+### 收表：`DS:6A78h` 在戰鬥外指 overlay-22 entry 4（`0A88h`）
+
+overlay-08 entry 1（`0071h`，開打）：`0077h` `C6 06 54 49 05`、`007Ch` `B8 7A 00 / BA 96 00 / A3 78 6A`
+——`DS:4954h = 5`、`DS:6A78h = 0096h:007Ah`（overlay-13 entry 18，`20AEh`）。收場那一支（`0000h`，
+`011Dh` 呼叫）的 `0060h` `B8 34 00 / BA E2 00 / A3 78 6A` 設回 `00E2h:0034h`（overlay-22 entry 4）。
+
+`0A88h(法術, 旗標, &結果)`（`retf 8`）：
+
+```
+0A8E  DS:6CA9h 為 nil → = DS:5CF0h（目前角色）
+0AA4  DS:6B89h = DS:5CF0h；DS:6B88h = 1；結果 = 1     ; 表先放施法者
+0AC8  8A 85 9B 31                     switch 參數表 +7
+0ACE  1 → 完成（表 = [施法者]）
+0AD6  2 → 010Ah:00D9h、"Cast Spell on whom"（0A75h）、010Ah:00F2h(&6CA9h, 1) 挑隊員；
+         沒挑 → 表清空、結果 0；挑了 → 表 = [他]
+0B2A  4 → 從 DS:5CF4h 沿 +104h 走完整隊，全部進表（B8 88 6B … FE 06 88 6B）
+0B95  其餘 → 結果 0
+```
+
+六十七格的 `+7` 只用 0、1、2、4（`TestCampTargetFollowsOverlay22Entry4`）：整隊是祝福、死靈、急速、
+隱形 10 呎與 63；自己是偵測類、友誼、閱讀魔法、護盾、靈魂鎚、鏡影、祈禱、閃現；挑一個是治療、防護
+邪惡／善良、抗寒、變大、縮小、抗火、緩毒、隱形、力量、解除類、解除魔法、恢復；0 是其餘全部
+（攻擊、碰觸、詛咒、緩速、定身…）。**碰觸法術（`+2` FFh）的 `+7` 全是 0**，所以 `0997h` 那段命中
+擲骰在營地走不到；`+8` 非 0 而營地放得出去的只有縮小術。
+
+### `08BCh` 與處理常式在營地的差異
+
+- `08BCh`（`08BCh..0A72h`）沒有任何 `DS:4954h` 判斷：豁免、`07C7h` 持續、群組 9、entry 20 照走。
+- `07C7h` 只有 `082Ch`（編號 `3Fh`）看 `4954h`：戰鬥外是 (Roll(1, 10) + 10) × 10（上面〈`07C7h`〉表）。
+- 祝福 `0F35h` 的 `0F88h` 在戰鬥外跳過「貼身有沒有敵人」（上面〈模式 0Ah：分邊〉）。隊員的 `+10Eh`
+  在 remake 一律是 0（`sideOf`），所以分邊留下整隊（strong inference：隊員記錄 `+10Eh` 在戰鬥外
+  是 0 沒有逐位元組讀過）。
+- 急速 `2724h` 的額度、先解緩速與 `27F5h..2840h` 的群組 18 派發都沒有戰鬥判斷——營地施的急速
+  一樣當場老一歲。
+- 變大術 `128Dh`、力量術 `1F16h`、友誼 `13C8h`、靈魂鎚 `19A8h`、鏡影 `1A6Fh`、隱形 `19FBh`、泛型
+  `10D1h`／`110Bh`／`1491h`／`2600h`、緩毒 `1846h` 的位元組範圍裡都沒有 `54 49`（對 `4954h` 的讀取）。
+
+### 持續與到期
+
+掛上去的節點就是角色記錄 `+7Fh` 的那一條（spec 069）：開打時跟著人進盤面、收場寫回，戰鬥外由
+overlay-20 offset `0` 逐分鐘倒數（走一步一分、休息一刻五分），到期先跑收尾再摘。所以營地施的護盾
+（`+5 × 等級`）在營地與戰鬥裡用的是同一個計數。
+
+### remake 的對應
+
+`cmd/pool-game/field_cast_effects.go`：`campSpellTable` 是 `0A88h`（`gamepack.CampTarget` 讀 `+7`），
+`campSpellEffect` 是戰鬥外的 `08BCh`——前提（`BlockedByEffect`／`RequiresEffect`／墊生命值）、
+分邊（`FilterSpellSide`，邊一律 0、不問貼身）、等級覆寫（友誼、鏡影、緩毒）、`SpellEffectDuration`
+（`inCombat` 為假）、群組 9、`ApplySpellEffectNode`、急速的群組 18、靈魂鎚，力量那一組是
+`campStrengthSpell`。`field_cast.go` 在挑法術那一步照 `+7` 決定要不要問對象，`item_page.go` 的
+Use 走同一支。測試全部從 `Update()` 送鍵（`field_cast_effects_test.go`）：
+`TestCampShieldCarriesIntoCombatAndStopsMagicMissile`（對照組照打）、
+`TestCampReadMagicRevealsTheScroll`、`TestCampWandOfReadMagicRevealsTheScroll`、
+`TestCampBlessCoversThePartyAndExpiresWithTime`、`TestCampHasteAgesThePartyAndCancelsSlow`、
+`TestCampEffectsSurviveSaveAndLoad`、`TestCampCombatOnlySpellAttachesNothing`。把 `campSpellEffect`
+短路成不處理，前五條全紅（2026-09-26 實跑）。
+
+與原版不同、寫明的幾處：
+
+| 原版 | remake | 理由 |
+|---|---|---|
+| `+7` 為 0 的記憶法術問 "Lose it?"，Y 才清掉、都不放 | 照舊挑對象、清掉記憶、說「要在戰鬥中才有目標」 | 提問那一段沒接（記憶那一側；物品那一側 spec 149 已接）|
+| 每一格印「<名字> <訊息>」、放之前印 "casts" | 選單最後一行只留一句（作用在誰、或 N 人）| 框內只有一行訊息 |
+| 物品頁 `+7` 是 1／4 的不問對象 | 物品頁仍先挑人，效果照 `+7` 收表 | 物品頁的對象步驟沿用 spec 149 |
+| 縮小術（`+8` = 1）走 `08BCh` 擲豁免、`1382h` 解掉變大 | 營地仍是「要在戰鬥中才有目標」 | 營地的豁免與 entry 15 摘節點的收尾沒接 |
+| 死靈（`+7` = 4）、解除魔法、恢復在營地放得出去 | 營地仍是「要在戰鬥中才有目標」 | 各自的處理常式在營地的表沒讀 |
 
 ## #99：收尾與碰觸（2026-09-26）
 

@@ -434,6 +434,14 @@ func (a *app) itemPageTargetInput(slot int) error {
 		if err != nil {
 			return err
 		}
+		// 掛效果的那一批走戰鬥外的 `08BCh`，表照 `0A88h`（field_cast_effects.go，issue #100）。
+		option := castOption{ID: page.spell, Label: a.spellLabel(page.spell)}
+		if message, handled := a.campSpellEffect(slot, option, effect, level, page.target); handled {
+			state.message = message
+			a.spendItemPageUse(slot)
+			page.stage = itemPagePicking
+			return nil
+		}
 		subject := &a.state.Party[page.target]
 		applied := applyFieldEffect(subject, effect)
 		syncTrainedLibraryCharacter(&a.state, *subject)

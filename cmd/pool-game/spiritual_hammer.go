@@ -32,13 +32,22 @@ func init() {
 // 鎚子沒有裝備上，`0916h` 的重算不會改任何數值。
 func (a *app) grantSpiritualHammer(state *tacticalState, cell uint8) {
 	member := a.partyMemberAt(state, cell)
-	if member == nil || hasSpiritualHammer(member.Inventory) ||
-		len(member.Inventory) >= gamepack.SpiritualHammerItemLimit {
+	if member == nil || !a.giveSpiritualHammer(member) {
 		return
+	}
+	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastGainsItem), strings.TrimSpace(member.Name)))
+}
+
+// giveSpiritualHammer 是 `07F6h` 模式 0 落在隊員身上那一段，回傳有沒有給。營地施的靈魂鎚
+// 走同一支（field_cast_effects.go）。
+func (a *app) giveSpiritualHammer(member *poolsave.Character) bool {
+	if hasSpiritualHammer(member.Inventory) ||
+		len(member.Inventory) >= gamepack.SpiritualHammerItemLimit {
+		return false
 	}
 	member.Inventory = append(member.Inventory, a.namedItem(gamepack.SpiritualHammerItem()))
 	syncTrainedLibraryCharacter(&a.state, *member)
-	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastGainsItem), strings.TrimSpace(member.Name)))
+	return true
 }
 
 // removeSpiritualHammer 是 `07F6h` 的模式 1（節點到期時 entry 2 叫的收尾）：`0849h` 找到就用

@@ -159,6 +159,14 @@ func (a *app) fieldCastAdvance() error {
 			return nil
 		}
 		a.fieldCastSpell = a.fieldCastCursor
+		// 參數表 `+7` 是 1（自己）或 4（整隊）的不問 "Cast Spell on whom"（`0A88h`，
+		// field_cast_effects.go）。
+		if id := a.fieldCastOptions[a.fieldCastSpell].ID; int(id) < len(a.spellParameters) {
+			switch a.spellParameters[id].CampTarget() {
+			case gamepack.CampTargetSelf, gamepack.CampTargetParty:
+				return a.resolveFieldCast(a.fieldCastCaster)
+			}
+		}
 		a.fieldCastStage, a.fieldCastCursor = fieldCastPickTarget, a.fieldCastCaster
 	case fieldCastPickTarget:
 		if a.fieldCastCursor >= len(a.state.Party) {
@@ -171,7 +179,10 @@ func (a *app) fieldCastAdvance() error {
 
 // resolveFieldCast 把選中的法術施在目標身上。
 //
-// 戰鬥外沒有戰術格，所以只結算**作用在人身上**的那幾種：治療、把生命值墊到
+// 掛效果的那一批（祝福、護盾、閱讀魔法、隱形…）走 campSpellEffect，與戰鬥中同一支
+// `08BCh`，表照參數表 `+7`（field_cast_effects.go）。
+//
+// 其餘戰鬥外沒有戰術格，所以只結算**作用在人身上**的那幾種：治療、把生命值墊到
 // 下限、拿掉效果、還一級能量吸取、能力值加成。其餘（傷害、範圍、睡眠…）
 // 原版在戰鬥外也沒有目標可打，這裡照實說一句，不假裝施出去了。
 func (a *app) resolveFieldCast(target int) error {
@@ -192,6 +203,16 @@ func (a *app) resolveFieldCast(target int) error {
 	effect, err := a.spellCaster.Cast(option.ID, a.spellParameters, casterLevel, a.roller)
 	if err != nil {
 		return err
+	}
+	// 掛效果的那一批走戰鬥外的 `08BCh`（field_cast_effects.go，issue #100）。
+	if message, handled := a.campSpellEffect(a.fieldCastCaster, option, effect,
+		casterLevel, target); handled {
+		caster.Memorised[option.Slot] = 0
+		syncTrainedLibraryCharacter(&a.state, *caster)
+		a.fieldCastMessage = message
+		a.fieldCastStage, a.fieldCastCursor = fieldCastPickCaster, 0
+		a.fieldCastOptions = nil
+		return nil
 	}
 	subject := &a.state.Party[target]
 	applied := applyFieldEffect(subject, effect)

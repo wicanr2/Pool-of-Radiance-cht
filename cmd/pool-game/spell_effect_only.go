@@ -113,7 +113,18 @@ func (state *tacticalState) attachSpellEffect(index int, code uint8, duration in
 // 能力值那幾格，回 0（`08F2h` 會退回施法者等級）。
 func (a *app) raiseAbilityForSpell(state *tacticalState, cell uint8, bonus gamepack.AbilityBonus) int {
 	subject := a.partyMemberAt(state, cell)
-	if subject == nil || bonus.Ability < 0 || bonus.Ability >= len(subject.Abilities) {
+	if subject == nil {
+		return 0
+	}
+	before := raiseMemberAbility(subject, bonus)
+	syncTrainedLibraryCharacter(&a.state, *subject)
+	return before
+}
+
+// raiseMemberAbility 是 `13CEh..1404h` 落在隊員記錄上：加、夾在上限，回傳加之前的值。
+// 營地施的友誼術走同一支（field_cast_effects.go）。
+func raiseMemberAbility(subject *poolsave.Character, bonus gamepack.AbilityBonus) int {
+	if bonus.Ability < 0 || bonus.Ability >= len(subject.Abilities) {
 		return 0
 	}
 	before := subject.Abilities[bonus.Ability]
@@ -122,7 +133,6 @@ func (a *app) raiseAbilityForSpell(state *tacticalState, cell uint8, bonus gamep
 		value = bonus.Cap
 	}
 	subject.Abilities[bonus.Ability] = value
-	syncTrainedLibraryCharacter(&a.state, *subject)
 	return before
 }
 
