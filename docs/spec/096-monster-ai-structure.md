@@ -227,6 +227,9 @@ bytes 對照（overlay-09，SHA-256 `6b47e49d…09258`，`objdump -b binary -m i
 把大於 100 的寫成 100。群組 11h 的三個代碼（spec 112）：`01h` 加 5（overlay-12
 entry 5 `010Fh`，byte 繞回）、`02h` 減 5 不低於 0（entry 6 `0121h`）、`0Bh` 魅惑的
 套用端在節點已套過時直接返回，對士氣沒有作用。證據等級：exact。
+兩次派發是 `1169h..1172h` 與 `11BCh..11C5h`（`B0 11 50 … 9A 2F 00 00 01`），各在比較之前；
+remake 的 `gamepack.AdjustMorale` 依這個順序算，`TestBlessAndCurseMoveTheMoraleCheck`
+從 `foeTurn` 驗祝福撐住、詛咒壓垮第二關（spec 112〈群組 17〉，#86）。
 
 `+11Bh` 是**目前生命值**（`+32h` 是上限）——這一段的百分比算式就是證據。
 神殿的起死回生與石化解除把它寫成 1，所以那兩項是「活過來但只剩一點」

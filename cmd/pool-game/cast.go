@@ -478,7 +478,12 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 					picked, option.Label))
 				continue
 			}
-			if a.savedAgainstSpellWithModifier(state, picked, option.ID, modifier) {
+			// 豁免在 `1740h` 先擲；overlay-24 entry 20（`17B0h`）先問群組 9 再看豁免（#86）。
+			saved := a.savedAgainstSpellWithModifier(state, picked, option.ID, modifier)
+			if a.unaffectedBySpellEffect(state, picked, gamepack.HoldPersonEffectCode, casterLevel) {
+				continue
+			}
+			if saved {
 				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
 				continue
 			}
@@ -542,7 +547,12 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 				picked, option.Label))
 			break
 		}
-		if a.savedAgainstSpell(state, picked, option.ID) {
+		// `08BCh` 在 `096Bh` 先擲豁免，`0A5Ah` 的 entry 20 先問群組 9 再看豁免（#86）。
+		saved := a.savedAgainstSpell(state, picked, option.ID)
+		if a.unaffectedBySpellEffect(state, picked, gamepack.CharmPersonEffectCode, casterLevel) {
+			break
+		}
+		if saved {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
 			break
 		}
@@ -783,6 +793,10 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 				continue
 			}
 			if code != 0 {
+				// entry 20 先問群組 9：免疫的印 "is Unaffected"、不掛（#86）。
+				if a.unaffectedBySpellEffect(state, index, code, casterLevel) {
+					continue
+				}
 				state.applySpellEffect(int(index), code, duration, casterLevel)
 			}
 			affected++

@@ -6,18 +6,25 @@ import "testing"
 func TestSideSpellEffectsFollowTheHandlers(t *testing.T) {
 	blessed := EffectList{}.Append(NewEffectNode(BlessEffectCode, 6, 1, false))
 	cursed := EffectList{}.Append(NewEffectNode(CurseEffectCode, 6, 1, false))
-	if got := HitRollEffectModifier(blessed, nil); got != 1 {
+	modifier := func(attacker, target EffectList) int {
+		value, _ := HitRollEffects{
+			Attacker: HitRollCombatant{Effects: attacker},
+			Target:   HitRollCombatant{Effects: target},
+		}.Apply(10)
+		return int(value) - 10
+	}
+	if got := modifier(blessed, nil); got != 1 {
 		t.Errorf("祝福 %d，應該 +1", got)
 	}
-	if got := HitRollEffectModifier(cursed, nil); got != -1 {
+	if got := modifier(cursed, nil); got != -1 {
 		t.Errorf("詛咒 %d，應該 −1", got)
 	}
 	// 群組 10 問的是攻擊者；祝福掛在目標身上不影響對它出手的人。
-	if got := HitRollEffectModifier(nil, blessed); got != 0 {
+	if got := modifier(nil, blessed); got != 0 {
 		t.Errorf("目標身上的祝福改了命中 %d", got)
 	}
 	// 同一個碼兩個節點：每個群組只問一次最早的那一個。
-	if got := HitRollEffectModifier(blessed.Append(NewEffectNode(BlessEffectCode, 6, 1, false)), nil); got != 1 {
+	if got := modifier(blessed.Append(NewEffectNode(BlessEffectCode, 6, 1, false)), nil); got != 1 {
 		t.Errorf("兩個祝福節點疊成 %d", got)
 	}
 

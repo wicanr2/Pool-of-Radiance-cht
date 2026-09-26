@@ -232,7 +232,7 @@ func TestBlessTwiceRefreshesInsteadOfStacking(t *testing.T) {
 	if count != 1 {
 		t.Fatalf("ally 2 carries %d bless nodes, want 1: %+v", count, state.Effects[2])
 	}
-	if got := state.hitRollEffectModifier(2, 3); got != 1 {
-		t.Errorf("bless modifier is %d, want +1", got)
+	if got, missed := state.hitRollAfterEffects(2, 3, 10); got != 1 || missed {
+		t.Errorf("bless modifier is %d (missed %v), want +1", got, missed)
 	}
 }

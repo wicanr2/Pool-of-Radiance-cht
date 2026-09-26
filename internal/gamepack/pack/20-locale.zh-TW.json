@@ -81,6 +81,7 @@
       "ui.castSleptNone": "%s 沒有催眠到任何人。",
       "ui.castStronger": "%s 變強了：%d/%02d。",
       "ui.castTookEffect": "%s 施展了 %s。",
+      "ui.castUnaffected": "%d 不受影響。",
       "ui.castWholeSide": "%s 施展 %s，作用在 %d 人身上。",
       "ui.characterName": "人物姓名：",
       "ui.characterSheet": "人物資料",

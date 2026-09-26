@@ -386,6 +386,8 @@ type tacticalState struct {
 	// 魅惑人類與定身術用它們判斷目標算不算「人」，迷蛇術用種類收目標。
 	CreatureType []uint8
 	BodySize     []uint8
+	// RecordNames 是每一格記錄 `+0` 的名字（怪物才有；效果 12h／1Ah／30h 比名字表，#86）。
+	RecordNames []string
 	// SaveTargets 是每一格的五個豁免目標值（記錄 `+6Dh` 起，spec 075），
 	// SaveBonus 是記錄 `+101h` 的修正。隊員的目標值由職業等級查表算出來。
 	SaveTargets [][gamepack.SavingThrowCategories]uint8
@@ -959,6 +961,7 @@ func (a *app) enterTacticalPreview() error {
 			state.SleepFlag[index] = record.Raw[0x2e]
 			state.CreatureType[index] = record.CreatureType()
 			state.BodySize[index] = record.BodySize()
+			state.rememberRecordName(index, record.Name)
 			// 怪物記錄與角色記錄同一份 285-byte 版面，豁免那五格在 `+6Dh`。
 			targets, err := gamepack.SavingThrowTargets(record.Raw[:])
 			if err != nil {
@@ -1978,12 +1981,13 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	var lastRoll uint8
 	for _, dice := range swings {
 		lastRoll = uint8(a.rollDice(1, 20))
-		// 命中骰擲出來之後先問效果系統（祝福 +1、詛咒 −1，overlay-24 entry 6，#81）。
-		hit, err := combat.ResolveHit(lastRoll, state.THAC0[attacker], state.ArmorClass[target],
-			state.hitRollEffectModifier(attacker, target))
+		// 命中骰擲出來之後先問效果系統：群組 10／16（overlay-24 entry 6，#81／#86）。
+		modifier, missed := state.hitRollAfterEffects(attacker, target, lastRoll)
+		hit, err := combat.ResolveHit(lastRoll, state.THAC0[attacker], state.ArmorClass[target], modifier)
 		if err != nil {
 			return err
 		}
+		hit = hit && !missed
 		if !hit {
 			continue
 		}

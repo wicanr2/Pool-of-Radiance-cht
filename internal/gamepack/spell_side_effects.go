@@ -8,7 +8,7 @@ package gamepack
 // (目標, 碼, 持續 = `07C7h`(法術), 等級, `[bp+0Eh]`, 豁免規則, 豁免結果, 訊息)。
 // 效果真正作用的地方不在施法那一側，而是各個戰鬥計算當下問效果系統的那幾個群組：
 //
-//	群組 10（overlay-24 entry 6 `0CE9h`）  攻擊者身上、改命中骰 `DS:6780h`
+//	群組 10／16（overlay-24 entry 6 `0CE9h`／`0CF6h`）攻擊者與目標身上、改命中骰 `DS:6780h`
 //	群組 18（overlay-13 `0055h`／`016Fh`／`0DB2h`）每回合初始化時改攻擊次數與移動的工作值 `DS:6778h`
 //
 // 每個群組對每個代碼只問一次 `014Dh`，而 `014Dh` 找到的是**最早掛上**的那一個節點
@@ -28,36 +28,8 @@ const (
 	EffectHasteAgedBit = 0x10
 )
 
-// attackerHitEffectGroup 是群組 10 的代碼，照原版的呼叫順序（spec 112）。
-var attackerHitEffectGroup = [...]uint8{0x01, 0x02, 0x21, 0x24, 0x31, 0x03, 0x06, 0x12, 0x1a}
-
-// HitRollEffectModifier 是命中骰（`DS:6780h`）在擲出來、自然 20 改寫成 100 之後，
-// 由效果系統加減的量（overlay-24 entry 6：`0CE9h` 問攻擊者的群組 10、`0CF6h` 問目標的
-// 群組 16，之後才與 THAC0、AC 比）。
-//
-// **只算處理常式逐條讀過的碼**：
-//
-//	01h 祝福  overlay-12 `010Fh`  80 06 83 67 05 / FE 06 80 67    命中骰 +1（士氣格 +5）
-//	02h 詛咒  overlay-12 `0121h`  … FE 0E 80 67                   命中骰 −1（士氣格 −5，不低於 0）
-//
-// 群組 10 其餘的碼與群組 16 的碼還沒逐支讀，身上帶著也不改——寧可少算，
-// 不用 spec 112 機械抽出的表去猜條件。
-func HitRollEffectModifier(attacker, target EffectList) int {
-	_ = target // 群組 16 的處理常式還沒有一支接上來。
-	modifier := 0
-	for _, code := range attackerHitEffectGroup {
-		if !attacker.Has(code) {
-			continue
-		}
-		switch code {
-		case BlessEffectCode:
-			modifier++
-		case CurseEffectCode:
-			modifier--
-		}
-	}
-	return modifier
-}
+// 命中骰的調整（群組 10／16）在 hit_roll_effects.go，掛效果前的免疫（群組 9）在
+// effect_immunity.go（issue #86）。
 
 // RoundRateEffects 記一個人在回合初始化時身上帶著群組 18 的哪幾個碼。
 type RoundRateEffects uint8

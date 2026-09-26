@@ -25,14 +25,7 @@ func (state *tacticalState) applySpellEffect(index int, code uint8, duration, ca
 		gamepack.NewEffectNode(code, uint16(duration), uint8(casterLevel), false))
 }
 
-// hitRollEffectModifier 是 overlay-24 entry 6 在擲出命中骰之後問群組 10（攻擊者）
-// 與群組 16（目標）加減的量。
-func (state *tacticalState) hitRollEffectModifier(attacker, target uint8) int {
-	if int(attacker) >= len(state.Effects) || int(target) >= len(state.Effects) {
-		return 0
-	}
-	return gamepack.HitRollEffectModifier(state.Effects[attacker], state.Effects[target])
-}
+// 命中擲骰時的群組 10／16 在 hit_roll_effects.go（#86）。
 
 // dispatchRateEffects 是群組 18 派發一次：回這個人身上帶著哪幾個碼，順帶跑 `27h`
 // 處理常式開頭那一段（最早的急速節點第一次被問到時老一歲）。

@@ -81,6 +81,7 @@
       "ui.castSleptNone": "%s puts nobody to sleep.",
       "ui.castStronger": "%s is stronger: %d/%02d.",
       "ui.castTookEffect": "%s casts %s.",
+      "ui.castUnaffected": "%d is Unaffected.",
       "ui.castWholeSide": "%s casts %s, affecting %d.",
       "ui.characterName": "CHARACTER NAME:",
       "ui.characterSheet": "CHARACTER SHEET",

@@ -998,15 +998,17 @@ remake：`gamepack.SpellSideFilterFor`／`FilterSpellSide` 是這兩支的表與
 命中擲骰 overlay-24 entry 6（`0CB5h`，呼叫端 overlay-13 `16D2h`、overlay-22 `09CEh`）呼叫：擲 1d20，
 1 以下落空、20 改寫成 100，**然後**問攻擊者的群組 10 與目標的群組 16，最後
 `6780h + THAC0 + 邊的加成 >= AC` 才中。所以祝福是出手的人命中 +1、詛咒 −1。
-`DS:6783h` 在群組 17 的意思是士氣累加格（strong inference：只讀了寫入端，讀它的 overlay-09 那兩處沒逐條讀）。
+`DS:6783h` 在群組 17 的意思是士氣累加格（exact：overlay-09 `1169h..1172h`／`11BCh..11C5h` 派發後
+拿它比，spec 096〈entry 8〉）。群組 10／16 其餘的碼與群組 9 見 spec 112（#86）。
 
 ### remake 的對應
 
-`internal/gamepack/spell_side_effects.go` 是規則（`HitRollEffectModifier`、`AttackRateAfterEffects`、
+`internal/gamepack/spell_side_effects.go` 是規則（`AttackRateAfterEffects`、
 `MovementAfterEffects`、`MarkHasteAged`、`ApplySpellEffectNode`），`cmd/pool-game/spell_side_effects.go`
 接盤面。`castSpell` 的模式 0Ah 那一支把參數表 `+0Ah` 掛到分邊後的每一個人；`FilterSpellSide` 的
 `CancelEffect` 是 entry 15（摘掉對面的碼）；`startRound` 對每一格派發群組 18（攻擊次數記在
-`RoundRates`、移動直接調 `Budgets`）；`resolveAttackSwings` 把群組 10 的修正傳給 `ResolveHit`。
+`RoundRates`、移動直接調 `Budgets`）；`resolveAttackSwings` 經 `hitRollAfterEffects` 跑群組 10／16
+（spec 112〈群組 10／16〉）；模式 0Ah 的每一格掛之前先問群組 9（`unaffectedBySpellEffect`）。
 玩家與 AI 都走 `castSpell`。測試從 `Update()` 送鍵：`TestBlessRaisesTheHitRollUntilItExpires`、
 `TestCurseLowersTheOtherSidesHitRoll`、`TestHasteDoublesAttacksAndMovementFromTheNextRound`、
 `TestSlowHalvesAttacksAndMovementFromTheNextRound`、`TestHasteCancelsSlowInsteadOfHasting`、
@@ -1016,10 +1018,8 @@ remake：`gamepack.SpellSideFilterFor`／`FilterSpellSide` 是這兩支的表與
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| entry 20 先問群組 9（免疫）| 沒問 | 群組 9 的十個碼的處理常式還沒讀 |
 | 每個目標印「<名字> is Blessed」、急速印 "ages"、抵銷印 "is Cured" | 狀態列只留最後一句「作用在 N 人身上」| 狀態列只有一行 |
-| 群組 10 其餘七個碼、群組 16 的六個碼也改命中骰 | 只算 `01h`／`02h` | 其餘處理常式沒有逐條讀，不照 spec 112 機械抽出的表猜 |
-| 群組 17 的士氣 ±5 | 沒接 | 士氣的讀取端（overlay-09 `1172h`／`11C5h`）沒逐條讀 |
+| 群組 16 的 `2Fh` 也改命中骰 | 不算 | 它比的是目標自己 runtime `+0Ah` 的名字，remake 沒有隊員那一格（spec 112〈OPEN〉）|
 
 ## 模式 8：射線（`2919h`，2026-09-26，issue #78）
 
