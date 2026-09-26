@@ -272,7 +272,9 @@ byte——它只會存進重掛的 `4Eh` 的 `+3`（解除魔法讀的等級）�
 `TestNeutralizedPoisonDoesNotComeBack`（神殿選單）、`TestPoisonRecoveryWaitsForItsSpotInCombat`（ENTER 推回合）、
 `TestFireResistanceRingRaisesTheSaveAgainstFire`、`TestSpellDamageGroupReadsTheDamageKind`、
 `TestMeleeBaneCodesAddDamageToTheRightKind`（A 出手）、`TestSpiritualHammerAlsoArmsAFoeCaster`、
-`TestCauseDiseaseAlsoWastesAFoe`。變異檢查逐條拿掉規則重跑（下表，2026-09-27 實跑）。
+`TestCauseDiseaseAlsoWastesAFoe`。變異檢查逐條拿掉規則重跑，十七個全紅（2026-09-27 實跑）：毒的派發、
+只限第二形態、41h 的修正、7Dh 的豁免、營地緩毒的後兩步、16h 毒發、0Fh 扣血、地圖收尾的接點、神殿摘 16h、
+扶起來的佔格探測、3Dh 的豁免、70h、每骰墊底、群組 4 的 03h／06h、怪物的鎚子、怪物的收尾接點。
 
 ## 與原版不同、寫明的幾處
 
