@@ -2209,7 +2209,8 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	if a.eventMachine != nil {
 		a.eventMachine.Memory[0x6DC7] = 0
 	}
-	a.awardCombatExperienceExcept(fled)
+	// 經驗總額含公款與戰利品的折算（spec 148），與怪物那一項一起除人數。
+	a.awardCombatExperienceWithLoot(fled, a.monsterLootExperience(loot))
 	a.combatActive, a.combatMonsters = false, nil
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.eventText, a.eventLabel = "", ""
@@ -2400,6 +2401,11 @@ func (a *app) awardCombatExperience() {
 // awardCombatExperienceExcept 同上，但 fled 那幾隻不算（逃掉的，`+10Ch == 3`，
 // overlay-05 entry 2 `0079h` 跳過）。
 func (a *app) awardCombatExperienceExcept(fled []gamepack.MonsterRecord) {
+	a.awardCombatExperienceWithLoot(fled, 0)
+}
+
+// awardCombatExperienceWithLoot 同上，總額另加 loot（公款與戰利品折算，spec 148）。
+func (a *app) awardCombatExperienceWithLoot(fled []gamepack.MonsterRecord, loot uint32) {
 	if len(a.state.Party) == 0 || len(a.combatMonsters) == 0 {
 		return
 	}
@@ -2415,23 +2421,7 @@ func (a *app) awardCombatExperienceExcept(fled []gamepack.MonsterRecord) {
 		}
 		total -= value
 	}
-	share := gamepack.DivideExperience(total, len(a.state.Party))
-	if share == 0 {
-		return
-	}
-	for index := range a.state.Party {
-		member := &a.state.Party[index]
-		code, ok := creation.ClassDOSCode(member.ClassID)
-		if !ok {
-			// NPC 帶的是自己的 285-byte 記錄，職業碼在 `+2Fh`。
-			if len(member.Record) > gamepack.ClassCodeOffset {
-				code = member.Record[gamepack.ClassCodeOffset]
-			} else {
-				continue
-			}
-		}
-		member.Experience += gamepack.ExperienceShare(share, code, member.Abilities)
-	}
+	a.shareExperience(total + loot)
 }
 
 

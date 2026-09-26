@@ -1875,6 +1875,11 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			return a.enterTreasure(result.TreasureRequests)
 		}
 		if result.CombatRequested && len(result.MonsterSpawns) != 0 {
+			if result.MonstersCleared {
+				// `1Ch CLEARMONSTERS`（overlay-03 `133Dh`）把公款七欄清成 0；戰後
+				// entry 2 換算經驗值的是這之後的公款（spec 148）。
+				a.state.PooledMoney = [pooltreasure.CurrencyCount]uint32{}
+			}
 			return a.enterCombatStaging(result.MonsterSpawns)
 		}
 		// `11h PRINT` **不是停頓點**：它接著印，與前面那一頁是同一頁
@@ -2136,12 +2141,16 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 		}
 	}
 	a.state.PooledMoney = pooled
+	// 選單是 `TREASURE → COMBAT` 的 overlay-05 `14CAh` 開的：先發經驗值（公款與
+	// 物品折算，spec 148），再讓 NPC 拿走份額（`1295h`），才進選單。
+	a.awardTreasureExperience(loaded)
 	a.awardCommissionExperience(pooled)
 	a.treasureActive, a.treasureStage = true, treasureMain
 	a.treasureItems, a.treasureSelected, a.treasureCurrency, a.treasureAmount = loaded, 0, 0, ""
 	a.cellEventPending, a.cellWaitingMenu = true, true
 	a.enterTreasureMain()
 	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s), seven money pools ready.", len(loaded))
+	a.hideNPCShares()
 	return nil
 }
 

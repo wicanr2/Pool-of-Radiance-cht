@@ -1,0 +1,256 @@
+{
+ "schema": "pool-dosgolem-loot-experience/1",
+ "generator": "dosgolem",
+ "generator_revision": "57454c4",
+ "note": "交件前後的經驗值差對 overlay-05 entry 2 `0224h..0306h` 的公款折算（spec 148）",
+ "before": {
+  "state": "workplace/dosgolem-cheat/slums.state",
+  "state_sha256": "ebbb65e8679bf8f5360f58af63da5b2b9e3e081e8d90719f5c52166cd44a80fb",
+  "where": {
+   "archive": 2,
+   "block": 20,
+   "x": 15,
+   "y": 12,
+   "facing": 1,
+   "terrain": 147,
+   "combat": false,
+   "geo": 20
+  },
+  "party": [
+   {
+    "name": "B",
+    "experience_0AC": 5027,
+    "class_2F": 2,
+    "abilities_10": [
+     17,
+     15,
+     12,
+     14,
+     15,
+     16
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "C",
+    "experience_0AC": 5027,
+    "class_2F": 2,
+    "abilities_10": [
+     16,
+     12,
+     14,
+     14,
+     13,
+     12
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "D",
+    "experience_0AC": 5027,
+    "class_2F": 2,
+    "abilities_10": [
+     18,
+     12,
+     12,
+     13,
+     16,
+     13
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "E",
+    "experience_0AC": 4580,
+    "class_2F": 2,
+    "abilities_10": [
+     14,
+     15,
+     13,
+     15,
+     16,
+     15
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "F",
+    "experience_0AC": 4580,
+    "class_2F": 2,
+    "abilities_10": [
+     15,
+     15,
+     12,
+     15,
+     13,
+     13
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   }
+  ],
+  "pool_6752": {
+   "copper": 144,
+   "silver": 0,
+   "electrum": 0,
+   "gold": 56,
+   "platinum": 0,
+   "gems": 0,
+   "jewelry": 0
+  },
+  "items_676E": [],
+  "stop_5CF8": "0000:0000",
+  "unsharing_829B": 0
+ },
+ "after": {
+  "state": "workplace/dosgolem-cheat/handin-slums-stuck.state",
+  "state_sha256": "2d976dfbeb218169ae8059fe79df65e88b9aec2612203fafe2927249953e1d68",
+  "where": {
+   "archive": 3,
+   "block": 8,
+   "x": 5,
+   "y": 5,
+   "facing": 1,
+   "terrain": 157,
+   "combat": false,
+   "geo": 0
+  },
+  "party": [
+   {
+    "name": "B",
+    "experience_0AC": 5621,
+    "class_2F": 2,
+    "abilities_10": [
+     17,
+     15,
+     12,
+     14,
+     15,
+     16
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "C",
+    "experience_0AC": 5621,
+    "class_2F": 2,
+    "abilities_10": [
+     16,
+     12,
+     14,
+     14,
+     13,
+     12
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "D",
+    "experience_0AC": 5621,
+    "class_2F": 2,
+    "abilities_10": [
+     18,
+     12,
+     12,
+     13,
+     16,
+     13
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "E",
+    "experience_0AC": 5120,
+    "class_2F": 2,
+    "abilities_10": [
+     14,
+     15,
+     13,
+     15,
+     16,
+     15
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   },
+   {
+    "name": "F",
+    "experience_0AC": 5120,
+    "class_2F": 2,
+    "abilities_10": [
+     15,
+     15,
+     12,
+     15,
+     13,
+     13
+    ],
+    "npc_84": 0,
+    "share_85": 0,
+    "status_10C": 0,
+    "field_10D": 1,
+    "side_10E": 0
+   }
+  ],
+  "pool_6752": {
+   "copper": 0,
+   "silver": 0,
+   "electrum": 0,
+   "gold": 250,
+   "platinum": 50,
+   "gems": 0,
+   "jewelry": 1
+  },
+  "items_676E": [],
+  "stop_5CF8": "0000:0000",
+  "unsharing_829B": 0
+ },
+ "formula": {
+  "money_value": 2700,
+  "item_value": 0,
+  "total": 2700,
+  "sharers": 5,
+  "share": 540
+ },
+ "experience_delta": [
+  594,
+  594,
+  594,
+  540,
+  540
+ ]
+}

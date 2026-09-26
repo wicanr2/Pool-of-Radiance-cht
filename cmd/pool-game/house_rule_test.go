@@ -19,7 +19,8 @@ func TestCommissionExperienceValueUsesGoldEquivalents(t *testing.T) {
 	}
 }
 
-// 開著：交件之後每一位隊員各得 600 XP；關著：一點都沒有。兩條都走真的職員腳本。
+// 開著：交件之後每一位隊員另外各得 600 XP；關著：只有原版戰後結算把公款折出來的那一份
+// （250 ＋ 50×5 ＋ 1×2200 ＝ 2700，一個人分，spec 148）。兩條都走真的職員腳本。
 func TestCommissionExperienceHouseRuleAtTheCityHall(t *testing.T) {
 	for _, enabled := range []bool{false, true} {
 		application, session, _ := slumsCommissionApp(t, 25)
@@ -30,9 +31,9 @@ func TestCommissionExperienceHouseRuleAtTheCityHall(t *testing.T) {
 			t.Fatalf("enabled=%t: the reward service did not open", enabled)
 		}
 		gained := application.state.Party[0].Experience - before
-		want := uint32(0)
+		want := uint32(2700)
 		if enabled {
-			want = 600
+			want += 600
 		}
 		if gained != want {
 			t.Fatalf("enabled=%t: the hand-in granted %d XP, want %d", enabled, gained, want)

@@ -162,5 +162,7 @@ func (a *app) openMonsterLoot(loot monsterLoot) bool {
 	a.treasureItems, a.treasureSelected, a.treasureCurrency, a.treasureAmount = loot.items, 0, 0, ""
 	a.cellEventPending, a.cellWaitingMenu = true, true
 	a.enterTreasureMain()
+	// `1295h`：開選單之前 NPC 先拿走份額（spec 148）。
+	a.hideNPCShares()
 	return true
 }
