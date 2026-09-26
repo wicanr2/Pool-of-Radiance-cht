@@ -49,27 +49,24 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **AI 施法的原版骰流收據：dosgolem 走到有施法怪物的遭遇，逐擲對照。** 功能已接上（entry 4、23F9h、Magic On/Off，與玩家共用 castSpell；d7 d7 與原版零錯位）。缺一場有施法怪物的 dosgolem 收據，挑法術與挑目標的 Roll(1,n) 只有程式碼證據。
       **驗收**：dosgolem 收據含施法怪物的回合，remake 逐擲重現；spec 096 的自承拿掉。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
-- [ ] **探索中的物品頁與原版不同。** 裝備自動換同類、沒有 Use／Drop／Halve／Join、+3Eh 穿戴效果沒接、already using 前綴沒讀。
-      **驗收**：各條照原版接上並有送鍵測試，穿戴效果三件真實物品實測。
-      **討論**：[#91](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/91)
-- [ ] **戰利品折算經驗值與 NPC 分錢。** overlay-05 0224h..0306h、1295h 未接。
-      **驗收**：兩項照原版接上並有測試，經驗值對原版收據。
-      **討論**：[#94](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/94)
-- [ ] **效果群組 12 的種族碼 5Ah／61h 沒作用。** #88 已掛上種族效果，群組 12 框架由 #89 接上，5Ah／61h 還沒處理。
-      **驗收**：讀群組 12 對 5Ah／61h 的處理常式並接上，矮人與人類同骰豁免不同的測試。
-      **討論**：[#96](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/96)
 - [ ] **NPC 開打時沒跑 overlay-25 entry 7。** applyNPCCombatStats 沒走共用重算。
       **驗收**：NPC 上戰場照 entry 7 重算，帶武器與盔甲的 NPC 對 spec 147 欄位。
       **討論**：[#97](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/97)
 - [ ] **彈藥消耗與沒有箭不能射。** overlay-13 射擊路徑未讀，兩側都沒有。
       **驗收**：讀出彈藥檢查與扣除並接上，箭用完不能射、每射少一支的測試。
       **討論**：[#98](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/98)
-- [ ] **只掛效果的法術：掛上未作用的群組與收尾。** 防護邪惡、抗寒抗火、鏡影、靈魂鎚、中毒逐時、17h／22h、豁免骰無號比較、碰觸傷害法術命中。
-      **驗收**：各條附位址接上並有送鍵測試。
-      **討論**：[#99](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/99)
 - [ ] **營地施法不掛效果。** field_cast.go 沒走 08BCh 的掛效果路徑。
       **驗收**：確認原版路徑並接上，營地護盾進戰鬥擋魔法飛彈的測試。
       **討論**：[#100](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/100)
+- [ ] **戰後結算的尾巴：NPC 分錢頁、829Ah 路徑、分經驗值人數。** #94 的 spec 148 DRAFT 三條。
+      **驗收**：三條照原版接上並有送鍵測試，分錢頁跑對拍。
+      **討論**：[#103](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/103)
+- [ ] **物品頁剩下的：Trade、84h、uses an item、+10Dh。** #91 的 spec 149 未接四條。
+      **驗收**：各條照原版接上並有送鍵測試，畫面改動跑對拍。
+      **討論**：[#105](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/105)
+- [ ] **中毒機制與效果群組剩餘碼。** 37h／4Eh／0Fh、29h、群組 12／6／4 其餘、怪物側收尾。
+      **驗收**：各條附位址接上，送鍵測試加變異檢查。
+      **討論**：[#106](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/106)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -125,9 +122,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **逐人效果訊息與編號 57 is Speedy。** 原版逐人印 is Blessed／ages／is Cured；編號 57 的呼叫端未找到。
       **驗收**：逐人訊息照原版；編號 57 照原版或寫明走不到。
       **討論**：[#87](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/87)
-- [ ] **施法中止訊息印名冊編號。** ui.castAborted 用 %d 印 mover；神殿牧師首回合大量中止。
-      **驗收**：照 0EE7h 原版格式印名字，確認中止條件與 0EC0h 一致。
-      **討論**：[#102](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/102)
+- [ ] **AI 戰鬥訊息印名冊編號、施法前少一句。** foeCasts 等用 %d；原版 0D23h 先印 Casts a Spell 與法名。
+      **驗收**：逐條照原版字串與印法，送鍵測試。
+      **討論**：[#104](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/104)
 
 <!-- worklist:end -->
 
