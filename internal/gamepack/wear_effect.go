@@ -60,7 +60,8 @@ type WearResult struct {
 	// Refused 是 87h 的「力量不足」：常式把物品 `+34h` 寫回 0，印
 	// "Must have Giant Strength"（`3128h`）。
 	Refused bool
-	// Known 是這個碼的處理常式有讀、有實作。沒有實作的碼（84h 的陣營限制）什麼也不做。
+	// Known 是這個碼的處理常式有讀、有實作。84h 的陣營限制要角色記錄 `+0A0h`，
+	// 這一支沒有那一格，由呼叫端接著叫 AlignedWearDamage。
 	Known bool
 }
 
@@ -91,8 +92,7 @@ func wearGrantsItemEffect(code uint8) bool {
 //	    模式 1：現在正好 18/00 → 摘第一個 26h；否則摘第一個快照解回 18/00 的 26h
 //	87h → entry 124（3141h）：模式 0 而力量小於 19 → 物品 +34h = 0，"Must have Giant Strength"
 //	89h → entry 125（3186h）：模式 1 → entry 2 摘第一個 17h；模式 0 什麼也不做
-//	84h → entry 123（30B1h）：陣營不合就卸下並受傷——傷害那一段（overlay-24 entry 19）
-//	      沒接，這裡回 Known = false。
+//	84h → entry 123（30B1h）：陣營不合就卸下並受傷，見 AlignedWearDamage。
 //
 // strength／percentile 是角色記錄 `+10h`／`+16h`。
 func ApplyWearEffect(list EffectList, item []byte, mode WearMode, strength, percentile uint8) WearResult {
@@ -139,6 +139,9 @@ func ApplyWearEffect(list EffectList, item []byte, mode WearMode, strength, perc
 		if mode == WearOn && strength < wearRequiredStrength {
 			result.Refused = true
 		}
+	case code == AlignedWearEffectCode:
+		// 串列與力量都不動；陣營那一半在 AlignedWearDamage。
+		result.Known = true
 	case code == 0x89:
 		result.Known = true
 		if mode == WearOff {
@@ -148,6 +151,35 @@ func ApplyWearEffect(list EffectList, item []byte, mode WearMode, strength, perc
 		}
 	}
 	return result
+}
+
+// AlignedWearEffectCode 是只給某一個陣營用的物品（overlay-12 entry 123，`30B1h`）。
+// 原版 ITEM4.DAX block 29 與 ITEM5.DAX block 35 的長劍帶這個碼（spec 149〈84h〉）。
+const AlignedWearEffectCode = 0x84
+
+// AlignedWearDamageFlags 是 84h 在派發傷害前寫進 `DS:6777h` 的傷害種類
+// （`30F7h` `C6 06 77 67 08`）：魔法，訊息後面接 "from Magic"。
+const AlignedWearDamageFlags = DamageFlagMagic
+
+// AlignedWearDamage 是 overlay-12 entry 123（`30B1h`）：
+//
+//	30C2  模式非 0（卸下）→ 什麼也不做
+//	30CA  物品 +3Dh & 0Fh == 角色 +0A0h（陣營）→ 什麼也不做
+//	30DD  物品 +34h = 0（卸下來）
+//	30E5  傷害 = 物品 +3Dh ÷ 16
+//	30F7  DS:6777h = 8；3118 overlay-24 entry 19（角色, 傷害, 規則 0, 沒豁免）
+//
+// refused 為真時呼叫端要把 +34h 寫回 0，再照 entry 19 讓角色受 damage 點魔法傷害
+// （damage 為 0 時 entry 19 在 `137Ah` 整段跳過）。
+func AlignedWearDamage(item []byte, mode WearMode, alignment uint8) (refused bool, damage int) {
+	if !HasWearEffect(item) || item[ItemEffectOffset] != AlignedWearEffectCode || mode != WearOn {
+		return false, 0
+	}
+	granted := item[ItemGrantedEffectOffset]
+	if granted&0x0f == alignment {
+		return false, 0
+	}
+	return true, int(granted / 16)
 }
 
 // removeFirstEffect 摘掉第一個符合的節點（overlay-24 entry 2 的 `0050h..0072h` 走訪，

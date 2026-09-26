@@ -3,8 +3,10 @@
 狀態：READY（選單組成、Ready 擋下同類、`+3Eh` 大於 7Fh 的穿戴效果怎麼掛與摘、
 "already using" 前面那一次呼叫、戰鬥外的 Use 與 `+07h` 為 0 的 "Use it?"，都從
 overlay-19／22／24／25／12 讀出並實作；`cmd/pool-game/item_page_test.go` 從 `Update()`
-送鍵驗，穿戴效果拿原版預設人物的三件真實物品驗）；DRAFT（見〈未閉合〉）。
-日期：2026-09-26。主台帳：GitHub issue #91（接 spec 144〈探索中（非戰鬥）的差異〉）。
+送鍵驗，穿戴效果拿原版預設人物的三件真實物品驗）；#105 補上 Trade 與負重檢查、84h
+的陣營限制與受傷、戰鬥外 Use 的 "uses an item" 那一拍與 " Use" 的兩道門
+（`item_page_trade.go`／`item_page_trade_test.go`）；DRAFT（見〈未閉合〉）。
+日期：2026-09-26。主台帳：GitHub issue #91、#105（接 spec 144〈探索中（非戰鬥）的差異〉）。
 
 ## 一句話
 
@@ -35,6 +37,7 @@ overlay-19／22／24／25／12 讀出並實作；`cmd/pool-game/item_page_test.g
 
 | 位址 | 位元組 | 內容 |
 |---|---|---|
+| `0F8Ch..0FA1h` | `26 80 BD 0D 01 00 74 5F`、`C4 3E 33 49 26 83 BD CA 01 00 75 53` | " Use"：記錄 `+10Dh` 為 0 或 `[4933h]+1CAh` 非 0 就不接（見〈Use 的兩道門〉）|
 | `0FA3h..0FBDh` | `80 3E 54 49 02 74 24`／`…03 74 1D`／`…04 74 16`／`…05 75 37` | " Use"：`DS:4954h` 是 2、3、4 才接（5 另看 runtime `+2`），其餘不接 |
 | `0FF6h..1017h` | `26 80 BD 84 00 80 72 16` … `80 3E 54 49 05 74 28` | " Trade"：不在戰鬥中，而且 `+84h` < 80h 或 `+10Dh` 為 0 或 `+10Ch` == 1 |
 | `10EAh`／`1119h` | `80 3E 54 49 01` | " Sell"／" Id"：商店中（spec 067）|
@@ -48,7 +51,10 @@ spec 135）、overlay-16 `0167h` = 0（隊伍選單）、overlay-03 `1989h`／`3
 集合裡，所以不影響選單）。
 
 remake：冒險畫面的 `I` 與紮營開的物品頁接 Use；隊伍選單的 `V` 開的不接
-（`itemPageState.creationMenu`）。Trade 沒接（〈未閉合〉）。
+（`itemPageState.creationMenu`）。Trade 不看 `DS:4954h` 的 2／3／4，只要不是 5（戰鬥中）
+就接，所以隊伍選單開的也有（`itemPageTradable`）。選項列是
+`READY USE TRADE DROP HALVE JOIN EXIT`，與商店裡量到的 `READY TRADE DROP HALVE JOIN SELL ID EXIT`
+（spec 067）同一個順序。
 
 ## Ready：擋下同類、不換手（exact）
 
@@ -173,6 +179,146 @@ entry 8 在戰鬥外（`1B94h..1BB3h`）印 "uses an item" 與物品名，再以
 實作：`useItemOnPage`、`beginItemPageSpell`、`itemPageCombatOnlyInput`、`itemPageTargetInput`、
 `spendItemPageUse`（`cmd/pool-game/item_page.go`）。
 
+### Use 的兩道門（位址 exact，`+10Dh` 的讀法 strong inference）
+
+```
+0F8C  C4 7E C1                   角色記錄
+0F8F  26 80 BD 0D 01 00 / 74 5F  +10Dh 為 0 → 0FF6h（不接 Use）
+0F97  C4 3E 33 49                [4933h]
+0F9B  26 83 BD CA 01 00 / 75 53  +1CAh（word）非 0 → 0FF6h
+```
+
+`[4933h]+1CAh` 是 class 0 的 ECL 變數 `@49E5`（`6E00h + 49E5h × 2 ≡ 1CAh`）。
+`cmd/pool-ecl-memory-audit -addresses 49E5` 在全部 ECL 裡只找到一個引用：ECL8 block 16
+`9BEEh` 的 `SAVE`，`pool-text-inventory` 同一段 `9C22h` 是 "YOU SENSE AN ANTI-MAGIC SHELL
+AROUND YOU."——它是**反魔法區**的旗標（語意 strong inference），區塊載入時 overlay-07
+`025Ah` 清成 0（spec 106，`gamepack/block_load.go` 已照做）。remake 讀
+`eventMachine.Memory[0x49E5]`。
+
+`+10Dh` 在 remake 沒有欄位。原版的寫入端都與 `+10Ch`（狀態）一起寫：overlay-25 entry 28
+（`2266h`）扣血後狀態不在 {0, 1} 就寫 0（spec 084）、逃離與轉化不死生物寫 0、建角與神殿的
+石化解除寫 1 並把狀態寫 0（spec 063／115）。所以讀成「狀態不大於 1」（strong inference），
+倒下、瀕死、死亡的人沒有 Use。
+
+### 戰鬥外 Use 的 "uses an item"（exact）
+
+```
+1B2D..1B4A  push [5CF0h]、"uses an item"（1A73h `0C 75 73 65 73 20 61 6E 20 69 74 65 6D`）、0Ah、0
+            9A 84 00 0A 01   overlay-25 entry 20：名字＋那一句，最後旗標 0 → 不停
+1B4F        80 3E 54 49 05 75 3E   戰鬥外 → 1B94h（不印 "Item:"）
+1B94..1BAE  push [5CF0h]、物品、1、16h、0、1
+            9A 25 00 0A 01   overlay-25 entry 1：旗標 (欄 1, 列 16h, 不加 Yes/No, 印) → 第 22 列印物品名
+1BB3        9A 61 00 98 01   overlay-37 entry 13：等一拍（遊戲速度 × 225 ms）
+1BB8        9A 89 00 0A 01   overlay-25 entry 21（1830h）：戰鬥外清 (1, 12h)..(26h, 16h) 那一塊
+1BD8        9A 39 00 E2 00   overlay-22 entry 5
+```
+
+entry 20 戰鬥外（`17A3h..181Bh`）開框、第 `12h`／`13h` 列印名字、下一列起印那一句；
+entry 1 的最後一個旗標非 0 才以 `0198:002F`（欄 = 第一個旗標、列 = 第二個）印（`0735h..074Bh`）。
+卷軸（`DS:6CB3h` 為 0）整段跳過，與戰鬥中相同（spec 144）。
+
+remake：`useNoticeOnPage` 在選項列那一行印「名字 USES AN ITEM 物品名」，停
+`speedDelayTicks()` 格、這段時間不收鍵，停完才進 `beginItemPageSpell`（挑對象或
+"Use it?"）。遊戲速度為 0 時不停。版面是 remake 的呈現，停拍與順序照原版。
+
+## Trade：overlay-19 entry 13（`173Bh`，exact）
+
+`1328h` 'T' 先過 entry 20（`0D72h`，spec 067〈放手檢查〉：穿戴中印 "Must be unreadied"、
+抄寫中的卷軸問 "is it Okay to lose it?"），過了才 `1341h` 呼叫 entry 13：
+
+```
+1741  les ax, [467Ch]              上一次交給誰（entry 5 `0AD9h` 開頁時設成自己）
+174D  9A D9 00 0A 01               overlay-25 entry 37
+1757..1769  "Trade with Whom?"（171Fh `10 54 72 61 64 65 …`）、旗標 1
+            9A F2 00 0A 01         overlay-25 entry 42（2C81h）：從 [467Ch] 起挑一個隊員
+176E  結果為 NULL（Exit／ESC）→ 17DBh 什麼也不做
+177B  [467Ch] = 挑到的那一個
+178F  E8 BD 0F                     entry 9（274Fh）(對方, 物品)
+1792  非 0 → 179Bh "Overloaded"（1730h `0A 4F 76 65 72 6C 6F 61 64 65 64`）
+             9A 7F 00 0A 01        overlay-25 entry 19：第 24 列印、停一拍、清
+17B8  9A 7A 00 0A 01               overlay-25 entry 18（164Bh）(對方, 物品)：GetMem(3Fh)、複製、接在對方串列最後
+17CB  9A 75 00 0A 01               overlay-25 entry 17 (自己 = [5CF0h], 物品)：從自己身上拿掉
+17D6  9A 43 00 0A 01               overlay-25 entry 7 (對方)：重算
+```
+
+overlay-25 entry 42 的選單是 prompt + " Select"（`2C7Ah`）+ " Exit"（`2C52h`，旗標非 0 才加），
+沿 `DS:5CF4h` 整條隊伍前後換人（`2D5Dh..2DF9h`），**自己也挑得到**；Enter 或 ESC 離開
+（`2C58h` 的集合：`0Dh`、`1Bh`），按鍵是 'E' 或 0 回 NULL（`2DFDh..2E0Eh`）。交給自己就是
+把那一件搬到最後一格。
+
+### 負重檢查：overlay-19 entry 9（`274Fh`，exact）
+
+```
+275B  9A 43 00 0A 01              overlay-25 entry 7 重算接收者（+C7h 物品數、+102h 總負重）
+2767  26 80 BD C7 00 0F / 76 04   +C7h > 0Fh → 超重
+2776  26 8B 45 37                 重量 = 物品 +37h（word）
+2780  26 80 7D 39 00 / 76 0F      +39h > 0 → 2790 F7 66 FC 重量 × +39h（取低字）
+279C  9A 6B 00 0A 01 / 05 DC 05   上限 = overlay-25 entry 15（力量表）+ 5DCh（1500）
+27AC  26 8B 85 02 01 / 03 46 FC   +102h + 重量（16 位元）
+27B6..27BE                        32 位元有號比較，大於上限 → 超重
+27D0  CA 08 00                    retf 8，回傳超重旗標
+```
+
+這一支就是 spec 035 拾取時走的同一支（overlay-06 經 `C9:004D`）。`+102h` 是物品重量加
+七欄錢的枚數（spec 079），所以錢多的人收不下；15 件還收得下第 16 件（`> 0Fh`）。
+
+remake：`poolcharacter.ReceiveOverloaded`（`internal/character/overload.go`，含錢）；
+`startItemPageTrade`／`askItemPageTrade`／`itemPageTradeInput`／`tradeMemberItem`
+（`cmd/pool-game/item_page_trade.go`）。挑人的畫面沿用挑對象那一種（上下換人、Enter 選、
+ESC 離開），起點是這一頁上一次交給的人，開頁時是自己。spec 035 的
+`CanReceiveItem`（拾取那一側）的負重沒有算錢，與這一支不一致，留在〈未閉合〉。
+
+## 84h：陣營限制（overlay-12 entry 123 `30B1h`，exact）
+
+```
+30C2  80 7E 06 00 / 74 02 / EB 58  模式非 0（卸下）→ 什麼也不做
+30CA  26 8A 45 3D / 24 0F          物品 +3Dh & 0Fh
+30D3  26 3A 85 A0 00 / 74 45       == 角色 +0A0h（陣營）→ 什麼也不做
+30DD  26 C6 45 34 00               物品 +34h = 0（卸下來）
+30E5..30F4  +3Dh ÷ 10h → 傷害
+30F7  C6 06 77 67 08               DS:6777h = 8（魔法）
+30FC  戰鬥中先叫 overlay-25 entry 41（2BC1h，只清右欄與第 24 列、放游標）
+3108..3118  push 角色、傷害、0、0 / 9A 7F 00 00 01   overlay-24 entry 19（規則 0、沒豁免）
+311D  C6 06 7F 67 01               DS:677Fh = 1
+```
+
+overlay-24 entry 19（`133Ah`）這一條路：
+
+```
+1341  DS:6776h = 傷害；1351 E8 8E EF 派發受傷那一個的群組 6（`DS:6779h` 為 0）
+137A  6776h 為 0 → 1642h 整段跳過（不印、不扣）
+1384  6776h == 1 → "takes 1 point of damage "（1297h）
+      否則 "takes " + 數字 + " points of damage "（127Dh、1284h）
+13DE  6777h & F7h 是 1／2／4／10h → 接 "from Fire"／"from Cold"／"from Electricity"／"from Acid"
+14A8  6777h & 8 == 6777h → 接 "from Magic"（12DFh）
+14EC  9A A2 00 0A 01               overlay-25 entry 26（2041h）(角色, 0, 字串)：
+                                   戰鬥外 21C1h 以 entry 20(角色, 字串, 0Ah, 1) 印名字＋那一句，停一拍
+14FB  9A AC 00 0A 01               overlay-25 entry 28（2266h）扣血（spec 084 的狀態轉移）
+1560  +10Dh 非 0 → 163Dh
+156E  "Goes Down"（12F7h）；狀態 5 接 ", and is Dying"（1301h）；
+      狀態在 1310h 的集合（`C0 01` → 6、7、8）改成 "is killed"（1330h）
+15F6  entry 20(角色, 字串, …, 0)；戰鬥外 1602h 等一拍
+163D  entry 21 清掉
+```
+
+原版物品裡帶 84h 的有三件（掃過 ITEM1..8.DAX、MON1..8ITM.DAX、預設人物 `.itm`）：
+
+| 來源 | `+3Dh` | 限定陣營 | 受傷 |
+|---|---|---|---|
+| ITEM4.DAX block 29 第 6 件 "Long Sword" | `F0h` | 0 守序善良 | 15 |
+| ITEM5.DAX block 35 第 0、1 件 "Long Sword" | `52h` | 2 守序邪惡 | 5 |
+
+ITEM4 那一件的 63 bytes：`0A 4C 6F 6E 67 20 53 77 6F 72 64 00 … 00 02 00 EA 14 24 00 A3 24 02 00
+00 06 00 3C 00 00 A0 0F 00 F0 84`（`+2Eh` 型別 24h 長劍、`+3Dh` F0h、`+3Eh` 84h）。
+
+remake：`gamepack.AlignedWearDamage`（`wear_effect.go`）判卸不卸、傷害多少；
+`(*app).alignedWear`（`item_page_trade.go`）接在 `wearItem` 裡：卸下、群組 6
+（`SpellDamageEffects`，旗標 8）、戰鬥外以 `gamepack.ApplyDamage` 扣角色的生命值，
+戰鬥中扣盤面那一格（受傷打斷施法與倒下離場照其他傷害）；訊息是
+「名字 TAKES N POINTS OF DAMAGE FROM MAGIC」，倒下再接「GOES DOWN」「GOES DOWN, AND IS DYING」
+或「IS KILLED」。陣營值：玩家角色取建角的編號（`creation.Alignments` 的順序），NPC 讀記錄
+`+0A0h`。原版兩句各停一拍；remake 的物品頁把它們放在同一行、不停拍（呈現）。
+
 ## Drop、Halve、Join（exact）
 
 與戰鬥中同一套（spec 144 的三節），戰鬥外一樣在選單裡做完、回到選單。`halveMemberItem`／
@@ -191,18 +337,20 @@ entry 8 在戰鬥外（`1B94h..1BB3h`）印 "uses an item" 與物品名，再以
   88h，戰鬥中）、`TestGiantStrengthItemRefusesAWeakWearer`（87h）。
 - `TestItemPageUsesAHealingPotion`、`TestItemPageCombatOnlyWandAsks`、
   `TestItemPageReadsAClericScroll`、`TestItemPageDropHalveJoin`。
-- `internal/gamepack/wear_effect_test.go`：7Fh 門檻、83h 拿下時摘自己那一個、89h。
+- `internal/gamepack/wear_effect_test.go`：7Fh 門檻、83h 拿下時摘自己那一個、89h、84h。
+- `cmd/pool-game/item_page_trade_test.go`（#105）：`TestItemPageTradeGivesTheItemAway`、
+  `TestItemPageTradeRefusesAnOverloadedRecipient`（16 件、錢壓到上限、15 件收得下第 16 件）、
+  `TestItemPageTradeHiddenForAMoraleNPC`、`TestItemPageUseNeedsAStandingMemberOutsideAntiMagic`、
+  `TestItemPageUseWaitsABeatAfterUsesAnItem`、`TestAlignedSwordHurtsTheWrongWearer`
+  （ITEM4／ITEM5 的兩把真實長劍）。
 
 ## 未閉合
 
-- **Trade**（`0FF6h` 的條件、`173Bh`）：印 "Trade with Whom?"（`171Fh`）以 overlay-25
-  entry 42 挑人，`274Fh` 的負重檢查不過印 "Overloaded"（`1730h`），過了以 overlay-25
-  entry 18 給對方、entry 17 從自己拿掉、entry 7 重算對方。`274Fh` 沒讀，remake 不接，
-  選項列也不列。
-- **84h**（陣營限制、受傷）：傷害那一段 overlay-24 entry 19（`133Ah`）的訊息與 HP 寫入
-  沒讀完，`ApplyWearEffect` 對 84h 回 `Known = false`、什麼也不做。原版預設人物與寶物裡
-  還沒看到 84h 的物品。
-- 戰鬥外 entry 8 那一句 "uses an item" 加物品名（`1B94h..1BB8h`）remake 沒印，直接進挑對象。
-- " Use" 另要角色 `+10Dh` 非 0（`0F8Fh`）；隊員的 `+10Dh` 在建角時是 1（spec 063），
-  死亡、離隊時的值沒讀，remake 不看。
-- 物品頁的版面（清單、選項列）是 remake 的呈現，原版的版面沒量。
+- overlay-25 entry 37（`280Fh`，Trade 開頭那一次）沒讀；它不帶參數、不回傳值，看形狀是
+  清畫面的一段，remake 不做。
+- 84h 在戰鬥中另叫 overlay-25 entry 41（只清畫面）與 entry 19 戰鬥那一支的 `1609h`
+  （`1004h`、群組 13、`13D:0084` 離場）；remake 戰鬥中的離場照 `applySpellDamage` 那一套，
+  `1004h` 與群組 13 沒有逐條對過。
+- spec 035 拾取那一側的 `CanReceiveItem` 算負重時沒有加錢，與 `274Fh`（`+102h` 含錢）不一致；
+  那一條路不在物品頁，沒改。
+- 物品頁的版面（清單、選項列、訊息那一行）是 remake 的呈現，原版的版面沒量。

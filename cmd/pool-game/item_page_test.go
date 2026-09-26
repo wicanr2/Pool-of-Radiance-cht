@@ -127,16 +127,16 @@ func effectCodes(member poolsave.Character) []uint8 {
 }
 
 // 選項列照 `0F79h..1148h` 組：冒險中有 Use，隊伍選單（`DS:4954h` 為 0）開的沒有；
-// Halve 要身上不到 10h 件。
+// Trade 只要不在戰鬥中就有（`1017h`）；Halve 要身上不到 10h 件。
 func TestItemPageFooterFollowsTheMenuContext(t *testing.T) {
 	application := newItemPageApp(t, poolsave.Character{Name: "A", ClassID: "fighter",
 		Abilities: [6]int{12, 12, 12, 12, 12, 12},
 		Inventory: []poolsave.Item{itemOf("SWORD", testTypeSword, false, 0)}})
-	if footer := application.itemPageFooter(); footer != "READY USE DROP HALVE JOIN EXIT" {
+	if footer := application.itemPageFooter(); footer != "READY USE TRADE DROP HALVE JOIN EXIT" {
 		t.Fatalf("adventure footer %q", footer)
 	}
 	application.equipment.page.creationMenu = true
-	if footer := application.itemPageFooter(); footer != "READY DROP HALVE JOIN EXIT" {
+	if footer := application.itemPageFooter(); footer != "READY TRADE DROP HALVE JOIN EXIT" {
 		t.Fatalf("party-menu footer %q", footer)
 	}
 	pressAll(t, application, ebiten.KeyR, ebiten.KeyU)

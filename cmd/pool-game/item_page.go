@@ -77,6 +77,12 @@ type itemPageState struct {
 	// creationMenu 是從隊伍選單（原版 overlay-16，`DS:4954h` 在 `0167h` 設成 0）開的：
 	// " Use" 只在 4954h 是 2、3、4（或戰鬥中）才接（`0FA3h..0FBDh`），這裡不接。
 	creationMenu bool
+	// trading 是 entry 20 的 "is it Okay to lose it?" 之後接 Trade 而不是 Drop；
+	// tradeTarget 是 `DS:467Ch`（上一次交給誰，1 起算，0 是還沒交過 → 從自己起挑）；
+	// ticks 是 "uses an item" 那一拍還剩幾格（item_page_trade.go）。
+	trading     bool
+	tradeTarget int
+	ticks       int
 }
 
 // wearItem 是 overlay-19 `1528h..153Fh`／`1650h..1667h`：`+3Eh` 大於 7Fh 的物品裝上或
@@ -95,6 +101,8 @@ func (a *app) wearItem(slot int, raw []byte, mode gamepack.WearMode, state *tact
 	result := gamepack.ApplyWearEffect(list, raw, mode,
 		uint8(member.Abilities[gamepack.AbilityStrength]), uint8(member.ExceptionalStrength))
 	line := ""
+	// 84h：陣營不合就卸下並受傷（overlay-12 entry 123，item_page_trade.go）。
+	result.List, line = a.alignedWear(slot, raw, mode, result.List, state, cell)
 	if result.Stronger {
 		member.Abilities[gamepack.AbilityStrength] = int(result.Strength)
 		member.ExceptionalStrength = int(result.Percentile)
@@ -220,6 +228,12 @@ func (a *app) itemPageInput() (bool, error) {
 		return true, nil
 	case itemPageTarget:
 		return true, a.itemPageTargetInput(slot)
+	case itemPageUsesNotice:
+		a.itemPageUsesNoticeInput(slot)
+		return true, nil
+	case itemPageTrade:
+		a.itemPageTradeInput(slot)
+		return true, nil
 	}
 	if len(party[slot].Inventory) == 0 || state.item >= len(party[slot].Inventory) {
 		return false, nil
@@ -232,8 +246,13 @@ func (a *app) itemPageInput() (bool, error) {
 		a.afterItemPageChange(slot)
 		return true, err
 	case a.justPressed(ebiten.KeyU):
-		if !page.creationMenu {
+		if a.itemPageUsable(slot) {
 			a.useItemOnPage(slot, index)
+		}
+		return true, nil
+	case a.justPressed(ebiten.KeyT):
+		if a.itemPageTradable(slot) {
+			a.startItemPageTrade(slot, index)
 		}
 		return true, nil
 	case a.justPressed(ebiten.KeyD):
@@ -295,6 +314,10 @@ func (a *app) itemPageDropConfirmInput(slot int) {
 	page := &state.page
 	switch {
 	case a.justPressed(ebiten.KeyY):
+		if page.stage == itemPageScribeConfirm && page.trading {
+			a.askItemPageTrade(slot)
+			return
+		}
 		if page.stage == itemPageScribeConfirm {
 			a.askItemPageDrop(slot)
 			return
@@ -306,7 +329,7 @@ func (a *app) itemPageDropConfirmInput(slot int) {
 		page.stage, state.message = itemPagePicking, ""
 		a.afterItemPageChange(slot)
 	case a.justPressed(ebiten.KeyN), a.justPressed(ebiten.KeyEscape), a.justPressed(ebiten.KeyEnter):
-		page.stage, state.message = itemPagePicking, ""
+		page.stage, state.message, page.trading = itemPagePicking, "", false
 	}
 }
 
@@ -330,7 +353,7 @@ func (a *app) useItemOnPage(slot, index int) {
 	}
 	if !scroll {
 		if spell, ok := gamepack.AIItemSpell(item.Raw, false); ok {
-			a.beginItemPageSpell(slot, index, spell, false)
+			a.useNoticeOnPage(slot, index, spell)
 		}
 		return
 	}
@@ -470,8 +493,8 @@ func (a *app) spendItemPageUse(slot int) {
 	a.afterItemPageChange(slot)
 }
 
-// itemPageFooter 是選項列（`0F79h..1148h`）：Ready、Use（隊伍選單開的沒有）、Drop、
-// Halve（身上不到 10h 件）、Join，最後 Exit。Trade 沒接（spec 149〈未閉合〉）。
+// itemPageFooter 是選項列（`0F79h..1148h`）：Ready、Use（itemPageUsable）、Trade
+// （itemPageTradable）、Drop、Halve（身上不到 10h 件）、Join，最後 Exit。
 func (a *app) itemPageFooter() string {
 	state := a.equipment
 	switch state.page.stage {
@@ -481,8 +504,11 @@ func (a *app) itemPageFooter() string {
 		return a.text(msgItemPageTargetFooter)
 	}
 	parts := []string{a.text(msgCombatItemReady)}
-	if !state.page.creationMenu {
+	if a.itemPageUsable(state.member) {
 		parts = append(parts, a.text(msgCombatItemsFooter))
+	}
+	if a.itemPageTradable(state.member) {
+		parts = append(parts, a.text(msgItemTrade))
 	}
 	parts = append(parts, a.text(msgCombatItemDrop))
 	if state.member < len(a.state.Party) && len(a.state.Party[state.member].Inventory) < gamepack.HalveCountLimit {
@@ -513,14 +539,14 @@ func drawItemPageOverlay(screen *ebiten.Image, a *app, foreground, accent color.
 			rows = append(rows, marker+a.spellLabel(option.spell))
 		}
 		cursor = page.scrollCursor
-	case itemPageTarget:
+	case itemPageTarget, itemPageTrade:
 		rows = a.partyPickerRows()
 		cursor = page.target
 	default:
 		return false
 	}
 	top := equipmentFirstLine + equipmentLineHeight
-	if page.stage == itemPageTarget {
+	if page.stage == itemPageTarget || page.stage == itemPageTrade {
 		top = equipmentFirstLine
 	}
 	for index, row := range rows {

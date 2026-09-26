@@ -43,3 +43,20 @@ func TestCode89RemovesEffect17(t *testing.T) {
 		t.Fatalf("89h off: %+v", result.List)
 	}
 }
+
+// 84h（`30B1h`）：卸下（模式 1）什麼也不做；陣營相同不做；不同就卸下、受 `+3Dh ÷ 16`。
+func TestAlignedWearDamage(t *testing.T) {
+	sword := wearItem(AlignedWearEffectCode, 0x52)
+	if refused, damage := AlignedWearDamage(sword, WearOff, 0); refused || damage != 0 {
+		t.Fatalf("taking it off: %v %d", refused, damage)
+	}
+	if refused, _ := AlignedWearDamage(sword, WearOn, 2); refused {
+		t.Fatal("the matching alignment was refused")
+	}
+	if refused, damage := AlignedWearDamage(sword, WearOn, 0); !refused || damage != 5 {
+		t.Fatalf("the wrong alignment: %v %d, want true 5", refused, damage)
+	}
+	if result := ApplyWearEffect(nil, sword, WearOn, 12, 0); !result.Known || len(result.List) != 0 {
+		t.Fatalf("84h touched the effect list: %+v", result)
+	}
+}
