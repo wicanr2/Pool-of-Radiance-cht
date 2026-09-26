@@ -57,6 +57,12 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 	if err != nil {
 		return fmt.Errorf("load Pool NPC archive %d block %d: %w", archive, id, err)
 	}
+	// 物品與記錄同一支讀（overlay-17 entry 9 `1244h` → `0E90h` 也讀 MONnITM，順序照檔案，
+	// spec 142）。開打時 entry 7 從這一條認武器與盔甲（#97，spec 147）。
+	items, err := a.npcItems(archive, uint8(id))
+	if err != nil {
+		return err
+	}
 	member := poolsave.Character{
 		Name:      a.monsterText.Translate(record.Name),
 		NPC:       true,
@@ -65,6 +71,7 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 		MaxHP:     int(record.MaxHitPoints()),
 		CurrentHP: int(record.CurrentHitPoints()),
 	}
+	member.Inventory = items
 	// **職業要從記錄帶出來。** NPC 沒有經過建角流程，它的職業只存在記錄的
 	// `+2Fh`（複合職業碼）與 `+96h` 起的八個等級裡。不帶出來的話後面任何
 	// 要查職業的地方都會拿到空字串——症狀不是顯示錯，是
@@ -126,6 +133,22 @@ func (a *app) migrateNPCMorale() {
 			break
 		}
 	}
+}
+
+// npcItems 讀這一位 NPC 的物品串列（MONnITM.DAX 同一個 block），名字照 overlay-25 entry 1 組。
+func (a *app) npcItems(archive, block uint8) ([]poolsave.Item, error) {
+	if a.loadMonsterItems == nil {
+		return nil, nil
+	}
+	raws, err := a.loadMonsterItems(archive, block)
+	if err != nil {
+		return nil, fmt.Errorf("load Pool NPC items archive %d block %d: %w", archive, block, err)
+	}
+	var items []poolsave.Item
+	for _, raw := range raws {
+		items = append(items, a.namedItem(raw))
+	}
+	return items, nil
 }
 
 // recordName 是 285-byte 記錄 `+0` 的 Pascal 字串。

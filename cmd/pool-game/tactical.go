@@ -901,6 +901,10 @@ func (a *app) enterTacticalPreview() error {
 				if err := applyNPCCombatStats(state, index, member); err != nil {
 					return err
 				}
+				// 上面是記錄裡的值；開打時 entry 7 依身上的物品重算，與怪物同一支（#97，spec 147）。
+				if err := a.applyNPCGearStats(state, index, member); err != nil {
+					return err
+				}
 				continue
 			}
 			state.Dexterity[index] = uint8(member.Abilities[dexterityAbilityIndex])

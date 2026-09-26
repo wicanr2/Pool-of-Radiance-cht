@@ -214,8 +214,8 @@ func (a *app) afterCombatItemChange(state *tacticalState, slot int) error {
 		a.combatItems.cursor = len(member.Inventory) - 1
 	}
 	if member.NPC {
-		// NPC 的戰鬥數值直接讀它帶的記錄（applyNPCCombatStats），不走裝備那一條。
-		return nil
+		// NPC 一樣跑 entry 7，只是從它帶的 285-byte 記錄出發（#97，spec 147）。
+		return a.applyNPCGearStats(state, int(state.Mover), member)
 	}
 	return a.applyPartyGearStats(state, int(state.Mover), member)
 }

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
@@ -17,10 +19,29 @@ import (
 //
 // 沒有型別表時（只建了盤面的測試）照舊讀模板，不猜。
 func (a *app) applyMonsterGearStats(state *tacticalState, index int, record gamepack.MonsterRecord) error {
+	return a.applyRecordGearStats(state, index, record, state.FoeItems[index])
+}
+
+// applyNPCGearStats 是同一支 entry 7 對隊伍裡的 NPC 跑的那一次（#97）。`1380h` 的迴圈
+// 沿 `5CF4h` 從隊員開始（`13D7h..13E5h` 的計數比隊伍人數 `+67Ch`，超過才是怪物），
+// `13A7h` 那一呼叫前後沒有分支，NPC 與怪物一樣從自己的記錄與物品串列重算。
+// NPC 的物品是 ADD NPC 載進來的 MONnITM（overlay-17 entry 9 `1244h` → `0E90h`，spec 142），
+// 之後玩家在物品選單改的也是同一條（`member.Inventory`）。
+func (a *app) applyNPCGearStats(state *tacticalState, index int, member poolsave.Character) error {
+	if len(member.Record) != poolsave.NPCRecordSize {
+		return fmt.Errorf("Pool NPC %q has a %d-byte record", member.Name, len(member.Record))
+	}
+	var record gamepack.MonsterRecord
+	copy(record.Raw[:], member.Record)
+	record.Name = member.Name
+	return a.applyRecordGearStats(state, index, record, member.Inventory)
+}
+
+// applyRecordGearStats 是 entry 7 本身：帶 285-byte 記錄的戰鬥員（怪物、NPC）共用。
+func (a *app) applyRecordGearStats(state *tacticalState, index int, record gamepack.MonsterRecord, inventory []poolsave.Item) error {
 	if a.itemTypes == nil {
 		return nil
 	}
-	inventory := state.FoeItems[index]
 	items := make([][]byte, 0, len(inventory))
 	for _, item := range inventory {
 		items = append(items, item.Raw)
