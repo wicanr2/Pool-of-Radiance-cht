@@ -340,7 +340,7 @@
       "ui.foeEscapeBlocked": "%d 的退路被擋住了",
       "ui.foeFled": "%d 逃了 %d 步。",
       "ui.castAbortPrompt": "放棄這個法術？ Y／N",
-      "ui.castAborted": "%d 的法術放棄了",
+      "ui.castAborted": "施法中止",
       "ui.castAlreadyTargeted": "%d 已經選過了",
       "ui.spellOutOfRange": "%s：目標在 %d 格外，射程只有 %d 格。",
       "ui.castCannotNow": "這一回合不能施法。",

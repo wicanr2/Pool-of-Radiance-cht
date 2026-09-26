@@ -311,7 +311,8 @@ func (a *app) castAbortInput() error {
 }
 
 // abortSpell 是 overlay-22 `0EE7h..0F0Bh`：印 "Spell Aborted"、以 `14ECh` 把那一格
-// 從記憶清掉，然後由 entry 34 結束這個行動。
+// 從記憶清掉，然後由 entry 34 結束這個行動。那一句是固定字串，不帶施法者名字
+// （overlay-25 entry 19 只收一個字串參數，spec 098〈Spell Aborted 的字串〉）。
 func (a *app) abortSpell() error {
 	state, aim := a.tactical, a.castAim
 	a.castAim, a.castTargeting, a.castManual = nil, false, false
@@ -325,7 +326,7 @@ func (a *app) abortSpell() error {
 			a.foeForgetSpell(state, caster, aim.option.ID)
 		}
 	}
-	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAborted), state.Mover))
+	a.tacticalStatus(state, a.text(msgCastAborted))
 	if keep {
 		// 參數表 `+0Bh` 為 0 的物品法術：沒有 entry 34，回到物品選單（spec 144）。
 		return nil

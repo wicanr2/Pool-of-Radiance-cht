@@ -789,6 +789,54 @@ overlay-22 entry 5 呼叫 `[6A78h]` 之後看結果（`0D6Ah`：`26 80 3D 00 75 
 與這裡不同，以這裡的位元組為準。remake：玩家 `cancelSpellPick`／`castAbortInput`／
 `abortSpell`，AI `foeReleaseSpell`。
 
+#### "Spell Aborted" 的字串與印法（2026-09-26，issue #102，exact）
+
+輸入：overlay-22（`967065cc…`）、overlay-25（`9fede24b…`）、overlay-37，
+`coab-go-test:20260729` 的 GNU objdump（`-b binary -m i8086`），位址是 overlay 檔內位移，
+far call 以 `docs/audit/dos-ovr-manifest.json` 反查。
+
+```
+overlay-22 0C06h  0D 53 70 65 6C 6C 20 41 62 6F 72 74 65 64   ; Pascal 字串，長 13："Spell Aborted"
+overlay-22 0EE7h  8D 7E DB 16 57 BF 06 0C 0E 57 9A 34 06 BB 05 ; 字串常數載進暫存
+           0EF6h  9A 7F 00 0A 01                               ; 010Ah:007Fh ＝ overlay-25 entry 19（16DFh）
+overlay-25 16DFh  複製字串（上限 28h）
+           16F8h  0150h:0138h(0, 18h, 27h, 18h)               ; 清第 24 列 0..39 欄
+           1709h  0198h:002Fh(0, 18h, 0Ah, 字串)               ; overlay-37 entry 3：欄 0、列 24、色 0Ah
+           171Ch  0198h:0061h                                  ; overlay-37 entry 13：等一拍（遊戲速度 × 225 ms）
+           1721h  0150h:0138h(0, 18h, 27h, 18h)               ; 再清掉那一列
+```
+
+- **固定字串，不帶施法者名字、不帶編號**：entry 19 只收一個字串參數（`retf 4`），
+  `0EE7h` 傳進去的就是 `0C06h` 那一句。原版字型只有大寫字模（spec 135），畫面上是
+  `SPELL ABORTED`。"Escape is blocked" 走同一支（spec 096 `0CFEh`）。
+- overlay-37 entry 3 的參數順序：`[bp+0Eh]` 欄（每印一字加一）、`[bp+0Ch]` 列、
+  `[bp+0Ah]` 色（`04D3h..054Ch`）。`0150h:0138h` 不在 overlay stub 表裡，前後各呼叫一次、
+  矩形相同，當成清區（strong inference）。
+- 施法者是誰由前一句交代：AI 的呼叫端傳 `[bp+0Ah]` = 1（overlay-13 `24C7h` `B0 01 50`），
+  `0D23h` 在挑目標**之前**就經 `32D3h` 印 "Casts a Spell"（`32BEh`，帶名字）與
+  "Spell:" 加法術名（`32CCh`）。remake 沒有那一句（見〈remake 的對應〉表），
+  所以狀態列只剩 `SPELL ABORTED`；繁中 `施法中止`。
+
+remake：`ui.castAborted`，`abortSpell` 與 `foeReleaseSpell` 都不帶參數；等一拍沒有做
+（戰鬥中的 AI 訊息都還沒接遊戲速度）。測試 `TestAbortSpellForgetsItAndEndsTheAction`、
+`TestFoeSpellAbortsWhenEveryTargetIsAlreadyHeld`。
+
+#### 神殿那一場第一回合為什麼一直中止（exact）
+
+城區神殿（GEO3/0 (10,5) FORCE YOUR WAY PAST）那一群 7TH LVL CLERIC 第一回合幾乎都中止。
+在 `TestDirectedExplorationReachesMaps` 第一趟（seed 7）量到：中止的全是定身術（`17h`，
+模式 6 收 3 個，射程 6），射程內四個隊員都在，但每一個身上都已經有效果 34h——
+先放出去的定身術已經把整隊定住了（每一次收 3 個）。之後每一個牧師：
+
+1. overlay-09 `02EAh` 挑法術只看優先度、射程內有沒有敵人與範圍法術會不會波及自己人
+   （`0344h..03D6h`），**不看目標身上的效果**，所以照樣挑到定身術；
+2. overlay-13 `1E09h` 二十次重挑，每一次 `1FC5h` 經 overlay-25 entry 6（`0B79h`）問到
+   目標身上有 `DS:2880h..2883h` 之一，而定身術的 `+0Ah`（34h）也在那張表裡 → 劃掉；
+3. `20AEh` 收到 0 個 → `0EB3h` → AI 直接到 `0EE7h`。
+
+三步都是原版的位元組，所以**這是原版本來就會發生的**，不是 remake 篩得比較嚴。
+`foeAcceptSpell`／`foeSpellTarget` 與這三步一一對應，沒有改。
+
 ## 收目標：overlay-13 `20AEh`（2026-09-26，issue #73）
 
 `20AEh(法術, 旗標, &結果)`（overlay-13 entry 18）是 overlay-22 entry 5 在戰鬥中經

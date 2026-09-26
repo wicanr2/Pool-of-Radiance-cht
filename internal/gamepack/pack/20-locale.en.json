@@ -340,7 +340,7 @@
       "ui.foeEscapeBlocked": "%d: ESCAPE IS BLOCKED",
       "ui.foeFled": "%d FLED %d STEPS.",
       "ui.castAbortPrompt": "ABORT SPELL? Y/N",
-      "ui.castAborted": "%d: SPELL ABORTED",
+      "ui.castAborted": "SPELL ABORTED",
       "ui.castAlreadyTargeted": "%d HAS ALREADY BEEN TARGETED",
       "ui.spellOutOfRange": "%s: TARGET IS %d AWAY, RANGE %d",
       "ui.castCannotNow": "NO SPELLCASTING THIS ROUND",

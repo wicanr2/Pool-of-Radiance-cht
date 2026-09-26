@@ -340,7 +340,8 @@ func TestAbortSpellForgetsItAndEndsTheAction(t *testing.T) {
 	if application.state.Party[0].Memorised[0] != 0 {
 		t.Fatal("an aborted spell stays memorised; 0F06h clears it")
 	}
-	if !strings.Contains(state.Status, "SPELL ABORTED") || state.Mover == 1 || state.HitPoints[2] != 30 {
+	// `0EE7h` 印的是固定字串 `0C06h`，不帶名字也不帶名冊編號（#102）。
+	if state.Status != "SPELL ABORTED" || state.Mover == 1 || state.HitPoints[2] != 30 {
 		t.Fatalf("abort did not end the action cleanly: status %q mover %d hp %d",
 			state.Status, state.Mover, state.HitPoints[2])
 	}

@@ -319,7 +319,9 @@ func foeCasterLevel(params gamepack.SpellParameters, caster foeSpellcaster) int 
 // foeReleaseSpell 是 overlay-22 entry 5（`0C14h`）的 AI 那一側：挑目標（`DS:6A78h`
 // 在戰鬥中指到 overlay-13 entry 18 `20AEh`），挑到了就把那一格從記憶裡清掉
 // （overlay-25 entry 16 `14ECh`）再派發效果。挑不到時 `0EC0h` 的旗標非 0（AI）直接
-// 跳 `0EE7h`：印 "Spell Aborted"，同樣以 `14ECh` 把法術清掉。兩種結果都用掉這個行動
+// 跳 `0EE7h`：印 "Spell Aborted"（固定字串，不帶名字），同樣以 `14ECh` 把法術清掉。
+// 目標全數已被定身／催眠／迷住時就走這一條：`02EAh` 挑法術不看目標狀態，`1E09h` 的
+// `1FC5h` 才把他們劃掉（spec 098）。兩種結果都用掉這個行動
 // （overlay-13 `24DAh` 的 entry 34）。
 func (a *app) foeReleaseSpell(state *tacticalState, mover uint8, spell uint8) error {
 	caster, ok := a.foeSpellcasterFor(state, mover)
@@ -334,7 +336,7 @@ func (a *app) foeReleaseSpell(state *tacticalState, mover uint8, spell uint8) er
 	}
 	if !found {
 		a.foeForgetSpell(state, caster, spell)
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAborted), mover))
+		a.tacticalStatus(state, a.text(msgCastAborted))
 		state.FoeLog = state.Status
 		state.endTurnAfterAction(a.rollDice)
 		return nil
