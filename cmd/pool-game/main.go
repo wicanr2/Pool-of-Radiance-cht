@@ -2144,7 +2144,7 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 	// 選單是 `TREASURE → COMBAT` 的 overlay-05 `14CAh` 開的：先發經驗值（公款與
 	// 物品折算，spec 148），再讓 NPC 拿走份額（`1295h`），才進選單。
 	a.awardTreasureExperience(loaded)
-	a.awardCommissionExperience(pooled)
+	a.awardCommissionExperience(loaded)
 	a.treasureActive, a.treasureStage = true, treasureMain
 	a.treasureItems, a.treasureSelected, a.treasureCurrency, a.treasureAmount = loaded, 0, 0, ""
 	a.cellEventPending, a.cellWaitingMenu = true, true
@@ -2154,44 +2154,22 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 	return nil
 }
 
-// commissionExperienceValue 把七欄貨幣換成金幣等值（AD&D 一版：200 銅＝20 銀＝2 琥珀金
-// ＝1 金＝1/5 白金）。寶石與珠寶用估價表最低那一格（10／100 金，`treasure.GemValueBands`
-// ／`JewelryValueBands`）——估價本身要擲骰，這裡取基準值讓數字可重現。
-func commissionExperienceValue(pooled [7]uint32) uint32 {
-	value := uint64(pooled[pooltreasure.Copper])/200 + uint64(pooled[pooltreasure.Silver])/20 +
-		uint64(pooled[pooltreasure.Electrum])/2 + uint64(pooled[pooltreasure.Gold]) +
-		uint64(pooled[pooltreasure.Platinum])*pooltreasure.GoldPerPlatinum +
-		uint64(pooled[pooltreasure.Gems])*uint64(pooltreasure.GemValueBands[0].Value) +
-		uint64(pooled[pooltreasure.Jewelry])*uint64(pooltreasure.JewelryValueBands[0].Base)
-	if value > uint64(^uint32(0)) {
-		return ^uint32(0)
-	}
-	return uint32(value)
-}
-
-// awardCommissionExperience 是 house rule「委任折算經驗值」（spec 140，預設關）：
-// 只在市政廳職員（ECL3/8）發的獎賞上作用——那一筆是 `CLEARMONSTERS → TREASURE →
-// COMBAT` 的空戰鬥，原版戰後結算的經驗總額是 0。開著時每一位隊員各得獎賞的
-// 金幣等值（不除以人數——除的話一場委任只有一百多點，升不了級，規則就沒有意義），
-// 主屬性加成照 spec 097。撿到的寶物（貧民窟的袋子、樓板下的箱子）不算：它們不是委任。
-func (a *app) awardCommissionExperience(pooled [7]uint32) {
+// awardCommissionExperience 是 house rule「委任經驗值加倍」（spec 140，預設關）：
+// 只在市政廳職員（ECL3/8）發的獎賞上作用。原版的戰後結算本來就把這一筆公款與物品
+// 折成經驗值、全隊分（spec 148）；開著時同一份再發一次，所以交件的經驗值是原版的兩倍。
+// 撿到的寶物（貧民窟的袋子、樓板下的箱子）不算：它們不是委任。
+func (a *app) awardCommissionExperience(items []gamepack.TreasureItemRecord) {
 	if !a.state.HouseRules.CommissionExperience || a.eventSession == nil ||
 		a.eclArchive != 3 || a.eventSession.CurrentBlockID() != 8 {
 		return
 	}
-	value := commissionExperienceValue(pooled)
-	if value == 0 {
+	total := lootExperience(a.state.PooledMoney, items)
+	share := gamepack.DivideExperience(total, len(a.state.Party))
+	if share == 0 {
 		return
 	}
-	for index := range a.state.Party {
-		member := &a.state.Party[index]
-		code, ok := creation.ClassDOSCode(member.ClassID)
-		if !ok {
-			continue
-		}
-		member.Experience += gamepack.ExperienceShare(value, code, member.Abilities)
-	}
-	a.statusLine = fmt.Sprintf(a.text(msgHouseRuleCommissionXP), value)
+	a.shareExperience(total)
+	a.statusLine = fmt.Sprintf(a.text(msgHouseRuleCommissionXP), share)
 }
 
 // enterTreasureMain 依錢與物品的有無組主選單（spec 034 `0E85h`）。原版實測：錢分完、沒有物品時

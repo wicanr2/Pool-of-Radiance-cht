@@ -50,7 +50,7 @@ func TestMainlineProbeNaturalPartyFirstBattle(t *testing.T) {
 }
 
 // TestMainlineProbeHouseRuleCommissionExperience 是 #28／#22 的第二條收據：
-// 隊伍選單按 H 開「委任折算經驗值」（spec 140），貧民窟停在 20 場之後改走
+// 隊伍選單按 H 開「委任經驗值加倍」（spec 140），貧民窟停在 20 場之後改走
 // 古托井打諾里斯（槽 0）換獎賞，交件、訓練所升級，再回索寇要塞。
 // 每一段記等級、XP、金幣（`partyLine`）。
 //
@@ -1034,7 +1034,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 	if houseRule && (!slumsCleared || probeRouteA) {
 		// 一級隊伍打得起的委任：圖書館的書拿得到但帶不出去（幽靈，
 		// `TestLibraryBooksSummonTheSpectreOnTheWayOut`）；剩下的是古托井的
-		// 諾里斯（槽 0：250 金＋200 白金 → 每人 1250 XP）。路線：城區 (0,4) 西出
+		// 諾里斯（槽 0：250 金＋200 白金，交件經驗值照 spec 148 折算、規則開著再加一倍）。路線：城區 (0,4) 西出
 		// → 貧民窟橫越 → 古托井 → 打完原路回城交件 → 有人過門檻就去訓練所。
 		t.Logf("house rule detour: before %s", outfitter.partyLine())
 		walkThroughBoundary(city)
