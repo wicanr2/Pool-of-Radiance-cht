@@ -1185,6 +1185,6 @@ overlay-19 entry 8（`1A86h`，spec 096〈entry 3〉已讀過 AI 那一側）是
 
 remake：`cmd/pool-game/combat_commands.go`（玩家）與 `foe_items.go`（AI）共用 `itemSpender`
 （記帳）與 `itemCasterLevel`（等級）；玩家瞄準走施法同一層（`aimSpell`），收尾由
-`finishCombatItem` 接手、放棄由 `abortCombatItem` 接手。還沒接的：卷軸（overlay-19 entry 12
-挑一條、overlay-22 entry 7 抹掉）、參數表 `+0Bh` 為 0 的法術在戰鬥中的結果（entry 5 的回傳
-沒讀）；AI 用物品瞄準時的射程仍用職業等級（`foeSpellTargets`）。
+`finishCombatItem` 接手、放棄由 `abortCombatItem` 接手。卷軸（overlay-19 entry 12 挑一條、
+overlay-22 entry 7 抹掉）與參數表 `+0Bh` 為 0 的法術（entry 5 在戰鬥中不看它，entry 8 不呼叫
+entry 34）見 spec 144。還沒接的：AI 用物品瞄準時的射程仍用職業等級（`foeSpellTargets`）。

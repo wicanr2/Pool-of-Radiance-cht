@@ -89,7 +89,8 @@ overlay-19 1432  3C 53 75 20           'S' → E8 32 F9（entry 20 0D72h 放手�
 
 選項裡的 Sell 另有一個角色條件（`10C9h..10E8h`）：記錄 `+84h < 80h`、或 `+10Dh == 0`、
 或 `+10Ch == 1` 才放。玩家建的角色 `+84h` 是 0，一律有 Sell；只有 ADD NPC 帶進來、
-`+84h` 位元 7 立著（有士氣判定）而且 `+10Dh` 非 0 的 NPC 看不到它（Drop 同一條件）。
+`+84h` 位元 7 立著（有士氣判定）而且 `+10Dh` 非 0 的 NPC 看不到它（Trade 同一條件，
+`0FF6h..1017h`；Drop 在 `1046h` 一律接，spec 144）。
 remake 對 `+84h`／`+10Dh` 讀 NPC 的原始記錄；`+10Ch` 取 `Character.Status`——兩者是否
 逐值同義未另證，這一格是 strong inference。
 

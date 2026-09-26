@@ -319,12 +319,17 @@ func (a *app) abortSpell() error {
 		return nil
 	}
 	// `0EFBh`：`DS:6CB3h`（用物品）非 0 就不清記憶，那一件照樣記帳（combat_commands.go）。
-	if !a.abortCombatItem() {
+	item, keep := a.abortCombatItem()
+	if !item {
 		if caster, ok := a.foeSpellcasterFor(state, state.Mover); ok {
 			a.foeForgetSpell(state, caster, aim.option.ID)
 		}
 	}
 	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAborted), state.Mover))
+	if keep {
+		// 參數表 `+0Bh` 為 0 的物品法術：沒有 entry 34，回到物品選單（spec 144）。
+		return nil
+	}
 	state.endTurnAfterAction(a.rollDice)
 	a.statusLine = state.Status
 	if state.Finished {

@@ -26,8 +26,8 @@ import (
 // 按鍵只在指令列上有那一段時才收（combatSegmentShown）。
 //
 // 物品選單在戰鬥中（`DS:4954h` == 5）的選項是 Ready、Use、Drop、Halve、Join
-// （`0F79h..1119h`；Trade 與 Sell、Id 戰鬥中不接）。**這一版只接 Use**，
-// 其餘幾項戰鬥中還沒有，所以選單列只印接上的那一項，不列按不動的鍵。
+// （`0F79h..1119h`；Trade 與 Sell、Id 戰鬥中不接）。Use 在這裡，其餘四項與卷軸在
+// combat_item_menu.go（spec 144）。
 //
 // Use 那一條（overlay-19 `12B0h..1325h`）：
 //
@@ -71,6 +71,13 @@ const (
 // combatItemMenu 是戰鬥中開著的物品選單（overlay-19 entry 6）。
 type combatItemMenu struct {
 	cursor int
+	// stage 是目前在等哪一種輸入（combat_item_menu.go）。
+	stage combatItemStage
+	// pending 是正在確認丟掉、或正在挑卷軸那一件的索引。
+	pending int
+	// scroll 與 scrollCursor 是 overlay-19 entry 12 列出來的那幾行。
+	scroll       []scrollOption
+	scrollCursor int
 }
 
 // combatItemUse 是正在瞄準、還沒放出去的那一件（overlay-19 entry 8 把 `DS:6CB3h`
@@ -79,6 +86,10 @@ type combatItemUse struct {
 	slot  int
 	item  int
 	spell uint8
+	// scroll 為真時用完抹掉那一行（overlay-22 entry 7），否則照 +3Ch 記帳。
+	scroll bool
+	// keepTurn 是參數表 `+0Bh` 為 0 的法術：entry 8 `1BF4h` 不呼叫 entry 34（spec 144）。
+	keepTurn bool
 }
 
 // combatCommandInput 是指令迴圈裡 T 與 U 那兩支，外加開著的物品選單。
@@ -139,6 +150,9 @@ func (a *app) combatItemInput(state *tacticalState) error {
 	menu := a.combatItems
 	count := len(a.state.Party[slot].Inventory)
 	menu.cursor = (menu.cursor%count + count) % count
+	if handled, err := a.combatItemMenuInput(state, slot); handled || err != nil {
+		return err
+	}
 	switch {
 	case a.justPressed(ebiten.KeyEscape):
 		a.combatItems = nil
@@ -168,9 +182,14 @@ func (a *app) useCombatItem(state *tacticalState, slot, index int) error {
 		return nil
 	}
 	scroll, known := a.itemIsScroll(item)
-	if !known || scroll {
+	if !known {
+		return nil
+	}
+	if scroll {
 		// 卷軸走 entry 8 的 `1AA9h`：overlay-19 entry 12 讓玩家從卷軸上挑一條，放完由
-		// overlay-22 entry 7（3243h）抹掉那一條。那兩支還沒讀，這一版不接。
+		// overlay-22 entry 7（3243h）抹掉那一條（combat_item_menu.go）。
+		category, _ := a.itemCategory(item)
+		a.openScrollPick(state, slot, index, category)
 		return nil
 	}
 	// `12EAh` 與 entry 8 的 `1ACEh`／`1B23h` 與 AI 的 entry 3 是同一組過濾與換算
@@ -179,17 +198,9 @@ func (a *app) useCombatItem(state *tacticalState, slot, index int) error {
 	if !ok {
 		return nil
 	}
-	if int(spell) >= len(a.spellParameters) || a.spellCaster == nil ||
-		!a.spellCaster.Implemented(spell) || a.spellParameters[spell].CampOnly() {
-		// 處理常式沒讀過的放不出去；只能在營地施的，entry 8 `1BF4h` 不呼叫 entry 34，
-		// 結果交給 overlay-22 entry 5 的回傳，那一支在戰鬥中怎麼回還沒讀。
-		return nil
-	}
-	a.combatItems = nil
-	name := strings.TrimSpace(item.Name)
-	a.tacticalStatus(state, state.say(msgFoeUsesItem, state.Mover, name))
-	a.combatItem = &combatItemUse{slot: slot, item: index, spell: spell}
-	return a.aimSpell(castOption{Slot: -1, ID: spell, Label: a.spellLabel(spell)}, false)
+	// 參數表 `+0Bh` 為 0 的也放得出去：overlay-22 entry 5 在戰鬥中（`0C2Ah`）不看
+	// 它，只有 entry 8 `1BF4h` 看，而那裡只決定要不要呼叫 entry 34（spec 144）。
+	return a.castFromItem(state, slot, index, spell, false)
 }
 
 // itemIsScroll 是 overlay-22 entry 6（31F6h）：物品型別表的類別落在卷軸那一段。
@@ -230,7 +241,11 @@ func (a *app) finishCombatItem(option castOption, targets spellTargets) (bool, e
 		partySlot: use.slot,
 		level: itemCasterLevel(a.spellParameters[option.ID],
 			[2]int{int(levels[gamepack.ClassSlotCleric]), int(levels[gamepack.ClassSlotMagicUser])}),
-		consume: a.itemSpender(use.slot, use.item),
+		consume:  a.itemSpender(use.slot, use.item),
+		keepTurn: use.keepTurn,
+	}
+	if use.scroll {
+		casting.consume = a.scrollEraser(use.slot, use.item, use.spell)
 	}
 	if err := a.castSpell(state, casting, option, targets); err != nil {
 		return true, err
@@ -243,15 +258,27 @@ func (a *app) finishCombatItem(option castOption, targets spellTargets) (bool, e
 
 // abortCombatItem 是瞄準時放棄（overlay-22 `0EE7h..0F0Bh`）碰上物品的那一支：
 // `0EFBh` 看 `DS:6CB3h` 非 0 就不清記憶；回到 entry 8 之後 `1BF4h` 照樣 entry 34、
-// 結果 1，所以這一件還是記帳。回傳 false 代表現在不是在用物品。
-func (a *app) abortCombatItem() bool {
+// 結果 1，所以這一件還是記帳（卷軸抹掉那一行）。回傳 handled 為 false 代表現在不是
+// 在用物品。
+//
+// 參數表 `+0Bh` 為 0 的沒有 entry 34：結果留著瞄準的回傳 0，不記帳，物品選單的迴圈
+// 在戰鬥中接著轉（`1318h` 結果 0 → 重畫、留在選單），這個行動也沒用掉——keep 為真。
+func (a *app) abortCombatItem() (handled, keep bool) {
 	use := a.combatItem
 	if use == nil {
-		return false
+		return false, false
 	}
 	a.combatItem = nil
-	a.itemSpender(use.slot, use.item)()
-	return true
+	if use.keepTurn {
+		a.combatItems = &combatItemMenu{cursor: use.item}
+		return true, true
+	}
+	if use.scroll {
+		a.scrollEraser(use.slot, use.item, use.spell)()
+	} else {
+		a.itemSpender(use.slot, use.item)()
+	}
+	return true, false
 }
 
 // itemSpender 包一次 spendFoeItem：同一件只記一次帳。
@@ -276,6 +303,11 @@ func drawCombatItems(screen *ebiten.Image, a *app, foreground, accent color.Colo
 	if !ok {
 		return
 	}
+	if a.combatItems.stage == combatItemScroll {
+		drawScrollOptions(screen, a, foreground, accent)
+		drawText(screen, a.combatItemFooter(state, slot), 0, footerBaseline, accent)
+		return
+	}
 	drawText(screen, a.text(msgCombatItemsTitle), combatInfoLeft, combatItemsTitleLine, accent)
 	inventory := a.state.Party[slot].Inventory
 	first := 0
@@ -295,9 +327,5 @@ func drawCombatItems(screen *ebiten.Image, a *app, foreground, accent color.Colo
 		drawText(screen, cursor+marker+strings.TrimSpace(item.Name),
 			combatInfoLeft, combatItemsTitleLine+18+(index-first)*18, ink)
 	}
-	footer := a.text(msgCombatItemsExitOnly)
-	if state.combatItemsUsable(int(state.Mover)) {
-		footer = a.text(msgCombatItemsFooter)
-	}
-	drawText(screen, footer, 0, footerBaseline, accent)
+	drawText(screen, a.combatItemFooter(state, slot), 0, footerBaseline, accent)
 }

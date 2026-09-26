@@ -340,6 +340,8 @@ type spellCasting struct {
 	level int
 	// consume 用掉記憶陣列裡的那一格。
 	consume func()
+	// keepTurn 為真時施完不結束這個行動（見 endAction）。
+	keepTurn bool
 }
 
 // castSpell 是施法的共用後半段：擲效果、用掉記憶的那一格、套用效果、結束這個
@@ -366,7 +368,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 					caster.consume()
 					a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
 						option.Label, target))
-					state.endTurn(a.rollDice, false)
+					caster.endAction(state, a.rollDice, false)
 					return nil
 				}
 			}
@@ -389,7 +391,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			caster.consume()
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
 				option.Label, target))
-			state.endTurn(a.rollDice, false)
+			caster.endAction(state, a.rollDice, false)
 			return nil
 		}
 	}
@@ -815,8 +817,22 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastTookEffect),
 			strings.TrimSpace(caster.name), option.Label))
 	}
-	state.endTurnAfterAction(a.rollDice)
+	caster.endAction(state, a.rollDice, true)
 	return nil
+}
+
+// endAction 是施完之後的收尾。平常是 entry 34 結束這個行動；keepTurn 的那一種
+// （戰鬥中用物品放參數表 `+0Bh` 為 0 的法術，overlay-19 `1BF4h` 不呼叫 entry 34）
+// 只離開指令迴圈、分數不歸零，由 keepCombatTurn 重選（spec 144）。
+func (caster spellCasting) endAction(state *tacticalState, roll func(count, sides int) int, afterAction bool) {
+	switch {
+	case caster.keepTurn:
+		state.keepCombatTurn(roll)
+	case afterAction:
+		state.endTurnAfterAction(roll)
+	default:
+		state.endTurn(roll, false)
+	}
 }
 
 // damageAfterSave 讓目標擲一次豁免，再依法術參數 `+8` 的規則處置傷害

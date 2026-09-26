@@ -902,11 +902,6 @@ func (a *app) enterTacticalPreview() error {
 			if member.MaxHP > 0 {
 				state.MaxHitPoints[index] = member.MaxHP
 			}
-			thac0, armor, movement, err := partyCombatStats(member)
-			if err != nil {
-				return err
-			}
-			state.THAC0[index] = thac0
 			// `+73h` 是最高職業等級（spec 072 的 overlay-23）。催眠術用它。
 			levels := memberClassLevels(member)
 			for _, level := range levels {
@@ -921,31 +916,9 @@ func (a *app) enterTacticalPreview() error {
 				}
 				state.SaveTargets[index] = targets
 			}
-			// 穿在身上的東西改 AC 與腳程（spec 079／080）：`partyCombatStats`
-			// 回的是建角值，那是「脫光了」的角色。
-			armor, movement, err = a.memberDefenceStats(member, armor, movement)
-			if err != nil {
+			if err := a.applyPartyGearStats(state, index, member); err != nil {
 				return err
 			}
-			state.ArmorClass[index] = armor
-			state.BaseMovement[index] = movement
-			// 手上有裝備好的武器時，THAC0 與傷害改由武器決定（spec 065）。
-			if weapon, ok := a.readiedWeapon(member); ok {
-				stats, err := a.weaponCombatStats(weapon, member, thac0)
-				if err != nil {
-					return err
-				}
-				state.THAC0[index] = stats.Thac0Internal
-				state.setSingleAttackForm(index, combat.DamageDice{
-					Count: stats.DamageCount, Sides: stats.DamageSides, Bonus: stats.DamageBonus,
-				})
-				state.AttackRange[index] = a.weaponAttackRange(weapon)
-			}
-			// `+A1h` 要放在 `setSingleAttackForm` 之後：那一支對每個人預設
-			// 一回合一次（編碼 2），而戰士 7 級以上是 3
-			//（overlay-23 `007Ch..009Dh`，spec 072）。
-			state.AttackRates[index] = [gamepack.MonsterAttackSlots]uint8{
-				gamepack.PlayerAttackRate(levels), 0}
 			continue
 		}
 		if monster, ok := a.stagedMonsterFor(index, friendly); ok {
@@ -1375,6 +1348,50 @@ const (
 // firstCharacterLevel 是還沒訓練過的角色的等級。建角每個組成職業各寫下第 1 級
 // （spec 072），存檔裡沒有 ClassLevels 就是這個狀態。
 const firstCharacterLevel = 1
+
+// applyPartyGearStats 是隊員那一格裡「跟身上東西有關」的戰鬥數值：THAC0、AC、
+// 腳程、攻擊形態、射程與攻擊次數。開打時算一次；戰鬥中物品選單換了裝備之後，
+// 原版在 overlay-19 `146Fh` 呼叫 overlay-25 entry 7（`0BBEh`）整份重算，remake
+// 同樣重跑這一支（combat_item_menu.go）。
+func (a *app) applyPartyGearStats(state *tacticalState, index int, member poolsave.Character) error {
+	thac0, armor, movement, err := partyCombatStats(member)
+	if err != nil {
+		return err
+	}
+	state.THAC0[index] = thac0
+	// 穿在身上的東西改 AC 與腳程（spec 079／080）：`partyCombatStats`
+	// 回的是建角值，那是「脫光了」的角色。
+	armor, movement, err = a.memberDefenceStats(member, armor, movement)
+	if err != nil {
+		return err
+	}
+	state.ArmorClass[index] = armor
+	state.BaseMovement[index] = movement
+	// 徒手是開打預設的那一組：1d8、相鄰一格（戰鬥中卸下武器要回到這裡）。
+	state.setSingleAttackForm(index, combat.DamageDice{Count: 1, Sides: 8})
+	reach := 1
+	// 手上有裝備好的武器時，THAC0 與傷害改由武器決定（spec 065）。
+	if weapon, ok := a.readiedWeapon(member); ok {
+		stats, err := a.weaponCombatStats(weapon, member, thac0)
+		if err != nil {
+			return err
+		}
+		state.THAC0[index] = stats.Thac0Internal
+		state.setSingleAttackForm(index, combat.DamageDice{
+			Count: stats.DamageCount, Sides: stats.DamageSides, Bonus: stats.DamageBonus,
+		})
+		reach = a.weaponAttackRange(weapon)
+	}
+	if index < len(state.AttackRange) {
+		state.AttackRange[index] = reach
+	}
+	// `+A1h` 要放在 `setSingleAttackForm` 之後：那一支對每個人預設
+	// 一回合一次（編碼 2），而戰士 7 級以上是 3
+	//（overlay-23 `007Ch..009Dh`，spec 072）。
+	state.AttackRates[index] = [gamepack.MonsterAttackSlots]uint8{
+		gamepack.PlayerAttackRate(memberClassLevels(member)), 0}
+	return nil
+}
 
 // partyCombatStats 依 spec 063 由職業算出隊伍成員的基礎戰鬥數值：THAC0 逐個
 // component 查 DS:3C16h 的表取最好的一個，AC 與移動用建角寫下的基礎值。

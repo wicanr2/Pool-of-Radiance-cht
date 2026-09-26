@@ -139,10 +139,10 @@ entry 8 本身見 spec 098〈用物品放法術〉：與 AI 用物品同一支�
 
 remake：`cmd/pool-game/combat_commands.go`。指令列與按鍵共用 `combatSegmentShown`
 （`combat_screen.go`），列上沒有的那一段按了也沒有反應。T 呼叫與 AI 共用的
-`turnUndead`（`foe_turn_undead.go`）；U 開的物品選單只接 Use（其餘四項戰鬥中還沒有），
-右側資訊欄列出身上物品、穿戴中的前面有標記，指令列那一條基線換成選項列
-（`USE EXIT`；沉默或咳嗽時只剩 `EXIT`）。版面是 remake 的呈現，原版物品選單的版面
-沒量。卷軸還不能用（overlay-19 entry 12 挑卷軸上的一條、overlay-22 entry 7 抹掉，兩支沒讀）。
+`turnUndead`（`foe_turn_undead.go`）；U 開的物品選單五項都接了（Ready、Drop、Halve、
+Join 與卷軸見 spec 144），右側資訊欄列出身上物品、穿戴中的前面有標記，指令列那一條
+基線換成選項列（`READY USE DROP HALVE JOIN EXIT`；沉默或咳嗽時沒有 `USE`，身上
+16 件時沒有 `HALVE`）。版面是 remake 的呈現，原版物品選單的版面沒量。
 
 ## remake 現況
 
