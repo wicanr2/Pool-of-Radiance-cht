@@ -78,9 +78,10 @@ func TestEnterTogglesReady(t *testing.T) {
 	}
 }
 
-// 一次只能裝備一件：原版的角色記錄只有一個武器槽，兩件同時掛著會讓
-// readiedWeapon 依順序挑，畫面上看起來像隨機換武器。
-func TestReadyingOneItemUnreadiesTheOther(t *testing.T) {
+// 一次只能裝備一件：原版的角色記錄只有一個武器槽（`+CCh`）。第二件不會把第一件
+// 換下來——overlay-19 entry 7 `159Ch` 看那一格有東西就印 "already using"、擋下
+// （spec 149）。要換得先卸下第一件。
+func TestReadyingASecondWeaponIsRefused(t *testing.T) {
 	a := newEquipmentApp(t)
 	second := graveyardSword(t)
 	second.Name = "SECOND SWORD"
@@ -102,8 +103,17 @@ func TestReadyingOneItemUnreadiesTheOther(t *testing.T) {
 		t.Fatalf("%d items are readied at once", readied)
 	}
 	weapon, _ := a.readiedWeapon(a.state.Party[0])
-	if weapon.Name != "SECOND SWORD" {
-		t.Fatalf("the readied weapon is %q", weapon.Name)
+	if weapon.Name == "SECOND SWORD" || !strings.Contains(a.equipment.message, "ALREADY USING") {
+		t.Fatalf("the readied weapon is %q, message %q", weapon.Name, a.equipment.message)
+	}
+	a.equipment.item = 0
+	a.keys = scriptedKeys{ebiten.KeyEnter: true}
+	a.equipmentInput()
+	a.equipment.item = 1
+	a.keys = scriptedKeys{ebiten.KeyEnter: true}
+	a.equipmentInput()
+	if weapon, _ = a.readiedWeapon(a.state.Party[0]); weapon.Name != "SECOND SWORD" {
+		t.Fatalf("after unreadying the first, the readied weapon is %q", weapon.Name)
 	}
 }
 

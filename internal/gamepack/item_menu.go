@@ -152,7 +152,7 @@ func readiedSlots(inventory [][]byte, types *ItemTypeTable) (equipmentSlots, err
 //	1642  都沒有                                           → +34h = 1
 //
 // 成立時直接改 inventory[index] 的 `+34h`。`+3Eh` 大於 7Fh 的物品原版還會交給
-// overlay-24 entry 1 掛上或摘掉穿戴效果；remake 沒有那一層（探索時的裝備頁也沒有）。
+// overlay-24 entry 1 掛上或摘掉穿戴效果，那一層是 ApplyWearEffect（spec 149），由呼叫端接著做。
 func ReadyItem(inventory [][]byte, index int, types *ItemTypeTable, classMask uint8) (ReadyResult, error) {
 	raw := inventory[index]
 	if raw[ItemReadiedOffset] != 0 {

@@ -143,8 +143,20 @@ func (d *mainlineDriver) buyArmourFromPool(member int, name string) string {
 		for guard := 0; guard < 8 && a.equipment.member != member; guard++ {
 			d.step(ebiten.KeyTab)
 		}
-		// 只裝剛買的那一件（在最後）：裝上同類會把舊的甲卸下（`toggleReady`）。
+		// 只裝剛買的那一件（在最後）。原版那一格有東西就印 "already using"、不換手
+		// （overlay-19 entry 7，spec 149），所以跟玩家一樣：先把同一類的舊甲卸下再裝。
 		item := len(a.state.Party[member].Inventory) - 1
+		bought, _ := a.itemCategory(a.state.Party[member].Inventory[item])
+		for old := 0; old < item; old++ {
+			worn := a.state.Party[member].Inventory[old]
+			if category, ok := a.itemCategory(worn); !ok || category != bought || worn.Raw[itemReadyOffset] == 0 {
+				continue
+			}
+			for guard := 0; guard < 16 && a.equipment.item != old; guard++ {
+				d.step(ebiten.KeyDown)
+			}
+			d.step(ebiten.KeyEnter)
+		}
 		for guard := 0; guard < 16 && a.equipment.item != item; guard++ {
 			d.step(ebiten.KeyDown)
 		}

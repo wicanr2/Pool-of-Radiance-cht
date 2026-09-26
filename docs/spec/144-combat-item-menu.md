@@ -71,7 +71,8 @@ R／D／H／J 四支都不寫 `[bp+6]`，所以**不用掉行動**（overlay-08 
 這兩處（`pool-disp-scan`），讀的是 overlay-19 `161Ch` 與 overlay-09 的 AI。
 
 `+3Eh` 大於 7Fh 的物品還會交給 overlay-24 entry 1（`153Fh`／`1667h`）掛上或摘掉穿戴
-效果；remake 沒有那一層（見〈未閉合〉）。實作：`gamepack.ReadyItem`、`ClassUseMask`。
+效果（spec 149，`gamepack.ApplyWearEffect`）。實作：`gamepack.ReadyItem`、`ClassUseMask`，
+戰鬥與探索共用 `readyMemberItem`。
 
 ## Drop（exact）
 
@@ -162,13 +163,9 @@ spec 098〈施法時間與打斷〉）同一個形狀：這一格還在排序裡
   Y 就把結果設 1（`0D17h`，照樣記帳）。兩種都**不放出去**（`0D1Fh` `[bp-1] = 0`）。
 - 選單多 Trade（`0FF6h` 的 NPC 條件）；商店中（`4954h` == 1）另有 Sell、Id（spec 067）。
 
-remake 的探索物品頁（`equipment.go`）只有 Enter 切換穿戴，而且是**自動換掉同類那一件**，
-與上面 entry 7 的「那一格有東西就拒絕」不同；探索中也沒有 Use、Drop、Halve、Join。
+探索中的物品頁照上面這幾條接在 spec 149（`cmd/pool-game/item_page.go`）。
 
 ## 未閉合
 
-- `+3Eh` 大於 7Fh 的穿戴效果（overlay-24 entry 1）沒有接，探索與戰鬥都一樣。
-- 探索中的物品選單（上一節）沒有接；探索頁的 Ready 規則與原版不同。
-- "already using" 那一句前面原版先以 overlay-25 entry 1（`16B9h`）印一段，引數是角色與
-  那一件；確切組字沒讀，remake 只印 "ALREADY USING <物品>"。
+- 探索中的 Trade 與穿戴效果碼 84h 見 spec 149〈未閉合〉。
 - 選單版面（右側清單、選項列）是 remake 的呈現，原版物品選單的版面沒量。

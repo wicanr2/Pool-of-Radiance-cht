@@ -124,36 +124,19 @@ func memberClassUseMask(member poolsave.Character) uint8 {
 	return gamepack.ClassUseMask(memberClassLevels(member))
 }
 
-// readyCombatItem 是 'R'（overlay-19 entry 7）。
+// readyCombatItem 是 'R'（overlay-19 entry 7），規則與探索中的物品頁同一支
+// readyMemberItem（item_page.go），穿戴效果掛在這一格的戰鬥串列上。
 func (a *app) readyCombatItem(state *tacticalState, slot, index int) error {
 	if a.itemTypes == nil {
 		return nil
 	}
-	member := &a.state.Party[slot]
-	raws := make([][]byte, len(member.Inventory))
-	for i := range member.Inventory {
-		raws[i] = member.Inventory[i].Raw
-		if len(raws[i]) <= gamepack.ItemEffectOffset {
-			return nil
-		}
-	}
-	result, err := gamepack.ReadyItem(raws, index, a.itemTypes, memberClassUseMask(*member))
+	outcome, line, err := a.readyMemberItem(slot, index, state, int(state.Mover))
 	if err != nil {
 		return err
 	}
-	switch result.Outcome {
-	case gamepack.ReadyCursed:
-		a.tacticalStatus(state, a.text(msgItemCursed))
-	case gamepack.ReadyWrongClass:
-		a.tacticalStatus(state, a.text(msgItemWrongClass))
-	case gamepack.ReadyAlreadyUsing:
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgItemAlreadyUsing),
-			strings.TrimSpace(member.Inventory[result.Blocker].Name)))
-	case gamepack.ReadyHandsFull:
-		// `16F3h`：戰鬥中由電腦接手（`+10Fh` 非 0）的不印。
-		if !state.aiDriven(state.Mover) {
-			a.tacticalStatus(state, a.text(msgItemHandsFull))
-		}
+	// `16F3h`：戰鬥中由電腦接手（`+10Fh` 非 0）的不印 "Your hands are full!"。
+	if line != "" && (outcome != gamepack.ReadyHandsFull || !state.aiDriven(state.Mover)) {
+		a.tacticalStatus(state, line)
 	}
 	return a.afterCombatItemChange(state, slot)
 }
@@ -207,38 +190,16 @@ func (a *app) combatItemConfirmInput(state *tacticalState, slot int) error {
 
 // halveCombatItem 是 'H'（overlay-19 entry 14）。
 func (a *app) halveCombatItem(state *tacticalState, slot, index int) error {
-	member := &a.state.Party[slot]
-	item := member.Inventory[index]
-	split, ok := gamepack.HalveItem(item.Raw)
-	if !ok {
+	if !a.halveMemberItem(slot, index) {
 		a.tacticalStatus(state, a.text(msgItemCannotHalve))
 		return nil
 	}
-	inventory := make([]poolsave.Item, 0, len(member.Inventory)+1)
-	inventory = append(inventory, member.Inventory[:index+1]...)
-	inventory = append(inventory, poolsave.Item{Name: item.Name, Raw: split})
-	member.Inventory = append(inventory, member.Inventory[index+1:]...)
 	return a.afterCombatItemChange(state, slot)
 }
 
 // joinCombatItem 是 'J'（overlay-19 entry 15）。
 func (a *app) joinCombatItem(state *tacticalState, slot, index int) error {
-	member := &a.state.Party[slot]
-	raws := make([][]byte, len(member.Inventory))
-	for i := range member.Inventory {
-		raws[i] = member.Inventory[i].Raw
-		if len(raws[i]) <= gamepack.ItemEffectOffset {
-			return nil
-		}
-	}
-	removed := gamepack.JoinItems(raws, index)
-	for at := len(removed) - 1; at >= 0; at-- {
-		gone := removed[at]
-		member.Inventory = append(member.Inventory[:gone], member.Inventory[gone+1:]...)
-		if gone < a.combatItems.cursor {
-			a.combatItems.cursor--
-		}
-	}
+	a.combatItems.cursor -= a.joinMemberItems(slot, index, a.combatItems.cursor)
 	return a.afterCombatItemChange(state, slot)
 }
 

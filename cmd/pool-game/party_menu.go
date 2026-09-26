@@ -289,6 +289,8 @@ func (a *app) runPartyMenuEntry(entry partyMenuEntry) error {
 			a.equipment.member = member
 			a.equipment.item = 0
 			a.equipment.clamp(a.state.Party)
+			// 隊伍選單是 overlay-16，`0167h` 把 `DS:4954h` 設成 0：物品選單不接 " Use"。
+			a.equipment.page.creationMenu = true
 		}
 		return nil
 	case ebiten.KeyA:
