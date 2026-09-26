@@ -2218,8 +2218,12 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	exitUses := map[[4]int]int{}
 	var hardFailures []string
 	total := 0
+	// 預算數的是整個迴圈，戰術地圖的每一幀也算在內；這一條量的卻是走得到哪裡。
+	// #89 讓牧師的祈禱照原版作用之後，城區神殿那一場從 52 回合拖到 87 回合，
+	// 同一個種子走到的地圖從 5 張掉到 2 張——退步的是量尺，不是移動或轉場。
+	// 所以預算給到戰鬥變長也走得完，斷言的下限不動。
 	for pass := 0; pass < 8; pass++ {
-		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 40000,
+		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 60000,
 			avoid, visited, transitionUses, menuTurn, exitUses, visited, maps, blocks,
 			&hardFailures)
 		if !ok {
