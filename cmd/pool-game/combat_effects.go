@@ -77,6 +77,8 @@ func (a *app) advancePartyEffects(minutes int) {
 		list, expired := combatEffects(member.Effects).AdvanceEffects(minutes)
 		for _, node := range expired {
 			a.expiredEffectTeardown(index, node, list)
+			// 致病那一串到期會自己重掛（disease_effects.go，#99）。
+			list = a.diseaseTeardown(member, node, list, &member.CurrentHP)
 		}
 		member.Effects = storedEffects(list)
 		syncTrainedLibraryCharacter(&a.state, *member)
@@ -113,6 +115,14 @@ func (a *app) expiredEffectTeardown(party int, node gamepack.EffectNode,
 		member := &a.state.Party[party]
 		member.Abilities[gamepack.AbilityCharisma] = int(node.Magnitude())
 		syncTrainedLibraryCharacter(&a.state, *member)
+		return
+	}
+	if node.Code == gamepack.SpiritualHammerEffectCode {
+		// 靈魂鎚到期：`07F6h` 模式 1 把那把鎚子從物品串列摘掉（#99）。
+		member := &a.state.Party[party]
+		if removeSpiritualHammer(member) {
+			syncTrainedLibraryCharacter(&a.state, *member)
+		}
 		return
 	}
 	if node.Code == gamepack.CloudObjectEffectCode {

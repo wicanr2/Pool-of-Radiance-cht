@@ -37,9 +37,7 @@ func effectOnlyBoard(t *testing.T, roll int, spells ...uint8) (*app, *tacticalSt
 	state.PartyAged = application.agePartyMember(state)
 	// 與開打時建的盤面同一條（tactical.go）：隊員的效果到期時跑收尾、寫回角色。
 	state.PartyEffectTeardown = func(index int, node gamepack.EffectNode) {
-		if party := state.PartySlot[index]; party >= 0 {
-			application.expiredEffectTeardown(party, node, state.Effects[index])
-		}
+		application.partyEffectTeardown(state, index, node)
 	}
 	application.roller = fixedRoller{roll}
 	return application, state

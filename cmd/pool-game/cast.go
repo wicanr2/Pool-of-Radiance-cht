@@ -396,6 +396,16 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	}
 	// 記憶的那一格用掉了，不論打不打得中——原版也是先耗掉才判定。
 	caster.consume()
+	// `DS:6777h`：`08BCh` 在傷害不為 0 時寫處理常式推的種類（`08E2h`），否則寫 0（`08DBh`）；
+	// `DS:677Eh`：`20AEh` 以一點收表時立起、火球 `2634h` 自己也立。施完都歸零（`0A6Ah`、`0EACh`）。
+	state.SpellDamage = spellDamageContext{Spell: option.ID, Area: targets.Area && chosen}
+	if effect.Damage > 0 {
+		state.SpellDamage.Flags = gamepack.SpellDamageKind(option.ID)
+	}
+	if option.ID == gamepack.SpellIDFireball || option.ID == gamepack.SpellIDFireballAlt {
+		state.SpellDamage.Area = true
+	}
+	defer func() { state.SpellDamage = spellDamageContext{} }()
 
 	// 目標是 overlay-13 `20AEh` 收好的那一份（spell_targets.go，玩家瞄、AI 擲骰）：
 	// 模式 0 作用在施法者自己、模式 0Ah 以一點收再分邊、模式 8 是射線、9／0Bh 是範圍。
@@ -771,6 +781,12 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
 			break
 		}
+		// `08BCh` `0997h..09DBh`：參數表 `+2` 是 FFh 的（致輕傷 4、電擊之握 20）先碰得到才有傷害；
+		// 沒碰到就把傷害寫 0，`09DFh` 整段跳過 entry 19（#99）。
+		if a.spellParameters[option.ID].RequiresAttackRoll() && !a.touchSpellHits(state, picked) {
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect), option.Label, picked))
+			break
+		}
 		a.applySpellDamage(state, picked,
 			a.damageAfterSave(state, picked, option.ID, effect.Damage))
 	case mode == gamepack.SpellTargetWholeSide:
@@ -846,9 +862,7 @@ func (caster spellCasting) endAction(state *tacticalState, roll func(count, side
 func (a *app) damageAfterSave(state *tacticalState, target, spell uint8, damage int) int {
 	saved := a.savedAgainstSpell(state, target, spell)
 	// entry 19 的 `1351h`：傷害進 `DS:6776h` 之後先派發目標的群組 6，才套豁免規則。
-	if int(target) < len(state.Effects) {
-		damage = gamepack.SpellDamageAfterEffects(state.Effects[target], spell, damage)
-	}
+	damage = a.spellDamageAfterEffects(state, target, spell, damage)
 	if !saved {
 		return damage
 	}
@@ -896,9 +910,11 @@ func (a *app) savedAgainstCategory(state *tacticalState, target uint8,
 	case roll == gamepack.SavingThrowDie:
 		return true
 	default:
-		// `0DB2h`：豁免骰算好之後派發擲豁免那一個的群組 12，再比目標值。
-		value := state.saveRollAfterEffects(target, roll+state.SaveBonus[target]+modifier)
-		return int(state.SaveTargets[target][category]) <= value
+		// `0DA5h` `mov ds:6774h, al`：骰 + `+101h` + 修正存成 byte；`0DB2h` 派發擲豁免那一個
+		// 的群組 12；`0DC8h` `3A 06 74 67 / 77 06` 目標值**無號**大於它就失敗——負值繞成
+		// `0F0h` 以上，照樣算成功（#99）。
+		value := state.saveRollAfterEffects(target, category, roll+state.SaveBonus[target]+modifier)
+		return state.SaveTargets[target][category] <= value
 	}
 }
 

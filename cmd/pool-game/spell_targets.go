@@ -487,8 +487,13 @@ func (a *app) castSpellRay(state *tacticalState, effect gamepack.CastEffect, x, 
 				return nil
 			}
 			dealt := damage
-			if a.savedAgainstCategory(state, occupant, ray.SaveCategory, 0) {
-				dealt = gamepack.DamageAfterSave(gamepack.SpellRaySaveRule, damage)
+			// `287Ch`：`28DCh` 寫 `DS:6777h = 0Ch`，豁免（`28FBh`）之後 entry 19（`2901h`）派發
+			// 群組 6，才套減半（#99）。
+			state.SpellDamage.Flags = gamepack.SpellDamageKind(gamepack.SpellIDLightningBolt)
+			saved := a.savedAgainstCategory(state, occupant, ray.SaveCategory, 0)
+			dealt = a.spellDamageAfterEffects(state, occupant, state.SpellDamage.Spell, dealt)
+			if saved {
+				dealt = gamepack.DamageAfterSave(gamepack.SpellRaySaveRule, dealt)
 			}
 			a.applySpellDamage(state, occupant, dealt)
 			hits++
@@ -498,6 +503,8 @@ func (a *app) castSpellRay(state *tacticalState, effect gamepack.CastEffect, x, 
 	if _, err := combat.StrikeSpellRayCell(state.Classes, cellAt, x, y, strike(effect.Damage)); err != nil {
 		return hits, err
 	}
+	// `2919h` 的 `2987h`：拉射線之前立 `DS:677Eh`，之後那幾格鏡影擋不下（`2B6Ah` 清回 0）。
+	state.SpellDamage.Area = true
 	caster := state.Roster[state.Mover]
 	err := combat.TraceSpellRay(combat.SpellRay{
 		CasterX: int(caster.X), CasterY: int(caster.Y), TargetX: x, TargetY: y,

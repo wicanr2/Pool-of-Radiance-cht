@@ -208,52 +208,21 @@ func HitCheckArmourClass(list EffectList, armourClass int) int {
 	return armourClass
 }
 
-// SaveRollAfterEffects 是群組 12（overlay-24 entry 7 `0DB2h`，豁免骰 `DS:6774h` 算好之後、
-// 比目標值之前）對這一批法術的碼做的事。side 是擲豁免那一個的 `+10Eh`；areaNode 是
-// `014Dh` 的作用範圍那一條（只有 `31h` 走得到），可以是 nil。
+// SaveRollAfterEffects 是群組 12（overlay-24 entry 7 `0DB2h`）只帶串列與邊的簡式：類別、體質、
+// 行動者陣營與傷害種類都當成不知道。完整的輸入見 SaveRollEffects（save_damage_effects.go）。
 //
 //	11h  entry 19 `0675h` `FE 06 74 67`：+1
 //	21h  entry 31 `80 2E 74 67 04`：−4
 //	24h  entry 34 `80 2E 74 67 04`：−4
 //	31h  entry 46 `12C1h`：節點 `+3` 位元 4 等於 side → `FE 06 74 67` +1，否則 `FE 0E 74 67` −1
-//
-// 群組 12 其餘的碼沒有接：`08h 09h 2Dh 2Eh` 要比 `DS:5CF0h` 的陣營（`+0A0h`），`0Ah`／`14h`
-// 要看 `DS:6777h` 的傷害種類，remake 的盤面兩樣都還沒有；`3Dh 6Fh 7Dh 5Ah 61h` 不是這批法術
-// 掛的（spec 112〈OPEN〉）。
 func SaveRollAfterEffects(list EffectList, value int, side uint8,
 	areaNode func(code uint8) (EffectNode, bool)) int {
-	if list.Has(ShieldEffectCode) {
-		value++
-	}
-	if list.Has(BlindnessEffectCode) {
-		value -= 4
-	}
-	if list.Has(BestowCurseEffectCode) {
-		value -= 4
-	}
-	node, ok := EffectNode{}, false
-	if index, found := list.IndexOf(PrayerAreaEffectCode); found {
-		node, ok = list[index], true
-	} else if areaNode != nil {
-		node, ok = areaNode(PrayerAreaEffectCode)
-	}
-	if ok {
-		if side == (node.Payload[effectNodeLevelOffset]&prayerSideBit)/prayerSideBit {
-			value++
-		} else {
-			value--
-		}
-	}
-	return value
+	return int(SaveRollEffects{Effects: list, Category: 0xff, Side: side, AreaNode: areaNode}.
+		Apply(uint8(value)))
 }
 
-// SpellDamageAfterEffects 是群組 6（overlay-24 entry 19 `1351h`，法術傷害進 `DS:6776h` 之後、
-// 套豁免規則之前）對這一批法術的碼做的事。只接護盾術：`067Eh` `80 3E 79 67 0F / 75 05 /
-// C6 06 76 67 00`——正在處理的法術（`DS:6779h`）是 0Fh（魔法飛彈）就把傷害寫 0。
-// 群組 6 的其餘碼（抗寒 `0Ah`、抗火 `14h` 要看 `DS:6777h`，鏡影 `1Ch` 等）沒有接。
+// SpellDamageAfterEffects 是群組 6（overlay-24 entry 19 `1351h`）只帶法術編號的簡式：傷害種類 0、
+// 不是範圍、不擲骰（鏡影不作用）。完整的輸入見 SpellDamageEffects。
 func SpellDamageAfterEffects(list EffectList, spell uint8, damage int) int {
-	if list.Has(ShieldEffectCode) && spell == SpellIDMagicMissile {
-		return 0
-	}
-	return damage
+	return SpellDamageEffects{Effects: list, Spell: spell}.Apply(damage).Damage
 }

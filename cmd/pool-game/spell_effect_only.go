@@ -88,6 +88,10 @@ func (a *app) castEffectOnly(state *tacticalState, caster spellCasting, option c
 	}
 	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastWholeSide),
 		strings.TrimSpace(caster.name), option.Label, affected))
+	if code == gamepack.SpiritualHammerEffectCode {
+		// 靈魂鎚 `19D1h`：`08BCh` 之後以模式 0 對表上第一格叫 `17h` 的常式（spiritual_hammer.go）。
+		a.grantSpiritualHammer(state, victims[0])
+	}
 }
 
 // attachSpellEffect 是 entry 20 的 `16B8h..1716h`，節點 `+3` 原樣存等級覆寫推進來的整個
@@ -159,16 +163,4 @@ func (state *tacticalState) hitCheckArmourClass(target uint8) int {
 		armourClass = gamepack.HitCheckArmourClass(state.Effects[target], armourClass)
 	}
 	return armourClass
-}
-
-// saveRollAfterEffects 是 entry 7 的 `0DB2h`：豁免骰算好之後派發擲豁免那一個的群組 12。
-func (state *tacticalState) saveRollAfterEffects(target uint8, value int) int {
-	if int(target) >= len(state.Effects) {
-		return value
-	}
-	side, _ := state.sideOf(target)
-	return gamepack.SaveRollAfterEffects(state.Effects[target], value, side,
-		func(code uint8) (gamepack.EffectNode, bool) {
-			return state.areaEffectNode(target, code, prayerAreaRadius)
-		})
 }

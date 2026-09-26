@@ -388,6 +388,12 @@ type tacticalState struct {
 	BodySize     []uint8
 	// RecordNames 是每一格記錄 `+0` 的名字（怪物才有；效果 12h／1Ah／30h 比名字表，#86）。
 	RecordNames []string
+	// Constitution 與 Alignment 是每一格記錄的 `+14h`／`+0A0h`（群組 12 的 5Ah／61h 與
+	// 08h／09h 讀，#96／#99）；SpellDamage 是施法那一趟的 `DS:6777h`／`DS:677Eh`
+	// （save_damage_effects.go）。
+	Constitution []uint8
+	Alignment    []uint8
+	SpellDamage  spellDamageContext
 	// SaveTargets 是每一格的五個豁免目標值（記錄 `+6Dh` 起，spec 075），
 	// SaveBonus 是記錄 `+101h` 的修正。隊員的目標值由職業等級查表算出來。
 	SaveTargets [][gamepack.SavingThrowCategories]uint8
@@ -852,14 +858,7 @@ func (a *app) enterTacticalPreview() error {
 	state.SleepFlag = make([]uint8, size)
 	state.Effects = make([]gamepack.EffectList, size)
 	state.PartyEffectTeardown = func(index int, node gamepack.EffectNode) {
-		if index < 0 || index >= len(state.PartySlot) {
-			return
-		}
-		party := state.PartySlot[index]
-		if party < 0 {
-			return
-		}
-		a.expiredEffectTeardown(party, node, state.Effects[index])
+		a.partyEffectTeardown(state, index, node)
 	}
 	state.PartyAged = a.agePartyMember(state)
 	state.Footprint = make([]uint8, size)
@@ -895,6 +894,8 @@ func (a *app) enterTacticalPreview() error {
 			// 身上的效果串列跟著人進戰場。原版根本不必搬——那條串列長在角色
 			// 記錄的 `+7Fh`，戰場上讀的就是同一條（spec 069）。
 			state.Effects[index] = combatEffects(member.Effects)
+			// 群組 12 讀的體質與陣營（#96／#99）。NPC 在 applyNPCCombatStats 改讀原版記錄。
+			state.rememberPartySaveRecord(index, member)
 			// NPC 沒有走過建角，戰鬥數值直接讀它帶著的原版記錄。
 			if member.NPC {
 				if err := applyNPCCombatStats(state, index, member); err != nil {
@@ -943,6 +944,7 @@ func (a *app) enterTacticalPreview() error {
 			state.CreatureType[index] = record.CreatureType()
 			state.BodySize[index] = record.BodySize()
 			state.rememberRecordName(index, record.Name)
+			state.rememberSaveRecord(index, record.Raw[recordConstitutionOffset], record.Raw[recordAlignmentOffset])
 			// 怪物記錄與角色記錄同一份 285-byte 版面，豁免那五格在 `+6Dh`。
 			targets, err := gamepack.SavingThrowTargets(record.Raw[:])
 			if err != nil {
@@ -1461,6 +1463,7 @@ func applyNPCCombatStats(state *tacticalState, index int, member poolsave.Charac
 	copy(record.Raw[:], member.Record)
 	record.Name = member.Name
 	state.rememberMorale(index, record.Raw[gamepack.MoraleOffset], record.Raw[gamepack.IntelligenceOffset])
+	state.rememberSaveRecord(index, record.Raw[recordConstitutionOffset], record.Raw[recordAlignmentOffset])
 	state.BaseMovement[index] = record.Movement()
 	state.HitPoints[index] = int(record.CurrentHitPoints())
 	if index < len(state.MaxHitPoints) {
@@ -2036,6 +2039,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		if err != nil {
 			return err
 		}
+		// overlay-13 `021Eh`／`022Ch`：攻擊者的群組 4（衰弱 1Dh）、目標的群組 5（鏡影 1Ch 擲骰，#99）。
+		damage = a.meleeDamageAfterEffects(state, attacker, target, damage)
 		// 一擊斃命（spec 141）：隊員命中時傷害改成目標剩下的 HP；擲骰照常。
 		damage = a.cheatDamage(state, attacker, target, damage)
 		landed++

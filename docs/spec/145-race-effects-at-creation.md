@@ -82,7 +82,7 @@ overlay-24 entry 10（`0E54h`，`retf 0Ch`）把參數寫進新節點（`0ED3h..
 | `30h` | 16 | 被 BUGBEAR、GNOLL 打 −4 | `HitRollEffects` |
 | `6Bh` | 9 | 1d100 <= 90 擋睡眠、魅惑 | `SpellEffectImmunity` |
 | `7Ch` | 9 | 1d100 <= 30 擋睡眠、魅惑 | `SpellEffectImmunity` |
-| `5Ah`／`61h` | 12 | 豁免骰「覆寫」 | 未接：remake 還沒有群組 12 |
+| `5Ah`／`61h` | 12 | 依體質（`+14h`）加豁免：`5Ah` 只在類別 0（毒），`61h` 在類別 2（魔杖）與 4（法術）；4..6 +1、7..10 +2、11..13 +3、14..17 +4、18..20 +5（spec 112〈群組 12／6／4／5〉，#96）| `SaveRollEffects`；送鍵測試 `TestDwarfOutsavesAHumanOnTheSameRoll` |
 
 ## remake
 
@@ -105,6 +105,5 @@ overlay-24 entry 10（`0E54h`，`retf 0Ch`）把參數寫進新節點（`0ED3h..
 
 ## 未閉合
 
-- `5Ah`／`61h` 的群組 12（豁免）與 `2Fh` 仍無 remake 消費端；節點已經掛上，接上規則時
-  不必再動建角。
+- `2Fh` 仍無 remake 消費端（spec 112〈OPEN〉）；節點已經掛上，接上規則時不必再動建角。
 - 串列在建角開頭是空的，是 strong inference（見〈順序〉）。
