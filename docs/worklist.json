@@ -205,18 +205,6 @@
       "github_issue": 85
     },
     {
-      "id": "effect-groups-9-10-16-17",
-      "layer": "feature",
-      "title": "效果群組 9／10／16／17 還沒接進戰鬥",
-      "body": "命中群組 10 其餘碼與 16、士氣群組 17（ov09 1172h／11C5h）、免疫群組 9。",
-      "acceptance": "各條 exact 接上並有送鍵測試，寫進 spec 112。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 86
-    },
-    {
       "id": "per-target-effect-messages",
       "layer": "presentation",
       "title": "逐人效果訊息與編號 57 is Speedy",
@@ -227,6 +215,42 @@
         "note": "要人判"
       },
       "github_issue": 87
+    },
+    {
+      "id": "racial-effects-at-creation",
+      "layer": "feature",
+      "title": "remake 建角不掛種族效果",
+      "body": "overlay-16 依種族掛效果：矮人 5Ah 61h 1Ah 2Fh、侏儒 61h 12h 2Fh 30h、精靈 6Bh、半精靈 7Ch；remake 沒掛。",
+      "acceptance": "建角照原版掛、舊存檔補上，與原版 .CHA 對照的送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 88
+    },
+    {
+      "id": "effect-only-spells",
+      "layer": "feature",
+      "title": "只掛效果的法術在戰鬥裡沒有作用",
+      "body": "祈禱、隱形、閃現、致盲、降咒等落到 cast.go default 分支，沒掛效果。",
+      "acceptance": "逐支照原版掛效果並實際作用，送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 89
+    },
+    {
+      "id": "hit-effect-tails",
+      "layer": "verification",
+      "title": "命中效果的尾巴：2Fh、21h 改 +111h、群組 4、0C4Dh、014Dh 順序",
+      "body": "五條細節見 issue。",
+      "acceptance": "各條附位址打勾，接上的有測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 90
     }
   ]
 }

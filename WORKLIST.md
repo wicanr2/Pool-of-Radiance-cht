@@ -55,9 +55,12 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **戰鬥中物品選單還缺 Ready／Drop／Halve／Join、卷軸、+0Bh 為 0 的物品法術。** ov19 entry 6 其餘選項、entry 12 與 ov22 entry 7 的卷軸、ov22 entry 5 戰鬥中回傳。
       **驗收**：三項照原版接上並有送鍵測試。
       **討論**：[#84](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/84)
-- [ ] **效果群組 9／10／16／17 還沒接進戰鬥。** 命中群組 10 其餘碼與 16、士氣群組 17（ov09 1172h／11C5h）、免疫群組 9。
-      **驗收**：各條 exact 接上並有送鍵測試，寫進 spec 112。
-      **討論**：[#86](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/86)
+- [ ] **remake 建角不掛種族效果。** overlay-16 依種族掛效果：矮人 5Ah 61h 1Ah 2Fh、侏儒 61h 12h 2Fh 30h、精靈 6Bh、半精靈 7Ch；remake 沒掛。
+      **驗收**：建角照原版掛、舊存檔補上，與原版 .CHA 對照的送鍵測試。
+      **討論**：[#88](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/88)
+- [ ] **只掛效果的法術在戰鬥裡沒有作用。** 祈禱、隱形、閃現、致盲、降咒等落到 cast.go default 分支，沒掛效果。
+      **驗收**：逐支照原版掛效果並實際作用，送鍵測試。
+      **討論**：[#89](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/89)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -85,6 +88,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **AI 物品瞄準射程與零傷害命中的吸取派發。** foeSpellTargets 射程該用 DS:6CB3h 物品等級；零傷害命中是否派發吸取未讀。
       **驗收**：兩條附位址打勾，射程照原版改並測試。
       **討論**：[#85](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/85)
+- [ ] **命中效果的尾巴：2Fh、21h 改 +111h、群組 4、0C4Dh、014Dh 順序。** 五條細節見 issue。
+      **驗收**：各條附位址打勾，接上的有測試。
+      **討論**：[#90](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/90)
 
 ### 三、版面與資料的差距
 
