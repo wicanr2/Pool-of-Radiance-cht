@@ -55,6 +55,11 @@ const exploreMaxCombatSteps = 12
 const bandageUrgency = 8
 
 func (pilot *tacticalPilot) key(app *app) ebiten.Key {
+	// 停拍中 tacticalInput 不讀鍵（combat_notice.go）：這一影格送一個沒有人接的鍵，
+	// 駕駛自己的計數也不動——不然「按了沒反應」會被當成被擋住或瞄不到。
+	if combatNoticeHolding(app) {
+		return combatNoticeIdleKey
+	}
 	state := app.tactical
 	if state.Prompt {
 		// 敵方清光之後那一次問的是「還要不要繼續打」（spec 062）。答 Y

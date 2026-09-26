@@ -378,7 +378,7 @@ func memorisedSlotOf(member poolsave.Character, id uint8) int {
 // 這一條、先攻分數扣掉施法時間（不夠扣就留 1）。**不呼叫 entry 34**，所以這一格
 // 還在排序裡，重選之後輪到牠時才放出去。與 foe_cast.go 的 foeCastPhase 讀寫同一份
 // `Casting.Pending`。
-func (state *tacticalState) beginCasting(mover, spell, cost uint8, label string,
+func (state *tacticalState) beginCasting(mover, spell, cost uint8, line string,
 	roll func(count, sides int) int) error {
 	index := int(mover)
 	if state.Casting.Pending == nil {
@@ -392,7 +392,7 @@ func (state *tacticalState) beginCasting(mover, spell, cost uint8, label string,
 		}
 		state.Scores[index] = score
 	}
-	state.Status = state.say(msgFoeBeginsCasting, mover, label)
+	state.Status = line
 	state.Moving = false
 	state.selectActor(roll)
 	if state.Mover == 0 {
@@ -404,7 +404,9 @@ func (state *tacticalState) beginCasting(mover, spell, cost uint8, label string,
 // beginPlayerCasting 是玩家那一側的「開始施法」：目標與記憶都留到放出去那一刻。
 func (a *app) beginPlayerCasting(option castOption, cost uint8) error {
 	state := a.tactical
-	if err := state.beginCasting(state.Mover, option.ID, cost, option.Label, a.rollDice); err != nil {
+	// overlay-13 `24E7h`：entry 20(記錄, "Begins Casting", 0Ah, 1)，名字加一句、停一拍。
+	line := a.panelNotice(state, state.Mover, state.say(msgFoeBeginsCasting), noticeRowPanel, true)
+	if err := state.beginCasting(state.Mover, option.ID, cost, line, a.rollDice); err != nil {
 		return err
 	}
 	a.statusLine = state.Status

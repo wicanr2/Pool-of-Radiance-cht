@@ -106,8 +106,10 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 	}
 	drawCombatBoard(screen, a, foreground)
 	drawCombatInfo(screen, a, foreground, accent)
-	// 作弊開著或開過都標在資訊欄，暫定說明那一塊的上面（spec 141〈標示〉）。
-	if mark := a.cheatMark(); mark != "" {
+	// 停拍中的 AI 訊息（combat_notice.go）：右欄那一塊原版先清掉再印，
+	// 所以這時不畫下面那兩樣；第 24 列的訊息取代指令列。
+	noticePanel, noticeFooter := drawCombatNotice(screen, a, foreground, accent)
+	if mark := a.cheatMark(); mark != "" && !noticePanel {
 		drawText(screen, mark, combatInfoLeft, combatNoteLine-24, accent)
 	}
 
@@ -126,14 +128,15 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		notes = append(notes, wrapDisplay(paragraph, combatNoteColumns)...)
 	}
 	for index, line := range notes {
-		if index >= combatNoteLines {
+		if index >= combatNoteLines || noticePanel {
 			break
 		}
 		drawText(screen, line, combatInfoLeft, combatNoteLine+index*18, foreground)
 	}
 
 	// 最下面那一列。挑目標的時候換成瞄準列——同一條基線，兩者不會同時出現。
-	if (!a.castTargeting || len(a.castTargets) == 0) && !a.castAborting() && a.combatItems == nil {
+	if (!a.castTargeting || len(a.castTargets) == 0) && !a.castAborting() && a.combatItems == nil &&
+		!noticeFooter {
 		line := a.combatCommandBar()
 		if a.tactical.Prompt {
 			line = a.text(msgTacticalPrompt)
@@ -453,6 +456,8 @@ type tacticalState struct {
 	BudgetSource  string
 	Status        string
 	FoeLog        string
+	// Notices 是等著顯示的 AI 訊息（overlay-25 entry 19／20），第一則停拍中（combat_notice.go）。
+	Notices []combatNotice
 	// Text 由建立者接上 app.text，讓狀態列的訊息也能翻譯。測試直接建構
 	// tacticalState 時不設它，say 會退回英文，所以測試不必知道語言這件事。
 	Text func(messageID) string
@@ -1159,7 +1164,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 		state.setFoeTarget(mover, target)
 	}
 	if target == 0 {
-		state.FoeLog = state.say(msgFoeNoTarget, mover)
+		state.FoeLog = state.say(msgFoeNoTarget, a.combatantName(state, mover))
 		state.endTurn(a.rollDice, false)
 		return nil
 	}
@@ -1241,7 +1246,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 			if err := a.resolveWeaponAttack(state, victim, true); err != nil {
 				return err
 			}
-			state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
+			state.FoeLog = state.say(msgFoeAttacked, a.combatantName(state, mover), steps, state.Status)
 			state.endTurn(a.rollDice, false)
 			return nil
 		}
@@ -1332,7 +1337,7 @@ func (a *app) foeTurn(state *tacticalState) error {
 	}
 	state.setTacticMode(mover, mode)
 	state.Activity.FoeSteps += steps
-	state.FoeLog = state.say(msgFoeClosed, mover, steps, target)
+	state.FoeLog = state.say(msgFoeClosed, a.combatantName(state, mover), steps, a.combatantName(state, target))
 	state.endTurn(a.rollDice, false)
 	return nil
 }
@@ -1754,6 +1759,10 @@ var tacticalStepKeypad = [8]ebiten.Key{
 func (a *app) tacticalInput() error {
 	state := a.tactical
 	if state == nil {
+		return nil
+	}
+	// 上一個行動印的訊息還在停拍（overlay-37 entry 13）：這一影格不做別的事。
+	if a.holdCombatNotice(state) {
 		return nil
 	}
 	if state.Prompt {

@@ -224,7 +224,7 @@ func (a *app) foeCastPhase(state *tacticalState, mover uint8, mode int) (bool, e
 		}
 		state.Scores[index] = score
 	}
-	state.FoeLog = state.say(msgFoeBeginsCasting, mover, a.spellLabel(spell))
+	state.FoeLog = a.panelNotice(state, mover, state.say(msgFoeBeginsCasting), noticeRowPanel, true)
 	state.Activity.FoeCastsBegun++
 	state.Status = state.FoeLog
 	state.Moving = false
@@ -330,18 +330,20 @@ func (a *app) foeReleaseSpell(state *tacticalState, mover uint8, spell uint8) er
 		return nil
 	}
 	label := a.spellLabel(spell)
+	// `0D23h`：挑目標之前先印 "Casts a Spell" 與 "Spell:" 加法名（`32D3h`）。
+	announce := a.castNotice(state, mover, spell)
 	targets, found, err := a.foeSpellTargets(state, mover, spell, caster)
 	if err != nil {
 		return err
 	}
 	if !found {
 		a.foeForgetSpell(state, caster, spell)
-		a.tacticalStatus(state, a.text(msgCastAborted))
+		a.tacticalStatus(state, a.footerNotice(state, a.text(msgCastAborted)))
 		state.FoeLog = state.Status
 		state.endTurnAfterAction(a.rollDice)
 		return nil
 	}
-	state.FoeLog = state.say(msgFoeCasts, mover, label)
+	state.FoeLog = announce
 	state.Activity.FoeCasts++
 	casting := spellCasting{
 		name:      caster.name,

@@ -146,16 +146,18 @@ func (a *app) turnUndead(state *tacticalState, mover uint8, clericLevel int,
 				state.Undead.Turned = map[int]bool{}
 			}
 			state.Undead.Turned[int(other)] = true
-			lines = append(lines, state.say(msgFoeUndeadTurned, other))
+			lines = append(lines, a.combatantName(state, other)+" "+state.say(msgFoeUndeadTurned))
 			continue
 		}
 		state.destroyTurnedUndead(other)
-		lines = append(lines, state.say(msgFoeUndeadDestroyed, other))
+		lines = append(lines, a.combatantName(state, other)+" "+state.say(msgFoeUndeadDestroyed))
 	}
 	if !result.Turned() {
-		lines = append(lines, state.say(msgFoeTurnNothing))
+		// `1325h`：entry 19，第 24 列、停一拍。
+		lines = append(lines, a.footerNotice(state, state.say(msgFoeTurnNothing)))
 	}
-	state.FoeLog = state.say(msgFoeTurnsUndead, mover) + " " + strings.Join(lines, " ")
+	state.FoeLog = a.combatantName(state, mover) + " " + state.say(msgFoeTurnsUndead) + " " +
+		strings.Join(lines, " ")
 	a.tacticalStatus(state, state.FoeLog)
 	state.endTurnAfterAction(a.rollDice)
 }

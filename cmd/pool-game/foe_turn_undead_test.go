@@ -66,7 +66,7 @@ func TestQuickClericDestroysUndead(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(state.FoeLog, "TURNS UNDEAD") || !strings.Contains(state.FoeLog, "2 IS DESTROYED") {
+	if !strings.Contains(state.FoeLog, "TURNS UNDEAD") || !strings.Contains(state.FoeLog, "SKELETON IS DESTROYED") {
 		t.Fatalf("the quick cleric did not destroy the skeleton: %q", state.FoeLog)
 	}
 	if state.Roster[2].FootprintClass != 0 || state.States[2] != turnDestroyedState {
@@ -87,7 +87,7 @@ func TestQuickClericTurnsOncePerFight(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(state.FoeLog, "2 IS TURNED") || !state.Undead.Turned[2] {
+	if !strings.Contains(state.FoeLog, "SKELETON IS TURNED") || !state.Undead.Turned[2] {
 		t.Fatalf("the skeleton was not turned: %q", state.FoeLog)
 	}
 	if state.Roster[2].FootprintClass == 0 {

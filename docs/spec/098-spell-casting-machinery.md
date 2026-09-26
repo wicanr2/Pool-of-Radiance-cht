@@ -7,7 +7,7 @@ DRAFT（`08BCh` 自己在做什麼、四個覆寫參數的語意、各法術的�
 日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）、模式 0Ah 分邊與模式 8
 射線（issue #78）、受傷打斷與用物品（issue #75／#77）、模式 0Ah 的效果怎麼掛上去、在戰鬥裡
 改什麼（issue #81）；只掛效果的那一批與 `07C7h` 的特例（issue #89）；靈魂鎚、致病的收尾、傷害型
-碰觸法術與緩毒術的卡點（issue #99）；營地施法走同一支 `08BCh`、表換成 `0A88h`（issue #100）。
+碰觸法術與緩毒術的卡點（issue #99）；營地施法走同一支 `08BCh`、表換成 `0A88h`（issue #100）；AI 戰鬥訊息的字串、名字與停拍（issue #104）。
 
 ## 擲骰：overlay-24 的兩支
 
@@ -815,12 +815,79 @@ overlay-25 16DFh  複製字串（上限 28h）
   矩形相同，當成清區（strong inference）。
 - 施法者是誰由前一句交代：AI 的呼叫端傳 `[bp+0Ah]` = 1（overlay-13 `24C7h` `B0 01 50`），
   `0D23h` 在挑目標**之前**就經 `32D3h` 印 "Casts a Spell"（`32BEh`，帶名字）與
-  "Spell:" 加法術名（`32CCh`）。remake 沒有那一句（見〈remake 的對應〉表），
-  所以狀態列只剩 `SPELL ABORTED`；繁中 `施法中止`。
+  "Spell:" 加法術名（`32CCh`），見下一節。繁中 `施法中止`。
 
-remake：`ui.castAborted`，`abortSpell` 與 `foeReleaseSpell` 都不帶參數；等一拍沒有做
-（戰鬥中的 AI 訊息都還沒接遊戲速度）。測試 `TestAbortSpellForgetsItAndEndsTheAction`、
-`TestFoeSpellAbortsWhenEveryTargetIsAlreadyHeld`。
+remake：`ui.castAborted`，`abortSpell` 與 `foeReleaseSpell` 都不帶參數。AI 那一側經
+`footerNotice` 在第 24 列停一拍（下一節）；玩家的 `abortSpell` 還沒有停拍。測試
+`TestAbortSpellForgetsItAndEndsTheAction`、`TestFoeSpellAbortsWhenEveryTargetIsAlreadyHeld`。
+
+#### AI 戰鬥訊息的字串與印法（2026-09-26，issue #104）
+
+輸入：overlay-09（`6b47e49d…9258`）、overlay-13（`4d53df20…2390`）、overlay-19
+（`4694cb51…bdca9`）、overlay-22（`967065cc…dda8`）、overlay-24（`e878166e…8714`）、
+overlay-25（`9fede24b…0c0e`）、overlay-37（`b1f5c221…be31`），清冊
+`docs/audit/dos-ovr-manifest.json`；`coab-go-test:20260729` 的 GNU objdump
+（`-b binary -m i8086 -M intel`），位址是 overlay 檔內位移，far call 以清冊反查
+（segment = (executable_file_offset − stub_offset − 3B0h) ÷ 16）。字串是 Pascal
+常數（長度 byte ＋ 內容），呼叫端以 `mov di, 字串` ＋ `0x5BB:0x634` 載進暫存。
+
+原版印這些訊息只走兩支：
+
+- **entry 20**（overlay-25 `1738h`，`retf 0Ch`）(記錄, 字串, 列, 停)：戰鬥中
+  （`DS:4954h == 5`）清右欄 17h..26h × 列..15h（`0150h:0138h`），`1865h` 在欄 17h、
+  那一列印記錄 `+0` 的名字（色：`+10Dh == 0` → 0Ch、`+10Eh == 1` → 0Eh、其餘 0Bh），
+  overlay-37 entry 5（`619h`）從下一列起以色 0Ah 在 17h..26h 折行印字串；「停」非 0 就
+  overlay-37 entry 13 等一拍（遊戲速度 × 225 ms），再以 `1830h` 清掉右欄。**名字只從
+  記錄 `+0` 取，沒有任何一支印名冊編號。**
+- **entry 19**（overlay-25 `16DFh`，`retf 4`）(字串)：清第 24 列、欄 0 色 0Ah 印、等一拍、
+  再清（見上一節）。不帶名字。
+
+| remake 鍵 | 原版字串（位址、bytes） | 呼叫端 | 印法 | 停拍 | 證據 |
+|---|---|---|---|---|---|
+| `ui.foeCasts` ＋ `ui.foeSpellLine` | overlay-22 `32BEh` `0D 43 61 73 74 73 20 61 20 53 70 65 6C 6C` "Casts a Spell"；`32CCh` `06 53 70 65 6C 6C 3A` "Spell:" | overlay-22 `0D23h`：`[bp+0Ah] != 0` 且 `DS:6CB3h == 0` → `32D3h(記錄 [5CF0h], "casts", 法術)`；`32F4h` entry 20(記錄, "Casts a Spell", 0Ah, 1)，`3320h` 清第 23 列，`3339h..3355h` 在列 17h 欄 0 色 0Ah 印 "Spell:" 串接 `DS:2883h + 法術 × 29h` 的法名（`0x5BB:0x6C1` 是字串串接，中間沒有空白）| 名字＋一句在右欄；法名在第 23 列 | 右欄那一段停一拍；第 23 列不清 | exact |
+| 同上的呼叫端旗標 | — | overlay-13 `24C7h` `B0 01 50`（施法時間 0）、overlay-09 `0148h..014Dh` `B0 01 50 B0 01 50`（放出開始施法的那一條）、overlay-08 `0352h`（玩家的開始施法）都傳 `[bp+0Ah] = 1`；只有營地那一支 `0D1Bh` 把它清成 0 | — | — | exact |
+| `ui.foeBeginsCasting` | overlay-13 `23EAh` `0E 42 65 67 69 6E 73 20 43 61 73 74 69 6E 67` "Begins Casting" | overlay-13 `24F9h..2509h` entry 20(記錄, 字串, 0Ah, 1)，AI 與玩家共用 | 名字＋一句，不帶法名 | 一拍 | exact |
+| `ui.foeLostSpell` | overlay-13 `02B0h` "lost a spell"；overlay-24 `12EAh` 同一句 | overlay-13 `0509h` 先 overlay-37 entry 13 等一拍，`0519h..0529h` entry 20(記錄, 字串, **0Ch**, 1)；overlay-24 `152Eh..153Eh` entry 20(記錄, 字串, 0Ch, 1) | 名字在第 12 列 | 一拍（攻擊那一側前面另有一拍） | exact |
+| `ui.foeUsesItem` ＋ `ui.foeItemLine` | overlay-19 `1A73h` "uses an item"；`1A80h` `05 49 74 65 6D 3A` "Item:" | overlay-19 `1B2Dh..1B4Ah` entry 20(記錄 [5CF0h], 字串, 0Ah, **0**)；`1B56h..1B6Eh` 列 17h 欄 0 印 "Item:"，`1B8Dh` overlay-25 entry 1 從欄 5 印物品名；`DS:6CB3h` 為 0（卷軸）整段跳過 | 名字＋一句；物品名在第 23 列 | 那一句不停；entry 1 停不停沒有讀 | exact／entry 1 unknown |
+| `ui.foeTurnsUndead` | overlay-13 `1130h` "turns undead..." | `117Bh..118Bh` entry 20(記錄, 字串, 0Ah, 0) | 名字＋一句 | 不停 | exact |
+| `ui.foeUndeadTurned` | overlay-13 `1140h` "is turned" | `129Dh..12A7h` overlay-25 entry 26（`2041h`）(記錄, 1, 字串) | 帶記錄（名字） | entry 26 沒有讀完 | strong inference（名字）／停拍 unknown |
+| `ui.foeUndeadDestroyed` | overlay-13 `114Ah` "Is destroyed" | `12B9h..12C9h` entry 20(記錄, 字串, 0Ah, 0) | 名字＋一句 | 不停 | exact |
+| `ui.foeTurnNothing` | overlay-13 `1157h` "Nothing Happens..." | `1325h..132Fh` entry 19 | 第 24 列，不帶名字 | 一拍 | exact |
+| `ui.foeForcedToFlee` | overlay-09 `10C0h` "is forced to flee" | `1126h..1136h` entry 20(記錄, 字串, 0Ah, 1) | 名字＋一句 | 一拍 | exact |
+| `ui.foeFleesInPanic` | overlay-09 `0000h` "flees in panic" | `00F1h..0101h` entry 20(記錄, 字串, 0Ah, 1)（runtime `+14h` 立著、`+10h` 沒立） | 名字＋一句 | 一拍 | exact |
+| `ui.foeSurrenders` | overlay-09 `10D2h` "Surrenders" | `1271h..127Bh` overlay-24 entry 11（`0F00h`）(記錄, 4, 字串) → `0F57h` entry 20(記錄, 字串, 0Ah, 1)，之後 `+10Dh = 0`、`+10Ch = 4` | 名字＋一句 | 一拍 | exact |
+| `ui.foeGotAway` | overlay-13 `0C51h` "Got Away" | `0CEDh..0CF7h` overlay-24 entry 11(記錄, 3, 字串)，同上 | 名字＋一句 | 一拍 | exact |
+| `ui.foeEscapeBlocked` | overlay-13 `0C5Ah` "Escape is blocked" | `0D03h..0D0Dh` entry 19 | 第 24 列，**不帶名字** | 一拍 | exact |
+| `ui.castAborted` | overlay-22 `0C06h`（上一節） | `0EE7h` entry 19 | 第 24 列，不帶名字 | 一拍 | exact |
+| `ui.foeFled`、`ui.foeAttacked`、`ui.foeClosed`、`ui.foeNoTarget` | 原版沒有這幾句 | — | remake 自己的戰鬥記錄（`FoeLog`），不上畫面 | — | 不適用 |
+
+英文照原版字串、以大寫字模顯示（spec 135）；法名照 START.EXE 的名稱表（spec 068），
+所以是 `SPELL:MAGIC MISSILE`，冒號後沒有空白。繁中是對應譯句，法名用說明書譯名。
+
+remake 的對應（`cmd/pool-game/combat_notice.go`）：
+
+- 名字：`combatantName`——隊員讀角色名，怪物讀開打時記下的記錄 `+0`
+  （`RecordNames`，依語言換成譯名），與資訊欄第一行同一套。
+- entry 20 是 `panelNotice`、entry 19 是 `footerNotice`、`32D3h` 是 `castNotice`；三者把
+  一則 `combatNotice` 排進 `tacticalState.Notices`，停拍的長度是 `speedDelayTicks`
+  （遊戲速度 × 225 ms 換成 60 Hz 影格）。`tacticalInput` 一開頭先看佇列：第一則還在倒數
+  就這一影格什麼都不做（原版的 Delay 不讀鍵）。戰鬥已經結束時不停，照舊在同一步收尾。
+- 畫面：停拍中的那一則，名字畫在右欄第 10 列（lost a spell 第 12 列）、句子從下一列起
+  折行，這時 remake 自己放在右欄下半的鍵位說明與作弊標示不畫（原版那一塊先清掉）；
+  "Spell:" 那一行在第 23 列；entry 19 的字取代第 24 列的指令列。
+- **與原版的差**：原版 `32D3h` 先停拍、清右欄，才印第 23 列，那一列留到挑目標與效果
+  動畫之後；remake 挑目標與效果在同一影格算完、沒有動畫層，所以右欄那一句與第 23 列
+  放在同一拍一起顯示，停拍期間盤面已經是施法後的樣子。第 23 列原版什麼時候清掉沒有
+  追（unknown），remake 隨那一拍一起清。
+- 沒有接的：`uses an item` 那一句原版不停拍、`Item:` 那一行的 entry 1 沒有讀，所以只進
+  記錄、不排停拍；`is turned`（entry 26）同樣只進記錄；lost a spell 在攻擊那一側前面
+  另有一拍（`0509h`），傷害那一行本身還沒有畫面，這一拍沒有接。玩家那一側的施法
+  （`resolveCast`／`pendingSpellTurn`）同樣經過 `0D23h`，"Casts a Spell" 沒有接；玩家的
+  `abortSpell` 也還沒有停拍。
+- 測試（全部從 `Update()` 送鍵）：`TestFoeCastAnnouncesCasterAndSpellByName`（英繁兩語）、
+  `TestFoeCastHoldsForOneBeat`、`TestFoeAbortedCastStillNamesTheCaster`、
+  `TestFoeBeginsCastingByName`、`TestFleeMessagesNameTheFoe`（英繁兩語、逃掉與逃不掉）。
+
 
 #### 神殿那一場第一回合為什麼一直中止（exact）
 

@@ -288,7 +288,7 @@ func (a *app) castFromItem(state *tacticalState, slot, index int, spell uint8, s
 	a.combatItems = nil
 	if !scroll {
 		name := strings.TrimSpace(a.state.Party[slot].Inventory[index].Name)
-		a.tacticalStatus(state, state.say(msgFoeUsesItem, state.Mover, name))
+		a.tacticalStatus(state, a.itemUseLine(state, state.Mover, name))
 	}
 	a.combatItem = &combatItemUse{slot: slot, item: index, spell: spell, scroll: scroll,
 		keepTurn: a.spellParameters[spell].CampOnly()}

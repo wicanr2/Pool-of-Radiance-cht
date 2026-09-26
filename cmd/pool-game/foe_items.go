@@ -133,7 +133,7 @@ func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 	chosen gamepack.AIItemCandidate, caster foeSpellcaster) error {
 	items, _ := a.foeItemBearer(state, mover)
 	name := strings.TrimSpace(items[chosen.Index].Name)
-	state.FoeLog = state.say(msgFoeUsesItem, mover, name)
+	state.FoeLog = a.itemUseLine(state, mover, name)
 	var member *poolsave.Character
 	var spend func()
 	if slot >= 0 {

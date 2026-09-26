@@ -64,7 +64,7 @@ func TestQuickMemberUsesAWandUntilItIsEmpty(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(state.FoeLog, "USES AN ITEM: WAND") || state.HitPoints[2] >= hp {
+	if !strings.Contains(state.FoeLog, "USES AN ITEM ITEM:WAND") || state.HitPoints[2] >= hp {
 		t.Fatalf("the quick member did not use the wand: %q, foe hp %d → %d",
 			state.FoeLog, hp, state.HitPoints[2])
 	}

@@ -35,7 +35,7 @@ func TestPlayerClericTurnsASkeleton(t *testing.T) {
 	if err := press(application, ebiten.KeyT); err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(state.FoeLog, "TURNS UNDEAD") || !strings.Contains(state.FoeLog, "2 IS DESTROYED") {
+	if !strings.Contains(state.FoeLog, "TURNS UNDEAD") || !strings.Contains(state.FoeLog, "SKELETON IS DESTROYED") {
 		t.Fatalf("T did not destroy the skeleton: %q", state.FoeLog)
 	}
 	if state.Roster[2].FootprintClass != 0 || state.States[2] != turnDestroyedState {
@@ -108,7 +108,7 @@ func TestPlayerUsesAWandAndSpendsACharge(t *testing.T) {
 		t.Fatal("U did not open the item menu")
 	}
 	pressAll(t, application, ebiten.KeyU)
-	if !strings.Contains(state.Status, "USES AN ITEM: WAND") {
+	if !strings.Contains(state.Status, "USES AN ITEM ITEM:WAND") {
 		t.Fatalf("using the wand printed %q", state.Status)
 	}
 	if application.castTargeting {

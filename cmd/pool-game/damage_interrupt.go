@@ -46,7 +46,9 @@ func (a *app) woundCombatant(state *tacticalState, target uint8, damage int) {
 	if caster, ok := a.foeSpellcasterFor(state, target); ok {
 		a.foeForgetSpell(state, caster, spell)
 	}
-	state.Casting.LostNotices = append(state.Casting.LostNotices, state.say(msgFoeLostSpell, target))
+	// overlay-13 `0529h`／overlay-24 `153Eh`：entry 20(記錄, "lost a spell", 0Ch, 1)。
+	state.Casting.LostNotices = append(state.Casting.LostNotices,
+		a.panelNotice(state, target, state.say(msgFoeLostSpell), noticeRowLost, true))
 }
 
 // announceLostSpells 把這一次傷害裡丟失的法術接在狀態列後面。原版先印傷害那一行，

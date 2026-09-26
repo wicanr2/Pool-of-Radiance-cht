@@ -153,7 +153,7 @@ func (a *app) foeMoralePhase(state *tacticalState, mover uint8) (fleeing, acted 
 	switch outcome {
 	case gamepack.MoraleForcedFlee:
 		// `1116h`：`is forced to flee`。
-		a.tacticalStatus(state, state.say(msgFoeForcedToFlee, mover))
+		a.tacticalStatus(state, a.panelNotice(state, mover, state.say(msgFoeForcedToFlee), noticeRowPanel, true))
 		return true, false
 	case gamepack.MoraleFlees:
 		// `122Fh..1252h` 再摘一次 4Ah／4Bh；entry 1 `00C8h` 印 `flees in panic`
@@ -161,12 +161,12 @@ func (a *app) foeMoralePhase(state *tacticalState, mover uint8) (fleeing, acted 
 		for _, code := range gamepack.MoraleClearedEffects {
 			state.removeEffect(index, code)
 		}
-		a.tacticalStatus(state, state.say(msgFoeFleesInPanic, mover))
+		a.tacticalStatus(state, a.panelNotice(state, mover, state.say(msgFoeFleesInPanic), noticeRowPanel, true))
 		return true, false
 	case gamepack.MoraleSurrenders:
 		// `1263h..128Bh`：overlay-24 entry 11(記錄, 4, "Surrenders")，再 entry 34。
 		state.leaveBoard(mover, gamepack.SurrenderedState)
-		state.FoeLog = state.say(msgFoeSurrenders, mover)
+		state.FoeLog = a.panelNotice(state, mover, state.say(msgFoeSurrenders), noticeRowPanel, true)
 		a.tacticalStatus(state, state.FoeLog)
 		state.endTurnAfterAction(a.rollDice)
 		return false, true
@@ -358,14 +358,18 @@ func (a *app) foeLeaveCombat(state *tacticalState, mover uint8, run *foeFleeRun)
 	}
 	escaped := gamepack.EscapeSucceeds(len(opponents), state.speedOf(int(mover)),
 		state.fastestOpponent(mover), a.rollDice)
-	result := state.say(msgFoeEscapeBlocked, mover)
+	var result string
 	if escaped {
 		state.leaveBoard(mover, gamepack.FledState)
-		result = state.say(msgFoeGotAway, mover)
+		// overlay-24 entry 11(記錄, 3, "Got Away") → entry 20(記錄, 字串, 0Ah, 1)。
+		result = a.panelNotice(state, mover, state.say(msgFoeGotAway), noticeRowPanel, true)
+	} else {
+		// `0D0Dh`：entry 19，不帶名字。
+		result = a.footerNotice(state, state.say(msgFoeEscapeBlocked))
 	}
 	state.Budgets[mover] = 0
 	state.Activity.FoeSteps += run.steps
-	state.FoeLog = state.say(msgFoeFled, mover, run.steps) + " " + result
+	state.FoeLog = state.say(msgFoeFled, a.combatantName(state, mover), run.steps) + " " + result
 	a.tacticalStatus(state, state.FoeLog)
 	state.endTurnAfterAction(a.rollDice)
 }
@@ -373,7 +377,7 @@ func (a *app) foeLeaveCombat(state *tacticalState, mover uint8, run *foeFleeRun)
 // foeFleeEnd 是逃跑中交給 entry 6／entry 34 的收尾。
 func (a *app) foeFleeEnd(state *tacticalState, mover uint8, run *foeFleeRun) {
 	state.Activity.FoeSteps += run.steps
-	state.FoeLog = state.say(msgFoeFled, mover, run.steps)
+	state.FoeLog = state.say(msgFoeFled, a.combatantName(state, mover), run.steps)
 	state.endTurn(a.rollDice, false)
 }
 

@@ -805,6 +805,14 @@ func exploreWorldWithFlags(t *testing.T, zipPath string, seed int64, rotate, rew
 	treasureShared := false
 walk:
 	for step := 0; step < budget; step++ {
+		// 停拍的影格只是等待（combat_notice.go），不算進預算、也不算卡住。
+		if combatNoticeHolding(application) {
+			if err := press(application, combatNoticeIdleKey); err != nil {
+				t.Fatal(err)
+			}
+			step--
+			continue
+		}
 		if stop != nil && stop(application) {
 			reason = "指定的主線狀態已達成"
 			break
