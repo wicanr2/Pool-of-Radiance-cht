@@ -2014,11 +2014,13 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	}
 	total, landed := 0, 0
 	var lastRoll uint8
+	// overlay-13 `1587h..1595h`：重算目標的戰鬥數值、派發目標的群組 11，才進擲骰（#89）。
+	armourClass := state.hitCheckArmourClass(target)
 	for _, dice := range swings {
 		lastRoll = uint8(a.rollDice(1, 20))
 		// 命中骰擲出來之後先問效果系統：群組 10／16（overlay-24 entry 6，#81／#86）。
 		modifier, missed := state.hitRollAfterEffects(attacker, target, lastRoll)
-		hit, err := combat.ResolveHit(lastRoll, state.THAC0[attacker], state.ArmorClass[target], modifier)
+		hit, err := combat.ResolveHit(lastRoll, state.THAC0[attacker], armourClass, modifier)
 		if err != nil {
 			return err
 		}

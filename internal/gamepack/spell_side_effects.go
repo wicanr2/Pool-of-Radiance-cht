@@ -118,3 +118,142 @@ func ApplySpellEffectNode(list EffectList, node EffectNode) EffectList {
 	}
 	return list.Append(node)
 }
+
+// ---- 只掛效果的那一批（`08BCh` 的通用路，issue #89）----
+//
+// 參數表 `+0Ah` 非 0 而處理常式沒有自己的算法的那幾十支，全部走 overlay-22 `08BCh` 的
+// `090Ch..0A62h`：對 `20AEh` 收好的表逐格擲豁免（`096Bh`）、`+2` 是 FFh 的先擲一次命中
+// （`0997h..09DBh`）、持續 `07C7h`、然後 `0A5Ah` 呼叫 overlay-24 entry 20（spec 098
+// 〈只掛效果的那一批〉）。效果真正作用在各群組被問到的時候；這一段收的是那幾個群組裡
+// 屬於這批法術的碼（群組 6／11／12 各自只接到下面列的那幾個，其餘寫在 spec 112〈OPEN〉）。
+
+// 這一批法術掛的碼裡，要在群組 6／11／12 裡作用的。
+const (
+	// FriendsEffectCode 是友誼術（`0Eh`）的參數表 `+0Ah`：處理常式 overlay-12 entry 16
+	// `05E0h` 只做 `記錄 +15h = 節點 +3`——收尾時把魅力還原成施法前的值。
+	FriendsEffectCode uint8 = 0x0e
+	// ShieldEffectCode 是護盾術（`13h`）的參數表 `+0Ah`：overlay-12 entry 19 `065Eh`。
+	ShieldEffectCode uint8 = 0x11
+	// BlindnessEffectCode 是致盲（`26h`）的參數表 `+0Ah`：overlay-12 entry 31 `0BBEh`。
+	BlindnessEffectCode uint8 = 0x21
+	// BestowCurseEffectCode 是降咒（`2Ch`）的參數表 `+0Ah`：overlay-12 entry 34 `0C2Dh`。
+	BestowCurseEffectCode uint8 = 0x24
+	// PoisonEffectCode 是中毒（`37h`）。緩毒術 `1873h` 先問它，沒中毒就整支不做。
+	PoisonEffectCode uint8 = 0x37
+	// ShieldArmourClassFloor 是 `065Eh` 的 `cmp es:[di+111h], 39h / jae` 之後
+	// `mov es:[di+111h], 39h`：AC 內部值墊到 57，也就是 AC 3。
+	ShieldArmourClassFloor = 0x39
+)
+
+// Magnitude 是節點 `+3` 整個 byte，不拆位元。等級覆寫推進來的值原樣存在這裡
+// （友誼術存施法前的魅力、鏡影術存影像數、祈禱術存 `(邊 << 4) + 等級`）。
+func (node EffectNode) Magnitude() uint8 { return node.Payload[effectNodeLevelOffset] }
+
+// `07C7h` 的六個特例（`07D2h..086Eh`，其餘走 `+4 + +5 × 26F8h(法術)`）。
+const (
+	durationSpellCauseDisease = 0x28 // Roll(1, 6) × 10
+	durationSpellSpeedy       = 0x39 // Roll(5, 4)
+	durationSpellParalyze     = 0x3d // Roll(5, 4)
+	durationSpellGiantStr     = 0x3b // Roll(1, 4) × 10 + 40
+	durationSpellInvisible    = 0x3f // 戰鬥中 Roll(2, 10) × 10，否則 (Roll(1, 10) + 10) × 10
+	durationSpellReading      = 0x43 // 固定 5A0h
+	// durationReadingRounds 是 `086Eh` `C7 46 FC A0 05`。
+	durationReadingRounds = 0x5a0
+)
+
+// SpellEffectDuration 是 overlay-22 `07C7h(法術)`：`08BCh` 在 `0A35h` 逐格呼叫一次，
+// 結果當成節點的持續。casterLevel 是 `26F8h` 的施法者等級（`0879h`，**不是**等級覆寫）。
+// inCombat 是 `DS:4954h == 5`，只有 `3Fh` 看它。擲骰走 overlay-24 entry 8
+// （`9A 48 00 00 01`），順序照原版：每一格各擲一次。
+func SpellEffectDuration(id uint8, parameters SpellParameters, casterLevel int, inCombat bool,
+	roll func(count, sides int) int) int {
+	switch id {
+	case durationSpellCauseDisease:
+		return roll(1, 6) * 10
+	case durationSpellSpeedy, durationSpellParalyze:
+		return roll(5, 4)
+	case durationSpellGiantStr:
+		return roll(1, 4)*10 + 40
+	case durationSpellInvisible:
+		if inCombat {
+			return roll(2, 10) * 10
+		}
+		return (roll(1, 10) + 10) * 10
+	case durationSpellReading:
+		return durationReadingRounds
+	}
+	return parameters.Duration(casterLevel)
+}
+
+// HitCheckArmourClass 是群組 11 對「被打的那一個」的 AC 內部值（`+111h`）做的事。
+//
+// 兩個呼叫端同形：近戰 overlay-13 `1587h..1595h`、碰觸法術 overlay-22 `099Eh..09B2h`，都是
+// 先 `010Ah:0043h(目標)`（overlay-25 entry 7 `0BBEh`，整份重算戰鬥數值，spec 063），再派發
+// 群組 11（`21h 11h 08h 09h 2Dh 2Eh 1Eh`），然後才擲命中。所以這裡的調整每一次出手都是從
+// 重算過的值起算，不會累加。
+//
+//	21h  entry 31 `0BBEh`：`+111h`／`+112h` 各減 4（`6780h`／`6774h` 的寫入在這個時點
+//	     會被 entry 6 的 `0CC9h` 與 entry 7 的 `0D71h` 蓋掉，看不到）
+//	11h  entry 19 `065Eh`：`+111h` 小於 39h 就寫成 39h
+//
+// `08h 09h 2Dh 2Eh` 只寫 `6774h`／`6780h`，同理看不到；`1Eh`（雲）的 AC 那一段由臭雲術的
+// 每回合結算處理（spec 121），這裡不重複。
+func HitCheckArmourClass(list EffectList, armourClass int) int {
+	if list.Has(BlindnessEffectCode) {
+		armourClass -= 4
+	}
+	if list.Has(ShieldEffectCode) && armourClass < ShieldArmourClassFloor {
+		armourClass = ShieldArmourClassFloor
+	}
+	return armourClass
+}
+
+// SaveRollAfterEffects 是群組 12（overlay-24 entry 7 `0DB2h`，豁免骰 `DS:6774h` 算好之後、
+// 比目標值之前）對這一批法術的碼做的事。side 是擲豁免那一個的 `+10Eh`；areaNode 是
+// `014Dh` 的作用範圍那一條（只有 `31h` 走得到），可以是 nil。
+//
+//	11h  entry 19 `0675h` `FE 06 74 67`：+1
+//	21h  entry 31 `80 2E 74 67 04`：−4
+//	24h  entry 34 `80 2E 74 67 04`：−4
+//	31h  entry 46 `12C1h`：節點 `+3` 位元 4 等於 side → `FE 06 74 67` +1，否則 `FE 0E 74 67` −1
+//
+// 群組 12 其餘的碼沒有接：`08h 09h 2Dh 2Eh` 要比 `DS:5CF0h` 的陣營（`+0A0h`），`0Ah`／`14h`
+// 要看 `DS:6777h` 的傷害種類，remake 的盤面兩樣都還沒有；`3Dh 6Fh 7Dh 5Ah 61h` 不是這批法術
+// 掛的（spec 112〈OPEN〉）。
+func SaveRollAfterEffects(list EffectList, value int, side uint8,
+	areaNode func(code uint8) (EffectNode, bool)) int {
+	if list.Has(ShieldEffectCode) {
+		value++
+	}
+	if list.Has(BlindnessEffectCode) {
+		value -= 4
+	}
+	if list.Has(BestowCurseEffectCode) {
+		value -= 4
+	}
+	node, ok := EffectNode{}, false
+	if index, found := list.IndexOf(PrayerAreaEffectCode); found {
+		node, ok = list[index], true
+	} else if areaNode != nil {
+		node, ok = areaNode(PrayerAreaEffectCode)
+	}
+	if ok {
+		if side == (node.Payload[effectNodeLevelOffset]&prayerSideBit)/prayerSideBit {
+			value++
+		} else {
+			value--
+		}
+	}
+	return value
+}
+
+// SpellDamageAfterEffects 是群組 6（overlay-24 entry 19 `1351h`，法術傷害進 `DS:6776h` 之後、
+// 套豁免規則之前）對這一批法術的碼做的事。只接護盾術：`067Eh` `80 3E 79 67 0F / 75 05 /
+// C6 06 76 67 00`——正在處理的法術（`DS:6779h`）是 0Fh（魔法飛彈）就把傷害寫 0。
+// 群組 6 的其餘碼（抗寒 `0Ah`、抗火 `14h` 要看 `DS:6777h`，鏡影 `1Ch` 等）沒有接。
+func SpellDamageAfterEffects(list EffectList, spell uint8, damage int) int {
+	if list.Has(ShieldEffectCode) && spell == SpellIDMagicMissile {
+		return 0
+	}
+	return damage
+}

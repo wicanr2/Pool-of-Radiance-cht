@@ -6,7 +6,7 @@
 DRAFT（`08BCh` 自己在做什麼、四個覆寫參數的語意、各法術的傷害）。
 日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）、模式 0Ah 分邊與模式 8
 射線（issue #78）、受傷打斷與用物品（issue #75／#77）、模式 0Ah 的效果怎麼掛上去、在戰鬥裡
-改什麼（issue #81）。
+改什麼（issue #81）；只掛效果的那一批與 `07C7h` 的特例（issue #89）。
 
 ## 擲骰：overlay-24 的兩支
 
@@ -1020,6 +1020,105 @@ remake：`gamepack.SpellSideFilterFor`／`FilterSpellSide` 是這兩支的表與
 |---|---|---|
 | 每個目標印「<名字> is Blessed」、急速印 "ages"、抵銷印 "is Cured" | 狀態列只留最後一句「作用在 N 人身上」| 狀態列只有一行 |
 | 群組 16 的 `2Fh` 也改命中骰 | 不算 | 它比的是目標自己 runtime `+0Ah` 的名字，remake 沒有隊員那一格（spec 112〈OPEN〉）|
+
+## 只掛效果的那一批（`08BCh` 通用路，2026-09-26，issue #89）
+
+輸入同〈模式 0Ah：效果怎麼掛上去〉，另加 overlay-25（`9fede24b…`）。以下除註明者外皆
+exact（位元組逐條讀）。每一格掛什麼碼的總表在 spec 073〈只掛效果的那三十四格〉。
+
+祈禱、隱形、閃現、致盲、降咒、護盾、閱讀魔法、防護邪惡……這些處理常式自己沒有算法，推
+「法術編號 + 四個覆寫參數 + 訊息」給 `08BCh`。`08BCh` 在傷害為 0 時走的是這一段：
+
+```
+08D5  80 7E 0C 00 / 75 07 / C6 06 77 67 00   傷害 0 → DS:6777h = 0
+08E8  80 3E 88 6B 00 / 75 03                  表是空的 → 整段跳過
+08F2  80 7E 10 00 / 75 0E                     等級覆寫 0 → [bp-2Ah] = 26F8h(法術)，否則 = 覆寫
+0921  for i := 1 to DS:6B88h
+092F  8B 85 85 6B 0B 85 87 6B / 75 03         表[i] 是 nil → 下一格
+095E  80 BD 9C 31 00                          +8 為 0 → 豁免結果 0
+0984  9A 43 00 00 01                          否則 entry 7(表[i], +9, 0)
+0997  80 BD 96 31 FF / 75 41                  +2 是 FFh（碰觸）才做下面四行
+09A4  9A 43 00 0A 01                          overlay-25 entry 7(表[i])：重算戰鬥數值（spec 063）
+09B2  B0 0B 50 … 9A 2F 00 00 01               群組 11(表[i])
+09CE  9A 3E 00 00 01                          entry 6(DS:5CF0h, 表[i], 表[i] +111h)
+09D3  08 C0 / 75 08 / C6 46 0C 00 / C6 46 D0 01   沒中 → 傷害 0、豁免結果 1
+0A13  80 BD 9E 31 00 / 76 45                  +0Ah 為 0 → 不掛
+0A35  E8 8F FD                                持續 = 07C7h(法術)
+0A5A  9A 84 00 00 01                          entry 20(表[i], 碼, 持續, [bp-2Ah], [bp+0Eh], +8, 豁免結果, 訊息)
+```
+
+entry 20 見上一節：群組 9 免疫 → 「豁免成功而且規則是 1」印 "is Unaffected"（`1689h..1693h`
+`80 7E 0A 00 / 74 29 / 80 7E 0C 01 / 75 23`）→ 同碼舊節點比較短就摘 → `0E54h` 掛新的，
+`[bp+10h]`（等級）存進節點 `+3`、`[bp+0Eh]` 存進 `+4`。**碰觸沒碰到等於豁免成功**，所以規則 1
+的致盲、致病、降咒碰不到就不受影響；規則 0 的碰觸法術照樣掛上。
+
+### `07C7h`：持續的六個特例
+
+| 位址 | bytes | 法術 | 持續 |
+|---|---|---|---|
+| `07D2h` | `3D 28 00 / B0 01 50 B0 06 50 9A 48 00 00 01 / B9 0A 00 F7 E9` | `28h` 致病 | Roll(1, 6) × 10 |
+| `07EFh` | `3D 39 00 74 05 3D 3D 00 / B0 05 50 B0 04 50 9A 48 00 00 01` | `39h`、`3Dh` | Roll(5, 4) |
+| `080Ch` | `3D 3B 00 / B0 01 50 B0 04 50 … F7 E9 05 28 00` | `3Bh` | Roll(1, 4) × 10 + 40 |
+| `082Ch` | `3D 3F 00 / 80 3E 54 49 05` | `3Fh` | 戰鬥中 Roll(2, 10) × 10，否則 (Roll(1, 10) + 10) × 10 |
+| `0869h` | `3D 43 00 / C7 46 FC A0 05` | `43h` | 5A0h |
+| `0875h` | `9A D4 00 0A 01 … 8A 85 99 31 … F7 EA … 8A 85 98 31` | 其餘 | `+4 + +5 × 26F8h(法術)` |
+
+一般式乘的是 `26F8h` 的施法者等級，**不是**等級覆寫。擲骰是 overlay-24 entry 8，逐格各擲
+一次，時點在豁免與碰觸之後、群組 9 之前。`07C7h` 另外被定身術（`177Ch`）、力量術（`2023h`）、
+變大術（`1339h`）與 `3Bh`（`2EEEh`）呼叫——`3Bh` 那一支原本拿參數表的 0 當持續，現在照
+`0811h` 擲。
+
+### 不是純泛型的那幾支
+
+| 常式 | bytes | 做什麼 |
+|---|---|---|
+| 友誼術 `13C8h` | `C4 3E 89 6B 26 8A 45 15 88 46 FF`、`B0 02 50 B0 04 50 9A 48 00 00 01`、`26 80 7D 15 19 76 09 … 26 C6 45 15 19`、`1400h` 推 `6779h`／`[bp-1]`／1／0／0 | 表上第一格的魅力記下來、加 Roll(2, 4)、夾在 25；**施法前的魅力**推在等級覆寫、第二個覆寫參數 1。`0Eh` 的常式 `05E0h`（`26 8A 45 03 … 26 88 45 15`）只做「記錄 `+15h` = 節點 `+3`」，到期時還原 |
+| 緩毒術 `1846h` | `26 80 BD 0C 01 01 75 0A`、`B0 37 50 … 9A A7 00 0A 01 08 C0 74 66`、`26 80 BD 1B 01 00 75 09 … C6 85 1B 01 01`、`B0 FF 50 B0 01 50` | 被死靈術叫起來的（`+10Ch == 1`）不做；**沒中毒（`37h`）就整支不做**；生命值 0 墊成 1；`08BCh(法術, FFh, 1, 0, 0)` |
+| 靈魂鎚 `19A8h` | `B0 00 50 B0 01 50 B0 00 50 B0 00 50`、`19D1h` `B0 17 50 … B0 00 50 9A 25 00 00 01` | `08BCh(法術, 0, 1, 0, 0)` 掛 `17h`，再用 entry 1 以模式 0 叫 `17h` 的常式（overlay-12 entry 24 `07F6h`，305 bytes，生出鎚子）|
+| 鏡影術 `1A6Fh` | `B0 01 50 B0 04 50 9A 48 00 00 01 50` | Roll(1, 4) 推在等級覆寫：影像數存在節點 `+3` |
+| 致病術 `231Dh` | `B0 00 50 B0 01 50 B0 00 50 B0 00 50` | `08BCh(法術, 0, 1, 0, 0)` |
+| 祈禱術 `249Dh` | `9A D4 00 0A 01 … 26 8A 85 0E 01 98 B9 04 00 D3 E0 03 C2 50` | `(施法者 +10Eh << 4) + 26F8h(法術)` 推在等級覆寫 |
+| `39h` `2DB7h` | `B0 2A 50 9A 6B 00 00 01 08 C0 75 23` | 表上第一格有 `2Ah` 就用 entry 15 摘掉（印 "is Cured"）、返回；否則四個 0 |
+| `43h` `305Bh` | `A0 79 67 50 B0 FF 50 B0 01 50 B0 00 50 B0 00 50` | `08BCh(法術, FFh, 1, 0, 0)`：解不掉、有收尾 |
+
+緩毒術在 `08BCh` 之後還有兩步：`18BBh` 用 entry 1 以模式 1 叫 `4Eh` 的常式（overlay-12 entry 71
+`19F5h`），`18D2h` 用 entry 10 掛一個 `0Fh` 節點（持續 0Ah、`+3` FFh、有收尾；常式 entry 17
+`05F7h`）。兩支都是中毒逐時扣血那一套，remake 還沒有，這兩步沒接（見 spec 112〈OPEN〉）。
+
+### 效果在戰鬥裡作用的地方
+
+碼掛上之後，作用都在各群組被問到的時候（spec 112）：命中擲骰的群組 10／16（#86 已接，祈禱、
+隱形、閃現、致盲、降咒、`47h`）、回合初始化的群組 18（`39h` 的 `27h`）、出手前的群組 11、
+擲豁免的群組 12 與法術傷害的群組 6（這一輪接了屬於這一批法術的碼，見 spec 112〈群組 11／12／6〉）。
+
+### remake 的對應
+
+`cmd/pool-game/spell_effect_only.go` 的 `castEffectOnly` 是上面那一段：表是 `20AEh` 收好的
+那一份（模式 0 是施法者自己），逐格擲豁免、碰觸的走 `touchSpellHits`（entry 6 與近戰同一支
+`hitRollAfterEffects`，AC 先過群組 11）、`gamepack.SpellEffectDuration` 是 `07C7h`、
+`unaffectedBySpellEffect` 是群組 9、`attachSpellEffect` 原樣存 `+3` 整個 byte。友誼術的收尾在
+`expiredEffectTeardown`；`39h` 與縮小術、緩毒術的前提在 `castSpell` 前段，改看戰場上的串列
+（`state.Effects`）。玩家與 AI 都走 `castSpell`。
+
+測試全部從 `Update()` 送鍵（`spell_effect_only_test.go`）：`TestEffectOnlySpellsAttachTheParameterCode`
+（三十一格逐項對碼、持續、`+3`、`+4`）、`TestPrayerCastFromTheMenuShiftsBothSides`（己方 +1、
+敵方 −1，對照組 `TestWithoutPrayerTheSameRollsMissAndHit`）、`TestPrayerLowersTheOtherSidesSave`、
+`TestInvisibilityFromTheMenuMakesAttackersMiss`、`TestBlinkFromTheMenuMakesTheFirstAttacksMiss`、
+`TestShieldFromTheMenuRaisesTheArmourAndStopsMagicMissile`、`TestReadMagicCastInCombatRevealsTheScroll`、
+`TestCauseBlindnessNeedsATouchAndThenHampersBothWays`、`TestBestowCurseLowersTheFoesRollsFromTheMenu`、
+`TestSlowPoisonOnlyHelpsThePoisoned`、`TestFriendsRaisesCharismaUntilItExpires`、
+`TestSpeedyItemCuresSlowInsteadOfHasting`、`TestKnockAttachesNothing`。把 `attachSpellEffect`
+那一行拿掉，前十一條全紅（2026-09-26 實跑）。
+
+與原版不同、寫明的幾處：
+
+| 原版 | remake | 理由 |
+|---|---|---|
+| 每一格印「<名字> <訊息>」 | 狀態列只留「作用在 N 人身上」 | 狀態列只有一行 |
+| 靈魂鎚掛完 `17h` 接著生出鎚子 | 只掛節點 | `07F6h` 那 305 bytes 還沒讀 |
+| 緩毒術之後叫 `4Eh`、掛 `0Fh` | 只掛 `16h` | 中毒逐時扣血那一套 remake 沒有 |
+| 探索（營地）施法同樣走 `08BCh` | `field_cast.go` 只結算治療等幾種，不掛效果 | 不在 #89 範圍 |
+| 傷害型碰觸法術（4、20）也先擲 `09CEh` | 傷害分支沒有碰觸那一步 | 不在 #89 範圍 |
 
 ## 模式 8：射線（`2919h`，2026-09-26，issue #78）
 

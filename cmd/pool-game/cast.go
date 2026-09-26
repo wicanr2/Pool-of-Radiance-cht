@@ -359,33 +359,32 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	if err != nil {
 		return err
 	}
-	// 有前提的那幾支：目標身上已經有那個效果就整支不做（原版先問
-	// `0100h:006Bh`，中了就直接返回）。記憶那一格照樣用掉。
-	if effect.BlockedByEffect != 0 && chosen && int(target) < len(state.Roster) {
-		if slot, ok := a.moverPartyIndex(target); ok {
-			for _, node := range a.state.Party[slot].Effects {
-				if node.Code == effect.BlockedByEffect {
-					caster.consume()
-					a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
-						option.Label, target))
-					caster.endAction(state, a.rollDice, false)
-					return nil
-				}
-			}
+	// 有前提的那幾支：表上第一格（`DS:6B89h`，模式 0 就是施法者自己）身上已經有
+	// 那個效果，就用 `0100h:006Bh`（overlay-24 entry 15）把它摘掉、整支不做。
+	// 記憶那一格照樣用掉。戰場上的串列是 state.Effects（開打時從角色抄過來的那一份）。
+	if effect.BlockedByEffect != 0 {
+		first := state.Mover
+		if chosen {
+			first = target
+		}
+		if state.hasEffect(int(first), effect.BlockedByEffect) {
+			state.removeEffect(int(first), effect.BlockedByEffect)
+			caster.consume()
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
+				option.Label, first))
+			caster.endAction(state, a.rollDice, false)
+			return nil
 		}
 	}
 	// 反過來的那一支：縮小術要求目標**身上有**效果 `0Ch`（被變大過），
 	// 沒有就整支不做（`1382h` 問 `0100h:006Bh(目標, 0Ch)`，為零就返回）。
+	// 緩毒術同一個形狀：`187Bh` 問中毒 `37h`，沒有就跳到結尾；目標是被死靈術叫起來
+	// 的（`+10Ch == 1`，`185Bh`）也整支不做。
 	if effect.RequiresEffect != 0 {
-		has := false
-		if chosen && int(target) < len(state.Roster) {
-			if slot, ok := a.moverPartyIndex(target); ok {
-				for _, node := range a.state.Party[slot].Effects {
-					if node.Code == effect.RequiresEffect {
-						has = true
-					}
-				}
-			}
+		has := chosen && state.hasEffect(int(target), effect.RequiresEffect)
+		if has && effect.MinimumHitPoints > 0 && int(target) < len(state.States) &&
+			state.States[target] == gamepack.AnimatedState {
+			has = false
 		}
 		if !has {
 			caster.consume()
@@ -442,7 +441,9 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		syncTrainedLibraryCharacter(&a.state, *subject)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured),
 			strings.TrimSpace(subject.Name), removed))
-	case effect.EffectCode == gamepack.HoldPersonEffectCode:
+	case effect.EffectCode == gamepack.HoldPersonEffectCode && effect.SaveModifierByTargetCount:
+		// 只有 `1650h` 那兩個編號走這裡。編號 3Dh 也掛 34h，但它是泛型版型，
+		// 走 `08BCh`（持續 `07C7h` 的 Roll(5, 4)），落到 default。
 		// 定身術：規則 1（豁免成功完全無效，spec 074）。中了就照參數表的
 		// 持續回合數定住，那一格輪到就直接結束回合。
 		//
@@ -513,7 +514,9 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			value, percentile = gamepack.StrengthSpellResult(
 				memberClassLevels(*subject), current, currentPercentile, a.roller)
 		}
-		duration := a.spellParameters[option.ID].Duration(casterLevel)
+		// 持續是 `07C7h`：編號 3Bh 是 Roll(1, 4) × 10 + 40（`0811h`），其餘照參數表。
+		duration := gamepack.SpellEffectDuration(option.ID, a.spellParameters[option.ID],
+			casterLevel, true, a.rollDice)
 		list, value, percentile, raised := gamepack.ApplyStrengthEffect(
 			state.Effects[cell], effect.EffectCode, duration,
 			current, currentPercentile, value, percentile)
@@ -814,8 +817,8 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastWholeSide),
 			strings.TrimSpace(caster.name), option.Label, affected))
 	default:
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastTookEffect),
-			strings.TrimSpace(caster.name), option.Label))
+		// 其餘全部是「只掛效果」：推法術編號與四個覆寫參數給 `08BCh`（spell_effect_only.go）。
+		a.castEffectOnly(state, caster, option, effect, targets, casterLevel)
 	}
 	caster.endAction(state, a.rollDice, true)
 	return nil
@@ -841,7 +844,12 @@ func (caster spellCasting) endAction(state *tacticalState, roll func(count, side
 // 原版在共用施法常式 `08BCh` 裡先擲一次豁免（`096Bh` 呼叫 overlay-24 entry 7），
 // 把布林結果和規則值一起交給 overlay-24 entry 19（`133Ah`）處置。
 func (a *app) damageAfterSave(state *tacticalState, target, spell uint8, damage int) int {
-	if !a.savedAgainstSpell(state, target, spell) {
+	saved := a.savedAgainstSpell(state, target, spell)
+	// entry 19 的 `1351h`：傷害進 `DS:6776h` 之後先派發目標的群組 6，才套豁免規則。
+	if int(target) < len(state.Effects) {
+		damage = gamepack.SpellDamageAfterEffects(state.Effects[target], spell, damage)
+	}
+	if !saved {
 		return damage
 	}
 	return gamepack.DamageAfterSave(a.spellParameters[spell].SaveRule(), damage)
@@ -888,8 +896,9 @@ func (a *app) savedAgainstCategory(state *tacticalState, target uint8,
 	case roll == gamepack.SavingThrowDie:
 		return true
 	default:
-		return int(state.SaveTargets[target][category]) <=
-			roll+state.SaveBonus[target]+modifier
+		// `0DB2h`：豁免骰算好之後派發擲豁免那一個的群組 12，再比目標值。
+		value := state.saveRollAfterEffects(target, roll+state.SaveBonus[target]+modifier)
+		return int(state.SaveTargets[target][category]) <= value
 	}
 }
 

@@ -107,6 +107,14 @@ func (a *app) expiredEffectTeardown(party int, node gamepack.EffectNode,
 		syncTrainedLibraryCharacter(&a.state, *member)
 		return
 	}
+	if node.Code == gamepack.FriendsEffectCode {
+		// 友誼術的 `0Eh`（overlay-12 entry 16 `05E0h`）：`記錄 +15h = 節點 +3`——
+		// 魅力回到施法前那個值（`13D2h` 記下、等級覆寫推進來的，#89）。
+		member := &a.state.Party[party]
+		member.Abilities[gamepack.AbilityCharisma] = int(node.Magnitude())
+		syncTrainedLibraryCharacter(&a.state, *member)
+		return
+	}
 	if node.Code == gamepack.CloudObjectEffectCode {
 		// 雲團在盤面上，地圖上沒有東西可以收——戰場那一側是
 		// `tacticalState.effectTeardown` → `disperseCloud`。

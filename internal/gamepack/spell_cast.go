@@ -42,6 +42,10 @@ type CastEffect struct {
 	// 非零就取代真正的施法者等級（`08F2h` 的 `cmpb $0` 之後分岔）。
 	// 鏡影術借這一格傳「幾個影像」。
 	CasterLevelOverride int
+	// CasterSideShift 非零時，等級覆寫還要加上 `施法者 +10Eh << CasterSideShift`。
+	// 祈禱術 `24B4h..24C3h` 是 `26 8A 85 0E 01 / 98 / B9 04 00 / D3 E0 / 03 C2`：
+	// 邊左移四位再加等級。邊只有呼叫端知道，所以這裡只記要移幾位。
+	CasterSideShift uint8
 	// EffectParameter 是第二個覆寫參數（`[bp+0Eh]`），掛效果時一起傳給
 	// 效果常式（`0A3Dh`）。致病術傳 1，其餘多半是 0；完整語意未閉合。
 	EffectParameter int
@@ -457,6 +461,7 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 隊伍這一邊的 `+10Eh` 是 0，所以對玩家而言就等於施法者等級本身；
 		// 高四位只有怪物施展時才不是零。
 		effect.CasterLevelOverride = casterLevel
+		effect.CasterSideShift = 4
 	case SpellIDSpiritHammer:
 		// `19AEh` 的四個覆寫參數是 0／1／0／0。08BCh 之後還有一段
 		// （`19D1h` 起，推效果碼 17h）還沒讀，那是把鎚子生出來的部分。
@@ -497,6 +502,8 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 	case SpellIDSlowPoison:
 		// `1873h` 先問 `010Ah:00A7h(目標, 37h)`（中毒），接著若目前生命值
 		// 是 0 就墊成 1（`1892h`），最後走 `08BCh`，等級覆寫推的是 FFh。
+		// 沒中毒就整支不做（`1882h` `74 66` 跳到結尾），所以中毒是前提。
+		effect.RequiresEffect = PoisonEffectCode
 		effect.MinimumHitPoints = 1
 		effect.CasterLevelOverride = 0xff
 	case SpellIDHaste:
@@ -515,6 +522,9 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.AbilityBonus = AbilityBonus{
 			Ability: AbilityCharisma, Amount: roller.Roll(2, 4), Cap: 25,
 		}
+		// `1408h` `B0 01 50`：第二個覆寫參數推 1——節點 `+4` 立著，到期時叫 `05E0h` 還原魅力。
+		// 等級覆寫推的是施法前的魅力（`1404h`），要看目標，由呼叫端填。
+		effect.EffectParameter = 1
 	case SpellIDCureBlindness:
 		// `21F6h` 問 `0100h:006Bh(目標, 21h)`，中了就解掉。
 		effect.RemoveEffects = []uint8{0x21}
