@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
@@ -99,8 +101,21 @@ func TestHiredSwordsmanHidesHisShareOfTheReward(t *testing.T) {
 	if want := ([7]uint32{3: 250 - 93, 4: 50 - 18, 6: 1}); application.state.PooledMoney != want {
 		t.Fatalf("pool after the swordsman's share %v, want %v", application.state.PooledMoney, want)
 	}
-	if !strings.HasSuffix(application.statusLine, "takes and hides his share.") {
-		t.Fatalf("status %q does not say who took a share", application.statusLine)
+	// `1387h..146Ah`：清畫面、每人一行「名字 takes and hides his share.」、等一個鍵，
+	// 接著才是結算頁（spec 150）。
+	if application.treasureStage != treasureNPCShare {
+		t.Fatalf("stage %d, want the NPC share page first", application.treasureStage)
+	}
+	lines := application.postCombatPageLines()
+	if len(lines) != 1 || lines[0].text != npc.Name+" takes and hides his share." ||
+		lines[0].column != 5 || lines[0].row != 5 {
+		t.Fatalf("NPC share page %+v", lines)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if application.treasureStage != treasureResult {
+		t.Fatalf("stage %d after Enter, want the result page", application.treasureStage)
 	}
 	// 經驗值在分錢之前發，照整筆 2700 除六個人：450，力量超過 15 的 495。
 	for index, want := range []uint32{495, 495, 495, 450, 450, 450} {

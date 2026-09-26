@@ -1,7 +1,8 @@
 # Spec 142：怪物的物品串列——從哪裡載、誰用、戰後怎麼交出來
 
 狀態：READY（載入鏈、第二隻起的順序、entry 3 用物品、戰後錢與物品併入戰利品、@6DE3，
-實作與測試）；DRAFT（戰後標題字樣）。戰利品折算經驗值與 NPC 分錢由 spec 148 接手（#94）。怪物武器／護甲的
+實作與測試）。戰後標題、沒有戰利品時的選單與第二隻起的效果串列由 spec 150 接手（#95）。
+戰利品折算經驗值與 NPC 分錢由 spec 148 接手（#94）。怪物武器／護甲的
 開打重算由 spec 147 接手（#93）。
 日期：2026-09-26。主台帳：GitHub issue #76（#71 留下）。
 
@@ -109,15 +110,11 @@ overlay-05 主流程 `14CAh` 先呼叫 `04ADh`；`04ADh` 在 `05E0h` 看 `DS:82A
 
 remake：`monster_loot.go` 的 `collectMonsterLoot` 照上面收，`openMonsterLoot` 把錢加進
 `PooledMoney`、物品交給既有的戰利品選單（spec 034），離開選單時（`exitTreasure`）才續跑
-戰後腳本。怪物那一側什麼都沒交出來時不開選單，照舊直接續跑。
+戰後腳本。選單之前的結算頁、以及什麼都沒掉也開選單，見 spec 150。
 
 ## 還沒接（DRAFT）
 
-| 項目 | 位址 | 等級 | 為什麼沒接 |
-|---|---|---|---|
-| 戰後標題 | overlay-05 `08E0h`：打過怪（`439Ch`）印 `The party has won.`（`0836h`），只有沒打怪才印 `The party has found treasure!`（`085Dh`） | exact | remake 的戰利品選單沿用 `found treasure` 那一句；`0E85h` 選單畫面上留哪一句沒有對拍 |
-| 沒有戰利品時選單開不開 | overlay-05 `0E85h` | unknown | remake 只在有東西時開 |
-| 同一條 `LOAD MONSTER` 第二隻起的**效果**串列反序 | overlay-03 `06FAh` 起 | exact（碼） | 效果那一側不在 #76 範圍 |
+原本列在這裡的三項（戰後標題、沒有戰利品時的選單、第二隻起的效果串列反序）已由 spec 150 接手。
 
 ## 測試
 

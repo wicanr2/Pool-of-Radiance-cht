@@ -98,6 +98,10 @@ const (
 	treasureMoneyCharacter
 	treasureMoneyAmount
 	treasureConfirmExit
+	// treasureNPCShare 與 treasureResult 是開選單之前的兩頁（overlay-05 `1295h`、
+	// `08E0h`，spec 150）：各等一個鍵，沒有選項。
+	treasureNPCShare
+	treasureResult
 )
 
 const (
@@ -435,6 +439,13 @@ type app struct {
 	treasureSelected int
 	treasureCurrency int
 	treasureAmount   string
+	// postCombat 是開選單之前那兩頁要印的東西（spec 150）；不在那兩頁時是 nil。
+	postCombat *postCombatReport
+	// pendingTreasure 是 `TREASURE` 之後接著一場有怪物的 `COMBAT` 時，先放進戰利品串列、
+	// 打完才一起交出來的物品（spec 150〈TREASURE 的時機〉）。
+	pendingTreasure []gamepack.TreasureItemRecord
+	// duel 是 DS:829Ah（ECL `CALL 8001h`，spec 150〈決鬥〉）：下一場只有目前角色上場。
+	duel bool
 }
 
 // defaultStatePath 是存檔的預設位置。
@@ -1137,6 +1148,13 @@ func (a *app) Update() error {
 					}
 					if !a.tacticalPreview {
 						a.statusLine = "A real Pool encounter is staged; press ENTER to enter tactical combat."
+					}
+					return nil
+				}
+				// 戰後那兩頁（spec 150）各等一個鍵，才輪到戰利品選單。
+				if a.postCombatPageActive() {
+					if a.justPressed(ebiten.KeyEnter) || a.justPressed(ebiten.KeySpace) {
+						a.advancePostCombatPage()
 					}
 					return nil
 				}
@@ -1872,7 +1890,19 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			if a.isShopBoundary(result) {
 				return a.enterShop(result.TreasureRequests)
 			}
-			return a.enterTreasure(result.TreasureRequests)
+			if !result.CombatRequested || len(result.MonsterSpawns) == 0 {
+				return a.enterTreasure(result.TreasureRequests)
+			}
+			// `TREASURE` 之後接著一場有怪物的 `COMBAT`（貧民窟以外的許多遭遇都是
+			// `CLEARMONSTERS → LOAD MONSTER → TREASURE → COMBAT`）：`TREASURE` 只把公款
+			// 寫進去、物品放上戰利品串列（overlay-03 `1A82h`），選單要等打完才由
+			// `14CAh` 開——與怪物身上的錢與物品一起（spec 150〈TREASURE 的時機〉）。
+			loaded, pooled, err := a.loadTreasureRequests(result.TreasureRequests)
+			if err != nil {
+				return err
+			}
+			a.state.PooledMoney, a.pendingTreasure = pooled, loaded
+			return a.enterCombatStaging(result.MonsterSpawns)
 		}
 		if result.CombatRequested && len(result.MonsterSpawns) != 0 {
 			if result.MonstersCleared {
@@ -2107,20 +2137,43 @@ func (a *app) isSuneTempleBoundary(result eclvm.Result) bool {
 // enterTreasure 接 `27h TREASURE`：八欄的請求（七種幣別加物品）由 spec 032
 // 讀出來，而戰後那張選單與「拿走一件就要從物品鏈摘掉」的邊界在 spec 034。
 func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
+	loaded, pooled, err := a.loadTreasureRequests(requests)
+	if err != nil {
+		return err
+	}
+	a.state.PooledMoney = pooled
+	// 選單是 `TREASURE → COMBAT` 的 overlay-05 `14CAh` 開的：先發經驗值（公款與
+	// 物品折算，spec 148），再讓 NPC 拿走份額（`1295h`），印結算頁（`08E0h`），才進選單。
+	share := a.awardTreasureExperience(loaded)
+	a.awardCommissionExperience(loaded)
+	a.treasureItems = loaded
+	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s), seven money pools ready.", len(loaded))
+	statuses := make([]uint8, 0, len(a.state.Party))
+	for _, member := range a.state.Party {
+		statuses = append(statuses, member.Status)
+	}
+	a.openPostCombat(postCombatReport{standing: partyStanding(statuses), share: share,
+		hiders: a.hideNPCShares()})
+	return nil
+}
+
+// loadTreasureRequests 讀 `27h TREASURE` 的八欄：七種幣別與物品 block（spec 032）。
+// `TREASURE` 以 `mov` 寫公款（overlay-03 `1AB5h`，spec 148），所以回的是取代值。
+func (a *app) loadTreasureRequests(requests []eclvm.TreasureRequest) ([]gamepack.TreasureItemRecord, [7]uint32, error) {
 	if a.loadTreasure == nil {
-		return fmt.Errorf("Pool treasure loader is not configured")
+		return nil, [7]uint32{}, fmt.Errorf("Pool treasure loader is not configured")
 	}
 	loaded := make([]gamepack.TreasureItemRecord, 0)
 	pooled := [7]uint32{}
 	for _, request := range requests {
 		for currency, amount := range request.Amounts {
 			if uint64(pooled[currency])+uint64(amount) > uint64(^uint32(0)) {
-				return fmt.Errorf("Pool treasure %s overflows uint32", pooltreasure.Names[currency])
+				return nil, pooled, fmt.Errorf("Pool treasure %s overflows uint32", pooltreasure.Names[currency])
 			}
 			pooled[currency] += uint32(amount)
 		}
 		if request.ItemBlock > 0xFF {
-			return fmt.Errorf("Pool treasure item block 0x%X exceeds byte range", request.ItemBlock)
+			return nil, pooled, fmt.Errorf("Pool treasure item block 0x%X exceeds byte range", request.ItemBlock)
 		}
 		if request.ItemBlock != 0 {
 			items, err := a.loadTreasure(a.spawn.Map.Archive, uint8(request.ItemBlock))
@@ -2134,24 +2187,13 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 				// 還沒讀，也還沒確認該用哪一個 archive 去找 ITEM 檔。
 				a.statusLine = err.Error()
 			case err != nil:
-				return err
+				return nil, pooled, err
 			default:
 				loaded = append(loaded, items...)
 			}
 		}
 	}
-	a.state.PooledMoney = pooled
-	// 選單是 `TREASURE → COMBAT` 的 overlay-05 `14CAh` 開的：先發經驗值（公款與
-	// 物品折算，spec 148），再讓 NPC 拿走份額（`1295h`），才進選單。
-	a.awardTreasureExperience(loaded)
-	a.awardCommissionExperience(loaded)
-	a.treasureActive, a.treasureStage = true, treasureMain
-	a.treasureItems, a.treasureSelected, a.treasureCurrency, a.treasureAmount = loaded, 0, 0, ""
-	a.cellEventPending, a.cellWaitingMenu = true, true
-	a.enterTreasureMain()
-	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s), seven money pools ready.", len(loaded))
-	a.hideNPCShares()
-	return nil
+	return loaded, pooled, nil
 }
 
 // awardCommissionExperience 是 house rule「委任經驗值加倍」（spec 140，預設關）：
@@ -2164,11 +2206,10 @@ func (a *app) awardCommissionExperience(items []gamepack.TreasureItemRecord) {
 		return
 	}
 	total := lootExperience(a.state.PooledMoney, items)
-	share := gamepack.DivideExperience(total, len(a.state.Party))
+	share := a.shareExperience(total, a.treasureExperienceEligible(), 0)
 	if share == 0 {
 		return
 	}
-	a.shareExperience(total)
 	a.statusLine = fmt.Sprintf(a.text(msgHouseRuleCommissionXP), share)
 }
 
@@ -2186,8 +2227,15 @@ func (a *app) enterTreasureMain() {
 	}
 	options = append(options, "Exit")
 	a.cellMenuOptions, a.cellMenuCursor = options, 0
-	a.eventText = "The party has found treasure!"
+	// 原版的選單頁文字框是空的（`docs/audit/dos-treasure-screens.json` 的 `top`）：
+	// 標題在前一頁（`08E0h`，spec 150），不在選單上。
+	a.eventText = ""
 	a.eventLabel = a.cellMenuLabel()
+}
+
+// treasureMenuShown 說戰利品選單開著、底下有選項——文字框空著也要畫出來。
+func (a *app) treasureMenuShown() bool {
+	return a.treasureActive && a.cellWaitingMenu && len(a.cellMenuOptions) != 0
 }
 
 func (a *app) selectTreasureOption() error {
@@ -2600,6 +2648,7 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.tourActive, a.tourStep, a.tourPage, a.tourDelay = false, -1, -1, 0
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.templeActive, a.treasureActive, a.combatActive = false, false, false
+	a.postCombat, a.pendingTreasure, a.duel = nil, nil, false
 	a.combatMonsters = nil
 	a.eventText, a.eventLabel, a.cellMenuOptions = "", "", nil
 	a.mode = modeAdventure
@@ -2610,6 +2659,7 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 func (a *app) exitTreasure() error {
 	a.treasureActive, a.treasureStage = false, treasureMain
 	a.treasureItems, a.cellMenuOptions = nil, nil
+	a.postCombat = nil
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.eventText, a.eventLabel = "", ""
 	result, err := a.eventSession.RunUntilEvent(4096, nil, true)
@@ -3099,9 +3149,13 @@ func (a *app) applyMapExitCommit(result eclvm.Result) {
 //
 // 五個有動作的：`8000h`／`8001h`（overlay-07 `00A2h`）、`2C90h`（重算地形
 // 暫存）、`BA03h`（音效）、`C018h`（重算牆的暫存）、`C01Eh`（依朝向走一格、
-// 邊界繞回）。前四個在 remake 這邊每次查地圖時本來就重算，所以只有
-// `C01Eh` 需要動作。
+// 邊界繞回）。地形與牆的暫存在 remake 這邊每次查地圖時本來就重算；`8001h` 是
+// 決鬥（postcombat.go，spec 150）；`8000h` 的競技場決鬥要一個複製出來的對手，還沒接。
 func (a *app) applyScriptCall(selector uint16) {
+	if selector == duelChampionCall {
+		a.startChampionDuel()
+		return
+	}
 	if selector == terrainRecalcCall {
 		a.recalculateTerrainCache()
 		return
@@ -3663,6 +3717,9 @@ func (a *app) Draw(screen *ebiten.Image) {
 		// `KEEP THIS CHARACTER? YES NO`（spec 130），肖像編輯器是
 		// `HEAD BODY KEEP`（基準畫面 `24-Return`）——兩者都由 `drawCreation`
 		// 畫。兩邊都畫會疊成一團。
+	case a.postCombatPageActive():
+		// 戰後那兩頁最下面是單選項選單的提示，從第 0 欄起（spec 150）。
+		drawText(screen, a.text(msgPostCombatContinue), 0, footerBaseline, accent)
 	case a.panelOpen():
 		// 手冊、裝備、法術、商店、紮營那幾頁自己有一列鍵盤提示，而且它們
 		// 開著的時候 `Update` 提早返回、指令列的鍵按不到。畫它只會從面板
@@ -3732,6 +3789,11 @@ func (a *app) houseRuleStateMessage() messageID {
 }
 
 func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	// 戰後那兩頁清掉整個框內（overlay-05 `150h:0310h`），不畫視野與隊伍欄（spec 150）。
+	if a.postCombatPageActive() {
+		drawPostCombatPage(screen, a, foreground, accent)
+		return
+	}
 	a.drawFrame(screen, foreground, accent)
 	// 自訂規則開著時要看得到（spec 140）：畫在右上角框內，關著時什麼都不畫，
 	// 對拍的畫面因此不受影響。
@@ -3858,7 +3920,7 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 			a.showDialogue(screen, a.gameText.Translate(step.Messages[a.tourPage]),
 				a.gameText.Translate(a.continueLabel(a.initialEvent.ContinueLabel)), foreground, accent)
 		}
-	} else if a.cellEventPending && a.eventText != "" {
+	} else if a.cellEventPending && (a.eventText != "" || a.treasureMenuShown()) {
 		a.showDialogue(screen, a.eventText, a.gameText.Translate(a.eventLabel), foreground, accent)
 	} else if a.cellTextSticky && a.eventText != "" {
 		// 腳本結束了，字還留著。**這一種沒有「按 RETURN 繼續」**——原版那時
@@ -4107,7 +4169,7 @@ func (a *app) dialogueVisible() bool {
 	case a.tourActive && a.tourPage >= 0 && a.initialEvent != nil &&
 		a.tourStep >= 0 && a.tourStep < len(a.initialEvent.Tour):
 		return a.tourPage < len(a.initialEvent.Tour[a.tourStep].Messages)
-	case a.cellEventPending && a.eventText != "":
+	case a.cellEventPending && (a.eventText != "" || a.treasureMenuShown()):
 		return true
 	case a.cellTextSticky && a.eventText != "":
 		return true

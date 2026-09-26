@@ -224,6 +224,11 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 		if member.Status == 4 || member.Status == combat.DyingState || member.Status == combat.DeadState {
 			continue
 		}
+		// 決鬥（`CALL 8001h`，spec 150）只有目前角色上場：overlay-07 `1AFFh` 把其他人的
+		// `+10Dh` 清成 0，部署時體型改 0、不佔格也不登記成屍體（spec 061 `1A99h`）。
+		if !a.duelDeploys(index) {
+			continue
+		}
 		if member.Side != 0 {
 			traitors = append(traitors, index)
 			continue
@@ -950,6 +955,15 @@ func (a *app) enterTacticalPreview() error {
 			state.rememberUndeadColumn(index, record)
 			state.rememberMorale(index, record.Raw[gamepack.MoraleOffset], record.Raw[gamepack.IntelligenceOffset])
 			state.Effects[index] = append(gamepack.EffectList(nil), monster.Effects...)
+			if copyIndex > 0 {
+				// 同一條 LOAD MONSTER 的第二隻起，效果也是逐節點插在串列頭複製的
+				// （overlay-03 `06FAh..07B4h`：GetMem(9)、Move、舊的頭接到新節點的 `+5`），
+				// 與物品同一個形狀，所以順序是反的（spec 150）。
+				effects := state.Effects[index]
+				for left, right := 0, len(effects)-1; left < right; left, right = left+1, right-1 {
+					effects[left], effects[right] = effects[right], effects[left]
+				}
+			}
 			state.BaseMovement[index] = record.Movement()
 			// 先攻修正讀這一格（overlay-25 entry 11，spec 052）。
 			state.Dexterity[index] = record.Dexterity()
@@ -2246,16 +2260,35 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	// 城堡的兩場才會被一支 4 HP 的一級隊伍「打過」（2026-09-15，spec 137）。
 	// （`tacticalPreview` 在真的遭遇裡也是 true——它是「戰術盤開著」不是
 	// 「F5 預覽」；分辨用的是 `combatActive`。）
+	// 決鬥（spec 150）輸了也不是全滅：`04ADh` 在 `0507h` 把 DS:4960h 清 0，`0612h` 的
+	// 狀態換算照打贏那樣跑。
+	duel := staged && a.duel && outcome != combat.CombatOngoing
 	if staged {
-		a.storeCombatHitPoints(a.tactical, outcome)
+		stored := outcome
+		if duel {
+			stored = combat.CombatVictory
+		}
+		a.storeCombatHitPoints(a.tactical, stored)
 	}
 	// 逃掉的敵方（`+10Ch == 3`）戰後不算經驗值（overlay-05 `0079h`，foe_flee.go）。
 	fled := a.fledFoeRecords(a.tactical)
-	// 身上的錢與物品在同一個迴圈收（monster_loot.go）；盤面丟掉之前先收好。
+	// 戰後結算要的三件事也在盤面丟掉之前量好（spec 150）：誰有資格分經驗值
+	// （`829Bh`）、有沒有人站著（`82A0h`）、有沒有打到沒逃掉的敵方（`439Ch`）。
+	eligible := combatExperienceEligible(a.tactical, len(a.state.Party))
+	standing := partyStanding(combatPartyStates(a.tactical))
+	if duel {
+		standing = duelChampionStanding(a.tactical)
+	}
+	fought := foughtAnyFoe(a.tactical)
+	// 身上的錢與物品在同一個迴圈收（monster_loot.go）；盤面丟掉之前先收好。entry 2
+	// 只在有人站著時跑（`05E0h`／決鬥的 `077Dh`）。
 	var loot monsterLoot
-	if staged && outcome == combat.CombatVictory {
+	if staged && standing && (outcome == combat.CombatVictory || duel) {
 		loot = a.collectMonsterLoot(a.tactical)
 	}
+	// `TREASURE` 在開打前放上串列的物品排在最後（spec 150〈TREASURE 的時機〉）。
+	loot.items = append(loot.items, a.pendingTreasure...)
+	a.pendingTreasure = nil
 	a.tacticalPreview, a.tactical = false, nil
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
@@ -2265,13 +2298,15 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		// 僵局收場：雙方都還在，只是誰也碰不到誰。跟打輸一樣要把排好的遭遇
 		// 清掉，否則同一場架會被重新排出來。
 		a.combatActive, a.combatMonsters = false, nil
+		a.duel = false
 		tacticalStalemateEndings++
 		a.statusLine = "Tactical combat ended in a stalemate; neither side could close."
 		return nil
 	}
-	if outcome != combat.CombatVictory {
+	if outcome != combat.CombatVictory && !duel {
 		// 輸掉之後**要把排好的遭遇清掉**，否則同一場架會被重新排出來。
 		a.combatActive, a.combatMonsters = false, nil
+		a.duel = false
 		if !staged {
 			a.statusLine = "Tactical preview finished; no encounter was staged."
 			return nil
@@ -2288,24 +2323,27 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	if a.eventMachine != nil {
 		a.eventMachine.Memory[0x6DC7] = 0
 	}
-	// 經驗總額含公款與戰利品的折算（spec 148），與怪物那一項一起除人數。
-	a.awardCombatExperienceWithLoot(fled, a.monsterLootExperience(loot))
+	// 經驗總額含公款與戰利品的折算（spec 148），與怪物那一項一起除人數。決鬥不數
+	// `829Bh`，除的是整隊人數（spec 150）。
+	share := uint32(0)
+	if standing {
+		divisor := 0
+		if duel {
+			divisor = len(a.state.Party)
+		}
+		share = a.awardCombatExperienceWithLoot(fled, a.monsterLootExperience(loot), eligible, divisor)
+	}
+	if duel {
+		a.finishDuelState()
+	}
 	a.combatActive, a.combatMonsters = false, nil
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.eventText, a.eventLabel = "", ""
-	if a.openMonsterLoot(loot) {
-		// 戰利品選單離開時（exitTreasure）才續跑戰後腳本。
-		return nil
-	}
-	result, err := a.eventSession.RunUntilEvent(4096, nil, true)
-	if err != nil {
-		return fmt.Errorf("continue after Pool combat: %w", err)
-	}
-	// 戰後腳本走的是跟走進一格時同一條邊界分派。只套文字的話，戰鬥後面接的
-	// `PROGRAM`、`TREASURE`、換區塊那些邊界都會停在原地——結局那一段就是
-	// 這樣卡住的：打贏泰倫斯拉克斯之後 `A82Ah PROGRAM 08` 沒有人接，
-	// 後面的結局文字與回到菲蘭的 `NEWECL 0` 一條都不會跑。
-	return a.consumeInitialSearch(result)
+	// `1295h` → `08E0h` → `0E85h`：選單不論有沒有東西都開（spec 150）；離開時
+	// （exitTreasure）才續跑戰後腳本。戰後腳本走的是跟走進一格時同一條邊界分派——
+	// 打贏泰倫斯拉克斯之後的 `A82Ah PROGRAM 08` 也是從那裡接上的。
+	a.openMonsterLoot(loot, postCombatReport{fought: fought, duel: duel, standing: standing, share: share})
+	return nil
 }
 
 // storeCombatHitPoints 把戰場上的生命值與狀態寫回隊伍（角色記錄 `+11Bh`／
@@ -2470,9 +2508,8 @@ func (state *tacticalState) sideCounts() combat.SideCounts {
 // 原版是先把所有敵方的經驗值加總、除以「有資格分的人數」，再由每個人依自己的
 // 複合職業碼調整：純職業的主屬性超過 15 多拿十分之一，複合職業除以職業數。
 //
-// **有資格的判準還沒讀完**：原版跳過 `+10Dh` 為 0 與狀態為 1 的成員，兩個欄位
-// 的語意都還沒閉合，所以這裡讓全隊都分。倒下的成員在原版一樣分得到——
-// 它擋的不是死亡。
+// 有資格的是 `+10Dh` 非 0（還在盤面上）而且狀態不是 1 的人（spec 150）；打完的那一條
+// 由 finishCombat 用盤面量。這兩支沒有盤面，全隊都算。
 func (a *app) awardCombatExperience() {
 	a.awardCombatExperienceExcept(nil)
 }
@@ -2480,13 +2517,19 @@ func (a *app) awardCombatExperience() {
 // awardCombatExperienceExcept 同上，但 fled 那幾隻不算（逃掉的，`+10Ch == 3`，
 // overlay-05 entry 2 `0079h` 跳過）。
 func (a *app) awardCombatExperienceExcept(fled []gamepack.MonsterRecord) {
-	a.awardCombatExperienceWithLoot(fled, 0)
+	eligible := make([]bool, len(a.state.Party))
+	for index := range eligible {
+		eligible[index] = true
+	}
+	a.awardCombatExperienceWithLoot(fled, 0, eligible, 0)
 }
 
-// awardCombatExperienceWithLoot 同上，總額另加 loot（公款與戰利品折算，spec 148）。
-func (a *app) awardCombatExperienceWithLoot(fled []gamepack.MonsterRecord, loot uint32) {
+// awardCombatExperienceWithLoot 同上，總額另加 loot（公款與戰利品折算，spec 148），
+// 只發給 eligible 的人，回每份（shareExperience）。
+func (a *app) awardCombatExperienceWithLoot(fled []gamepack.MonsterRecord, loot uint32,
+	eligible []bool, divisor int) uint32 {
 	if len(a.state.Party) == 0 || len(a.combatMonsters) == 0 {
-		return
+		return 0
 	}
 	total := uint32(0)
 	for _, monster := range a.combatMonsters {
@@ -2500,7 +2543,7 @@ func (a *app) awardCombatExperienceWithLoot(fled []gamepack.MonsterRecord, loot 
 		}
 		total -= value
 	}
-	a.shareExperience(total + loot)
+	return a.shareExperience(total+loot, eligible, divisor)
 }
 
 

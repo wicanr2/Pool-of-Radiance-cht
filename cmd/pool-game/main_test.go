@@ -437,6 +437,11 @@ func TestGraveyardTreasureRequestEntersFiveItemService(t *testing.T) {
 	if err := application.enterTreasure([]eclvm.TreasureRequest{{ItemBlock: 0x33}}); err != nil {
 		t.Fatal(err)
 	}
+	// 選單之前是戰後結算頁（overlay-05 `08E0h`，spec 150），按一下才到選單。
+	if !application.postCombatPageActive() || application.treasureStage != treasureResult {
+		t.Fatalf("treasure opened at stage %d, want the post-combat result page", application.treasureStage)
+	}
+	application.advancePostCombatPage()
 	// 主選單依錢與物品的有無組（spec 034 `0E85h`）：這一場只有物品、沒有錢，所以沒有 `Share`。
 	if !application.treasureActive || application.treasureStage != treasureMain || !application.cellEventPending || !application.cellWaitingMenu || len(application.treasureItems) != 5 || !reflect.DeepEqual(application.cellMenuOptions, []string{"View", "Take", "Pool", "Exit"}) {
 		t.Fatalf("treasure service=%+v options=%v", application, application.cellMenuOptions)
@@ -573,6 +578,7 @@ func TestMoneyTreasureNormalMenuTakePoolAndShare(t *testing.T) {
 	if err := application.enterTreasure([]eclvm.TreasureRequest{{Amounts: [7]uint16{0: 2, 3: 7, 6: 1}}}); err != nil {
 		t.Fatal(err)
 	}
+	application.advancePostCombatPage() // 結算頁（spec 150）
 	if application.state.PooledMoney != ([7]uint32{0: 2, 3: 7, 6: 1}) {
 		t.Fatalf("initial pools=%v", application.state.PooledMoney)
 	}

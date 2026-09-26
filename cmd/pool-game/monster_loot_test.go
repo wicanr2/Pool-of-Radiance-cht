@@ -260,6 +260,11 @@ func leaveTreasureMenu(a *app) bool {
 	acted := false
 	for guard := 0; guard < 64 && a.treasureActive; guard++ {
 		acted = true
+		if a.postCombatPageActive() {
+			// 選單之前的 NPC 分錢頁與結算頁（spec 150）：按一下 Enter。
+			press(a, ebiten.KeyEnter)
+			continue
+		}
 		want := "Exit"
 		switch a.treasureStage {
 		case treasureConfirmExit:

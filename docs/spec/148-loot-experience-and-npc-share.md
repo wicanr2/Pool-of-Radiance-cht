@@ -1,8 +1,9 @@
 # Spec 148：戰利品折算經驗值與 NPC 分錢
 
 狀態：CONFORMED（公款折算經驗值：碼 exact、原版執行期收據逐人相同）；READY（物品加值折算、
-NPC 分錢：碼 exact，remake 有測試，沒有原版執行期收據）；DRAFT（`DS:5CF8h` 停點、NPC
-列名的畫面與停頓）。日期：2026-09-26。主台帳：GitHub issue #94（#76 留下，spec 142）。
+NPC 分錢：碼 exact，remake 有測試，沒有原版執行期收據）；DRAFT（`DS:5CF8h` 停點）。
+NPC 列名那一頁、`DS:829Ah`（決鬥）與有資格分的人數由 spec 150 接手（#103）。
+日期：2026-09-26。主台帳：GitHub issue #94（#76 留下，spec 142）。
 
 ## 輸入與位址空間
 
@@ -149,16 +150,13 @@ remake：`TREASURE` 在 `enterTreasure` 取代公款（原本就是這樣）；�
   建角那一側寫 `+85h = 1`，但那些記錄 `+84h` 是 0，不影響分錢。
 
 remake：`gamepack.HideNPCShares`，在開戰利品選單之前（`openMonsterLoot` 與 `enterTreasure`）呼叫；
-列名那一行放在狀態列。
+列名那一頁見 spec 150。
 
 ## 還沒接（DRAFT）
 
 | 項目 | 位址 | 等級 | 為什麼沒接 |
 |---|---|---|---|
-| NPC 列名的畫面與停頓 | overlay-05 `1387h..146Ah` | exact（碼） | remake 只在狀態列印同一句，沒有清畫面與等鍵那一頁；沒有對拍 |
-| `DS:829Ah` 那一條路 | overlay-05 `0006h..0032h`、`0748h..07A7h` | exact（碼）；`829Ah` 由 overlay-07 `1AB9h` 設、`@6DE6`（`[4937h]+5CCh`）同時寫入，語意 unknown | entry 2 直接回 `[5CF0h]+73h × 100`，不走上面的三項；觸發它的 ECL 命令還沒讀 |
-| 有資格分的人數 | overlay-05 `05B3h..05C9h`（`829Bh`） | exact（碼）；`+10Dh` 語意 unknown | 沿用 spec 097 的全隊都分；收據那一場 `829Bh` 為 0 |
-| 同一個結果裡 `TREASURE` 與有怪物的 `COMBAT` | — | — | remake 先開戰利品選單（spec 036 的既有分派），原版是打完才一起結算；沒有找到走得到的實例 |
+| NPC 列名的畫面與停頓、`DS:829Ah`（決鬥）、有資格分的人數、`TREASURE` 與有怪物的 `COMBAT` | — | — | 已由 spec 150 接手 |
 
 ## 被推翻的斷言
 

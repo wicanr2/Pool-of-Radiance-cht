@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
@@ -32,14 +29,29 @@ func lootExperience(pool [pooltreasure.CurrencyCount]uint32, items []gamepack.Tr
 	return gamepack.LootExperience(pool, plus)
 }
 
-// shareExperience 是 `0308h` 除人數與 entry 3（`033Ah`）依職業調整（spec 097）。
-// 有資格的判準與 awardCombatExperience 同一套：全隊都分。
-func (a *app) shareExperience(total uint32) {
-	share := gamepack.DivideExperience(total, len(a.state.Party))
+// shareExperience 是 `0308h` 除人數與 entry 3（`033Ah`）依職業調整（spec 097），回每份
+// （DS:829Ch，戰後結算頁印的那個數字）。
+//
+// eligible 是有資格分的人（`+10Dh` 非 0 而且狀態不是 1，spec 150〈有資格的人數〉）；
+// entry 3 只發給他們。除數是隊伍人數減掉沒資格的人數（`0308h..0318h` 的
+// `[4937h]+67Ch − DS:829Bh`）；divisor 大於 0 時直接用它——決鬥那一條不數 `829Bh`
+// （`04ADh` 在 `0524h` 跳過那一段），除的是整隊人數。
+func (a *app) shareExperience(total uint32, eligible []bool, divisor int) uint32 {
+	if divisor <= 0 {
+		for index := range a.state.Party {
+			if index < len(eligible) && eligible[index] {
+				divisor++
+			}
+		}
+	}
+	share := gamepack.DivideExperience(total, divisor)
 	if share == 0 {
-		return
+		return 0
 	}
 	for index := range a.state.Party {
+		if index >= len(eligible) || !eligible[index] {
+			continue
+		}
 		member := &a.state.Party[index]
 		code, ok := creation.ClassDOSCode(member.ClassID)
 		if !ok {
@@ -52,12 +64,13 @@ func (a *app) shareExperience(total uint32) {
 		}
 		member.Experience += gamepack.ExperienceShare(share, code, member.Abilities)
 	}
+	return share
 }
 
 // awardTreasureExperience 是沒有怪物的那一場（`TREASURE → COMBAT`）：怪物那一項是 0，
 // 總額只有公款與戰利品。
-func (a *app) awardTreasureExperience(items []gamepack.TreasureItemRecord) {
-	a.shareExperience(lootExperience(a.state.PooledMoney, items))
+func (a *app) awardTreasureExperience(items []gamepack.TreasureItemRecord) uint32 {
+	return a.shareExperience(lootExperience(a.state.PooledMoney, items), a.treasureExperienceEligible(), 0)
 }
 
 // monsterLootExperience 是有怪物的那一場：entry 2 換算的公款是原本的公款加上怪物身上的錢
@@ -74,8 +87,9 @@ func (a *app) monsterLootExperience(loot monsterLoot) uint32 {
 	return lootExperience(pool, loot.items)
 }
 
-// hideNPCShares 是 `1295h`：公款扣掉 NPC 藏起來的份額，列出拿走的人。
-func (a *app) hideNPCShares() {
+// hideNPCShares 是 `1295h`：公款扣掉 NPC 藏起來的份額，回拿走的人的名字——有名字就有
+// 那一頁（`1387h..146Ah`，postcombat.go）。
+func (a *app) hideNPCShares() []string {
 	members := make([]gamepack.NPCShareMember, len(a.state.Party))
 	for index, member := range a.state.Party {
 		if !member.NPC || len(member.Record) <= 0x85 {
@@ -91,12 +105,5 @@ func (a *app) hideNPCShares() {
 	}
 	pool, hiders := gamepack.HideNPCShares(a.state.PooledMoney, members)
 	a.state.PooledMoney = pool
-	if len(hiders) == 0 {
-		return
-	}
-	lines := make([]string, 0, len(hiders))
-	for _, index := range hiders {
-		lines = append(lines, fmt.Sprintf("%s takes and hides his share.", strings.TrimSpace(a.state.Party[index].Name)))
-	}
-	a.statusLine = strings.Join(lines, " ")
+	return a.postCombatHiderNames(hiders)
 }

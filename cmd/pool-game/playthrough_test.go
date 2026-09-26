@@ -1278,6 +1278,13 @@ func hasMenuOption(application *app, want string) bool {
 // selectMenuOption 把游標移到指定的選項再按 Enter。找不到就回 false。
 func selectMenuOption(t *testing.T, application *app, want string) error {
 	t.Helper()
+	// 戰利品選單前面的兩頁（NPC 分錢、戰後結算，spec 150）各按一下 Enter，
+	// 與原版玩家一樣。
+	for guard := 0; guard < 4 && application.postCombatPageActive(); guard++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			return err
+		}
+	}
 	for guard := 0; guard < 12; guard++ {
 		if len(application.cellMenuOptions) == 0 {
 			return fmt.Errorf("選單是空的")
@@ -1482,6 +1489,8 @@ func TestDefeatingTyranthraxusSetsTheVictoryFlag(t *testing.T) {
 	if err := press(application, ebiten.KeyN); err != nil {
 		t.Fatal(err)
 	}
+	// 戰後結算頁與戰利品選單（spec 150）：原版一樣要按過去、選 Exit，腳本才往下跑。
+	leaveLootMenu(t, application)
 	machine := session.Machine()
 	if got := machine.Memory[0x4ABA]; got != 0xFE {
 		t.Fatalf("打贏之後 4ABA=%d，應該是 FEh（`A815h`）", got)

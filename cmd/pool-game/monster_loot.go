@@ -42,10 +42,6 @@ type monsterLoot struct {
 	items []gamepack.TreasureItemRecord
 }
 
-func (loot monsterLoot) empty() bool {
-	return loot.money == [pooltreasure.CurrencyCount]uint32{} && len(loot.items) == 0
-}
-
 // rememberFoeItems 把這一隻的物品串列放上盤面。第二隻起順序反過來（`0684h`）。
 func (a *app) rememberFoeItems(state *tacticalState, index int, monster stagedMonster, copyIndex int) {
 	if len(monster.Items) == 0 {
@@ -160,12 +156,9 @@ func (a *app) collectMonsterLoot(state *tacticalState) monsterLoot {
 	return loot
 }
 
-// openMonsterLoot 把錢加進公款、物品交給戰後戰利品選單（spec 034）。沒有東西就不開，
-// 回 false，由呼叫端照舊續跑戰後腳本。
-func (a *app) openMonsterLoot(loot monsterLoot) bool {
-	if loot.empty() {
-		return false
-	}
+// openMonsterLoot 把錢加進公款、物品交給戰後戰利品選單（spec 034），先經過 NPC 分錢與
+// 結算那兩頁（spec 150）。原版的 `0E85h` 沒有東西也開（選項 `View Pool Exit`）。
+func (a *app) openMonsterLoot(loot monsterLoot, report postCombatReport) {
 	for currency, amount := range loot.money {
 		total := uint64(a.state.PooledMoney[currency]) + uint64(amount)
 		if total > uint64(^uint32(0)) {
@@ -173,11 +166,8 @@ func (a *app) openMonsterLoot(loot monsterLoot) bool {
 		}
 		a.state.PooledMoney[currency] = uint32(total)
 	}
-	a.treasureActive, a.treasureStage = true, treasureMain
-	a.treasureItems, a.treasureSelected, a.treasureCurrency, a.treasureAmount = loot.items, 0, 0, ""
-	a.cellEventPending, a.cellWaitingMenu = true, true
-	a.enterTreasureMain()
+	a.treasureItems = loot.items
 	// `1295h`：開選單之前 NPC 先拿走份額（spec 148）。
-	a.hideNPCShares()
-	return true
+	report.hiders = a.hideNPCShares()
+	a.openPostCombat(report)
 }

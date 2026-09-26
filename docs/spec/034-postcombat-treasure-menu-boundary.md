@@ -10,8 +10,8 @@
   `900ea1b8e57b03e0f6dd1c16024a686c8474e2b0ae9674c730d5619679809c16`。
   `docs/audit/ida-overlay05-postcombat.json` 由 IDA Pro 9.4 對十二個 TPOV entry seed
   非破壞性匯出；位址空間是 overlay-local file offset、base 0，保留 bytes 與原名稱。
-- `14CAh` 是戰後主流程：先呼叫 `04ADh` 準備狀態，再呼叫 `08E0h` 顯示
-  `The party has found treasure!` 等結果，接著 `0E85h` 進入戰利品選單；結束後
+- `14CAh` 是戰後主流程：先呼叫 `04ADh` 準備狀態，再呼叫 `08E0h` 那一頁（標題、每份經驗值、
+  等一個鍵，spec 150），接著 `0E85h` 進入戰利品選單；結束後
   `1510h..1554h` 逐節點沿 `+2Ah` next 釋放，每節點固定 `3Fh` bytes。
 - `0E85h` 依是否有 money／item 組成 `View Take Pool Share`、`View Take Pool` 等選項；
   `0FF6h..1008h` 的 `T` 分支呼叫 `0CF0h`。

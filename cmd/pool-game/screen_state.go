@@ -125,6 +125,10 @@ func (a *app) screenName() string {
 			return "treasure-items-who"
 		case treasureConfirmExit:
 			return "treasure-confirm-exit"
+		case treasureNPCShare:
+			return "treasure-npc-share"
+		case treasureResult:
+			return "treasure-result"
 		}
 		return "treasure"
 	case a.equipmentOpen:
