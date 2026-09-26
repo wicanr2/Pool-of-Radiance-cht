@@ -4,7 +4,7 @@
 > 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，
 > 這份只是把它反過來收攏，所以改了註解重跑一次就對了。
 
-147 份規格，其中 0 份還沒有任何檔案的註解指回它、0 份沒有測試提到它；
+148 份規格，其中 0 份還沒有任何檔案的註解指回它、0 份沒有測試提到它；
 另有 9 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go、1 份由 Go 以外的測試驗證。
 這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。
 
@@ -76,11 +76,11 @@
 | [062](062-combat-round-loop.md) | 戰鬥回合迴圈與結束條件 | READY＋DRAFT | `cmd/pool-game/tactical.go`、`internal/combat/round.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/playthrough_test.go`、`cmd/pool-game/tactical_pilot_test.go` 等 5 個 |
 | [063](063-character-base-combat-stats.md) | 角色的基礎 AC、THAC0、移動與武器攻擊數值 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/dos_export.go`、`cmd/pool-game/tactical.go` 等 16 個 | `cmd/pool-game/dos_export_test.go`、`cmd/pool-game/main_test.go`、`cmd/pool-game/monster_thac0_receipt_test.go` 等 8 個 |
 | [064](064-in-game-journal.md) | 遊戲內《探險者手冊》 | CONFORMED | `cmd/pool-journal-corpus/main.go` | `internal/journal/journal_test.go` |
-| [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/monster_gear.go` 等 10 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
+| [065](065-weapon-driven-combat-stats.md) | 物品型別表與裝備武器決定的戰鬥數值 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/equipment.go`、`cmd/pool-game/missile.go` 等 12 個 | `cmd/pool-game/tactical_test.go`、`internal/gamepack/monster_test.go` |
 | [066](066-three-platform-release.md) | 三平台發行包 | CONFORMED＋DRAFT | `tools/package-release.sh`（shell 與 Docker 工具鏈，不是 Go）。 | `cmd/pool-doc-index/main_test.go` |
 | [067](067-shop-service-and-stock.md) | 商店服務邊界與進貨清單 | CONFORMED＋DRAFT | `cmd/pool-game/combat_item_menu.go`、`cmd/pool-game/foe_flee.go`、`cmd/pool-game/main.go` 等 11 個 | `cmd/pool-game/mainline_outfit_test.go`、`cmd/pool-game/shop_sell_test.go`、`cmd/pool-game/shop_walk_test.go` |
 | [068](068-spell-name-table.md) | 法術名稱表 | CONFORMED＋DRAFT | `cmd/pool-game/spells.go`、`internal/gamepack/spell_dispatch.go`、`internal/gamepack/spell_table.go` | `internal/gamepack/spell_table_test.go` |
-| [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 13 個 | `cmd/pool-game/combat_effects_test.go`、`internal/character/export_test.go`、`internal/gamepack/effect_names_test.go` 等 4 個 |
+| [069](069-character-effect-list.md) | 角色的效果串列（`.spc`） | CONFORMED＋DRAFT | `cmd/pool-game/combat_effects.go`、`cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go` 等 13 個 | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/field_cast_effects_test.go`、`internal/character/export_test.go` 等 5 個 |
 | [070](070-memorised-spells.md) | 記憶法術陣列與 1-based 法術編號 | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/foe_cast.go`、`cmd/pool-game/spells.go` 等 8 個 | `cmd/pool-game/inn_test.go`、`cmd/pool-spell-dispatch/main_test.go`、`internal/gamepack/memorisation_test.go` |
 | [071](071-experience-and-level-caps.md) | 經驗值門檻表與等級上限 | CONFORMED | `cmd/pool-game/main.go`、`internal/gamepack/spell_slots.go` | `cmd/pool-game/mainline_house_rule_test.go`、`internal/journal/manual_tables_test.go` |
 | [072](072-spell-slots-and-wisdom-bonus.md) | 可記憶法術數與睿智加成 | CONFORMED＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/spells.go`、`cmd/pool-game/tactical.go` 等 7 個 | `cmd/pool-game/memorise_test.go`、`internal/gamepack/memorisation_test.go`、`internal/gamepack/saving_throw_table_test.go` |
@@ -102,14 +102,14 @@
 | [088](088-ecl-rob-opcode.md) | `28h ROB` | READY＋DRAFT | `cmd/pool-game/rob.go`、`internal/gamepack/intro.go`、`internal/gamepack/rob.go` | `internal/gamepack/rob_test.go` |
 | [089](089-ecl-protection-opcode.md) | `3Ch PROTECTION` | READY＋DRAFT | `cmd/pool-game/protection.go`、`internal/gamepack/ecl_operands.go`、`internal/gamepack/intro.go` | `cmd/pool-game/protection_test.go` |
 | [090](090-ecl-who-opcode.md) | `39h WHO` 與「目前角色」 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/who.go`、`internal/gamepack/intro.go` | `cmd/pool-game/coverage_test.go`、`cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_rest_test.go` |
-| [091](091-ecl-add-npc-opcode.md) | `36h ADD NPC` | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/ecl_operands.go` 等 6 個 | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_spells_test.go` |
+| [091](091-ecl-add-npc-opcode.md) | `36h ADD NPC` | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/ecl_operands.go` 等 6 個 | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_spells_test.go`、`cmd/pool-game/npc_gear_test.go` |
 | [092](092-ecl-checkparty-opcode.md) | `1Eh CHECKPARTY` | READY | `cmd/pool-game/checkparty.go`、`internal/gamepack/checkparty.go`、`internal/gamepack/intro.go` | `internal/gamepack/checkparty_test.go` |
 | [093](093-ecl-clock-opcode.md) | `34h ECL CLOCK` | READY＋DRAFT | `cmd/pool-ecl-trace/main.go`、`cmd/pool-game/ecl_clock.go`、`cmd/pool-game/ecl_party_queries.go` 等 8 個 | `cmd/pool-ecl-audit/main_test.go` |
 | [094](094-ecl-spell-search-opcode.md) | `3Bh SPELL` | READY＋DRAFT | `cmd/pool-game/spell_search.go`、`internal/gamepack/intro.go`、`internal/gamepack/memorised_spells.go` | `internal/gamepack/memorised_spells_test.go` |
 | [095](095-thief-skills.md) | 角色記錄的八個賊技能 | CONFORMED | `cmd/pool-game/checkparty.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 10 個 | `cmd/pool-game/thief_skills_test.go`、`internal/gamepack/thief_skills_build_test.go` |
 | [096](096-monster-ai-structure.md) | 怪物 AI 的骨架（overlay-09） | CONFORMED＋READY | `cmd/pool-game/addnpc.go`、`cmd/pool-game/cast.go`、`cmd/pool-game/combat_screen.go` 等 14 個 | `cmd/pool-game/foe_cast_test.go`、`cmd/pool-game/foe_flee_test.go`、`cmd/pool-game/foe_items_test.go` 等 7 個 |
 | [097](097-training-level-up-and-energy-drain.md) | 經驗值、訓練所昇級、生命骰與能量吸取 | CONFORMED＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/loot_experience.go`、`cmd/pool-game/main.go` 等 15 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/door_test.go`、`cmd/pool-game/experience_test.go` 等 9 個 |
-| [098](098-spell-casting-machinery.md) | 施法的共用機制（擲骰、施法者等級、處理常式的呼叫慣例） | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/damage_interrupt.go`、`cmd/pool-game/disease_effects.go` 等 24 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/memorise_test.go`、`cmd/pool-game/spell_aborted_test.go` 等 8 個 |
+| [098](098-spell-casting-machinery.md) | 施法的共用機制（擲骰、施法者等級、處理常式的呼叫慣例） | CONFORMED＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/damage_interrupt.go`、`cmd/pool-game/disease_effects.go` 等 27 個 | `cmd/pool-game/cast_test.go`、`cmd/pool-game/field_cast_effects_test.go`、`cmd/pool-game/memorise_test.go` 等 10 個 |
 | [099](099-boat-travel-and-quest-gate.md) | 搭船旅行與它的進度閘門 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/coverage_test.go` |
 | [100](100-the-6dd5-map-exit-gate.md) | `DS:6DD5h` — 擋住整個世界的那一個變數 | CONFORMED | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/main.go`、`cmd/pool-game/training_gate.go` | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/mainline_castle_test.go` 等 4 個 |
 | [101](101-world-transition-graph.md) | 世界怎麼接起來——NEWECL 圖與邊界出口 | READY | `cmd/pool-game/main.go`、`cmd/pool-world-graph/main.go` | `cmd/pool-game/kuto_well_test.go`、`cmd/pool-game/mainline_castle_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 7 個 |
@@ -132,7 +132,7 @@
 | [118](118-adventure-status-line-and-clock.md) | 冒險畫面的狀態列與遊戲時鐘 | READY＋DRAFT | `cmd/pool-game/main.go`、`cmd/pool-game/party_panel.go`、`internal/save/state.go` | `cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/party_panel_test.go`、`internal/gamepack/effect_time_test.go` |
 | [119](119-adventure-command-bar.md) | 冒險畫面的指令列與平面全圖 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/camp.go`、`cmd/pool-game/command_bar.go` 等 9 個 | `cmd/pool-game/area_map_test.go`、`cmd/pool-game/field_cast_test.go` |
 | [120](120-wall-symbol-bands.md) | 8×8 符號的五帶 | READY＋DRAFT | `cmd/pool-game/area_map.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` 等 5 個 | `cmd/pool-game/first_person_inset_test.go` |
-| [121](121-cloud-objects.md) | 盤面上的雲團物件 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/cloud.go`、`cmd/pool-game/reaction_attack.go` 等 8 個 | `cmd/pool-game/cloud_test.go`、`internal/gamepack/cloud_test.go`、`internal/gamepack/spell_cast_test.go` |
+| [121](121-cloud-objects.md) | 盤面上的雲團物件 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/cloud.go`、`cmd/pool-game/missile.go` 等 9 個 | `cmd/pool-game/cloud_test.go`、`internal/gamepack/cloud_test.go`、`internal/gamepack/spell_cast_test.go` |
 | [122](122-locked-doors.md) | 鎖住的門（`Bash`／`Pick`／`Knock`） | CONFORMED＋DRAFT | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/door.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/door_test.go`、`cmd/pool-game/journal_link_test.go` 等 6 個 |
 | [123](123-screen-frame.md) | 畫面外框的繩索花紋 | CONFORMED＋DRAFT | `cmd/pool-game/command_bar.go`、`cmd/pool-game/main.go`、`cmd/pool-game/screen_frame.go` | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/screen_frame_test.go`、`cmd/pool-game/tactical_test.go` |
 | [124](124-map-names-from-the-original.md) | 地圖的名字要從原版自己的文字取 | READY＋DRAFT | `cmd/pool-doc-index/main.go`、`cmd/pool-map-names/main.go` | `cmd/pool-map-names/main_test.go` |
@@ -153,12 +153,13 @@
 | [139](139-quick-auto-combat.md) | Q）UICK 自動戰鬥與 M）OVE 的兩層按鍵 | READY＋DRAFT | `cmd/pool-game/foe_cast.go`、`cmd/pool-game/foe_items.go`、`cmd/pool-game/tactical.go` 等 5 個 | `cmd/pool-game/foe_cast_test.go`、`cmd/pool-game/quick_test.go` |
 | [140](140-house-rule-commission-experience.md) | 自訂規則——委任經驗值加倍（預設關） | CONFORMED＋READY | `cmd/pool-game/main.go`、`cmd/pool-game/party_menu.go`、`cmd/pool-game/text.go` 等 4 個 | `cmd/pool-game/mainline_house_rule_test.go`、`cmd/pool-game/mainline_probe_test.go` |
 | [141](141-cheat-menu.md) | 作弊選單——鎖 HP、一擊斃命、穿牆（預設關）、密語提示（預設開） | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/cheats.go`、`cmd/pool-game/ecl_input.go` 等 8 個 | `cmd/pool-game/cheat_playthrough_test.go`、`cmd/pool-game/cheats_test.go`、`cmd/pool-game/coverage_test.go` 等 8 個 |
-| [142](142-monster-item-chain-and-loot.md) | 怪物的物品串列——從哪裡載、誰用、戰後怎麼交出來 | READY＋DRAFT | `cmd/pool-game/foe_items.go`、`cmd/pool-game/main.go`、`cmd/pool-game/monster_gear.go` 等 7 個 | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_castle_test.go`、`cmd/pool-game/mainline_probe_test.go` 等 9 個 |
-| [144](144-combat-item-menu.md) | 戰鬥中的物品選單——Ready、Drop、Halve、Join、卷軸與 `+0Bh` 為 0 的物品法術 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/combat_commands.go`、`cmd/pool-game/combat_item_menu.go` 等 8 個 | `cmd/pool-game/combat_item_menu_test.go`、`cmd/pool-game/item_page_test.go`、`cmd/pool-game/spell_effect_only_test.go` |
+| [142](142-monster-item-chain-and-loot.md) | 怪物的物品串列——從哪裡載、誰用、戰後怎麼交出來 | READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/foe_items.go`、`cmd/pool-game/main.go` 等 8 個 | `cmd/pool-game/main_test.go`、`cmd/pool-game/mainline_castle_test.go`、`cmd/pool-game/mainline_probe_test.go` 等 10 個 |
+| [144](144-combat-item-menu.md) | 戰鬥中的物品選單——Ready、Drop、Halve、Join、卷軸與 `+0Bh` 為 0 的物品法術 | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/combat_commands.go`、`cmd/pool-game/combat_item_menu.go` 等 8 個 | `cmd/pool-game/combat_item_menu_test.go`、`cmd/pool-game/field_cast_effects_test.go`、`cmd/pool-game/item_page_test.go` 等 4 個 |
 | [145](145-race-effects-at-creation.md) | 建角依種族掛的效果 | CONFORMED | `cmd/pool-game/main.go`、`cmd/pool-game/race_effects.go`、`internal/gamepack/race_effects.go` 等 4 個 | `cmd/pool-game/race_effects_test.go` |
-| [147](147-monster-gear-recompute.md) | 怪物開打時的裝備重算（overlay-25 entry 7） | CONFORMED＋DRAFT | `cmd/pool-game/monster_gear.go`、`cmd/pool-game/tactical.go`、`internal/gamepack/monster.go` | `cmd/pool-game/monster_gear_test.go`、`cmd/pool-game/norris_fight_receipt_test.go`、`internal/gamepack/monster_recompute_test.go` 等 4 個 |
+| [147](147-monster-gear-recompute.md) | 怪物開打時的裝備重算（overlay-25 entry 7） | CONFORMED＋READY＋DRAFT | `cmd/pool-game/addnpc.go`、`cmd/pool-game/combat_item_menu.go`、`cmd/pool-game/monster_gear.go` 等 5 個 | `cmd/pool-game/monster_gear_test.go`、`cmd/pool-game/norris_fight_receipt_test.go`、`cmd/pool-game/npc_gear_test.go` 等 5 個 |
 | [148](148-loot-experience-and-npc-share.md) | 戰利品折算經驗值與 NPC 分錢 | CONFORMED＋READY＋DRAFT | `cmd/pool-game/loot_experience.go`、`cmd/pool-game/main.go`、`cmd/pool-game/monster_loot.go` 等 5 個 | `cmd/pool-game/house_rule_test.go`、`cmd/pool-game/loot_experience_test.go`、`cmd/pool-game/mainline_probe_test.go` |
-| [149](149-exploration-item-menu-and-wear-effects.md) | 探索中的物品頁與穿戴效果——Ready 不換手、Use／Drop／Halve／Join、`+3Eh` 效果碼 | READY＋DRAFT | `cmd/pool-game/item_page.go`、`internal/gamepack/item_menu.go`、`internal/gamepack/wear_effect.go` | `cmd/pool-game/equipment_test.go`、`cmd/pool-game/item_page_test.go`、`cmd/pool-game/mainline_reward_test.go` |
+| [149](149-exploration-item-menu-and-wear-effects.md) | 探索中的物品頁與穿戴效果——Ready 不換手、Use／Drop／Halve／Join、`+3Eh` 效果碼 | READY＋DRAFT | `cmd/pool-game/item_page.go`、`internal/gamepack/item_menu.go`、`internal/gamepack/wear_effect.go` | `cmd/pool-game/equipment_test.go`、`cmd/pool-game/field_cast_effects_test.go`、`cmd/pool-game/item_page_test.go` 等 4 個 |
+| [151](151-missile-ammunition-and-ai-weapon-choice.md) | 射擊、彈藥與 AI 換武器（overlay-25 entry 43／44／45、overlay-13 射擊路徑、overlay-09 entry 9） | READY＋DRAFT | `cmd/pool-game/cast.go`、`cmd/pool-game/missile.go`、`cmd/pool-game/monster_loot.go` 等 6 個 | `cmd/pool-game/missile_test.go`、`cmd/pool-game/monster_gear_test.go` |
 
 ## `cmd/` 底下的工具
 
@@ -176,7 +177,7 @@
 | `pool-ecl-opcodes` | 把 overlay-03 的 ECL 派發鏈 dump 成 JSON：每條 opcode 的處理常式位移與運算元個數，並標出與共用 engine 那張二手 arity 表的差異 | 有 | — |
 | `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | 093 |
 | `pool-font-coverage` | 報出遊戲要顯示、但倚天字型畫不出來的字 | 有 | — |
-| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 119 份 |
+| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 120 份 |
 | `pool-geo-audit` | decodes every Pool GEO block through the shared engine and records only structural map evidence | 有 | 009 |
 | `pool-initial-cell-sweep` | executes the original initial-map cell lifecycle entry against isolated copies of the post-Rolf VM state | 有 | 015 |
 | `pool-input-manifest` | inventories the fixed DOS source ZIP without extracting or modifying its contents | 有 | — |
