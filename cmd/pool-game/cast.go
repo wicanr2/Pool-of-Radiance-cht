@@ -201,7 +201,14 @@ func (a *app) resolveAimedAttack(target uint8) error {
 		state.Status = state.say(msgStatusBlocked)
 		return nil
 	}
-	if err := a.resolveTacticalAttack(state, target); err != nil {
+	// 射擊武器沒彈藥、或身邊有敵人而武器不能近戰：原版選單上沒有 Target（spec 151）。
+	if offered, err := a.aimOffersTarget(state, state.Mover); err != nil {
+		return err
+	} else if !offered {
+		a.tacticalStatus(state, state.say(msgAimNoTarget, target))
+		return nil
+	}
+	if err := a.resolveWeaponAttack(state, target, true); err != nil {
 		return err
 	}
 	state.endTurnAfterAction(a.rollDice)

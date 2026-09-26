@@ -1146,17 +1146,17 @@
   }
  ],
  "mechanics": {
-  "battles": 42,
-  "foe_attacks": 1251,
+  "battles": 41,
+  "foe_attacks": 1517,
   "foe_casts": 0,
   "foe_casts_begun": 0,
-  "foe_hits": 591,
-  "foe_steps": 4636,
+  "foe_hits": 706,
+  "foe_steps": 4287,
   "note": "作弊之下戰鬥機制與 AI 照樣作用的證據（#57）。battles 起到 party_hits 是閘門，其餘只記錄。",
   "party_attacks": 993,
   "party_casts": 5,
-  "party_hits": 339,
-  "reaction_attacks": 36
+  "party_hits": 338,
+  "reaction_attacks": 59
  },
  "route": "spec 137 路線 (a)，house rule，dice seed 142",
  "schema": "pool-remake-cheat-playthrough/2",

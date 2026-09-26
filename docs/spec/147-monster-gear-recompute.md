@@ -3,7 +3,7 @@
 狀態：CONFORMED（開打時對怪物跑 entry 7、`+2Dh` 不寫、`0DB4h` 的傷害骰抄寫、`+0F8h`／`+0FCh`
 兩格、兩隻獸人頭目與十六隻獸人的九個欄位逐位元組對上 dosgolem 執行期記錄）；READY（隊伍 NPC
 開打與戰鬥中換裝走同一支、ADD NPC 帶 MONnITM 物品，#97；呼叫鏈 exact，NPC 本身沒有執行期收據）；
-DRAFT（彈藥消耗）。日期：2026-09-26。主台帳：GitHub issue #93（#76 留下，spec 142 的
+彈藥消耗已由 spec 151 接上（#98）。日期：2026-09-26。主台帳：GitHub issue #93（#76 留下，spec 142 的
 DRAFT 表那一列）、#97（NPC）。
 
 ## 輸入
@@ -72,8 +72,9 @@ spec 063〈怪物開打時也跑同一支〉：overlay-10 開打初始化 `1ED6h
 - 負對照：`TestMonsterRecomputeChangesTheArmedLeaderAndKeepsBaseThac0`（樣板 55／1d8／6 → 56／1d6／9，
   `+2Dh` 不動）；`TestMonsterRecomputeAddsStrengthDamageOnlyWhenTheFlagIsSet`（吸血鬼 `+0AAh = 1`
   1d6+4 → +8，獸人 `+0AAh = 0` 不補）。
-- 遠程：`TestArmedOrcLeaderShootsFromOutsideMeleeReach`：同一格、同一批隊員，拿弓的頭目在
-  `foeTurn` 原地射人（一次攻擊、零步），沒拿武器的頭目要先走。
+- 遠程：`TestArmedOrcLeaderShootsFromOutsideMeleeReach`：同一格、同一批隊員。敵方回合先跑
+  overlay-09 entry 9 重挑武器（spec 151）：block 14 的頭目穿上弓、原地射人（一次攻擊、零步）；
+  block 15 的頭目釘頭錘與弓都穿著、三隻手，entry 9 把弓卸下，拿釘頭錘往前走。
 - 規模（`MON*CHA` 172 筆全部重算）：AC 變的 66 筆、腳程 39 筆；穿戴中的武器是遠程的只有
   四筆（兩份 ORC 1/44、7/44 帶短弓 2Ch、ORC LEADER 2/15 帶 2Bh、DRIDER 7/69 帶 29h）。
 
@@ -126,5 +127,5 @@ THAC0／AC／腳程／骰子／射程，負對照是只讀記錄的舊做法；�
 
 | 項目 | 等級 | 為什麼 |
 |---|---|---|
-| 彈藥消耗與「沒有箭不能射」 | unknown | 隊員那一側也沒有；overlay-13 的射擊路徑還沒讀 |
+| 彈藥消耗與「沒有箭不能射」 | exact | 已由 spec 151 接上（overlay-13 `1883h`／`2A7Bh`、overlay-25 entry 45、overlay-09 entry 9）|
 | 戰鬥中怪物換裝 | exact（`146Fh` 重算）| 怪物不走物品選單；AI 用物品（spec 096 entry 3）不改穿戴 |

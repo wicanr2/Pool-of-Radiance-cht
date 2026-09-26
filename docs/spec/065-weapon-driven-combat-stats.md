@@ -68,6 +68,10 @@ overlay-25 以 `type × 16` 索引 `DS:54E0h`。把該處 1,024 bytes 匯出來
 修正）、bit 2 近戰（THAC0 與傷害加力量修正）、bit 7 使用彈藥（再加 `+0FCh`
 那件的 `+32h`）。其餘位元未用到，不猜。
 
+射擊那一側（spec 151）另外讀到 bit 3（射出去的武器）與 bit 4（丟出去的是武器自己），
+並訂正 bit 0 的語意：`+0F8h` 裝的是型別 49h 的**箭**，bit 0 是「要箭」，不是「要發射器」
+（overlay-25 entry 45 `2F1Ah`）。型別表 `+05h` 是射擊一回合的次數編碼（overlay-13 `0D89h`）。
+
 ## 三張能力值修正表（exact）
 
 `docs/audit/ida-overlay25-ability-modifiers.json` 保存 overlay-25

@@ -96,6 +96,21 @@ func (a *app) collectMonsterLoot(state *tacticalState) monsterLoot {
 		// `15FBh`：戰後主流程把它清回 0。
 		a.eventMachine.Memory[monsterLootNoItemsAddress] = 0
 	}
+	// 戰鬥中丟出去落地的武器（spec 151）已經在戰利品串列上；怪物的物品之後插在它們前面。
+	for _, item := range state.ThrownLoot {
+		named := a.namedItem(item.Raw)
+		if named.Name == "" {
+			named.Name = item.Name
+		}
+		if named.Name == "" || len(named.Raw) != gamepack.MonsterItemRecordSize {
+			continue
+		}
+		var record gamepack.TreasureItemRecord
+		record.Name = named.Name
+		copy(record.Raw[:], named.Raw)
+		record.Raw[gamepack.ItemReadiedOffset] = 0
+		loot.items = append(loot.items, record)
+	}
 	friendly := state.Friendly
 	taken := 0
 	for index := 1; index < len(state.Roster) && index < len(friendly); index++ {

@@ -412,6 +412,11 @@ type tacticalState struct {
 	// FoeItems 是怪物那幾格的物品串列（記錄 `+C8h`，MONnITM.DAX，spec 142）。
 	// 每一隻各一份：`0Bh LOAD MONSTER` 的第二隻起逐件複製（monster_loot.go）。
 	FoeItems      map[int][]poolsave.Item
+	// ThrownLoot 是戰鬥中丟出去落地的武器（戰利品串列 `DS:676Eh`，頭在前；spec 151）。
+	// 打贏時排在怪物的物品後面（overlay-05 entry 2 之後才把牠們的插到頭上）。
+	ThrownLoot []poolsave.Item
+	// lastSwings 是上一次 resolveAttackSwings 實際揮了幾下（扣彈藥用，`DS:6D20h`）。
+	lastSwings    int
 	Budgets       []uint8
 	States        []uint8
 	DyingCounters []uint8
@@ -1140,6 +1145,10 @@ func (a *app) foeTurn(state *tacticalState) error {
 			return state.foeTargetCandidatesAt(mover, side, relaxed)
 		})
 	}
+	var previousTarget uint8
+	if int(mover) < len(state.FoeTargets) {
+		previousTarget = state.FoeTargets[mover]
+	}
 	target, ok := state.foeTarget(mover)
 	if !ok {
 		picked, err := pickTarget()
@@ -1169,6 +1178,11 @@ func (a *app) foeTurn(state *tacticalState) error {
 	// overlay-09 entry 1 `010Fh..0187h`：用物品、放開始施法的那一條、挑法術
 	// （foe_cast.go，spec 096 entry 4）。放了就不追人。
 	if acted, err := a.foeCastPhase(state, mover, mode); acted || err != nil {
+		return err
+	}
+	// `019Bh`：都沒動就先重挑武器與盾（entry 9 `13D5h`，spec 151）。原版這時還沒挑這一回合的
+	// 目標，型別 55h 看的是上一回合記著的那一個。
+	if err := a.foeChooseGear(state, mover, previousTarget); err != nil {
 		return err
 	}
 
@@ -1208,7 +1222,23 @@ func (a *app) foeTurn(state *tacticalState) error {
 			// `1087h`；名單依直線追蹤的成本排（`0912h`）。以前固定打第一個（#65）。
 			victim := reachable[a.rollDice(1, len(reachable))-1]
 			state.Activity.FoeSteps += steps
-			if err := a.resolveTacticalAttack(state, victim); err != nil {
+			// `0DCBh..0E03h`：射擊武器（不能近戰的）而身邊有敵人，這一回合改去換武器
+			//（entry 9），不打（spec 151）。
+			if refused, err := a.bumpAttackRefused(state, mover); err != nil {
+				return err
+			} else if refused {
+				if adjacent, err := state.adjacentEnemies(mover); err != nil {
+					return err
+				} else if adjacent {
+					if err := a.foeChooseGear(state, mover, target); err != nil {
+						return err
+					}
+					state.FoeLog = state.say(msgFoeClosed, mover, steps, target)
+					state.endTurn(a.rollDice, false)
+					return nil
+				}
+			}
+			if err := a.resolveWeaponAttack(state, victim, true); err != nil {
 				return err
 			}
 			state.FoeLog = state.say(msgFoeAttacked, mover, steps, state.Status)
@@ -1913,6 +1943,13 @@ func (a *app) tacticalInput() error {
 				state.Status = state.say(msgStatusBlocked)
 				return nil
 			}
+			// overlay-08 `0D36h..0D68h`：拿著射擊武器撞上去不打（spec 151）。
+			if refused, err := a.bumpAttackRefused(state, state.Mover); err != nil {
+				return err
+			} else if refused {
+				state.Status = state.say(msgStatusNotWithWeapon)
+				return nil
+			}
 			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
 				return err
 			}
@@ -1996,11 +2033,8 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 	// 原版一次行動把這一相位的兩種形態都打完：攻擊區段（overlay-13
 	// `1678h..176Ah`）由第二形態倒數到第一，每一形態剩幾次由
 	// `AttacksThisPhase` 給（spec 051）。巨魔的爪／爪／咬就是這樣來的。
-	swings, err := a.attackSwingsThisPhase(state, state.Mover)
-	if err != nil {
-		return err
-	}
-	return a.resolveAttackSwings(state, state.Mover, target, swings)
+	// 走進敵人那一格（overlay-08 `0DD2h`）的彈藥是 NULL；射擊那一段在 missile.go（spec 151）。
+	return a.resolveWeaponAttack(state, target, false)
 }
 
 // resolveAttackSwings 讓 attacker 對 target 揮 swings 這幾下。一般攻擊與反應攻擊
@@ -2014,6 +2048,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	// 施法中被打斷的訊息接在命中那一行後面（damage_interrupt.go）。
 	defer a.announceLostSpells(state)
 	state.Activity.countAttack(state.isFriendly(attacker))
+	state.lastSwings = 0
+	avoided := false
 	if len(swings) == 0 {
 		// 這一相位揮不出任何一下（編碼 3 的「每兩回合三次」在單數相位）。
 		state.Status = state.say(msgStatusMissed, target, uint8(a.rollDice(1, 20)))
@@ -2024,6 +2060,7 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	// overlay-13 `1587h..1595h`：重算目標的戰鬥數值、派發目標的群組 11，才進擲骰（#89）。
 	armourClass := state.hitCheckArmourClass(target)
 	for _, dice := range swings {
+		state.lastSwings++
 		lastRoll = uint8(a.rollDice(1, 20))
 		// 命中骰擲出來之後先問效果系統：群組 10／16（overlay-24 entry 6，#81／#86）。
 		modifier, missed := state.hitRollAfterEffects(attacker, target, lastRoll)
@@ -2045,6 +2082,13 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		}
 		// overlay-13 `021Eh`／`022Ch`：攻擊者的群組 4（衰弱 1Dh）、目標的群組 5（鏡影 1Ch 擲骰，#99）。
 		damage = a.meleeDamageAfterEffects(state, attacker, target, damage)
+		// 同一次群組 5 的 `29h`：非魔法的飛彈從兩格外射來就擋掉（spec 151）。
+		if missed, err := a.normalMissileAvoided(state, attacker, target); err != nil {
+			return err
+		} else if missed {
+			avoided = true
+			continue
+		}
 		// 一擊斃命（spec 141）：隊員命中時傷害改成目標剩下的 HP；擲骰照常。
 		damage = a.cheatDamage(state, attacker, target, damage)
 		landed++
@@ -2062,6 +2106,10 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		if a.applyEnergyDrainSpecialAttack(state, attacker, target) {
 			break
 		}
+	}
+	if landed == 0 && avoided {
+		state.Status = state.say(msgStatusAvoidsMissile, target)
+		return nil
 	}
 	if landed == 0 {
 		state.Status = state.say(msgStatusMissed, target, lastRoll)

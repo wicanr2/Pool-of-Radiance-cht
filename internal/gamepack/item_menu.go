@@ -154,6 +154,13 @@ func readiedSlots(inventory [][]byte, types *ItemTypeTable) (equipmentSlots, err
 // 成立時直接改 inventory[index] 的 `+34h`。`+3Eh` 大於 7Fh 的物品原版還會交給
 // overlay-24 entry 1 掛上或摘掉穿戴效果，那一層是 ApplyWearEffect（spec 149），由呼叫端接著做。
 func ReadyItem(inventory [][]byte, index int, types *ItemTypeTable, classMask uint8) (ReadyResult, error) {
+	return readyItemWithHands(inventory, index, types, classMask, -1)
+}
+
+// readyItemWithHands 同 ReadyItem，但 `1571h` 讀的角色 `+100h` 由呼叫端給（hands ≥ 0）。
+// entry 7 每次重算都把 `+100h` 設成穿戴中物品的手數和，所以平常兩者相同；AI 換武器
+// （overlay-09 entry 9，spec 151）在重算之後另外扣掉盾牌的手數才叫 Ready，那一次不同。
+func readyItemWithHands(inventory [][]byte, index int, types *ItemTypeTable, classMask uint8, hands int) (ReadyResult, error) {
 	raw := inventory[index]
 	if raw[ItemReadiedOffset] != 0 {
 		if raw[ItemCursedOffset] != 0 {
@@ -171,7 +178,10 @@ func ReadyItem(inventory [][]byte, index int, types *ItemTypeTable, classMask ui
 		return ReadyResult{}, err
 	}
 	result := ReadyResult{Outcome: ReadyDone, Blocker: -1}
-	if int(entry.Raw[ItemTypeHandsOffset])+slots.hands > readyHandLimit {
+	if hands < 0 {
+		hands = slots.hands
+	}
+	if int(entry.Raw[ItemTypeHandsOffset])+hands > readyHandLimit {
 		result.Outcome = ReadyHandsFull
 	}
 	switch category := entry.Category(); {

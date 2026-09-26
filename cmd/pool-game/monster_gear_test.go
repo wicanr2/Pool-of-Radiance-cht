@@ -97,16 +97,18 @@ func TestMonsterGearMatchesTheOrcHomeRuntimeReceipt(t *testing.T) {
 	}
 }
 
-// 拿弓的獸人頭目（收據 6 號）與同一場沒拿武器的頭目（7 號）放在同一格、面對同一批
-// 隊員：前者在自己的回合原地射人（一次攻擊、零步），後者得先往前走。
+// 兩隻獸人頭目放在同一格、面對同一批隊員。敵方回合接近之前先跑 overlay-09 entry 9
+// （`13D5h`，spec 151）重挑武器：7 號（MON2 block 14）兩件武器都沒穿、箭穿著，身邊沒人
+// 就把短弓穿上，在原地射人（一次攻擊、零步）；6 號（block 15）釘頭錘與短弓都穿著，
+// 三隻手超過兩隻，entry 9 把弓卸下，拿釘頭錘往前走。
 func TestArmedOrcLeaderShootsFromOutsideMeleeReach(t *testing.T) {
 	for _, testCase := range []struct {
 		mover   uint8
 		shoots  bool
 		comment string
 	}{
-		{6, true, "short bow"},
-		{7, false, "no readied weapon"},
+		{7, true, "unworn short bow readied by entry 9"},
+		{6, false, "mace and short bow both worn: entry 9 puts the bow away"},
 	} {
 		application, _ := orcHomeGearFixture(t)
 		state := application.tactical
