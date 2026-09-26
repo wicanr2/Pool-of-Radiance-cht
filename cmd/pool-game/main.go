@@ -2592,6 +2592,8 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.state = cloneSaveState(loaded)
 	// #74 之前寫出的存檔：隊伍 NPC 的士氣還是怪物檔的 FFh，補回原版的值。
 	a.migrateNPCMorale()
+	// #88 之前建的玩家角色沒有種族效果，補回原版建角會掛的節點（spec 145）。
+	a.migrateRaceEffects()
 	a.spawn = gamepack.Spawn{Map: key, X: campaign.X, Y: campaign.Y, Facing: campaign.Facing}
 	a.initialMap = &geometryMap
 	a.eclArchive = campaign.ECLArchive
@@ -3503,6 +3505,7 @@ func (a *app) loadSavedGame() error {
 		return nil
 	}
 	a.state = loaded
+	a.migrateRaceEffects()
 	a.statusLine = fmt.Sprintf("Loaded %d library / %d party characters; no campaign was saved.", len(loaded.CharacterLibrary), len(loaded.Party))
 	return nil
 }
@@ -3530,6 +3533,8 @@ func (a *app) finishCharacter() error {
 		Money: money, MaxHP: rolled.HP, CurrentHP: rolled.HP, RawHP: rolled.RawHP,
 		PortraitHead: a.flow.PortraitHead, PortraitBody: a.flow.PortraitBody,
 		IconHead: a.flow.IconHead, IconWeapon: a.flow.IconWeapon, IconSize: a.flow.IconSize, IconColors: a.flow.IconColors,
+		// 種族效果照 overlay-16 `078Ah..0905h` 掛（spec 145）。
+		Effects: raceEffectNodes(a.flow.SelectedRace().ID),
 	}
 	// 法術書照原版的建角規則填（spec 109）：牧師會第 1 級的全部神術，
 	// 法師會寫死的四條。少了這一步，一級法師記得起火球術。
