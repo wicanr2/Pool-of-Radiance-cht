@@ -146,7 +146,7 @@ func (a *app) resolveWeaponAttack(state *tacticalState, target uint8, fire bool)
 	if err != nil {
 		return err
 	}
-	if err := a.resolveAttackSwings(state, mover, target, swings); err != nil {
+	if err := a.resolveAttackSwings(state, mover, target, swings, form2); err != nil {
 		return err
 	}
 	if ammunition < 0 || ammunition >= len(items) {

@@ -366,6 +366,10 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	if err != nil {
 		return err
 	}
+	// 走 overlay-24 entry 9 擲傷害的那幾支記下骰數（`DS:677Ah`，spec 153）。
+	if dice, ok := gamepack.SpellDamageDice(option.ID, casterLevel); ok {
+		a.diceCount = dice
+	}
 	// 有前提的那幾支：表上第一格（`DS:6B89h`，模式 0 就是施法者自己）身上已經有
 	// 那個效果，就用 `0100h:006Bh`（overlay-24 entry 15）把它摘掉、整支不做。
 	// 記憶那一格照樣用掉。戰場上的串列是 state.Effects（開打時從角色抄過來的那一份）。
@@ -405,7 +409,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 	caster.consume()
 	// `DS:6777h`：`08BCh` 在傷害不為 0 時寫處理常式推的種類（`08E2h`），否則寫 0（`08DBh`）；
 	// `DS:677Eh`：`20AEh` 以一點收表時立起、火球 `2634h` 自己也立。施完都歸零（`0A6Ah`、`0EACh`）。
-	state.SpellDamage = spellDamageContext{Spell: option.ID, Area: targets.Area && chosen}
+	state.SpellDamage = spellDamageContext{Spell: option.ID, Area: targets.Area && chosen, Level: casterLevel}
 	if effect.Damage > 0 {
 		state.SpellDamage.Flags = gamepack.SpellDamageKind(option.ID)
 	}
@@ -430,6 +434,8 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		}
 	}
 	switch {
+	case effect.NeutralizesPoison && a.neutralizeOnBoard(state, targets, option):
+		// 編號 58 `2E08h..2E3Ch`：中毒就只解毒（poison.go，spec 153）。
 	case len(effect.RemoveEffects) > 0:
 		// 解病術這一類：拿掉**選中的目標**身上那幾個效果碼。原版
 		// `225Bh` 是逐個 `lcall 0100h:006Bh(目標, …)` 再 `002Ah(目標, …)`

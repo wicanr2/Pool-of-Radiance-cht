@@ -193,7 +193,11 @@ func (a *app) reactionAttack(state *tacticalState, attacker, target uint8) error
 	for index := range swings {
 		swings[index] = dice
 	}
-	return a.resolveAttackSwings(state, attacker, target, swings)
+	form2 := 0
+	if pick.Slot == 2 {
+		form2 = len(swings)
+	}
+	return a.resolveAttackSwings(state, attacker, target, swings, form2)
 }
 
 // combatActivity 數一場裡實際發生的動作（#57）。收據用，遊戲本身不讀。

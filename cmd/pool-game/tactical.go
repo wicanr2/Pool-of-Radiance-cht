@@ -466,9 +466,11 @@ type tacticalState struct {
 	// Text 由建立者接上 app.text，讓狀態列的訊息也能翻譯。測試直接建構
 	// tacticalState 時不設它，say 會退回英文，所以測試不必知道語言這件事。
 	Text func(messageID) string
-	// PartyEffectTeardown 把戰場上的隊員效果到期同步回角色記錄。怪物與只改
-	// 戰術盤面的效果不走這一層；測試手工建立 tacticalState 時可留空。
+	// PartyEffectTeardown 把戰場上的效果到期交給 app：隊員的同步回角色記錄，中毒、致病與靈魂鎚
+	// 在怪物身上也跑（spec 153）。測試手工建立 tacticalState 時可留空。
 	PartyEffectTeardown func(index int, node gamepack.EffectNode)
+	// FoeStrength 是怪物記錄的 `+10h`（力量）被致病的 `2Bh` 減過之後的值；用到才長（spec 153）。
+	FoeStrength map[int]uint8
 	// PartyAged 是急速的 `27h` 第一次被問到時讓那個人老一歲（記錄 `+30h`，spec 112）。
 	// 隊員寫回角色；怪物與測試盤面可留空。
 	PartyAged func(index int)
@@ -2063,8 +2065,10 @@ func (a *app) resolveTacticalAttack(state *tacticalState, target uint8) error {
 }
 
 // resolveAttackSwings 讓 attacker 對 target 揮 swings 這幾下。一般攻擊與反應攻擊
-// （`reactionAttack`，spec 059）走同一支，原版兩者也都進同一個攻擊包裝。
-func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, swings []combat.DamageDice) error {
+// （`reactionAttack`，spec 059）走同一支，原版兩者也都進同一個攻擊包裝。前 form2 下是第二攻擊
+// 形態（攻擊區段由第二形態倒數，`[bp-15h]` 是 2），命中之後派發的是群組 3（spec 153）。
+func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, swings []combat.DamageDice,
+	form2 int) error {
 	if int(target) >= len(state.HitPoints) || int(attacker) >= len(state.HitPoints) {
 		return fmt.Errorf("Pool attack %d → %d is outside the roster", attacker, target)
 	}
@@ -2107,6 +2111,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		if err != nil {
 			return err
 		}
+		// `01B4h` 擲傷害走 overlay-24 entry 9：`DS:677Ah` 記下骰數（spec 153）。
+		a.diceCount = dice.Count
 		// overlay-13 `021Eh`／`022Ch`：攻擊者的群組 4（衰弱 1Dh）、目標的群組 5（鏡影 1Ch 擲骰，#99）。
 		damage = a.meleeDamageAfterEffects(state, attacker, target, damage)
 		// 同一次群組 5 的 `29h`：非魔法的飛彈從兩格外射來就擋掉（spec 151）。
@@ -2134,6 +2140,10 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 			break
 		}
 		// 原版在每一下成功造成傷害之後，以「攻擊形態 + 1」派發群組 2／3。
+		// 群組 3 的毒（40h 41h 42h 46h）排在 55h／56h 前面，只有第二形態（spec 153）。
+		if state.lastSwings <= form2 && a.poisonSpecialAttack(state, attacker, target) {
+			return nil
+		}
 		// 55h／56h 同時在兩組裡，所以不論是哪一形態命中，都由攻擊者身上的
 		// MONnSPC 節點對目前目標吸取一級／兩級（spec 112）。
 		if a.applyEnergyDrainSpecialAttack(state, attacker, target) {

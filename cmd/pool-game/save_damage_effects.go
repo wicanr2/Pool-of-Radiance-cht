@@ -46,6 +46,8 @@ type spellDamageContext struct {
 	Spell uint8
 	Flags uint8
 	Area  bool
+	// Level 是 `010Ah:00D4h(DS:6779h)`，群組 6 的魔法抗性 `2910h` 用它（spec 153）。
+	Level int
 }
 
 // rememberSaveRecord 記下那一格記錄 `+14h`（體質）與 `+0A0h`（陣營），群組 12 的
@@ -133,16 +135,23 @@ func (a *app) spellDamageAfterEffects(state *tacticalState, target, spell uint8,
 		return damage
 	}
 	outcome := gamepack.SpellDamageEffects{
-		Effects:     state.Effects[target],
-		Spell:       spell,
-		DamageFlags: state.SpellDamage.Flags,
-		Area:        state.SpellDamage.Area,
-		Roll:        a.rollDice,
+		Effects:         state.Effects[target],
+		Spell:           spell,
+		DamageFlags:     state.SpellDamage.Flags,
+		Area:            state.SpellDamage.Area,
+		Roll:            a.rollDice,
+		Dice:            a.diceCount,
+		CasterLevel:     state.SpellDamage.Level,
+		ActorWeaponType: a.readiedWeaponType(state, state.Mover),
 	}.Apply(damage)
 	state.Effects[target] = outcome.Effects
+	a.diceCount = outcome.Dice
 	if outcome.LostImage {
 		// overlay-12 `0A1Ah`：entry 20(記錄, "lost an image", 0Ah, 1)。
 		a.tacticalStatus(state, a.panelNotice(state, target, state.say(msgCastLostImage), noticeRowPanel, true))
+	}
+	if outcome.Unaffected {
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgEffectUnaffected), a.combatantName(state, target)))
 	}
 	return outcome.Damage
 }
@@ -151,10 +160,25 @@ func (a *app) spellDamageAfterEffects(state *tacticalState, target, spell uint8,
 // 目標的群組 5。群組 5 的 `1Ch` 在這裡一定擲一次骰，但 `DS:6779h` 是 0，擋不下來。
 func (a *app) meleeDamageAfterEffects(state *tacticalState, attacker, target uint8, damage int) int {
 	if int(attacker) < len(state.Effects) {
-		damage = gamepack.MeleeDamageAfterAttackerEffects(state.Effects[attacker], damage)
+		targetType := uint8(0)
+		if int(target) < len(state.CreatureType) {
+			targetType = state.CreatureType[target]
+		}
+		damage = gamepack.MeleeDamageAfterAttackerEffects(state.Effects[attacker], damage, targetType)
 	}
 	if int(target) < len(state.Effects) {
 		state.Effects[target], _ = gamepack.MirrorImageAbsorbs(state.Effects[target], 0, false, a.rollDice)
 	}
 	return damage
+}
+
+// readiedWeaponType 是那一格手上武器（`+0CCh`）的型別 `+2Eh`；沒拿武器回 −1。群組 6 的 `7Ah` 讀
+// `DS:5CF0h` 的這一格（spec 153）。
+func (a *app) readiedWeaponType(state *tacticalState, index uint8) int {
+	gear, items, _, err := a.missileGear(state, index)
+	if err != nil || gear.Weapon < 0 || gear.Weapon >= len(items) ||
+		len(items[gear.Weapon].Raw) <= gamepack.ItemTypeOffset {
+		return -1
+	}
+	return int(items[gear.Weapon].Raw[gamepack.ItemTypeOffset])
 }

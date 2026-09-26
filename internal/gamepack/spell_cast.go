@@ -52,6 +52,9 @@ type CastEffect struct {
 	// RemoveEffects 是要從目標身上拿掉的效果碼。解病術走的是這條路，
 	// 不掛新效果（overlay-22 `225Bh`）。
 	RemoveEffects []uint8
+	// NeutralizesPoison 為真時（編號 58，`2E02h`）先看表上第一格有沒有中毒 `37h`：有就只解毒
+	// （NeutralizePoison），不走 RemoveEffects 與治療（spec 153）。
+	NeutralizesPoison bool
 	// BlockedByEffect 非零時代表：目標身上有這個效果就把它解掉、整支不再做
 	// （處理常式先問 `0100h:006Bh`＝overlay-24 entry 15：有就摘掉、回非零，然後直接返回）。
 	BlockedByEffect uint8
@@ -415,7 +418,7 @@ func (c *SpellCaster) GenericMessage(id uint8) (string, bool) {
 //	40h （無名）       262Eh  與火球術同一支
 //	41h （無名）       300Eh  Roll(2, 4) ＋ 2
 //	39h （無名）       2DB7h  身上有緩速 2Ah 就解掉、不做，沒有才走泛型
-//	3Ah （無名）       2E02h  治療 Roll(1, 4) ＋ 8，並解掉 16h 與病痛那組
+//	3Ah （無名）       2E02h  中毒就解毒；否則解病痛那組、治療 Roll(1, 4) ＋ 8
 //	3Eh （無名）       2F85h  治療 Roll(2, 4) ＋ 2
 //	42h （無名）       3049h  整支是空的：原版什麼都不做
 //
@@ -506,6 +509,8 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		effect.RequiresEffect = PoisonEffectCode
 		effect.MinimumHitPoints = 1
 		effect.CasterLevelOverride = 0xff
+		// `18A1h` `B0 01 50`：第二個覆寫參數 1——`16h` 節點 `+4` 立著，到期時叫 `078Bh`（spec 153）。
+		effect.EffectParameter = 1
 	case SpellIDHaste:
 		// `2858h` 推緩速的碼 2Ah 與施法者的 `+10Eh`（哪一邊）給 `2724h`，
 		// 與緩速術同一支：只留那一邊、最多施法者等級個（SpellSideFilterFor）。
@@ -554,10 +559,12 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// 沒有才走泛型那條（四個覆寫參數全是 0，掛參數表的 `27h`）。
 		effect.BlockedByEffect = SlowEffectCode
 	case SpellIDGreaterHeal:
-		// `2E4Eh` 的 Roll(1, 4) ＋ 8 走治療常式 `0100h:0089h`。
-		// 前面還會解掉 16h，並走一次解病術那條鏈（`225Bh`）。
+		// `2E08h..2E3Ch`：身上有 `37h` 就用 entry 15 解掉、`677Dh` 立著摘 `16h`，整支結束
+		// （NeutralizesPoison，spec 153）；否則 `2E3Fh` 走解病術那條鏈（`225Bh`），`2E4Eh` 的
+		// Roll(1, 4) ＋ 8 走治療常式 `0100h:0089h`。`16h` 只在中毒那一支摘。
 		effect.Heal = roller.Roll(1, 4) + 8
-		effect.RemoveEffects = append([]uint8{0x16}, CureDiseaseEffectCodes[:]...)
+		effect.NeutralizesPoison = true
+		effect.RemoveEffects = append([]uint8(nil), CureDiseaseEffectCodes[:]...)
 	case SpellIDLesserHeal:
 		// `2F93h` 的 Roll(2, 4) ＋ 2，同一支治療常式。
 		effect.Heal = roller.Roll(2, 4) + 2

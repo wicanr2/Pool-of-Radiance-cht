@@ -33,6 +33,36 @@ const (
 	RacePoisonSaveEffectCode uint8 = 0x5a
 	// RaceMagicSaveEffectCode 是 `61h`（矮人、侏儒、半身人）：entry 90 `2673h`。
 	RaceMagicSaveEffectCode uint8 = 0x61
+
+	// 以下是怪物（MONnSPC.DAX）或魔法物品（物品 `+3Dh`）帶的碼（spec 153〈群組 12／6／4 其餘〉，#106）。
+
+	// FireResistanceEffectCode 是 `3Dh`（抗火戒指、spec 069 的 "Fire Resistance"）：entry 55 `149Ch`。
+	FireResistanceEffectCode uint8 = 0x3d
+	// PoisonHoldImmunityEffectCode 是 `6Fh`（SPECTRE、WIGHT、WRAITH…）：entry 105 `29F4h`。
+	PoisonHoldImmunityEffectCode uint8 = 0x6f
+	// UndeadImmunityEffectCode 是 `7Dh`（SKELETON、ZOMBIE、MUMMY、VAMPIRE…）：entry 119 `2E1Fh`。
+	UndeadImmunityEffectCode uint8 = 0x7d
+	// FireToleranceEffectCode 是 `71h`（EFREETI）：entry 107 `2A30h`。
+	FireToleranceEffectCode uint8 = 0x71
+	// FireVulnerabilityEffectCode 是 `7Ah`（MUMMY）：entry 116 `2D4Ch`。
+	FireVulnerabilityEffectCode uint8 = 0x7a
+	// JujuImmunityEffectCode 是 `5Bh`（JUJU ZOMBIE）：entry 85 `2535h`。
+	JujuImmunityEffectCode uint8 = 0x5b
+	// MagicResistanceFiftyEffectCode／MagicResistanceFifteenEffectCode 是 `69h`／`6Ah`
+	// （entry 99／100，`2910h(32h)`／`2910h(0Fh)`；TYRANITHRAXUS 帶 `6Ah`）。
+	MagicResistanceFiftyEffectCode   uint8 = 0x69
+	MagicResistanceFifteenEffectCode uint8 = 0x6a
+	// FireImmunityEffectCode 是 `70h`（FIRE GIANT）：entry 106 `2A17h`。
+	FireImmunityEffectCode uint8 = 0x70
+	// ElectricHalfEffectCode 是 `72h`、ColdHalfEffectCode 是 `76h`（VAMPIRE）：entry 108 `2A75h`、112 `2B76h`。
+	ElectricHalfEffectCode uint8 = 0x72
+	ColdHalfEffectCode     uint8 = 0x76
+	// FireHalfEffectCode 是 `5Dh`（JUJU ZOMBIE）：entry 86 `2581h`。
+	FireHalfEffectCode uint8 = 0x5d
+	// UndeadBaneEffectCode 是 `03h`、CreatureBaneEffectCode 是 `06h`：entry 7 `0141h`、entry 9 `01C9h`
+	// （群組 10 的命中那一半在 hit_roll_effects.go）。
+	UndeadBaneEffectCode   uint8 = 0x03
+	CreatureBaneEffectCode uint8 = 0x06
 )
 
 // `DS:6777h` 的位元（`08BCh` 在 `08E2h` 從處理常式推的 `[bp+0Ah]` 寫入，傷害為 0 時 `08DBh` 寫 0；
@@ -44,6 +74,9 @@ const (
 	// `C6 06 77 67`／`A2 77 67` 的寫入與 `08BCh` 的推入值（8、9、0Ch），**沒有一處立這一位**，
 	// 所以抗寒在 DOS 版的法術與已知特殊攻擊上都不會作用（exact：寫入點的窮舉）。
 	DamageFlagCold uint8 = 0x02
+	// DamageFlagElectric 是位元 2：`72h` 的 `2A7Bh` `24 04`、`5Bh` 的 `256Eh` `24 04` 讀它。
+	// 電擊之握、閃電束與編號 60 的射線推 0Ch（位元 2、3）。
+	DamageFlagElectric uint8 = 0x04
 	// DamageFlagMagic 是位元 3：群組 9 的 `2910h` 讀它決定要不要擲魔法抗性。
 	DamageFlagMagic uint8 = 0x08
 )
@@ -135,8 +168,6 @@ var saveRollGroup = [...]uint8{0x08, 0x09, 0x0a, 0x11, 0x14, 0x21, 0x24, 0x2d, 0
 
 // Apply 讓豁免骰 `DS:6774h` 依序過群組 12。全部是 byte 運算，回傳值是 byte；entry 7 的
 // `0DC8h` `26 8A 45 6D / 3A 06 74 67 / 77 06` 拿它與目標值做**無號**比較（目標值大於它就失敗）。
-//
-// `3Dh 6Fh 7Dh` 不是法術或種族掛的，沒有接（spec 112〈OPEN〉）。
 func (save SaveRollEffects) Apply(value uint8) uint8 {
 	for _, code := range saveRollGroup {
 		node, ok := save.node(code)
@@ -207,6 +238,19 @@ func (save SaveRollEffects) applyCode(code uint8, node EffectNode, value uint8) 
 		if save.Category == saveCategorySpell || save.Category == saveCategoryWand {
 			value = addConstitutionBonus(value, save.Constitution)
 		}
+	case FireResistanceEffectCode:
+		// entry 55 `149Ch`：`6777h & 1` 才做；`14DCh` `80 06 74 67 04`（傷害格的改動在這個時點
+		// 會被 entry 19 的 `1344h` 蓋掉）。
+		if save.DamageFlags&DamageFlagFire != 0 {
+			value += 4
+		}
+	case PoisonHoldImmunityEffectCode, UndeadImmunityEffectCode:
+		// entry 105 `2A05h`／entry 119 `2E3Eh`：`80 3E 88 67 00 / 75 05 / C6 06 74 67 64`——
+		// 類別 0 的豁免骰寫成 100，一定過。前面的 `0000h(37h)`／`0000h(34h)` 只動 `6775h`／`6776h`，
+		// 在豁免這個時點沒有讀者。
+		if save.Category == saveCategoryPoison {
+			value = 0x64
+		}
 	}
 	return value
 }
@@ -244,7 +288,25 @@ type SpellDamageEffects struct {
 	Area bool
 	// Roll 是 overlay-24 entry 8（`0100h:0048h`）。
 	Roll func(count, sides int) int
+	// Dice 是 `DS:677Ah`：最近一次 overlay-24 entry 9（`0E30h`，`0100h:004Dh`）擲的骰數。只有 entry 9
+	// 寫它（`0E39h`，全部 overlay 掃 `7A 67` 的窮舉），所以沒走 entry 9 的傷害（燃燒之手、閃電束）
+	// 讀到的是上一次的值（spec 153〈677Ah〉）。
+	Dice uint8
+	// CasterLevel 是 `010Ah:00D4h(DS:6779h)`：`69h`／`6Ah` 的魔法抗性門檻用它（`2910h`）。
+	CasterLevel int
+	// ActorWeaponType 是 `DS:5CF0h`（輪到行動的人）手上武器 `+0CCh` 的型別 `+2Eh`；沒拿武器是 −1。
+	ActorWeaponType int
 }
+
+// oilFlaskItemType 是 `7Ah` 在 `2D6Eh` 比的 `+2Eh == 56h`（物品名稱把 part 3 接成複數的那一型，
+// treasure.itemNameTakesPlural）。
+const oilFlaskItemType = 0x56
+
+// spellDamageGroup 是群組 6 的呼叫順序（spec 112 的二十組表）。`3Ch` 指到空常式 entry 126；
+// `65h`（TROLL，entry 94 `280Dh`：身上沒有 `62h`、`3Bh` 就掛一個持續 3 的 `3Bh`）不改傷害，
+// `3Bh` 的處理常式還沒讀，沒有接（spec 153〈卡點〉）。
+var spellDamageGroup = [...]uint8{0x71, 0x3d, 0x7a, 0x3c, 0x5b, 0x0a, 0x14, 0x69, 0x6a, 0x70, 0x72,
+	0x76, 0x11, 0x5d, 0x65, 0x1c}
 
 // SpellDamageOutcome 是群組 6 之後的結果。
 type SpellDamageOutcome struct {
@@ -253,29 +315,120 @@ type SpellDamageOutcome struct {
 	Effects EffectList
 	// LostImage 為真時原版印 "lost an image"（`09BFh`）並停一下。
 	LostImage bool
+	// Unaffected 為真時原版印 "is unaffected"（`5Bh`，overlay-12 `2527h`）並停一下。
+	Unaffected bool
+	// Dice 是跑完之後的 `DS:677Ah`（`7Ah` 擲 3d8 時改成 3）。
+	Dice uint8
 }
 
-// Apply 照群組 6 的順序（`71h 3Dh 7Ah 3Ch 5Bh 0Ah 14h 69h 6Ah 70h 72h 76h 11h 5Dh 65h 1Ch`）
-// 跑 remake 接了的四個碼：`0Ah`、`14h`、`11h`、`1Ch`。
+// Apply 照群組 6 的順序跑一遍。傷害格 `DS:6776h` 是 byte，每一支都是 byte 運算。
 func (damage SpellDamageEffects) Apply(value int) SpellDamageOutcome {
-	outcome := SpellDamageOutcome{Damage: value, Effects: damage.Effects}
+	outcome := SpellDamageOutcome{Damage: value, Effects: damage.Effects, Dice: damage.Dice}
 	list := damage.Effects
-	if list.Has(ResistColdEffectCode) && damage.DamageFlags&DamageFlagCold != 0 {
-		outcome.Damage = halveDamage(outcome.Damage) // `03F1h..03FCh`
-	}
-	if list.Has(ResistFireEffectCode) && damage.DamageFlags&DamageFlagFire != 0 {
-		outcome.Damage = halveDamage(outcome.Damage) // `0700h..070Bh`
-	}
-	if list.Has(ShieldEffectCode) && damage.Spell == SpellIDMagicMissile {
-		outcome.Damage = 0 // `067Eh` `80 3E 79 67 0F / 75 05 / C6 06 76 67 00`
-	}
-	var lost bool
-	outcome.Effects, lost = MirrorImageAbsorbs(list, damage.Spell, damage.Area, damage.Roll)
-	if lost {
-		outcome.Damage = 0
-		outcome.LostImage = true
+	for _, code := range spellDamageGroup {
+		if !list.Has(code) {
+			continue
+		}
+		switch code {
+		case FireToleranceEffectCode:
+			// entry 107 `2A30h`：`6777h & 1` → 骰數次 `FE 0E 76 67`，每次不低於骰數（`73 06` 無號）。
+			if damage.DamageFlags&DamageFlagFire != 0 {
+				outcome.Damage = perDieDamage(outcome.Damage, outcome.Dice, 1)
+			}
+		case FireResistanceEffectCode:
+			// entry 55 `149Ch`：`6777h & 1` → 骰數次 `80 2E 76 67 02`，每次不低於骰數；位元 3 沒立
+			// （`14E1h` `24 08`）→ `0000h(0)` 傷害歸零。
+			if damage.DamageFlags&DamageFlagFire != 0 {
+				outcome.Damage = perDieDamage(outcome.Damage, outcome.Dice, 2)
+				if damage.DamageFlags&DamageFlagMagic == 0 {
+					outcome.Damage = 0
+				}
+			}
+		case FireVulnerabilityEffectCode:
+			// entry 116 `2D4Ch`：行動者手上是 56h → `0100h:004Dh(3, 8)` 蓋掉傷害（骰數跟著變 3）；
+			// `6777h & 9` → `00 06 76 67` 加骰數。
+			if damage.ActorWeaponType == oilFlaskItemType && damage.Roll != nil {
+				outcome.Dice = 3
+				outcome.Damage = int(uint8(damage.Roll(3, 8)))
+			}
+			if damage.DamageFlags&(DamageFlagFire|DamageFlagMagic) != 0 {
+				outcome.Damage = int(uint8(outcome.Damage) + outcome.Dice)
+			}
+		case JujuImmunityEffectCode:
+			// entry 85 `2535h`：`6779h == 0Fh`（魔法飛彈）→ 歸零、印 "is unaffected"；否則 `6777h & 4` → 歸零。
+			if damage.Spell == SpellIDMagicMissile {
+				outcome.Damage = 0
+				outcome.Unaffected = true
+			} else if damage.DamageFlags&DamageFlagElectric != 0 {
+				outcome.Damage = 0
+			}
+		case ResistColdEffectCode:
+			if damage.DamageFlags&DamageFlagCold != 0 {
+				outcome.Damage = halveDamage(outcome.Damage) // `03F1h..03FCh`
+			}
+		case ResistFireEffectCode:
+			if damage.DamageFlags&DamageFlagFire != 0 {
+				outcome.Damage = halveDamage(outcome.Damage) // `0700h..070Bh`
+			}
+		case MagicResistanceFiftyEffectCode, MagicResistanceFifteenEffectCode:
+			// entry 99／100 → `2910h(32h／0Fh)`：`6775h != 0` 或 `6777h & 8` 才擲 1d100，不大於門檻
+			// → `0000h(0)` 歸零。`6775h` remake 當 0（spec 153〈677Ah 與 6775h〉）。
+			percent := 50
+			if code == MagicResistanceFifteenEffectCode {
+				percent = 15
+			}
+			if damage.Roll != nil {
+				magicResistance(percent, 0, damage.DamageFlags, damage.CasterLevel, damage.Roll,
+					func(uint8) { outcome.Damage = 0 })
+			}
+		case FireImmunityEffectCode:
+			// entry 106 `2A17h`：`6777h & 1` → `0000h(0)`。
+			if damage.DamageFlags&DamageFlagFire != 0 {
+				outcome.Damage = 0
+			}
+		case ElectricHalfEffectCode:
+			// entry 108 `2A75h`：`6777h & 4` → 減半。
+			if damage.DamageFlags&DamageFlagElectric != 0 {
+				outcome.Damage = halveDamage(outcome.Damage)
+			}
+		case ColdHalfEffectCode:
+			// entry 112 `2B76h`：`6777h & 2` → 減半。
+			if damage.DamageFlags&DamageFlagCold != 0 {
+				outcome.Damage = halveDamage(outcome.Damage)
+			}
+		case ShieldEffectCode:
+			if damage.Spell == SpellIDMagicMissile {
+				outcome.Damage = 0 // `067Eh` `80 3E 79 67 0F / 75 05 / C6 06 76 67 00`
+			}
+		case FireHalfEffectCode:
+			// entry 86 `2581h`：`6777h & 1` → 減半。
+			if damage.DamageFlags&DamageFlagFire != 0 {
+				outcome.Damage = halveDamage(outcome.Damage)
+			}
+		case MirrorImageEffectCode:
+			var lost bool
+			outcome.Effects, lost = MirrorImageAbsorbs(list, damage.Spell, damage.Area, damage.Roll)
+			if lost {
+				outcome.Damage = 0
+				outcome.LostImage = true
+			}
+		}
 	}
 	return outcome
+}
+
+// perDieDamage 是 `71h`／`3Dh` 的迴圈：`for i := 1 to 677Ah`，傷害格減 step（byte），減完**無號**小於
+// 骰數就墊回骰數（`3A 06 7A 67 / 73 06`）。byte 減到負數會繞成 0FEh／0FFh，比骰數大，不墊——
+// 單顆骰擲出 1 的火焰傷害碰上 `3Dh` 會變成 255（exact，照搬）。
+func perDieDamage(value int, dice, step uint8) int {
+	damage := uint8(value)
+	for count := 0; count < int(dice); count++ {
+		damage -= step
+		if damage < dice {
+			damage = dice
+		}
+	}
+	return int(damage)
 }
 
 // halveDamage 是 `A0 76 67 / 30 E4 / 99 / B9 02 00 / F7 F9 / A2 76 67`：byte 零延伸再除 2。
@@ -315,15 +468,36 @@ func MirrorImageAbsorbs(list EffectList, spell uint8, area bool,
 	return result, true
 }
 
-// MeleeDamageAfterAttackerEffects 是近戰傷害算完之後的群組 4（overlay-13 `021Eh`，記錄是攻擊者）。
-// 只接 `1Dh`：entry 28 `0A4Ah` `A0 76 67 / 30 E4 / 99 / B9 04 00 / F7 F9 / 8B D0 / A0 76 67 /
-// 30 E4 / 2B C2 / A2 76 67`——傷害減掉自己的四分之一（byte，整數除法）。
-// 同組的 `03h`／`06h` 沒有接（spec 112〈OPEN〉）。
-func MeleeDamageAfterAttackerEffects(list EffectList, damage int) int {
+// MeleeDamageAfterAttackerEffects 是近戰傷害算完之後的群組 4（overlay-13 `021Eh`，記錄是攻擊者），
+// 照 `1Dh 03h 06h` 的順序：
+//
+//	1Dh  entry 28 `0A4Ah` `A0 76 67 / 30 E4 / 99 / B9 04 00 / F7 F9 / 8B D0 / A0 76 67 / 30 E4 / 2B C2 /
+//	     A2 76 67`——傷害減掉自己的四分之一（byte，整數除法）
+//	03h  entry 7 `0141h`：目標（記錄 +108h 的 +0Ah）`+9Fh == 4` → `80 06 76 67 02`
+//	06h  entry 9 `01C9h`：`+9Fh` 0Ah → 1、9／0Ch → 2、4 → 3、其餘 0，`00 06 76 67`；另寫 `6777h = 9`
+//	     （`0227h`），給之後的群組 5 讀——remake 的群組 5 沒有讀這一格的碼（spec 153）
+//
+// targetType 是被打的那一個的 `+9Fh`。
+func MeleeDamageAfterAttackerEffects(list EffectList, damage int, targetType uint8) int {
+	value := uint8(damage)
 	if list.Has(EnfeeblementEffectCode) {
-		value := uint8(damage)
 		value -= value / 4
-		return int(value)
 	}
-	return damage
+	if list.Has(UndeadBaneEffectCode) && targetType == creatureTypeUndead {
+		value += 2
+	}
+	if list.Has(CreatureBaneEffectCode) {
+		switch targetType {
+		case creatureTypeTroll:
+			value++
+		case creatureTypeNine, creatureTypeTwelve:
+			value += 2
+		case creatureTypeUndead:
+			value += 3
+		}
+	}
+	if value == uint8(damage) {
+		return damage
+	}
+	return int(value)
 }

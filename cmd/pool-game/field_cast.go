@@ -241,6 +241,13 @@ func (a *app) fieldCastChosen() castOption {
 
 // applyFieldEffect 套用戰鬥外算得出來的那幾種效果，回傳有沒有真的作用。
 func applyFieldEffect(member *poolsave.Character, effect gamepack.CastEffect) bool {
+	if effect.NeutralizesPoison {
+		// 編號 58 `2E08h..2E3Ch`：中毒就只解毒，不解病、不治療（spec 153）。
+		if list, ok := neutralizesPoison(combatEffects(member.Effects)); ok {
+			member.Effects = storedEffects(list)
+			return true
+		}
+	}
 	applied := false
 	if effect.Heal > 0 {
 		before := member.CurrentHP

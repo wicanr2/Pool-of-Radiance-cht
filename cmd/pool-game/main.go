@@ -341,6 +341,9 @@ type app struct {
 	//（overlay-19 entry 6／8，combat_commands.go）。
 	combatItems *combatItemMenu
 	combatItem  *combatItemUse
+	// diceCount 是 `DS:677Ah`：最近一次 overlay-24 entry 9 擲的骰數，群組 6 的 `71h`／`3Dh`／`7Ah`
+	// 讀它（spec 153）。原版是 DS 段全域，跨戰鬥留著；遊戲開始是 0。
+	diceCount uint8
 	// levelUpTables 是生命骰、體質加成與職業分類遮罩（spec 097），訓練要用。
 	levelUpTables gamepack.LevelUpTables
 	// thiefSkillTables 是賊技能的基礎、種族與敏捷三張表（spec 095），建角要用。

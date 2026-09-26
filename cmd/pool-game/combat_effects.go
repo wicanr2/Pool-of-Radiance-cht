@@ -79,6 +79,8 @@ func (a *app) advancePartyEffects(minutes int) {
 			a.expiredEffectTeardown(index, node, list)
 			// 致病那一串到期會自己重掛（disease_effects.go，#99）。
 			list = a.diseaseTeardown(member, node, list, &member.CurrentHP)
+			// 中毒那一串：`0Fh` 扣血重掛、`16h` 到期毒發、`4Eh` 站起來（poison.go，spec 153）。
+			list = a.mapPoisonTeardown(member, node, list)
 		}
 		member.Effects = storedEffects(list)
 		syncTrainedLibraryCharacter(&a.state, *member)

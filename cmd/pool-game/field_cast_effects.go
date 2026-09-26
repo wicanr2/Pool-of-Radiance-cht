@@ -179,6 +179,10 @@ func (a *app) campSpellEffect(caster int, option castOption, effect gamepack.Cas
 			syncTrainedLibraryCharacter(&a.state, *member)
 		}
 	}
+	if option.ID == gamepack.SpellIDSlowPoison && len(table) > 0 {
+		// 緩毒術 `18BBh..18E5h`：`4Eh` 扶起來、掛 `0Fh`；戰鬥外一定站得起來（poison.go，spec 153）。
+		return a.slowPoisonAftermathInCamp(&a.state.Party[table[0]]), true
+	}
 	if code == gamepack.SpiritualHammerEffectCode && len(table) > 0 {
 		// 靈魂鎚 `19D1h`：`08BCh` 之後對表上第一格以模式 0 叫 `17h` 的常式。
 		if a.giveSpiritualHammer(&a.state.Party[table[0]]) {

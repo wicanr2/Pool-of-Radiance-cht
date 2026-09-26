@@ -477,10 +477,9 @@ func TestHealAndGuardedHandlers(t *testing.T) {
 	if low.Heal != 9 || high.Heal != 12 {
 		t.Errorf("58 是 Roll(1,4)+8（9..12），算出 %d..%d", low.Heal, high.Heal)
 	}
-	// 它也走一次解病術那條鏈，外加 16h。
-	if len(high.RemoveEffects) != len(CureDiseaseEffectCodes)+1 ||
-		high.RemoveEffects[0] != 0x16 {
-		t.Errorf("58 應該先解 16h 再解病痛那組，算出 %v", high.RemoveEffects)
+	// 沒中毒時走解病術那條鏈；16h 只在中毒那一支摘（`2E29h`，spec 153）。
+	if len(high.RemoveEffects) != len(CureDiseaseEffectCodes) || !high.NeutralizesPoison {
+		t.Errorf("58 應該先看中毒、再解病痛那組，算出 %v／%v", high.RemoveEffects, high.NeutralizesPoison)
 	}
 	lowLesser, _ := CastSpell(SpellIDLesserHeal, parameters, 6, minRoller{})
 	highLesser, _ := CastSpell(SpellIDLesserHeal, parameters, 6, maxRoller{})

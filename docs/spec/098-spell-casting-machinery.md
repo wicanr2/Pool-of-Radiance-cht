@@ -1286,7 +1286,7 @@ entry 20 見上一節：群組 9 免疫 → 「豁免成功而且規則是 1」�
 
 緩毒術在 `08BCh` 之後還有兩步：`18BBh` 用 entry 1 以模式 1 叫 `4Eh` 的常式（overlay-12 entry 71
 `19F5h`），`18D2h` 用 entry 10 掛一個 `0Fh` 節點（持續 0Ah、`+3` FFh、有收尾；常式 entry 17
-`05F7h`）。兩支都是中毒逐時扣血那一套，remake 還沒有，這兩步沒接（卡點見〈#99：收尾〉）。
+`05F7h`）。兩步已接（spec 153）。
 
 ### 效果在戰鬥裡作用的地方
 
@@ -1318,8 +1318,6 @@ entry 20 見上一節：群組 9 免疫 → 「豁免成功而且規則是 1」�
 | 原版 | remake | 理由 |
 |---|---|---|
 | 每一格印「<名字> <訊息>」 | 狀態列只留「作用在 N 人身上」 | 狀態列只有一行 |
-| 緩毒術之後叫 `4Eh`、掛 `0Fh` | 只掛 `16h` | 中毒逐時那一套 remake 沒有（見〈#99：收尾〉）|
-| 靈魂鎚的鎚子給怪物施法者 | 只給隊員 | remake 的怪物物品串列不跑效果收尾（見〈#99：收尾〉）|
 
 ## 營地施法：同一支 `08BCh`，表換成 `0A88h`（2026-09-26，issue #100）
 
@@ -1448,7 +1446,7 @@ Use 走同一支。測試全部從 `Update()` 送鍵（`field_cast_effects_test.
 節點 `+4` 是 1（`19B5h`），到期時 entry 2 以模式 1 叫同一支，把鎚子收回。remake：
 `gamepack.SpiritualHammerItem`／`IsSpiritualHammer`、`grantSpiritualHammer`（名字照 overlay-25
 entry 1 用名稱字詞重組）、到期在 `expiredEffectTeardown` 摘掉，戰場上再重算那一位的武器數值
-（`partyEffectTeardown`）。怪物施法者沒有給（上表）。測試 `TestSpiritualHammerComesAndGoesWithItsNode`。
+（`partyEffectTeardown`）。怪物施法者一樣給、到期收回（spec 153〈怪物側〉）。測試 `TestSpiritualHammerComesAndGoesWithItsNode`。
 
 ### 致病（`22h`）到期之後：`2Bh`／`2Ch`
 
@@ -1464,26 +1462,14 @@ entry 1 用名稱字詞重組）、到期在 `expiredEffectTeardown` 摘掉，�
 `677Dh` 只在治療那幾條路摘節點的前後立起（解病術 `2265h`／`22F4h`、overlay-04、緩毒的 `16h`
 常式），所以自然到期時一定重掛——一個會自己續命的計時器，直到被治好。remake 的治療摘節點時不跑
 收尾，等同 `677Dh` 立著。remake：`gamepack.DiseaseTeardownOf`；地圖 `advancePartyEffects` 與戰場
-`partyEffectTeardown` 都接（戰場扣的那 1 點照 entry 19 走受傷打斷）。怪物身上的 `22h` 到期不跑
-（remake 的怪物效果收尾只有雲團）。測試 `TestCauseDiseaseKeepsWeakeningAfterItExpires`。
+`partyEffectTeardown` 都接（戰場扣的那 1 點照 entry 19 走受傷打斷）。怪物身上一樣跑
+（spec 153〈怪物側〉）。測試 `TestCauseDiseaseKeepsWeakeningAfterItExpires`。
 
-### 緩毒術之後的 `4Eh`／`0Fh`：卡住
+### 緩毒術之後的 `4Eh`／`0Fh`
 
-讀到的（exact）：
-
-- `0Fh`（entry 17 `05F7h`）：`0021h(記錄, 0Fh, 節點 +3, 0Ah)` 重掛；回 1 而且生命 `+11Bh` 大於 1 →
-  `6777h = 0`、entry 19 打 1 點；不在戰鬥（`4954h != 5`）就重畫。與 `2Ch` 同形。
-- `4Eh`（entry 71 `19F5h`）：overlay-24 entry 22 `1869h(記錄, +11Bh)` 回 0 才 `0021h(記錄, 4Eh, 節點 +3, 1)`
-  重掛。entry 22 先問 overlay-38（`013Dh:0089h`，以那一格的座標與 1）有沒有位置，有才把狀態
-  `+10Ch` 寫 0、`+10Dh` 寫 1、生命寫成參數、戰鬥中重畫、印訊息（`1848h`／`185Ch` 依 `+10Eh` 選一句），
-  回 1——也就是「中毒倒下的人，時候到了能站就站起來」。
-- `16h`（entry 23 `078Bh`，緩毒節點到期）：身上還有 `37h` → `005Ah(記錄, 6, "dies from poison")`
-  把狀態 `+10Ch` 寫 6（`7／6／8` 已經是就不動）；然後 `677Dh = 1`、摘掉 `0Fh`、`677Dh = 0`。
-
-卡點：這一套牽涉中毒致死的狀態轉換（`+10Ch` 6）、倒地者由 entry 22 依盤面空位復起、`37h` 本身
-的來源與持續，remake 都還沒有（中毒 `37h` 只當成緩毒術的前提）。需要先有一份「中毒」的規格：
-`37h` 由誰掛、何時致死、`4Eh`／`0Fh`／`16h` 三支與 overlay-38 的位置查詢；接上之前 remake 維持
-只掛 `16h`（上表）。
+三支處理常式（`0Fh` `05F7h`、`4Eh` `19F5h`、`16h` `078Bh`）、overlay-24 entry 22 `1869h` 與它問的
+overlay-32 entry 21 `1091h`，以及 `37h` 從哪裡來（overlay-12 `1553h`：豁免失敗就當場死亡）都在
+spec 153；remake 已照那一份接上。
 
 ## 模式 8：射線（`2919h`，2026-09-26，issue #78）
 

@@ -125,11 +125,11 @@ func TestMirrorImageAbsorbsOnlySingleTargetSpells(t *testing.T) {
 func TestEnfeeblementTakesAQuarter(t *testing.T) {
 	weak := EffectList{}.Append(NewEffectNode(EnfeeblementEffectCode, 3, 3, false))
 	for damage, want := range map[int]int{0: 0, 3: 3, 4: 3, 12: 9, 15: 12} {
-		if got := MeleeDamageAfterAttackerEffects(weak, damage); got != want {
+		if got := MeleeDamageAfterAttackerEffects(weak, damage, 0); got != want {
 			t.Errorf("enfeebled %d → %d, want %d", damage, got, want)
 		}
 	}
-	if got := MeleeDamageAfterAttackerEffects(nil, 12); got != 12 {
+	if got := MeleeDamageAfterAttackerEffects(nil, 12, 0); got != 12 {
 		t.Errorf("plain 12 → %d", got)
 	}
 }

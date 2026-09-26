@@ -51,12 +51,17 @@ func (a *app) diseaseTeardown(member *poolsave.Character, node gamepack.EffectNo
 // partyEffectTeardown 是戰場上隊員的節點到期時那一下（tickEffects → effectTeardown）：先跑與地圖
 // 共用的 expiredEffectTeardown，再補戰場才有的兩件事——靈魂鎚收走之後重算戰鬥數值（`07F6h` 的
 // `0916h`），與致病那一串的重掛、扣血（entry 19 打 1 點，受傷打斷照走）。
+//
+// 中毒那一串（`0Fh`／`16h`／`4Eh`）、致病那一串與靈魂鎚的常式都不看 `+10Eh`，怪物身上一樣跑
+// （poisonTeardown、foeEffectTeardown，spec 153）。
 func (a *app) partyEffectTeardown(state *tacticalState, index int, node gamepack.EffectNode) {
+	a.poisonTeardown(state, index, node)
 	if index < 0 || index >= len(state.PartySlot) {
 		return
 	}
 	party := state.PartySlot[index]
 	if party < 0 || party >= len(a.state.Party) {
+		a.foeEffectTeardown(state, index, node)
 		return
 	}
 	a.expiredEffectTeardown(party, node, state.Effects[index])
@@ -70,3 +75,49 @@ func (a *app) partyEffectTeardown(state *tacticalState, index int, node gamepack
 		a.woundCombatant(state, uint8(index), before-state.HitPoints[index])
 	}
 }
+
+// foeEffectTeardown 是怪物身上的節點到期：靈魂鎚（`07F6h` 模式 1 摘鎚子、`0916h` 重算）與致病那一串
+// （`0BE3h`／`10EDh`／`1177h`）。三支都只讀寫傳進來的記錄，沒有 `+10Eh` 的判斷（spec 153，exact）。
+func (a *app) foeEffectTeardown(state *tacticalState, index int, node gamepack.EffectNode) {
+	if !node.NeedsTeardown() || index < 0 || index >= len(state.Effects) {
+		return
+	}
+	if node.Code == gamepack.SpiritualHammerEffectCode {
+		items, slot := a.foeItemBearer(state, uint8(index))
+		kept := append([]poolsave.Item(nil), items...)
+		if removeSpiritualHammerFrom(&kept) {
+			_ = a.storeCombatItems(state, index, slot, kept)
+		}
+		return
+	}
+	if !gamepack.IsDiseaseEffect(node.Code) || index >= len(state.HitPoints) {
+		return
+	}
+	strength := a.foeStrength(state, index)
+	before := state.HitPoints[index]
+	result := gamepack.DiseaseTeardownOf(node, state.Effects[index], strength, before)
+	state.Effects[index] = result.Effects
+	if state.FoeStrength == nil {
+		state.FoeStrength = map[int]uint8{}
+	}
+	state.FoeStrength[index] = result.Strength
+	state.HitPoints[index] = result.HitPoints
+	a.woundCombatant(state, uint8(index), before-result.HitPoints)
+	if result.Weakened {
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgEffectWeakened), a.combatantName(state, uint8(index))))
+	}
+}
+
+// foeStrength 是怪物記錄的 `+10h`：`2Bh` 減過就用減過的值，否則讀開打時的記錄。
+func (a *app) foeStrength(state *tacticalState, index int) uint8 {
+	if value, ok := state.FoeStrength[index]; ok {
+		return value
+	}
+	if monster, ok := a.stagedMonsterFor(index, state.Friendly); ok {
+		return monster.Record.Raw[gamepack.AbilityStrength+recordAbilityOffset]
+	}
+	return 0
+}
+
+// recordAbilityOffset 是記錄裡能力值的起點（`+10h` 力量……`+15h` 魅力，spec 112〈群組 12／6／4／5〉）。
+const recordAbilityOffset = 0x10

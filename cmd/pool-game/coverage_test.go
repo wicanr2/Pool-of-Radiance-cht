@@ -2230,7 +2230,13 @@ func TestDirectedExplorationReachesMaps(t *testing.T) {
 	// #89 讓牧師的祈禱照原版作用之後，城區神殿那一場從 52 回合拖到 87 回合，
 	// 同一個種子走到的地圖從 5 張掉到 2 張——退步的是量尺，不是移動或轉場。
 	// 所以預算給到戰鬥變長也走得完，斷言的下限不動。
-	for pass := 0; pass < 8; pass++ {
+	//
+	// 趟數從 8 加到 16（#106）：中毒照原版當場死亡之後（spec 153），第一趟在索寇要塞被巨蠍
+	// 咬死一人（鎖 HP 再扶起來），戰鬥的回合與亂數從那裡分岔，跨趟共用的換圖與出口計數跟著變，
+	// 第 2..12 趟都先進了索寇要塞。把 `poisonSpecialAttack` 關掉重跑，前四趟與改動前逐步數一致、
+	// 八趟同樣走到 5 張圖（後幾趟差一兩步，是同一輪的群組 12／6 規則）——掉到 2 張圖只來自中毒。
+	// 16 趟走到的仍是同樣 5 張圖、6 個 block。
+	for pass := 0; pass < 16; pass++ {
 		moved, ok := exploreWorld(t, zipPath, int64(7+pass), pass%4, 0, 60000,
 			avoid, visited, transitionUses, menuTurn, exitUses, visited, maps, blocks,
 			&hardFailures)

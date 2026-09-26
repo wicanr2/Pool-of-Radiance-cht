@@ -28,11 +28,22 @@ func init() {
 }
 
 // grantSpiritualHammer 是 `07F6h` 的模式 0：身上沒有這把、不到 16 件就接一把在物品串列尾端
-// （overlay-25 entry 18）。隊員才有 remake 的物品串列；怪物那一側見 spec 098〈#99：收尾〉。
-// 鎚子沒有裝備上，`0916h` 的重算不會改任何數值。
+// （overlay-25 entry 18）。這一支只讀寫傳進來的記錄 `+0C8h`／`+0C7h`，沒有 `+10Eh` 的判斷
+// （spec 153，exact），所以怪物施法者一樣拿到——怪物的物品串列是 FoeItems（spec 142），
+// `0916h` 的重算走 storeCombatItems。鎚子沒有裝備上，重算不會改任何數值。
 func (a *app) grantSpiritualHammer(state *tacticalState, cell uint8) {
 	member := a.partyMemberAt(state, cell)
-	if member == nil || !a.giveSpiritualHammer(member) {
+	if member == nil {
+		items, slot := a.foeItemBearer(state, cell)
+		if slot >= 0 || hasSpiritualHammer(items) || len(items) >= gamepack.SpiritualHammerItemLimit {
+			return
+		}
+		items = append(append([]poolsave.Item(nil), items...), a.namedItem(gamepack.SpiritualHammerItem()))
+		_ = a.storeCombatItems(state, int(cell), slot, items)
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastGainsItem), a.combatantName(state, cell)))
+		return
+	}
+	if !a.giveSpiritualHammer(member) {
 		return
 	}
 	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastGainsItem), strings.TrimSpace(member.Name)))
@@ -53,9 +64,14 @@ func (a *app) giveSpiritualHammer(member *poolsave.Character) bool {
 // removeSpiritualHammer 是 `07F6h` 的模式 1（節點到期時 entry 2 叫的收尾）：`0849h` 找到就用
 // overlay-25 entry 17 摘掉。回傳有沒有摘到。
 func removeSpiritualHammer(member *poolsave.Character) bool {
-	for index, item := range member.Inventory {
+	return removeSpiritualHammerFrom(&member.Inventory)
+}
+
+// removeSpiritualHammerFrom 是同一件事落在任意一條物品串列上（怪物的 FoeItems 也走它）。
+func removeSpiritualHammerFrom(items *[]poolsave.Item) bool {
+	for index, item := range *items {
 		if gamepack.IsSpiritualHammer(item.Raw) {
-			member.Inventory = append(member.Inventory[:index:index], member.Inventory[index+1:]...)
+			*items = append((*items)[:index:index], (*items)[index+1:]...)
 			return true
 		}
 	}

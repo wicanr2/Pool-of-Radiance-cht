@@ -92,6 +92,10 @@ func (a *app) castEffectOnly(state *tacticalState, caster spellCasting, option c
 		// 靈魂鎚 `19D1h`：`08BCh` 之後以模式 0 對表上第一格叫 `17h` 的常式（spiritual_hammer.go）。
 		a.grantSpiritualHammer(state, victims[0])
 	}
+	if option.ID == gamepack.SpellIDSlowPoison {
+		// 緩毒術 `18BBh..18E5h`：`4Eh` 扶起來、掛 `0Fh`（poison.go，spec 153）。
+		a.slowPoisonAftermath(state, victims[0])
+	}
 }
 
 // attachSpellEffect 是 entry 20 的 `16B8h..1716h`，節點 `+3` 原樣存等級覆寫推進來的整個
