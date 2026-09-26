@@ -315,10 +315,17 @@ func TestWinningTheRealSlumsCombatResumesTheECLScript(t *testing.T) {
 		t.Fatalf("the prompt already advanced the ECL PC to 0x%04X", got)
 	}
 
-	// 答 N 結束戰鬥，戰後腳本才續跑。
+	// 答 N 結束戰鬥；怪物身上的東西先進戰利品選單（spec 142），離開之後戰後腳本才續跑。
 	if err := press(application, ebiten.KeyN); err != nil {
 		t.Fatal(err)
 	}
+	if !application.treasureActive {
+		t.Fatal("the orcs' money did not open the treasure menu")
+	}
+	if got := uint16(0x9900 + session.Machine().PC); got != 0x9E6D {
+		t.Fatalf("the post-combat script ran at 0x%04X before the loot was left", got)
+	}
+	leaveCombatLoot(t, application)
 	if application.tacticalPreview || application.tactical != nil {
 		t.Fatal("the tactical screen stayed open after the battle ended")
 	}

@@ -591,7 +591,7 @@ func TestFoeTurnUsesTheWeaponRangeNotJustAdjacency(t *testing.T) {
 }
 
 // 沒填、填 0 或索引越界都當成相鄰一格——原版把型別表 `+0Ch` 的 0 與 FFh
-// 都當 1，而怪物那一側 remake 還沒有物品鏈可讀。
+// 都當 1，而怪物那一側 remake 還沒從物品串列重算武器（spec 142）。
 func TestAttackRangeOfFallsBackToAdjacent(t *testing.T) {
 	state := newFoeTurnState(11, 10, 10, 10, 6)
 	if got := state.attackRangeOf(2); got != 1 {

@@ -23,6 +23,12 @@
 回報成功後才移除節點。因此 remake 在解出該 helper 前不得先刪 loot、也不得假定任何
 角色都能無條件取得物品。
 
+## 打過怪之後的串列從哪裡來
+
+`14CAh` 先呼叫的 `04ADh` 在有隊員站著時叫 entry 2（`0000h`）：沒逃掉的敵方身上的七種錢
+加進 `DS:6752h`，物品依 `+3Ah` 與 `Roll(1, 10)` 挑過之後插在 `DS:676Eh` 串列頭。
+細節、位址與 remake 的對應在 spec 142。
+
 ## 原版版面（dosgolem 實測，2026-09-18）
 
 收據 [`docs/audit/dos-treasure-screens.json`](../audit/dos-treasure-screens.json)（六張畫面的

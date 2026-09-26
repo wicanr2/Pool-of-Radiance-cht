@@ -956,7 +956,9 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 					t.Logf("slums count 4ABB=%02X at (%d,%d) terrain %d 4A80=%02X text=%q", slumsCount,
 						a.spawn.X, a.spawn.Y, cell.Terrain&0x7F, a.eventMachine.Memory[0x4A80], firstLine(a.eventText))
 				}
-				return a.eventMachine != nil && (a.eventMachine.Memory[0x4ABB] == 0xFE || hurt(a))
+				// 打完之後怪物的戰利品選單（spec 142）先交給探索器照常處理。
+				return a.eventMachine != nil && !a.treasureActive &&
+					(a.eventMachine.Memory[0x4ABB] == 0xFE || hurt(a))
 			}, false)
 		if !reachable {
 			t.Fatal("existing application was rejected while clearing the slums")
@@ -1232,7 +1234,7 @@ func runMainlineProbe(t *testing.T, houseRule bool, seed int64) {
 					lastStatus = a.tactical.Status
 					t.Logf("  r%d m%d %s / %s", a.tactical.Round, a.tactical.Mover, a.tactical.Status, a.tactical.FoeLog)
 				}
-				return a.eventMachine != nil &&
+				return a.eventMachine != nil && !a.treasureActive &&
 					(a.eventMachine.Memory[0x4AA7] == 0xFF || readyToHandIn(a) ||
 						(hurt(a) && (!pressOn || partyDown(a) != "")))
 			}, false)

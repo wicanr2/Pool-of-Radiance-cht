@@ -403,6 +403,9 @@ type tacticalState struct {
 	// ItemsOf 回傳某一格的人身上物品的原始記錄（否決代碼 `7Eh` 要讀，#65）。
 	// 隊員從隊伍取；怪物與測試盤面沒有就是 nil。
 	ItemsOf func(index int) [][]byte
+	// FoeItems 是怪物那幾格的物品串列（記錄 `+C8h`，MONnITM.DAX，spec 142）。
+	// 每一隻各一份：`0Bh LOAD MONSTER` 的第二隻起逐件複製（monster_loot.go）。
+	FoeItems      map[int][]poolsave.Item
 	Budgets       []uint8
 	States        []uint8
 	DyingCounters []uint8
@@ -421,10 +424,10 @@ type tacticalState struct {
 	// `+0Ch` 再減一，而 overlay-09 entry 5 的 `0C3Eh` 用同一個值當「搆不搆
 	// 得到」的預算。
 	//
-	// **怪物一律是 1。** 原版怪物的射程也走 `+0CCh`，但 remake 的怪物只載
-	// 285-byte 記錄、沒有物品鏈（物品在另外的 `.itm`），`+0CCh` 讀不到東西；
-	// 原版在 `+0CCh` 為 0 時算出來也是 1，所以近戰怪物兩邊一致，**拿武器的
-	// 怪物還不對**。要修得先把怪物的物品鏈載進來。
+	// **怪物一律是 1。** 原版怪物的射程也走 `+0CCh`（開打時 overlay-25 entry 7
+	// 依物品串列重算）。remake 已經載了怪物的物品串列（`FoeItems`，spec 142），
+	// 但還沒替怪物跑那一支重算，`+0CCh` 仍是空的；原版在 `+0CCh` 為 0 時算出來
+	// 也是 1，所以近戰怪物兩邊一致，**拿武器的怪物還不對**。
 	//
 	// 被魅惑的隊員走的是敵方 AI（`AIDriven`）卻帶著自己的裝備，所以這一欄
 	// 按格記而不是按陣營記。
@@ -816,11 +819,16 @@ func (a *app) enterTacticalPreview() error {
 			return nil
 		}
 		slot := state.PartySlot[index]
-		if slot < 0 || slot >= len(a.state.Party) {
+		if slot >= len(a.state.Party) {
 			return nil
 		}
-		items := make([][]byte, 0, len(a.state.Party[slot].Inventory))
-		for _, item := range a.state.Party[slot].Inventory {
+		// 怪物讀自己那一份（spec 142）；原版兩邊都是記錄 `+C8h` 那一條。
+		inventory := state.FoeItems[index]
+		if slot >= 0 {
+			inventory = a.state.Party[slot].Inventory
+		}
+		items := make([][]byte, 0, len(inventory))
+		for _, item := range inventory {
 			items = append(items, item.Raw)
 		}
 		return items
@@ -921,8 +929,9 @@ func (a *app) enterTacticalPreview() error {
 			}
 			continue
 		}
-		if monster, ok := a.stagedMonsterFor(index, friendly); ok {
+		if monster, copyIndex, ok := a.stagedMonsterCopy(index, friendly); ok {
 			record := monster.Record
+			a.rememberFoeItems(state, index, monster, copyIndex)
 			state.rememberSpellbook(index, record)
 			state.rememberUndeadColumn(index, record)
 			state.rememberMorale(index, record.Raw[gamepack.MoraleOffset], record.Raw[gamepack.IntelligenceOffset])
@@ -1947,6 +1956,12 @@ func (a *app) tacticalInput() error {
 // stagedMonsterFor 找出敵方第 index 筆對應的原版怪物記錄與效果串列。staged
 // 的每一筆帶著數量，所以要依序展開才對得回去。
 func (a *app) stagedMonsterFor(index int, friendly []bool) (stagedMonster, bool) {
+	monster, _, ok := a.stagedMonsterCopy(index, friendly)
+	return monster, ok
+}
+
+// stagedMonsterCopy 同上，另外回傳這一格是同一條 `LOAD MONSTER` 的第幾隻（從 0 起）。
+func (a *app) stagedMonsterCopy(index int, friendly []bool) (stagedMonster, int, bool) {
 	position := 0
 	for slot := 1; slot < index; slot++ {
 		if !friendly[slot] {
@@ -1955,11 +1970,11 @@ func (a *app) stagedMonsterFor(index int, friendly []bool) (stagedMonster, bool)
 	}
 	for _, monster := range a.combatMonsters {
 		if position < int(monster.Spawn.Count) {
-			return monster, true
+			return monster, position, true
 		}
 		position -= int(monster.Spawn.Count)
 	}
-	return stagedMonster{}, false
+	return stagedMonster{}, 0, false
 }
 
 // resolveTacticalAttack 以既有的命中與傷害規則（spec 050／051）解一次攻擊。
@@ -2152,6 +2167,11 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	}
 	// 逃掉的敵方（`+10Ch == 3`）戰後不算經驗值（overlay-05 `0079h`，foe_flee.go）。
 	fled := a.fledFoeRecords(a.tactical)
+	// 身上的錢與物品在同一個迴圈收（monster_loot.go）；盤面丟掉之前先收好。
+	var loot monsterLoot
+	if staged && outcome == combat.CombatVictory {
+		loot = a.collectMonsterLoot(a.tactical)
+	}
 	a.tacticalPreview, a.tactical = false, nil
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
@@ -2188,6 +2208,10 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	a.combatActive, a.combatMonsters = false, nil
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.eventText, a.eventLabel = "", ""
+	if a.openMonsterLoot(loot) {
+		// 戰利品選單離開時（exitTreasure）才續跑戰後腳本。
+		return nil
+	}
 	result, err := a.eventSession.RunUntilEvent(4096, nil, true)
 	if err != nil {
 		return fmt.Errorf("continue after Pool combat: %w", err)

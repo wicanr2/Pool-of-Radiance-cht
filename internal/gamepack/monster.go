@@ -71,8 +71,8 @@ func (record MonsterRecord) THAC0() int              { return 60 - int(record.Ra
 // 樣板的 40 變成 `+2Dh` 的 41（`docs/audit/dosgolem-monster-thac0-runtime.json`）。
 // `+2Dh` 本身開打時不重算（獸人的 41 不是一級戰士表的 40），照樣板。
 //
-// remake 沒有怪物的物品鏈，一律走「沒有武器」那一條：`+0AAh` 開著才加力量修正
-// （spec 063 的同一個開關）。
+// 怪物的物品串列已經載了（spec 142），但 remake 還沒替怪物跑 entry 7 的武器那一支，
+// 一律走「沒有武器」那一條：`+0AAh` 開著才加力量修正（spec 063 的同一個開關）。
 func (record MonsterRecord) CombatThac0Internal() (uint8, error) {
 	internal := int(record.Raw[BaseThac0Offset])
 	if record.Raw[AbilityBonusFlagOffset] != 0 {

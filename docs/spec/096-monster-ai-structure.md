@@ -299,7 +299,7 @@ ZIP 的 `poolrad/items`，`+2Eh` 就是索引），所以這一支是**怪物用
 | `00E2h:003Eh(物品)` 非零 → 跳過 | 那是 **overlay-22 entry 6（`31F6h`）**：物品型別表 `DS:54E0h + 型別 × 16` 的 `+0`（類別，spec 063）落在 `0Bh..0Dh` 時回 1。所以怪物**不動**那一類 |
 | `物品 +34h == 0` → 跳過 | `+34h` 非零代表**已裝備**（spec 065／067）。沒穿戴的不算 |
 | `物品 +3Dh <= 0` → 跳過 | 沒有可用的編號 |
-| `物品 +3Eh >= 80h` → 跳過 | `+3Eh` 的語意還沒對 |
+| `物品 +3Eh >= 80h` → 跳過 | `+3Eh >= 80h` 是物品穿戴時掛上的效果碼（overlay-19 `14D4h` 比 `7Fh`，穿上／卸下以它呼叫 overlay-24 entry 1，spec 142）。那一類的 `+3Dh` 不是拿來放的法術 |
 
 `[4933h]+1CAh` 那個閘門**在這一版永遠不成立**：全 36 顆 overlay 加
 `START.EXE` 掃過所有 disp16 形狀，寫它的只有 overlay-07 `025Bh`（寫 0），
@@ -352,13 +352,13 @@ overlay-19 entry 8（`1A86h`，`retf 8`：物品、結果）用的是 `DS:5CF0h`
 ```
 
 所以戰鬥中用了就記帳，**找不找得到目標都一樣**（entry 34 把結果蓋成 1）。
-施法者等級是行動者自己的（`0C14h` 從 `DS:5CF0h` 取人，與記憶施法同一支，strong inference：
-等級那一段沒有逐條追進 `0C14h`）。
+施法者等級不是行動者自己的：`1BBDh` 立著 `DS:6CB3h`，overlay-25 `26F8h` 把牧師／法師法術
+當 6 級、物品效果 12 級（spec 098、spec 142），誰拿著都一樣。
 
 remake：`internal/gamepack/ai_items.go`（`AIItemSpell`、`ChooseAIItem`、`SpendAIItemUse`）、
 `cmd/pool-game/foe_items.go`（`foeUseItemPhase` 接在 `foeCastPhase` 開頭擲次數骰那一格）。
 效果交給 `castSpell`。測試 `cmd/pool-game/foe_items_test.go` 從 `Update()` 送鍵。
-怪物的物品鏈 remake 還沒載，所以目前只有隊員（Q、魅惑、NPC）會用到。
+怪物的物品串列從 `MONnITM.DAX` 載（`tacticalState.FoeItems`，spec 142），怪物與隊員走同一支。
 
 ## entry 4（`053Eh`）是 AI 挑法術（2026-09-25，issue #64）
 
@@ -500,7 +500,6 @@ overlay-13 entry 18 `20AEh`）挑目標。挑不到時 AI 不問，印 "Spell Ab
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| entry 3 擲完次數骰會掃物品鏈 | 隊員照掃（`foe_items.go`）；怪物的串列是空的 | 怪物的物品鏈還沒載（#76） |
 | 處理常式沒讀的也會放 | `SpellCaster.Implemented` 為否的當作 `02EAh` 不成立 | 施不出來；清單長度（骰面）不變 |
 | 第 7 位立著的格子拿去查表（讀到表外） | 當作不成立 | 表外那一格讀出什麼沒有追 |
 | `1BF0h` 的倒地那一支 | 不做 | `DS:6634h` 那張表 remake 沒有 |

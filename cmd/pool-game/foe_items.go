@@ -32,8 +32,9 @@ import (
 // entry 34（`266Dh`）永遠回 1，所以戰鬥中用掉就記帳，**找不找得到目標都一樣**。
 // 效果不另寫：交給 cast.go 的 castSpell，與施法同一支。
 //
-// 怪物的物品鏈 remake 還沒載（tacticalState.AttackRange 那則註解），所以只有隊員
-// （Q）UICK 過的、被魅惑的、NPC）會走到這裡；怪物照原版擲完次數骰，串列是空的就走。
+// 隊員（Q）UICK 過的、被魅惑的、NPC）用自己身上的；怪物用 MONnITM.DAX 載進來的那一份
+// （tacticalState.FoeItems，spec 142）。施法者等級照 `DS:6CB3h` 那一條：物品放的牧師／
+// 法師法術一律 6 級、物品效果 12 級（overlay-25 `26F8h`，spec 098），與誰拿著無關。
 //
 // **不看 Magic On／Off**：`DS:6D23h` 只在 entry 4 的 `05C0h` 讀（spec 139），entry 3
 // 沒有這道閘，所以交給電腦的隊員預設就會用物品。
@@ -62,15 +63,15 @@ func (a *app) foeUseItemPhase(state *tacticalState, mover uint8, mode int) (bool
 	if opposing == 0 {
 		return false, nil
 	}
-	member, slot := a.foeItemBearer(state, mover)
-	if member == nil || len(member.Inventory) == 0 {
+	items, slot := a.foeItemBearer(state, mover)
+	if len(items) == 0 {
 		return false, nil
 	}
 	caster, ok := a.foeSpellcasterFor(state, mover)
 	if !ok {
 		return false, nil
 	}
-	candidates := a.foeItemCandidates(member.Inventory)
+	candidates := a.foeItemCandidates(items)
 	var failure error
 	chosen, found := gamepack.ChooseAIItem(candidates, rounds, func(spell, threshold uint8) bool {
 		if failure != nil {
@@ -89,17 +90,18 @@ func (a *app) foeUseItemPhase(state *tacticalState, mover uint8, mode int) (bool
 	return true, a.foeUseItem(state, mover, slot, chosen, caster)
 }
 
-// foeItemBearer 是身上物品串列（記錄 `+C8h`）的主人。只有隊員有。
-func (a *app) foeItemBearer(state *tacticalState, mover uint8) (*poolsave.Character, int) {
+// foeItemBearer 回傳身上的物品串列（記錄 `+C8h`）與隊伍索引；怪物的索引是 −1。
+func (a *app) foeItemBearer(state *tacticalState, mover uint8) ([]poolsave.Item, int) {
 	index := int(mover)
-	if index >= len(state.PartySlot) {
-		return nil, -1
+	if index < len(state.PartySlot) {
+		if slot := state.PartySlot[index]; slot >= 0 {
+			if slot >= len(a.state.Party) {
+				return nil, -1
+			}
+			return a.state.Party[slot].Inventory, slot
+		}
 	}
-	slot := state.PartySlot[index]
-	if slot < 0 || slot >= len(a.state.Party) {
-		return nil, -1
-	}
-	return &a.state.Party[slot], slot
+	return state.FoeItems[index], -1
 }
 
 // foeItemCandidates 把串列逐件過 AIItemSpell。卷軸由物品型別表的類別判（overlay-22
@@ -129,10 +131,17 @@ func (a *app) foeItemCandidates(items []poolsave.Item) []gamepack.AIItemCandidat
 // foeUseItem 是 overlay-19 entry 8 的 AI 那一側：印一句、交給施法那一支、記帳。
 func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 	chosen gamepack.AIItemCandidate, caster foeSpellcaster) error {
-	member := &a.state.Party[slot]
-	name := strings.TrimSpace(member.Inventory[chosen.Index].Name)
+	items, _ := a.foeItemBearer(state, mover)
+	name := strings.TrimSpace(items[chosen.Index].Name)
 	state.FoeLog = state.say(msgFoeUsesItem, mover, name)
-	spend := a.itemSpender(slot, chosen.Index)
+	var member *poolsave.Character
+	var spend func()
+	if slot >= 0 {
+		member = &a.state.Party[slot]
+		spend = a.itemSpender(slot, chosen.Index)
+	} else {
+		spend = state.foeItemSpender(int(mover), chosen.Index)
+	}
 	spell := chosen.Spell
 	label := a.spellLabel(spell)
 	targets, found, err := a.foeSpellTargets(state, mover, spell, caster)
@@ -155,6 +164,24 @@ func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 		consume: spend,
 	}
 	return a.castSpell(state, casting, castOption{Slot: -1, ID: spell, Label: label}, targets)
+}
+
+// foeItemSpender 是怪物那一側的記帳（同 spendFoeItem），只記一次。
+func (state *tacticalState) foeItemSpender(index, item int) func() {
+	spent := false
+	return func() {
+		if spent {
+			return
+		}
+		spent = true
+		items := state.FoeItems[index]
+		if item < 0 || item >= len(items) {
+			return
+		}
+		if gamepack.SpendAIItemUse(items[item].Raw) {
+			state.FoeItems[index] = append(items[:item:item], items[item+1:]...)
+		}
+	}
 }
 
 // spendFoeItem 是 gamepack.SpendAIItemUse 加上「用完就拿掉」（overlay-25 entry 17

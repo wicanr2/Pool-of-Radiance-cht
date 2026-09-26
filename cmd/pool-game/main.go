@@ -76,6 +76,9 @@ type stagedMonster struct {
 	Record gamepack.MonsterRecord
 
 	Effects gamepack.EffectList
+	// Items 是 MONnITM.DAX 同一個 block 的物品串列（記錄 `+C8h`，spec 142），
+	// 一件 63 bytes，順序照檔案。
+	Items [][]byte
 }
 
 const (
@@ -354,6 +357,7 @@ type app struct {
 	loadMonster      func(archive, block uint8) (gamepack.MonsterRecord, error)
 
 	loadMonsterEffects func(archive, block uint8) (gamepack.EffectList, error)
+	loadMonsterItems   func(archive, block uint8) ([][]byte, error)
 	combatActive     bool
 	combatMonsters   []stagedMonster
 	// 結局過場（spec 108）：`38h PROGRAM` 的值 8 進來，一頁一頁按 ENTER。
@@ -592,6 +596,9 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.loadMonsterEffects = func(archive, block uint8) (gamepack.EffectList, error) {
 		return gamepack.ReadDOSMonsterEffects(zipPath, archive, block)
+	}
+	application.loadMonsterItems = func(archive, block uint8) ([][]byte, error) {
+		return gamepack.ReadDOSMonsterItems(zipPath, archive, block)
 	}
 	application.loadPortrait = func(head, body uint8) (*ebiten.Image, error) {
 		parts, err := assets.ReadCreationPortraitParts(zipPath, head, body)
@@ -2030,7 +2037,16 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 					archive, spawn.MonsterID, err)
 			}
 		}
-		staged = append(staged, stagedMonster{Spawn: spawn, Record: record, Effects: effects})
+		// 物品與效果同一支載入常式讀（overlay-17 entry 8 `0E90h`，spec 142）。
+		var items [][]byte
+		if a.loadMonsterItems != nil {
+			items, err = a.loadMonsterItems(archive, spawn.MonsterID)
+			if err != nil {
+				return fmt.Errorf("load Pool monster items archive %d block %d: %w",
+					archive, spawn.MonsterID, err)
+			}
+		}
+		staged = append(staged, stagedMonster{Spawn: spawn, Record: record, Effects: effects, Items: items})
 		labels = append(labels, fmt.Sprintf("%s ×%d", a.monsterText.Translate(record.Name), spawn.Count))
 	}
 	if len(staged) == 0 {

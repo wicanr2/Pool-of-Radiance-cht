@@ -590,6 +590,10 @@ func drainWildernessEvents(a *app) {
 		case a.combatActive:
 			press(a, ebiten.KeyEnter)
 			continue
+		case a.treasureActive:
+			// 打完之後怪物的錢與物品（spec 142）：照玩家的做法離開。
+			leaveTreasureMenu(a)
+			continue
 		}
 		if a.cellWaitingMenu && len(a.cellMenuOptions) > 1 &&
 			a.cellMenuCursor != len(a.cellMenuOptions)-1 {
@@ -645,6 +649,9 @@ func TestTheNorthEdgeOfBlockEighteenLeadsToBlockNine(t *testing.T) {
 		press(application, ebiten.KeyArrowUp)
 		for tick := 0; tick < 200 &&
 			(application.cellEventPending || application.cellWaitingMenu); tick++ {
+			if leaveTreasureMenu(application) { // 打完之後怪物的戰利品（spec 142）
+				continue
+			}
 			press(application, ebiten.KeyEnter)
 		}
 	}

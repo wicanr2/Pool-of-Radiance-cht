@@ -27,9 +27,10 @@ DRAFT（命中／傷害運算、initiative、攻擊次數、特殊攻擊與戰�
 
 ## 285-byte unified record（exact）
 
-overlay-17 `0ACDh..0E64h` 的 MON loader 在 `0C1Bh` push `011Dh`，接著呼叫
-`05BBh:1508h`，把 DAX block 的 285 bytes 完整複製到角色 record。載入後只清除
-數個 runtime linked-list pointer，另載入 63-byte ITM 與 9-byte SPC 節點；因此
+overlay-17 有兩支載入常式讀同一份 285-byte 記錄：`0ACDh..0E64h` 讀存檔的
+`.sav`／`.cha`（`0C1Bh` push `011Dh`、`05BBh:1508h` BlockRead），`0E90h`（entry 8）讀
+`MONnCHA.DAX`（`0F28h` Move 11Dh bytes）。兩支載入後都只清除數個 runtime linked-list
+pointer，另載入 63-byte ITM 與 9-byte SPC 節點（怪物那一支見 spec 142）；因此
 MON*CHA 與玩家 CHA 使用同一份 285-byte record layout。這只證明資料形狀與共用
 layout，不會讓尚未追到 consumer 的 offset 自動成為已知語意。
 

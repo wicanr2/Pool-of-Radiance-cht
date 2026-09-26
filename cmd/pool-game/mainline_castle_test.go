@@ -752,6 +752,9 @@ func (d *mainlineDriver) audienceHall() (sawTyranthraxus, sawEnding bool, pages 
 			}
 		case a.combatActive:
 			d.step(ebiten.KeyEnter)
+		case a.treasureActive:
+			// 打完之後怪物的戰利品（spec 142）：留下，繼續往下走。
+			leaveTreasureMenu(a)
 		case a.cellWaitingMenu && len(a.cellMenuOptions) != 0:
 			pick := 0
 			for index, option := range a.cellMenuOptions {

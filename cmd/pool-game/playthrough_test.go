@@ -1151,6 +1151,8 @@ func slumsCommissionApp(t *testing.T, fights int) (*app, *eclvm.BlockSession, []
 		if err := press(application, ebiten.KeyN); err != nil {
 			t.Fatalf("第 %d 場收尾失敗：%v", fight, err)
 		}
+		// 怪物身上的錢與物品先進戰利品選單（spec 142），玩家按 Exit 才續跑戰後腳本。
+		leaveCombatLoot(t, application)
 		if application.combatActive {
 			t.Fatalf("第 %d 場打完之後遭遇還掛著", fight)
 		}
@@ -1646,6 +1648,8 @@ func winCombatAt(t *testing.T, archiveID uint8, blockID uint16, start uint16) (*
 	if err := press(application, ebiten.KeyN); err != nil {
 		t.Fatal(err)
 	}
+	// 怪物身上的錢與物品先進戰利品選單（spec 142），玩家按 Exit 才續跑戰後腳本。
+	leaveCombatLoot(t, application)
 	// 戰後腳本常常先印一段字才寫旗標，所以要把文字翻完——原版也是玩家
 	// 按過去才往下跑。
 	for guard := 0; guard < 24; guard++ {

@@ -50,6 +50,9 @@ func enterStojanowGate(t *testing.T) *app {
 		press(application, ebiten.KeyArrowUp)
 		for tick := 0; tick < 200 &&
 			(application.cellEventPending || application.cellWaitingMenu); tick++ {
+			if leaveTreasureMenu(application) { // 打完之後怪物的戰利品（spec 142）
+				continue
+			}
 			press(application, ebiten.KeyEnter)
 		}
 	}
@@ -158,6 +161,9 @@ func answerCellMenus(a *app, want ...string) {
 			// 只按 Enter 的話全隊都不出手，那一場永遠結束不了——用探索器
 			// 那個「自己人怎麼打」的駕駛（coverage_test.go）。
 			press(a, castlePilot.key(a))
+			continue
+		}
+		if leaveTreasureMenu(a) { // 打完之後怪物的戰利品（spec 142）
 			continue
 		}
 		if a.cellWaitingMenu && len(a.cellMenuOptions) != 0 {

@@ -584,6 +584,17 @@ func (d *mainlineDriver) visitClerk() {
 	if !d.walkAllowing("City Hall door (3,4)", func(x, y int) bool { return x == 3 && y == 4 }, street, false) {
 		d.fatalf("visitClerk: cannot reach (3,4)")
 	}
+	// 十四點之後市政廳鎖門（`ecl3/0 9920h`，spec 102）：玩家的做法與交件那一條相同，
+	// 門口答 NO、睡到早上再來。
+	if nightInTheCity(a.gameTime) {
+		if !d.sleepUntilHour(restMorningHour) {
+			d.fatalf("visitClerk: City Hall is locked at hour %d and the party cannot sleep until morning",
+				a.gameTime[gamepack.TimeDigitHour])
+		}
+		if !d.walkAllowing("City Hall door (3,4)", func(x, y int) bool { return x == 3 && y == 4 }, street, false) {
+			d.fatalf("visitClerk: cannot reach (3,4) after sleeping")
+		}
+	}
 	if block := d.stepOut("City Hall", 1); block != 8 {
 		d.fatalf("visitClerk: (3,4) east led to block %d, want 8", block)
 	}
