@@ -193,30 +193,6 @@
       "github_issue": 87
     },
     {
-      "id": "racial-effects-at-creation",
-      "layer": "feature",
-      "title": "remake 建角不掛種族效果",
-      "body": "overlay-16 依種族掛效果：矮人 5Ah 61h 1Ah 2Fh、侏儒 61h 12h 2Fh 30h、精靈 6Bh、半精靈 7Ch；remake 沒掛。",
-      "acceptance": "建角照原版掛、舊存檔補上，與原版 .CHA 對照的送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 88
-    },
-    {
-      "id": "effect-only-spells",
-      "layer": "feature",
-      "title": "只掛效果的法術在戰鬥裡沒有作用",
-      "body": "祈禱、隱形、閃現、致盲、降咒等落到 cast.go default 分支，沒掛效果。",
-      "acceptance": "逐支照原版掛效果並實際作用，送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 89
-    },
-    {
       "id": "hit-effect-tails",
       "layer": "verification",
       "title": "命中效果的尾巴：2Fh、21h 改 +111h、群組 4、0C4Dh、014Dh 順序",
@@ -241,30 +217,6 @@
       "github_issue": 91
     },
     {
-      "id": "parity-capture-flakiness",
-      "layer": "verification",
-      "title": "發行包對拍擷圖流程偶發卡住、法術兩張數字會跳",
-      "body": "v.1.1.19 第一次在神殿格卡住；spells／field-cast 兩次執行數字不同。",
-      "acceptance": "改成等畫面狀態，同一發行包連跑 5 次逐欄相同。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 92
-    },
-    {
-      "id": "monster-gear-recompute",
-      "layer": "feature",
-      "title": "怪物的武器與護甲沒有重算（overlay-25 entry 7）",
-      "body": "命中、傷害、AC、射程沒照身上的裝備。",
-      "acceptance": "entry 7 照原版套上，帶弓射程、帶甲 AC 的測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 93
-    },
-    {
       "id": "treasure-xp-and-npc-share",
       "layer": "feature",
       "title": "戰利品折算經驗值與 NPC 分錢",
@@ -287,6 +239,90 @@
         "note": "要人判"
       },
       "github_issue": 95
+    },
+    {
+      "id": "race-save-effects",
+      "layer": "feature",
+      "title": "效果群組 12 的種族碼 5Ah／61h 沒作用",
+      "body": "#88 已掛上種族效果，群組 12 框架由 #89 接上，5Ah／61h 還沒處理。",
+      "acceptance": "讀群組 12 對 5Ah／61h 的處理常式並接上，矮人與人類同骰豁免不同的測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 96
+    },
+    {
+      "id": "npc-combat-recompute",
+      "layer": "feature",
+      "title": "NPC 開打時沒跑 overlay-25 entry 7",
+      "body": "applyNPCCombatStats 沒走共用重算。",
+      "acceptance": "NPC 上戰場照 entry 7 重算，帶武器與盔甲的 NPC 對 spec 147 欄位。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 97
+    },
+    {
+      "id": "ammunition",
+      "layer": "feature",
+      "title": "彈藥消耗與沒有箭不能射",
+      "body": "overlay-13 射擊路徑未讀，兩側都沒有。",
+      "acceptance": "讀出彈藥檢查與扣除並接上，箭用完不能射、每射少一支的測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 98
+    },
+    {
+      "id": "effect-only-spell-tails",
+      "layer": "feature",
+      "title": "只掛效果的法術：掛上未作用的群組與收尾",
+      "body": "防護邪惡、抗寒抗火、鏡影、靈魂鎚、中毒逐時、17h／22h、豁免骰無號比較、碰觸傷害法術命中。",
+      "acceptance": "各條附位址接上並有送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 99
+    },
+    {
+      "id": "field-cast-effects",
+      "layer": "feature",
+      "title": "營地施法不掛效果",
+      "body": "field_cast.go 沒走 08BCh 的掛效果路徑。",
+      "acceptance": "確認原版路徑並接上，營地護盾進戰鬥擋魔法飛彈的測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 100
+    },
+    {
+      "id": "parity-field-cast-spell",
+      "layer": "verification",
+      "title": "對拍的 field-cast-spell 量不到",
+      "body": "城區休息被城衛隊打斷，記不成法術。",
+      "acceptance": "換不會被打斷的休息點，基準同狀態，連跑兩次都量到。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 101
+    },
+    {
+      "id": "spell-aborted-message",
+      "layer": "presentation",
+      "title": "施法中止訊息印名冊編號",
+      "body": "ui.castAborted 用 %d 印 mover；神殿牧師首回合大量中止。",
+      "acceptance": "照 0EE7h 原版格式印名字，確認中止條件與 0EC0h 一致。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 102
     }
   ]
 }
