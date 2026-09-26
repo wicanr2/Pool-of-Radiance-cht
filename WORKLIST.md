@@ -49,15 +49,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **AI 施法的原版骰流收據：dosgolem 走到有施法怪物的遭遇，逐擲對照。** 功能已接上（entry 4、23F9h、Magic On/Off，與玩家共用 castSpell；d7 d7 與原版零錯位）。缺一場有施法怪物的 dosgolem 收據，挑法術與挑目標的 Roll(1,n) 只有程式碼證據。
       **驗收**：dosgolem 收據含施法怪物的回合，remake 逐擲重現；spec 096 的自承拿掉。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
-- [ ] **NPC 開打時沒跑 overlay-25 entry 7。** applyNPCCombatStats 沒走共用重算。
-      **驗收**：NPC 上戰場照 entry 7 重算，帶武器與盔甲的 NPC 對 spec 147 欄位。
-      **討論**：[#97](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/97)
-- [ ] **彈藥消耗與沒有箭不能射。** overlay-13 射擊路徑未讀，兩側都沒有。
-      **驗收**：讀出彈藥檢查與扣除並接上，箭用完不能射、每射少一支的測試。
-      **討論**：[#98](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/98)
-- [ ] **營地施法不掛效果。** field_cast.go 沒走 08BCh 的掛效果路徑。
-      **驗收**：確認原版路徑並接上，營地護盾進戰鬥擋魔法飛彈的測試。
-      **討論**：[#100](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/100)
 - [ ] **戰後結算的尾巴：NPC 分錢頁、829Ah 路徑、分經驗值人數。** #94 的 spec 148 DRAFT 三條。
       **驗收**：三條照原版接上並有送鍵測試，分錢頁跑對拍。
       **討論**：[#103](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/103)
@@ -67,6 +58,15 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **中毒機制與效果群組剩餘碼。** 37h／4Eh／0Fh、29h、群組 12／6／4 其餘、怪物側收尾。
       **驗收**：各條附位址接上，送鍵測試加變異檢查。
       **討論**：[#106](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/106)
+- [ ] **ADD NPC 的尾巴：寫回記錄、MONnSPC、舊存檔物品欄、+6Bh、執行期收據。** #97 留下五條。
+      **驗收**：各條照原版接上並有測試，NPC 執行期收據對上。
+      **討論**：[#107](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/107)
+- [ ] **營地施法的尾巴：Lose it?、縮小術等、物品頁挑人、逐格訊息。** #100 留下的 spec 098 條目。
+      **驗收**：各條照原版接上並有送鍵測試，畫面改動跑對拍。
+      **討論**：[#108](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/108)
+- [ ] **射擊與 AI 換武器的尾巴。** #98 的 spec 151〈還沒接〉八條。
+      **驗收**：各條照原版接上並有測試。
+      **討論**：[#109](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/109)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -122,9 +122,9 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **逐人效果訊息與編號 57 is Speedy。** 原版逐人印 is Blessed／ages／is Cured；編號 57 的呼叫端未找到。
       **驗收**：逐人訊息照原版；編號 57 照原版或寫明走不到。
       **討論**：[#87](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/87)
-- [ ] **AI 戰鬥訊息印名冊編號、施法前少一句。** foeCasts 等用 %d；原版 0D23h 先印 Casts a Spell 與法名。
+- [ ] **戰鬥狀態列其餘訊息印名冊編號與 #104 留下的時機。** IS ASLEEP 等、Avoids it、瞄準提示、spellLabel 英文、顏色、顯示時機、玩家側 Casts a Spell。
       **驗收**：逐條照原版字串與印法，送鍵測試。
-      **討論**：[#104](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/104)
+      **討論**：[#110](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/110)
 
 <!-- worklist:end -->
 

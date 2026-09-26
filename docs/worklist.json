@@ -217,42 +217,6 @@
       "github_issue": 95
     },
     {
-      "id": "npc-combat-recompute",
-      "layer": "feature",
-      "title": "NPC 開打時沒跑 overlay-25 entry 7",
-      "body": "applyNPCCombatStats 沒走共用重算。",
-      "acceptance": "NPC 上戰場照 entry 7 重算，帶武器與盔甲的 NPC 對 spec 147 欄位。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 97
-    },
-    {
-      "id": "ammunition",
-      "layer": "feature",
-      "title": "彈藥消耗與沒有箭不能射",
-      "body": "overlay-13 射擊路徑未讀，兩側都沒有。",
-      "acceptance": "讀出彈藥檢查與扣除並接上，箭用完不能射、每射少一支的測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 98
-    },
-    {
-      "id": "field-cast-effects",
-      "layer": "feature",
-      "title": "營地施法不掛效果",
-      "body": "field_cast.go 沒走 08BCh 的掛效果路徑。",
-      "acceptance": "確認原版路徑並接上，營地護盾進戰鬥擋魔法飛彈的測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 100
-    },
-    {
       "id": "parity-field-cast-spell",
       "layer": "verification",
       "title": "對拍的 field-cast-spell 量不到",
@@ -277,18 +241,6 @@
       "github_issue": 103
     },
     {
-      "id": "foe-message-names",
-      "layer": "presentation",
-      "title": "AI 戰鬥訊息印名冊編號、施法前少一句",
-      "body": "foeCasts 等用 %d；原版 0D23h 先印 Casts a Spell 與法名。",
-      "acceptance": "逐條照原版字串與印法，送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 104
-    },
-    {
       "id": "item-page-tails",
       "layer": "feature",
       "title": "物品頁剩下的：Trade、84h、uses an item、+10Dh",
@@ -311,6 +263,54 @@
         "note": "要人判"
       },
       "github_issue": 106
+    },
+    {
+      "id": "addnpc-tails",
+      "layer": "feature",
+      "title": "ADD NPC 的尾巴：寫回記錄、MONnSPC、舊存檔物品欄、+6Bh、執行期收據",
+      "body": "#97 留下五條。",
+      "acceptance": "各條照原版接上並有測試，NPC 執行期收據對上。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 107
+    },
+    {
+      "id": "camp-cast-tails",
+      "layer": "feature",
+      "title": "營地施法的尾巴：Lose it?、縮小術等、物品頁挑人、逐格訊息",
+      "body": "#100 留下的 spec 098 條目。",
+      "acceptance": "各條照原版接上並有送鍵測試，畫面改動跑對拍。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 108
+    },
+    {
+      "id": "missile-tails",
+      "layer": "feature",
+      "title": "射擊與 AI 換武器的尾巴",
+      "body": "#98 的 spec 151〈還沒接〉八條。",
+      "acceptance": "各條照原版接上並有測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 109
+    },
+    {
+      "id": "combat-status-names",
+      "layer": "presentation",
+      "title": "戰鬥狀態列其餘訊息印名冊編號與 #104 留下的時機",
+      "body": "IS ASLEEP 等、Avoids it、瞄準提示、spellLabel 英文、顏色、顯示時機、玩家側 Casts a Spell。",
+      "acceptance": "逐條照原版字串與印法，送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 110
     }
   ]
 }
