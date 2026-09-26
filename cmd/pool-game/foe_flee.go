@@ -165,8 +165,9 @@ func (a *app) foeMoralePhase(state *tacticalState, mover uint8) (fleeing, acted 
 		return true, false
 	case gamepack.MoraleSurrenders:
 		// `1263h..128Bh`：overlay-24 entry 11(記錄, 4, "Surrenders")，再 entry 34。
-		state.leaveBoard(mover, gamepack.SurrenderedState)
+		// `0F57h` 先印（名字的顏色看的還是在場的 `+10Dh`），`0F5Ch` 才寫 `+10Dh = 0`。
 		state.FoeLog = a.panelNotice(state, mover, state.say(msgFoeSurrenders), noticeRowPanel, true)
+		state.leaveBoard(mover, gamepack.SurrenderedState)
 		a.tacticalStatus(state, state.FoeLog)
 		state.endTurnAfterAction(a.rollDice)
 		return false, true
@@ -360,9 +361,9 @@ func (a *app) foeLeaveCombat(state *tacticalState, mover uint8, run *foeFleeRun)
 		state.fastestOpponent(mover), a.rollDice)
 	var result string
 	if escaped {
-		state.leaveBoard(mover, gamepack.FledState)
-		// overlay-24 entry 11(記錄, 3, "Got Away") → entry 20(記錄, 字串, 0Ah, 1)。
+		// overlay-24 entry 11(記錄, 3, "Got Away") → entry 20(記錄, 字串, 0Ah, 1)，之後才離場。
 		result = a.panelNotice(state, mover, state.say(msgFoeGotAway), noticeRowPanel, true)
+		state.leaveBoard(mover, gamepack.FledState)
 	} else {
 		// `0D0Dh`：entry 19，不帶名字。
 		result = a.footerNotice(state, state.say(msgFoeEscapeBlocked))

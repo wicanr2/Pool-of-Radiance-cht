@@ -72,7 +72,7 @@ func (a *app) spellOptionsFor(member poolsave.Character) []castOption {
 		label := fmt.Sprintf("%d", id)
 		if a.spells != nil {
 			if spell, err := a.spells.catalogue.SpellByID(id); err == nil {
-				label = spell.Text
+				label = a.spellEntryLabel(spell)
 			}
 		}
 		options = append(options, castOption{Slot: slot, ID: id, Label: label})
@@ -186,11 +186,11 @@ func (a *app) resolveAimedAttack(target uint8) error {
 	state := a.tactical
 	distance, reachable := state.tacticalRange(state.Mover, target)
 	if !reachable {
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimBlocked), target))
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimBlocked), a.combatantName(state, target)))
 		return nil
 	}
 	if reach := a.moverAttackRange(); distance > reach {
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimOutOfRange), target, distance, reach))
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimOutOfRange), a.combatantName(state, target), distance, reach))
 		return nil
 	}
 	if same, err := state.sameSide(state.Mover, target); err != nil {
@@ -205,7 +205,7 @@ func (a *app) resolveAimedAttack(target uint8) error {
 	if offered, err := a.aimOffersTarget(state, state.Mover); err != nil {
 		return err
 	} else if !offered {
-		a.tacticalStatus(state, state.say(msgAimNoTarget, target))
+		a.tacticalStatus(state, state.say(msgAimNoTarget, a.combatantName(state, target)))
 		return nil
 	}
 	if err := a.resolveWeaponAttack(state, target, true); err != nil {
@@ -378,7 +378,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			state.removeEffect(int(first), effect.BlockedByEffect)
 			caster.consume()
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
-				option.Label, first))
+				option.Label, a.combatantName(state, first)))
 			caster.endAction(state, a.rollDice, false)
 			return nil
 		}
@@ -396,7 +396,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		if !has {
 			caster.consume()
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
-				option.Label, target))
+				option.Label, a.combatantName(state, target)))
 			caster.endAction(state, a.rollDice, false)
 			return nil
 		}
@@ -495,7 +495,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			// 不是人的目標一律當作豁免成功（`175Dh` 直接把結果設成 1）。
 			if effect.PersonOnly && !state.affectsPerson(picked) {
 				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNotPerson),
-					picked, option.Label))
+					a.combatantName(state, picked), option.Label))
 				continue
 			}
 			// 豁免在 `1740h` 先擲；overlay-24 entry 20（`17B0h`）先問群組 9 再看豁免（#86）。
@@ -504,11 +504,11 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 				continue
 			}
 			if saved {
-				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
+				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), a.combatantName(state, picked), option.Label))
 				continue
 			}
 			state.addEffect(int(picked), gamepack.HoldPersonEffectCode, rounds, casterLevel)
-			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), picked, rounds))
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHeld), a.combatantName(state, picked), rounds))
 		}
 	case effect.StrengthValue > 0 || effect.StrengthFromTarget:
 		// 力量那一組（變大術、力量術、編號 59）走同一支
@@ -542,7 +542,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		if !raised {
 			syncTrainedLibraryCharacter(&a.state, *subject)
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
-				option.Label, target))
+				option.Label, a.combatantName(state, target)))
 			break
 		}
 		subject.Abilities[gamepack.AbilityStrength] = int(value)
@@ -566,7 +566,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		}
 		if !state.affectsPerson(picked) {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNotPerson),
-				picked, option.Label))
+				a.combatantName(state, picked), option.Label))
 			break
 		}
 		// `08BCh` 在 `096Bh` 先擲豁免，`0A5Ah` 的 entry 20 先問群組 9 再看豁免（#86）。
@@ -575,7 +575,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			break
 		}
 		if saved {
-			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), picked, option.Label))
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastResisted), a.combatantName(state, picked), option.Label))
 			break
 		}
 		state.applyCharm(int(picked), casterLevel)
@@ -694,7 +694,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		removed := state.dispelEffects(int(picked), casterLevel, func() int {
 			return a.roller.Roll(1, 100)
 		})
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDispelled), picked, removed))
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDispelled), a.combatantName(state, picked), removed))
 	case effect.Ray != nil:
 		// 閃電束與編號 3Ch：由瞄準的那一點拉射線（spell_targets.go 的 castSpellRay）。
 		// 沒瞄過（remake 自己挑）時瞄繞得過去的最近敵人。
@@ -791,7 +791,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		// `08BCh` `0997h..09DBh`：參數表 `+2` 是 FFh 的（致輕傷 4、電擊之握 20）先碰得到才有傷害；
 		// 沒碰到就把傷害寫 0，`09DFh` 整段跳過 entry 19（#99）。
 		if a.spellParameters[option.ID].RequiresAttackRoll() && !a.touchSpellHits(state, picked) {
-			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect), option.Label, picked))
+			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect), option.Label, a.combatantName(state, picked)))
 			break
 		}
 		a.applySpellDamage(state, picked,
@@ -938,7 +938,7 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 	defer a.announceLostSpells(state)
 	if state.HitPoints[target] > 0 {
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHit),
-			target, damage, state.HitPoints[target]))
+			a.combatantName(state, target), damage, state.HitPoints[target]))
 		return
 	}
 	state.HitPoints[target] = 0
@@ -946,7 +946,7 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
 	state.States[target] = combat.DyingState
-	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDown), target))
+	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDown), a.combatantName(state, target)))
 }
 
 // tacticalStatus 把一行字放進戰場的狀態列。

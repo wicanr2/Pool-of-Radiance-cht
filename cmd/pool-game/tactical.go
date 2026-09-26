@@ -1780,7 +1780,7 @@ func (a *app) tacticalInput() error {
 	}
 	// 被定身的一輪到也直接結束回合（定身術，效果碼 `34h`）。
 	if state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.HoldPersonEffectCode) {
-		state.Status = state.say(msgStatusHeld, state.Mover)
+		state.Status = state.say(msgStatusHeld, a.combatantName(state, state.Mover))
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
 			return a.finishCombat(state.Outcome)
@@ -1793,7 +1793,7 @@ func (a *app) tacticalInput() error {
 	//（spec 112）。倒戈在 applyCharm 那一支做，這裡不必再擋。
 	asleep := state.Mover != 0 && state.hasEffect(int(state.Mover), gamepack.SleepEffectCode)
 	if asleep {
-		state.Status = state.say(msgStatusAsleep, state.Mover)
+		state.Status = state.say(msgStatusAsleep, a.combatantName(state, state.Mover))
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
 			return a.finishCombat(state.Outcome)
@@ -1805,7 +1805,8 @@ func (a *app) tacticalInput() error {
 	// （`4Ah`／`4Bh` 在 `1Eh` 之後，但 `15h`、`1Eh` 在最前面），
 	// 三者都是「這一回合不能動」，先後不影響結果。
 	if state.Mover != 0 && state.stinkingCloudTurn(int(state.Mover)) {
-		state.Status = state.say(msgStatusCoughing, state.Mover)
+		// overlay-12 entry 29 `0A76h`：entry 20(記錄, "is coughing", 0Ah, 1)。
+		state.Status = a.panelNotice(state, state.Mover, state.say(msgStatusCoughing), noticeRowPanel, true)
 		state.endTurn(a.rollDice, false)
 		if state.Finished {
 			return a.finishCombat(state.Outcome)
@@ -1882,7 +1883,7 @@ func (a *app) tacticalInput() error {
 		if index, ok := a.moverPartyIndex(state.Mover); ok && !a.state.Party[index].NPC {
 			a.state.Party[index].Quick = true
 			state.quick(state.Mover)
-			state.Status = state.say(msgStatusQuick, state.Mover)
+			state.Status = state.say(msgStatusQuick, a.combatantName(state, state.Mover))
 			if err := a.foeTurn(state); err != nil {
 				return err
 			}
@@ -1896,7 +1897,8 @@ func (a *app) tacticalInput() error {
 	// 這個行動就用掉了（原版接著呼叫 overlay-25 entry 34，與 Q）UIT 同一支）。
 	if a.justPressed(ebiten.KeyB) && state.Mover != 0 {
 		if target, ok := state.bandage(); ok {
-			state.Status = state.say(msgStatusBandaged, target)
+			// overlay-08 `0FE9h`：entry 20(被包紮的那一位, "is bandaged", 0Ah, 1)。
+			state.Status = a.panelNotice(state, uint8(target), state.say(msgStatusBandaged), noticeRowPanel, true)
 			state.endTurnAfterAction(a.rollDice)
 			if state.Finished {
 				return a.finishCombat(state.Outcome)
@@ -2061,7 +2063,9 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	avoided := false
 	if len(swings) == 0 {
 		// 這一相位揮不出任何一下（編碼 3 的「每兩回合三次」在單數相位）。
-		state.Status = state.say(msgStatusMissed, target, uint8(a.rollDice(1, 20)))
+		state.Status = state.say(msgStatusMissed, a.combatantName(state, target), uint8(a.rollDice(1, 20)))
+		// 一下都沒中：`1796h` 以 hit = 0 呼叫 entry 4，印 "and Misses"。
+		a.attackNotice(state, attacker, target, 0, false)
 		return nil
 	}
 	total, landed := 0, 0
@@ -2095,6 +2099,10 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		if missed, err := a.normalMissileAvoided(state, attacker, target); err != nil {
 			return err
 		} else if missed {
+			// overlay-12 `0FB7h`：entry 20(目標, "Avoids it", 0Ah, 1)，傷害 `6776h` 寫 0；
+			// 這一下仍由 `1732h` 呼叫 entry 4，印 "Hitting for 0 points of damage"。
+			a.panelNotice(state, target, state.say(msgStatusAvoidsMissile), noticeRowPanel, true)
+			a.attackNotice(state, attacker, target, 0, true)
 			avoided = true
 			continue
 		}
@@ -2102,6 +2110,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		damage = a.cheatDamage(state, attacker, target, damage)
 		landed++
 		state.Activity.countHit(state.isFriendly(attacker))
+		// `1732h`：每一下命中呼叫一次 entry 4，在扣生命值與 "lost a spell"（woundCombatant）之前。
+		a.attackNotice(state, attacker, target, damage, true)
 		total += damage
 		state.HitPoints[target] -= damage
 		// overlay-13 entry 4 `04E8h..054Bh`：傷害大於 0 的當下清 runtime +1。
@@ -2117,16 +2127,17 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		}
 	}
 	if landed == 0 && avoided {
-		state.Status = state.say(msgStatusAvoidsMissile, target)
+		state.Status = a.combatantName(state, target) + " " + state.say(msgStatusAvoidsMissile)
 		return nil
 	}
 	if landed == 0 {
-		state.Status = state.say(msgStatusMissed, target, lastRoll)
+		state.Status = state.say(msgStatusMissed, a.combatantName(state, target), lastRoll)
+		a.attackNotice(state, attacker, target, 0, false)
 		return nil
 	}
 	damage := total
 	if state.HitPoints[target] > 0 {
-		state.Status = state.say(msgStatusHit, target, damage, state.HitPoints[target])
+		state.Status = state.say(msgStatusHit, a.combatantName(state, target), damage, state.HitPoints[target])
 		return nil
 	}
 	state.HitPoints[target] = 0
@@ -2134,7 +2145,9 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
 	state.States[target] = combat.DyingState
-	state.Status = state.say(msgStatusDown, target)
+	// "goes down"（overlay-13 `0567h..0583h`）是 entry 20(目標, 字串, 列, 0)，不停拍；
+	// 與其他不停拍的訊息一樣只進狀態列（combat_notice.go）。
+	state.Status = state.say(msgStatusDown, a.combatantName(state, target))
 	return nil
 }
 

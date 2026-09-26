@@ -28,6 +28,9 @@ type battleTally struct {
 	rounds   int
 	result   string
 	reported bool
+	// nameOf 是狀態列印的名字（#110 起「n IS DOWN」印的是名字，不是盤面索引）。
+	nameOf func(uint8) string
+	downed map[int]bool
 }
 
 // observe 每一個 tick 叫一次；換了一場就重新開始。
@@ -39,6 +42,7 @@ func (tally *battleTally) observe(a *app) {
 	if state != tally.state {
 		*tally = battleTally{state: state}
 	}
+	tally.nameOf = func(index uint8) string { return a.combatantName(state, index) }
 	if state.Round != tally.lastRound {
 		tally.lastRound = state.Round
 		tally.rounds = state.Round
@@ -96,7 +100,7 @@ func (tally *battleTally) count(line string, party bool) {
 	case strings.HasSuffix(line, " IS DOWN"):
 		// 打倒人的那一下只印「n IS DOWN」不印 HIT，命中要把它算回去。
 		who := strings.TrimSuffix(line, " IS DOWN")
-		if index, err := strconv.Atoi(who); err == nil {
+		if index, ok := tally.downIndex(who); ok {
 			side := "foe"
 			if index < len(tally.state.Friendly) && tally.state.Friendly[index] {
 				side = "party"
@@ -110,6 +114,26 @@ func (tally *battleTally) count(line string, party bool) {
 			tally.downs = append(tally.downs, fmt.Sprintf("r%d:%s%d", tally.lastRound, side, index))
 		}
 	}
+}
+
+// downIndex 把「<名字> IS DOWN」的名字對回盤面索引：同名的怪物不只一隻，所以挑
+// 名字相同、已經倒下、而且還沒記過的第一個。
+func (tally *battleTally) downIndex(who string) (int, bool) {
+	state := tally.state
+	if state == nil || tally.nameOf == nil {
+		return 0, false
+	}
+	if tally.downed == nil {
+		tally.downed = map[int]bool{}
+	}
+	for index := 1; index < len(state.Roster) && index < len(state.States); index++ {
+		if tally.downed[index] || state.States[index] < 4 || tally.nameOf(uint8(index)) != who {
+			continue
+		}
+		tally.downed[index] = true
+		return index, true
+	}
+	return 0, false
 }
 
 // line 是一場的一行摘要。收場那一個 tick 常常看不到（`a.tactical` 在同一個

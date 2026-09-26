@@ -92,6 +92,12 @@ func TestFoesCloseOnACrowdedBoard(t *testing.T) {
 		if current == nil || current.Finished {
 			break
 		}
+		// 停拍的影格只是等待（combat_notice.go），不算進預算。
+		if combatNoticeHolding(application) {
+			drainCombatNotices(t, application)
+			tick--
+			continue
+		}
 		key := ebiten.KeyEnter // 一律結束回合：完全不動不打
 		if current.Prompt {
 			key = ebiten.KeyY

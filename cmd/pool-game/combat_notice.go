@@ -26,10 +26,27 @@ const (
 	msgFoeItemLine
 )
 
+// 攻擊那一則（overlay-13 entry 4 `02FEh`，#110）另開 `iota + 4200`。
+const (
+	// msgAttackAttacks 是 `0252h` 的 "Attacks"（模式 2 "-Backstabs-" `0237h`、3 "slays helpless" `0243h`
+	// remake 沒有背刺與斬殺無助者，只用這一句）。
+	msgAttackAttacks messageID = iota + 4200
+	// msgAttackHitPoint／msgAttackHitPoints 是 "Hitting for " 串接傷害、" point "／" points "
+	// 再串 "of damage"（`027Dh`、`028Ah`、`0292h`、`029Bh`）。
+	msgAttackHitPoint
+	msgAttackHitPoints
+	// msgAttackMisses 是 `02A5h` 的 "and Misses"。
+	msgAttackMisses
+)
+
 func init() {
 	for id, key := range map[messageID]string{
-		msgFoeSpellLine: "ui.foeSpellLine",
-		msgFoeItemLine:  "ui.foeItemLine",
+		msgFoeSpellLine:    "ui.foeSpellLine",
+		msgFoeItemLine:     "ui.foeItemLine",
+		msgAttackAttacks:   "ui.attackAttacks",
+		msgAttackHitPoint:  "ui.attackHitPoint",
+		msgAttackHitPoints: "ui.attackHitPoints",
+		msgAttackMisses:    "ui.attackMisses",
 	} {
 		if existing, ok := messageKeys[id]; ok {
 			panic(fmt.Sprintf("message id %d is already %q", id, existing))
@@ -47,6 +64,19 @@ const (
 	noticeRowSpell = 0x17
 	// noticeRowLast 是 entry 20 清的右欄最下一列（15h）。
 	noticeRowLast = 0x15
+	// noticeRowTarget 是攻擊那一則 entry 22（`1865h`）印目標名字的列（0Ch，overlay-13
+	// `036Bh..037Bh`）；傷害那一句從下一列起折行（`0367h` 的 0Ch 加一，`04BCh..04DAh`）。
+	noticeRowTarget = 0x0C
+)
+
+// `1865h` 印名字的三種顏色（`186Eh..188Dh`）：記錄 `+10Dh` 為 0（已經離場）0Ch，
+// `+10Eh` 是 1（敵方）0Eh，其餘 0Bh。字串本身一律是 0Ah（`1790h`、overlay-37 entry 3
+// 的呼叫端）。都是 EGA 色號，畫的時候查目前主題的色盤。
+const (
+	noticeInkParty = 0x0B
+	noticeInkOut   = 0x0C
+	noticeInkFoe   = 0x0E
+	noticeInkText  = 0x0A
 )
 
 // combatNotice 是一次 entry 20 或 entry 19 的輸出，停拍倒數完才換下一則。
@@ -55,6 +85,13 @@ type combatNotice struct {
 	Name string
 	Text string
 	Row  int
+	// NameInk 是名字的 EGA 色號（noticeInk*），排進佇列那一刻依記錄算好。
+	NameInk uint8
+	// Target 與 Detail 只有攻擊那一則用：Target 是 entry 22 印在第 0Ch 列的目標名字，
+	// Detail 是傷害那一句，從第 0Dh 列起折行。
+	Target    string
+	TargetInk uint8
+	Detail    string
 	// Bottom 是第 23 列（17h）欄 0 的那一行（`32D3h` 的 "Spell:" 加法名）。
 	Bottom string
 	// Footer 是 entry 19 印在第 24 列欄 0 的固定字串，停拍時取代指令列。
@@ -85,11 +122,23 @@ func (a *app) combatantName(state *tacticalState, index uint8) string {
 	return a.monsterText.Translate(name)
 }
 
+// nameInk 是 `1865h` 替這一格挑的顏色：離場（體型 0，原版 `+10Dh` 為 0）、敵方
+// （`+10Eh` 是 1）、其餘。
+func (state *tacticalState) nameInk(index uint8) uint8 {
+	if int(index) >= len(state.Roster) || state.Roster[index].FootprintClass == 0 {
+		return noticeInkOut
+	}
+	if side, ok := state.sideOf(index); ok && side == 1 {
+		return noticeInkFoe
+	}
+	return noticeInkParty
+}
+
 // panelNotice 是 overlay-25 entry 20：名字加一句，beat 為真時停一拍。回傳記錄用的
 // 一行（名字、空白、那一句）。
 func (a *app) panelNotice(state *tacticalState, index uint8, text string, row int, beat bool) string {
 	name := a.combatantName(state, index)
-	notice := combatNotice{Name: name, Text: text, Row: row}
+	notice := combatNotice{Name: name, Text: text, Row: row, NameInk: state.nameInk(index)}
 	if beat {
 		notice.Ticks = a.speedDelayTicks()
 	}
@@ -101,6 +150,28 @@ func (a *app) panelNotice(state *tacticalState, index uint8, text string, row in
 func (a *app) footerNotice(state *tacticalState, text string) string {
 	state.Notices = append(state.Notices, combatNotice{Footer: text, Ticks: a.speedDelayTicks()})
 	return text
+}
+
+// attackNotice 是 overlay-13 entry 4（`02FEh`）的畫面：entry 20(攻擊者, "Attacks", 0Ah, 0)、
+// entry 22 在第 0Ch 列印目標名字、下一列起折行印 "Hitting for N points of damage" 或
+// "and Misses"，接著 `0509h`／`054Dh`／`0554h` 三條路都經 overlay-37 entry 13 等一拍。
+// 攻擊包裝（`1678h..176Ah`）每一下命中呼叫一次，一下都沒中才以 hit = 0 呼叫一次。
+//
+// 目標的顏色取呼叫當下：原版印目標名字（`037Bh`）在扣生命值（`048Dh`）之前。
+func (a *app) attackNotice(state *tacticalState, attacker, target uint8, damage int, hit bool) {
+	detail := state.say(msgAttackMisses)
+	if hit {
+		detail = state.say(msgAttackHitPoints, damage)
+		if damage == 1 {
+			detail = state.say(msgAttackHitPoint, damage)
+		}
+	}
+	state.Notices = append(state.Notices, combatNotice{
+		Name: a.combatantName(state, attacker), NameInk: state.nameInk(attacker),
+		Text: state.say(msgAttackAttacks), Row: noticeRowPanel,
+		Target: a.combatantName(state, target), TargetInk: state.nameInk(target),
+		Detail: detail, Ticks: a.speedDelayTicks(),
+	})
 }
 
 // castNotice 是 overlay-22 entry 5 在挑目標之前（`0D23h`，旗標 `[bp+0Ah]` 非 0）呼叫的
@@ -115,26 +186,38 @@ func (a *app) castNotice(state *tacticalState, mover, spell uint8) string {
 	return line + " " + bottom
 }
 
-// itemUseLine 是 overlay-19 entry 8 的 `1B2Dh..1B8Dh`：entry 20(記錄, "uses an item",
-// 0Ah, 0)——**不停拍**——接著第 23 列欄 0 印 "Item:"、物品名由 overlay-25 entry 1 從
-// 欄 5 起印。entry 1 停不停拍沒有讀，所以這一句只進記錄，不排進停拍佇列。
+// itemUseLine 是 overlay-19 entry 8 的 `1B2Dh..1BB8h`：entry 20(記錄, "uses an item", 0Ah, 0)，
+// 戰鬥中接著在第 23 列欄 0 印 "Item:"（`1B56h..1B6Eh`）、overlay-25 entry 1 從欄 5 印物品名
+// （`1B8Dh`；entry 1 本身沒有 Delay），然後 `1BB3h` 等一拍、`1BB8h` entry 21 清右欄。
+// 所以停拍在物品名印完之後，名字、那一句與 "Item:" 那一行同一拍顯示。
+// `DS:6CB3h` 為 0（卷軸）整段跳過（`1B19h`），呼叫端不叫這一支。
 func (a *app) itemUseLine(state *tacticalState, mover uint8, item string) string {
-	return a.combatantName(state, mover) + " " + state.say(msgFoeUsesItem) + " " +
-		state.say(msgFoeItemLine, item)
+	line := a.panelNotice(state, mover, state.say(msgFoeUsesItem), noticeRowPanel, true)
+	bottom := state.say(msgFoeItemLine, item)
+	state.Notices[len(state.Notices)-1].Bottom = bottom
+	return line + " " + bottom
+}
+
+// turnedSparkleMilliseconds 是 overlay-25 entry 26 動畫每一格的 `0512h:029Eh`（Delay，毫秒）
+// 參數 46h（`2173h`）。
+const turnedSparkleMilliseconds = 0x46
+
+// turnedNotice 是 overlay-25 entry 26（`2041h`）旗標 1 的那一路（"is turned"，overlay-13
+// `129Dh..12A7h`）：entry 20(記錄, 字串, 0Ah, **0**) 之後播閃光動畫，(遊戲速度 + 1) 輪、
+// 每輪四格、每格 Delay(70 ms)（`2130h..21ADh`）；遊戲速度是 0 才另外等一拍（`21B4h`，
+// 那時一拍是 0）。remake 沒有這段動畫，停的長度照它算。
+func (a *app) turnedNotice(state *tacticalState, index uint8, text string) string {
+	line := a.panelNotice(state, index, text, noticeRowPanel, false)
+	state.Notices[len(state.Notices)-1].Ticks =
+		(int(a.gameSpeed) + 1) * 4 * turnedSparkleMilliseconds * 60 / 1000
+	return line
 }
 
 // noticeSpellName 是 `32D3h` 接在 "Spell:" 後面的法名：`DS:2883h + 編號 × 29h`
 // 的名稱表（spec 068）。英文照原版的拼法、以大寫字模顯示；中文用說明書譯名。
 func (a *app) noticeSpellName(spell uint8) string {
 	if a.language == languageEnglish {
-		if a.spells == nil {
-			a.spellLabel(spell)
-		}
-		if a.spells != nil {
-			if entry, err := a.spells.catalogue.SpellByID(spell); err == nil {
-				return strings.ToUpper(entry.Name)
-			}
-		}
+		return strings.ToUpper(a.spellLabel(spell))
 	}
 	return a.spellLabel(spell)
 }
@@ -179,24 +262,34 @@ func drawCombatNotice(screen *ebiten.Image, a *app, foreground, accent color.Col
 	if !ok {
 		return false, false
 	}
+	palette := a.currentTheme().palette
+	text := palette[noticeInkText]
 	if notice.Name != "" || notice.Text != "" {
 		panel = true
-		drawText(screen, notice.Name, combatInfoLeft, noticeBaseline(notice.Row), accent)
-		row := notice.Row + 1
-		for _, line := range wrapDisplay(notice.Text, combatNoteColumns) {
-			if row > noticeRowLast {
-				break
-			}
-			drawText(screen, line, combatInfoLeft, noticeBaseline(row), foreground)
-			row++
-		}
+		drawText(screen, notice.Name, combatInfoLeft, noticeBaseline(notice.Row), palette[notice.NameInk&0x0F])
+		drawNoticeLines(screen, notice.Text, notice.Row+1, text)
+	}
+	if notice.Target != "" {
+		drawText(screen, notice.Target, combatInfoLeft, noticeBaseline(noticeRowTarget), palette[notice.TargetInk&0x0F])
+		drawNoticeLines(screen, notice.Detail, noticeRowTarget+1, text)
 	}
 	if notice.Bottom != "" {
-		drawText(screen, notice.Bottom, 0, noticeBaseline(noticeRowSpell), foreground)
+		drawText(screen, notice.Bottom, 0, noticeBaseline(noticeRowSpell), text)
 	}
 	if notice.Footer != "" {
 		footer = true
-		drawText(screen, notice.Footer, 0, footerBaseline, foreground)
+		drawText(screen, notice.Footer, 0, footerBaseline, text)
 	}
 	return panel, footer
+}
+
+// drawNoticeLines 是 overlay-37 entry 5（`619h`）：從 row 起在右欄折行，畫到第 15h 列為止。
+func drawNoticeLines(screen *ebiten.Image, value string, row int, ink color.Color) {
+	for _, line := range wrapDisplay(value, combatNoteColumns) {
+		if row > noticeRowLast {
+			break
+		}
+		drawText(screen, line, combatInfoLeft, noticeBaseline(row), ink)
+		row++
+	}
 }

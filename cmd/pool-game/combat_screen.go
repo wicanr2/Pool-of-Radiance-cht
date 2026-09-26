@@ -210,7 +210,12 @@ func drawCombatInfo(screen *ebiten.Image, a *app, foreground, accent color.Color
 		strings.TrimSpace(monster.Record.Name) != "" {
 		name = strings.TrimSpace(a.monsterText.Translate(monster.Record.Name))
 	}
-	drawText(screen, name, combatInfoLeft, combatInfoLine1, accent)
+	// 名字的顏色也是 `1865h` 挑的：離場 0Ch、敵方 0Eh、其餘 0Bh（combat_notice.go）。
+	ink := accent
+	if state.Mover != 0 {
+		ink = a.currentTheme().palette[state.nameInk(state.Mover)]
+	}
+	drawText(screen, name, combatInfoLeft, combatInfoLine1, ink)
 	mover := int(state.Mover)
 	if mover < len(state.HitPoints) {
 		drawText(screen, fmt.Sprintf("%s %d", a.text(msgCombatHitPoints),

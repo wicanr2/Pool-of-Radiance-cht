@@ -148,11 +148,11 @@ func TestFleeMessagesNameTheFoe(t *testing.T) {
 		notice   combatNotice
 	}{
 		{languageEnglish, 1, "SKELETON FLED 1 STEPS. SKELETON GOT AWAY",
-			combatNotice{Name: "SKELETON", Text: "GOT AWAY", Row: noticeRowPanel}},
+			combatNotice{Name: "SKELETON", Text: "GOT AWAY", Row: noticeRowPanel, NameInk: noticeInkFoe}},
 		{languageEnglish, 2, "SKELETON FLED 1 STEPS. ESCAPE IS BLOCKED",
 			combatNotice{Footer: "ESCAPE IS BLOCKED"}},
 		{languageTraditionalChinese, 1, "SKELETON 逃了 1 步。 SKELETON 逃走了",
-			combatNotice{Name: "SKELETON", Text: "逃走了", Row: noticeRowPanel}},
+			combatNotice{Name: "SKELETON", Text: "逃走了", Row: noticeRowPanel, NameInk: noticeInkFoe}},
 		{languageTraditionalChinese, 2, "SKELETON 逃了 1 步。 退路被擋住了",
 			combatNotice{Footer: "退路被擋住了"}},
 	} {

@@ -80,7 +80,7 @@ func (a *app) castEffectOnly(state *tacticalState, caster spellCasting, option c
 			continue
 		}
 		if saved && rule == gamepack.SaveRuleNegates {
-			a.tacticalStatus(state, state.say(msgCastUnaffected, index))
+			a.tacticalStatus(state, a.panelNotice(state, index, state.say(msgCastUnaffected), noticeRowPanel, true))
 			continue
 		}
 		state.attachSpellEffect(int(index), code, duration, level, effect.EffectParameter != 0)

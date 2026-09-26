@@ -128,6 +128,8 @@ func TestPlayerArrowsAreSpentAndRunOut(t *testing.T) {
 
 	shoot := func() {
 		t.Helper()
+		// 上一發的 "and Misses" 停一拍（overlay-13 entry 4，#110）：只是等待，等它過去。
+		drainCombatNotices(t, application)
 		state.Prompt, state.Mover = false, archer
 		for _, key := range []ebiten.Key{ebiten.KeyA, ebiten.KeyEnter} {
 			if err := press(application, key); err != nil {
@@ -151,7 +153,7 @@ func TestPlayerArrowsAreSpentAndRunOut(t *testing.T) {
 	if state.Activity.PartyAttacks != attacks || state.Mover != archer {
 		t.Fatalf("no arrows: %d attacks, mover %d; want no shot and the turn kept", state.Activity.PartyAttacks-attacks, state.Mover)
 	}
-	if want := state.say(msgAimNoTarget, missileLeader); state.Status != want {
+	if want := state.say(msgAimNoTarget, application.combatantName(state, missileLeader)); state.Status != want {
 		t.Fatalf("status %q, want %q", state.Status, want)
 	}
 	if state.HitPoints[missileLeader] != foeHP {
@@ -293,7 +295,7 @@ func TestProtectionFromNormalMissilesStopsTheLeadersArrows(t *testing.T) {
 		for index, before := range hp {
 			wounded = wounded || state.HitPoints[index] < before
 		}
-		avoided := strings.Contains(state.FoeLog, state.say(msgStatusAvoidsMissile, 0)[1:])
+		avoided := strings.Contains(state.FoeLog, " "+state.say(msgStatusAvoidsMissile))
 		if protected && (wounded || !avoided) {
 			t.Errorf("protected: wounded %v, log %q; want every arrow avoided", wounded, state.FoeLog)
 		}

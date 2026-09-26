@@ -185,6 +185,12 @@ func TestCastMagicMissileInCombat(t *testing.T) {
 		if state == nil || state.Finished {
 			break
 		}
+		// 停拍的影格只是等待（combat_notice.go），不算進預算。
+		if combatNoticeHolding(application) {
+			drainCombatNotices(t, application)
+			tick--
+			continue
+		}
 		if state.Prompt {
 			if err := press(application, ebiten.KeyY); err != nil {
 				t.Fatal(err)
@@ -231,6 +237,8 @@ func TestCastMagicMissileInCombat(t *testing.T) {
 		if len(application.castTargets) == 0 {
 			t.Fatal("選目標那一步沒有任何候選")
 		}
+		// 挑目標之前那一句 "Casts a Spell" 停一拍（`0D23h`，#110），等它過去才按得動。
+		drainCombatNotices(t, application)
 		// 停在繞得過去的最近敵人身上。
 		if application.castTargets[application.castTargetCursor] != target {
 			t.Errorf("預設應該停在 %d，停在 %d", target,

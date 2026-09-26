@@ -146,7 +146,8 @@ func (a *app) turnUndead(state *tacticalState, mover uint8, clericLevel int,
 				state.Undead.Turned = map[int]bool{}
 			}
 			state.Undead.Turned[int(other)] = true
-			lines = append(lines, a.combatantName(state, other)+" "+state.say(msgFoeUndeadTurned))
+			// `129Dh..12A7h`：overlay-25 entry 26(記錄, 1, "is turned")，停的是閃光動畫。
+			lines = append(lines, a.turnedNotice(state, other, state.say(msgFoeUndeadTurned)))
 			continue
 		}
 		state.destroyTurnedUndead(other)

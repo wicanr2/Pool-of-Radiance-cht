@@ -184,6 +184,12 @@ func (a *app) aimSpell(option castOption, release bool) error {
 	if state == nil {
 		return nil
 	}
+	// `0D23h`：玩家的兩個呼叫端（overlay-08 `0410h` 當場放、`0352h` 放出開始施法的那一條）
+	// 也傳 `[bp+0Ah]` = 1，所以挑目標之前同樣印 "Casts a Spell" 與 "Spell:" 加法名、停一拍。
+	// 用物品（`DS:6CB3h` 非 0）不印，那一側由 overlay-19 印 "uses an item"。
+	if a.combatItem == nil {
+		a.castNotice(state, state.Mover, option.ID)
+	}
 	if int(option.ID) >= len(a.spellParameters) {
 		return a.releaseSpell(option, spellTargets{}, release)
 	}
@@ -239,7 +245,8 @@ func (a *app) confirmSpellCell(x, y int, occupant uint8) error {
 		for _, earlier := range aim.picks {
 			if earlier == occupant {
 				// `2363h`：玩家挑到重複的印 "Already been targeted"，不算數、再挑一次。
-				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAlreadyTargeted), occupant))
+				// 那一句走 entry 19（`2378h`）：第 24 列、固定字串、停一拍，不帶名字。
+				a.tacticalStatus(state, a.footerNotice(state, a.text(msgCastAlreadyTargeted)))
 				return nil
 			}
 		}
@@ -326,7 +333,8 @@ func (a *app) abortSpell() error {
 			a.foeForgetSpell(state, caster, aim.option.ID)
 		}
 	}
-	a.tacticalStatus(state, a.text(msgCastAborted))
+	// `0EE7h`：entry 19，第 24 列、停一拍（與 AI 那一側 foeReleaseSpell 同一支）。
+	a.tacticalStatus(state, a.footerNotice(state, a.text(msgCastAborted)))
 	if keep {
 		// 參數表 `+0Bh` 為 0 的物品法術：沒有 entry 34，回到物品選單（spec 144）。
 		return nil

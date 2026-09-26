@@ -276,7 +276,7 @@ func TestHoldImmunityCodesBlockTheHold(t *testing.T) {
 		if held == tc.blocked {
 			t.Errorf("carrying %#x: held %v, want blocked %v (status %q)", tc.carried, held, tc.blocked, state.Status)
 		}
-		if tc.blocked && !strings.Contains(state.Status, state.say(msgCastUnaffected, 2)) {
+		if tc.blocked && !strings.Contains(state.Status, application.combatantName(state, 2)+" "+state.say(msgCastUnaffected)) {
 			t.Errorf("carrying %#x: no Unaffected message: %q", tc.carried, state.Status)
 		}
 	}

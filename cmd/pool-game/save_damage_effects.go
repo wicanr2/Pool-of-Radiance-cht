@@ -141,7 +141,8 @@ func (a *app) spellDamageAfterEffects(state *tacticalState, target, spell uint8,
 	}.Apply(damage)
 	state.Effects[target] = outcome.Effects
 	if outcome.LostImage {
-		a.tacticalStatus(state, state.say(msgCastLostImage, target))
+		// overlay-12 `0A1Ah`：entry 20(記錄, "lost an image", 0Ah, 1)。
+		a.tacticalStatus(state, a.panelNotice(state, target, state.say(msgCastLostImage), noticeRowPanel, true))
 	}
 	return outcome.Damage
 }

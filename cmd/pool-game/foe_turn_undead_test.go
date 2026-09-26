@@ -94,6 +94,8 @@ func TestQuickClericTurnsOncePerFight(t *testing.T) {
 		t.Fatal("a turned skeleton left the board; only the destroy branch removes it")
 	}
 
+	// "is turned" 停的是閃光動畫（overlay-25 entry 26，#110），遊戲速度 0 也有四格 × 70 ms。
+	drainCombatNotices(t, application)
 	script := &turnScript{d20: 20}
 	application.roller = script
 	state.Mover = 1

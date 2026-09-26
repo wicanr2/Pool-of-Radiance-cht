@@ -143,6 +143,7 @@ func (a *app) unaffectedBySpellEffect(state *tacticalState, index uint8, code ui
 	if !gamepack.SpellEffectImmunity(state.Effects[index], code, 0, casterLevel, a.rollDice) {
 		return false
 	}
-	a.tacticalStatus(state, state.say(msgCastUnaffected, index))
+	// overlay-24 `16B0h`：entry 20(目標, "is Unaffected", 0Ah, 1)。
+	a.tacticalStatus(state, a.panelNotice(state, index, state.say(msgCastUnaffected), noticeRowPanel, true))
 	return true
 }

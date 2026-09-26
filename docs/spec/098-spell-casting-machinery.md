@@ -7,7 +7,7 @@ DRAFT（`08BCh` 自己在做什麼、四個覆寫參數的語意、各法術的�
 日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）、模式 0Ah 分邊與模式 8
 射線（issue #78）、受傷打斷與用物品（issue #75／#77）、模式 0Ah 的效果怎麼掛上去、在戰鬥裡
 改什麼（issue #81）；只掛效果的那一批與 `07C7h` 的特例（issue #89）；靈魂鎚、致病的收尾、傷害型
-碰觸法術與緩毒術的卡點（issue #99）；營地施法走同一支 `08BCh`、表換成 `0A88h`（issue #100）；AI 戰鬥訊息的字串、名字與停拍（issue #104）。
+碰觸法術與緩毒術的卡點（issue #99）；營地施法走同一支 `08BCh`、表換成 `0A88h`（issue #100）；AI 戰鬥訊息的字串、名字與停拍（issue #104）；攻擊、包紮、用物品等其餘戰鬥訊息、名字的三種顏色與玩家施法前的 "Casts a Spell"（issue #110）。
 
 ## 擲骰：overlay-24 的兩支
 
@@ -818,7 +818,7 @@ overlay-25 16DFh  複製字串（上限 28h）
   "Spell:" 加法術名（`32CCh`），見下一節。繁中 `施法中止`。
 
 remake：`ui.castAborted`，`abortSpell` 與 `foeReleaseSpell` 都不帶參數。AI 那一側經
-`footerNotice` 在第 24 列停一拍（下一節）；玩家的 `abortSpell` 還沒有停拍。測試
+`footerNotice` 在第 24 列停一拍（下一節），玩家的 `abortSpell` 走同一支。測試
 `TestAbortSpellForgetsItAndEndsTheAction`、`TestFoeSpellAbortsWhenEveryTargetIsAlreadyHeld`。
 
 #### AI 戰鬥訊息的字串與印法（2026-09-26，issue #104）
@@ -875,19 +875,106 @@ remake 的對應（`cmd/pool-game/combat_notice.go`）：
 - 畫面：停拍中的那一則，名字畫在右欄第 10 列（lost a spell 第 12 列）、句子從下一列起
   折行，這時 remake 自己放在右欄下半的鍵位說明與作弊標示不畫（原版那一塊先清掉）；
   "Spell:" 那一行在第 23 列；entry 19 的字取代第 24 列的指令列。
-- **與原版的差**：原版 `32D3h` 先停拍、清右欄，才印第 23 列，那一列留到挑目標與效果
-  動畫之後；remake 挑目標與效果在同一影格算完、沒有動畫層，所以右欄那一句與第 23 列
-  放在同一拍一起顯示，停拍期間盤面已經是施法後的樣子。第 23 列原版什麼時候清掉沒有
-  追（unknown），remake 隨那一拍一起清。
-- 沒有接的：`uses an item` 那一句原版不停拍、`Item:` 那一行的 entry 1 沒有讀，所以只進
-  記錄、不排停拍；`is turned`（entry 26）同樣只進記錄；lost a spell 在攻擊那一側前面
-  另有一拍（`0509h`），傷害那一行本身還沒有畫面，這一拍沒有接。玩家那一側的施法
-  （`resolveCast`／`pendingSpellTurn`）同樣經過 `0D23h`，"Casts a Spell" 沒有接；玩家的
-  `abortSpell` 也還沒有停拍。
+- **與原版的差**：原版 `32D3h` 先停拍、清右欄，才印第 23 列，之後才挑目標、放效果。
+  玩家那一側照這個順序（停拍中瞄準按鍵不作用；瞄準列在停拍中已經畫出來，原版拍完才畫）；
+  AI 那一側與不用挑目標的
+  法術，remake 的挑目標與效果在同一影格算完、沒有動畫層，所以停拍期間盤面已經是施法後的
+  樣子。改成照原版要把 AI 的一次行動拆成可以跨影格續跑的狀態機（`foeTurn` 現在是同步
+  呼叫，測試直接呼叫後就斷言效果），不在這一節做。
+- 第 23 列（"Spell:"、"Item:"）原版誰清、什麼時候清沒有追（unknown）；remake 隨那一拍清掉。
+- 其餘訊息（攻擊、包紮、用物品、is turned 等）與名字的顏色見下一節。
 - 測試（全部從 `Update()` 送鍵）：`TestFoeCastAnnouncesCasterAndSpellByName`（英繁兩語）、
   `TestFoeCastHoldsForOneBeat`、`TestFoeAbortedCastStillNamesTheCaster`、
   `TestFoeBeginsCastingByName`、`TestFleeMessagesNameTheFoe`（英繁兩語、逃掉與逃不掉）。
 
+
+#### 其餘戰鬥訊息（2026-09-26，issue #110）
+
+輸入同上一節，另加 overlay-08（`932ce281…036f`）、overlay-12（`d1b05743…cb7e`）；工具與
+far call 換算同上（entry 19 = `010Ah:007Fh`、20 = `0084h`、21 = `0089h`、22 = `008Eh`、
+26 = `00A2h`，overlay-25 的清冊 entry 表）。
+
+**名字的顏色**（`1865h`，entry 22 本身，entry 20 與資訊欄第一行都叫它）：
+
+```
+186E  26 80 BD 0D 01 00 / 75 06 / C6 46 FF 0C   ; 記錄 +10Dh == 0（離場）→ 0Ch
+187F  26 80 BD 0E 01 01 / 75 06 / C6 46 FF 0E   ; +10Eh == 1（敵方）→ 0Eh
+188D  C6 46 FF 0B                               ; 其餘 → 0Bh
+18A2  9A 2F 00 98 01                            ; overlay-37 entry 3(欄, 列, 色, 記錄 +0)
+```
+
+字串本身一律色 0Ah（entry 20 `1790h` 推 0Ah 給 overlay-37 entry 5）。exact。
+remake：`nameInk`（體型 0 對 `+10Dh` 為 0、`sideOf` 對 `+10Eh`），排進佇列那一刻算好；
+畫的時候查目前主題色盤的那一格，右欄訊息、第 23 列、第 24 列與資訊欄第一行都照這一套。
+`Surrenders`／`Got Away` 原版先印（`0F57h`）才寫 `+10Dh = 0`（`0F5Fh`），所以名字是 0Eh；
+remake 的 `foe_flee.go` 把訊息排在 `leaveBoard` 之前，對上這個順序。
+
+**攻擊**（overlay-13 entry 4 `02FEh`，`retf 10h`，參數：攻擊者、目標、模式、傷害 ×2、命中）：
+
+```
+0351  entry 20(攻擊者, 模式 2 "-Backstabs-" / 3 "slays helpless" / 其餘 "Attacks", 0Ah, 0)
+0367  [bp-1] = 0Ch；037B  entry 22(目標, 欄 17h, 列 0Ch, 0)       ; 目標名字，扣血之前
+0383  模式 1 → "(from behind) "；命中：模式 3 "with one cruel blow"，其餘
+      "Hitting for " + 數字 + " point "／" points "（== 1 才單數）+ "of damage"；
+      沒中 "and Misses"
+04DA  0198h:0039h(17h, 0Dh, 26h, 10h, 0Ah, 1, 字串)             ; 第 0Dh 列起折行
+04E8  傷害 > 0：+1 清 0；+0 非 0 → 0509h 等一拍、entry 20(目標, "lost a spell", 0Ch, 1)
+      其餘兩條路（054Dh、0554h）同樣等一拍
+0559  目標 +10Dh == 0 → entry 20(目標, "goes down", 列, 0)；+10Ch == 5 → 下兩列
+      "and is Dying"；+10Ch ∈ {6, 7, 8}（`02D4h` 的集合 C0 01）→ entry 20(目標, "is killed", 列, 0)
+```
+
+呼叫端是攻擊包裝（`1678h..176Ah`）：**每一下擲中呼叫一次**（`1732h`，傷害是 `6776h`），一下都沒
+擲中才以命中 = 0 呼叫一次（`1796h`）；`14C1h` 是斬殺無助者（模式 3）。exact。
+
+| remake 鍵 | 原版字串（位址、bytes） | 呼叫端 | 印法 | 停拍 | 證據 |
+|---|---|---|---|---|---|
+| `ui.attackAttacks` | overlay-13 `0252h` `07 41 74 74 61 63 6B 73` "Attacks" | `033Eh..0362h` | 攻擊者名字＋一句（第 0Ah 列），目標名字第 0Ch 列 | 見下兩列 | exact |
+| `ui.attackHitPoint`／`ui.attackHitPoints` | `027Dh` "Hitting for "、`028Ah` `07 20 70 6F 69 6E 74 20`、`0292h` " points "、`029Bh` "of damage" | `03C7h..0480h` | 第 0Dh 列起折行 | 一拍（`054Dh`／`0509h`）| exact |
+| `ui.attackMisses` | `02A5h` `0A 61 6E 64 20 4D 69 73 73 65 73` "and Misses" | `0494h..04B7h` | 同上 | 一拍（`0554h`）| exact |
+| `ui.statusHit`／`ui.statusMissed`／`ui.statusDown` | 原版沒有這幾句（"goes down" `02BDh` 是 entry 20 不停拍）| — | remake 的狀態列與記錄，帶名字 | — | 不適用 |
+| `ui.statusAvoidsMissile` | overlay-12 `0FADh` `09 41 76 6F 69 64 73 20 69 74` "Avoids it" | `0FF4h..100Fh` entry 20(目標, 字串, 0Ah, 1)，接著 `6776h = 0`；那一下照樣由 `1732h` 呼叫 entry 4，印 "Hitting for 0 points of damage" | 目標名字＋一句 | 一拍 | exact（字串與停拍）／strong inference（0 點那一則：`0FB7h` 在 `1713h` 的 `0191h` 裡，`1732h` 讀 `6776h`）|
+| `ui.statusBandaged` | overlay-08 `0FDDh` `0B 69 73 20 62 61 6E 64 61 67 65 64` "is bandaged" | `0FE9h` 沿 `DS:5CF4h` 找 `+10Ch == 5` 的隊員，`104Ch..1067h` entry 20(那一位, 字串, 0Ah, 1) | 被包紮的人的名字 | 一拍 | exact |
+| `ui.statusCoughing` | overlay-12 `0A6Ah` "is coughing" | entry 29 `0A76h`：runtime `+2` 非 0 → `0A8Bh..0AA6h` entry 20(記錄, 字串, 0Ah, 1) | 名字＋一句 | 一拍 | exact |
+| `ui.statusHeld`／`ui.statusAsleep` | 原版沒有 | 群組 7 的 `33h 34h 35h 1Fh` 共用 overlay-12 entry 48（`1352h..1367h`：只有 `9A CA 00 0A 01` entry 34）| 不印字；remake 的狀態列帶名字，隨即被 `TURN ENDED` 蓋掉 | — | exact（不印）|
+| `ui.statusQuick` | 原版沒有 | overlay-08 `0447h..0477h`（`120Eh`、`011Dh:0034h`、`026Bh:00F6h`、`Delay(200)`、AI）沒有字串 | remake 的狀態列帶名字 | — | exact（不印）|
+| `ui.castLostImage` | overlay-12 `09BFh` "lost an image" | `09FFh..0A1Ah` entry 20(記錄, 字串, 0Ah, 1) | 名字＋一句 | 一拍 | exact |
+| `ui.castUnaffected` | overlay-24 `1648h` `0D 69 73 20 55 6E 61 66 66 65 63 74 65 64` "is Unaffected" | entry 20 `1695h..16B0h`(目標, 字串, 0Ah, 1)，群組 9 擋下與「豁免成功且規則 1」兩條路 | 名字＋一句 | 一拍 | exact |
+| `ui.castAlreadyTargeted` | overlay-13 `2098h` "Already been targeted" | `2363h`：`[bp+0Ah] == 0`（玩家）→ `2378h` entry 19；AI 不印 | 第 24 列固定字串，不帶名字 | 一拍 | exact |
+| `ui.foeUsesItem` ＋ `ui.foeItemLine` | 上一節 | overlay-19 `1B4Ah` entry 20(…, 0)、`1B6Eh` "Item:"、`1B8Dh` entry 1 印物品名（entry 1 `0441h..0753h` 沒有 `0198h:0061h`），接著 **`1BB3h` 等一拍**、`1BB8h` entry 21 清右欄；之後 `DS:6CB3h = 1` 呼叫 overlay-22 entry 5 推旗標 0，所以用物品不印 "Casts a Spell" | 名字＋一句；第 23 列 "Item:" 加物品名 | 物品名之後一拍 | exact |
+| `ui.foeUndeadTurned` | overlay-13 `1140h` "is turned" | `129Dh..12A7h` entry 26(記錄, 1, 字串)：`20DDh` entry 20(…, 0Ah, 0)，然後閃光動畫 (遊戲速度 + 1) 輪 × 4 格，每格 `0512h:029Eh`（Delay）46h ms（`2130h..21ADh`）；速度 0 才另外 `21BAh` 等一拍 | 名字＋一句 | 動畫的長度 | exact |
+| `ui.castAborted`（玩家） | 上一節 | overlay-22 `0EE7h` entry 19，玩家按 Y 之後與 AI 走同一段 | 第 24 列 | 一拍 | exact |
+| `ui.foeCasts` ＋ `ui.foeSpellLine`（玩家） | 上一節 | 玩家的兩個呼叫端 overlay-08 `0410h`（當場放）、`0352h`（放出開始施法的那一條）都推 `[bp+0Ah] = 1`，所以 `0D23h` 一樣印 | 同 AI | 一拍，拍完才挑目標 | exact |
+| `ui.aimBlocked`／`ui.aimOutOfRange`／`ui.aimNoTarget` | 原版沒有 | 瞄準列 `2A7Ch..2B8Bh`：射程外（`2AF2h`）、目標是自己、`010Ah:00F7h`／`0101h`／`00C0h`／`00FCh` 不過就不接 "Target "（`2A50h`），不印說明 | remake 按 ENTER 時的說明，帶名字 | — | exact（不印）|
+| `ui.castHeld`、`ui.castHit`、`ui.castDown`、`ui.castResisted`、`ui.castNotPerson`、`ui.castNoEffect`、`ui.castDispelled` | 各支處理常式自己的字串（overlay-22 `1648h` "is held"、`1506h` "falls asleep"、overlay-24 `1284h` " points of damage " 等）| 這幾句的呼叫端沒有逐支讀 | remake 的狀態列，帶名字 | — | unknown（原版印法）|
+
+英文照原版字串、以大寫字模顯示；"Hitting for" 那一句的數字與單複數照 `03E7h..0433h`。
+繁中是對應譯句。
+
+remake 的對應：
+
+- `attackNotice`（`combat_notice.go`）是 entry 4 的畫面：`combatNotice` 多了 `Target`／`Detail`
+  兩欄，名字在第 0Ah 列、"Attacks" 第 0Bh 列、目標名字第 0Ch 列、傷害那一句第 0Dh 列起。
+  `resolveAttackSwings` 每一下命中排一則（在扣生命值與 "lost a spell" 之前，所以
+  "lost a spell" 排在它的後面，對上 `0509h` 那一拍在前）、被 "Avoids it" 擋掉的那一下排
+  "Avoids it" 與 0 點那一則、一下都沒中排一則 "and Misses"。
+- "goes down"／"and is Dying"／"is killed" 是不停拍的 entry 20，照上一節的慣例只進狀態列。
+- `itemUseLine` 把名字、那一句與 "Item:" 那一行排成一則、停一拍；`turnedNotice` 的長度是
+  (遊戲速度 + 1) × 4 × 70 ms 換成影格。
+- 包紮、咳嗽、Avoids it、lost an image、is Unaffected 經 `panelNotice`；Already been targeted
+  與玩家的 Spell Aborted 經 `footerNotice`；玩家的 `aimSpell` 在 `a.combatItem == nil`（對
+  `DS:6CB3h` 為 0）時先呼叫 `castNotice`。
+- `spellLabel` 英文回 START.EXE 名稱表的拼法（`spellEntryLabel`，施法清單同一支），繁中回
+  說明書譯名；`noticeSpellName` 是它的大寫。
+- 沒有做的：模式 1／2／3 的 "(from behind) "、"-Backstabs-"、"slays helpless"、
+  "with one cruel blow"（remake 沒有背刺與斬殺無助者，只印 "Attacks"）；`0D23h` 之後的顯示
+  時機與第 23 列何時清（上一節）；表末那幾支處理常式自己的訊息。
+- 測試（從 `Update()` 送鍵，英繁兩語）：`TestAttackNoticeNamesAttackerAndTarget`、
+  `TestAttackNoticeHoldsForOneBeat`、`TestAimOutOfRangeNamesTheTarget`、
+  `TestBandageNoticeNamesTheMember`、`TestPlayerCastAnnouncesBeforeAiming`、
+  `TestPlayerAbortSpellHoldsOnTheFooter`、`TestAlreadyTargetedIsAFixedFooter`、
+  `TestItemUseHoldsAfterTheItemLine`、`TestTurnedUndeadHoldsForTheSparkle`、
+  `TestNoticeNameInkFollowsTheRecord`。
 
 #### 神殿那一場第一回合為什麼一直中止（exact）
 

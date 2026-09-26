@@ -591,8 +591,17 @@ func (a *app) spellLabel(id uint8) string {
 	}
 	if a.spells != nil {
 		if spell, err := a.spells.catalogue.SpellByID(id); err == nil {
-			return spell.Text
+			return a.spellEntryLabel(spell)
 		}
 	}
 	return fmt.Sprintf("%d", id)
+}
+
+// spellEntryLabel 依語言挑名字：英文是 START.EXE 名稱表（`DS:2883h + 編號 × 29h`，
+// spec 068）的拼法，繁中是說明書譯名（#110）。
+func (a *app) spellEntryLabel(spell gamepack.Spell) string {
+	if a.language == languageEnglish && spell.Name != "" {
+		return spell.Name
+	}
+	return spell.Text
 }
