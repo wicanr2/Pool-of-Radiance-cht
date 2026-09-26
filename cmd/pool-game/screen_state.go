@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/creation"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
@@ -217,6 +219,40 @@ func (a *app) publishScreenName() {
 		return
 	}
 	a.screenStateLast = name
+}
+
+// publishAutomationSync 在 `-screen-state` 旁邊多寫一份 `<檔名>.sync`，一行：
+//
+//	<Update 次數> <按下數> <放開數> <畫面識別字> <archive>:<block> <x> <y> <朝向>
+//
+// 發行包對拍（#92）原本送鍵靠「按下 0.12 秒、放開、再睡 0.3 秒」。那有兩個洞：
+//
+//   - Ebiten 每一幀才輪詢一次鍵盤（`GetKey`），一幀拖過 0.12 秒時，按下與放開
+//     都落在兩次輪詢之間，這一下就整個不見了。冷啟動、換地圖載資源的那幾幀
+//     最容易拖長，所以症狀是「偶爾」：少走一步，等不到下一個畫面。
+//   - 睡完就讀畫面，讀到的可能是這一步還沒處理完的舊狀態，於是該清的格子字
+//     沒清，下一步被擋掉。
+//
+// 所以腳本改成按住鍵直到這裡的按下數變了才放開、放開後等放開數也變了（不然
+// 緊接著再按同一個鍵，兩次按下會被輪詢併成一次），再以 Update 次數等畫面
+// 與位置連續幾拍不動。計數寫在這一格開頭：上一格讀到的鍵已經在上一格處理完，
+// 這一行跟著上面那份畫面識別字一起反映處理後的結果。
+// 位置與朝向也報出來：轉向與走一步不換畫面識別字，不報的話只能盲按。
+func (a *app) publishAutomationSync() {
+	if a.screenStatePath == "" {
+		return
+	}
+	line := fmt.Sprintf("%d %d %d %s %d:%d %d %d %d\n", a.syncTicks, a.syncKeys, a.syncReleased, a.screenName(),
+		a.spawn.Map.Archive, a.spawn.Map.BlockID, a.spawn.X, a.spawn.Y, a.spawn.Facing)
+	a.syncTicks++
+	a.syncKeys += uint64(len(inpututil.AppendJustPressedKeys(nil)))
+	a.syncReleased += uint64(len(inpututil.AppendJustReleasedKeys(nil)))
+	path := a.screenStatePath + ".sync"
+	temp := path + ".tmp"
+	if err := os.WriteFile(temp, []byte(line), 0o644); err != nil {
+		return
+	}
+	_ = os.Rename(temp, path)
 }
 
 // defaultScreenStateDir 只是把相對路徑釘在工作目錄，避免寫到別處去。

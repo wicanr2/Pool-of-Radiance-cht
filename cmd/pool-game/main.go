@@ -183,6 +183,11 @@ type app struct {
 	// 不用猜時間（screen_state.go）。空字串代表不寫。
 	screenStatePath string
 	screenStateLast string
+	// syncTicks／syncKeys／syncReleased 是 `-screen-state` 旁邊那份 `.sync`
+	// 的計數（#92）：跑過幾次 Update、遊戲讀到幾次按下與幾次放開。
+	syncTicks       uint64
+	syncKeys        uint64
+	syncReleased    uint64
 	keys            keySource
 	nameInput       string
 	portrait        *ebiten.Image
@@ -791,6 +796,7 @@ func (a *app) Update() error {
 	// 這一格的畫面識別字（screen_state.go）。放在最前面：上一格處理完的
 	// 結果就是這一格玩家看到的東西，而腳本要等的正是那個。
 	a.publishScreenName()
+	a.publishAutomationSync()
 	// 配樂跟著畫面狀態走（spec 128）。沒有音訊資產時 musicPlayer 是 nil，
 	// 這一行什麼都不做。
 	a.updateMusic()

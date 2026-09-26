@@ -109,7 +109,8 @@ GATE
 
 # 容器裡那段鍵序走到市政廳外那一格（spec 082）：導覽結束在 (0,4) 朝西，
 # 左轉兩次朝東再走三步就到 (3,4)。轉向與移動不會改變畫面識別字，所以那一段用
-# pulse 直接按，不能用 step——step 會因為識別字早就符合而一次都不按。
+# turn／east_step（看 `.sync` 的朝向與座標），不能用 step——step 會因為識別字
+# 早就符合而一次都不按。
 #
 # 路上的格子會印字，而事件 pending 的時候方向鍵按不動，所以每走一步要把純文字
 # 的那種按掉（east_step）。它只吃 adventure-cell-text：市政廳第一段是腳本自己
@@ -119,8 +120,27 @@ GATE
 # `bash -c '…'` 的單引號字串，
 # 中文註解在裡面曾經讓主機這一側報 "指令找不到"（對拍照樣跑完、exit 0，
 # 只是尾巴多一行雜訊，看起來像對拍壞了）。註解留在主機端這裡。
+#
+# **送鍵與擷圖不靠 sleep（#92）。** 遊戲在 `-screen-state` 旁邊寫一份
+# `<檔名>.sync`：Update 次數、讀到的按下數與放開數、畫面識別字、地圖、座標、
+# 朝向（cmd/pool-game/screen_state.go 的 publishAutomationSync）。
+#   * pulse：按住直到按下數變了才放開，放開後等放開數變了才回來。Ebiten 每幀
+#     才輪詢一次鍵盤，舊版「按 0.12 秒就放」在一幀拖長時整下不見；回來時那一格
+#     的處理結果也已經寫出來了，不必再睡。
+#   * turn／east_step：按完要看到朝向或座標真的變了，否則當場 die；走完以
+#     Update 次數等畫面與位置連續 90 拍（比速度 4 的一拍 54 格長）不動，再清
+#     格子文字。舊版睡 0.3 秒就讀畫面，格子字還沒出來就被當成沒有，下一步
+#     被擋、少走一格，停在 adventure-move 等不到 adventure-cell-menu。
+#   * shot：先等 30 拍不動，再連拍到兩張逐位元組相同才收（§7 同一條做法），
+#     拍完確認畫面識別字沒換；次數記在 shot-attempts.txt，二十張都不一致的
+#     記在 unstable.txt。
+# 法術兩張的數字會跳（spells 52055／52065）也是掉鍵：牧師流程在種族頁按五下
+# End（游標往下、會繞回），掉一下就換了種族，擲出來的人物不同，法術頁那一行
+# 「已記 0/1,還能記 1」變成「0/0,還能記 0」。不是游標閃爍，畫面本身沒有閃的東西。
 rm -rf "$OUT"; mkdir -p "$OUT"
-docker run --rm --network none --memory 3g --cpus "${PARITY_CPUS:-2}" --pids-limit 384 \
+# POOL_PARITY_CONTAINER 可替這個容器命名，並行跑好幾份時分得出是誰的。
+docker run --rm ${POOL_PARITY_CONTAINER:+--name "$POOL_PARITY_CONTAINER"} \
+  --network none --memory 3g --cpus "${PARITY_CPUS:-2}" --pids-limit 384 \
   --log-opt max-size=10m --log-opt max-file=3 \
   -u "$(id -u):$(id -g)" --tmpfs /tmp/.X11-unix:rw,mode=1777 \
   -e HOME=/tmp/home -e LANG_MODE="$LANG_MODE" \
@@ -146,7 +166,7 @@ export DISPLAY=:99
 until test -S /tmp/.X11-unix/X99; do sleep 0.1; done
 
 STATE=/tmp/pool-screen
-rm -f "$STATE"
+rm -f "$STATE" "$STATE.sync"
 if test "$LANG_MODE" = zh; then
   set -- -lang zh -eten-font /fonts/stdfont.15
 else
@@ -168,8 +188,33 @@ eval "$(xdotool getwindowgeometry --shell "$window")"
 # 舊的 (1190,790) 會落在視窗裡。
 xdotool mousemove 1390 890
 
-screen() { cat "$STATE" 2>/dev/null | tr -d "\n"; }
-die() { echo "$1" >&2; echo "目前畫面：$(screen)" >&2; tail -20 /tmp/game.log >&2 || true; exit 1; }
+sync_read() {
+  s_tick=0; s_down=0; s_up=0; s_screen=; s_map=; s_x=; s_y=; s_face=
+  if test -f "$STATE.sync"; then read -r s_tick s_down s_up s_screen s_map s_x s_y s_face < "$STATE.sync" || true; fi
+}
+screen() { sync_read; printf "%s" "$s_screen"; }
+where() { sync_read; printf "%s %s %s %s" "$s_map" "$s_x" "$s_y" "$s_face"; }
+die() {
+  echo "$1" >&2; sync_read
+  echo "目前畫面：$s_screen 位置：$s_map $s_x $s_y $s_face 第 $s_tick 拍" >&2
+  tail -20 /tmp/game.log >&2 || true; exit 1
+}
+wait_ticks() {
+  local t0 w=0; sync_read; t0=$s_tick
+  while sync_read; test $((s_tick - t0)) -lt "$1"; do
+    sleep 0.02; w=$((w+1)); test "$w" -lt 3000 || die "遊戲停住了（等 $1 拍）"
+  done
+}
+settle() {
+  local need last since now n
+  need=${1:-90}; sync_read; last="$s_screen $s_map $s_x $s_y $s_face"; since=$s_tick; n=0
+  while :; do
+    sleep 0.03; sync_read; now="$s_screen $s_map $s_x $s_y $s_face"
+    if test "$now" != "$last"; then last=$now; since=$s_tick; fi
+    test $((s_tick - since)) -lt "$need" || return 0
+    n=$((n+1)); test "$n" -lt 4000 || die "畫面一直在變"
+  done
+}
 await() {
   want=$1; rounds=${2:-150}; n=0
   while test "$(screen)" != "$want"; do
@@ -184,73 +229,109 @@ await_adventure() {
     test "$n" -lt "$rounds" || die "等不到自由移動畫面"
   done
 }
-pulse() { xdotool keydown "$1"; sleep 0.12; xdotool keyup "$1"; sleep 0.12; }
-# 第三個參數是「最多按幾次」。先前它被忽略——簽章只取 $1／$2，而呼叫端寫的
-# 那個 60 沒有生效，上限一直是寫死的 40。導覽那一段要等的時間本來就長，
-# 於是偶爾就在那裡 die 掉。
+pulse() {
+  local d0 u0 n
+  sync_read; d0=$s_down; u0=$s_up; n=0
+  xdotool keydown "$1"
+  while sync_read; test "$s_down" -le "$d0"; do
+    sleep 0.02; n=$((n+1))
+    test "$n" -lt 1500 || { xdotool keyup "$1"; die "遊戲讀不到按鍵 $1"; }
+  done
+  xdotool keyup "$1"
+  n=0
+  while sync_read; test "$s_up" -le "$u0"; do
+    sleep 0.02; n=$((n+1))
+    test "$n" -lt 1500 || die "遊戲讀不到放開 $1"
+  done
+}
 step() {
   key=$1; want=$2; limit=${3:-40}; attempt=0
   while test "$(screen)" != "$want"; do
     attempt=$((attempt+1))
     test "$attempt" -le "$limit" || die "按 $key 走不到 $want（試了 $limit 次）"
     pulse "$key"
-    waited=0
-    while test "$(screen)" != "$want" && test "$waited" -lt 15; do
-      sleep 0.1; waited=$((waited+1))
+    sync_read; t0=$s_tick; n=0
+    while test "$s_screen" != "$want" && test $((s_tick - t0)) -lt 90; do
+      sleep 0.03; sync_read; n=$((n+1)); test "$n" -lt 3000 || die "遊戲停住了"
     done
   done
 }
+wait_moved() {
+  local before t0
+  before=$1; sync_read; t0=$s_tick
+  while test "$s_map $s_x $s_y $s_face" = "$before"; do
+    test $((s_tick - t0)) -lt 60 || return 1
+    sleep 0.02; sync_read
+  done
+}
+turn() {
+  local before
+  before=$(where); pulse "$1"
+  wait_moved "$before" || die "按 $1 沒有轉向（停在 $before）"
+}
+east_step() {
+  local before n
+  before=$(where); pulse Up
+  wait_moved "$before" || die "往前走不動（停在 $before）"
+  settle 90
+  n=0
+  while test "$(screen)" = "adventure-cell-text"; do
+    pulse Return
+    settle 90
+    n=$((n+1))
+    test "$n" -lt 20 || die "清不掉格子事件"
+  done
+}
 shot() {
-  ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
-    -i ":99+${X},${Y}" -frames:v 1 "/out/$1.png"
+  local first prev sum n
+  settle 30
+  first=$(screen); prev=; n=0
+  while :; do
+    ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+      -i ":99+${X},${Y}" -frames:v 1 /tmp/shot.png
+    sum=$(md5sum < /tmp/shot.png)
+    if test "$sum" = "$prev"; then break; fi
+    prev=$sum; n=$((n+1))
+    if test "$n" -ge 20; then echo "$1 連拍 20 張都不一致，收最後一張" >&2; echo "$1" >> /out/unstable.txt; break; fi
+    wait_ticks 6
+  done
+  test "$(screen)" = "$first" || die "拍 $1 的時候畫面從 $first 換掉了"
+  mv /tmp/shot.png "/out/$1.png"
+  echo "$1 $n" >> /out/shot-attempts.txt
 }
 
 # 標題：不用按任何鍵，那一張本來就是開場。
 await title
-sleep 0.6
 shot remake-title
 
 # 建隊到進城，每一站拍一張。原版同一段由 tools/dosgolem-reference.sh 拍，
 # 兩邊逐張對得起來，版面差在哪就看得出來。
 step Return menu
-sleep 0.4
 shot remake-menu-empty
 step c creation-race
-sleep 0.4
 shot remake-race
 step Return creation-gender
-sleep 0.4
 shot remake-gender
 step Return creation-class
-sleep 0.4
 shot remake-class
 step Return creation-alignment
-sleep 0.4
 shot remake-alignment
 step Return creation-roll
-sleep 0.5
 shot remake-sheet
 step Return creation-name
-sleep 0.3
 shot remake-name
 xdotool type --delay 120 HERO
-sleep 0.4
+wait_ticks 10
 step Return creation-portrait
-sleep 0.4
 shot remake-portrait
 step k creation-icon-0
-sleep 0.4
 shot remake-icon
 step e creation-icon-confirm
-sleep 0.4
 shot remake-icon-confirm
 step y menu
-sleep 0.4
 pulse a
-sleep 0.6
 shot remake-menu-party
 step b adventure-intro
-sleep 0.6
 shot remake-intro
 # 導覽是自己會跑完的：tourActive 底下走的是 ECL，每一步靠 tourDelay 逐幀
 # 遞減推進（Game Speed 是「等一拍」的統一單位）。按 Return 只是推過中間需要
@@ -258,54 +339,34 @@ shot remake-intro
 # Ebiten 的幀率掉下來，同樣的步數要等更久。60 次（約 90 秒）在負載高時不夠，
 # 症狀是「按 Return 走不到 adventure-move、目前畫面 adventure-tour」。
 step Return adventure-move 200
-sleep 0.6
 shot remake-first-person
 # 平面圖：A 把第一人稱視野換成俯視圖（原版指令列的 AREA）。基準那一側
 # 也是在導覽結束的同一格按 a 拍的，所以兩邊站的位置一樣。
 step a adventure-map
-sleep 0.6
 shot remake-map
 step a adventure-move
-sleep 0.4
 # 檢視人物：原版指令列的 VIEW。**兩邊多了一層**——原版有「選定角色」那個
 # 全域（ds:5CF0h），按 v 直接開資料頁；remake 沒有那個全域，所以先挑人
 # （view-pick）再按 Return 才進資料頁。退出鍵也不同：原版那一頁底下是
 # VIEW: TRADE DROP EXIT（按 e），remake 是 ESC 返回，而且要按兩次
 # （先從資料頁回挑人那一層，再退出去）。
 step v view-pick
-sleep 0.3
 step Return view-sheet
-sleep 0.6
 shot remake-view-sheet
 pulse Escape
-sleep 0.3
 step Escape adventure-move
-sleep 0.4
 # 戰鬥畫面（spec 129）。原版那一側是走到第一場遭遇拍的；remake 這一側用 F5
 # 叫出同一支繪製——盤面內容本來就不同，這一項看的是版面。
 # 市政廳外那一格：見主機端那一段註解。
-east_step() {
-  pulse Up
-  sleep 0.3
-  n=0
-  while test "$(screen)" = "adventure-cell-text"; do
-    pulse Return
-    sleep 0.2
-    n=$((n+1))
-    test "$n" -lt 20 || die "走到市政廳的路上清不掉格子事件"
-  done
-}
-pulse Left
-pulse Left
+turn Left
+turn Left
 east_step
 east_step
 east_step
 await adventure-cell-menu
-sleep 0.6
 shot remake-city-hall-first
 pulse Return
 await adventure-cell-done
-sleep 0.6
 shot remake-city-hall-second
 
 # 紮營（spec 135）：原版指令列的 ENCAMP，兩邊的指令列一樣
@@ -314,85 +375,71 @@ shot remake-city-hall-second
 # 狀態變掉，症狀是「等不到畫面 adventure-cell-menu」。兩邊只要各自走到同一
 # 個畫面就好，先後順序不必跟基準那一側一致。
 step e camp
-sleep 0.6
 shot remake-camp
 # REST 是紮營底下最直接的一層；兩側都按 R 進去、E 回到最外層。
 step r camp-rest
-sleep 0.6
 shot remake-camp-rest
 step e camp
 # ALTER 底下七個狀態都用原版的字母／數字鍵走，不用 direct-entry。
 step a camp-alter
-sleep 0.4
 shot remake-camp-alter
 step s camp-speed
-sleep 0.4
 shot remake-camp-speed
 step e camp-alter
 step p camp-pics
-sleep 0.4
 shot remake-camp-pics
 step e camp-alter
 step i camp-icon
-sleep 0.5
 shot remake-camp-icon
 step e camp-alter
 step o camp-order-select
-sleep 0.4
 shot remake-camp-order-select
 step 1 camp-order-place
-sleep 0.4
 shot remake-camp-order-place
 step 1 camp-order-select
 step e camp-alter
 step d camp-drop
-sleep 0.4
 shot remake-camp-drop
 step n camp-alter
 step e camp
 step s camp-quit
-sleep 0.4
 shot remake-camp-quit
 step n camp
 step e adventure-cell-done
-sleep 0.4
 
-pulse Right
-pulse Right
+turn Right
+turn Right
 east_step
 east_step
-pulse Right
-pulse Up
+turn Right
+east_step
 await adventure-cell-menu
 pulse Return
 await temple
-sleep 0.6
 shot remake-temple
 pulse Left
 pulse Return
 await_adventure
-pulse Right
-pulse Right
+turn Right
+turn Right
 for unused in 1 2 3 4 5 6 7 8; do east_step; done
-pulse Left
+turn Left
 for unused in 1 2 3 4 5 6 7; do east_step; done
 await adventure-cell-menu
 pulse Return
 await shop
-sleep 0.6
 shot remake-shop
 pulse Escape
 await_adventure
 
 step F5 tactical
-sleep 0.6
 shot remake-tactical
 
 kill "$game" 2>/dev/null || true
 wait "$game" 2>/dev/null || true
 game=
 STATE=/tmp/pool-screen-caster
-rm -f "$STATE"
+rm -f "$STATE" "$STATE.sync"
 (exec ./squashfs-root/AppRun -zip /zip/pool.zip -screen-state "$STATE" \
   -dice-seed 136 -capture-camp-fire-frame 0 "$@") >/tmp/game-caster.log 2>&1 &
 game=$!
@@ -416,6 +463,7 @@ step Return creation-alignment
 step Return creation-roll
 step Return creation-name
 xdotool type --delay 120 HERO
+wait_ticks 10
 step Return creation-portrait
 step k creation-icon-0
 step e creation-icon-confirm
@@ -424,11 +472,9 @@ pulse a
 step b adventure-intro
 step Return adventure-move 500
 step i equipment
-sleep 0.5
 shot remake-equipment
 step i adventure-move
 step k spells-cleric-1
-sleep 0.5
 shot remake-spells
 pulse m
 step k adventure-move
@@ -459,7 +505,6 @@ while test "$(screen)" != field-cast; do
   pulse c; sleep 0.3
 done
 if test "$(screen)" = field-cast; then
-  sleep 0.5
   shot remake-field-cast
   # 挑人那一頁開得起來，**法術清單那一頁要真的有記好的法術**才開得了；
   # 休息被城衛隊攔掉就沒有。開不了就只少這一張。
@@ -470,7 +515,6 @@ if test "$(screen)" = field-cast; then
     pulse Return; sleep 0.3
   done
   if test "$(screen)" = field-cast-spell; then
-    sleep 0.5
     shot remake-field-cast-spell
   fi
 fi
