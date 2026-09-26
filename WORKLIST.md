@@ -49,18 +49,21 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **AI 施法的原版骰流收據：dosgolem 走到有施法怪物的遭遇，逐擲對照。** 功能已接上（entry 4、23F9h、Magic On/Off，與玩家共用 castSpell；d7 d7 與原版零錯位）。缺一場有施法怪物的 dosgolem 收據，挑法術與挑目標的 Roll(1,n) 只有程式碼證據。
       **驗收**：dosgolem 收據含施法怪物的回合，remake 逐擲重現；spec 096 的自承拿掉。
       **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
-- [ ] **怪物的物品鏈沒有載入。** 怪物記錄 +C8h 起的物品串列未載入，entry 3 對怪物挑不到物品；0C14h 施法者等級來源與物品 +3Eh 待讀。
-      **驗收**：怪物物品來源 exact 並載入，會用物品的怪物照 entry 3 用。
-      **討論**：[#76](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/76)
-- [ ] **戰鬥中物品選單還缺 Ready／Drop／Halve／Join、卷軸、+0Bh 為 0 的物品法術。** ov19 entry 6 其餘選項、entry 12 與 ov22 entry 7 的卷軸、ov22 entry 5 戰鬥中回傳。
-      **驗收**：三項照原版接上並有送鍵測試。
-      **討論**：[#84](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/84)
 - [ ] **remake 建角不掛種族效果。** overlay-16 依種族掛效果：矮人 5Ah 61h 1Ah 2Fh、侏儒 61h 12h 2Fh 30h、精靈 6Bh、半精靈 7Ch；remake 沒掛。
       **驗收**：建角照原版掛、舊存檔補上，與原版 .CHA 對照的送鍵測試。
       **討論**：[#88](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/88)
 - [ ] **只掛效果的法術在戰鬥裡沒有作用。** 祈禱、隱形、閃現、致盲、降咒等落到 cast.go default 分支，沒掛效果。
       **驗收**：逐支照原版掛效果並實際作用，送鍵測試。
       **討論**：[#89](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/89)
+- [ ] **探索中的物品頁與原版不同。** 裝備自動換同類、沒有 Use／Drop／Halve／Join、+3Eh 穿戴效果沒接、already using 前綴沒讀。
+      **驗收**：各條照原版接上並有送鍵測試，穿戴效果三件真實物品實測。
+      **討論**：[#91](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/91)
+- [ ] **怪物的武器與護甲沒有重算（overlay-25 entry 7）。** 命中、傷害、AC、射程沒照身上的裝備。
+      **驗收**：entry 7 照原版套上，帶弓射程、帶甲 AC 的測試。
+      **討論**：[#93](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/93)
+- [ ] **戰利品折算經驗值與 NPC 分錢。** overlay-05 0224h..0306h、1295h 未接。
+      **驗收**：兩項照原版接上並有測試，經驗值對原版收據。
+      **討論**：[#94](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/94)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -91,6 +94,12 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **命中效果的尾巴：2Fh、21h 改 +111h、群組 4、0C4Dh、014Dh 順序。** 五條細節見 issue。
       **驗收**：各條附位址打勾，接上的有測試。
       **討論**：[#90](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/90)
+- [ ] **發行包對拍擷圖流程偶發卡住、法術兩張數字會跳。** v.1.1.19 第一次在神殿格卡住；spells／field-cast 兩次執行數字不同。
+      **驗收**：改成等畫面狀態，同一發行包連跑 5 次逐欄相同。
+      **討論**：[#92](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/92)
+- [ ] **戰後畫面細節：標題、無戰利品選單、效果串列反序、TREASURE 時機。** 見 issue 四條。
+      **驗收**：各條附位址打勾，畫面改動跑對拍。
+      **討論**：[#95](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/95)
 
 ### 三、版面與資料的差距
 

@@ -121,18 +121,6 @@
       "github_issue": 70
     },
     {
-      "id": "monster-item-chains",
-      "layer": "feature",
-      "title": "怪物的物品鏈沒有載入",
-      "body": "怪物記錄 +C8h 起的物品串列未載入，entry 3 對怪物挑不到物品；0C14h 施法者等級來源與物品 +3Eh 待讀。",
-      "acceptance": "怪物物品來源 exact 並載入，會用物品的怪物照 entry 3 用。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 76
-    },
-    {
       "id": "pool-money-edges",
       "layer": "verification",
       "title": "公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款",
@@ -179,18 +167,6 @@
         "note": "要人判"
       },
       "github_issue": 83
-    },
-    {
-      "id": "combat-item-menu-rest",
-      "layer": "feature",
-      "title": "戰鬥中物品選單還缺 Ready／Drop／Halve／Join、卷軸、+0Bh 為 0 的物品法術",
-      "body": "ov19 entry 6 其餘選項、entry 12 與 ov22 entry 7 的卷軸、ov22 entry 5 戰鬥中回傳。",
-      "acceptance": "三項照原版接上並有送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 84
     },
     {
       "id": "item-aim-range-and-drain",
@@ -251,6 +227,66 @@
         "note": "要人判"
       },
       "github_issue": 90
+    },
+    {
+      "id": "exploration-item-page",
+      "layer": "feature",
+      "title": "探索中的物品頁與原版不同",
+      "body": "裝備自動換同類、沒有 Use／Drop／Halve／Join、+3Eh 穿戴效果沒接、already using 前綴沒讀。",
+      "acceptance": "各條照原版接上並有送鍵測試，穿戴效果三件真實物品實測。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 91
+    },
+    {
+      "id": "parity-capture-flakiness",
+      "layer": "verification",
+      "title": "發行包對拍擷圖流程偶發卡住、法術兩張數字會跳",
+      "body": "v.1.1.19 第一次在神殿格卡住；spells／field-cast 兩次執行數字不同。",
+      "acceptance": "改成等畫面狀態，同一發行包連跑 5 次逐欄相同。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 92
+    },
+    {
+      "id": "monster-gear-recompute",
+      "layer": "feature",
+      "title": "怪物的武器與護甲沒有重算（overlay-25 entry 7）",
+      "body": "命中、傷害、AC、射程沒照身上的裝備。",
+      "acceptance": "entry 7 照原版套上，帶弓射程、帶甲 AC 的測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 93
+    },
+    {
+      "id": "treasure-xp-and-npc-share",
+      "layer": "feature",
+      "title": "戰利品折算經驗值與 NPC 分錢",
+      "body": "overlay-05 0224h..0306h、1295h 未接。",
+      "acceptance": "兩項照原版接上並有測試，經驗值對原版收據。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 94
+    },
+    {
+      "id": "post-combat-screen-details",
+      "layer": "verification",
+      "title": "戰後畫面細節：標題、無戰利品選單、效果串列反序、TREASURE 時機",
+      "body": "見 issue 四條。",
+      "acceptance": "各條附位址打勾，畫面改動跑對拍。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 95
     }
   ]
 }
