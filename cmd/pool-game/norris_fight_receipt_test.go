@@ -1,9 +1,9 @@
 package main
 
 // 古托井井底那一場（#37，spec 137「古托井與索寇要塞的門」）：ECL8/29 `9DDBh..9DE9h`
-// 三條 LOAD MONSTER 是 32×1、57×5、1×9，MON8CHA 那三筆記錄的 `+2Dh`／`+111h` 給的
-// THAC0 與 AC，remake 擺上盤面的 combatant 要逐格相同——蜥蜴人 AC 4、THAC0 16 是
-// 原版資料，不是 remake 讀錯。位址基準先拿 `9A41h` 那條已解出的 GETTABLE 對過。
+// 三條 LOAD MONSTER 是 32×1、57×5、1×9，MON8CHA 那三筆記錄的 `+2Dh` 給的 THAC0 與
+// 樣板 AC 再經開打時的 entry 7 依身上物品重算（spec 147），remake 擺上盤面的 combatant
+// 要逐格相同——蜥蜴人 AC 4、THAC0 16 是原版資料，不是 remake 讀錯。位址基準先拿 `9A41h` 那條已解出的 GETTABLE 對過。
 
 import (
 	"bytes"
@@ -66,12 +66,15 @@ func TestNorrisFightCompositionAndNumbersComeFromTheOriginalData(t *testing.T) {
 		name  string
 		base  uint8 // +2Dh
 		thac0 int   // 表面值
-		ac    int
+		ac    int   // 樣板的 +111h
+		// combatAC 是開打時 entry 7 依身上的物品重算之後的 AC（spec 147）：諾里斯穿著盾與
+		// 盔甲（樣板 7 只算了敏捷），狗頭人首領拿著盾，蜥蜴人沒有物品。
+		combatAC int
 	}
 	expects := []expect{
-		{32, "NORRIS THE GRAY", 45, 14, 7},
-		{57, "LIZARDMAN", 44, 16, 4},
-		{1, "KOBOLD LEADER", 41, 19, 7},
+		{32, "NORRIS THE GRAY", 45, 14, 7, 1},
+		{57, "LIZARDMAN", 44, 16, 4, 4},
+		{1, "KOBOLD LEADER", 41, 19, 7, 6},
 	}
 	for _, e := range expects {
 		record, err := gamepack.ReadDOSMonsterRecord(zipPath, 8, e.id)
@@ -153,8 +156,8 @@ func TestNorrisFightCompositionAndNumbersComeFromTheOriginalData(t *testing.T) {
 		if got := 60 - int(state.THAC0[index]); got != e.thac0 {
 			t.Errorf("combatant %d (%s): THAC0 %d, record says %d", index, e.name, got, e.thac0)
 		}
-		if got := 60 - int(state.ArmorClass[index]); got != e.ac {
-			t.Errorf("combatant %d (%s): AC %d, record says %d", index, e.name, got, e.ac)
+		if got := 60 - int(state.ArmorClass[index]); got != e.combatAC {
+			t.Errorf("combatant %d (%s): AC %d, entry 7 with its items says %d", index, e.name, got, e.combatAC)
 		}
 		if got := state.MaxHitPoints[index]; got != hp[e.name] {
 			t.Errorf("combatant %d (%s): max HP %d, record says %d", index, e.name, got, hp[e.name])
@@ -163,5 +166,5 @@ func TestNorrisFightCompositionAndNumbersComeFromTheOriginalData(t *testing.T) {
 	if foes != 15 {
 		t.Fatalf("board has %d foes, want 15 (1 + 5 + 9; spec 061 deployment)", foes)
 	}
-	t.Logf("Norris's hall: 15 foes on the board; THAC0 14/16/19, AC 7/4/7, HP 25/11/4 all from MON8CHA")
+	t.Logf("Norris's hall: 15 foes on the board; THAC0 14/16/19, AC 1/4/6 (template 7/4/7 plus carried gear), HP 25/11/4 from MON8CHA")
 }

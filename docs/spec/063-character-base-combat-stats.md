@@ -158,11 +158,12 @@ remake：`MonsterRecord.CombatThac0Internal()` ＝ `+2Dh` ＋（`+0AAh` 開著�
 力量修正 +1）；`TestNorrisTHAC0ReadsTheBaseFieldNotTheTemplate`、
 `TestMonsterTHAC0MatchesTheOrcHomeRuntimeReceipt`（二十隻逐隻相同）。
 
-仍未閉合的點：
+怪物身上的物品串列接上之後，整份重算（武器、盔甲、腳程、射程）見 spec 147。
 
-- **`+115h`／`+117h` 在沒有武器時從哪來。** TARRY（`chrdatd5`）身上沒有備妥
-  武器，記錄裡卻存著 1／2（1d2）。`0E36h` 那條路不寫這兩格，所以那個值是
-  別處寫的，還沒讀出來。
+`+115h`／`+117h` 在沒有武器時的來源也在 spec 147：entry 7 前段 `0DB4h..0E1Bh` 把
+`+0A2h+n`／`+0A4h+n`／`+0A6h+n` 抄到 `+114h+n`／`+116h+n`／`+118h+n`，TARRY 的 1d2 是
+建角寫下的 `+0A3h = 1`、`+0A5h = 2`。下面契約第 7 條「不得順手填」指的是不補徒手傷害，
+抄寫照 spec 147。
 
 ## READY 契約
 

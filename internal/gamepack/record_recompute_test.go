@@ -42,8 +42,9 @@ func TestRecomputeCombatFieldsMatchesThePremadeCharacters(t *testing.T) {
 	}{
 		{"chrdatd1", true}, {"chrdatd2", true}, {"chrdatd3", true}, {"chrdatd4", true},
 		// TARRY 身上的 Quarter Staff +1 沒有備妥，所以走的是「沒有武器」那條路。
-		// 原版記錄裡的 `+115h`／`+117h` 是 1／2，那不是這一支寫的——它從哪來
-		// 還沒讀出來，所以這裡只驗證重算沒有去碰它們。
+		// 原版記錄裡的 `+115h`／`+117h` 是 1／2：entry 7 在 `0DB4h..0E1Bh` 把
+		// 建角寫下的 `+0A3h = 1`、`+0A5h = 2` 抄過去（spec 147），清成 0 之後
+		// 重算要寫回同一組值。
 		{"chrdatd5", false},
 		{"chrdatd6", true}, {"chrdatd7", true},
 	} {
@@ -77,9 +78,6 @@ func TestRecomputeCombatFieldsMatchesThePremadeCharacters(t *testing.T) {
 		}
 		for _, field := range dice {
 			want := record[field.offset]
-			if !item.weapon {
-				want = 0 // 清成 0 之後不該被寫回去
-			}
 			if result[field.offset] != want {
 				t.Fatalf("%s 的 %s 重算成 %d，預期 %d",
 					name, field.name, result[field.offset], want)
@@ -98,9 +96,10 @@ func TestRecomputeCombatFieldsMatchesThePremadeCharacters(t *testing.T) {
 	}
 }
 
-// 沒有備妥武器時傷害三欄維持原值——原版那支直接返回，不補徒手傷害
-//（spec 063 契約第 5 條）。
-func TestRecomputeCombatFieldsLeavesDamageAloneWithoutAWeapon(t *testing.T) {
+// 沒有備妥武器時武器那一支直接返回，不補徒手傷害（spec 063 契約第 5 條）；傷害三欄是
+// entry 7 前段 `0DB4h..0E1Bh` 從 `+0A3h`／`+0A5h`／`+0A7h` 抄來的，再加力量的傷害修正
+// （spec 147）。HAPLO 的記錄裡存的是武器算出來的值，拿掉物品重算就回到抄來的那一組。
+func TestRecomputeCombatFieldsCopiesTheBaseDiceWithoutAWeapon(t *testing.T) {
 	types, err := gamepack.ReadDOSItemTypeTable(dosZIP)
 	if err != nil {
 		t.Skipf("DOS ZIP unavailable: %v", err)
@@ -114,14 +113,15 @@ func TestRecomputeCombatFieldsLeavesDamageAloneWithoutAWeapon(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, field := range []struct {
-		offset int
-		name   string
+		offset, source int
+		name           string
 	}{
-		{gamepack.DamageDiceCountOffset, "+115h"},
-		{gamepack.DamageDieSidesOffset, "+117h"},
+		{gamepack.DamageDiceCountOffset, 0xA3, "+115h"},
+		{gamepack.DamageDieSidesOffset, 0xA5, "+117h"},
 	} {
-		if result[field.offset] != record[field.offset] {
-			t.Fatalf("沒有武器時 %s 不該改變", field.name)
+		if result[field.offset] != record[field.source] {
+			t.Fatalf("沒有武器時 %s 是 %d，預期抄自 +%02Xh 的 %d",
+				field.name, result[field.offset], field.source, record[field.source])
 		}
 	}
 	// 命中與傷害則只剩下能力值那兩個加值。HAPLO 是 18/00：命中 +3、傷害 +6。
@@ -133,7 +133,7 @@ func TestRecomputeCombatFieldsLeavesDamageAloneWithoutAWeapon(t *testing.T) {
 	if int(result[gamepack.CurrentThac0Offset]) != wantThac0 {
 		t.Fatalf("沒有武器時 +110h 是 %d，預期 %d", result[gamepack.CurrentThac0Offset], wantThac0)
 	}
-	wantDamage := int(int8(record[gamepack.DamageBonusOffset])) + gamepack.StrengthDamageAdjustment(index)
+	wantDamage := int(int8(record[0xA7])) + gamepack.StrengthDamageAdjustment(index)
 	if int(int8(result[gamepack.DamageBonusOffset])) != wantDamage {
 		t.Fatalf("沒有武器時 +119h 是 %d，預期 %d",
 			int8(result[gamepack.DamageBonusOffset]), wantDamage)
@@ -146,6 +146,8 @@ func isDerivedOffset(offset int) bool {
 		gamepack.InternalArmourClassOffset, gamepack.RearArmourClassOffset,
 		gamepack.DamageDiceCountOffset, gamepack.DamageDieSidesOffset,
 		gamepack.DamageBonusOffset, gamepack.CurrentMovementOffset,
+		// 第二種形態那三格也是 `0DB4h` 抄的（spec 147）。
+		gamepack.DamageDiceCountOffset + 1, gamepack.DamageDieSidesOffset + 1, gamepack.DamageBonusOffset + 1,
 		gamepack.CarriedWeightOffset, gamepack.CarriedWeightOffset + 1:
 		return true
 	}

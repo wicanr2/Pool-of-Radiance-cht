@@ -424,10 +424,9 @@ type tacticalState struct {
 	// `+0Ch` 再減一，而 overlay-09 entry 5 的 `0C3Eh` 用同一個值當「搆不搆
 	// 得到」的預算。
 	//
-	// **怪物一律是 1。** 原版怪物的射程也走 `+0CCh`（開打時 overlay-25 entry 7
-	// 依物品串列重算）。remake 已經載了怪物的物品串列（`FoeItems`，spec 142），
-	// 但還沒替怪物跑那一支重算，`+0CCh` 仍是空的；原版在 `+0CCh` 為 0 時算出來
-	// 也是 1，所以近戰怪物兩邊一致，**拿武器的怪物還不對**。
+	// 怪物的射程也走 `+0CCh`：開打時 overlay-25 entry 7 依物品串列（`FoeItems`，
+	// spec 142）認回手上的武器（applyMonsterGearStats，spec 147），拿弓的怪物
+	// 就是弓的射程；沒有武器是 1。
 	//
 	// 被魅惑的隊員走的是敵方 AI（`AIDriven`）卻帶著自己的裝備，所以這一欄
 	// 按格記而不是按陣營記。
@@ -969,6 +968,10 @@ func (a *app) enterTacticalPreview() error {
 				Bonus: record.DamageBonus(),
 			}
 			if err := applyMonsterAttackForms(state, index, record); err != nil {
+				return err
+			}
+			// 上面是模板值；開打時 entry 7 依身上的物品重算（spec 147）。
+			if err := a.applyMonsterGearStats(state, index, record); err != nil {
 				return err
 			}
 		}

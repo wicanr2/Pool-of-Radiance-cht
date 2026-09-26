@@ -34,11 +34,15 @@ const (
 	// ItemCategoryWeapon 是物品型別表 `+0` 的武器類別，對應記錄的 `+0CCh` 槽。
 	ItemCategoryWeapon = 0
 	// LauncherOffset 與 AmmunitionOffset 是 `+0F8h`／`+0FCh` 那兩個物品槽。
-	// 檔案裡存的是上次執行的遠指標，載入後沒有意義，所以重算時不追它們。
+	// 檔案裡存的是上次執行的遠指標，載入後沒有意義；重算時照原版從物品鏈
+	// 重新認（readiedTypePlus），不讀這兩格。
 	LauncherOffset   = 0xf8
 	AmmunitionOffset = 0xfc
 
-	recomputeMinimumSize = DamageBonusOffset + 1
+	// runtimeAttackBase 是執行期攻擊形態那一段的起點（`+114h`，spec 051）。
+	runtimeAttackBase = 0x114
+
+	recomputeMinimumSize = CurrentMovementOffset + 1
 )
 
 // RecomputeCombatFields 依 overlay-25 `0E36h` 把衍生欄位填回記錄。
@@ -64,6 +68,21 @@ func RecomputeCombatFields(record []byte, items [][]byte, types *ItemTypeTable) 
 		return nil, err
 	}
 	result[BaseThac0Offset] = base
+	return recomputeFromBase(result, items, types)
+}
+
+// recomputeFromBase 是 entry 7 本身（`0BBEh`／`0E36h`）：`+2Dh` 只讀不寫。
+// 隊員那一側在前面多算一次 `+2Dh`（見上），怪物那一側直接從這裡進。
+func recomputeFromBase(result []byte, items [][]byte, types *ItemTypeTable) ([]byte, error) {
+	// 0. 兩種攻擊形態的骰子抄進執行期那一段（`0DB4h..0E1Bh`，n = 1、2）：
+	//    `+114h+n = +0A2h+n`、`+116h+n = +0A4h+n`、`+118h+n = +0A6h+n`。
+	//    沒有武器時 `+115h`／`+117h` 就是這裡來的（TARRY 的 1d2 是建角寫下的
+	//    `+0A3h = 1`、`+0A5h = 2`），武器那一支再蓋掉第一種形態。
+	for slot := 1; slot <= MonsterAttackSlots; slot++ {
+		result[runtimeAttackBase+slot] = result[MonsterDamageCountBase+slot]
+		result[runtimeAttackBase+2+slot] = result[MonsterDamageSidesBase+slot]
+		result[runtimeAttackBase+4+slot] = result[MonsterDamageBonusBase+slot]
+	}
 
 	// 2. 三個基礎值搬進來。
 	result[InternalArmourClassOffset] = result[BaseArmourClassOffset]
@@ -103,6 +122,9 @@ func RecomputeCombatFields(record []byte, items [][]byte, types *ItemTypeTable) 
 			Dexterity:             int(result[DexterityOffset]),
 			AbilityBonusesEnabled: result[AbilityBonusFlagOffset] != 0,
 			ClassBonusApplies:     result[RaceOffset] == 2,
+			// `+0F8h`／`+0FCh` 由同一趟掃描認回（`0D02h..0D3Ah`，只看穿戴中的）。
+			LauncherPlus:   readiedTypePlus(items, launcherSlotItemType),
+			AmmunitionPlus: readiedTypePlus(items, ammunitionSlotItemType),
 		}
 		stats, err := WeaponCombatStats(types, weapon[ItemTypeOffset],
 			int(int8(weapon[ItemPlusOffset])), bearer)
@@ -135,6 +157,28 @@ func RecomputeCombatFields(record []byte, items [][]byte, types *ItemTypeTable) 
 	}
 	result[CurrentMovementOffset] = byte(rate)
 	return result, nil
+}
+
+// entry 7 的槽位掃描（`0D02h..0D3Ah`）另外依**物品型別索引**認兩格：
+// `+2Eh == 49h` 寫進 `+0F8h`，`+2Eh == 1Ch` 寫進 `+0FCh`。武器那一支
+// 依型別旗標 bit 0／bit 7 再加上那一件的 `+32h`（spec 063 第 7 步）。
+const (
+	launcherSlotItemType   = 0x49
+	ammunitionSlotItemType = 0x1c
+)
+
+// readiedTypePlus 回物品鏈上穿戴中、型別是 itemType 的最後一件的 `+32h`；
+// 沒有就是 nil。槽是覆寫，所以最後一件贏（與 `+0CCh` 同一條規則）。
+func readiedTypePlus(items [][]byte, itemType uint8) *int {
+	var plus *int
+	for _, item := range items {
+		if len(item) <= ItemReadiedOffset || item[ItemReadiedOffset] == 0 || item[ItemTypeOffset] != itemType {
+			continue
+		}
+		value := int(int8(item[ItemPlusOffset]))
+		plus = &value
+	}
+	return plus
 }
 
 // readiedWeapon 挑出物品鏈上備妥的武器。原版的記錄只有一個武器槽（`+0CCh`），
