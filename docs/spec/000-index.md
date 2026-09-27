@@ -4,7 +4,7 @@
 > 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，
 > 這份只是把它反過來收攏，所以改了註解重跑一次就對了。
 
-153 份規格，其中 0 份還沒有任何檔案的註解指回它、0 份沒有測試提到它；
+154 份規格，其中 0 份還沒有任何檔案的註解指回它、0 份沒有測試提到它；
 另有 9 份實作在共用 engine（`eclvm`）、2 份的實作不是 Go、1 份由 Go 以外的測試驗證。
 這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。
 
@@ -165,6 +165,7 @@
 | [154](154-add-npc-record-and-sweep.md) | ADD NPC 加入當下的記錄、MONnSPC、橫掃（`+6Bh`） | CONFORMED＋READY | `cmd/pool-game/addnpc.go`、`cmd/pool-game/missile.go`、`cmd/pool-game/party_strength.go` 等 8 個 | `cmd/pool-game/npc_record_test.go`、`cmd/pool-game/sweep_test.go`、`internal/gamepack/record_recompute_test.go` |
 | [155](155-death-regeneration-paralysis.md) | 倒下時的群組 13、再生、群組 5 其餘的碼、麻痺、編號 58 的先後、瞄準屍體 | READY＋OPEN | `cmd/pool-game/cast.go`、`cmd/pool-game/death_effects.go`、`cmd/pool-game/deploy_corpses.go` 等 16 個 | `cmd/pool-game/death_effects_test.go`、`internal/gamepack/death_effects_test.go` |
 | [156](156-down-state-anti-magic.md) | 倒下的狀態依打穿點數、84h 倒下、反魔法區擋施法、戰場上解除效果 | READY | `cmd/pool-game/cast.go`、`cmd/pool-game/combat_screen.go`、`cmd/pool-game/death_effects.go` 等 6 個 | `cmd/pool-game/down_state_test.go`、`cmd/pool-game/playthrough_test.go` |
+| [160](160-attack-turn-continues-after-kill.md) | 殺了目標、還有剩的攻擊次數時回合繼續（overlay-13 `1404h`／entry 8、overlay-08／09 的迴圈） | READY | `cmd/pool-game/attack_continue.go`、`cmd/pool-game/cast.go`、`cmd/pool-game/combat_commands.go` 等 6 個 | `cmd/pool-game/attack_continue_test.go`、`cmd/pool-game/missile_test.go`、`cmd/pool-game/spell_side_effects_test.go` |
 
 ## `cmd/` 底下的工具
 
@@ -182,7 +183,7 @@
 | `pool-ecl-opcodes` | 把 overlay-03 的 ECL 派發鏈 dump 成 JSON：每條 opcode 的處理常式位移與運算元個數，並標出與共用 engine 那張二手 arity 表的差異 | 有 | — |
 | `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | 093 |
 | `pool-font-coverage` | 報出遊戲要顯示、但倚天字型畫不出來的字 | 有 | — |
-| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 125 份 |
+| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 126 份 |
 | `pool-geo-audit` | decodes every Pool GEO block through the shared engine and records only structural map evidence | 有 | 009 |
 | `pool-initial-cell-sweep` | executes the original initial-map cell lifecycle entry against isolated copies of the post-Rolf VM state | 有 | 015 |
 | `pool-input-manifest` | inventories the fixed DOS source ZIP without extracting or modifying its contents | 有 | — |
