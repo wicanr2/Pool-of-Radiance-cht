@@ -938,6 +938,19 @@ func menuEscapeKey(application *app) (ebiten.Key, bool) {
 	if len(options) < 2 {
 		return 0, false
 	}
+	// 競技場的 `DO YOU DUEL?`（`ecl3/11`）：`CALL 8000h` 接上之後答 YES 就真的開一場決鬥
+	// （spec 150）。這些駕駛要找的是第一場遭遇，原版玩家路過競技場答 NO。
+	if strings.Contains(strings.ToUpper(application.eventText), "DO YOU DUEL") {
+		for index, option := range options {
+			if !strings.EqualFold(option, "No") {
+				continue
+			}
+			if application.cellMenuCursor != index {
+				return ebiten.KeyArrowRight, true
+			}
+			return ebiten.KeyEnter, true
+		}
+	}
 	for index, option := range options {
 		if !strings.EqualFold(option, "Exit") {
 			continue

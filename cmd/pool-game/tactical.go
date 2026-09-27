@@ -141,6 +141,9 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		if a.tactical.Prompt {
 			line = a.text(msgTacticalPrompt)
 		}
+		if a.tactical.FleePrompt {
+			line = a.text(msgTacticalFleePrompt)
+		}
 		drawText(screen, line, 0, footerBaseline, accent)
 	}
 	if a.castAborting() {
@@ -323,7 +326,8 @@ type boardIcon struct {
 
 // boardIconFor 取一格的造形。`slot` 是隊伍索引，-1 代表敵方。
 func (a *app) boardIconFor(slot int, isParty bool, foeIcons []uint8, nextFoe *int) boardIcon {
-	if isParty && slot >= 0 && slot < len(a.state.Party) {
+	// 競技場的複製品站在對面，造形欄位是從上場的人照抄的（spec 150）。
+	if (isParty || a.isArenaCopy(slot)) && slot >= 0 && slot < len(a.state.Party) {
 		member := a.state.Party[slot]
 		size := member.IconSize
 		if size != 1 && size != 2 {
@@ -457,6 +461,8 @@ type tacticalState struct {
 	Mover         uint8
 	Finished      bool
 	Prompt        bool
+	// FleePrompt 是隊員要踏出盤面時的 "Flee:"（overlay-08 `0BFDh`，spec 150）。
+	FleePrompt   bool
 	Outcome       combat.CombatOutcome
 	BudgetSource  string
 	Status        string
@@ -915,6 +921,11 @@ func (a *app) enterTacticalPreview() error {
 			state.Effects[index] = combatEffects(member.Effects)
 			// 群組 12 讀的體質與陣營（#96／#99）。NPC 在 applyNPCCombatStats 改讀原版記錄。
 			state.rememberPartySaveRecord(index, member)
+			// 競技場的複製品 `+84h = B2h`（overlay-07 `1BC6h`）：要判士氣（spec 150）。
+			if a.isArenaCopy(party) {
+				state.rememberMorale(index, arenaCopyMorale,
+					uint8(member.Abilities[gamepack.AbilityIntelligence]))
+			}
 			// NPC 沒有走過建角，戰鬥數值直接讀它帶著的原版記錄。
 			if member.NPC {
 				if err := applyNPCCombatStats(state, index, member); err != nil {
@@ -1783,6 +1794,21 @@ func (a *app) tacticalInput() error {
 	if a.holdCombatNotice(state) {
 		return nil
 	}
+	if state.FleePrompt {
+		// `0C1Ah`：Y 交給 overlay-13 entry 7；`0C31h`：N 什麼都不做。
+		if a.justPressed(ebiten.KeyY) {
+			state.FleePrompt = false
+			a.partyLeaveCombat(state, state.Mover)
+			if state.Finished {
+				return a.finishCombat(state.Outcome)
+			}
+		}
+		if a.justPressed(ebiten.KeyN) {
+			state.FleePrompt = false
+			state.Status = ""
+		}
+		return nil
+	}
 	if state.Prompt {
 		if a.justPressed(ebiten.KeyY) {
 			state.Prompt = false
@@ -1957,7 +1983,9 @@ func (a *app) tacticalInput() error {
 		}
 		switch {
 		case outcome.Leaving:
-			state.Status = state.say(msgStatusOffBoard)
+			// overlay-08 `0BFDh`：盤面外不是擋住，問 "Flee:"（party_flee.go，spec 150）。
+			state.FleePrompt = true
+			state.Status = state.say(msgTacticalFleePrompt)
 		case outcome.Action == combat.MovementAttack:
 			// 撞到自己人不打自己人。`ProbeDestination` 忠實重現原版，它只回報
 			// 「那一格站著誰」——原版的格位表（`DS:5E89h`）本來就沒有陣營，
@@ -2295,11 +2323,15 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	}
 	fought := foughtAnyFoe(a.tactical)
 	// 身上的錢與物品在同一個迴圈收（monster_loot.go）；盤面丟掉之前先收好。entry 2
-	// 只在有人站著時跑（`05E0h`／決鬥的 `077Dh`）。
+	// 只在有人站著時跑（`05E0h`／決鬥的 `077Dh`）。競技場的複製品不是 staged 的怪物，
+	// 身上的東西不收——entry 2 在 `0006h` 就整段跳過了（spec 150）。
 	var loot monsterLoot
 	if staged && standing && (outcome == combat.CombatVictory || duel) {
 		loot = a.collectMonsterLoot(a.tactical)
 	}
+	// `1164h`：`+10Eh == 1` 的記錄從隊伍鏈摘掉（競技場的複製品，spec 150）。
+	arena := a.arenaCopy
+	a.removeArenaCopy()
 	// `TREASURE` 在開打前放上串列的物品排在最後（spec 150〈TREASURE 的時機〉）。
 	loot.items = append(loot.items, a.pendingTreasure...)
 	a.pendingTreasure = nil
@@ -2325,6 +2357,19 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 			a.statusLine = "Tactical preview finished; no encounter was staged."
 			return nil
 		}
+		// `04ADh`：有人踏出盤面逃掉而沒有人站著，不是全滅——留下的人摘掉，
+		// 結算頁印 "The party has fled."（party_flee.go，spec 150）。
+		states := make([]uint8, 0, len(a.state.Party))
+		for _, member := range a.state.Party {
+			states = append(states, member.Status)
+		}
+		if fledAway, wiped := a.partyFledOutcome(states); fledAway && !wiped {
+			a.leaveBehindAfterFleeing()
+			a.cellEventPending, a.cellWaitingMenu = false, false
+			a.eventText, a.eventLabel = "", ""
+			a.openMonsterLoot(loot, postCombatReport{fled: true})
+			return nil
+		}
 		return a.partyDestroyed()
 	}
 	if !staged {
@@ -2340,7 +2385,11 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	// 經驗總額含公款與戰利品的折算（spec 148），與怪物那一項一起除人數。決鬥不數
 	// `829Bh`，除的是整隊人數（spec 150）。
 	share := uint32(0)
-	if standing {
+	switch {
+	case standing && arena:
+		// entry 2 `0006h..0032h`：每份是最高職業等級 × 100，不除人數（spec 150）。
+		share = a.shareExperience(a.arenaDuelExperience(), eligible, 1)
+	case standing:
 		divisor := 0
 		if duel {
 			divisor = len(a.state.Party)

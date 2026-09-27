@@ -8,6 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
 // 戰後結算的兩頁（spec 150，issue #95／#103）。
@@ -271,8 +272,8 @@ func foughtAnyFoe(state *tacticalState) bool {
 // 1／0 呼叫 overlay-07 entry 26（`1AB3h`，`0045h:00A2h`）。那一支把 DS:829Ah 立起來、
 // @6DE6 寫成參數，並把 `DS:5CF0h`（目前角色）以外的隊員 `+10Dh` 清成 0——只有那一個人上場。
 //
-// 參數 1（競技場，`ecl3/11 9CA6h`）另外把目前角色複製一份、取名 `ROLF` 放進敵方當對手
-// （`1B20h..1CDFh`）；remake 還沒有「角色記錄變成敵方」這一條，所以那一支不接（spec 150）。
+// 參數 1（競技場，`ecl3/11 9CA6h`）另外把目前角色複製一份、取名 `ROLF` 接在隊伍鏈尾當對手
+// （`1B20h..1CDFh`，startArenaDuel）。
 const (
 	duelArenaCall    = 0x8000
 	duelChampionCall = 0x8001
@@ -288,9 +289,106 @@ func (a *app) startChampionDuel() {
 	}
 }
 
-// duelDeploys 說 index 那一個隊員這一場上不上場。
+// duelDeploys 說 index 那一個隊員這一場上不上場。競技場的複製品 `+10Dh = 1`（`1B8Ch`）。
 func (a *app) duelDeploys(index int) bool {
-	return !a.duel || index == a.currentCharacter
+	return !a.duel || index == a.currentCharacter || a.isArenaCopy(index)
+}
+
+// arenaCopyName 是 overlay-07 `1AAEh` 的 Pascal 字串（`04 52 4F 4C 46`）。
+const arenaCopyName = "ROLF"
+
+// arenaCopyMorale 是 `1BC6h` 寫進複製品 `+84h` 的 `B2h`：位元 7 立著（要判士氣），
+// 低七位 32h × 2 = 100（spec 091〈`+84h` 是士氣〉）。
+const arenaCopyMorale = 0xB2
+
+// startArenaDuel 是 `CALL 8000h`（參數 1）。除了 `8001h` 那一段（`1AB9h..1B15h`），
+// `1B20h..1CDFh` 還把目前角色（`DS:5CF0h`）複製一份接在隊伍鏈尾（exact）：
+//
+//	1B68  GetMem(11Dh)；1B84 Move(目前角色 → 新記錄, 11Dh)     ; 整筆照抄
+//	1B8C  +10Dh = 1                       ; 在場
+//	1B97  +104h = nil                     ; 鏈尾
+//	1BAF  名字 = "ROLF"（1AAEh，長度上限 0Fh）
+//	1BB7  +10Fh = 1                       ; 由 AI 走（spec 139 的 Quick 同一個欄位）
+//	1BC0  +10Eh = 1                       ; 敵方
+//	1BC9  +84h = B2h                      ; 士氣 100、要判
+//	1BD5  +BFh = DS:6D49h                 ; 造形槽位（1B36h 先以 147h:0039h 載入）
+//	1BDF  +7Fh = nil                      ; 效果串列清空
+//	1BED  +C8h = nil，1C19..1CDF 逐件 GetMem(3Fh)、Move、插在頭 ; 物品照抄、順序反過來
+//
+// 造形欄位 `+BDh..+C6h` 在 Move 裡一起照抄，所以複製品畫的是同一個人（strong inference：
+// `147h:0039h` 載入的是哪一份造形還沒讀）。
+func (a *app) startArenaDuel() {
+	a.startChampionDuel()
+	if a.eventMachine != nil {
+		a.eventMachine.Memory[duelArenaAddress] = 1
+	}
+	if a.arenaCopy || a.currentCharacter < 0 || a.currentCharacter >= len(a.state.Party) {
+		return
+	}
+	source := a.state.Party[a.currentCharacter]
+	copied := source
+	copied.Name = arenaCopyName
+	copied.Side, copied.Quick = 1, true
+	copied.Effects = nil
+	copied.Inventory = make([]poolsave.Item, 0, len(source.Inventory))
+	for index := len(source.Inventory) - 1; index >= 0; index-- {
+		item := source.Inventory[index]
+		item.Raw = append([]byte(nil), item.Raw...)
+		copied.Inventory = append(copied.Inventory, item)
+	}
+	copied.Record = append([]byte(nil), source.Record...)
+	if len(copied.Record) > gamepack.MoraleOffset {
+		copied.Record[gamepack.MoraleOffset] = arenaCopyMorale
+	}
+	copied.Memorised = append([]uint8(nil), source.Memorised...)
+	copied.Spellbook = append([]uint8(nil), source.Spellbook...)
+	copied.ClassLevels = append([]uint8(nil), source.ClassLevels...)
+	copied.ThiefSkills = append([]uint8(nil), source.ThiefSkills...)
+	a.state.Party = append(a.state.Party, copied)
+	a.arenaCopy = true
+}
+
+// isArenaCopy 說隊伍的第 index 個是不是競技場的複製品（一定在鏈尾）。
+func (a *app) isArenaCopy(index int) bool {
+	return a.arenaCopy && index == len(a.state.Party)-1
+}
+
+// removeArenaCopy 是戰後 overlay-05 `1164h` 對複製品做的事：`+10Eh == 1` 的記錄一律
+// 從隊伍鏈摘掉（`119Eh` `26 80 BD 0E 01 01`、`11EFh` `9A 2F 00 B6 00` = overlay-16 entry 3）。
+// 複製品排在隊伍人數之外，佈置時 runtime `+13h` 是 1，所以隊伍人數 `+67Ch` 不減
+// （overlay-16 `3323h`）。
+func (a *app) removeArenaCopy() {
+	if !a.arenaCopy {
+		return
+	}
+	if last := len(a.state.Party) - 1; last >= 0 {
+		a.state.Party = a.state.Party[:last]
+	}
+	a.arenaCopy = false
+}
+
+// arenaDuelExperience 是 overlay-05 entry 2 的 `0006h..0032h`：決鬥而且 @6DE6 非 0 時，
+// 每份就是 `[5CF0h]+73h`（最高職業等級）× 100，**不除人數**，也不收怪物身上的錢與物品
+// （整段跳到 `0334h`）。`5CF0h` 在那一刻指的是上場的人或它的複製品，兩者的 `+73h` 相同。
+func (a *app) arenaDuelExperience() uint32 {
+	if a.currentCharacter < 0 || a.currentCharacter >= len(a.state.Party) {
+		return 0
+	}
+	return uint32(memberHighestLevel(a.state.Party[a.currentCharacter])) * 100
+}
+
+// memberHighestLevel 是記錄 `+73h`：玩家角色取各職業等級的最大值，NPC 讀自己的記錄。
+func memberHighestLevel(member poolsave.Character) uint8 {
+	if member.NPC && len(member.Record) > 0x73 {
+		return member.Record[0x73]
+	}
+	highest := uint8(0)
+	for _, level := range memberClassLevels(member) {
+		if level > highest {
+			highest = level
+		}
+	}
+	return highest
 }
 
 // finishDuelState 是決鬥收場：overlay-03 `197Dh` 清 DS:829Ah、主流程 `1606h` 清 @6DE6。
@@ -311,6 +409,10 @@ func duelChampionStanding(state *tacticalState) bool {
 	}
 	for index := 1; index < len(state.Roster) && index < len(state.PartySlot); index++ {
 		if state.PartySlot[index] < 0 || index >= len(state.States) {
+			continue
+		}
+		// `0775h`：`+10Eh == 1`（競技場的複製品）不算。
+		if index < len(state.Friendly) && !state.Friendly[index] {
 			continue
 		}
 		if state.Roster[index].FootprintClass != 0 && state.States[index] == 0 {

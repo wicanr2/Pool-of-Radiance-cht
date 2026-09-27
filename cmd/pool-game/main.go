@@ -449,6 +449,8 @@ type app struct {
 	pendingTreasure []gamepack.TreasureItemRecord
 	// duel 是 DS:829Ah（ECL `CALL 8001h`，spec 150〈決鬥〉）：下一場只有目前角色上場。
 	duel bool
+	// arenaCopy 是 `CALL 8000h` 接在隊伍鏈尾的 `ROLF`（spec 150〈競技場〉）；戰後摘掉。
+	arenaCopy bool
 }
 
 // defaultStatePath 是存檔的預設位置。
@@ -1907,7 +1909,9 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			a.state.PooledMoney, a.pendingTreasure = pooled, loaded
 			return a.enterCombatStaging(result.MonsterSpawns)
 		}
-		if result.CombatRequested && len(result.MonsterSpawns) != 0 {
+		// 競技場（`CALL 8000h`）沒有 `LOAD MONSTER`：對手是接在隊伍鏈尾的複製品，而
+		// `COMBAT` 的分派（overlay-03 `187Dh`）在 DS:829Ah 立著時直接開戰（spec 150）。
+		if result.CombatRequested && (len(result.MonsterSpawns) != 0 || a.arenaCopy) {
 			if result.MonstersCleared {
 				// `1Ch CLEARMONSTERS`（overlay-03 `133Dh`）把公款七欄清成 0；戰後
 				// entry 2 換算經驗值的是這之後的公款（spec 148）。
@@ -2093,7 +2097,10 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 		staged = append(staged, stagedMonster{Spawn: spawn, Record: record, Effects: effects, Items: items})
 		labels = append(labels, fmt.Sprintf("%s ×%d", a.monsterText.Translate(record.Name), spawn.Count))
 	}
-	if len(staged) == 0 {
+	if a.arenaCopy {
+		labels = append(labels, arenaCopyName)
+	}
+	if len(staged) == 0 && !a.arenaCopy {
 		// 一隻都沒放成，就不要開戰鬥；開了會是一場沒有敵人的架。
 		a.statusLine = "Original monster descriptors staged no monsters."
 		return nil
@@ -2228,6 +2235,11 @@ func (a *app) enterTreasureMain() {
 	if a.hasPooledMoney() {
 		options = append(options, "Share")
 	}
+	// `0EE0h..0F4Fh`：有物品而且目前角色記著 Detect Magic，後綴換成 " Detect Exit"
+	// （treasure_detect.go，spec 150）。
+	if _, ok := a.treasureDetectOption(); ok {
+		options = append(options, "Detect")
+	}
 	options = append(options, "Exit")
 	a.cellMenuOptions, a.cellMenuCursor = options, 0
 	// 原版的選單頁文字框是空的（`docs/audit/dos-treasure-screens.json` 的 `top`）：
@@ -2273,6 +2285,8 @@ func (a *app) selectTreasureOption() error {
 			return a.applyTreasureMoneyService(pooltreasure.PoolMoney, "Party money pooled.")
 		case "Share":
 			return a.applyTreasureMoneyService(pooltreasure.ShareMoney, "Pooled money shared.")
+		case "Detect":
+			return a.treasureDetect()
 		case "Exit":
 			if len(a.treasureItems) == 0 && !a.hasPooledMoney() {
 				return a.exitTreasure()
@@ -2655,6 +2669,7 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.templeActive, a.treasureActive, a.combatActive = false, false, false
 	a.postCombat, a.pendingTreasure, a.duel = nil, nil, false
+	a.arenaCopy = false
 	a.combatMonsters = nil
 	a.eventText, a.eventLabel, a.cellMenuOptions = "", "", nil
 	a.mode = modeAdventure
@@ -3156,10 +3171,14 @@ func (a *app) applyMapExitCommit(result eclvm.Result) {
 // 五個有動作的：`8000h`／`8001h`（overlay-07 `00A2h`）、`2C90h`（重算地形
 // 暫存）、`BA03h`（音效）、`C018h`（重算牆的暫存）、`C01Eh`（依朝向走一格、
 // 邊界繞回）。地形與牆的暫存在 remake 這邊每次查地圖時本來就重算；`8001h` 是
-// 決鬥（postcombat.go，spec 150）；`8000h` 的競技場決鬥要一個複製出來的對手，還沒接。
+// 決鬥、`8000h` 是競技場（對手是目前角色的複製品，postcombat.go，spec 150）。
 func (a *app) applyScriptCall(selector uint16) {
 	if selector == duelChampionCall {
 		a.startChampionDuel()
+		return
+	}
+	if selector == duelArenaCall {
+		a.startArenaDuel()
 		return
 	}
 	if selector == terrainRecalcCall {

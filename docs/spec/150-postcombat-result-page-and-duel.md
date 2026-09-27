@@ -1,10 +1,12 @@
 # Spec 150：戰後結算頁、NPC 分錢頁、選單一定開、TREASURE 的時機、有資格的人數與決鬥
 
 狀態：CONFORMED（結算頁 `08E0h` 的標題與兩行字、之後才開選單、選單文字框是空的：碼 exact、
-原版 dosgolem 收據逐字相同）；READY（NPC 分錢頁、沒有戰利品也開選單、`TREASURE` 等到戰鬥
-打完、第二隻起的效果串列反序、有資格分經驗值的人數、`CALL 8001h` 決鬥：碼 exact，remake
-有從 `Update()` 送鍵的測試，沒有原版執行期收據）；DRAFT（見〈還沒接〉）。
-日期：2026-09-27。主台帳：GitHub issue #95（#76 留下）、#103（#94 留下）。接 spec 142 與 148
+原版 dosgolem 收據逐字相同；NPC 分錢頁的欄與列：碼 exact、原版 dosgolem 診斷收據相同）；
+READY（沒有戰利品也開選單、`TREASURE` 等到戰鬥打完、第二隻起的效果串列反序、有資格分經驗值
+的人數、`CALL 8001h` 決鬥、`CALL 8000h` 競技場、隊員踏出盤面逃走與 "The party has fled."、
+選單的 ` Detect`：碼 exact，remake 有從 `Update()` 送鍵的測試，沒有原版執行期收據）；
+DRAFT（見〈還沒接〉）。
+日期：2026-09-27。主台帳：GitHub issue #95（#76 留下）、#103（#94 留下）、#111。接 spec 142 與 148
 的 DRAFT 表。
 
 ## 輸入與位址空間
@@ -20,6 +22,9 @@
 | 03 | `5a3a18bd061c5b75bfad2fe6f9cff27ed5443aa4c2d59b026e4a05e2806ea68f` |
 | 05 | `900ea1b8e57b03e0f6dd1c16024a686c8474e2b0ae9674c730d5619679809c16` |
 | 07 | `a59f9d16a1d186bbd3806865ffe55de4be5b58484287237fb73872295da778ae` |
+| 08 | `932ce28178ffad8d180db6fdc130f08e540452e788535217979e33fc30da036f` |
+| 13 | `4d53df204756640fbae8fdc8743ada85ea6e323a9d4dcac496395600a64a2390` |
+| 22 | `967065cc35975465a7250026c63b8a5ae06b812b228abcfbbbd83d636538dda8` |
 
 - far call 由 `segment = (executable_file_offset − stub_offset − 3B0h) ÷ 16` 對 manifest 反查：
   `0045h:00A2h` = overlay-07 entry 26（`executable_file_offset 8A2h`、`stub 0A2h`、code `1AB3h`）。
@@ -80,7 +85,7 @@
 
 remake：`postcombat.go` 的 `postCombatReport`／`drawPostCombatPage`；戰利品選單
 （`enterTreasureMain`）的文字框改成空的。畫面識別字 `treasure-result`。
-`The party has fled.` 走不到：remake 的隊員不會離開盤面（`msgStatusOffBoard`）。
+`The party has fled.` 見〈隊伍逃走〉。
 
 ## 沒有戰利品時也開選單：overlay-05 `0E85h`（exact）
 
@@ -96,7 +101,7 @@ remake：`postcombat.go` 的 `postCombatReport`／`drawPostCombatPage`；戰利�
 1047..1117  E（或 0）：錢與物品都沒了就直接出去；否則問 "There is still treasure left…"
 ```
 
-所以打完一場什麼都沒掉，選單是 `View Pool Exit`。remake：`openMonsterLoot` 不再因為
+所以打完一場什麼都沒掉，選單是 `View Pool Exit`。` Detect` 見〈Detect〉。remake：`openMonsterLoot` 不再因為
 「怪物那一側沒交出東西」就跳過選單。原版駕駛（`tools/dosgolem-cheat-playthrough.py`）
 對每一場都認 `POOL … EXIT` 按 `E`，與此一致。
 
@@ -137,7 +142,7 @@ remake：`consumeInitialSearch` 在同一個結果裡有怪物的戰鬥時，先
 同一個代碼有兩個節點時取到哪一個。remake：`enterTacticalPreview` 對 `copyIndex > 0` 的那一隻
 把效果反過來。
 
-## NPC 分錢頁：overlay-05 `1387h..146Ah`（exact 碼，版面 strong inference）
+## NPC 分錢頁：overlay-05 `1387h..146Ah`（exact 碼；版面有 dosgolem 診斷收據）
 
 ```
 1387..13A8  150h:0310h(1, 1, 26h, 16h, 0, 0Fh, "")      ; 與結算頁同一個清法
@@ -149,8 +154,15 @@ remake：`consumeInitialSearch` 在同一個結果裡有怪物的戰鬥時，先
 ```
 
 `198h:002Fh` 的前兩個參數是欄與列（結算頁那三行，dosgolem 量到第 1 欄第 3／5／7 列）；
-`198h:0039h` 是同一族、多了右下角的界限，前兩個參數照同一個意思讀成第 5 欄、第 5、7、9…列
-（strong inference：沒有帶 NPC 的原版收據）。remake：`hideNPCShares` 回名字，
+`198h:0039h` 是同一族、多了右下角的界限，前兩個參數是第 5 欄、第 5、7、9…列。
+
+原版收據：`docs/audit/dosgolem-npc-share-screen.json`（`tools/dosgolem-npc-share-screen.py`，
+dosgolem `57454c4`，從 `slums.state`（SHA-256 `ebbb65e8…`）出發走 cheat 通關的市政廳交件）。
+cheat 通關的隊伍沒有 NPC，所以這一份是**診斷樣本**：出發前把隊伍鏈第二與第四個人（C、E）的
+`+84h`／`+85h` 從 `00 00` 改成 `B2 01`，只拿來量版面，不拿來證明有 NPC 的隊伍走得到這裡。
+結果：清掉的框內兩行 `C TAKES AND HIDES HIS SHARE.`、`E TAKES AND HIDES HIS SHARE.`，
+名字的第一個字在第 5 欄、第 5 與第 7 列，底列 `PRESS <ENTER>/<RETURN> TO CONTINUE`；按一下
+才是 `THE PARTY HAS FOUND TREASURE!` 那一頁。remake：`hideNPCShares` 回名字，
 `postCombatPageLines` 照這個版面排；英繁兩語（`ui.postCombatHidesShare`）。
 
 ## 有資格分經驗值的人數：`829Bh`（exact）
@@ -225,14 +237,135 @@ remake：`CALL 8001h` 接上（`startChampionDuel`）：只有目前角色上場
 不是全滅、倒下的換成昏迷、結算頁印 `You have lost the duel.` 與 0；贏了印
 `You have won the duel.`、`The duelist receives N`，N 是總額除以**整隊**人數，只有上場的人拿到。
 
+## 競技場：`CALL 8000h`（exact 碼）
+
+`ecl3/11` 的競技場：`WHO WILL DUEL?`（`9C72h`）→ `COMPARE @6BB8, 128 ; IF <`（`9C80h`）→
+`9CA5h CLEARMONSTERS` → `9CA6h CALL 8000h` → `9CAAh COMBAT` → `9CABh EXIT`。士氣 128 以上的
+（NPC）印 `I CANNOT ARRANGE SUCH A DUEL.`。
+
+overlay-07 entry 26 以參數 1 進來，`1AB9h..1B15h` 與 `8001h` 相同，之後（`1B17h` 參數非 0）：
+
+```
+1B20..1B36  Pascal "cpic"（1AA9h：04 63 70 69 63）、0Bh、DS:6D49h → 147h:0039h（overlay-33 entry 5）
+1B3B..1B66  沿 DS:5CF4h 的 +104h 走到鏈尾
+1B6D  B8 1D 01 / 1B71 9A 29 03 BB 05          GetMem(11Dh)
+1B80  B8 1D 01 / 1B84 9A 5D 02 BB 05          Move(目前角色 [5CF0h] → 新記錄, 11Dh)
+1B8C  26 C6 85 0D 01 01                       +10Dh = 1
+1B97  26 89 85 04 01 / 26 89 85 06 01         +104h = nil
+1BA1  BF AE 1A … 1BAF 9A 4E 06 BB 05          名字 = "ROLF"（1AAEh：04 52 4F 4C 46），上限 0Fh
+1BB7  26 C6 85 0F 01 01                       +10Fh = 1（AI 走，spec 139 的 Quick 同一個欄位）
+1BC0  26 C6 85 0E 01 01                       +10Eh = 1（敵方）
+1BC9  26 C6 85 84 00 B2                       +84h = B2h（士氣 100、要判，spec 091）
+1BCF  A0 49 6D / 1BD5 26 88 85 BF 00          +BFh = DS:6D49h（造形槽位）
+1BDF  26 89 45 7F / 26 89 85 81 00            +7Fh = nil（效果清空）
+1BED  26 89 85 C8 00 / 26 89 85 CA 00         +C8h = nil
+1BFF  26 89 85 04 01                          接在鏈尾
+1C19..1CDF  沿目前角色的 +C8h：GetMem(3Fh)、Move，第一件是頭、之後的插在頭上（舊的頭寫進新節點 +2Ah）
+```
+
+所以複製品是**整筆照抄**（能力值、生命值、職業等級、記憶法術、造形 `+BDh..+C6h`），改的只有名字、
+陣營、AI、士氣、造形槽位、效果與物品鏈；物品順序是反的（與 spec 142 怪物物品、本份〈第二隻起的
+效果串列反序〉同一個形狀）。`147h:0039h` 載入哪一份造形沒讀：remake 畫複製品用上場那個人的造形
+（strong inference：`+BDh..+C6h` 在 Move 裡照抄）。
+
+打完：
+
+```
+overlay-05 entry 2  0006  80 3E 9A 82 00 / 26 83 BD CC 05 00   決鬥而且 @6DE6 != 0
+                    0019..002E  [5CF0h]+73h × 100 寫進參數，0032 E9 FF 02 跳到 0334h
+                                ；不除人數、不收錢與物品（0035h 起的迴圈整段跳過）
+overlay-05 1164h    119E  26 80 BD 0E 01 01   +10Eh == 1 的記錄
+                    11A9  +10Dh != 1 → [4937h]+590h（@6DC8）加一
+                    11EF  9A 2F 00 B6 00      overlay-16 entry 3(runtime +13h, 1)：從鏈摘掉、放掉造形槽位；
+                                              複製品排在隊伍人數之外（+13h = 1），所以 +67Ch 不減（3323h）
+```
+
+`5CF0h` 在 entry 2 那一刻指的是上場的人或它的複製品，兩者的 `+73h` 相同。`entry 3`（`0794h`）
+照職業調整上場那個人的份額。
+
+remake：`applyScriptCall` 的 `8000h` → `startArenaDuel`（`postcombat.go`）把複製品接在
+`a.state.Party` 尾端、`Side = 1`、`Quick`、效果清空、物品反序；`consumeInitialSearch` 在
+`COMBAT` 沒有 `LOAD MONSTER` 但有複製品時照常開戰；`deployRoster` 把它擺到對面（陣營非 0 的
+那一條）、`boardIconFor` 用它照抄來的造形、`enterTacticalPreview` 記 `B2h` 的士氣；
+`finishCombat` 摘掉複製品（`removeArenaCopy`），每份是最高職業等級 × 100（`arenaDuelExperience`）、
+只有上場的人拿到、不收複製品身上的東西。`@6DC8` 那一個計數沒有接（腳本 `9CABh` 直接 `EXIT`，
+沒有讀它）。
+
+## 隊伍逃走（exact 碼）
+
+隊員踏出盤面，overlay-08 的移動常式（spec 058）問一句：
+
+```
+0BF7  80 7E F7 00 / 75 42        目的格類別 0（盤面外）
+0C02  BF B5 09                   "Flee:"（09B5h：05 46 6C 65 65 3A）
+0C15  9A 3E 00 1D 01             11Dh:003Eh(0Dh, 0Ah, 0Fh, 字串)：Y／N
+0C1A  3C 59 / 0C24 9A 43 00 96 00   'Y' → overlay-13 entry 7（0C6Ch）
+0C31  3C 4E / 0C38 26 C6 05 00      'N' → 什麼都不做
+```
+
+overlay-13 entry 7 與怪物逃跑同一支（spec 096〈脫離戰場〉）：對面沒有人、或自己比對面最快的快就
+逃掉，一樣快擲 d2；逃掉的走 overlay-24 entry 11(記錄, 3, "Got Away")——`+10Ch = 3`、生命保留、
+`+10Dh = 0`；逃不掉印 "Escape is blocked"。兩條都結束這個行動。
+
+戰後 overlay-05 `04ADh`：
+
+```
+04B8  C6 06 60 49 01             DS:4960h = 1（全滅）
+04E8  26 80 BD 0C 01 03 / 04F0 C6 06 9D 43 01    有人狀態 3 → DS:439Dh = 1
+054E..058E  狀態 3／1／0、+10Eh == 0、+84h < 80h → 4960h = 0
+05A9  C6 06 A0 82 01 / 05AE C6 06 9D 43 00       有人狀態 0／1 → 82A0h = 1、439Dh = 0
+062F  80 3E 9D 43 00             439Dh 立著（有人逃掉、沒有人站著）：
+068C  26 C7 85 8E 05 81 00         @6DC7 = 81h
+0696  狀態 3 → 0、+10Dh = 1
+06B2..06C4  其餘的人 9A 2F 00 B6 00  overlay-16 entry 3(0, 1)：從隊伍鏈摘掉、隊伍人數減一
+```
+
+之後 `14CAh` 照常：4960h 是 0 所以不是全滅，`1295h` → `08E0h`（439Ch 是 0——entry 2 沒跑——所以
+印 `The party has fled.`，數字清 0）→ `0E85h`。82A0h 是 0，entry 2／3 不跑：沒有經驗值，
+怪物身上的東西不進來，`TREASURE` 先放上去的那一份還在。**逃掉的只有 NPC（`+84h` 位元 7）時
+4960h 還是 1，照全滅處理。**
+
+remake：`tacticalInput` 在 `ResolveDestination` 回 `Leaving` 時立 `FleePrompt`、底列換成
+`ui.tacticalFleePrompt`；Y 走 `partyLeaveCombat`（`party_flee.go`，與 `foeLeaveCombat` 同一組
+規則），N 什麼都不做。收場時 `finishCombat` 在「沒打贏也不是決鬥」那一支先問
+`partyFledOutcome`（439Dh／4960h），成立就 `leaveBehindAfterFleeing`（留下的人從隊伍摘掉、
+逃掉的換回 0、@6DC7 = 81h），開 `postCombatReport{fled: true}`。戰鬥中丟出去的武器
+（`ThrownLoot`，spec 151）在這一支沒有收進選單，原版那些在串列上（差異，還沒接）。
+
+## Detect（exact 碼；作用 DRAFT）
+
+`0E85h` 每一圈（`115Dh` 跳回 `0E9Fh`）重組選項：
+
+```
+0EA9  9A 66 00 D9 00             [bp-1] 有錢、[bp-2] 有物品
+0EE0  80 7E FE 00 / 74 53        沒有物品 → 後綴 " Exit"
+0EE6..0F37  i = 0..14h：[5CF0h]+17h+i 是 05h（26 80 7D 17 05）或 0Bh（26 80 7D 17 0B）→ 記下、停
+0F40  BF FB 0D                   後綴 " Detect Exit"（0DFBh）
+102A  3C 44                      按 D：
+103F  9A 39 00 E2 00             00E2h:0039h(編號, 0, 0, &[bp-106h]) = overlay-22 entry 5（0C14h）
+```
+
+比的是整個位元組，第 7 位立著（還沒記完，spec 070）的不算。overlay-22 entry 5 與探索施法同一支，
+第三個參數 0 不印誰施了什麼（`0D23h`）；`0E8Dh` 以 overlay-25 entry 16（`9A 70 00 0A 01`）把法術
+從記憶清掉，再派發 `DS:6A78h + 編號 × 4`——05h／0Bh 都是 `10D1h`，只以 `DS:6779h` 叫 `08BCh`
+把效果碼 05h 掛上去（spec 073／074）。
+
+remake：`treasureDetectOption`／`treasureDetect`（`treasure_detect.go`）；`enterTreasureMain` 在
+`Exit` 前面放 `Detect`，選了就走營地施法那一支（`campSpellEffect`）、清掉那一格記憶、重組選單。
+
+效果 05h 掛上去之後怎麼改變物品的顯示（View／Take 的清單是否標出魔法物品）還沒讀：
+對 overlay-25 entry 27（`10Ah:00A7h`，效果串列搜尋）的 39 處呼叫，推的效果碼沒有一處是字面值
+05h，讀取端可能是間接傳入的代碼或另一支。
+
 ## 還沒接（DRAFT）
 
 | 項目 | 位址 | 等級 | 為什麼沒接 |
 |---|---|---|---|
-| 競技場決鬥（`CALL 8000h`） | overlay-07 `1B20h..1CDFh`、overlay-05 `0006h..0032h` | exact（碼） | 對手是目前角色的複製品（`ROLF`），remake 沒有「角色記錄變成敵方」這一條；只接旗標不接對手會變成不打就贏。`ecl3/11 9CA6h` 照舊什麼都不做 |
-| `The party has fled.` | overlay-05 `09A1h`、`04ADh` 的 `0688h` | exact（碼） | remake 的隊員不會離開盤面，走不到；字串與判斷已接（`postCombatReport.fled`） |
-| 選單的 ` Detect Exit` | overlay-05 `0EE0h..0F4Fh` | exact（碼） | 目前角色記著偵測魔法（05h／0Bh）時的第六個選項；探索施法的偵測魔法另案 |
-| NPC 分錢頁的列位 | overlay-05 `13E6h` | strong inference | 沒有帶 NPC 的原版收據 |
+| 效果 05h 對物品清單的作用 | 讀取端未定位 | unknown | 〈Detect〉：掛上去已接，之後物品怎麼顯示沒讀 |
+| 競技場複製品的造形載入 | overlay-07 `1B36h`（`147h:0039h`）、`+BFh` | strong inference | 畫的是照抄的造形；`cpic`／0Bh／槽位那一支沒讀 |
+| `1164h` 摘掉 `+10Eh == 1` 的其他記錄 | overlay-05 `1164h` | exact（碼） | remake 只摘競技場的複製品；ADD NPC 帶進來、站在對面的 NPC（spec 091）戰後也該摘掉，屬 #107 的範圍 |
+| 逃走那一支的丟出去的武器 | overlay-05 `0E85h` 的串列 | strong inference | `ThrownLoot` 只在有人站著時收 |
+| 原版執行期收據：競技場、逃走 | — | — | dosgolem 沒有走到競技場或逃走的駕駛段 |
 
 ## 被推翻的斷言
 
@@ -252,3 +385,14 @@ remake：`CALL 8001h` 接上（`startChampionDuel`）：只有目前角色上場
   輸掉決鬥不是全滅、印 0、選單照開。
 - `cmd/pool-game/loot_experience_test.go`：帶 SWORDSMAN 交件先是 NPC 分錢頁（第 5 欄第 5 列一行），
   Enter 之後才是結算頁。
+- `cmd/pool-game/npc_share_receipt_test.go`：同一份隊伍（B..F，第二與第四個人改成 NPC）走同一段
+  交件，兩行的欄、列、字與 `docs/audit/dosgolem-npc-share-screen.json` 逐行相同。
+- `cmd/pool-game/arena_duel_test.go`：從 `ecl3/11 9CA5h` 跑，`CALL 8000h` 之後隊伍尾端是 `ROLF`
+  （陣營 1、AI、效果清空、物品反序）；盤面上只有上場的人與它，它用上場那個人的造形、士氣 B2h；
+  打贏印 `The duelist receives 100`（1 級 × 100）、只有上場的人拿到、複製品摘掉；兩邊都交給 AI
+  打到收場時複製品真的出手。
+- `cmd/pool-game/party_flee_test.go`：`ecl4/10 A5DBh` 的戰鬥裡隊員踏出盤面先問 `Flee:`，N 留在原地、
+  Y 逃掉；其餘的人倒著時收場印 `The party has fled.` 與 0、倒著的人從隊伍摘掉、@6DC7 = 81h、
+  選單只有 `TREASURE` 的那一份。
+- `cmd/pool-game/treasure_detect_test.go`：有物品而且目前角色記完了 Detect Magic 才有 `Detect`，
+  選了掛上效果 05h、清掉最前面那一格，記憶用完選項就消失。

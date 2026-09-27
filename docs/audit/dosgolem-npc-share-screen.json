@@ -1,0 +1,125 @@
+{
+ "schema": "pool-dos-npc-share-screen/1",
+ "generator": "dosgolem",
+ "generator_revision": "57454c4",
+ "driver": "tools/dosgolem-cheat-playthrough.py（generic 前面加一層拍照）",
+ "load": "workplace/dosgolem-cheat/slums.state",
+ "load_sha256": "ebbb65e8679bf8f5360f58af63da5b2b9e3e081e8d90719f5c52166cd44a80fb",
+ "diagnostic_injection": [
+  {
+   "slot": 1,
+   "name": "C",
+   "84_85_before": "0000",
+   "84_85_after": "b201"
+  },
+  {
+   "slot": 3,
+   "name": "E",
+   "84_85_before": "0000",
+   "84_85_after": "b201"
+  }
+ ],
+ "note": "診斷樣本：+84h/+85h 是注入的，只量 overlay-05 `13E6h` 的欄與列（spec 150）。",
+ "status": "captured",
+ "shots": [
+  {
+   "name": "npc-share-00",
+   "why": "npc-share",
+   "where": {
+    "archive": 3,
+    "block": 8,
+    "x": 5,
+    "y": 5,
+    "facing": 1,
+    "terrain": 157,
+    "combat": false,
+    "geo": 0
+   },
+   "rows": [
+    "????????????????????????????????????????",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?    C TAKES AND HIDES HIS SHARE.      ?",
+    "?                                      ?",
+    "?    E TAKES AND HIDES HIS SHARE.      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "????????????????????????????????????????",
+    "PRESS <ENTER>/<RETURN> TO CONTINUE"
+   ],
+   "bottom": "PRESS <ENTER>/<RETURN> TO CONTINUE",
+   "sha256": "320fe8765131d633f03b21f64e171c9884c6dc6a37819bae6d504d7fc39ff099",
+   "hides_lines": [
+    {
+     "row": 5,
+     "column": 5,
+     "text": "C TAKES AND HIDES HIS SHARE."
+    },
+    {
+     "row": 7,
+     "column": 5,
+     "text": "E TAKES AND HIDES HIS SHARE."
+    }
+   ]
+  },
+  {
+   "name": "npc-share-01",
+   "why": "result-after-share",
+   "where": {
+    "archive": 3,
+    "block": 8,
+    "x": 5,
+    "y": 5,
+    "facing": 1,
+    "terrain": 157,
+    "combat": false,
+    "geo": 0
+   },
+   "rows": [
+    "????????????????????????????????????????",
+    "?                                      ?",
+    "?                                      ?",
+    "?THE PARTY HAS FOUND TREASURE?         ?",
+    "?                                      ?",
+    "?EACH CHARACTER RECEIVES 5?0           ?",
+    "?                                      ?",
+    "?EXPERIENCE POINTS.                    ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "?                                      ?",
+    "????????????????????????????????????????",
+    "PRESS <ENTER>/<RETURN> TO CONTINUE"
+   ],
+   "bottom": "PRESS <ENTER>/<RETURN> TO CONTINUE",
+   "sha256": "057b6e76a367996a02e141921e6550a27fa2da5d07aa4d6453952280f63253a2",
+   "hides_lines": []
+  }
+ ]
+}

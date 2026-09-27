@@ -1146,16 +1146,16 @@
   }
  ],
  "mechanics": {
-  "battles": 41,
-  "foe_attacks": 1644,
+  "battles": 42,
+  "foe_attacks": 1654,
   "foe_casts": 0,
   "foe_casts_begun": 0,
-  "foe_hits": 817,
-  "foe_steps": 3701,
+  "foe_hits": 828,
+  "foe_steps": 4067,
   "note": "作弊之下戰鬥機制與 AI 照樣作用的證據（#57）。battles 起到 party_hits 是閘門，其餘只記錄。",
-  "party_attacks": 1007,
+  "party_attacks": 1036,
   "party_casts": 5,
-  "party_hits": 328,
+  "party_hits": 332,
   "reaction_attacks": 50
  },
  "route": "spec 137 路線 (a)，house rule，dice seed 142",
