@@ -52,6 +52,7 @@ func (a *app) applyRecordGearStats(state *tacticalState, index int, record gamep
 	}
 	state.THAC0[index] = runtime.Raw[gamepack.CurrentThac0Offset]
 	state.ArmorClass[index] = int(runtime.Raw[gamepack.InternalArmourClassOffset])
+	state.setRearArmour(index, int(runtime.Raw[gamepack.RearArmourClassOffset]))
 	state.BaseMovement[index] = runtime.Raw[gamepack.CurrentMovementOffset]
 	primary := -1
 	for slot := uint8(1); slot <= gamepack.MonsterAttackSlots; slot++ {

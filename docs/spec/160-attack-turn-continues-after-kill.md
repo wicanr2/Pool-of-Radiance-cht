@@ -110,6 +110,12 @@ remake：`recountSwings`（attack_continue.go）。玩家在物品選單收起�
 打，打完扣掉實際揮出去的（`lastSwings`，第二形態先扣）。沒有骰子的形態不揮也不數，與
 `attackSwingsThisPhase` 相同。
 
+## 反應攻擊共用同一份次數（spec 059）
+
+反應攻擊走同一個攻擊核心（第三個引數 1），扣的是反應者這一回合的 `+113h`／`+114h`，扣完就對它
+呼叫 entry 34。remake 的 `reactionAttack` 從 `swingsLeft`（沒有就現數）選槽、打完寫回
+`swingsLeft`；反應者輪到自己時 `resolveWeaponAttack` 照剩下的打。
+
 ## 驗證
 
 - 送鍵（`Update()`）：`TestPlayerFighterKeepsTheSwingLeftAfterAKill`——編碼 4 的戰士撞上第一隻、一下
@@ -123,5 +129,9 @@ remake：`recountSwings`（attack_continue.go）。玩家在物品選單收起�
   U、ESC 之後變成 `[4 0]`。
 - 變異：`spendSwings` 一律回 false（回合一律結束）讓三條送鍵／foeTurn 測試變紅；`recountSwings` 拿掉
   `0E34h` 或射擊那一支各自讓條件寫回那一條變紅；ESC 不叫 `recountSwings` 讓物品選單那一條變紅。
+- 反應攻擊（`tacticalInput()` 送鍵）：`TestAReactionSpendsTheReactorsTurn`（兩下打完、先攻與開始施法
+  清掉、Enter 之後這一回合輪不到它）、`TestAReactionThatDownsTheMoverKeepsTheRest`（剩 `[1 0]`、
+  先攻留著）、`TestAReactionHitsTheRearArmourClass`、`TestDisengagingFromAFacingFoeDrawsAReactionAttack`
+  （走的人不轉身）。變異：拿掉 entry 34、改回 `+111h`、不寫回次數、照樣轉身，各自讓一條變紅。
 - `0DFCh` 換完武器再進 entry 5 沒有專屬測試：entry 9 在回合開頭就看身邊有沒有敵人，走得到
   `0DFCh` 的只有走近之後或殺了一個之後的再進；`TestFoeWalkReproducesEveryOriginalAction` 40/40 照舊。

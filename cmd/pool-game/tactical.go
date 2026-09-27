@@ -438,6 +438,11 @@ type tacticalState struct {
 	// 上一次出手之後回合沒有結束（攻擊核心的完成旗標為 0）。見 attack_continue.go（spec 160）。
 	swingsLeft   map[uint8][2]uint8
 	attackGoesOn bool
+	// rearArmour 是記錄 `+112h`（不含敏捷與盾、再減 2 的背後 AC，spec 080）；反應攻擊拿它
+	// 比命中（spec 059）。沒記下的格子退回 ArmorClass。
+	rearArmour map[int]int
+	// reactionSwing 是這一次攻擊包裝的第三個引數（`[bp+0Eh]`）為 1：反應攻擊（spec 059）。
+	reactionSwing bool
 	Budgets       []uint8
 	States        []uint8
 	DyingCounters []uint8
@@ -1508,11 +1513,15 @@ func (a *app) applyPartyGearStats(state *tacticalState, index int, member poolsa
 	state.THAC0[index] = thac0
 	// 穿在身上的東西改 AC 與腳程（spec 079／080）：`partyCombatStats`
 	// 回的是建角值，那是「脫光了」的角色。
+	base := armor
 	armor, movement, err = a.memberDefenceStats(member, armor, movement)
 	if err != nil {
 		return err
 	}
 	state.ArmorClass[index] = armor
+	if err := a.rememberPartyRearArmour(state, index, member, base); err != nil {
+		return err
+	}
 	state.BaseMovement[index] = movement
 	// 徒手是開打預設的那一組：1d8、相鄰一格（戰鬥中卸下武器要回到這裡）。
 	state.setSingleAttackForm(index, combat.DamageDice{Count: 1, Sides: 8})
@@ -2170,8 +2179,11 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	if int(target) >= len(state.HitPoints) || int(attacker) >= len(state.HitPoints) {
 		return fmt.Errorf("Pool attack %d → %d is outside the roster", attacker, target)
 	}
-	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）。
-	state.turnToFace(target, attacker)
+	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）；反應攻擊的第三個引數是 1，
+	// `1898h` 跳過（spec 059）。
+	if !state.reactionSwing {
+		state.turnToFace(target, attacker)
+	}
 	// `191Ch..192Dh`：攻擊者 runtime `+0Ah` = 目標，不分玩家或 AI（spec 052；群組 16 的 `2Fh`
 	// 讀被打的人的這一格，#90）。
 	state.setFoeTarget(attacker, target)
@@ -2193,6 +2205,10 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	var lastRoll uint8
 	// overlay-13 `1587h..1595h`：重算目標的戰鬥數值、派發目標的群組 11，才進擲骰（#89）。
 	armourClass := state.hitCheckArmourClass(target)
+	if state.reactionSwing {
+		// `1604h..161Ch`：旗標立著 → 拿目標的 `+112h`（背後 AC）而不是 `+111h`（spec 059）。
+		armourClass = state.hitCheckArmourClassFrom(target, state.rearArmourClass(target))
+	}
 	for _, dice := range swings {
 		state.lastSwings++
 		lastRoll = uint8(a.rollDice(1, 20))

@@ -143,6 +143,10 @@ func (state *tacticalState) stinkingCloudTurn(index int) bool {
 	}
 	if index < len(state.ArmorClass) {
 		state.ArmorClass[index] = gamepack.StinkingCloudArmourClass(state.ArmorClass[index])
+		// `0AD3h` 改的是 `+112h` 本身（背後 AC，spec 059 反應攻擊用它）。
+		if rear, ok := state.rearArmour[index]; ok {
+			state.setRearArmour(index, gamepack.StinkingCloudArmourClass(rear))
+		}
 	}
 	return true
 }

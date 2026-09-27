@@ -174,7 +174,11 @@ func (a *app) touchSpellHits(state *tacticalState, target uint8) bool {
 
 // hitCheckArmourClass 是出手之前的群組 11：從重算過的 AC 內部值起算（gamepack.HitCheckArmourClass）。
 func (state *tacticalState) hitCheckArmourClass(target uint8) int {
-	armourClass := state.ArmorClass[target]
+	return state.hitCheckArmourClassFrom(target, state.ArmorClass[target])
+}
+
+// hitCheckArmourClassFrom 是同一個群組 11，從指定的 AC（`+111h` 或背後的 `+112h`）起算。
+func (state *tacticalState) hitCheckArmourClassFrom(target uint8, armourClass int) int {
 	if int(target) < len(state.Effects) {
 		armourClass = gamepack.HitCheckArmourClass(state.Effects[target], armourClass)
 	}

@@ -3,6 +3,8 @@ package main
 import (
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 )
 
@@ -47,9 +49,83 @@ func TestDisengagingFromAFacingFoeDrawsAReactionAttack(t *testing.T) {
 	if state.HitPoints[1] > 0 && (state.Roster[1].X != 9 || state.Roster[1].Y != 10) {
 		t.Fatalf("the step was not committed: mover at (%d,%d)", state.Roster[1].X, state.Roster[1].Y)
 	}
-	// 被打的一方轉身面向攻擊者（攻擊包裝 `1883h`），所以朝向不是西。
-	if want, _ := combatFacingTowards(10, 10, 11, 10); state.Facings[1] != want {
-		t.Fatalf("mover facing %d after the reaction, want %d (towards the attacker)", state.Facings[1], want)
+	// 反應攻擊以第三個引數 1 呼叫攻擊包裝，`1898h` 跳過目標轉身（spec 059）：走的人還是朝西。
+	if state.Facings[1] != reactionWest {
+		t.Fatalf("mover facing %d after the reaction, want %d (a reaction does not turn it)", state.Facings[1], reactionWest)
+	}
+}
+
+// 還沒輪到的反應者（先攻 5）一回合兩下（編碼 4）：反應攻擊把兩下都打完，次數扣光，entry 34
+// 清掉它的先攻——走的人按 Enter 結束之後，這一回合輪不到它（spec 059）。
+func TestAReactionSpendsTheReactorsTurn(t *testing.T) {
+	a, state := reactionBoard(t, facingTowardsMover)
+	state.HitPoints[1] = 100
+	state.AttackRates[2] = [2]uint8{4, 0}
+	state.Casting.Pending = map[int]uint8{2: 1}
+	stepWith(t, a, reactionWest)
+	if state.Activity.FoeHits != 2 || state.HitPoints[1] != 100-16 {
+		t.Fatalf("reaction: %d hits, mover HP %d; want both swings (84)", state.Activity.FoeHits, state.HitPoints[1])
+	}
+	if state.Scores[2] != 0 || state.swingsLeft[2] != [2]uint8{} || state.Budgets[2] != 0 {
+		t.Fatalf("reactor: score %d, left %v, budget %d; want entry 34 to clear it", state.Scores[2], state.swingsLeft[2], state.Budgets[2])
+	}
+	if _, ok := state.Casting.Pending[2]; ok {
+		t.Fatal("entry 34 left the reactor's pending spell")
+	}
+	round := state.Round
+	a.keys = scriptedKeys{ebiten.KeyEnter: true}
+	if err := a.tacticalInput(); err != nil {
+		t.Fatal(err)
+	}
+	if state.Round == round || state.Activity.FoeAttacks != 1 {
+		t.Fatalf("after Enter: round %d → %d, %d foe attacks; want a new round with no further attack",
+			round, state.Round, state.Activity.FoeAttacks)
+	}
+}
+
+// 反應攻擊第一下就打倒了走的人：剩下那一下留著（`+113h` 1），先攻不清，輪到它時照剩下的打。
+func TestAReactionThatDownsTheMoverKeepsTheRest(t *testing.T) {
+	a, state := reactionBoard(t, facingTowardsMover)
+	state.HitPoints[1] = 1
+	state.AttackRates[2] = [2]uint8{4, 0}
+	stepWith(t, a, reactionWest)
+	if state.HitPoints[1] > 0 || state.Activity.FoeHits != 1 {
+		t.Fatalf("mover HP %d after %d hits; want it down after one", state.HitPoints[1], state.Activity.FoeHits)
+	}
+	if state.swingsLeft[2] != [2]uint8{1, 0} || state.Scores[2] != 5 {
+		t.Fatalf("reactor: left %v, score %d; want [1 0] and its initiative kept", state.swingsLeft[2], state.Scores[2])
+	}
+}
+
+// 反應攻擊比的是目標的背後 AC（`+112h`，`1604h..161Ch`）：正面擋得住、背後擋不住的那一骰會中。
+func TestAReactionHitsTheRearArmourClass(t *testing.T) {
+	for _, rear := range []bool{true, false} {
+		a, state := reactionBoard(t, facingTowardsMover)
+		a.roller = fixedRoller{10}
+		front, back := -1, -1
+		for armour := 0; armour <= 120 && (front < 0 || back < 0); armour++ {
+			hit, err := combat.ResolveHit(10, state.THAC0[2], armour, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if hit && back < 0 {
+				back = armour
+			}
+			if !hit && front < 0 && back >= 0 {
+				front = armour
+			}
+		}
+		if front < 0 || back < 0 {
+			t.Fatal("fixture: no armour class pair splits a roll of 10")
+		}
+		state.ArmorClass[1] = front
+		if rear {
+			state.setRearArmour(1, back)
+		}
+		stepWith(t, a, reactionWest)
+		if hurt := state.HitPoints[1] < 10; hurt != rear {
+			t.Errorf("rear AC %v: mover HP %d; want hurt only against the rear AC", rear, state.HitPoints[1])
+		}
 	}
 }
 

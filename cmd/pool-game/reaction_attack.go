@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
 // 戰場上的朝向（原版 combatant 的 `+108h` 結構 `+9`）。反應攻擊的朝向窗以它為
@@ -172,32 +174,110 @@ func (state *tacticalState) canReact(mover, opponent uint8) bool {
 	return false
 }
 
-// reactionAttack 以 spec 059 選出的攻擊槽打一次。phase 計數（`+113h`／`+114h`）
-// remake 沒有逐次扣的那一份，拿這一相位該揮幾下代替（hypothesis）。
+// reactionAttack 是 overlay-13 `0B69h..0C1Bh`（spec 059，exact）：攻擊槽照這一回合剩下的
+// `+113h`／`+114h` 選（`SelectReactionAttackSlot`，選中的是 0 就補成 1），runtime `+4` 寫成
+// 它，攻擊包裝以第三個引數 1 呼叫（`0BF4h`）。攻擊核心 `1404h` 從那一槽倒數到第一槽，把剩下的
+// 次數全部打完（目標先倒下就停），照樣扣次數、立 `+8`；兩槽都扣完時對反應者呼叫 entry 34
+// （`17E4h`），它的先攻、開始施法的法術與腳程一起清掉（overlay-25 `266Dh`）——還沒輪到的
+// 反應者這一回合就沒了。第三個引數 1 讓目標不轉身（`1898h`）、改拿背後 AC `+112h` 比命中
+// （`1604h..161Ch`）。
 func (a *app) reactionAttack(state *tacticalState, attacker, target uint8) error {
-	var counts [2]uint8
-	for slot := 0; slot < 2; slot++ {
-		count, err := combat.AttacksThisPhase(state.attackRateThisRound(attacker, slot), state.AttackPhase&1)
-		if err != nil {
-			return err
-		}
-		counts[slot] = count
+	gear, items, _, err := a.missileGear(state, attacker)
+	if err != nil {
+		return err
 	}
+	fresh, form2, err := a.volleySwings(state, attacker, gear, items)
+	if err != nil {
+		return err
+	}
+	fresh, form2 = state.remainingSwings(attacker, fresh, form2)
 	state.Activity.ReactionAttacks++
-	pick := combat.SelectReactionAttackSlot(state.AttackRates[attacker][0], counts)
-	dice := state.AttackForms[attacker][pick.Slot-1]
-	if dice.Count == 0 || dice.Sides == 0 {
-		dice = state.Damage[attacker]
+	pick := combat.SelectReactionAttackSlot(state.AttackRates[attacker][0],
+		[2]uint8{uint8(len(fresh) - form2), uint8(form2)})
+	left := pick.PhaseCounts
+	var swings []combat.DamageDice
+	form2 = 0
+	for slot := pick.Slot; slot >= 1; slot-- {
+		dice := state.AttackForms[attacker][slot-1]
+		if dice.Count == 0 || dice.Sides == 0 {
+			if slot != pick.Slot {
+				continue
+			}
+			dice = state.Damage[attacker]
+		}
+		for swing := uint8(0); swing < left[slot-1]; swing++ {
+			swings = append(swings, dice)
+		}
+		if slot == 2 {
+			form2 = int(left[1])
+		}
 	}
-	swings := make([]combat.DamageDice, pick.PhaseCounts[pick.Slot-1])
-	for index := range swings {
-		swings[index] = dice
+	state.reactionSwing = true
+	err = a.resolveAttackSwings(state, attacker, target, swings, form2)
+	state.reactionSwing = false
+	if err != nil {
+		return err
 	}
-	form2 := 0
-	if pick.Slot == 2 {
-		form2 = len(swings)
+	used := state.lastSwings
+	for slot := pick.Slot; slot >= 1 && used > 0; slot-- {
+		spent := int(left[slot-1])
+		if spent > used {
+			spent = used
+		}
+		left[slot-1] -= uint8(spent)
+		used -= spent
 	}
-	return a.resolveAttackSwings(state, attacker, target, swings, form2)
+	if state.swingsLeft == nil {
+		state.swingsLeft = map[uint8][2]uint8{}
+	}
+	state.swingsLeft[attacker] = left
+	if left[0]+left[1] == 0 {
+		state.finishAction(attacker)
+	}
+	return nil
+}
+
+// finishAction 是 overlay-25 entry 34（`266Dh`）落在不是當下行動者的那一格：runtime `+3`
+// （先攻）、`+0`（開始施法、還沒放出去的法術）、`+7`、`+6`（腳程）清 0。`+7` remake 沒有對應
+// 欄位（spec 053 的 `0630h` 沒接）。
+func (state *tacticalState) finishAction(index uint8) {
+	if int(index) < len(state.Scores) {
+		state.Scores[index] = 0
+	}
+	if int(index) < len(state.Budgets) {
+		state.Budgets[index] = 0
+	}
+	delete(state.Casting.Pending, int(index))
+}
+
+// setRearArmour 記下這一格的 `+112h`。
+func (state *tacticalState) setRearArmour(index, value int) {
+	if state.rearArmour == nil {
+		state.rearArmour = map[int]int{}
+	}
+	state.rearArmour[index] = value
+}
+
+// rearArmourClass 是這一格的 `+112h`；沒記下的（測試盤面、沒有物品型別表）退回 ArmorClass。
+func (state *tacticalState) rearArmourClass(index uint8) int {
+	if rear, ok := state.rearArmour[int(index)]; ok {
+		return rear
+	}
+	return state.ArmorClass[index]
+}
+
+// rememberPartyRearArmour 算隊員的 `+112h`（overlay-25 entry 7 `0FE1h`，spec 080）。
+func (a *app) rememberPartyRearArmour(state *tacticalState, index int, member poolsave.Character, base int) error {
+	items := make([][]byte, 0, len(member.Inventory))
+	for _, item := range member.Inventory {
+		items = append(items, item.Raw)
+	}
+	armour, err := gamepack.ArmourClassFor(base, member.Abilities[dexterityAbilityIndex], items, a.itemTypes)
+	if err != nil {
+		return err
+	}
+	state.setRearArmour(index, armour.Rear)
+	return nil
 }
 
 // combatActivity 數一場裡實際發生的動作（#57）。收據用，遊戲本身不讀。
