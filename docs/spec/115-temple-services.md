@@ -38,6 +38,38 @@
 `+10Ch` 的狀態值與 `combat.DeadState` 對得上：6 是死亡，7 是石化，
 8 是被轉變不死生物摧毀（spec 111）。
 
+## 沒有毛病照樣收錢
+
+（2026-09-27，#118，exact。overlay-04 code SHA-256 `d948ce6bc533470ac1fa44a7787c2ce5006462cc33ada1cf61ffd128da8a91af`，
+`coab-go-test:20260729` 的 GNU objdump，位址是 overlay 檔內位移。）
+
+有前提的六項（失明、疾病、起死回生、解毒、除咒、石化解除）形狀都一樣：沒有那個毛病就印
+`is not …`，交給 `0013h` 問一句 "cast cure anyway: "（`0000h` 的 Pascal 字串
+`12 63 61 73 74 20 63 75 72 65 20 61 6E 79 77 61 79 3A 20`），`011Dh:003Eh` 讀一個鍵回傳；
+是 `'Y'` 就照樣報價、由 entry 3（`00BFh`）收錢。除咒（entry 9）是這樣：
+
+```
+082B  C6 86 F6 FE 59            答案預設 'Y'（有毛病就不問）
+0891  8D BE E7 FE 16 57 BF 03 08 0E 57 9A 34 06 BB 05   ; "is not cursed."（cs:0803h）
+08A1  0E E8 6E F7               call 0013h("cast cure anyway: ")
+08A5  88 86 F6 FE               答案 = 讀到的鍵
+08A9  80 BE F6 FE 59 75 35      不是 'Y' → 收工
+08C0  B8 AC 0D 50 0E E8 F7 F7   00BFh(3500)：報價、問 pay for cure、收錢
+08CC  80 BE F6 FE 59 75 12      沒付 → 收工
+08D3  DS:6B89h = 這個人；08E0 9A 4D 00 E2 00   overlay-22 entry 9（`2508h`）
+```
+
+付完的處理對沒有毛病的人什麼也不做：失明、疾病、解毒是拿掉不存在的效果碼；除咒的 `2508h` 兩樣都
+找不到；起死回生在 `05A5h`（`80 BE FA FE 00 75 03 E9 60 01`）看付款前記下的「真的死了」旗標，
+石化解除在 `096Ah`（`26 80 BD 0C 01 07 75 1E`）重讀 `+10Ch`，不符都直接收工——**活人付了 5500
+也不會被改成 1 點生命、扣體質**。三種傷藥沒有前提，本來就照收。
+
+remake：`temple.Serve` 先記下 `Applies`，照付；沒有毛病就付完直接回傳。選單上兩問（anyway 與
+pay for cure）併成一個 YES／NO，`is not …` 那一句放在狀態列（停止線，呈現）。測試
+`TestServiceChargesEvenWhenThereIsNothingToCure`、`TestRaiseDeadOnTheLivingOnlyTakesTheMoney`、
+`TestTempleChargesEvenWhenThereIsNothingToCure`（從 `Update()` 按鍵）、
+`TestTempleRemoveCurseChargesTheUncursed`（同上）。
+
 ## 起死回生要付一點體質
 
 ```

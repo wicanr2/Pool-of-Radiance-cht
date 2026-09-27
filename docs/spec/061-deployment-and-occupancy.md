@@ -346,7 +346,7 @@ EFREETI**（`+84h` 是 B2h）；它在瓦海登墳場 ECL4 block 10 的 `B161h`�
 | overlay-05 entry 2 `0068h` | `+10Eh != 1` 整段跳過：不算經驗值、錢、物品 | `awardCombatExperienceWithLoot` 跳過記錄 `+10Eh` 是 0 的；錢與物品本來就只收敵方 |
 | overlay-08 `100Fh` | B）ANDAGE 只包 `+13h == 0`（隊員） | `bandageTarget` 跳過 PartySlot 為 −1 的格 |
 | overlay-32 `0F4Bh`／`114Dh`、overlay-05 `04DEh..11DEh` | 屍體表與戰後的隊伍換算只看 `+13h == 0` | 隊伍那一側本來就用 PartySlot 對回隊員 |
-| overlay-13 `2A0Dh` | 玩家打自己人答 Y 之後，狀態 0 而 `+84h > 7Fh` 的全部改成敵方 | EFREETI 的 `+10Fh` 是 1，打它不問（`2995h`）；remake 沒有 Attack Ally 這一問 |
+| overlay-13 `2A0Dh` | 玩家打自己人答 Y 之後，狀態 0 而 `+84h > 7Fh` 的全部改成敵方 | `2995h` 看的是**攻擊者**的 `+10Fh`（AI 在走的不問），所以玩家打 EFREETI 或隊員都要問；remake 已接（spec 162） |
 
 `+84h` 的改寫沒有觸發：唯一的 `+10Eh == 0` 怪物是 B2h（低七位 32h），不在「0 或大於 66h」裡
 （停止線，無觸發）。remake：`deployRoster` 依記錄 `+10Eh` 分邊，怪物照 `LOAD MONSTER` 的順序排在

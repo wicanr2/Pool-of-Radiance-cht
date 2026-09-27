@@ -452,6 +452,7 @@
       "ui.tacticalBack": "F5: BACK",
       "ui.tacticalBoard": "DUNGEON %d,%d  CELLS %d  BLOCKING %d  PARTY %d  FOES %d",
       "ui.tacticalFleePrompt": "FLEE: Y YES   N NO",
+      "ui.attackAllyPrompt": "ATTACK ALLY: Y YES   N NO",
       "ui.tacticalKeys": "M: MOVE THEN HIMQPOKG (OR KEYPAD)   ENTER: END TURN   D: DELAY   B: BANDAGE   Q: QUICK   SPACE: TAKE BACK",
       "ui.tacticalNoMap": "DUNGEON MAP IS NOT LOADED",
       "ui.tacticalNoState": "TACTICAL STATE IS NOT BUILT",

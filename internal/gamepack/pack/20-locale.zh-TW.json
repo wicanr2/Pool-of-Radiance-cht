@@ -452,6 +452,7 @@
       "ui.tacticalBack": "F5 返回",
       "ui.tacticalBoard": "地城 %d,%d　格 %d　阻擋 %d　隊伍 %d　敵方 %d",
       "ui.tacticalFleePrompt": "逃走？Y 是　N 否",
+      "ui.attackAllyPrompt": "攻擊同伴？Y 是　N 否",
       "ui.tacticalKeys": "M 移動再按 HIMQPOKG（或數字鍵盤）　ENTER 結束回合　D 延後　B 包紮　Q 自動戰鬥　SPACE 收回",
       "ui.tacticalNoMap": "地城地圖尚未載入",
       "ui.tacticalNoState": "戰場尚未建立",

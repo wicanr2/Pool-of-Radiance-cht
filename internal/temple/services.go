@@ -161,15 +161,20 @@ func Serve(state *poolsave.State, partyIndex int, id string, roller Roller) (Res
 		}
 	}
 	character := &state.Party[partyIndex]
-	if !service.Applies(*character) {
-		return Result{}, fmt.Errorf("%s %s", character.Name, service.Refusal)
-	}
+	// 沒有那個毛病照樣收錢（spec 115〈沒有毛病照樣收錢〉，#118）：六項都是
+	// `is not …` 之後由 `0013h` 問 "cast cure anyway: "，答 Y 就走 `00BFh` 收錢；
+	// 付完的處理對沒有毛病的人什麼也不做（拿掉不存在的效果、`05A5h`／`096Ah`
+	// 再看一次狀態、`2508h` 兩樣都找不到）。
+	afflicted := service.Applies(*character)
 	result := Result{Cost: service.Cost}
 	paidFrom, err := pay(state, partyIndex, service.Cost)
 	if err != nil {
 		return Result{}, err
 	}
 	result.PaidFrom = paidFrom
+	if !afflicted {
+		return result, nil
+	}
 
 	character.Effects = withoutEffects(character.Effects, service.RemovesEffects)
 	switch service.ID {

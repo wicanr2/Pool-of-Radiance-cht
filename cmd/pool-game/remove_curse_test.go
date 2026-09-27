@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
@@ -84,5 +85,53 @@ func TestTempleRemoveCurseFreesACursedItem(t *testing.T) {
 	left := int(member.Money[3]) + int(member.Money[4])*5
 	if left != 500 || member.Inventory[0].Raw[gamepack.ItemCursedOffset] != 0 {
 		t.Fatalf("paid %d, item curse %d", 4000-left, member.Inventory[0].Raw[gamepack.ItemCursedOffset])
+	}
+}
+
+// 沒有詛咒也照收 3500（#118，spec 115）：`0891h` 印 "is not cursed." 之後問
+// "cast cure anyway: "，答 Y 就走 `00BFh` 收錢、`08E0h` 交給 `2508h`；那一支兩樣都
+// 找不到，什麼也沒做。從 Update() 按方向鍵與 ENTER 走完，身上的東西不動。
+func TestTempleRemoveCurseChargesTheUncursed(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 12,
+		Money:     [7]uint16{3: 4000},
+		Effects:   poolsave.PermanentEffects(0x21),
+		Inventory: []poolsave.Item{{Name: "DAGGER", Raw: make([]byte, 63)}}}
+	application := &app{
+		mode: modeAdventure, introDone: true, roller: fixedTempleRoller(1),
+		state: poolsave.State{Schema: poolsave.Schema,
+			CharacterLibrary: []poolsave.Character{character},
+			Party:            []poolsave.Character{character}},
+		templeActive: true, cellEventPending: true, cellWaitingMenu: true,
+	}
+	application.saveState = func(poolsave.State) error { return nil }
+	application.enterTempleHeal()
+	for guard := 0; guard < 64 && templeHealServiceIDs[application.cellMenuCursor] != "remove-curse"; guard++ {
+		if err := press(application, ebiten.KeyArrowDown); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if templeHealServiceIDs[application.cellMenuCursor] != "remove-curse" {
+		t.Fatalf("游標走不到 Remove Curse，停在 %d", application.cellMenuCursor)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(application.statusLine, "is not cursed") ||
+		!strings.Contains(application.eventText, "3500 gold pieces") {
+		t.Fatalf("應該說他沒被詛咒並報價：狀態 %q 文字 %q", application.statusLine, application.eventText)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	member := application.state.Party[0]
+	// 500 金重鑄成白金 100。
+	if left := int(member.Money[3]) + int(member.Money[4])*5; left != 500 {
+		t.Fatalf("應該照收 3500，剩 %d（%v）", left, member.Money)
+	}
+	if len(member.Effects) != 1 || member.Effects[0].Code != 0x21 || member.Inventory[0].Raw[gamepack.ItemCursedOffset] != 0 {
+		t.Fatalf("沒被詛咒卻動了東西：效果 %+v", member.Effects)
+	}
+	if library := application.state.CharacterLibrary[0]; library.Money != member.Money {
+		t.Fatalf("角色庫沒跟著扣：%v", library.Money)
 	}
 }

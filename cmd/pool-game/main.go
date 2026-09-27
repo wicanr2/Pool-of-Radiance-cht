@@ -2843,8 +2843,8 @@ func (a *app) selectSuneTempleOption() error {
 		}
 		a.templeService = a.cellMenuCursor
 		service, _ := temple.ServiceByID(templeHealServiceIDs[a.templeService])
-		// 沒有那個毛病時原版先印 `is not …` 再問要不要照做，錢照收。
-		// 這裡把那一句放進事件文字，選 YES 才會付錢。
+		// 沒有那個毛病時原版先印 `is not …` 再問 "cast cure anyway: "，錢照收（spec 115）。
+		// 這裡把那一句放進狀態列，兩問併成這一個 YES／NO，選 YES 才會付錢。
 		if !service.Applies(a.state.Party[a.templeParty]) && service.Refusal != "" {
 			a.statusLine = a.state.Party[a.templeParty].Name + " " + service.Refusal
 		} else {
@@ -2873,7 +2873,6 @@ func (a *app) selectSuneTempleOption() error {
 				a.statusLine = "The cure was not purchased; no money or HP changed."
 				return nil
 			}
-			// 沒有那個毛病：原版不收錢也不做事，只留那一句。
 			a.eventText = err.Error()
 			a.statusLine = "Nothing was purchased; no money changed."
 			return nil

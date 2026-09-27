@@ -193,13 +193,8 @@ func (a *app) resolveAimedAttack(target uint8) error {
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgAimOutOfRange), a.combatantName(state, target), distance, reach))
 		return nil
 	}
-	if same, err := state.sameSide(state.Mover, target); err != nil {
+	if _, err := state.sameSide(state.Mover, target); err != nil {
 		return err
-	} else if same {
-		// 原版允許打自己人（`Attack Ally:` 會先問一句），那一句還沒讀，
-		// 所以這裡直接擋下來。
-		state.Status = state.say(msgStatusBlocked)
-		return nil
 	}
 	// 射擊武器沒彈藥、或身邊有敵人而武器不能近戰：原版選單上沒有 Target（spec 151）。
 	if offered, err := a.aimOffersTarget(state, state.Mover); err != nil {
@@ -208,6 +203,16 @@ func (a *app) resolveAimedAttack(target uint8) error {
 		a.tacticalStatus(state, state.say(msgAimNoTarget, a.combatantName(state, target)))
 		return nil
 	}
+	// 按 Target 之後先過 overlay-13 `2977h`：打自己人要問 "Attack Ally:"（attack_ally.go）。
+	if state.needsAllyPrompt(state.Mover, target) {
+		state.askAttackAlly(target, true)
+		return nil
+	}
+	return a.strikeAimedTarget(state, target)
+}
+
+// strikeAimedTarget 是 Target 確定之後真的打下去（overlay-13 `2CBAh` 之後）。
+func (a *app) strikeAimedTarget(state *tacticalState, target uint8) error {
 	if err := a.resolveWeaponAttack(state, target, true); err != nil {
 		return err
 	}

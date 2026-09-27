@@ -144,6 +144,9 @@ func drawTactical(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 		if a.tactical.FleePrompt {
 			line = a.text(msgTacticalFleePrompt)
 		}
+		if a.tactical.AllyPrompt != nil {
+			line = a.text(msgAttackAllyPrompt)
+		}
 		drawText(screen, line, 0, footerBaseline, accent)
 	}
 	if a.castAborting() {
@@ -498,6 +501,8 @@ type tacticalState struct {
 	Prompt        bool
 	// FleePrompt 是隊員要踏出盤面時的 "Flee:"（overlay-08 `0BFDh`，spec 150）。
 	FleePrompt   bool
+	// AllyPrompt 是玩家打自己人時的 "Attack Ally:"（overlay-13 `2977h`，attack_ally.go）。
+	AllyPrompt   *allyPrompt
 	Outcome       combat.CombatOutcome
 	BudgetSource  string
 	Status        string
@@ -1089,6 +1094,8 @@ func (a *app) enterTacticalPreview() error {
 	a.deployedCorpses(state)
 	// 遭遇腳本寫的命中與腳程修正（`@6E70..6E72`，side_adjust.go）。
 	state.SideAdjust = readSideAdjustments(a.eventMachine)
+	// overlay-10 `1F76h`：開打時 @6E33（打過自己人）歸零（attack_ally.go）。
+	a.clearAttackedAlly()
 	// 戰鬥佈置的最後：隊伍 `+58Ch` 夾到 100、算第一次 `DS:6D22h`（foe_flee.go）。
 	a.setupMorale(state)
 	state.startRound(a.rollDice)
@@ -1932,6 +1939,9 @@ func (a *app) tacticalInput() error {
 		}
 		return nil
 	}
+	if state.AllyPrompt != nil {
+		return a.allyPromptInput(state)
+	}
 	if state.Prompt {
 		if a.justPressed(ebiten.KeyY) {
 			state.Prompt = false
@@ -2110,19 +2120,12 @@ func (a *app) tacticalInput() error {
 			state.FleePrompt = true
 			state.Status = state.say(msgTacticalFleePrompt)
 		case outcome.Action == combat.MovementAttack:
-			// 撞到自己人不打自己人。`ProbeDestination` 忠實重現原版，它只回報
-			// 「那一格站著誰」——原版的格位表（`DS:5E89h`）本來就沒有陣營，
-			// 陣營在角色記錄的 `+10Eh`，所以這個判斷是呼叫端的責任。
-			// 少了它，隊伍排成一列時最左邊那個往右走就會砍死自己的同伴，
-			// 而戰鬥永遠打不完。
+			// `ProbeDestination` 忠實重現原版，它只回報「那一格站著誰」——原版的格位表
+			// （`DS:5E89h`）本來就沒有陣營，陣營在角色記錄的 `+10Eh`，所以這個判斷是
+			// 呼叫端的責任。原版撞到同伴是問 "Attack Ally:"（overlay-08 `0D76h` 叫 overlay-13 `2977h`，
+			// attack_ally.go）：答 Y 才打，其他鍵什麼也不做、留在移動裡。順序照 `0D30h`：
+			// 先看武器，再問。
 			//
-			// 待證：原版撞到同伴是「擋住」還是「換位」。這裡先擋住。
-			if same, err := state.sameSide(state.Mover, outcome.Target); err != nil {
-				return err
-			} else if same {
-				state.Status = state.say(msgStatusBlocked)
-				return nil
-			}
 			// overlay-08 `0D36h..0D68h`：拿著射擊武器撞上去不打（spec 151）。
 			if refused, err := a.bumpAttackRefused(state, state.Mover); err != nil {
 				return err
@@ -2130,24 +2133,14 @@ func (a *app) tacticalInput() error {
 				state.Status = state.say(msgStatusNotWithWeapon)
 				return nil
 			}
-			if err := a.resolveTacticalAttack(state, outcome.Target); err != nil {
+			if _, err := state.sameSide(state.Mover, outcome.Target); err != nil {
 				return err
 			}
-			// 攻擊就用掉這一次行動。原版的玩家指令迴圈（overlay-08 `0307h`）
-			// 把「這一回合結束了嗎」的旗標位址交給攻擊常式
-			// （`0096h:0089h`，`03D7h` 那個 `lea -2(bp)`），由它決定要不要
-			// 回到 `036Ch` 再問下一個指令；敵方回合（`foeTurn`）打完也是直接
-			// `endTurn`。少了這一步，同一個角色可以對同一個目標無限連打。
-			//
-			// 殺了目標而還有剩的次數時完成旗標是 0（spec 160）：移動迴圈（`0A13h`）只看腳程，
-			// entry 34 沒被叫到、腳程還在，所以留在移動裡接著走。
-			if state.attackGoesOn {
+			if state.needsAllyPrompt(state.Mover, outcome.Target) {
+				state.askAttackAlly(outcome.Target, false)
 				return nil
 			}
-			state.endTurnAfterAction(a.rollDice)
-			if state.Finished {
-				return a.finishCombat(state.Outcome)
-			}
+			return a.bumpAttack(state, outcome.Target)
 		case outcome.Action == combat.MovementBlocked:
 			state.Status = state.say(msgStatusBlocked)
 		default:
@@ -2180,6 +2173,30 @@ func (a *app) tacticalInput() error {
 			state.Status = state.say(msgStatusMoved, direction)
 		}
 		return nil
+	}
+	return nil
+}
+
+// bumpAttack 是 overlay-08 `0D7Fh` 之後：走進那一格就打（`0DD2h`）。
+// 答過 "Attack Ally:" 的 Y 也從這裡接著打（attack_ally.go）。
+func (a *app) bumpAttack(state *tacticalState, target uint8) error {
+	if err := a.resolveTacticalAttack(state, target); err != nil {
+		return err
+	}
+	// 攻擊就用掉這一次行動。原版的玩家指令迴圈（overlay-08 `0307h`）
+	// 把「這一回合結束了嗎」的旗標位址交給攻擊常式
+	// （`0096h:0089h`，`03D7h` 那個 `lea -2(bp)`），由它決定要不要
+	// 回到 `036Ch` 再問下一個指令；敵方回合（`foeTurn`）打完也是直接
+	// `endTurn`。少了這一步，同一個角色可以對同一個目標無限連打。
+	//
+	// 殺了目標而還有剩的次數時完成旗標是 0（spec 160）：移動迴圈（`0A13h`）只看腳程，
+	// entry 34 沒被叫到、腳程還在，所以留在移動裡接著走。
+	if state.attackGoesOn {
+		return nil
+	}
+	state.endTurnAfterAction(a.rollDice)
+	if state.Finished {
+		return a.finishCombat(state.Outcome)
 	}
 	return nil
 }

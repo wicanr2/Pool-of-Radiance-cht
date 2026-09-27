@@ -70,20 +70,26 @@ func partyState(character poolsave.Character) *poolsave.State {
 	return &state
 }
 
-// 沒有那個毛病就治不了——原版印 `is not blind.` 之類的一句。
-func TestServiceRefusesWhenThereIsNothingToCure(t *testing.T) {
+// 沒有那個毛病照樣收錢、什麼也不做（spec 115，#118）：原版印 `is not blind.` 之後問
+// "cast cure anyway: "，答 Y 就由 `00BFh` 收錢，`02B5h` 拿掉一個不存在的 21h。
+func TestServiceChargesEvenWhenThereIsNothingToCure(t *testing.T) {
 	state := partyState(poolsave.Character{Name: "A", MaxHP: 10, CurrentHP: 10,
-		Money: [7]uint16{3: 9999}})
-	if _, err := temple.Serve(state, 0, "cure-blindness", fixedRoll(1)); err == nil {
-		t.Fatal("沒有失明卻治得了")
+		Money: [7]uint16{3: 9999}, Effects: poolsave.PermanentEffects(0x24)})
+	result, err := temple.Serve(state, 0, "cure-blindness", fixedRoll(1))
+	if err != nil {
+		t.Fatalf("沒有失明也該照收：%v", err)
 	}
-	// 錢不能被扣掉。
-	if got := state.Party[0].Money[3]; got != 9999 {
-		t.Errorf("治不了卻扣了錢，剩 %d", got)
+	// 付完餘額重鑄成白金＋金：8999 金 → 白金 1799、金 4。
+	if result.Cost != 1000 || state.Party[0].Money != [7]uint16{3: 4, 4: 1799} {
+		t.Errorf("收了 %d，剩 %v", result.Cost, state.Party[0].Money)
+	}
+	if len(state.Party[0].Effects) != 1 || state.Party[0].Effects[0].Code != 0x24 {
+		t.Errorf("沒有失明卻動了效果：%v", state.Party[0].Effects)
 	}
 	// 正對照：真的瞎了就治得了，而且代碼被拿掉。
+	state.Party[0].Money = [7]uint16{3: 9999}
 	state.Party[0].Effects = poolsave.PermanentEffects(0x21, 0x24)
-	result, err := temple.Serve(state, 0, "cure-blindness", fixedRoll(1))
+	result, err = temple.Serve(state, 0, "cure-blindness", fixedRoll(1))
 	if err != nil {
 		t.Fatalf("治療失明：%v", err)
 	}
@@ -93,6 +99,28 @@ func TestServiceRefusesWhenThereIsNothingToCure(t *testing.T) {
 	}
 	if len(state.Party[0].Effects) != 1 || state.Party[0].Effects[0].Code != 0x24 {
 		t.Errorf("效果剩 %v，應該只拿掉 21h", state.Party[0].Effects)
+	}
+}
+
+// 起死回生與石化解除付完錢**再看一次狀態**（`05A5h` 看付款前記下的旗標、`096Ah` 重讀
+// `+10Ch`）：對活人照收錢，但不會把生命力改成 1、也不扣體質。
+func TestRaiseDeadOnTheLivingOnlyTakesTheMoney(t *testing.T) {
+	for _, id := range []string{"raise-dead", "stone-to-flesh"} {
+		character := poolsave.Character{Name: "A", MaxHP: 20, RawHP: 15, CurrentHP: 12,
+			Money: [7]uint16{3: 6000}, ClassLevels: []uint8{0, 0, 3}}
+		character.Abilities[4] = 16
+		state := partyState(character)
+		result, err := temple.Serve(state, 0, id, fixedRoll(1))
+		if err != nil {
+			t.Fatalf("%s：%v", id, err)
+		}
+		got := state.Party[0]
+		if left := int(got.Money[3]) + int(got.Money[4])*5; left != 6000-result.Cost || result.Cost == 0 {
+			t.Errorf("%s 收了 %d，剩 %d", id, result.Cost, left)
+		}
+		if got.CurrentHP != 12 || got.MaxHP != 20 || got.Abilities[4] != 16 || got.Status != temple.StatusNormal {
+			t.Errorf("%s 動了活人：HP %d/%d 體質 %d 狀態 %d", id, got.CurrentHP, got.MaxHP, got.Abilities[4], got.Status)
+		}
 	}
 }
 

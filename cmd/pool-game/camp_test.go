@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/temple"
@@ -133,31 +134,44 @@ func TestTempleStoneToFleshRunsThroughTheMenu(t *testing.T) {
 	}
 }
 
-// 負對照：沒有那個毛病時不收錢，也不會有人被治好。
-func TestTempleRefusesWhenThereIsNothingToCure(t *testing.T) {
-	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 12,
+// 沒有那個毛病照樣收錢，而且沒有人被「治好」（spec 115，#118）：原版 `0907h` 印
+// `is not stoned.`、問 "cast cure anyway: "，Y 就收 2000；`096Ah` 再看一次狀態，
+// 不是 7 就什麼也不做。從 Update() 按鍵走完整條。
+func TestTempleChargesEvenWhenThereIsNothingToCure(t *testing.T) {
+	character := poolsave.Character{Name: "HERO", MaxHP: 12, CurrentHP: 9,
 		Money: [7]uint16{3: 3000}}
 	application := &app{
-		roller: fixedTempleRoller(1),
+		mode: modeAdventure, introDone: true, roller: fixedTempleRoller(1),
 		state: poolsave.State{Schema: poolsave.Schema,
 			CharacterLibrary: []poolsave.Character{character},
 			Party:            []poolsave.Character{character}},
-		templeActive: true,
+		templeActive: true, cellEventPending: true, cellWaitingMenu: true,
 	}
 	application.saveState = func(poolsave.State) error { return nil }
 	application.enterTempleHeal()
-	application.cellMenuCursor = len(templeHealServiceIDs) - 1 // Stone to Flesh
-	if err := application.selectSuneTempleOption(); err != nil {
+	// 九項的最後一項是 Stone to Flesh：從第一項往上繞一格。
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyArrowUp); err != nil {
+		t.Fatal(err)
+	}
+	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatalf("挑石化解除：%v", err)
 	}
-	if !strings.Contains(application.statusLine, "is not stoned") {
-		t.Errorf("狀態列是 %q，應該說他沒有石化", application.statusLine)
+	if application.templeStage != templeConfirm || !strings.Contains(application.statusLine, "is not stoned") {
+		t.Fatalf("stage %d 狀態列 %q，應該說他沒有石化並問要不要照付", application.templeStage, application.statusLine)
 	}
-	if err := application.selectSuneTempleOption(); err != nil {
+	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatalf("確認：%v", err)
 	}
-	if got := application.state.Party[0].Money[3]; got != 3000 {
-		t.Errorf("沒毛病卻收了錢，剩 %d", got)
+	got := application.state.Party[0]
+	// 付完餘額重鑄成白金＋金：1000 金 → 白金 200。
+	if got.Money != [7]uint16{4: 200} {
+		t.Errorf("剩 %v，應該照收 2000", got.Money)
+	}
+	if got.CurrentHP != 9 || got.Status != temple.StatusNormal {
+		t.Errorf("沒石化卻被動了：HP %d 狀態 %d", got.CurrentHP, got.Status)
 	}
 }
 

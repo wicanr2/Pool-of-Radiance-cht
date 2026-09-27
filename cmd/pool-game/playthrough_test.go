@@ -567,6 +567,12 @@ func TestActiveCombatTerminatesAndKillsFoes(t *testing.T) {
 		if after == nil || after.Finished {
 			break
 		}
+		// 撞到自己人會問 "Attack Ally:"（spec 162）：答 N，當成擋住。
+		if after.AllyPrompt != nil {
+			if err := press(application, ebiten.KeyN); err != nil {
+				t.Fatal(err)
+			}
+		}
 		if after.Mover == mover && after.Roster[mover].X == from.X && after.Roster[mover].Y == from.Y {
 			// 動不了也打不到就結束這一回合。攻擊本身已經會結束回合。
 			sameCell++
