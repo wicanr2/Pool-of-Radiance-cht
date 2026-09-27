@@ -269,11 +269,16 @@ func TestChampionDuelDeploysOnlyTheChampion(t *testing.T) {
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
 	}
+	// 其他人也在串列上、用掉一格樣板，只是 `+10Dh` 為 0、體型 0（overlay-10 `1D50h`），不登記屍體
+	// （`1D55h` 的 `DS:829Ah`）。
 	deployed := []int{}
 	for index := 1; index < len(application.tactical.PartySlot); index++ {
-		if slot := application.tactical.PartySlot[index]; slot >= 0 {
+		if slot := application.tactical.PartySlot[index]; slot >= 0 && application.tactical.Roster[index].FootprintClass != 0 {
 			deployed = append(deployed, slot)
 		}
+	}
+	if len(application.tactical.Corpses) != 0 {
+		t.Fatalf("the duel registered corpses %v", application.tactical.Corpses)
 	}
 	if !slices.Equal(deployed, []int{2}) {
 		t.Fatalf("deployed party slots %v, want only the champion 2", deployed)

@@ -68,9 +68,14 @@ func TestArenaDuelCopiesTheCurrentCharacterAsRolf(t *testing.T) {
 	if state == nil {
 		t.Fatal("no tactical board")
 	}
-	deployed, foes := []int{}, []int{}
+	// 不上場的隊員也在串列上、用掉一格樣板，只是體型 0（overlay-10 `1D50h`，spec 061）。
+	deployed, foes, standing := []int{}, []int{}, 0
 	for index := 1; index < len(state.PartySlot); index++ {
 		slot := state.PartySlot[index]
+		if state.Roster[index].FootprintClass == 0 {
+			continue
+		}
+		standing++
 		switch {
 		case slot >= 0 && state.Friendly[index]:
 			deployed = append(deployed, slot)
@@ -87,8 +92,8 @@ func TestArenaDuelCopiesTheCurrentCharacterAsRolf(t *testing.T) {
 			}
 		}
 	}
-	if !slices.Equal(deployed, []int{1}) || !slices.Equal(foes, []int{4}) || len(state.Roster) != 3 {
-		t.Fatalf("board: party %v, opposing %v, roster %d", deployed, foes, len(state.Roster))
+	if !slices.Equal(deployed, []int{1}) || !slices.Equal(foes, []int{4}) || standing != 2 {
+		t.Fatalf("board: party %v, opposing %v, %d standing", deployed, foes, standing)
 	}
 	winByKeys(t, application)
 	report := application.postCombat

@@ -201,9 +201,9 @@ func drawCastMenu(screen *ebiten.Image, a *app, foreground, accent color.Color) 
 // 對面（spec 091），所以不能整批當成我方；隊伍索引也因此要另外記，
 // 不能靠「友方槽依序對應隊伍」那個假設。
 //
-// 與原版仍有兩處差：昏迷／倒地／死亡的隊員原版也會擺上去再改成體型 0 並
-// 留一具屍體（地形 `1Fh`），這裡直接不擺；串列順序原版是 `5CF4h` 的順序，
-// 這裡是隊伍、倒戈的 NPC、怪物。
+// 不在場的隊員（昏迷／倒地／死亡，或決鬥時不上場的人，記錄 `+10Dh` 為 0）一樣擺上去、
+// 用掉一格樣板，再改成體型 0（overlay-10 `1D3Ah..1D50h`）；屍體表在開打時登記
+// （deployedCorpses，spec 061）。串列順序原版是 `5CF4h` 的順序，這裡是隊伍、倒戈的 NPC、怪物。
 func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) (
 	[]combat.CombatantCell, []bool, []int, []boardIcon, error) {
 	cells := []combat.CombatantCell{{}}
@@ -221,22 +221,20 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 	nextFoe := 0
 
 	allies, traitors := make([]int, 0, len(a.state.Party)), make([]int, 0, 1)
+	// present 是兩邊在場的人數：`1A9Fh` 的 overlay-25 entry 31（`2419h`）只數 `+10Dh` 非 0 的
+	// （`2440h`），陣型第一腿的上限由它算。
+	present := [2]int{}
 	for index, member := range a.state.Party {
-		// 昏迷（4）、倒地（5）與死亡（6）的人不上戰場：狀態是戰後寫回的
-		// （`storeCombatHitPoints`），不排除的話 0 HP 的人會拿預設的 8 HP 再打一場。
-		if member.Status == 4 || member.Status == combat.DyingState || member.Status == combat.DeadState {
-			continue
-		}
-		// 決鬥（`CALL 8001h`，spec 150）只有目前角色上場：overlay-07 `1AFFh` 把其他人的
-		// `+10Dh` 清成 0，部署時體型改 0、不佔格也不登記成屍體（spec 061 `1A99h`）。
-		if !a.duelDeploys(index) {
-			continue
-		}
+		side := 0
 		if member.Side != 0 {
+			side = 1
 			traitors = append(traitors, index)
-			continue
+		} else {
+			allies = append(allies, index)
 		}
-		allies = append(allies, index)
+		if !a.partyMemberAbsent(index) {
+			present[side]++
+		}
 	}
 	opposing := append([]int(nil), traitors...)
 	for _, monster := range a.combatMonsters {
@@ -254,7 +252,7 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 	if a.eventMachine != nil {
 		distance = int(a.eventMachine.Memory[encounterDistanceAddress])
 	}
-	sides, err := combat.DeploymentSides(a.spawn.Facing*2, distance, [2]int{len(allies), len(opposing)})
+	sides, err := combat.DeploymentSides(a.spawn.Facing*2, distance, [2]int{present[0], present[1] + len(opposing) - len(traitors)})
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
@@ -291,8 +289,13 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 		if !placement.Placed {
 			return nil
 		}
+		footprint := uint8(1)
+		if slot >= 0 && a.partyMemberAbsent(slot) {
+			// `1D3Ah..1D50h`：放上了而 `+10Dh` 為 0 → 體型類別改 0，不佔格。
+			footprint = 0
+		}
 		cells = append(cells, combat.CombatantCell{
-			X: uint8(placement.X), Y: uint8(placement.Y), FootprintClass: 1,
+			X: uint8(placement.X), Y: uint8(placement.Y), FootprintClass: footprint,
 		})
 		friendly = append(friendly, isParty)
 		partySlot = append(partySlot, slot)
@@ -1026,6 +1029,8 @@ func (a *app) enterTacticalPreview() error {
 			}
 		}
 	}
+	// 部署時就不在場的隊員留下屍體（overlay-10 `1D55h..1E1Bh`，deploy_corpses.go）。
+	a.deployedCorpses(state)
 	// 戰鬥佈置的最後：隊伍 `+58Ch` 夾到 100、算第一次 `DS:6D22h`（foe_flee.go）。
 	a.setupMorale(state)
 	state.startRound(a.rollDice)
