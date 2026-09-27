@@ -112,6 +112,8 @@ func (a *app) reduceOnBoard(state *tacticalState, option castOption, casterName 
 	}
 	node := list[at]
 	state.Effects[target] = list.RemoveAt(at)
+	// `138Dh` 的 entry 15 摘掉的當下印 "is Cured"（effect_notice.go）。
+	a.curedNotice(state, target)
 	if member := a.partyMemberAt(state, target); member != nil {
 		member.Effects = storedEffects(state.Effects[target])
 	}
@@ -156,6 +158,8 @@ func (a *app) campSpecialSpell(caster int, option castOption, effect gamepack.Ca
 		}
 		node := list[at]
 		list = list.RemoveAt(at)
+		// entry 15 摘掉的當下印 "is Cured"（戰鬥外 entry 20 停一拍，effect_notice.go）。
+		a.fieldNotice(name, msgNoticeCured)
 		subject.Effects = storedEffects(list)
 		a.expiredEffectTeardown(index, node, list)
 		syncTrainedLibraryCharacter(&a.state, a.state.Party[index])
@@ -199,6 +203,10 @@ func (a *app) campSpecialSpell(caster int, option castOption, effect gamepack.Ca
 		}
 		a.state.Party[index].Effects = storedEffects(list)
 		syncTrainedLibraryCharacter(&a.state, a.state.Party[index])
+		if removed > 0 {
+			// `2460h..247Eh`：這一趟摘到東西（`[bp-7]`）就 entry 26(目標, 1, "is affected")。
+			a.fieldNotice(name, msgNoticeAffected)
+		}
 		return fmt.Sprintf(a.text(msgCastDispelled), name, removed), true
 	}
 }

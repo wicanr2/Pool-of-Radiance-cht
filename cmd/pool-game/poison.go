@@ -237,11 +237,16 @@ func (a *app) neutralizeOnBoard(state *tacticalState, targets spellTargets, opti
 	}
 	if list, ok := neutralizesPoison(state.Effects[first]); ok {
 		state.Effects[first] = list
+		a.curedNotice(state, first) // `2E13h` 的 entry 15
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured), a.combatantName(state, first), 1))
 		return true
 	}
+	probes := curedCount(state.Effects[first], cureDiseaseProbes())
 	if list, cured := gamepack.CureDiseaseChain(state.Effects[first]); cured {
 		state.Effects[first] = list
+		for ; probes > 0; probes-- {
+			a.curedNotice(state, first) // `225Bh` 的三次 entry 15
+		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured), a.combatantName(state, first), 1))
 		return true
 	}
@@ -250,6 +255,8 @@ func (a *app) neutralizeOnBoard(state *tacticalState, targets spellTargets, opti
 		before = state.HitPoints[first]
 	}
 	if a.healOnBoard(state, first, heal) {
+		// `2E67h..2E85h`：entry 21 回 1 就 entry 26(目標, 1, "is Healed")。
+		a.sparkleNotice(state, first, msgNoticeHealed)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed), a.combatantName(state, state.Mover),
 			option.Label, state.HitPoints[first]-before))
 	}

@@ -486,13 +486,17 @@ func (a *app) castItemPageSpell(slot int) error {
 		// 掛效果的那一批走戰鬥外的 `08BCh`，表照 `0A88h`（field_cast_effects.go，issue #100）。
 		option := castOption{ID: page.spell, Label: a.spellLabel(page.spell)}
 		if message, handled := a.campSpellEffect(slot, option, effect, level, page.target); handled {
-			state.message = message
+			// 逐人訊息各停一拍，停完才放原本那一句（effect_notice.go）。
+			a.showEffectBeats(&state.message, a.takeFieldNotices(), message)
 			a.spendItemPageUse(slot)
 			page.stage = itemPagePicking
 			return nil
 		}
 		subject := &a.state.Party[page.target]
+		before := combatEffects(subject.Effects)
 		applied := applyFieldEffect(subject, effect)
+		a.fieldNotices = nil
+		a.fieldCureNotices(page.spell, subject.Name, before, applied)
 		syncTrainedLibraryCharacter(&a.state, *subject)
 		label := a.spellLabel(page.spell)
 		if applied {
@@ -501,6 +505,7 @@ func (a *app) castItemPageSpell(slot int) error {
 		} else {
 			state.message = fmt.Sprintf(a.text(msgFieldCastCombatOnly), label)
 		}
+		a.showEffectBeats(&state.message, a.takeFieldNotices(), state.message)
 		a.spendItemPageUse(slot)
 		page.stage = itemPagePicking
 	}

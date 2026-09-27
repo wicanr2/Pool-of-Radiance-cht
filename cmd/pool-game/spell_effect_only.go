@@ -86,6 +86,8 @@ func (a *app) castEffectOnly(state *tacticalState, caster spellCasting, option c
 			continue
 		}
 		state.attachSpellEffect(int(index), code, duration, level, effect.EffectParameter != 0)
+		// entry 20 `171Fh`：掛上之後印處理常式推的那一句（effect_notice.go）。
+		a.attachNotice(state, index, option.ID)
 		affected++
 	}
 	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastWholeSide),

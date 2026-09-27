@@ -310,7 +310,8 @@ Hold Person `34h`、Sleep `35h`、Haste `27h`、Slow `2Ah`、Strength `26h`。
 | 64 | （共用 Fireball 的常式）| `00h` |
 | 67 | `is Reading` | `04h` |
 
-**呼叫端還沒找到**，所以哪個物品對到哪個編號仍是 DRAFT。
+**呼叫端還沒找到**，所以哪個物品對到哪個編號仍是 DRAFT。編號 57 已找到：物品 `+3Dh` = 50h
+（型別 46h／47h，五筆），見 spec 163。
 
 ## 八個還沒解讀的欄位
 

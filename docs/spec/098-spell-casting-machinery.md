@@ -1231,11 +1231,12 @@ remake：`gamepack.SpellSideFilterFor`／`FilterSpellSide` 是這兩支的表與
 `TestSlowHalvesAttacksAndMovementFromTheNextRound`、`TestHasteCancelsSlowInsteadOfHasting`、
 `TestBlessTwiceRefreshesInsteadOfStacking`。
 
+逐人印的「<名字> is Blessed」、"ages"、抵銷的 "is Cured" 見 spec 163。
+
 與原版不同、寫明的幾處：
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| 每個目標印「<名字> is Blessed」、急速印 "ages"、抵銷印 "is Cured" | 狀態列只留最後一句「作用在 N 人身上」| 狀態列只有一行 |
 | 群組 16 的 `2Fh` 也改命中骰 | 不算 | 它比的是目標自己 runtime `+0Ah` 的名字，remake 沒有隊員那一格（spec 112〈OPEN〉）|
 
 ## 只掛效果的那一批（`08BCh` 通用路，2026-09-26，issue #89）
@@ -1325,13 +1326,7 @@ entry 20 見上一節：群組 9 免疫 → 「豁免成功而且規則是 1」�
 `TestCauseBlindnessNeedsATouchAndThenHampersBothWays`、`TestBestowCurseLowersTheFoesRollsFromTheMenu`、
 `TestSlowPoisonOnlyHelpsThePoisoned`、`TestFriendsRaisesCharismaUntilItExpires`、
 `TestSpeedyItemCuresSlowInsteadOfHasting`、`TestKnockAttachesNothing`。把 `attachSpellEffect`
-那一行拿掉，前十一條全紅（2026-09-26 實跑）。
-
-與原版不同、寫明的幾處：
-
-| 原版 | remake | 理由 |
-|---|---|---|
-| 每一格印「<名字> <訊息>」 | 狀態列只留「作用在 N 人身上」 | 狀態列只有一行 |
+那一行拿掉，前十一條全紅（2026-09-26 實跑）。每一格掛上之後印的「<名字> <訊息>」見 spec 163。
 
 ## 營地施法：同一支 `08BCh`，表換成 `0A88h`（2026-09-26，issue #100）
 

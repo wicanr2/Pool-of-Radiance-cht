@@ -410,6 +410,9 @@ type app struct {
 	fieldCastSpell   int
 	fieldCastOptions []castOption
 	fieldCastMessage string
+	// fieldNotices 與 effectBeats 是戰鬥外逐人效果訊息的收集與停拍（effect_notice.go）。
+	fieldNotices []string
+	effectBeats  effectBeatQueue
 	// combatCommands 是戰鬥指令列那六段原版字串（spec 129）。哪幾段接上去
 	// 由 `combatCommandBar` 依角色算。
 	combatCommands []gamepack.CombatCommandSegment
@@ -866,6 +869,10 @@ func (a *app) Update() error {
 	// 作弊選單開著時吃掉所有按鍵（spec 141）。
 	if handled, err := a.cheatInput(); handled {
 		return err
+	}
+	// 戰鬥外逐人效果訊息的停拍（effect_notice.go）：停拍中不讀鍵。
+	if a.effectBeatInput() {
+		return nil
 	}
 	// 探索施法那一頁同理。
 	if handled, err := a.fieldCastInput(); handled {

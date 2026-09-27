@@ -225,13 +225,16 @@ func (a *app) resolveFieldCast(target int) error {
 		casterLevel, target); handled {
 		caster.Memorised[option.Slot] = 0
 		syncTrainedLibraryCharacter(&a.state, *caster)
-		a.fieldCastMessage = message
+		// 逐人訊息各停一拍，停完才放原本那一句（effect_notice.go）。
+		a.showEffectBeats(&a.fieldCastMessage, a.takeFieldNotices(), message)
 		a.fieldCastStage, a.fieldCastCursor = fieldCastPickCaster, 0
 		a.fieldCastOptions = nil
 		return nil
 	}
 	subject := &a.state.Party[target]
+	before := combatEffects(subject.Effects)
 	applied := applyFieldEffect(subject, effect)
+	a.fieldCureNotices(option.ID, subject.Name, before, applied)
 	// 記憶那一格用掉了——原版施完把槽位清成 FFFFh 再回迴圈頂。
 	caster.Memorised[option.Slot] = 0
 	syncTrainedLibraryCharacter(&a.state, *caster)
@@ -242,6 +245,7 @@ func (a *app) resolveFieldCast(target int) error {
 	} else {
 		a.fieldCastMessage = fmt.Sprintf(a.text(msgFieldCastCombatOnly), option.Label)
 	}
+	a.showEffectBeats(&a.fieldCastMessage, a.takeFieldNotices(), a.fieldCastMessage)
 	a.fieldCastStage, a.fieldCastCursor = fieldCastPickCaster, 0
 	a.fieldCastOptions = nil
 	return nil

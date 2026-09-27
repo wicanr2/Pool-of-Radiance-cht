@@ -73,6 +73,8 @@ func (a *app) campSpellEffect(caster int, option castOption, effect gamepack.Cas
 	if int(option.ID) >= len(a.spellParameters) || caster < 0 || caster >= len(a.state.Party) {
 		return "", false
 	}
+	// 逐人訊息（effect_notice.go）從這一次施法起算，呼叫端用 takeFieldNotices 取走。
+	a.fieldNotices = nil
 	// 縮小術、解除魔法、恢復術各有自己的處理常式（camp_spell_extra.go，issue #108）。
 	if message, handled := a.campSpecialSpell(caster, option, effect, casterLevel, picked); handled {
 		return message, true
@@ -94,6 +96,7 @@ func (a *app) campSpellEffect(caster int, option castOption, effect gamepack.Cas
 	if code := effect.BlockedByEffect; code != 0 {
 		if index, ok := combatEffects(first.Effects).IndexOf(code); ok {
 			first.Effects = storedEffects(combatEffects(first.Effects).RemoveAt(index))
+			a.fieldNotice(first.Name, msgNoticeCured) // entry 15
 			syncTrainedLibraryCharacter(&a.state, *first)
 			return took, true
 		}
@@ -131,6 +134,7 @@ func (a *app) campSpellEffect(caster int, option castOption, effect gamepack.Cas
 				}
 				member.Effects = storedEffects(combatEffects(member.Effects).RemoveAt(at))
 				syncTrainedLibraryCharacter(&a.state, *member)
+				a.fieldNotice(member.Name, msgNoticeCured) // entry 15
 				return true
 			},
 		})
@@ -168,6 +172,10 @@ func (a *app) campSpellEffect(caster int, option castOption, effect gamepack.Cas
 			gamepack.NewEffectNode(code, uint16(duration), level, effect.EffectParameter != 0))
 		member.Effects = storedEffects(list)
 		syncTrainedLibraryCharacter(&a.state, *member)
+		// entry 20 `171Fh`：戰鬥外經 entry 26 的 `21C1h` 在下方訊息框印、停一拍。
+		if id, ok := effectAttachMessages[option.ID]; ok {
+			a.fieldNotice(member.Name, id)
+		}
 		affected++
 	}
 	if filter, ok := gamepack.SpellSideFilterFor(option.ID); ok &&
@@ -179,6 +187,7 @@ func (a *app) campSpellEffect(caster int, option castOption, effect gamepack.Cas
 			list, aged := gamepack.MarkHasteAged(combatEffects(member.Effects))
 			member.Effects = storedEffects(list)
 			if aged {
+				a.fieldNotice(member.Name, msgNoticeAges) // `0C98h..0CA8h`
 				member.Age++
 			}
 			syncTrainedLibraryCharacter(&a.state, *member)

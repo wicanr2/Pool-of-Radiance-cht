@@ -56,10 +56,14 @@ func (state *tacticalState) attackRateThisRound(index uint8, slot int) uint8 {
 	return gamepack.AttackRateAfterEffects(rate, state.RoundRates[index])
 }
 
-// agePartyMember 是 `27h` 的 `0CB0h`（`26 FF 45 30`：記錄 `+30h` 加一）落在隊員身上：
-// 寫回角色與角色庫。怪物的年齡不存檔，不必寫。
+// agePartyMember 是 `27h` 的 `0C98h..0CB0h`：先 entry 20(目標, "ages", 0Ah, 1)（effect_notice.go，
+// 怪物也印），再把記錄 `+30h` 加一（`26 FF 45 30`）落在隊員身上：寫回角色與角色庫。怪物的年齡
+// 不存檔，不必寫。
 func (a *app) agePartyMember(state *tacticalState) func(index int) {
 	return func(index int) {
+		if index >= 0 && index < len(state.Roster) {
+			a.agesNotice(state, uint8(index))
+		}
 		if index < 0 || index >= len(state.PartySlot) {
 			return
 		}

@@ -89,6 +89,8 @@ func castInCamp(t *testing.T, application *app, caster int, spell uint8, target 
 	if application.fieldCastStage != fieldCastPickCaster {
 		t.Fatalf("the cast did not come back to the caster picker: stage %d", application.fieldCastStage)
 	}
+	// 逐人效果訊息各停一拍（effect_notice.go）：停完才回到原本那一句。
+	drainEffectBeats(t, application)
 	message := application.fieldCastMessage
 	pressAll(t, application, ebiten.KeyEscape)
 	if application.fieldCastOpen {

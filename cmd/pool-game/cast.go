@@ -388,6 +388,8 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		}
 		if state.hasEffect(int(first), effect.BlockedByEffect) {
 			state.removeEffect(int(first), effect.BlockedByEffect)
+			// entry 15 摘掉的當下印 "is Cured"（effect_notice.go）。
+			a.curedNotice(state, first)
 			caster.consume()
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoEffect),
 				option.Label, a.combatantName(state, first)))
@@ -466,6 +468,8 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			break
 		}
 		removed := 0
+		// 處理常式問 entry 15 的那幾個碼，身上有幾個就印幾次 "is Cured"（effect_notice.go）。
+		cured := curedCount(state.Effects[cell], entry15Probes(option.ID))
 		for _, code := range effect.RemoveEffects {
 			if list := state.Effects[cell]; list.Has(code) {
 				state.Effects[cell] = list.Remove(code)
@@ -478,11 +482,14 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			if removed == 0 && effect.UncursesItem && uncurseFirstItem(member) {
 				// 除咒術 `2543h`：沒有 24h 可解就清第一件被詛咒的物品（remove_curse.go）。
 				syncTrainedLibraryCharacter(&a.state, *member)
+				// `258Dh..25ADh`：entry 26(目標, 1, "'s item is un-cursed")。
+				a.sparkleNotice(state, cell, msgNoticeItemUncursed)
 				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastItemUncursed), strings.TrimSpace(member.Name)))
 				break
 			}
 			syncTrainedLibraryCharacter(&a.state, *member)
 		}
+		a.removalNotices(state, option.ID, cell, cured)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured),
 			a.combatantName(state, cell), removed))
 	case effect.EffectCode == gamepack.HoldPersonEffectCode && effect.SaveModifierByTargetCount:
@@ -622,7 +629,10 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		}
 		before := state.HitPoints[healed]
 		// overlay-24 entry 21（`175Dh`，spec 155）：封頂、狀態與 `32h` 的判斷都在 healOnBoard。
-		a.healOnBoard(state, healed, effect.Heal)
+		if a.healOnBoard(state, healed, effect.Heal) && option.ID == gamepack.SpellIDLesserHeal {
+			// 編號 62 `2FA7h..2FCAh`：entry 21 回 1 就 entry 26(目標, 1, "is Healed")。
+			a.sparkleNotice(state, healed, msgNoticeHealed)
+		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
 			strings.TrimSpace(caster.name), option.Label, state.HitPoints[healed]-before))
 	case effect.Cloud:
@@ -724,6 +734,10 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		removed := state.dispelEffects(int(picked), casterLevel, func() int {
 			return a.roller.Roll(1, 100)
 		})
+		if removed > 0 {
+			// `2460h..247Eh`：這一趟摘到東西就 entry 26(目標, 1, "is affected")（effect_notice.go）。
+			a.sparkleNotice(state, picked, msgNoticeAffected)
+		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDispelled), a.combatantName(state, picked), removed))
 	case effect.Ray != nil:
 		// 閃電束與編號 3Ch：由瞄準的那一點拉射線（spell_targets.go 的 castSpellRay）。
@@ -838,7 +852,9 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		var kept []uint8
 		if chosen {
 			var err error
-			kept, err = state.sideSpellTargets(option.ID, targets.List, casterLevel)
+			kept, err = state.sideSpellTargets(option.ID, targets.List, casterLevel, func(index uint8) {
+				a.curedNotice(state, index)
+			})
 			if err != nil {
 				return err
 			}
@@ -856,6 +872,8 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 					continue
 				}
 				state.applySpellEffect(int(index), code, duration, casterLevel)
+				// entry 20 `171Fh`：掛上之後印處理常式推的那一句（"is Blessed"……）。
+				a.attachNotice(state, index, option.ID)
 			}
 			affected++
 		}
