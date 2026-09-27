@@ -77,6 +77,14 @@ func facingLetter(facing uint8) string {
 
 // drawPartyPanel 畫第一人稱畫面右邊那一塊。
 func drawPartyPanel(screen *ebiten.Image, a *app, foreground, accent color.Color) {
+	drawPartyRoster(screen, a, -1, foreground, accent)
+	drawText(screen, a.adventureStatusLine(), partyPanelLeft, partyPanelStatusRow, foreground)
+}
+
+// drawPartyRoster 只畫 `NAME AC HP` 與名單，不畫狀態列。商店的主選單就是這個樣子
+//（原版 `79-y` 那一張沒有座標時鐘那一行，spec 164）。highlight 是要換強調色的
+// 那一列，-1 表示不換。
+func drawPartyRoster(screen *ebiten.Image, a *app, highlight int, foreground, accent color.Color) {
 	// `AC` 與 `HP` 留原文：說明書自己在中文行文裡就是這樣用的
 	//（p.19「欄位為 NAME／AC／HP」、p.22「裝甲防護力（AC）」、
 	// 詞彙表「Hit Points 生命力（H、P）」），換成漢字反而與手冊對不上。
@@ -88,11 +96,14 @@ func drawPartyPanel(screen *ebiten.Image, a *app, foreground, accent color.Color
 			break
 		}
 		y := partyPanelFirstRow + index*partyPanelRowHeight
-		drawText(screen, row.Name, partyPanelLeft, y, foreground)
+		ink := foreground
+		if index == highlight {
+			ink = accent
+		}
+		drawText(screen, row.Name, partyPanelLeft, y, ink)
 		drawTextRight(screen, fmt.Sprintf("%d", row.ArmourClass), partyPanelACRight, y, foreground)
 		drawTextRight(screen, fmt.Sprintf("%d", row.HitPoints), partyPanelHPRight, y, foreground)
 	}
-	drawText(screen, a.adventureStatusLine(), partyPanelLeft, partyPanelStatusRow, foreground)
 }
 
 // drawTextRight 讓一段文字的右緣落在 right 上。

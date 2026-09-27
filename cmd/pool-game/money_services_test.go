@@ -62,7 +62,7 @@ func TestShopPoolThenTakeBackThroughUpdate(t *testing.T) {
 // 公款付款：P 之後錢包是空的，買東西由公款出（spec 116〈付款〉）。
 func TestShopBuysFromThePoolAfterPooling(t *testing.T) {
 	a := newShopApp(t)
-	pressKeys(t, a, ebiten.KeyP, ebiten.KeyEnter)
+	pressKeys(t, a, ebiten.KeyP, ebiten.KeyB, ebiten.KeyEnter)
 	if len(a.state.Party[0].Inventory) != 1 {
 		t.Fatalf("the long sword was not bought from the pool (%q)", a.shop.message)
 	}

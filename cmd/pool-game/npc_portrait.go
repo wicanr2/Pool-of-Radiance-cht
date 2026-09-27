@@ -41,4 +41,10 @@ func (a *app) approachPortrait() *ebiten.Image {
 }
 
 // clearNPCPortrait 在半身像該收掉的時候丟掉快取（換主題也要重疊一次）。
-func (a *app) clearNPCPortrait() { a.npcPortrait = nil }
+func (a *app) clearNPCPortrait() {
+	a.npcPortrait = nil
+	// 店主肖像同樣是照當下色盤畫好的（spec 164）。
+	if a.shop != nil {
+		a.shop.portrait, a.shop.portraitTried = nil, false
+	}
+}

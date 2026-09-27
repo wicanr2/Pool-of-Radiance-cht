@@ -42,6 +42,12 @@ type shopState struct {
 	leaving bool
 	// take 是 T）ake（`062Ah` → overlay-21 entry 8，money_services.go）。
 	take *moneyTakeState
+	// buying：主選單按 B）uy 之後的貨品清單（spec 164）。沒開的時候畫面是
+	// 原版的主選單——店主肖像、隊伍名單、底列指令。
+	buying bool
+	// portrait 是店主肖像的快取；portraitTried 讓載不到時不每一幀重讀。
+	portrait      *ebiten.Image
+	portraitTried bool
 }
 
 // sellStage 是賣出那一頁等的是哪一個問題。
@@ -204,8 +210,12 @@ func (a *app) shopInput() error {
 		}
 		return nil
 	}
+	if state.buying {
+		a.shopBuyInput()
+		return nil
+	}
 	switch {
-	case a.justPressed(ebiten.KeyEscape):
+	case a.justPressed(ebiten.KeyEscape), a.justPressed(ebiten.KeyE):
 		// overlay-06 `066Ch..0681h`：公款七欄有一欄非 0（overlay-21 entry 14）就先問。
 		if a.hasPooledMoney() {
 			state.leaving, state.message = true, a.text(msgShopLeaveMoney)
@@ -217,12 +227,12 @@ func (a *app) shopInput() error {
 			state.buyer = (state.buyer + 1) % len(a.state.Party)
 		}
 		state.message = ""
-	case a.justPressed(ebiten.KeyDown):
-		state.cursor = (state.cursor + 1) % len(state.items)
-	case a.justPressed(ebiten.KeyUp):
-		state.cursor = (state.cursor - 1 + len(state.items)) % len(state.items)
-	case a.justPressed(ebiten.KeyEnter):
-		a.buy()
+	case !state.appraising && a.justPressed(ebiten.KeyB):
+		// B）uy（overlay-06 選單的第一項）開貨品清單，spec 164。
+		state.buying, state.message = true, ""
+	case !state.appraising && a.justPressed(ebiten.KeyA):
+		// A）ppraise：寶石與珠寶分開估（spec 116），這裡先說要按哪一個。
+		state.message = a.text(msgShopAppraiseChoose)
 	case state.appraising && a.justPressed(ebiten.KeyS):
 		a.resolveShopAppraise(false)
 	case state.appraising && a.justPressed(ebiten.KeyK):
@@ -560,6 +570,10 @@ func (s *shopState) window(lines int) (first, last int) {
 
 func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
 	state := a.shop
+	if !state.buying && !state.selling && state.take == nil {
+		drawShopMenu(screen, a, background, foreground, accent)
+		return
+	}
 	for y := 40; y < 372; y++ {
 		for x := 32; x < 608; x++ {
 			screen.Set(x, y, background)
@@ -602,9 +616,6 @@ func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color
 	drawText(screen, fmt.Sprintf(a.text(msgShopCount), state.cursor+1, len(state.items)),
 		shopTextLeft, 336, foreground)
 	footer := a.text(msgShopFooter)
-	if a.hasPooledMoney() {
-		footer = a.text(msgShopFooterPool)
-	}
 	if state.message != "" {
 		footer = state.message
 	}

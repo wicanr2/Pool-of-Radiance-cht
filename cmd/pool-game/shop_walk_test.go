@@ -186,6 +186,13 @@ func TestNormalKeysBuyAndEquipFromTheWeaponShop(t *testing.T) {
 	if application.state.PooledMoney != ([7]uint32{}) {
 		t.Fatalf("進店之後公款是 %v，原版在 0548h 清成 0", application.state.PooledMoney)
 	}
+	// 店主肖像跟著腳本走：`A8BFh SAVE 42 → @6DE1`、`A8C5h PICTURE 9`（spec 164）。
+	if want := (eclPicture{head: 42, value: 9, set: true}); application.lastPicture != want {
+		t.Fatalf("進店時記下的 PICTURE 是 %+v，武具店的腳本是 %+v", application.lastPicture, want)
+	}
+	if shop.buying {
+		t.Fatal("進店應該停在主選單，不是貨品清單")
+	}
 	t.Logf("走到店裡：GEO%d/%d (%d,%d)，庫存 %d 件",
 		application.spawn.Map.Archive, application.spawn.Map.BlockID,
 		application.spawn.X, application.spawn.Y, len(shop.items))
@@ -211,6 +218,13 @@ func TestNormalKeysBuyAndEquipFromTheWeaponShop(t *testing.T) {
 	if affordable < 0 {
 		t.Fatalf("這一家店沒有買得起的東西：金幣 %d", wallet)
 	}
+	// 貨品清單在主選單按 B）uy 之後才出現（spec 164）。
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatalf("按 B：%v", err)
+	}
+	if !shop.buying {
+		t.Fatal("按 B 沒有打開貨品清單")
+	}
 	for shop.cursor != affordable {
 		if err := press(application, ebiten.KeyDown); err != nil {
 			t.Fatalf("移游標：%v", err)
@@ -231,6 +245,12 @@ func TestNormalKeysBuyAndEquipFromTheWeaponShop(t *testing.T) {
 	}
 	t.Logf("買了 %s，花掉 %d 金幣（剩 %d）", wanted.Name, before-after, after)
 
+	if err := press(application, ebiten.KeyEscape); err != nil {
+		t.Fatalf("回主選單：%v", err)
+	}
+	if shop.buying || !application.shopActive {
+		t.Fatal("在貨品清單按 Escape 應該回到商店主選單")
+	}
 	if err := press(application, ebiten.KeyEscape); err != nil {
 		t.Fatalf("離開店裡：%v", err)
 	}

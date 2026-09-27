@@ -107,6 +107,11 @@ func (d *mainlineDriver) buyArmourFromPool(member int, name string) string {
 	if !a.shopActive || a.shop == nil {
 		d.fatalf("buyArmourFromPool: the armoury did not open its shop")
 	}
+	// 貨品清單在主選單按 B）uy 之後才出現（spec 164）。
+	d.step(ebiten.KeyB)
+	if !a.shop.buying {
+		d.fatalf("buyArmourFromPool: B did not open the list of wares")
+	}
 	for guard := 0; guard < 8 && a.shop.buyer != member; guard++ {
 		d.step(ebiten.KeyTab)
 	}
@@ -133,6 +138,7 @@ func (d *mainlineDriver) buyArmourFromPool(member int, name string) string {
 	}
 	d.note("%s", line)
 	d.wantShop = false
+	d.step(ebiten.KeyEscape) // 貨品清單 → 主選單
 	d.step(ebiten.KeyEscape)
 	d.settle()
 	if len(a.state.Party[member].Inventory) == count+1 {

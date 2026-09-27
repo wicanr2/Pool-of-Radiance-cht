@@ -76,6 +76,11 @@ func (d *mainlineDriver) outfitParty() {
 	if !a.shopActive || a.shop == nil {
 		d.fatalf("outfitParty: the armoury did not open its shop")
 	}
+	// 貨品清單在主選單按 B）uy 之後才出現（spec 164）。
+	d.step(ebiten.KeyB)
+	if !a.shop.buying {
+		d.fatalf("outfitParty: B did not open the list of wares")
+	}
 	index := map[string]int{}
 	for position, item := range a.shop.items {
 		index[item.Name] = position
@@ -105,6 +110,7 @@ func (d *mainlineDriver) outfitParty() {
 			a.state.Party[member].ClassID, gold, list, pooltreasure.GoldEquivalent(a.state.Party[member].Money))
 	}
 	d.wantShop = false
+	d.step(ebiten.KeyEscape) // 貨品清單 → 主選單
 	d.step(ebiten.KeyEscape)
 	d.settle()
 	// 買到的東西都是沒裝上的（`TestBoughtItemsArriveUnreadied`）；一件一件裝。

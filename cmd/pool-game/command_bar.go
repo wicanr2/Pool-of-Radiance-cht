@@ -121,8 +121,17 @@ func drawCommandBar(screen *ebiten.Image, a *app, foreground, accent color.Color
 		drawText(screen, prefix, x, footerBaseline, a.commandPrefixInk(accent))
 		x += font.MeasureString(uiFace, displayText(prefix)).Ceil()
 	}
+	labels := make([]string, 0, len(a.commandBarList()))
 	for _, command := range a.commandBarList() {
-		label := a.commandLabel(command)
+		labels = append(labels, a.commandLabel(command))
+	}
+	drawCommandLabels(screen, x, labels, foreground, accent)
+}
+
+// drawCommandLabels 從 x 起畫一列指令，每一個標籤的大寫字母用強調色。
+// 冒險、紮營與商店（spec 164）的指令列都走這一支。
+func drawCommandLabels(screen *ebiten.Image, x int, labels []string, foreground, accent color.Color) {
+	for _, label := range labels {
 		if label == "" {
 			continue
 		}

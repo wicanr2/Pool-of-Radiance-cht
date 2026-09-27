@@ -63,9 +63,23 @@ func newShopApp(t *testing.T) *app {
 	return a
 }
 
+// openShopBuyList 按主選單的 B）uy 打開貨品清單（spec 164）。已經開著時
+// B 不作用，所以在同一家店裡重複叫也可以。
+func openShopBuyList(t *testing.T, a *app) {
+	t.Helper()
+	a.keys = scriptedKeys{ebiten.KeyB: true}
+	if err := a.shopInput(); err != nil {
+		t.Fatal(err)
+	}
+	if !a.shop.buying {
+		t.Fatal("B did not open the list of wares")
+	}
+}
+
 // 買下去：扣金幣、物品進背包，隊伍與角色庫都要同步。
 func TestBuyingDeductsGoldAndAddsTheItem(t *testing.T) {
 	a := newShopApp(t)
+	openShopBuyList(t, a)
 	a.keys = scriptedKeys{ebiten.KeyEnter: true}
 	if err := a.shopInput(); err != nil {
 		t.Fatal(err)
@@ -87,6 +101,7 @@ func TestBuyingDeductsGoldAndAddsTheItem(t *testing.T) {
 func TestBuyingRefusesWhenTheGoldIsShort(t *testing.T) {
 	a := newShopApp(t)
 	a.state.Party[0].Money[pooltreasure.Gold] = 10
+	openShopBuyList(t, a)
 	a.keys = scriptedKeys{ebiten.KeyEnter: true}
 	if err := a.shopInput(); err != nil {
 		t.Fatal(err)
@@ -108,6 +123,7 @@ func TestBuyingWithPlatinumOnly(t *testing.T) {
 	a := newShopApp(t)
 	a.state.Party[0].Money = [7]uint16{}
 	a.state.Party[0].Money[pooltreasure.Platinum] = 100
+	openShopBuyList(t, a)
 	a.keys = scriptedKeys{ebiten.KeyEnter: true}
 	if err := a.shopInput(); err != nil {
 		t.Fatal(err)
@@ -129,6 +145,7 @@ func TestBuyingFallsBackToThePartyPool(t *testing.T) {
 	a := newShopApp(t)
 	a.state.Party[0].Money[pooltreasure.Gold] = 10
 	a.state.PooledMoney[pooltreasure.Gold] = 100
+	openShopBuyList(t, a)
 	a.keys = scriptedKeys{ebiten.KeyEnter: true}
 	if err := a.shopInput(); err != nil {
 		t.Fatal(err)
@@ -150,6 +167,7 @@ func TestBuyingFallsBackToThePartyPool(t *testing.T) {
 // 買來的東西預設沒裝備上，跟撿到的一樣。
 func TestBoughtItemsArriveUnreadied(t *testing.T) {
 	a := newShopApp(t)
+	openShopBuyList(t, a)
 	a.keys = scriptedKeys{ebiten.KeyEnter: true}
 	if err := a.shopInput(); err != nil {
 		t.Fatal(err)
@@ -276,6 +294,7 @@ func TestShopPaymentMatchesTheDosgolemReceipt(t *testing.T) {
 		}
 		a.state.Party[0].Money = toMoney(scenario.Frames[0].Wallet)
 		a.state.CharacterLibrary[0].Money = a.state.Party[0].Money
+		openShopBuyList(t, a)
 		a.keys = scriptedKeys{ebiten.KeyEnter: true}
 		if err := a.shopInput(); err != nil {
 			t.Fatal(err)

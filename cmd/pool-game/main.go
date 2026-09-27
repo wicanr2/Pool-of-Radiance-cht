@@ -173,6 +173,8 @@ type app struct {
 	spellsOpen      bool
 	shop            *shopState
 	shopActive      bool
+	// lastPicture 是最近一次 `0Eh PICTURE`（shop_menu.go，spec 164）。
+	lastPicture eclPicture
 	equipment       *equipmentState
 	equipmentOpen   bool
 	journalOpen     bool
@@ -3352,6 +3354,8 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 	// 那一行才真的接得起來。
 	for _, event := range result.Events {
 		switch event.Opcode {
+		case gamepack.PictureOpcode:
+			a.recordECLPicture(event.Value)
 		case gamepack.ClearBoxOpcode:
 			a.eventText = ""
 		case gamepack.PrintReturnOpcode:
@@ -3915,6 +3919,10 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		screen.DrawImage(fire, op)
 		drawPartyPanel(screen, a, foreground, accent)
 		drawCamp(screen, a, foreground, accent)
+		return
+	}
+	// 商店的主選單：那一框是店主，右邊只有名單（spec 164）。
+	if a.shopActive && drawShopFrame(screen, a, viewLeft, viewTop, foreground, accent) {
 		return
 	}
 	// APPROACH 的時候原版把半身像整個蓋在那一框上，不是畫視野（spec 117）。
