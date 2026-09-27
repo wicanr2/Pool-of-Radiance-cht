@@ -163,8 +163,9 @@ GATE
 # 一條祝福術（屬性是各自擲的，兩邊不同）。
 # 旅店以外的路（貧民窟屋內）要穿過有隨機遭遇的街道，兩邊的亂數不同，走不成
 # 同一個狀態。
-# 手斧在原版清單是第二項，開清單時反白就在它上面，`b` 直接買；remake 的清單
-# 順序與原版相反（手斧是倒數第二項），游標從第一項往上繞兩格。清單順序若改成
+# 手斧在原版清單是第二項，開清單時反白就在它上面，`b` 直接買；remake 要先按 `b`
+# 開貨品清單（#70，spec 164），清單順序與原版相反（手斧是倒數第二項），游標從第一項
+# 往上繞兩格；買完 ESC 關清單、再 ESC 離店。清單順序若改成
 # 與原版一致，這裡要跟著換成往下一格。
 rm -rf "$OUT"; mkdir -p "$OUT"
 # POOL_PARITY_CONTAINER 可替這個容器命名，並行跑好幾份時分得出是誰的。
@@ -517,9 +518,11 @@ for unused in 1 2 3 4 5 6 7; do east_step; done
 await adventure-cell-menu
 pulse Return
 await shop
+pulse b
 pulse Up
 pulse Up
 pulse Return
+pulse Escape
 pulse Escape
 await_adventure
 turn Left

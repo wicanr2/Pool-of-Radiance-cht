@@ -261,6 +261,10 @@ func TestBuyingAtTheArmouryThenStayingAtTheInnKeepsThePlatinum(t *testing.T) {
 	if cheapest < 0 {
 		t.Fatal("店裡沒有 1 金的東西")
 	}
+	// 商店主選單要先按 B）uy 才出現貨品清單（#70，spec 164）。
+	if err := press(application, ebiten.KeyB); err != nil {
+		t.Fatal(err)
+	}
 	application.shop.cursor = cheapest
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)
@@ -268,8 +272,11 @@ func TestBuyingAtTheArmouryThenStayingAtTheInnKeepsThePlatinum(t *testing.T) {
 	if got := application.state.Party[0].Money[pooltreasure.Platinum]; got != 23 {
 		t.Fatalf("買完身上白金 %d，應該是 23（%q）", got, application.shop.message)
 	}
-	if err := press(application, ebiten.KeyEscape); err != nil {
-		t.Fatal(err)
+	// ESC 先關貨品清單，再 ESC 離店。
+	for _, key := range []ebiten.Key{ebiten.KeyEscape, ebiten.KeyEscape} {
+		if err := press(application, key); err != nil {
+			t.Fatal(err)
+		}
 	}
 	if !walkToCells(t, application, 4000, innCells) {
 		t.Fatalf("沒走到旅店，最後在 %+v", application.spawn)
