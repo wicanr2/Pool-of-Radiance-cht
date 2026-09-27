@@ -20,42 +20,6 @@
       "github_issue": 6
     },
     {
-      "id": "minor-fidelity-gaps",
-      "layer": "verification",
-      "title": "雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊",
-      "body": "規模小、各自不阻擋主線，合併追蹤；任一條要動工時可拆成子 issue。 - [ ] `internal/gamepack/spell_cast.go:495`：Remove Curse 不清物品 `+36h`，remake 沒有詛咒欄位。 - [ ] `spell_cast.go:568`：射線幾何「先收整邊」，是近似。 - [ ] `internal/character/export.go:246`：`.CHA` 匯出不寫豁免表 `+6Dh..+71h` 與生命骰 `+73h`。 - [ ] `docs/spec/124`：二十幾個目的地區塊還沒逐一命名。 - [ ] `docs/spec/108`：`FINAL` 那幾張圖的調色仍是 DRAFT。 - [ ] `WORKLIST.md`：逐顆 overlay 命名與全模組函式清冊（依 CLAUDE.md §11，只做到能判定不阻擋玩家路徑即可）。",
-      "acceptance": "issue 內六條逐一打勾或寫明不做的理由。",
-      "verify": {
-        "kind": "manual",
-        "note": "六條雜項各自在 issue 裡打勾"
-      },
-      "github_issue": 66
-    },
-    {
-      "id": "outdoor-battlefield-open-points",
-      "layer": "verification",
-      "title": "野外戰場的三個未閉合點：08B4h 不命中的地形碼、生成後寫 1Fh 的常式、35E2h 高 36 列",
-      "body": "#59 之後的缺口：08B4h 七個地形碼不命中（remake 暫用旗標 0）；(32,18) 原版 1Fh 由生成後另一支常式寫入（候選 ov10 1DDBh、ov12 0E5Ch、ov32 0FB9h）；DS:35E2h 高 36 列是 strong inference；斜帶與直立物兩支沒有原版收據。",
-      "acceptance": "issue 內四條逐一附 dosgolem 收據或 overlay 位址打勾，寫進 spec 060。",
-      "verify": {
-        "kind": "manual",
-        "note": "四條各自在 issue 打勾"
-      },
-      "github_issue": 69
-    },
-    {
-      "id": "pool-money-edges",
-      "layer": "verification",
-      "title": "公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款",
-      "body": "四條邊角見 issue。",
-      "acceptance": "每條附位址與收據或測試打勾，寫進 spec 067。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 79
-    },
-    {
       "id": "ray-breath-and-6039h",
       "layer": "verification",
       "title": "射線的兩個原版細節：吐息呼叫 2919h 與 DS:6039h",
@@ -80,30 +44,6 @@
       "github_issue": 83
     },
     {
-      "id": "item-aim-range-and-drain",
-      "layer": "verification",
-      "title": "AI 物品瞄準射程與零傷害命中的吸取派發",
-      "body": "foeSpellTargets 射程該用 DS:6CB3h 物品等級；零傷害命中是否派發吸取未讀。",
-      "acceptance": "兩條附位址打勾，射程照原版改並測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 85
-    },
-    {
-      "id": "hit-effect-tails",
-      "layer": "verification",
-      "title": "命中效果的尾巴：2Fh、21h 改 +111h、群組 4、0C4Dh、014Dh 順序",
-      "body": "五條細節見 issue。",
-      "acceptance": "各條附位址打勾，接上的有測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 90
-    },
-    {
       "id": "camp-cast-tails",
       "layer": "feature",
       "title": "營地施法的尾巴：Lose it?、縮小術等、物品頁挑人、逐格訊息",
@@ -126,42 +66,6 @@
         "note": "要人判"
       },
       "github_issue": 109
-    },
-    {
-      "id": "anti-magic-and-84h-down",
-      "layer": "feature",
-      "title": "反魔法區擋施法、84h 倒下收尾",
-      "body": "戰鬥 Cast 的 @49E5、84h 倒下接 combatantDown、倒下後回合收尾。",
-      "acceptance": "各條照原版接上並有送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 115
-    },
-    {
-      "id": "combat-cure-overwritten",
-      "layer": "feature",
-      "title": "戰場上治療疾病白解",
-      "body": "RemoveEffects 改 Party[].Effects，戰後被 storeCombatEffects 蓋回。",
-      "acceptance": "戰鬥中解除效果照盤面那一份，送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 116
-    },
-    {
-      "id": "down-state-by-overkill",
-      "layer": "feature",
-      "title": "倒下的狀態依打穿點數分 4／5／6",
-      "body": "overlay-24 entry 28。",
-      "acceptance": "所有倒下路徑照原版，送鍵測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 117
     }
   ]
 }

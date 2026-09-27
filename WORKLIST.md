@@ -52,42 +52,18 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **射擊與 AI 換武器的尾巴。** #98 的 spec 151〈還沒接〉八條。
       **驗收**：各條照原版接上並有測試。
       **討論**：[#109](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/109)
-- [ ] **反魔法區擋施法、84h 倒下收尾。** 戰鬥 Cast 的 @49E5、84h 倒下接 combatantDown、倒下後回合收尾。
-      **驗收**：各條照原版接上並有送鍵測試。
-      **討論**：[#115](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/115)
-- [ ] **戰場上治療疾病白解。** RemoveEffects 改 Party[].Effects，戰後被 storeCombatEffects 蓋回。
-      **驗收**：戰鬥中解除效果照盤面那一份，送鍵測試。
-      **討論**：[#116](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/116)
-- [ ] **倒下的狀態依打穿點數分 4／5／6。** overlay-24 entry 28。
-      **驗收**：所有倒下路徑照原版，送鍵測試。
-      **討論**：[#117](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/117)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **雜項忠實度缺口：Remove Curse、射線幾何、.CHA 豁免欄、目的地命名、FINAL 調色、overlay 清冊。** 規模小、各自不阻擋主線，合併追蹤；任一條要動工時可拆成子 issue。 - [ ] `internal/gamepack/spell_cast.go:495`：Remove Curse 不清物品 `+36h`，remake 沒有詛咒欄位。 - [ ] `spell_cast.go:568`：射線幾何「先收整邊」，是近似。 - [ ] `internal/character/export.go:246`：`.CHA` 匯出不寫豁免表 `+6Dh..+71h` 與生命骰 `+73h`。 - [ ] `docs/spec/124`：二十幾個目的地區塊還沒逐一命名。 - [ ] `docs/spec/108`：`FINAL` 那幾張圖的調色仍是 DRAFT。 - [ ] `WORKLIST.md`：逐顆 overlay 命名與全模組函式清冊（依 CLAUDE.md §11，只做到能判定不阻擋玩家路徑即可）。
-      **驗收**：issue 內六條逐一打勾或寫明不做的理由。
-      **討論**：[#66](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/66)
-- [ ] **野外戰場的三個未閉合點：08B4h 不命中的地形碼、生成後寫 1Fh 的常式、35E2h 高 36 列。** #59 之後的缺口：08B4h 七個地形碼不命中（remake 暫用旗標 0）；(32,18) 原版 1Fh 由生成後另一支常式寫入（候選 ov10 1DDBh、ov12 0E5Ch、ov32 0FB9h）；DS:35E2h 高 36 列是 strong inference；斜帶與直立物兩支沒有原版收據。
-      **驗收**：issue 內四條逐一附 dosgolem 收據或 overlay 位址打勾，寫進 spec 060。
-      **討論**：[#69](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/69)
-- [ ] **公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款。** 四條邊角見 issue。
-      **驗收**：每條附位址與收據或測試打勾，寫進 spec 067。
-      **討論**：[#79](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/79)
 - [ ] **射線的兩個原版細節：吐息呼叫 2919h 與 DS:6039h。** ov22 31A3h／31B8h 疑似吐息呼叫 2919h 未接；被射線打倒的人何時離開 DS:6039h 未追。
       **驗收**：兩條附位址與證據等級打勾，吐息確認就接上並測試。
       **討論**：[#82](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/82)
 - [ ] **士氣逃跑的原版收據與四處近似。** 缺敵方崩潰的 dosgolem 收據；接近迴圈先看腳程、腳程初值少兩項、離場沒跑收尾常式、1380h 跟隊非隊員、+3==14h 分支。
       **驗收**：各條附位址與收據或測試打勾，寫進 spec 096。
       **討論**：[#83](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/83)
-- [ ] **AI 物品瞄準射程與零傷害命中的吸取派發。** foeSpellTargets 射程該用 DS:6CB3h 物品等級；零傷害命中是否派發吸取未讀。
-      **驗收**：兩條附位址打勾，射程照原版改並測試。
-      **討論**：[#85](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/85)
-- [ ] **命中效果的尾巴：2Fh、21h 改 +111h、群組 4、0C4Dh、014Dh 順序。** 五條細節見 issue。
-      **驗收**：各條附位址打勾，接上的有測試。
-      **討論**：[#90](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/90)
 
 <!-- worklist:end -->
 
