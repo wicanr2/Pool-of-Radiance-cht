@@ -18,54 +18,6 @@
         "note": "要別人在真機上跑完回填。checklist 目前沒有結構化的結果欄位，所以沒得驗"
       },
       "github_issue": 6
-    },
-    {
-      "id": "ray-breath-and-6039h",
-      "layer": "verification",
-      "title": "射線的兩個原版細節：吐息呼叫 2919h 與 DS:6039h",
-      "body": "ov22 31A3h／31B8h 疑似吐息呼叫 2919h 未接；被射線打倒的人何時離開 DS:6039h 未追。",
-      "acceptance": "兩條附位址與證據等級打勾，吐息確認就接上並測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 82
-    },
-    {
-      "id": "morale-receipt-and-approximations",
-      "layer": "verification",
-      "title": "士氣逃跑的原版收據與四處近似",
-      "body": "缺敵方崩潰的 dosgolem 收據；接近迴圈先看腳程、腳程初值少兩項、離場沒跑收尾常式、1380h 跟隊非隊員、+3==14h 分支。",
-      "acceptance": "各條附位址與收據或測試打勾，寫進 spec 096。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 83
-    },
-    {
-      "id": "camp-cast-tails",
-      "layer": "feature",
-      "title": "營地施法的尾巴：Lose it?、縮小術等、物品頁挑人、逐格訊息",
-      "body": "#100 留下的 spec 098 條目。",
-      "acceptance": "各條照原版接上並有送鍵測試，畫面改動跑對拍。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 108
-    },
-    {
-      "id": "missile-tails",
-      "layer": "feature",
-      "title": "射擊與 AI 換武器的尾巴",
-      "body": "#98 的 spec 151〈還沒接〉八條。",
-      "acceptance": "各條照原版接上並有測試。",
-      "verify": {
-        "kind": "manual",
-        "note": "要人判"
-      },
-      "github_issue": 109
     }
   ]
 }

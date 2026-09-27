@@ -44,26 +44,11 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 <!-- worklist:begin 這一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改 -->
 
-### 一、玩家會撞到的功能缺口
-
-- [ ] **營地施法的尾巴：Lose it?、縮小術等、物品頁挑人、逐格訊息。** #100 留下的 spec 098 條目。
-      **驗收**：各條照原版接上並有送鍵測試，畫面改動跑對拍。
-      **討論**：[#108](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/108)
-- [ ] **射擊與 AI 換武器的尾巴。** #98 的 spec 151〈還沒接〉八條。
-      **驗收**：各條照原版接上並有測試。
-      **討論**：[#109](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/109)
-
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
-- [ ] **射線的兩個原版細節：吐息呼叫 2919h 與 DS:6039h。** ov22 31A3h／31B8h 疑似吐息呼叫 2919h 未接；被射線打倒的人何時離開 DS:6039h 未追。
-      **驗收**：兩條附位址與證據等級打勾，吐息確認就接上並測試。
-      **討論**：[#82](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/82)
-- [ ] **士氣逃跑的原版收據與四處近似。** 缺敵方崩潰的 dosgolem 收據；接近迴圈先看腳程、腳程初值少兩項、離場沒跑收尾常式、1380h 跟隊非隊員、+3==14h 分支。
-      **驗收**：各條附位址與收據或測試打勾，寫進 spec 096。
-      **討論**：[#83](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/83)
 
 <!-- worklist:end -->
 
