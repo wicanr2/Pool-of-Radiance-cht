@@ -500,8 +500,10 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 	case SpellIDReduce:
 		// `135Eh`：三道關卡都過才印 `has been reduced`——沒有目標就返回、
 		// 豁免成功（`0100h:0043h(目標, 4, 0)` 回非零）就返回、目標身上
-		// 沒有效果 `0Ch`（沒被變大過）也返回。**過了之後整支只印一句話**：
-		// 不掛效果、不解掉 `0Ch`、不算傷害。照碼接，不補原版沒有的行為。
+		// 沒有效果 `0Ch`（沒被變大過）也返回。第三道是 overlay-24 entry 15
+		// （`107Bh`），它本身就把最早的 `0Ch` 摘掉並跑收尾（力量還原，spec 098
+		// 〈縮小術〉）；不掛效果、不算傷害。盤面上走 reduceOnBoard、營地走
+		// campSpecialSpell，兩支都不看這兩個欄位的組合，留著給說明這一支的形狀。
 		effect.RequiresEffect = EnlargeEffectCode
 		effect.MessageOnly = true
 		effect.EffectCode = 0

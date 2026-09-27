@@ -237,9 +237,23 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 		}
 	}
 	opposing := append([]int(nil), traitors...)
+	// 怪物的陣營是記錄 `+10Eh`：`LOAD MONSTER` 整筆讀進 285 bytes，之後沒有任何指令改它
+	// （overlay 全掃 `C6 85 0E 01`／`88 85 0E 01`），部署 `1CEEh` 逐筆拿它挑樣板。172 筆裡只有
+	// MON4 block 70 的 EFREETI 是 0——瓦海登墳場（ECL4 block 10 `B161h`／`B270h`）跟著隊伍打吸血鬼的
+	// 那一隻（#83，spec 061）。它排在怪物的順序裡，站在隊伍那一邊。
+	var foeSides []uint8
+	followers := 0
 	for _, monster := range a.combatMonsters {
+		side := uint8(1)
+		if monster.Record.Raw[gamepack.RecordSideOffset] == 0 {
+			side = 0
+		}
 		for index := 0; index < int(monster.Spawn.Count); index++ {
 			opposing = append(opposing, -1)
+			foeSides = append(foeSides, side)
+			if side == 0 {
+				followers++
+			}
 		}
 	}
 
@@ -252,7 +266,8 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 	if a.eventMachine != nil {
 		distance = int(a.eventMachine.Memory[encounterDistanceAddress])
 	}
-	sides, err := combat.DeploymentSides(a.spawn.Facing*2, distance, [2]int{present[0], present[1] + len(opposing) - len(traitors)})
+	sides, err := combat.DeploymentSides(a.spawn.Facing*2, distance,
+		[2]int{present[0] + followers, present[1] + len(opposing) - len(traitors) - followers})
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
@@ -307,8 +322,12 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 			return nil, nil, nil, nil, err
 		}
 	}
-	for _, slot := range opposing {
-		if err := place(slot, false, 1); err != nil {
+	for at, slot := range opposing {
+		side := uint8(1)
+		if at >= len(traitors) {
+			side = foeSides[at-len(traitors)]
+		}
+		if err := place(slot, side == 0, side); err != nil {
 			return nil, nil, nil, nil, err
 		}
 	}
@@ -694,7 +713,9 @@ func (state *tacticalState) quick(mover uint8) {
 func (a *app) releaseQuick(state *tacticalState) bool {
 	released := false
 	for index := range a.state.Party {
-		if a.state.Party[index].NPC || !a.state.Party[index].Quick {
+		// 死靈術叫起來的隊員 `+84h` 是 B2h／B3h（animate_dead.go），跟 NPC 一樣收不回來。
+		if a.state.Party[index].NPC || !a.state.Party[index].Quick ||
+			memberMoraleRaw(a.state.Party[index]) > moraleHighBit {
 			continue
 		}
 		a.state.Party[index].Quick = false
@@ -704,7 +725,8 @@ func (a *app) releaseQuick(state *tacticalState) bool {
 		if index >= len(state.PartySlot) || state.PartySlot[index] < 0 {
 			continue
 		}
-		if slot := state.PartySlot[index]; slot < len(a.state.Party) && !a.state.Party[slot].NPC {
+		if slot := state.PartySlot[index]; slot < len(a.state.Party) && !a.state.Party[slot].NPC &&
+			memberMoraleRaw(a.state.Party[slot]) <= moraleHighBit {
 			state.AIDriven[index] = false
 		}
 	}
@@ -717,11 +739,15 @@ func (a *app) releaseQuick(state *tacticalState) bool {
 // 串列，只比陣營（`+10Eh`）與狀態（`+10Ch`），誰站在哪裡不看。指令列上
 // 有沒有 `Bandage` 這一項也是同一支函式（帶 0）判的。
 //
-// 原版另外要求 runtime（`+108h`）的 `+13h` 為 0；那個欄位的寫入端沒讀，
-// 這裡當它恆為 0（hypothesis）。
+// 原版另外要求 runtime（`+108h`）的 `+13h` 為 0（`100Fh`）。那一格只有開打的 overlay-10 `13EFh`
+// 寫：串列上排在隊伍人數（`@6E3E`）之後的立 1，也就是不是隊員的（spec 061，#83）。所以跟著
+// 隊伍打的怪物倒地了也不包；治具沒填 PartySlot 的格照舊只看陣營。
 func (state *tacticalState) bandageTarget() (int, bool) {
 	for index := 1; index < len(state.Roster) && index < len(state.States); index++ {
 		if index >= len(state.Friendly) || !state.Friendly[index] {
+			continue
+		}
+		if index < len(state.PartySlot) && state.PartySlot[index] < 0 {
 			continue
 		}
 		if state.States[index] == combat.DyingState {
@@ -937,6 +963,19 @@ func (a *app) enterTacticalPreview() error {
 		state.setSingleAttackForm(index, combat.DamageDice{Count: 1, Sides: 8})
 		if party := partySlot[index]; party >= 0 && party < len(a.state.Party) {
 			member := a.state.Party[party]
+			// 死靈術叫起來過的隊員：`+72h`／`+9Fh`／`+84h` 是記錄上的值（animate_dead.go，#108）。
+			if raised := member.Animated; raised != nil {
+				state.CreatureType[index] = raised.CreatureType
+				state.rememberMorale(index, raised.Morale, uint8(member.Abilities[gamepack.AbilityIntelligence]))
+				if member.NPC && len(member.Record) == poolsave.NPCRecordSize {
+					record := append([]byte(nil), member.Record...)
+					record[gamepack.BaseMovementOffset] = raised.Movement
+					record[gamepack.CurrentMovementOffset] = raised.Movement
+					record[gamepack.MonsterCreatureTypeOffset] = raised.CreatureType
+					record[gamepack.MoraleOffset] = raised.Morale
+					member.Record = record
+				}
+			}
 			// 身上的效果串列跟著人進戰場。原版根本不必搬——那條串列長在角色
 			// 記錄的 `+7Fh`，戰場上讀的就是同一條（spec 069）。
 			state.Effects[index] = combatEffects(member.Effects)
@@ -984,7 +1023,7 @@ func (a *app) enterTacticalPreview() error {
 			}
 			continue
 		}
-		if monster, copyIndex, ok := a.stagedMonsterCopy(index, friendly); ok {
+		if monster, copyIndex, ok := a.stagedMonsterCopy(index, partySlot, friendly); ok {
 			record := monster.Record
 			a.rememberFoeItems(state, index, monster, copyIndex)
 			state.rememberSpellbook(index, record)
@@ -1249,8 +1288,8 @@ func (a *app) foeTurn(state *tacticalState) error {
 	if err := a.foeChooseGear(state, mover, previousTarget); err != nil {
 		return err
 	}
-	// entry 5 開場 `0B66h`：效果群組 0Eh（吐息，breath.go）；叫了 entry 34 就收工（`0B73h`）。
-	if acted, err := a.foeApproachEffects(state, mover); acted || err != nil {
+	// entry 5 開場 `0B66h`：效果群組 0Eh（凝視、吐息、噴酸，breath.go）；叫了 entry 34 就收工（`0B73h`）。
+	if acted, err := a.foeApproachEffects(state, mover, &target, pickTarget); acted || err != nil {
 		return err
 	}
 
@@ -1564,7 +1603,12 @@ func partyCombatStats(member poolsave.Character) (thac0Internal uint8, armorInte
 	if err != nil {
 		return 0, 0, 0, err
 	}
-	return thac0Internal, creationArmorClassInternal, creationBaseMovement, nil
+	movement = creationBaseMovement
+	if member.Animated != nil {
+		// 死靈術改過 `+72h`（`2105h`，animate_dead.go）。
+		movement = member.Animated.Movement
+	}
+	return thac0Internal, creationArmorClassInternal, movement, nil
 }
 
 // memberDefenceStats 把角色身上的東西算進 AC 與移動力（spec 079／080）。
@@ -2134,18 +2178,26 @@ func (a *app) tacticalInput() error {
 	return nil
 }
 
-// stagedMonsterFor 找出敵方第 index 筆對應的原版怪物記錄與效果串列。staged
+// stagedMonsterFor 找出第 index 格對應的原版怪物記錄與效果串列。staged
 // 的每一筆帶著數量，所以要依序展開才對得回去。
-func (a *app) stagedMonsterFor(index int, friendly []bool) (stagedMonster, bool) {
-	monster, _, ok := a.stagedMonsterCopy(index, friendly)
+//
+// 數的是「不是隊員」的格（partySlot 為 −1，原版 runtime `+13h == 1`，overlay-10 `13EFh`），
+// 不是陣營：跟著隊伍的怪物（記錄 `+10Eh` 為 0，#83）站在隊伍那一邊，被魅惑的會中途倒戈，
+// 倒戈的隊員（`+10Eh` 為 1）也不是怪物。治具沒填 partySlot 的格退回「不是我方」。
+func (a *app) stagedMonsterFor(index int, partySlot []int, friendly []bool) (stagedMonster, bool) {
+	monster, _, ok := a.stagedMonsterCopy(index, partySlot, friendly)
 	return monster, ok
 }
 
 // stagedMonsterCopy 同上，另外回傳這一格是同一條 `LOAD MONSTER` 的第幾隻（從 0 起）。
-func (a *app) stagedMonsterCopy(index int, friendly []bool) (stagedMonster, int, bool) {
+func (a *app) stagedMonsterCopy(index int, partySlot []int, friendly []bool) (stagedMonster, int, bool) {
 	position := 0
 	for slot := 1; slot < index; slot++ {
-		if !friendly[slot] {
+		if slot < len(partySlot) {
+			if partySlot[slot] < 0 {
+				position++
+			}
+		} else if slot < len(friendly) && !friendly[slot] {
 			position++
 		}
 	}
@@ -2699,6 +2751,11 @@ func (a *app) awardCombatExperienceWithLoot(fled []gamepack.MonsterRecord, loot 
 	}
 	total := uint32(0)
 	for _, monster := range a.combatMonsters {
+		// overlay-05 entry 2 `0068h`：`+10Eh != 1` 的整段跳過——跟著隊伍打的怪物（EFREETI，#83）
+		// 不算經驗值。
+		if monster.Record.Raw[gamepack.RecordSideOffset] == 0 {
+			continue
+		}
 		value := monster.Record.ExperienceValue(int(monster.Record.MaxHitPoints()))
 		total += value * uint32(monster.Spawn.Count)
 	}
@@ -2995,8 +3052,13 @@ func (state *tacticalState) rememberFootprint(index int) {
 //	217C  生命值補到 `+32h`；掛效果碼 20h，參數是 (原陣營 << 4) + 施法者等級
 //	21C0  狀態 `+10Ch = 1`
 func (state *tacticalState) animateDead(casterLevel int) int {
+	return len(state.animateDeadIndices(casterLevel))
+}
+
+// animateDeadIndices 同上，回叫起來的是哪幾格（隊員那幾格另外要寫進存檔，animate_dead.go）。
+func (state *tacticalState) animateDeadIndices(casterLevel int) []int {
 	budget := casterLevel
-	raised := 0
+	var raised []int
 	for index := 1; index < len(state.Roster) && budget > 0; index++ {
 		if index >= len(state.States) || state.States[index] != combat.DeadState {
 			continue
@@ -3041,8 +3103,12 @@ func (state *tacticalState) animateDead(casterLevel int) int {
 		if at, ok := state.Effects[index].IndexOf(gamepack.AnimateDeadEffectCode); ok {
 			state.Effects[index][at].MarkApplied(originalSide)
 		}
+		// `211Ah`：清空記憶法術陣列（怪物那一份在 Casting，隊員那一份由 persistAnimatedOnBoard 清）。
+		if spells, ok := state.Casting.Spells[index]; ok {
+			state.Casting.Spells[index] = make([]uint8, len(spells))
+		}
 		budget--
-		raised++
+		raised = append(raised, index)
 	}
 	return raised
 }

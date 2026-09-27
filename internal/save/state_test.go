@@ -363,3 +363,49 @@ func TestCheatsRoundTripAndOldSavesReadAsOff(t *testing.T) {
 		t.Fatalf("作弊欄位沒有照樣讀回：%+v used=%t", got.Cheats, got.CheatsUsed)
 	}
 }
+
+// 死靈術寫下的三格（`+72h`／`+9Fh`／`+84h`，spec 098〈死靈術〉）跟著存檔走；沒有這個欄位的舊存檔
+// 讀回來是 nil，寫出去也不帶這個鍵（#108）。
+func TestAnimatedRecordRoundTripsAndOldSavesReadAsNil(t *testing.T) {
+	dir := t.TempDir()
+	plain := NewState()
+	plain.CharacterLibrary = []Character{validCharacter("A")}
+	plain.Party = []Character{validCharacter("A")}
+	plainPath := filepath.Join(dir, "plain.json")
+	if err := WriteAtomic(plainPath, plain); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(plainPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(raw), "animated") {
+		t.Fatalf("沒被叫起來的人寫了 animated：%s", raw)
+	}
+	got, err := Read(plainPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Party[0].Animated != nil {
+		t.Fatalf("舊存檔讀回來帶著 %+v", got.Party[0].Animated)
+	}
+	raised := plain
+	member := validCharacter("A")
+	member.Status, member.Quick = 1, true
+	member.Animated = &AnimatedRecord{Movement: 6, CreatureType: 4, Morale: 0xB3}
+	raised.CharacterLibrary = []Character{member}
+	raised.Party = []Character{member}
+	raisedPath := filepath.Join(dir, "raised.json")
+	if err := WriteAtomic(raisedPath, raised); err != nil {
+		t.Fatal(err)
+	}
+	got, err = Read(raisedPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Party[0].Animated == nil ||
+		*got.Party[0].Animated != (AnimatedRecord{Movement: 6, CreatureType: 4, Morale: 0xB3}) ||
+		got.Party[0].Status != 1 || !got.Party[0].Quick {
+		t.Fatalf("往返之後是 %+v", got.Party[0])
+	}
+}

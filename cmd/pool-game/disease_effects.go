@@ -115,7 +115,7 @@ func (a *app) foeStrength(state *tacticalState, index int) uint8 {
 	if value, ok := state.FoeStrength[index]; ok {
 		return value
 	}
-	if monster, ok := a.stagedMonsterFor(index, state.Friendly); ok {
+	if monster, ok := a.stagedMonsterFor(index, state.PartySlot, state.Friendly); ok {
 		return monster.Record.Raw[gamepack.AbilityStrength+recordAbilityOffset]
 	}
 	return 0

@@ -397,7 +397,7 @@ func (a *app) fledFoeRecords(state *tacticalState) []gamepack.MonsterRecord {
 			state.Roster[index].FootprintClass != 0 {
 			continue
 		}
-		if monster, ok := a.stagedMonsterFor(index, friendly); ok {
+		if monster, ok := a.stagedMonsterFor(index, state.PartySlot, friendly); ok {
 			records = append(records, monster.Record)
 		}
 	}

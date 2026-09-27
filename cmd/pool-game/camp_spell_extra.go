@@ -19,8 +19,8 @@ import (
 //   - 縮小術、解除魔法、恢復術的處理常式（`135Eh`、`2356h`、`2C01h`）沒有 `DS:4954h`
 //     的判斷，只讀 `0A88h` 收好的表的第一格（`DS:6B89h`）。
 //
-// 死靈術（`2043h`，`+7` = 4）在營地同樣走得到，但它把死掉的隊員改成 AI 控制的不死生物
-// （`+10Fh`、`+72h`、`+9Fh`、`+84h`），那幾格 remake 的隊員存檔沒有；沒接，寫在回報。
+// 死靈術（`2043h`，`+7` = 4）在營地同樣走得到：把死掉的隊員改成 AI 控制的不死生物，改的
+// `+72h`／`+9Fh`／`+84h` 存在 `poolsave.Character.Animated`（animate_dead.go）。
 
 // 這一段訊息另開 `iota + 5200`（#108／#79），在 init 登記進 messageKeys，重號直接 panic。
 const (
@@ -87,10 +87,46 @@ func (a *app) fieldCastLoseItInput() {
 	a.fieldCastOptions = nil
 }
 
+// reduceOnBoard 是縮小術（`135Eh`）在戰鬥中：與營地同一支，只讀 `20AEh` 收好的表的第一格。
+//
+//	1364h  表空（DS:6B88h）→ 返回
+//	1379h  overlay-24 entry 7(表首, 4, 0) 豁免成功 → 返回
+//	138Dh  overlay-24 entry 15(表首, 0Ch)：身上沒有就回 0 → 返回；有就印 "is Cured"、經 entry 2
+//	       摘掉最早的那一個（`0Ch` 的節點帶收尾，力量還原到變大之前）
+//	13A3h  "has been reduced"
+func (a *app) reduceOnBoard(state *tacticalState, option castOption, casterName string, chosen bool, target uint8) {
+	took := fmt.Sprintf(a.text(msgCastTookEffect), strings.TrimSpace(casterName), option.Label)
+	if !chosen || int(target) >= len(state.Effects) || int(target) >= len(state.Roster) {
+		a.tacticalStatus(state, took)
+		return
+	}
+	if a.savedAgainstCategory(state, target, gamepack.SaveSpell, 0) {
+		a.tacticalStatus(state, took)
+		return
+	}
+	list := state.Effects[target]
+	at, found := list.IndexOf(gamepack.EnlargeEffectCode)
+	if !found {
+		a.tacticalStatus(state, took)
+		return
+	}
+	node := list[at]
+	state.Effects[target] = list.RemoveAt(at)
+	if member := a.partyMemberAt(state, target); member != nil {
+		member.Effects = storedEffects(state.Effects[target])
+	}
+	state.effectTeardown(int(target), node)
+	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastReduced), a.combatantName(state, target)))
+}
+
 // campSpecialSpell 是縮小術、解除魔法、恢復術在戰鬥外：三支處理常式都只讀表上第一格。
 // handled 為假時不是這三支。
 func (a *app) campSpecialSpell(caster int, option castOption, effect gamepack.CastEffect,
 	casterLevel, picked int) (string, bool) {
+	if effect.AnimateDead {
+		// 死靈術（`2043h`）不收表，自己沿隊伍走（animate_dead.go）。
+		return a.campAnimateDead(caster, option, casterLevel), true
+	}
 	if !effect.Restore && !effect.Dispel && option.ID != gamepack.SpellIDReduce {
 		return "", false
 	}

@@ -208,6 +208,7 @@ func TestFledFoesGiveNoExperience(t *testing.T) {
 	orc.Raw[0xB8] = 10
 	orc.Raw[0xBA] = 1
 	orc.Raw[0x32] = 5
+	orc.Raw[gamepack.RecordSideOffset] = 1 // 敵方；原版怪物記錄除了 EFREETI 都是 1（#83）
 	application := &app{combatMonsters: []stagedMonster{{Spawn: eclvm.MonsterSpawn{Count: 3}, Record: orc}}}
 	application.state = poolsave.State{Party: []poolsave.Character{
 		{Name: "A", ClassID: "fighter", Abilities: [6]int{10, 10, 10, 10, 10, 10}},

@@ -390,10 +390,16 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			return nil
 		}
 	}
-	// 反過來的那一支：縮小術要求目標**身上有**效果 `0Ch`（被變大過），
-	// 沒有就整支不做（`1382h` 問 `0100h:006Bh(目標, 0Ch)`，為零就返回）。
-	// 緩毒術同一個形狀：`187Bh` 問中毒 `37h`，沒有就跳到結尾；目標是被死靈術叫起來
-	// 的（`+10Ch == 1`，`185Bh`）也整支不做。
+	// 縮小術（`135Eh`）有自己的處理常式，順序是豁免在前、摘 `0Ch` 在後（camp_spell_extra.go 的
+	// reduceOnBoard，#108）。
+	if option.ID == gamepack.SpellIDReduce {
+		caster.consume()
+		a.reduceOnBoard(state, option, caster.name, chosen, target)
+		caster.endAction(state, a.rollDice, true)
+		return nil
+	}
+	// 反過來的那一支：緩毒術要求目標**身上有**效果——`187Bh` 問中毒 `37h`，沒有就跳到結尾；
+	// 目標是被死靈術叫起來的（`+10Ch == 1`，`185Bh`）也整支不做。
 	if effect.RequiresEffect != 0 {
 		has := chosen && state.hasEffect(int(target), effect.RequiresEffect)
 		if has && effect.MinimumHitPoints > 0 && int(target) < len(state.States) &&
@@ -687,12 +693,14 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			strings.TrimSpace(subject.Name), outcome.HitPoints))
 	case effect.AnimateDead:
 		// 死靈術：把死掉的人類屍體叫起來，換到施法者那一邊（spec 098）。
-		raised := state.animateDead(casterLevel)
-		if raised == 0 {
+		raised := state.animateDeadIndices(casterLevel)
+		if len(raised) == 0 {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
 			break
 		}
-		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAnimated), raised))
+		// 隊員那幾格改的欄位留在記錄上：寫進存檔那一份（animate_dead.go，#108）。
+		a.persistAnimatedOnBoard(state, raised)
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastAnimated), len(raised)))
 	case effect.Dispel:
 		// 解除魔法（overlay-22 `2356h`）：沿著目標身上的效果節點串列走，
 		// 每一個各擲一次。`+3` 是 `0FFh` 的解不掉。

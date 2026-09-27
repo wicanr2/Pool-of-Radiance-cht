@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
+	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
 
@@ -32,8 +33,11 @@ func (a *app) partyMemberAbsent(slot int) bool {
 }
 
 // partyMemberDown 是昏迷（4）、倒地（5）與死亡（6）：戰後寫回的狀態（storeCombatHitPoints）。
+// 石化（7）也是：overlay-12 `005Ah` 把 `+10Dh` 清成 0，戰鬥外只有戰後把狀態 0／1／3 的設回 1
+// （spec 150），所以石化的人下一場照樣只擺屍體（spec 161）。
 func partyMemberDown(member poolsave.Character) bool {
-	return member.Status == 4 || member.Status == combat.DyingState || member.Status == combat.DeadState
+	return member.Status == 4 || member.Status == combat.DyingState || member.Status == combat.DeadState ||
+		member.Status == gamepack.StonedState
 }
 
 // deployedCorpses 把部署時體型改成 0 的隊員登記進屍體表（`DS:6634h`，spec 155 的 Manual

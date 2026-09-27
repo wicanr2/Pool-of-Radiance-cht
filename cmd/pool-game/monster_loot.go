@@ -113,7 +113,7 @@ func (a *app) collectMonsterLoot(state *tacticalState) monsterLoot {
 		if friendly[index] {
 			continue
 		}
-		monster, ok := a.stagedMonsterFor(index, friendly)
+		monster, ok := a.stagedMonsterFor(index, state.PartySlot, friendly)
 		if !ok {
 			continue
 		}

@@ -108,6 +108,20 @@ type Character struct {
 	// 原版就是「永久」（overlay-20 `0165h` 不遞減也不到期），而舊檔存得下的
 	// 本來就只有詛咒那一類永久狀態。
 	Effects []EffectNode `json:"effects,omitempty"`
+	// Animated 是死靈術（overlay-22 `2043h`）改寫、而 remake 的隊員平常不存的三格記錄欄位
+	// （spec 098〈死靈術〉）：`+72h` 基礎移動、`+9Fh` 生物種類、`+84h` 士氣。玩家建的角色沒有
+	// 285-byte 記錄，這三格平常由建角值推得（12、0、0）；NPC 平常讀 Record。nil 代表沒被叫起來過，
+	// 所以沒有這個欄位的舊存檔照讀。原版把它們寫在記錄上、跨戰鬥與存檔都留著。
+	Animated *AnimatedRecord `json:"animated,omitempty"`
+}
+
+// AnimatedRecord 是死靈術寫下的三格：`2112h` 的 `+72h = 6`、`215Ah` 的 `+9Fh = 4`、
+// `2138h..2153h` 的 `+84h`（原本大於 7Fh 就是 B2h，否則 B3h）。值照存，語意在 gamepack。
+// 只整個換掉、不就地改——Character 是值複製，指標會被兩份共用。
+type AnimatedRecord struct {
+	Movement     uint8 `json:"movement"`
+	CreatureType uint8 `json:"creature_type"`
+	Morale       uint8 `json:"morale"`
 }
 
 // EffectNode 是效果串列的一個節點，與 `gamepack.EffectNode` 同形：

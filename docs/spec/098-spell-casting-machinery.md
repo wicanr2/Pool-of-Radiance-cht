@@ -1422,7 +1422,6 @@ Use 走同一支。測試全部從 `Update()` 送鍵（`field_cast_effects_test.
 | 原版 | remake | 理由 |
 |---|---|---|
 | 每一格印「<名字> <訊息>」、放之前印 "casts" | 選單最後一行只留一句（作用在誰、或 N 人）| 框內只有一行訊息；停止線（`docs/audit/stop-line.md`）|
-| 死靈術（`2043h`，`+7` = 4）在營地把整隊裡死掉的人類改成不死生物 | 營地仍是「要在戰鬥中才有目標」 | 見下一節〈死靈術〉|
 
 ## 營地施法的尾巴（2026-09-27，issue #108）
 
@@ -1464,6 +1463,10 @@ entry 15（`107Bh`）是「身上有這個碼就印 "is Cured"、經 entry 2（`
 摘節點之後叫 `expiredEffectTeardown`。測試 `TestCampReduceUndoesTheEnlargement`（豁免沒過：`0Ch` 摘掉、
 力量回到 12；自然 20：不動）。
 
+戰鬥中是同一支處理常式，表換成 `20AEh` 收好的那一份：`castSpell` 看到縮小術就交給 `reduceOnBoard`
+（豁免在前、`0Ch` 在後，摘掉之後照盤面的收尾跑 `effectTeardown`），不再走「只印一句」的那一路。
+測試 `TestReduceInCombatUndoesTheEnlargement`（從 Update() 按 C 施變大術再施縮小術）。
+
 ### 解除魔法（`2356h`）與恢復術（`2C01h`）
 
 兩支都沒有 `DS:4954h` 的判斷，只讀表首 `DS:6B89h`（`C4 06 89 6B`）：解除魔法照〈解除魔法〉一節逐個
@@ -1482,10 +1485,18 @@ entry 15（`107Bh`）是「身上有這個碼就印 "is Cured"、經 entry 2（`
 ### 死靈術
 
 `2043h` 沿 `DS:5CF4h` 走整隊，`+10Ch == 6`、`+9Fh == 0` 的人（overlay-32 entry 21 `1091h` 在戰鬥外
-`1097h` 直接回 1，所以「站不站得住」那一道一定過）改成 AI 控制（`+10Fh = 1`）、移動 6（`+72h`）、
-不死生物（`+9Fh = 4`）、士氣 B3h（`+84h`）、清記憶、生命補滿、掛 `20h`、狀態 1。remake 的隊員存檔
-沒有 `+72h`、`+9Fh`、`+84h` 這三格，戰鬥外叫起來的人帶進下一場戰鬥時對不上，所以營地的死靈術
-仍是「要在戰鬥中才有目標」。
+`1097h` 直接回 1，所以「站不站得住」那一道一定過）改成施法者那一邊（`+10Eh`）、AI 控制（`+10Fh = 1`）、
+移動 6（`+72h`）、不死生物（`+9Fh = 4`）、士氣 B2h／B3h（`+84h`，原本大於 7Fh 才是 B2h）、清記憶、
+生命補到 `+32h`、掛 `20h`、狀態 1。這些都寫在隊員的記錄上，跨戰鬥與存檔都留著。
+
+remake 的隊員平常不存 `+72h`／`+9Fh`／`+84h`，另外存在 `poolsave.Character.Animated`（沒有這個欄位
+的舊存檔讀成 nil；匯出 `.CHA` 時寫回那三格）。營地的死靈術走 `campAnimateDead`（額度是施法者等級，
+沿隊伍順序），戰鬥中的 `animateDeadIndices` 之後以 `persistAnimatedOnBoard` 把隊員那幾格寫進存檔
+（Quick、陣營、三格、清記憶）。下一場開打：生物種類、士氣照存值，`partyCombatStats` 的基礎移動改用
+`+72h`；SPACE 收回自動戰鬥照原版只收 `+84h < 80h` 的（overlay-08 `04D8h`），叫起來的人留在 AI 手上。
+測試 `TestCampAnimateDeadRaisesTheFirstDeadMember`、`TestAnimateDeadInCombatRecordsThePartyMember`、
+`TestAnimatedMemberCarriesItsRecordIntoTheNextFight`（從 Update() 送鍵），存檔往返
+`TestAnimatedRecordRoundTripsAndOldSavesReadAsNil`、匯出 `TestExportDOSRecordWritesTheAnimatedFields`。
 
 ## #99：收尾與碰觸（2026-09-26）
 
@@ -1673,7 +1684,7 @@ remake：`gamepack/breath.go`（`BreathSkipped`、`BreathStart`、`BreathRay`、
 
 `1E09h` 二十次都挑不到時（射程 4 內沒有人）不寫 `6CADh`／`6CAEh`，原版拿上一次留下的點吐
 （殘值，unknown）；remake 這一回合不吐、照常接近，列在停止線。群組 0Eh 其餘三個碼（`53h`
-BASILISK／MEDUSA、`54h` VAMPIRE、`79h` AHNKHEG）的處理常式還沒接。
+BASILISK／MEDUSA、`54h` VAMPIRE、`79h` AHNKHEG）在 spec 161。
 
 ## 受傷打斷（2026-09-26，issue #77）
 

@@ -74,7 +74,7 @@ func TestCombatInfoNamesTheMonsterOnItsTurn(t *testing.T) {
 	if foe < 0 {
 		t.Fatal("no foe on the board")
 	}
-	monster, ok := application.stagedMonsterFor(foe, state.Friendly)
+	monster, ok := application.stagedMonsterFor(foe, state.PartySlot, state.Friendly)
 	if !ok {
 		t.Fatalf("foe %d has no staged monster", foe)
 	}

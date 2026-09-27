@@ -320,6 +320,41 @@ Manual 瞄得到（spec 155）；倒地的人帶著自己的狀態與生命值�
   再夾上限（spec 078）。同一場的敵方偏移因此可能差兩格，那是 spec 078 的缺口。
 - 放不下的怪物原版從串列摘掉（overlay-16 entry 3），remake 直接不擺，效果相同。
 
+### 跟著隊伍的非隊員（2026-09-27，#83）
+
+開打前 overlay-10 `1380h`（`1F9Ch` 叫，overlay-10 SHA-256 `b929c704…`）沿 `DS:5CF4h` 數到第幾筆，
+超過隊伍人數（`[4937h]+67Ch`，ECL `@6E3E`）的把 runtime `+13h` 立 1（`13E5h..13EFh`
+`26 3B 85 7C 06 / 76 0D … 26 C6 45 13 01`）。三十八顆 overlay 掃 `26 C6 45 13`／`26 88 45 13`，
+另一筆 overlay-31 `0211h` 寫的是 `0196h` 直線走訪器自己的結構（`[bp-4]`，同一段寫 `+12h`），所以
+runtime `+13h` 的意思就是「串列上排在隊員後面的」。同一迴圈對 `+10Eh == 0`、`+13h == 1`、`+84h`
+低七位是 0 或大於 66h 的，把 `+84h` 改成 `[4937h]+58Ch + 80h`（`1440h..1482h`）。
+
+誰會落進這一格：怪物的 `+10Eh` 是記錄帶的——`LOAD MONSTER` 由 overlay-17 整筆讀 285 bytes，之後
+全 GAME.OVR 直接寫 `+10Eh` 的只有 ADD NPC（overlay-03 `2F35h`／`2F41h`）、ECL 對目前角色寫
+`+10Ch` 欄位的那一支（overlay-07 `0BCFh..0C05h`，對 `DS:5CF0h`）、競技場的複製品（`1BC1h`）、
+魅惑與死靈術的倒戈（overlay-12 `0428h`／`0488h`／`0B6Fh`、overlay-22 `20F5h`）與 Attack Ally
+（overlay-13 `2A0Dh`）。八個 MONnCHA 的 172 筆記錄裡 `+10Eh` 是 0 的**只有 MON4 block 70 的
+EFREETI**（`+84h` 是 B2h）；它在瓦海登墳場 ECL4 block 10 的 `B161h`（吸血鬼、15 隻 106、EFREETI）
+與 `B270h`（吸血鬼、50 隻 106、EFREETI）跟著載進來——說明書與臺詞裡「瓶中的伊弗利特幫隊伍打吸血鬼」
+那一隻。
+
+所以部署第 6 步的 `45BAh = +10Eh` 讓它用我方那一組樣板、站在隊伍那一邊，`+10Fh = 1` 由 AI 走。
+連帶的讀取端：
+
+| 位置 | 做什麼 | remake |
+|---|---|---|
+| overlay-05 entry 2 `0068h` | `+10Eh != 1` 整段跳過：不算經驗值、錢、物品 | `awardCombatExperienceWithLoot` 跳過記錄 `+10Eh` 是 0 的；錢與物品本來就只收敵方 |
+| overlay-08 `100Fh` | B）ANDAGE 只包 `+13h == 0`（隊員） | `bandageTarget` 跳過 PartySlot 為 −1 的格 |
+| overlay-32 `0F4Bh`／`114Dh`、overlay-05 `04DEh..11DEh` | 屍體表與戰後的隊伍換算只看 `+13h == 0` | 隊伍那一側本來就用 PartySlot 對回隊員 |
+| overlay-13 `2A0Dh` | 玩家打自己人答 Y 之後，狀態 0 而 `+84h > 7Fh` 的全部改成敵方 | EFREETI 的 `+10Fh` 是 1，打它不問（`2995h`）；remake 沒有 Attack Ally 這一問 |
+
+`+84h` 的改寫沒有觸發：唯一的 `+10Eh == 0` 怪物是 B2h（低七位 32h），不在「0 或大於 66h」裡
+（停止線，無觸發）。remake：`deployRoster` 依記錄 `+10Eh` 分邊，怪物照 `LOAD MONSTER` 的順序排在
+倒戈的 NPC 之後；`stagedMonsterCopy` 改數「不是隊員的格」而不是「不是我方的格」（跟著隊伍的、被魅惑
+倒戈的都不會把後面的對應推歪）。測試 `TestEfreetiFightsOnThePartySide`（ECL4 block 10 的真實記錄，從
+Update() 按 ENTER 開打）：部署在隊伍那一邊、由 AI 走、挑目標只挑對面、不包紮、不算經驗值；每一格都
+對回正確的怪物記錄。
+
 之前那一版固定偏移（隊伍 −1、敵方 ＋2）加「敵方只擺在與隊伍連通的格子」
 的護欄已經整段拿掉；連通護欄當初擋的是 GEO4 block 21 那種雙方被地形隔開、
 打不完的場面，換成原版演算法之後敵方本來就擺在隊伍朝向前方 `距離` 格的

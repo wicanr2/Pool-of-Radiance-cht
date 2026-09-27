@@ -69,7 +69,7 @@ func (a *app) sweepLimit(state *tacticalState, index uint8) uint8 {
 			return gamepack.SweepLimit(levels[gamepack.ClassSlotFighter], race)
 		}
 	}
-	if monster, ok := a.stagedMonsterFor(int(index), state.Friendly); ok {
+	if monster, ok := a.stagedMonsterFor(int(index), state.PartySlot, state.Friendly); ok {
 		raw := monster.Record.Raw[:]
 		return gamepack.SweepLimit(raw[gamepack.ClassLevelOffset+gamepack.ClassSlotFighter], raw[gamepack.RaceOffset])
 	}

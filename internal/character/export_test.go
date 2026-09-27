@@ -113,6 +113,26 @@ func TestExportDOSRecordLeavesUndocumentedBytesAlone(t *testing.T) {
 	}
 }
 
+// 死靈術叫起來的人（spec 098〈死靈術〉，#108）：`+72h`／`+9Fh`／`+84h` 照存寫回；沒被叫起來的
+// 不碰那三格（上一條測試）。
+func TestExportDOSRecordWritesTheAnimatedFields(t *testing.T) {
+	base := make([]byte, character.DOSRecordSize)
+	for index := range base {
+		base[index] = 0xAA
+	}
+	written, err := character.ExportDOSRecord(base, poolsave.Character{
+		Name: "TINA", RaceID: "human", GenderID: "female", ClassID: "thief", Status: 1,
+		Animated: &poolsave.AnimatedRecord{Movement: 6, CreatureType: 4, Morale: 0xB3},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if written[0x72] != 6 || written[0x9F] != 4 || written[0x84] != 0xB3 || written[0x10C] != 1 {
+		t.Fatalf("+72h %02X +9Fh %02X +84h %02X +10Ch %02X，預期 06 04 B3 01",
+			written[0x72], written[0x9F], written[0x84], written[0x10C])
+	}
+}
+
 // ClassLevels 是空的代表「每個組成職業都是第 1 級」。
 // 這是讀取端的語意（spec 097），寫回去也要照它展開，不能留 base 的舊值。
 func TestExportDOSRecordExpandsEmptyClassLevels(t *testing.T) {

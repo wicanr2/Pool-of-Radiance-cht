@@ -208,7 +208,7 @@ func drawCombatInfo(screen *ebiten.Image, a *app, foreground, accent color.Color
 	name := a.text(msgCombatFoe)
 	if member, ok := a.combatMoverCharacter(); ok {
 		name = strings.TrimSpace(member.Name)
-	} else if monster, ok := a.stagedMonsterFor(int(state.Mover), state.Friendly); ok &&
+	} else if monster, ok := a.stagedMonsterFor(int(state.Mover), state.PartySlot, state.Friendly); ok &&
 		strings.TrimSpace(monster.Record.Name) != "" {
 		name = strings.TrimSpace(a.monsterText.Translate(monster.Record.Name))
 	}

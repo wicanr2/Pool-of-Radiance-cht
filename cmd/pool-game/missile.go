@@ -79,7 +79,7 @@ func (a *app) storeCombatItems(state *tacticalState, index int, slot int, items 
 		state.FoeItems = map[int][]poolsave.Item{}
 	}
 	state.FoeItems[index] = items
-	if monster, ok := a.stagedMonsterFor(index, state.Friendly); ok {
+	if monster, ok := a.stagedMonsterFor(index, state.PartySlot, state.Friendly); ok {
 		return a.applyMonsterGearStats(state, index, monster.Record)
 	}
 	return nil
@@ -259,7 +259,7 @@ func (a *app) foeChooseGear(state *tacticalState, mover, previousTarget uint8) e
 		if member.NPC && len(member.Record) == poolsave.NPCRecordSize {
 			input.NaturalScore = gamepack.AIGearNaturalScore(member.Record)
 		}
-	} else if monster, ok := a.stagedMonsterFor(int(mover), state.Friendly); ok {
+	} else if monster, ok := a.stagedMonsterFor(int(mover), state.PartySlot, state.Friendly); ok {
 		input.ClassMask = monster.Record.Raw[gamepack.ClassUseMaskOffset]
 		input.NaturalScore = gamepack.AIGearNaturalScore(monster.Record.Raw[:])
 	}

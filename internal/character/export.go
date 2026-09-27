@@ -22,7 +22,8 @@ import (
 //     照 overlay-23 重算（cmd/pool-game/dos_export_saves.go），這一支不碰。
 //   - `+72h` 移動、`+76h` 驅散不死欄、`+A9h`／`+111h` 護甲、
 //     `+101h` 豁免修正、`+102h` 負重：全部由裝備與等級推導，remake 現算現用，
-//     沒有存進角色模型。
+//     沒有存進角色模型。例外是死靈術叫起來的人（`Character.Animated`）：
+//     `+72h`、`+9Fh`、`+84h` 是 overlay-22 `2043h` 寫下的值，照存寫回（spec 098）。
 //   - `+77h` 起的賊技能：`poolsave.Character.ThiefSkills` 可能是空的，
 //     空的時候寫 0 會把原本的技能抹掉，所以只在有值時才覆寫。
 //   - `+BFh` 圖示的不透明旗標：WriteDOSIcon 也是刻意保留這一個。
@@ -43,6 +44,9 @@ const (
 	offsetRawHP       = 0xB1
 	offsetStatus      = 0x10C
 	offsetCurrentHP   = 0x11B
+	// 死靈術改的兩格（`+72h` 是 BaseMovementOffset）：生物種類與士氣。
+	offsetCreatureType = 0x9F
+	offsetMorale       = 0x84
 
 	// AbilityCount 是 `+10h` 起的六個能力值。
 	AbilityCount = 6
@@ -108,6 +112,11 @@ func ExportDOSRecord(base []byte, character poolsave.Character) ([]byte, error) 
 	record[offsetRawHP] = clampByte(character.RawHP)
 	record[offsetCurrentHP] = clampByte(character.CurrentHP)
 	record[offsetStatus] = character.Status
+	if raised := character.Animated; raised != nil {
+		record[BaseMovementOffset] = raised.Movement
+		record[offsetCreatureType] = raised.CreatureType
+		record[offsetMorale] = raised.Morale
+	}
 	for slot := 0; slot < MoneySlots; slot++ {
 		binary.LittleEndian.PutUint16(record[offsetMoney+slot*2:], character.Money[slot])
 	}

@@ -25,7 +25,8 @@ import (
 // 所以這裡只要把節點掛到 `a.state.Party[i].Effects`。
 
 // campAttachesEffect 說這一條在營地走「只掛效果」那一路（戰鬥中是 castSpell 的 default、
-// 模式 0Ah 與力量那一組）。治療、解除、復原、死靈、解除魔法等仍走 applyFieldEffect 或沒接。
+// 模式 0Ah 與力量那一組）。縮小、解除魔法、恢復、死靈各有處理常式（camp_spell_extra.go），
+// 治療、解除效果這一類走 applyFieldEffect。
 func campAttachesEffect(effect gamepack.CastEffect, params gamepack.SpellParameters) bool {
 	switch params.CampTarget() {
 	case gamepack.CampTargetSelf, gamepack.CampTargetPick, gamepack.CampTargetParty:

@@ -6,9 +6,9 @@ import (
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 )
 
-// 怪物接近之前的效果群組 0Eh（overlay-09 entry 5 開場 `0B66h`，spec 096／098，issue #82）。
-// 群組 0Eh 依序是 `53h 54h 58h 79h`；remake 接的是 `58h` 吐息（gamepack/breath.go）。
-// 處理常式叫了 entry 34 結束行動，`0B73h` 看 runtime `+3` 為 0 就不進接近迴圈。
+// 怪物接近之前的效果群組 0Eh（overlay-09 entry 5 開場 `0B66h`，spec 096／098／161，issue #82）。
+// 群組 0Eh 依序是 `53h 54h 58h 79h`；這個檔案是 `58h` 吐息（gamepack/breath.go），其餘三個在
+// approach_effects.go。處理常式叫了 entry 34 結束行動，`0B73h` 看 runtime `+3` 為 0 就不進接近迴圈。
 
 const (
 	// msgFoeBreathes 是 overlay-22 `3088h` 的 "Breathes!"。
@@ -26,12 +26,59 @@ func init() {
 	}
 }
 
-// foeApproachEffects 是 `0B66h` 的群組 0Eh。回傳 true 代表這一隻的行動已經結束。
-func (a *app) foeApproachEffects(state *tacticalState, mover uint8) (bool, error) {
-	if !state.hasEffect(int(mover), gamepack.BreathEffectCode) {
+// foeApproachEffects 是 `0B66h` 的群組 0Eh：overlay-24 entry 3 依 `53h 54h 58h 79h` 的順序，身上有
+// 那個碼就以最早的節點叫一次它的處理常式（`014Dh`）。回傳 true 代表這一隻的行動已經結束
+// （處理常式叫了 entry 34，`0B73h` 看 runtime `+3`）；吐息與噴酸不會同時長在一隻身上。
+//
+// target 是 `37B8h` 剛挑好的追擊目標（runtime `+0Ah`）。凝視把它石化或魅惑之後，接近迴圈
+// `0C7Bh` 把它作廢，搆不到人時 `0D5Dh` 交給 `37B8h` 重挑；remake 的接近迴圈不逐步重挑，
+// 所以凝視過後目標不再有效就在這裡重挑一次，挑不到就收工（spec 161）。
+func (a *app) foeApproachEffects(state *tacticalState, mover uint8, target *uint8,
+	pickTarget func() (uint8, error)) (bool, error) {
+	gazed := false
+	for _, code := range gamepack.ApproachEffectCodes {
+		if !state.hasEffect(int(mover), code) {
+			continue
+		}
+		ended := false
+		var err error
+		switch code {
+		case gamepack.GazeStoneEffectCode:
+			a.tacticalStatus(state, a.foeGazeStone(state, mover, *target))
+			gazed = true
+		case gamepack.GazeCharmEffectCode:
+			if line := a.foeGazeCharm(state, mover, *target); line != "" {
+				a.tacticalStatus(state, line)
+			}
+			gazed = true
+		case gamepack.BreathEffectCode:
+			ended, err = a.foeBreath(state, mover)
+		case gamepack.AcidSpitEffectCode:
+			ended, err = a.foeAcidSpit(state, mover, *target)
+		}
+		if err != nil || ended {
+			return ended, err
+		}
+	}
+	if !gazed {
 		return false, nil
 	}
-	return a.foeBreath(state, mover)
+	if _, ok := state.foeTarget(mover); ok {
+		return false, nil
+	}
+	state.setFoeTarget(mover, 0)
+	picked, err := pickTarget()
+	if err != nil {
+		return false, err
+	}
+	if picked == 0 {
+		state.FoeLog = state.say(msgFoeNoTarget, a.combatantName(state, mover))
+		state.endTurn(a.rollDice, false)
+		return true, nil
+	}
+	*target = picked
+	state.setFoeTarget(mover, picked)
+	return false, nil
 }
 
 // foeBreath 是 overlay-22 `3092h`（gamepack/breath.go 有逐條位址）。

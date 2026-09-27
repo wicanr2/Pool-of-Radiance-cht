@@ -21,6 +21,9 @@ const (
 	// 修正（`1173h`，spec 065）與賊的技能份額（`+13h > 15`，spec 097）
 	// 讀的都是這一格。
 	MonsterDexterityOffset = 0x13
+	// RecordSideOffset 是記錄 `+10Eh`：陣營，0 與隊伍同一邊、1 是敵方。怪物的這一格是資料帶的
+	// （`LOAD MONSTER` 整筆讀進來後沒人改），部署 overlay-10 `1CEEh` 逐筆拿它挑樣板（spec 061）。
+	RecordSideOffset = 0x10E
 )
 
 type MonsterRecord struct {
