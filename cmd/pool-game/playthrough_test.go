@@ -409,9 +409,11 @@ func TestPassiveCombatTerminates(t *testing.T) {
 	if !strings.Contains(application.eventText, "destroyed") || !application.gameOver {
 		t.Fatalf("a party that never fought back ended with %q / %q", application.eventText, application.statusLine)
 	}
-	// 倒下的人要寫回隊伍：生命值 0、狀態是倒地／死亡（全滅那一支不換算）。
+	// 倒下的人要寫回隊伍：生命值 0、狀態是昏迷／倒地／死亡（全滅那一支不換算）。剛好打到 0 點是
+	// 昏迷 4（overlay-25 entry 28 `2301h`，spec 156）。
 	for _, member := range application.state.Party {
-		if member.CurrentHP != 0 || (member.Status != combat.DyingState && member.Status != combat.DeadState) {
+		if member.CurrentHP != 0 || (member.Status != gamepack.UnconsciousState &&
+			member.Status != combat.DyingState && member.Status != combat.DeadState) {
 			t.Fatalf("%s ended the rout with hp=%d status=%d; combat never wrote back",
 				strings.TrimSpace(member.Name), member.CurrentHP, member.Status)
 		}

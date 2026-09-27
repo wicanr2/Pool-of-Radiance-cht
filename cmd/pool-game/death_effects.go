@@ -17,10 +17,17 @@ const (
 	msgEffectFallsDead
 )
 
+// spec 156 另開 `iota + 4900`。
+const (
+	// msgFieldCastAntiMagic 是 overlay-15 `02F3h` "cannot cast spells in this area"（entry 8 模式 1）。
+	msgFieldCastAntiMagic messageID = iota + 4900
+)
+
 func init() {
 	for id, key := range map[messageID]string{
-		msgEffectParalyzed: "ui.effectParalyzed",
-		msgEffectFallsDead: "ui.effectFallsDead",
+		msgEffectParalyzed:    "ui.effectParalyzed",
+		msgEffectFallsDead:    "ui.effectFallsDead",
+		msgFieldCastAntiMagic: "ui.fieldCastAntiMagic",
 	} {
 		if existing, ok := messageKeys[id]; ok {
 			panic(fmt.Sprintf("message id %d is already %q", id, existing))
@@ -76,6 +83,24 @@ func (a *app) combatantDown(state *tacticalState, index int, overkill int) {
 	// 所以吸血鬼的氣化逃走在 DOS 版走不到，這裡什麼都不做。
 	// `4Bh`／`4Ah`（`178Bh`、overlay-13 `3A55h`）：模式 0 而一方已倒 → 摘夥伴的 `3Ah`、摘自己。
 	// entry 13 已經先摘掉第一個，remake 也沒有掛這兩個碼的來源（群組 2 的 `4Ch`／`49h` 沒接）。
+}
+
+// settleDownState 是 overlay-25 entry 28（`2266h`，gamepack.ApplyDamage）寫狀態的那一段落在盤面上
+// （spec 156）：打穿 10 點以上或原本是狀態 1 → 6（`22AFh..22C9h`）；打穿 1..9 點 → 5，戰鬥中
+// （`DS:4954h == 5`）把打穿的點數寫進倒地計數 `+108h` 的 `+0Eh`（`22DAh..22F2h`）；剛好 0 點 → 4
+// （`2301h`）。呼叫端已經把生命值歸零、把那一格記成倒下；overkill 是打穿的點數。
+func (state *tacticalState) settleDownState(index int, overkill int) {
+	if index <= 0 || index >= len(state.States) {
+		return
+	}
+	if overkill < 0 {
+		overkill = 0
+	}
+	next := gamepack.ApplyDamage(0, state.States[index], overkill).State
+	state.States[index] = next
+	if next == gamepack.DyingState && index < len(state.DyingCounters) {
+		state.DyingCounters[index] = uint8(overkill)
+	}
 }
 
 // deathTeardown 是 `3Bh`／`5Fh`／`66h` 到期（或被摘）時的收尾，隊員與怪物同一支（三支都不看

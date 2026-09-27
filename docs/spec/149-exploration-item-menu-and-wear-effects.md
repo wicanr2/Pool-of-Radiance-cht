@@ -374,7 +374,7 @@ remake：`gamepack.AlignedWearDamage`（`wear_effect.go`）判卸不卸、傷害
 「名字 TAKES N POINTS OF DAMAGE FROM MAGIC」，倒下再接「GOES DOWN」「GOES DOWN, AND IS DYING」
 或「IS KILLED」。陣營值：玩家角色取建角的編號（`creation.Alignments` 的順序），NPC 讀記錄
 `+0A0h`。停拍：戰鬥中兩句各排一則戰鬥訊息（`panelNotice`，名字在上一列，停
-`speedDelayTicks()`），倒下時摘 `EscapeStrippedEffects`；戰鬥外物品頁進 `itemPageWearBeat`，
+`speedDelayTicks()`），倒下時走 `combatantDown`（spec 155／156：十六個碼、群組 13、屍體表），狀態照 entry 28 分 4／5／6；戰鬥外物品頁進 `itemPageWearBeat`，
 一句一拍、這段時間不收鍵，停完清掉（`startWearBeats`）。遊戲速度 0 時一拍是 0，物品頁
 不停、兩句留在選項列那一行（呈現）。狀態列（`state.Status`）照舊是兩句合起來的那一行。
 
@@ -417,11 +417,9 @@ entry 6。`0F97h..0FA1h`（`C4 3E 33 49`、`26 83 BD CA 01 00 / 75 53`）排在 
 
 ## 未閉合
 
-- 群組 13（`161Dh`）的派發屬 #113；remake 在 84h 倒下這一路還沒有派發它。群組 13 若把人
-  救回來，原版改走 `1638h`（一拍、不播倒下動畫）。
-- 輪到的人在自己的物品選單裡被 84h 弄倒時，原版 entry 6 的選單迴圈照舊（`1485h` 回
-  `0F2Fh`，`+10Dh` 為 0 之後 Use 與 Trade 不接）；離開選單之後 overlay-08 怎麼收這個回合
-  沒有讀，remake 照目前的戰鬥流程。
+- 84h 倒下接群組 13、倒下之後選單裡 Use 不接、離開選單之後 overlay-08 怎麼收這個回合：
+  見 spec 156〈84h 在自己的物品選單裡倒下〉。群組 13 把人救回來時原版改走 `1638h`（一拍、
+  不播倒下動畫），remake 兩條路停的拍數相同。
 - 戰鬥中 entry 26 的捲動、音效與閃光，overlay-32 entry 20 的倒下動畫：remake 沒有，
   只照停拍的長度。
 - 物品頁的版面（清單、選項列、訊息那一行）是 remake 的呈現，原版的版面沒量。

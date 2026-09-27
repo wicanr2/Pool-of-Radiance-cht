@@ -325,6 +325,8 @@ func TestCureDiseaseWorksOnTheChosenTarget(t *testing.T) {
 	}
 	for index := 1; index < 3; index++ {
 		state.Roster[index] = combat.CombatantCell{X: uint8(index), Y: 1, FootprintClass: 1}
+		// 進場時從隊伍抄一份到盤面（#116：戰場上改的是這一份）。
+		state.Effects[index] = combatEffects(party[index-1].Effects)
 	}
 	application := &app{tactical: state, tacticalPreview: true, mode: modeAdventure,
 		spellParameters: parameters, spellCaster: caster, roller: fixedRoller{10},

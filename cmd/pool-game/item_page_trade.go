@@ -93,8 +93,13 @@ func (a *app) outsideAntiMagic() bool {
 // combatItemUseOpen 是戰鬥中 " Use" 接不接。戰鬥的 'U'（overlay-08 `03F2h`
 // `9A 3E 00 C9 00`）開的是同一支 overlay-19 entry 6，`0F97h` 的反魔法門排在
 // `DS:4954h` 的分派（`0FA3h`）之前，所以戰鬥中一樣要過；過了再看 runtime +2
-// （combatItemsUsable）。`+10Dh` 那一道對輪到的人恆成立。
+// （combatItemsUsable）。`0F8Fh` 的 `+10Dh` 那一道在輪到的人自己的選單裡被 84h 弄倒之後才會
+// 不成立：選單不收（`0F42h` 只看結果、`0F51h` 只看件數），倒下的人留在選單裡，Use 從那一刻
+// 起不接（spec 156）。remake 的 `+10Dh` 是體型不為 0。
 func (a *app) combatItemUseOpen(state *tacticalState, index int) bool {
+	if index > 0 && index < len(state.Roster) && state.Roster[index].FootprintClass == 0 {
+		return false
+	}
 	return a.outsideAntiMagic() && state.combatItemsUsable(index)
 }
 
@@ -268,11 +273,12 @@ func (a *app) alignedWear(slot int, raw []byte, mode gamepack.WearMode, list gam
 	}
 	inCombat := state != nil && cell > 0 && cell < len(state.HitPoints)
 	var next uint8
+	overkill := 0
 	if inCombat {
 		// 戰鬥中 entry 26 走 `205Ah..21BAh`：entry 20(記錄, 那一句, 0Ah, 0) 之後播受傷閃光，
 		// `21BAh` 等一拍。先排這一則，扣血時丟失法術的 "lost a spell"（`153Eh`）接在後面。
 		a.panelNotice(state, uint8(cell), wearNoticeText(line, name), noticeRowPanel, true)
-		next = a.woundWearer(state, cell, damage)
+		next, overkill = a.woundWearer(state, cell, damage)
 	} else {
 		result := gamepack.ApplyDamage(member.CurrentHP, member.Status, damage)
 		member.CurrentHP, member.Status = result.HitPoints, result.State
@@ -289,9 +295,11 @@ func (a *app) alignedWear(slot int, raw []byte, mode gamepack.WearMode, list gam
 		// overlay-32 entry 20（`13D:0084`，倒下的動畫）收尾，它在 `1006h` 等一拍；
 		// 群組 13 把人救回來（`+10Dh` 非 0）時改在 `1638h` 等一拍。兩條路都是一拍。
 		a.panelNotice(state, uint8(cell), wearNoticeText(down, name), noticeRowPanel, true)
-		for _, code := range gamepack.EscapeStrippedEffects {
-			list = list.Remove(code)
-		}
+		// `1610h..161Dh` 就是 combatantDown（spec 155）：它改的是盤面那一份串列，所以先把手上這一份
+		// 放回去再叫它，叫完再拿回來（wearItem 最後把這一份寫回盤面）。
+		state.Effects[cell] = list
+		a.combatantDown(state, cell, overkill)
+		list = state.Effects[cell]
 	case !inCombat && a.equipment != nil && a.speedDelayTicks() > 0:
 		// 戰鬥外 entry 26 以 entry 20(記錄, 那一句, 0Ah, 1) 印完停一拍（`21C1h`）；倒下再印
 		// "Goes Down" 那一句、`1602h` 再等一拍；`163Dh` entry 21 清掉。物品頁照這兩拍停。
@@ -352,21 +360,29 @@ func (a *app) wearDownLine(name string, status uint8) string {
 
 // woundWearer 是戰鬥中那一份：生命值在盤面那一格。扣法與 overlay-25 entry 28（`2266h`，
 // gamepack.ApplyDamage）相同；受傷打斷施法（`1500h..155Fh`）與倒下離場照其他傷害那一套。
-func (a *app) woundWearer(state *tacticalState, cell int, damage int) uint8 {
+//
+// 第二個回傳值是打穿的點數（倒下時交給 combatantDown，`161Dh` 的群組 13 要用）。
+func (a *app) woundWearer(state *tacticalState, cell int, damage int) (uint8, int) {
 	target := uint8(cell)
 	current := uint8(0)
 	if cell < len(state.States) {
 		current = state.States[cell]
 	}
-	result := gamepack.ApplyDamage(state.HitPoints[cell], current, damage)
+	before := state.HitPoints[cell]
+	result := gamepack.ApplyDamage(before, current, damage)
 	state.HitPoints[cell] = result.HitPoints
 	a.woundCombatant(state, target, damage)
 	defer a.announceLostSpells(state)
+	overkill := damage - before
+	if overkill < 0 {
+		overkill = 0
+	}
 	if result.Downed {
 		state.rememberFootprint(cell)
 		state.Roster[cell].FootprintClass = 0
 		state.Scores[cell] = 0
-		state.States[cell] = result.State
+		// 同一支 entry 28：狀態 4／5／6，5 時倒地計數是打穿的點數（spec 156）。
+		state.settleDownState(cell, overkill)
 	}
-	return result.State
+	return result.State, overkill
 }

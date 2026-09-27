@@ -123,8 +123,7 @@ func outlineCombatCell(screen *ebiten.Image, column, row int, ink color.Color) {
 // `Cast ` 的 `es:[di+108h]+1` 是 runtime +1「這一回合還能施法」（spec 096〈entry 4〉），
 // 受過傷、沉默或咳嗽就清 0——接上了（castingDisrupted）。`Turn ` 的 `+11h` 是
 // 「這一場轉過了」（`Undead.Tried`，overlay-13 `11AAh` 寫）。
-// **還沒接的一道**：`Cast ` 的 `ds:4933h+1CAh`（ECL `@49E5`，這一版恆為 0）。它只會讓
-// 指令**多出現**，不會少，所以不會發生「原版有而 remake 沒有」。
+// `Cast ` 的 `ds:4933h+1CAh`（`073Ah..0740h`，ECL `@49E5`，反魔法區）非 0 就不接（spec 156）。
 func (a *app) combatCommandBar() string {
 	segments := a.combatCommands
 	if len(segments) == 0 {
@@ -152,7 +151,10 @@ func (a *app) combatSegmentShown(key gamepack.CombatCommandKey) bool {
 		if !isParty || !hasMemorisedSpell(member.Memorised) {
 			return false
 		}
-		// overlay-08 `072Fh`：runtime +1 為 0 就不接。
+		// overlay-08 `072Fh`：runtime +1 為 0 就不接；`073Ah`：反魔法區不接。
+		if !a.outsideAntiMagic() {
+			return false
+		}
 		return a.tactical == nil || !a.tactical.castingDisrupted(int(a.tactical.Mover))
 	case gamepack.CombatCommandTurn:
 		// `076Dh` 記錄 `+96h`（牧師等級）大於 0；`077Dh` runtime `+11h` 為 0。

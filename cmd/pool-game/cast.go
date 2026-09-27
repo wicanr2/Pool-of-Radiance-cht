@@ -6,7 +6,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/wicanr2/Pool-of-Radiance-cht/internal/combat"
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
 )
@@ -44,7 +43,8 @@ func (a *app) openCastMenu() {
 	}
 	// overlay-08 `072Fh`：runtime +1（這一回合還能施法）為 0 的，指令列不接 "Cast "。
 	// 受過傷、沉默或咳嗽都會清它（spec 096〈entry 4〉）。
-	if state.castingDisrupted(int(state.Mover)) {
+	// `073Ah..0740h`：`[4933h]+1CAh`（`@49E5`，反魔法區）非 0 也不接（spec 156）。
+	if state.castingDisrupted(int(state.Mover)) || !a.outsideAntiMagic() {
 		a.tacticalStatus(state, a.text(msgCastCannotNow))
 		return
 	}
@@ -357,7 +357,6 @@ type spellCasting struct {
 func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOption,
 	targets spellTargets) error {
 	target, chosen := targets.first()
-	member := caster.member
 	casterLevel := caster.level
 	if state.isFriendly(state.Mover) {
 		state.Activity.PartyCasts++
@@ -440,30 +439,30 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		// 解病術這一類：拿掉**選中的目標**身上那幾個效果碼。原版
 		// `225Bh` 是逐個 `lcall 0100h:006Bh(目標, …)` 再 `002Ah(目標, …)`
 		// （spec 098），問的一直是目標，不是施法者；沒挑目標時才是自己。
-		subject := member
+		//
+		// 戰場上的串列是盤面那一份（state.Effects，收場時 storeCombatEffects 寫回隊伍）；改隊伍那一份
+		// 會在收場時被蓋回去（#116）。原版只有一份串列，掛在記錄 `+7Fh`，怪物也一樣。
+		cell := state.Mover
 		if chosen {
-			if index, ok := a.moverPartyIndex(target); ok {
-				subject = &a.state.Party[index]
-			}
+			cell = target
 		}
-		if subject == nil {
-			// 怪物施法而目標不是隊員：效果串列只存在隊員身上。
+		if int(cell) >= len(state.Effects) {
 			a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastNoTarget), option.Label))
 			break
 		}
 		removed := 0
 		for _, code := range effect.RemoveEffects {
-			for index, node := range subject.Effects {
-				if node.Code == code {
-					subject.Effects = append(subject.Effects[:index], subject.Effects[index+1:]...)
-					removed++
-					break
-				}
+			if list := state.Effects[cell]; list.Has(code) {
+				state.Effects[cell] = list.Remove(code)
+				removed++
 			}
 		}
-		syncTrainedLibraryCharacter(&a.state, *subject)
+		if index, ok := a.moverPartyIndex(cell); ok {
+			a.state.Party[index].Effects = storedEffects(state.Effects[cell])
+			syncTrainedLibraryCharacter(&a.state, a.state.Party[index])
+		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured),
-			strings.TrimSpace(subject.Name), removed))
+			a.combatantName(state, cell), removed))
 	case effect.EffectCode == gamepack.HoldPersonEffectCode && effect.SaveModifierByTargetCount:
 		// 只有 `1650h` 那兩個編號走這裡。編號 3Dh 也掛 34h，但它是泛型版型，
 		// 走 `08BCh`（持續 `07C7h` 的 Roll(5, 4)），落到 default。
@@ -953,7 +952,8 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 	state.rememberFootprint(int(target))
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
-	state.States[target] = combat.DyingState
+	// entry 19 `14FBh` 的 overlay-25 entry 28：狀態依打穿點數分 4／5／6（spec 156）。
+	state.settleDownState(int(target), overkill)
 	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDown), a.combatantName(state, target)))
 	// entry 19 `1610h..161Dh`：entry 13 摘那十六個碼、群組 13（spec 155）。
 	a.combatantDown(state, int(target), overkill)

@@ -2221,7 +2221,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	state.rememberFootprint(int(target))
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
-	state.States[target] = combat.DyingState
+	// overlay-13 `048Dh` 的 overlay-25 entry 28：狀態依打穿點數分 4／5／6（spec 156）。
+	state.settleDownState(int(target), overkill)
 	// "goes down"（overlay-13 `0567h..0583h`）是 entry 20(目標, 字串, 列, 0)，不停拍；
 	// 與其他不停拍的訊息一樣只進狀態列（combat_notice.go）。
 	state.Status = state.say(msgStatusDown, a.combatantName(state, target))

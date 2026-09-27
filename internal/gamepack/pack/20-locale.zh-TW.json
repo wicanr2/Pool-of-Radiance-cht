@@ -128,6 +128,7 @@
       "ui.fieldCastDone": "%[1]s 對 %[3]s 施了 %[2]s。",
       "ui.fieldCastFooter": "上下選擇　ENTER 確定　ESC 返回",
       "ui.fieldCastNoSpells": "%s 沒有記住任何法術。",
+      "ui.fieldCastAntiMagic": "%s 在這一區無法施法。",
       "ui.fieldCastPickCaster": "誰要施法？",
       "ui.fieldCastPickSpell": "施哪一條？",
       "ui.fieldCastPickTarget": "對誰施？",

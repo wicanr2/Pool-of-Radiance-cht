@@ -144,6 +144,12 @@ func (a *app) fieldCastAdvance() error {
 		}
 		a.fieldCastCaster = a.fieldCastCursor
 		member := a.state.Party[a.fieldCastCaster]
+		// overlay-15 entry 2 `04B2h` 以模式 1 叫 entry 8（`035Dh`）：`036Eh..0378h` 反魔法區
+		// （`@49E5`）非 0 就印 "cannot cast spells in this area"、回 0（spec 156）。
+		if !a.outsideAntiMagic() {
+			a.fieldCastMessage = fmt.Sprintf(a.text(msgFieldCastAntiMagic), strings.TrimSpace(member.Name))
+			return nil
+		}
 		options := a.spellOptionsFor(member)
 		if len(options) == 0 {
 			// 原版 `052Ah`：把名字接上 `has no spells memorized` 印出來。

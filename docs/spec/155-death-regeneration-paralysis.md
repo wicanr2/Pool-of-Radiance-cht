@@ -195,6 +195,7 @@ Pool 的法術表沒有 Remove Paralysis。怪物側 `1B36h`、`1C5Ah` 另有兩
 | 麻痺 | `gamepack.ParalysisAttacks`、`NewParalysisNode`；`app.paralysisSpecialAttack`（群組 3 在毒之後、群組 2 在吸取之後）|
 | 編號 58 | `neutralizeOnBoard`（戰場，整支）、`applyFieldEffect`（營地）；`gamepack.CureDiseaseChain` |
 | entry 21 | `gamepack.HealByEntry21`；戰場 `app.healOnBoard`（通用的治療也改走它）|
+| entry 28 的狀態 4／5／6 與倒地計數 | `tacticalState.settleDownState`（spec 156）|
 | 屍體表 | `tacticalState.Corpses`、`corpseAt`、`forgetCorpse`（`poisonRecover` 站起來時）；`confirmManualAim` |
 | 08BCh 不看狀態 | `castEffectOnly` 拿掉「體型 0 就跳過」 |
 
@@ -219,7 +220,6 @@ Pool 的法術表沒有 Remove Paralysis。怪物側 `1B36h`、`1C5Ah` 另有兩
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| 倒下時狀態依打穿點數分 4／5／6（entry 28）| 近戰與法術倒下一律寫 5（既有行為，未改）；野豬的 n 由打穿點數直接換算 | 倒下狀態的分流不在本 issue；`63h` 只需要 n |
 | 編號 58 的 Roll(1, 4) + 8 只在治療那一支擲 | CastEffect 放出去時就擲（`spell_cast.go`）| remake 的施法先擲好整組數值；亂數次數多一次 |
 | 屍體格的地形改成 1Fh，雲散時還原的是雲記下的原地形 | 屍體可選的條件是「那一格現在不是雲（1Eh）」| remake 不改盤面地形；死在雲裡、雲散之後那一具原版選不到，remake 選得到 |
 | Manual 停在屍體上時底列印名字（`3012h` ov25 entry 5）| 不印 | 狀態列只有一行 |
