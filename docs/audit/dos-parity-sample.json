@@ -469,16 +469,16 @@
       "reference": "79-y.png",
       "reference_step": 527300000,
       "remake": "remake-shop.png",
-      "same": 54721,
+      "same": 55738,
       "total": 64000,
-      "ratio": 0.855,
+      "ratio": 0.8709,
       "note": "正常走進菲蘭武具店後的服務選單（spec 067／102；layout-only）",
-      "frame_same": 7600,
+      "frame_same": 7744,
       "frame_total": 7936,
-      "frame_ratio": 0.9577,
-      "view_same": 3793,
+      "frame_ratio": 0.9758,
+      "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 0.4898
+      "view_ratio": 1
     },
     {
       "name": "spells",
