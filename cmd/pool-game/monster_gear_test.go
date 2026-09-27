@@ -187,7 +187,9 @@ func TestArmedOrcLeaderShootsFromOutsideMeleeReach(t *testing.T) {
 		}
 		attacked := state.Activity.FoeAttacks - activity.FoeAttacks
 		moved := state.Roster[mover].X != before.X || state.Roster[mover].Y != before.Y
-		if testCase.shoots && (attacked != 1 || moved) {
+		// 至少射一次、一步不動。第一箭就射倒目標時，原版用剩下的次數再射（overlay-13
+		// `1799h..17C2h`，spec 160），所以不要求「剛好一次」——那會隨骰子時好時壞。
+		if testCase.shoots && (attacked < 1 || moved) {
 			t.Errorf("%s: %d attacks, moved %v (log %q); want one shot from where it stood",
 				testCase.comment, attacked, moved, state.FoeLog)
 		}
