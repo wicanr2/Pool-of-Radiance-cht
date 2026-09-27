@@ -23,7 +23,10 @@ func TestRemoveCurseUncursesOneItem(t *testing.T) {
 		ally := &application.state.Party[1]
 		ally.Inventory = []poolsave.Item{{Name: "DAGGER", Raw: make([]byte, 63)}, cursed(), cursed()}
 		if withCurseEffect {
-			ally.Effects = poolsave.PermanentEffects(0x24) // 降咒（參數表 +0Ah）
+			// 降咒（參數表 +0Ah）。戰場上讀的是盤面那一份（開打時從隊伍複製，#116），
+			// 所以兩份一起掛，與正常開打後的狀態相同。
+			ally.Effects = poolsave.PermanentEffects(0x24)
+			state.Effects[2] = combatEffects(ally.Effects)
 		}
 		castAtTarget(t, application, state, 2)
 		first, second := ally.Inventory[1].Raw[gamepack.ItemCursedOffset], ally.Inventory[2].Raw[gamepack.ItemCursedOffset]
@@ -77,7 +80,9 @@ func TestTempleRemoveCurseFreesACursedItem(t *testing.T) {
 		t.Fatal(err)
 	}
 	member := application.state.Party[0]
-	if member.Money[3] != 500 || member.Inventory[0].Raw[gamepack.ItemCursedOffset] != 0 {
-		t.Fatalf("paid %d, item curse %d", 4000-int(member.Money[3]), member.Inventory[0].Raw[gamepack.ItemCursedOffset])
+	// 神殿付完錢把餘額重鑄成白金＋金（overlay-04 經 entry 15，#79）：500 金 → 100 白金。
+	left := int(member.Money[3]) + int(member.Money[4])*5
+	if left != 500 || member.Inventory[0].Raw[gamepack.ItemCursedOffset] != 0 {
+		t.Fatalf("paid %d, item curse %d", 4000-left, member.Inventory[0].Raw[gamepack.ItemCursedOffset])
 	}
 }
