@@ -434,7 +434,7 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 		}
 	}
 	switch {
-	case effect.NeutralizesPoison && a.neutralizeOnBoard(state, targets, option):
+	case effect.NeutralizesPoison && a.neutralizeOnBoard(state, targets, option, effect.Heal):
 		// 編號 58 `2E08h..2E3Ch`：中毒就只解毒（poison.go，spec 153）。
 	case len(effect.RemoveEffects) > 0:
 		// 解病術這一類：拿掉**選中的目標**身上那幾個效果碼。原版
@@ -600,7 +600,8 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			healed = target
 		}
 		before := state.HitPoints[healed]
-		state.HitPoints[healed] += effect.Heal
+		// overlay-24 entry 21（`175Dh`，spec 155）：封頂、狀態與 `32h` 的判斷都在 healOnBoard。
+		a.healOnBoard(state, healed, effect.Heal)
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed),
 			strings.TrimSpace(caster.name), option.Label, state.HitPoints[healed]-before))
 	case effect.Cloud:
@@ -947,12 +948,15 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 			a.combatantName(state, target), damage, state.HitPoints[target]))
 		return
 	}
+	overkill := -state.HitPoints[target]
 	state.HitPoints[target] = 0
 	state.rememberFootprint(int(target))
 	state.Roster[target].FootprintClass = 0
 	state.Scores[target] = 0
 	state.States[target] = combat.DyingState
 	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastDown), a.combatantName(state, target)))
+	// entry 19 `1610h..161Dh`：entry 13 摘那十六個碼、群組 13（spec 155）。
+	a.combatantDown(state, int(target), overkill)
 }
 
 // tacticalStatus 把一行字放進戰場的狀態列。

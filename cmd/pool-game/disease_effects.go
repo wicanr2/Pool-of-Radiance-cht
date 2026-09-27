@@ -56,6 +56,8 @@ func (a *app) diseaseTeardown(member *poolsave.Character, node gamepack.EffectNo
 // （poisonTeardown、foeEffectTeardown，spec 153）。
 func (a *app) partyEffectTeardown(state *tacticalState, index int, node gamepack.EffectNode) {
 	a.poisonTeardown(state, index, node)
+	// `3Bh`／`5Fh`／`66h`：再生開始、野豬倒地、巨魔站起來（death_effects.go，spec 155）。
+	a.deathTeardown(state, index, node)
 	if index < 0 || index >= len(state.PartySlot) {
 		return
 	}

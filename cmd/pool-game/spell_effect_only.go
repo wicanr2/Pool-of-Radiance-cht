@@ -63,7 +63,9 @@ func (a *app) castEffectOnly(state *tacticalState, caster spellCasting, option c
 	rule := params.SaveRule()
 	affected := 0
 	for _, index := range victims {
-		if int(index) >= len(state.Roster) || state.Roster[index].FootprintClass == 0 {
+		// `092Fh..0939h` 只跳過表上清成 NULL 的那一格；整段 `08BCh..0A70h` 與 entry 20 都沒有看
+		// `+10Ch`／`+10Dh`，所以 Manual 瞄到的屍體（spec 155）一樣掛得上。
+		if int(index) >= len(state.Roster) {
 			continue
 		}
 		saved := false

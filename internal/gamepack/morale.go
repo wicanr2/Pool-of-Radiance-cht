@@ -176,7 +176,7 @@ func EscapeSucceeds(opponents, ownSpeed, fastestFoe int, roll func(count, sides 
 // 代碼（`DS:0C28h..0C37h`，START.EXE 檔案位移 `30640 + 0C28h`，`DS:2880h` 讀到
 // `33 34 35 1F` 當正對照）。每個代碼摘第一個節點。迴圈是 `100Ah` 從 1 起、
 // `102Fh` `80 7E FF 10` 在呼叫**之後**才比 10h，所以讀 `[0C27h + 1..16]`，最後一個是
-// `0C37h` 的 4Bh（#114 補上；逃跑那一路在 `122Fh..1252h` 本來就另外摘 4Ah／4Bh）。
+// `0C37h` 的 4Bh（#114 補上；逃跑那一路在 `122Fh..1252h` 本來就另外摘 4Ah／4Bh；spec 155）。
 var EscapeStrippedEffects = [...]uint8{
 	0x07, 0x0B, 0x1E, 0x1F, 0x20, 0x33, 0x34, 0x35, 0x36, 0x3A, 0x3B, 0x5F, 0x62, 0x89, 0x4A, 0x4B,
 }

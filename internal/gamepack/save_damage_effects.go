@@ -304,7 +304,7 @@ const oilFlaskItemType = 0x56
 
 // spellDamageGroup 是群組 6 的呼叫順序（spec 112 的二十組表）。`3Ch` 指到空常式 entry 126；
 // `65h`（TROLL，entry 94 `280Dh`：身上沒有 `62h`、`3Bh` 就掛一個持續 3 的 `3Bh`）不改傷害，
-// `3Bh` 的處理常式還沒讀，沒有接（spec 153〈卡點〉）。
+// 串列照 TrollWounded 改（spec 155）。
 var spellDamageGroup = [...]uint8{0x71, 0x3d, 0x7a, 0x3c, 0x5b, 0x0a, 0x14, 0x69, 0x6a, 0x70, 0x72,
 	0x76, 0x11, 0x5d, 0x65, 0x1c}
 
@@ -405,9 +405,11 @@ func (damage SpellDamageEffects) Apply(value int) SpellDamageOutcome {
 			if damage.DamageFlags&DamageFlagFire != 0 {
 				outcome.Damage = halveDamage(outcome.Damage)
 			}
+		case TrollWoundEffectCode:
+			outcome.Effects = TrollWounded(outcome.Effects)
 		case MirrorImageEffectCode:
 			var lost bool
-			outcome.Effects, lost = MirrorImageAbsorbs(list, damage.Spell, damage.Area, damage.Roll)
+			outcome.Effects, lost = MirrorImageAbsorbs(outcome.Effects, damage.Spell, damage.Area, damage.Roll)
 			if lost {
 				outcome.Damage = 0
 				outcome.LostImage = true
@@ -475,7 +477,7 @@ func MirrorImageAbsorbs(list EffectList, spell uint8, area bool,
 //	     A2 76 67`——傷害減掉自己的四分之一（byte，整數除法）
 //	03h  entry 7 `0141h`：目標（記錄 +108h 的 +0Ah）`+9Fh == 4` → `80 06 76 67 02`
 //	06h  entry 9 `01C9h`：`+9Fh` 0Ah → 1、9／0Ch → 2、4 → 3、其餘 0，`00 06 76 67`；另寫 `6777h = 9`
-//	     （`0227h`），給之後的群組 5 讀——remake 的群組 5 沒有讀這一格的碼（spec 153）
+//	     （`0227h`，CreatureBaneDamageFlags），給之後的群組 5 與群組 13 讀（spec 155）
 //
 // targetType 是被打的那一個的 `+9Fh`。
 func MeleeDamageAfterAttackerEffects(list EffectList, damage int, targetType uint8) int {

@@ -247,6 +247,12 @@ func applyFieldEffect(member *poolsave.Character, effect gamepack.CastEffect) bo
 			member.Effects = storedEffects(list)
 			return true
 		}
+		// `2E3Fh`：解病鏈 `225Bh` 解到東西就結束；沒解到才 `2E4Eh` 治療（spec 155）。
+		if list, cured := gamepack.CureDiseaseChain(combatEffects(member.Effects)); cured {
+			member.Effects = storedEffects(list)
+			return true
+		}
+		effect.RemoveEffects = nil
 	}
 	applied := false
 	if effect.Heal > 0 {

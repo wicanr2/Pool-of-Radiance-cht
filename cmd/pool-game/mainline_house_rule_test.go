@@ -100,6 +100,12 @@ func (d *mainlineDriver) walkAllowing(what string, wanted, allowed func(x, y int
 				tried[key] = map[string]bool{}
 			}
 			want := explorerDoorChoice(a.door.Options, tried[key])
+			if want == doorOptionExit && tried[key][doorOptionExit] {
+				// 整輪都試過、也退出過一次，路線還是要穿過這扇門：原版玩家會回來再撞一次
+				// （BASH 每次都重擲）。不重來的話，下一步又走回門前、又選 EXIT，一直到 guard 用完。
+				tried[key] = map[string]bool{}
+				want = explorerDoorChoice(a.door.Options, tried[key])
+			}
 			if a.door.Options[a.door.Cursor] != want {
 				d.step(ebiten.KeyArrowRight)
 				continue

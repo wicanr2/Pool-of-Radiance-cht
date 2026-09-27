@@ -477,6 +477,9 @@ type tacticalState struct {
 	PartyEffectTeardown func(index int, node gamepack.EffectNode)
 	// FoeStrength 是怪物記錄的 `+10h`（力量）被致病的 `2Bh` 減過之後的值；用到才長（spec 153）。
 	FoeStrength map[int]uint8
+	// Corpses 是 overlay-32 entry 20 記進 `DS:6634h` 那張屍體表的順序（倒下的三個入口，combatantDown）；
+	// entry 22 站起來時摘掉（spec 155）。Manual 瞄準一個空格時照這張表找屍體。
+	Corpses []int
 	// PartyAged 是急速的 `27h` 第一次被問到時讓那個人老一歲（記錄 `+30h`，spec 112）。
 	// 隊員寫回角色；怪物與測試盤面可留空。
 	PartyAged func(index int)
@@ -585,6 +588,8 @@ func (state *tacticalState) startRound(roll func(count, sides int) int) {
 	}
 	// 有計時的效果每個回合邊界減一，歸零就摘掉。
 	for index := 1; index < len(state.Effects); index++ {
+		// overlay-08 `08A3h` 的群組 19（再生 `62h`）在 `08AEh` entry 4 減計時之前（spec 155）。
+		state.regenerate(index)
 		state.tickEffects(index)
 	}
 	// 回合初始化（overlay-13 entry 1）對每一格派發群組 18：攻擊次數與移動都照它調
@@ -2147,8 +2152,10 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		a.diceCount = dice.Count
 		// overlay-13 `021Eh`／`022Ch`：攻擊者的群組 4（衰弱 1Dh）、目標的群組 5（鏡影 1Ch 擲骰，#99）。
 		damage = a.meleeDamageAfterEffects(state, attacker, target, damage)
-		// 同一次群組 5 的 `29h`：非魔法的飛彈從兩格外射來就擋掉（spec 151）。
-		if missed, err := a.normalMissileAvoided(state, attacker, target); err != nil {
+		// 同一次群組 5 的 `29h`：非魔法的飛彈從兩格外射來就擋掉（spec 151）；其後的 `68h`..`75h`
+		// 照 `DS:5CF0h` 手上那一件改傷害或擋掉（meleeTargetGroup，spec 155）。
+		damage, missed, err = a.meleeTargetGroup(state, attacker, target, damage)
+		if err != nil {
 			return err
 		} else if missed {
 			// overlay-12 `0FB7h`：entry 20(目標, "Avoids it", 0Ah, 1)，傷害 `6776h` 寫 0；
@@ -2176,10 +2183,18 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		if state.lastSwings <= form2 && a.poisonSpecialAttack(state, attacker, target) {
 			return nil
 		}
+		// 群組 3 的麻痺 `43h 44h 45h` 排在 `42h` 與 `46h` 之間（spec 155）；帶毒碼的怪物沒有帶麻痺碼的。
+		if state.lastSwings <= form2 {
+			a.paralysisSpecialAttack(state, attacker, target, 2)
+		}
 		// 55h／56h 同時在兩組裡，所以不論是哪一形態命中，都由攻擊者身上的
 		// MONnSPC 節點對目前目標吸取一級／兩級（spec 112）。
 		if a.applyEnergyDrainSpecialAttack(state, attacker, target) {
 			break
+		}
+		// 群組 2 的 `44h` 排在 `55h 56h 57h` 之後（spec 155）。
+		if state.lastSwings > form2 {
+			a.paralysisSpecialAttack(state, attacker, target, 1)
 		}
 	}
 	if landed == 0 && avoided {
@@ -2196,6 +2211,7 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 		state.Status = state.say(msgStatusHit, a.combatantName(state, target), damage, state.HitPoints[target])
 		return nil
 	}
+	overkill := -state.HitPoints[target]
 	state.HitPoints[target] = 0
 	state.rememberFootprint(int(target))
 	state.Roster[target].FootprintClass = 0
@@ -2204,6 +2220,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	// "goes down"（overlay-13 `0567h..0583h`）是 entry 20(目標, 字串, 列, 0)，不停拍；
 	// 與其他不停拍的訊息一樣只進狀態列（combat_notice.go）。
 	state.Status = state.say(msgStatusDown, a.combatantName(state, target))
+	// `05F5h..0603h`：entry 13 摘那十六個碼、群組 13（spec 155）。
+	a.combatantDown(state, int(target), overkill)
 	return nil
 }
 

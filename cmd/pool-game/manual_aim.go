@@ -144,6 +144,11 @@ func (a *app) confirmManualAim() error {
 		}
 	}
 	if a.castAim != nil && !a.castTargetingAttack {
+		// `2F9Fh..3002h`：沒有站著的人就找屍體表（`DS:6634h`）。`306Dh` 擋屍體與自己只在第四個引數
+		// 是 1 時成立，施法的 `1E09h` → `352Ch` 推 0，所以法術瞄得到屍體（spec 155）。
+		if occupant == 0 {
+			occupant = state.corpseAt(a.castManualX, a.castManualY)
+		}
 		return a.confirmSpellCell(a.castManualX, a.castManualY, occupant)
 	}
 	if occupant == 0 {

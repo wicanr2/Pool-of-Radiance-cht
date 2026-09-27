@@ -159,6 +159,12 @@ func (a *app) spellDamageAfterEffects(state *tacticalState, target, spell uint8,
 // meleeDamageAfterEffects 是 overlay-13 `0215h..022Ch`：近戰傷害骰算完之後，攻擊者的群組 4、
 // 目標的群組 5。群組 5 的 `1Ch` 在這裡一定擲一次骰，但 `DS:6779h` 是 0，擋不下來。
 func (a *app) meleeDamageAfterEffects(state *tacticalState, attacker, target uint8, damage int) int {
+	// `0210h` `C6 06 77 67 00`：`DS:6777h = 0`；群組 4 的 `06h` 在 `0227h` 改寫成 9，之後的群組 5
+	// （`7Ah`）與倒下時的群組 13（`64h`）讀它（spec 155）。
+	state.SpellDamage.Flags = 0
+	if state.hasEffect(int(attacker), gamepack.CreatureBaneEffectCode) {
+		state.SpellDamage.Flags = gamepack.CreatureBaneDamageFlags
+	}
 	if int(attacker) < len(state.Effects) {
 		targetType := uint8(0)
 		if int(target) < len(state.CreatureType) {

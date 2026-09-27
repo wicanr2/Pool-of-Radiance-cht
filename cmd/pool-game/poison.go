@@ -63,7 +63,7 @@ func (a *app) poisonSpecialAttack(state *tacticalState, attacker, target uint8) 
 
 // poisonKill 是 overlay-12 `005Ah(記錄, 6, 訊息)` 落在盤面上：狀態已經是 6／7／8 就不動
 // （`008Ch..009Bh`）；否則 `+10Ch = 6`、`+10Dh = 0`、生命 0，離場（`00E6h` overlay-32 entry 20）。
-// 回傳這一下有沒有把人弄死。死亡時的群組 13（`00D0h`）沒有接（spec 153〈卡點〉）。
+// 回傳這一下有沒有把人弄死。`00C2h`／`00D0h` 的 entry 13 與群組 13 走 combatantDown（spec 155）。
 func (a *app) poisonKill(state *tacticalState, target uint8) bool {
 	index := int(target)
 	if index >= len(state.HitPoints) || index >= len(state.States) || alreadyGone(state.States[index]) {
@@ -80,6 +80,7 @@ func (a *app) poisonKill(state *tacticalState, target uint8) bool {
 	if index < len(state.DyingCounters) {
 		state.DyingCounters[index] = 0
 	}
+	a.combatantDown(state, index, deadOverkill)
 	return true
 }
 
@@ -134,6 +135,7 @@ func (a *app) poisonRecover(state *tacticalState, index, hitPoints int) bool {
 	if index < len(state.DyingCounters) {
 		state.DyingCounters[index] = 0
 	}
+	state.forgetCorpse(index)
 	message := msgEffectGetsBackUp
 	if side, ok := state.sideOf(uint8(index)); ok && side == 1 {
 		message = msgEffectStandsUpAndGrins
@@ -220,9 +222,12 @@ func neutralizesPoison(list gamepack.EffectList) (gamepack.EffectList, bool) {
 	return gamepack.NeutralizePoison(list)
 }
 
-// neutralizeOnBoard 是編號 58 在戰場上：表上第一格（沒挑過是施法者自己）中毒就解毒、印 "is Cured"，
-// 回 true 讓 castSpell 不再往下走。串列改的是盤面那一份，收場時 storeCombatEffects 寫回。
-func (a *app) neutralizeOnBoard(state *tacticalState, targets spellTargets, option castOption) bool {
+// neutralizeOnBoard 是編號 58 在戰場上，整支照 `2E02h` 的先後：表上第一格（沒挑過是施法者自己）中毒就
+// 只解毒（`2E08h..2E3Ch`）；否則 `2E3Fh` 走解病鏈 `225Bh`，解到東西就結束；什麼都沒解到才 `2E4Eh`
+// 以 Roll(1, 4) ＋ 8 走 entry 21（旗標 0）。串列改的是盤面那一份，收場時 storeCombatEffects 寫回。
+// 回 true 讓 castSpell 不再往下走（spec 155）。heal 是 CastEffect 先擲好的那一個 Roll(1, 4) ＋ 8
+// ——remake 的施法在放出去時就擲，原版只在治療那一支才擲（spec 155〈與原版不同〉）。
+func (a *app) neutralizeOnBoard(state *tacticalState, targets spellTargets, option castOption, heal int) bool {
 	first := state.Mover
 	if target, chosen := targets.first(); chosen {
 		first = target
@@ -230,11 +235,23 @@ func (a *app) neutralizeOnBoard(state *tacticalState, targets spellTargets, opti
 	if int(first) >= len(state.Effects) {
 		return false
 	}
-	list, ok := neutralizesPoison(state.Effects[first])
-	if !ok {
-		return false
+	if list, ok := neutralizesPoison(state.Effects[first]); ok {
+		state.Effects[first] = list
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured), a.combatantName(state, first), 1))
+		return true
 	}
-	state.Effects[first] = list
-	a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured), a.combatantName(state, first), 1))
+	if list, cured := gamepack.CureDiseaseChain(state.Effects[first]); cured {
+		state.Effects[first] = list
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured), a.combatantName(state, first), 1))
+		return true
+	}
+	before := 0
+	if int(first) < len(state.HitPoints) {
+		before = state.HitPoints[first]
+	}
+	if a.healOnBoard(state, first, heal) {
+		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastHealed), a.combatantName(state, state.Mover),
+			option.Label, state.HitPoints[first]-before))
+	}
 	return true
 }
