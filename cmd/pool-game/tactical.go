@@ -434,6 +434,10 @@ type tacticalState struct {
 	ThrownLoot []poolsave.Item
 	// lastSwings 是上一次 resolveAttackSwings 實際揮了幾下（扣彈藥用，`DS:6D20h`）。
 	lastSwings    int
+	// swingsLeft 是這一回合出過手的人還剩幾下（runtime `+113h`／`+114h`），attackGoesOn 是
+	// 上一次出手之後回合沒有結束（攻擊核心的完成旗標為 0）。見 attack_continue.go（spec 160）。
+	swingsLeft   map[uint8][2]uint8
+	attackGoesOn bool
 	Budgets       []uint8
 	States        []uint8
 	DyingCounters []uint8
@@ -600,6 +604,8 @@ func (state *tacticalState) startRound(roll func(count, sides int) int) {
 	// 回合初始化（overlay-13 entry 1）對每一格派發群組 18：攻擊次數與移動都照它調
 	// （spec 112，issue #81）。
 	state.RoundRates = make([]gamepack.RoundRateEffects, len(state.Roster))
+	// 同一支回合初始化把 runtime `+8` 清 0（`002Eh`）、重數攻擊次數（`0042h`／`006Eh`，spec 160）。
+	state.swingsLeft = nil
 	for index := 1; index < len(state.Roster); index++ {
 		state.RoundRates[index] = state.dispatchRateEffects(index)
 		// `0123h`：隊伍那一邊先加遭遇腳本的 `+6E4h`（side_adjust.go）。
@@ -1112,6 +1118,11 @@ func (state *tacticalState) foeTargetCandidatesAt(mover, side uint8, relaxed boo
 // 不動但算一輪，所以它不等於步數。
 const foeMaxRoundsPerTurn = 20
 
+// foeMaxEntriesPerTurn 是 entry 1 的 `01B2h` 迴圈最多再進幾次 entry 5。原版沒有上限，每一次
+// 再進都要先有一下殺掉目標（次數每次至少少一），只有手上的射擊武器被詛咒、換不下來時
+// `0DFCh` 會一直轉；remake 在這裡停，結束這一回合（spec 160）。
+const foeMaxEntriesPerTurn = 8
+
 // foeTargetTries 是 `37B8h` 重挑時最多擲幾次（`3872h`：`次數 = 14h`）。
 const foeTargetTries = 20
 
@@ -1239,6 +1250,29 @@ func (a *app) foeTurn(state *tacticalState) error {
 	}
 
 	steps := 0
+	// overlay-09 entry 1 `01B2h..01FBh`：entry 5 回傳 0（殺了目標還有剩的次數、或 `0DFCh` 換了
+	// 武器）而 runtime `+3` 還大於 0，就再挑一次目標、再進一次 entry 5（spec 160）。
+	entries := 0
+foeEntry:
+	if entries > 0 {
+		// `37B8h`：記著的目標還有效就沿用，倒下了就重挑；挑不到是 `01EEh` 的 `0F56h`，結束。
+		if target, ok = state.foeTarget(mover); !ok {
+			picked, err := pickTarget()
+			if err != nil {
+				return err
+			}
+			target = picked
+			state.setFoeTarget(mover, target)
+		}
+		if target == 0 {
+			state.FoeLog = state.say(msgFoeNoTarget, a.combatantName(state, mover))
+			state.endTurn(a.rollDice, false)
+			return nil
+		}
+		// entry 5 開場（`0B42h..0B4Ch`）把上一步的方向與卡住次數清掉；模式沿用（`+15h`）。
+		lastDirection, stuck, steps = uint8(combat.DirectionAny), 0, 0
+	}
+	entries++
 	if fleeing {
 		// entry 5 `0B9Fh`：逃跑迴圈先跑（foe_flee.go）；回合沒結束的（腳程剛好用完、
 		// 卡住三次）照原版回到下面的接近迴圈。
@@ -1280,6 +1314,11 @@ func (a *app) foeTurn(state *tacticalState) error {
 						return err
 					}
 					state.FoeLog = state.say(msgFoeClosed, mover, steps, target)
+					// `0DFFh` 只把 entry 5 的 `[bp-2]` 立起來，`[bp-4]` 還是 1，回傳 0：entry 1
+					// 再進一次 entry 5，拿換好的武器打（spec 160）。
+					if entries < foeMaxEntriesPerTurn {
+						goto foeEntry
+					}
 					state.endTurn(a.rollDice, false)
 					return nil
 				}
@@ -1288,6 +1327,12 @@ func (a *app) foeTurn(state *tacticalState) error {
 				return err
 			}
 			state.FoeLog = state.say(msgFoeAttacked, a.combatantName(state, mover), steps, state.Status)
+			if state.attackGoesOn && !state.Finished && entries < foeMaxEntriesPerTurn {
+				// `0F2Ch`：目標倒下、完成旗標是 0（spec 160）。攻擊包裝把 runtime `+0Ah` 寫成
+				// 這一個目標（`1883h`），它已經倒下，所以 `37B8h` 一定重挑。
+				state.setFoeTarget(mover, victim)
+				goto foeEntry
+			}
 			state.endTurn(a.rollDice, false)
 			return nil
 		}
@@ -2036,8 +2081,11 @@ func (a *app) tacticalInput() error {
 			// 回到 `036Ch` 再問下一個指令；敵方回合（`foeTurn`）打完也是直接
 			// `endTurn`。少了這一步，同一個角色可以對同一個目標無限連打。
 			//
-			// 這一相位該揮的每一下都在 `resolveTacticalAttack` 裡打完了
-			// （`attackSwingsThisPhase` 給次數），所以這裡結束回合是對的。
+			// 殺了目標而還有剩的次數時完成旗標是 0（spec 160）：移動迴圈（`0A13h`）只看腳程，
+			// entry 34 沒被叫到、腳程還在，所以留在移動裡接著走。
+			if state.attackGoesOn {
+				return nil
+			}
 			state.endTurnAfterAction(a.rollDice)
 			if state.Finished {
 				return a.finishCombat(state.Outcome)

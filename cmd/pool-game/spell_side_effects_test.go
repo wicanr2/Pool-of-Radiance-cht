@@ -38,6 +38,8 @@ func sideEffectBoard(t *testing.T, class int, level uint8, spell uint8, roll int
 func attackWithKeys(t *testing.T, application *app, state *tacticalState, attacker, target uint8) {
 	t.Helper()
 	state.Mover, state.Scores[attacker] = attacker, 5
+	// 每一次當成新的一回合：回合初始化重數攻擊次數（spec 160）。
+	state.swingsLeft = nil
 	pressAll(t, application, ebiten.KeyA)
 	if !application.castTargeting || !application.castTargetingAttack {
 		t.Fatalf("A did not open attack aiming: %q", state.Status)

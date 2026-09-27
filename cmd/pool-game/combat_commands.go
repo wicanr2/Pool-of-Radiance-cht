@@ -146,7 +146,8 @@ func (a *app) combatItemInput(state *tacticalState) error {
 	slot, ok := a.moverPartyIndex(state.Mover)
 	if !ok || len(a.state.Party[slot].Inventory) == 0 {
 		a.combatItems = nil
-		return nil
+		// 選單回來之後 `03FDh` 叫 overlay-13 entry 8（spec 160，`0E09h` 的條件寫回）。
+		return a.recountSwings(state, state.Mover)
 	}
 	menu := a.combatItems
 	count := len(a.state.Party[slot].Inventory)
@@ -157,6 +158,7 @@ func (a *app) combatItemInput(state *tacticalState) error {
 	switch {
 	case a.justPressed(ebiten.KeyEscape):
 		a.combatItems = nil
+		return a.recountSwings(state, state.Mover)
 	case a.justPressed(ebiten.KeyArrowUp):
 		menu.cursor = (menu.cursor + count - 1) % count
 	case a.justPressed(ebiten.KeyArrowDown):
@@ -253,6 +255,10 @@ func (a *app) finishCombatItem(option castOption, targets spellTargets) (bool, e
 	}
 	if state.Finished {
 		return true, a.finishCombat(state.Outcome)
+	}
+	if use.keepTurn {
+		// 行動沒用掉：選單回到 `03FDh`，照樣叫 entry 8（spec 160）。
+		return true, a.recountSwings(state, state.Mover)
 	}
 	return true, nil
 }

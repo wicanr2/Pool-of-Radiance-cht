@@ -213,11 +213,16 @@ func (a *app) afterCombatItemChange(state *tacticalState, slot int) error {
 	} else if a.combatItems != nil && a.combatItems.cursor >= len(member.Inventory) {
 		a.combatItems.cursor = len(member.Inventory) - 1
 	}
+	apply := a.applyPartyGearStats
 	if member.NPC {
 		// NPC 一樣跑 entry 7，只是從它帶的 285-byte 記錄出發（#97，spec 147）。
-		return a.applyNPCGearStats(state, int(state.Mover), member)
+		apply = a.applyNPCGearStats
 	}
-	return a.applyPartyGearStats(state, int(state.Mover), member)
+	if err := apply(state, int(state.Mover), member); err != nil || a.combatItems != nil {
+		return err
+	}
+	// 選單收起來了：回到 `03FDh` 叫 overlay-13 entry 8（spec 160，`0E09h` 的條件寫回）。
+	return a.recountSwings(state, state.Mover)
 }
 
 // aiDriven 是記錄 `+10Fh`：這一格由電腦接手。

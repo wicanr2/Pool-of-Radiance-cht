@@ -131,6 +131,8 @@ func TestPlayerArrowsAreSpentAndRunOut(t *testing.T) {
 		// 上一發的 "and Misses" 停一拍（overlay-13 entry 4，#110）：只是等待，等它過去。
 		drainCombatNotices(t, application)
 		state.Prompt, state.Mover = false, archer
+		// 每一輪當成新的一回合：回合初始化重數攻擊次數（spec 160）。
+		state.swingsLeft = nil
 		for _, key := range []ebiten.Key{ebiten.KeyA, ebiten.KeyEnter} {
 			if err := press(application, key); err != nil {
 				t.Fatal(err)

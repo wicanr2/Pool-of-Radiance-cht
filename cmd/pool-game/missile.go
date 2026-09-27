@@ -131,6 +131,7 @@ func (a *app) bumpAttackRefused(state *tacticalState, mover uint8) (bool, error)
 // 瞄準（`2C17h`）與電腦（overlay-09 `0EB3h`）那兩條，會帶彈藥；走進敵人那一格（overlay-08
 // `0DD2h`）傳的是 NULL，fire 為 false。
 func (a *app) resolveWeaponAttack(state *tacticalState, target uint8, fire bool) error {
+	state.attackGoesOn = false
 	// 三條路都先問橫掃（overlay-13 entry 10，spec 154），成立就不照一般攻擊打。
 	if swept, err := a.sweep(state, target); swept || err != nil {
 		return err
@@ -151,9 +152,12 @@ func (a *app) resolveWeaponAttack(state *tacticalState, target uint8, fire bool)
 	if err != nil {
 		return err
 	}
+	// 這一回合出過手的照 `+113h`／`+114h` 剩下的打；打完扣掉，還有剩就不結束回合（spec 160）。
+	swings, form2 = state.remainingSwings(mover, swings, form2)
 	if err := a.resolveAttackSwings(state, mover, target, swings, form2); err != nil {
 		return err
 	}
+	state.attackGoesOn = state.spendSwings(mover, swings, form2)
 	if ammunition < 0 || ammunition >= len(items) {
 		return nil
 	}
@@ -279,5 +283,9 @@ func (a *app) foeChooseGear(state *tacticalState, mover, previousTarget uint8) e
 	// `1808h` 與 `18FEh` 不論換沒換都跑 entry 7（`176Eh` 不換也跳到 `1802h`），連身上沒有物品的
 	// 也一樣：戰鬥中直接改在記錄上的 `+111h`／`+112h`（臭雲的 AC，spec 121）在這裡照原版被
 	// `0E43h`（`+111h = +0A9h`）與 `0FA9h..0FFBh` 洗回物品算出來的值（spec 151〈每回合的重算〉）。
-	return a.storeCombatItems(state, int(mover), slot, items)
+	if err := a.storeCombatItems(state, int(mover), slot, items); err != nil {
+		return err
+	}
+	// `1813h` 的 entry 8：這一回合已經出過手（`0DFCh` 再進來的那一次）才有 `0E09h` 的條件寫回。
+	return a.recountSwings(state, mover)
 }

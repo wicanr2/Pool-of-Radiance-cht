@@ -211,6 +211,10 @@ func (a *app) resolveAimedAttack(target uint8) error {
 	if err := a.resolveWeaponAttack(state, target, true); err != nil {
 		return err
 	}
+	// 殺了目標、還有剩的次數：完成旗標為 0，指令迴圈（overlay-08 `05A6h`）再畫一次指令列（spec 160）。
+	if state.attackGoesOn {
+		return nil
+	}
 	state.endTurnAfterAction(a.rollDice)
 	if state.Finished {
 		return a.finishCombat(state.Outcome)
