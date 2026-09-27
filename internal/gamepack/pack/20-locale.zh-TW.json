@@ -73,6 +73,7 @@
       "ui.castLostImage": "失去一個鏡影",
       "ui.statusAvoidsMissile": "躲開了",
       "ui.statusNotWithWeapon": "拿這件武器不能這樣打。",
+      "ui.statusSweeps": "橫掃一片",
       "ui.aimNoTarget": "這件武器對 %s 沒有 Target：沒有彈藥，或身邊有敵人。",
       "ui.castNoEffect": "%s 對 %s 沒有作用。",
       "ui.castNoTarget": "%s 找不到打得到的目標。",

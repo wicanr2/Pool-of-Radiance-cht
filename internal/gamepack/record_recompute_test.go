@@ -27,6 +27,9 @@ func TestRecomputeCombatFieldsMatchesThePremadeCharacters(t *testing.T) {
 		{gamepack.RearArmourClassOffset, "+112h 背面 AC"},
 		{gamepack.DamageBonusOffset, "+119h 傷害加值"},
 		{gamepack.CurrentMovementOffset, "+11Ch 移動力"},
+		// entry 7 尾段 `1000h..102Eh`（spec 154）：七名預設人物是 8、8、1、1、1、1、4。
+		{gamepack.SweepLimitOffset, "+6Bh 橫掃上限"},
+		{gamepack.HandsOffset, "+100h 手數"},
 	}
 	// 傷害骰只有備妥武器時才由這一支寫；沒有武器時原版直接返回。
 	dice := []struct {
@@ -148,7 +151,9 @@ func isDerivedOffset(offset int) bool {
 		gamepack.DamageBonusOffset, gamepack.CurrentMovementOffset,
 		// 第二種形態那三格也是 `0DB4h` 抄的（spec 147）。
 		gamepack.DamageDiceCountOffset + 1, gamepack.DamageDieSidesOffset + 1, gamepack.DamageBonusOffset + 1,
-		gamepack.CarriedWeightOffset, gamepack.CarriedWeightOffset + 1:
+		gamepack.CarriedWeightOffset, gamepack.CarriedWeightOffset + 1,
+		// entry 7 尾段（spec 154）。
+		gamepack.SweepLimitOffset, gamepack.HandsOffset:
 		return true
 	}
 	return false

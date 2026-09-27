@@ -156,6 +156,17 @@ func recomputeFromBase(result []byte, items [][]byte, types *ItemTypeTable) ([]b
 		return nil, err
 	}
 	result[CurrentMovementOffset] = byte(rate)
+
+	// 6. 手數 `+100h`：`0C0Ch` 清 0、`0D57h..0D6Eh` 對穿戴中的每件累加型別表 `+1`
+	//    （spec 144 的 readiedSlots 同一段）。
+	slots, err := readiedSlots(items, types)
+	if err != nil {
+		return nil, err
+	}
+	result[HandsOffset] = byte(slots.hands)
+
+	// 7. 尾段 `1000h..102Eh`：橫掃上限 `+6Bh`（spec 154）。
+	result[SweepLimitOffset] = SweepLimit(result[ClassLevelOffset+ClassSlotFighter], result[RaceOffset])
 	return result, nil
 }
 

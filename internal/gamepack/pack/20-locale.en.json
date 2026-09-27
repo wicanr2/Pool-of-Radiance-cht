@@ -73,6 +73,7 @@
       "ui.castLostImage": "LOST AN IMAGE",
       "ui.statusAvoidsMissile": "AVOIDS IT",
       "ui.statusNotWithWeapon": "Not with that weapon.",
+      "ui.statusSweeps": "SWEEPS",
       "ui.aimNoTarget": "No Target for %s with this weapon: out of ammunition, or an enemy is adjacent.",
       "ui.castNoEffect": "%s has no effect on %s.",
       "ui.castNoTarget": "%s finds no reachable target.",

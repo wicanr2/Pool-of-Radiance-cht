@@ -497,6 +497,8 @@ type tacticalState struct {
 	Undead foeUndead
 	// Morale 是士氣判定要的每格 `+84h`／`+11h` 與兩個全域，見 foe_flee.go（spec 096，#74）。
 	Morale foeMorale
+	// Sweep 記著每一格這一回合出過手沒有：runtime `+5` 在出手之後清 0，見 sweep.go（spec 154）。
+	Sweep sweepState
 	// stallSignature／stalledRounds 是**非原版**的僵局安全閥，見 endRound。
 	stallSignature string
 	stalledRounds  int
@@ -2074,6 +2076,8 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	}
 	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）。
 	state.turnToFace(target, attacker)
+	// 這一下打完原版清掉攻擊者的橫掃上限（`17D0h`，spec 154）。
+	defer state.Sweep.struck(state.Round, attacker)
 	// 施法中被打斷的訊息接在命中那一行後面（damage_interrupt.go）。
 	defer a.announceLostSpells(state)
 	state.Activity.countAttack(state.isFriendly(attacker))

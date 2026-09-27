@@ -72,6 +72,12 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 		CurrentHP: int(record.CurrentHitPoints()),
 	}
 	member.Inventory = items
+	// 掛進隊伍（overlay-17 `13EDh` 的 `150Fh`）時跑 overlay-23 entry 1：`+2Dh`、`+73h`、`+A1h`
+	// 照職業等級重寫（spec 154）。樣板的 `+2Dh` 不一定是這個值：WARRIOR 40 → 41、HERO 與
+	// PRINCESS FATIMA 42 → 43，dosgolem 雇 WARRIOR 那一刻讀到的是 41。
+	if err := gamepack.ApplyJoinDerivedStats(member.Record); err != nil {
+		return fmt.Errorf("Pool NPC %q: %w", member.Name, err)
+	}
 	// **職業要從記錄帶出來。** NPC 沒有經過建角流程，它的職業只存在記錄的
 	// `+2Fh`（複合職業碼）與 `+96h` 起的八個等級裡。不帶出來的話後面任何
 	// 要查職業的地方都會拿到空字串——症狀不是顯示錯，是
@@ -102,6 +108,20 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 		return fmt.Errorf("Pool ADD NPC morale operand: %w", err)
 	}
 	member.Record[gamepack.MoraleOffset] = gamepack.NPCMoraleByte(uint8(morale))
+	// 效果串列同一支讀（`0E90h` 的 `1051h`：MONnSPC 同一個 block，鏈在 `+7Fh`，spec 154）。
+	if a.loadMonsterEffects != nil {
+		effects, err := a.loadMonsterEffects(archive, uint8(id))
+		if err != nil {
+			return fmt.Errorf("load Pool NPC effects archive %d block %d: %w", archive, id, err)
+		}
+		member.Effects = storedEffects(effects)
+	}
+	// overlay-03 `2F2Ah..2F40h`：陣營寫進記錄 `+10Eh`（編號 18h 是 1）。
+	member.Record[npcSideOffset] = member.Side
+	// overlay-03 `2F46h`：加入時跑一次 entry 7，結果寫在這一位自己的記錄裡（spec 154）。
+	if err := a.recomputeNPCRecord(&member); err != nil {
+		return err
+	}
 	if member.CurrentHP > member.MaxHP {
 		member.CurrentHP = member.MaxHP
 	}
@@ -133,6 +153,59 @@ func (a *app) migrateNPCMorale() {
 			break
 		}
 	}
+	a.migrateNPCRecords()
+}
+
+// migrateNPCRecords 把 #107 之前加入的 NPC 記錄補成 ADD NPC 當下該有的樣子：overlay-23
+// entry 1 的三格、`+10Eh` 與 entry 7 的結果（spec 154）。三者都只由記錄本身、陣營與物品
+// 決定，新存檔再跑一次得到同一組值，所以每次讀檔都跑。
+//
+// 物品欄空的舊 NPC 不補 MONnITM：schema 8 從 #97 之前就在用，檔案裡分不出「那時還沒載」
+// 與「後來交給別人了」，補了會在後一種情形複製物品（spec 154〈舊存檔〉）。
+func (a *app) migrateNPCRecords() {
+	for index := range a.state.Party {
+		member := &a.state.Party[index]
+		if !member.NPC || len(member.Record) != poolsave.NPCRecordSize {
+			continue
+		}
+		if err := gamepack.ApplyJoinDerivedStats(member.Record); err != nil {
+			continue
+		}
+		member.Record[npcSideOffset] = member.Side
+		if err := a.recomputeNPCRecord(member); err != nil {
+			continue
+		}
+	}
+}
+
+// npcSideOffset 是記錄 `+10Eh`：0 與隊伍同一邊，1 是對面（spec 057）。
+const npcSideOffset = 0x10e
+
+// recomputeNPCRecord 是 overlay-25 entry 7 對 NPC 自己的記錄跑一次、結果寫回記錄
+// （ADD NPC 的 `2F46h`，spec 154）。記錄是 NPC 在原版唯一的一份資料，`1Dh PARTYSTRENGTH`
+// 讀的 `+110h`／`+111h` 就在這裡。沒有型別表（只建了盤面的測試）就不動。
+func (a *app) recomputeNPCRecord(member *poolsave.Character) error {
+	if a.itemTypes == nil || len(member.Record) != poolsave.NPCRecordSize {
+		return nil
+	}
+	record, err := a.npcRecomputed(*member)
+	if err != nil {
+		return err
+	}
+	copy(member.Record, record.Raw[:])
+	return nil
+}
+
+// npcRecomputed 是同一支 entry 7 的結果，不寫回。
+func (a *app) npcRecomputed(member poolsave.Character) (gamepack.MonsterRecord, error) {
+	var record gamepack.MonsterRecord
+	copy(record.Raw[:], member.Record)
+	record.Name = member.Name
+	items := make([][]byte, 0, len(member.Inventory))
+	for _, item := range member.Inventory {
+		items = append(items, item.Raw)
+	}
+	return gamepack.RecomputeMonsterCombatFields(record, items, a.itemTypes)
 }
 
 // npcItems 讀這一位 NPC 的物品串列（MONnITM.DAX 同一個 block），名字照 overlay-25 entry 1 組。

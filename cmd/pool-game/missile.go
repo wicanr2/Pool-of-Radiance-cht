@@ -130,6 +130,10 @@ func (a *app) bumpAttackRefused(state *tacticalState, mover uint8) (bool, error)
 // 瞄準（`2C17h`）與電腦（overlay-09 `0EB3h`）那兩條，會帶彈藥；走進敵人那一格（overlay-08
 // `0DD2h`）傳的是 NULL，fire 為 false。
 func (a *app) resolveWeaponAttack(state *tacticalState, target uint8, fire bool) error {
+	// 三條路都先問橫掃（overlay-13 entry 10，spec 154），成立就不照一般攻擊打。
+	if swept, err := a.sweep(state, target); swept || err != nil {
+		return err
+	}
 	mover := state.Mover
 	gear, items, slot, err := a.missileGear(state, mover)
 	if err != nil {

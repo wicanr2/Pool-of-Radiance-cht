@@ -2,7 +2,8 @@
 
 狀態：CONFORMED（開打時對怪物跑 entry 7、`+2Dh` 不寫、`0DB4h` 的傷害骰抄寫、`+0F8h`／`+0FCh`
 兩格、兩隻獸人頭目與十六隻獸人的九個欄位逐位元組對上 dosgolem 執行期記錄）；READY（隊伍 NPC
-開打與戰鬥中換裝走同一支、ADD NPC 帶 MONnITM 物品，#97；呼叫鏈 exact，NPC 本身沒有執行期收據）；
+開打與戰鬥中換裝走同一支、ADD NPC 帶 MONnITM 物品，#97；呼叫鏈 exact；ADD NPC 當下的執行期收據
+與寫回記錄見 spec 154）；
 彈藥消耗已由 spec 151 接上（#98）。日期：2026-09-26。主台帳：GitHub issue #93（#76 留下，spec 142 的
 DRAFT 表那一列）、#97（NPC）。
 
@@ -108,7 +109,8 @@ remake：
 資料面（ADD NPC 的八個呼叫點，`RecomputeMonsterCombatFields` 逐筆）：十四筆裡十二筆帶物品（MAD MAN、SKULLCRUSHER 沒有）；
 重算改變 THAC0／AC／腳程／骰子的有 DIRTEN、ACOLYTE、WARRIOR、SWORDSMAN、ROBBER、CURATE、HERO、
 PRINCESS FATIMA 等。例：HERO（MON3CHA 6Dh）樣板 THAC0 43（`+2Dh` 42 加力量）、AC 53、1d8、腳程 12；
-開打時長劍 +1、盾、帶甲 +1 → THAC0 44、AC 61、1d10+2、腳程 9。
+長劍 +1、盾、帶甲 +1 → 從樣板的 `+2Dh` 算是 THAC0 44、AC 61、1d10+2、腳程 9。實際雇來的 HERO 還要先
+過 ADD NPC 的 overlay-23 entry 1，`+2Dh` 變成 43，THAC0 是 45（spec 154）。
 
 驗證：`TestAddNPCLoadsTheMonsterItemChain`（ECL3/b0 `A046h` 的 `ADD NPC 6Bh` 實跑，DIRTEN 的三件
 逐位元組對 MON3ITM）、`TestNPCGearIsRecomputedWhenTheBattleStarts`（獸人家同一場，HERO 上盤面的
@@ -118,10 +120,10 @@ THAC0／AC／腳程／骰子／射程，負對照是只讀記錄的舊做法；�
 
 | 項目 | 等級 | 為什麼 |
 |---|---|---|
-| NPC 的執行期收據 | unknown | `workplace/` 沒有 dosgolem 讀出的隊伍 NPC 記錄；要駕駛原版雇一名傭兵再開打才拿得到 |
-| ADD NPC 時 entry 7／entry 2 寫回記錄 | exact（`2F46h`／`2F53h`） | remake 的 `member.Record` 仍是樣板；`partyStrengthRecord` 讀 NPC 的 `+110h`／`+111h`，拿到的是樣板殘值（HERO 的 `+110h` 是 151）。戰場不受影響（開打時重算），影響的是遭遇強度 |
-| #97 之前加入的 NPC | — | 舊存檔裡的 NPC 物品欄是空的；讀檔不補（補的條件分不出「本來沒有」與「交出去了」，要 schema 版本才能判） |
-| entry 7 尾段 `1000h..102Eh` | exact（bytes） | `+98h > 0` 而且 `+2Eh > 0` 時 `+6Bh = +98h`，否則 `+6Bh = 1`；`+6Bh` 的讀取端沒追，remake 不寫 |
+| NPC 的執行期收據 | exact | 已由 spec 154 接手：dosgolem 雇 WARRIOR 那一刻 209 bytes 逐位元組相同（#107） |
+| ADD NPC 時 entry 7／entry 2 寫回記錄 | exact | 已由 spec 154 接上：entry 7 寫回記錄（另加 overlay-23 entry 1），entry 2 只重畫名單 |
+| #97 之前加入的 NPC | — | 記錄欄位讀檔時補（spec 154）；物品欄不補，理由見 spec 154〈舊存檔〉 |
+| entry 7 尾段 `1000h..102Eh` | exact | 已由 spec 154 接上：`+6Bh` 是橫掃上限，讀取端是 overlay-13 entry 10 |
 
 ## 還沒接（DRAFT）
 

@@ -44,6 +44,24 @@ func (a *app) partyStrengthRecord(member poolsave.Character) (character.PartyStr
 	if hp > 0xFF {
 		return character.PartyStrengthRecord{}, fmt.Errorf("current HP %d is outside byte range", hp)
 	}
+	// NPC 讀自己的記錄，而且**先於**職業等級那一條：NPC 從記錄帶出了等級（addnpc.go），
+	// 走下去會被當成能力值全 0 的玩家角色算。記錄裡的 `+110h`／`+111h` 是 entry 7 寫的
+	// （ADD NPC `2F46h`、換裝、開打都會再跑一次），它只由記錄與物品決定，所以這裡照同一支
+	// 現算，舊存檔裡還是樣板殘值的記錄也拿得到對的值（spec 154）。
+	if member.NPC && len(member.Record) == poolsave.NPCRecordSize {
+		raw := member.Record
+		if a.itemTypes != nil {
+			record, err := a.npcRecomputed(member)
+			if err != nil {
+				return character.PartyStrengthRecord{}, err
+			}
+			raw = record.Raw[:]
+		}
+		return character.PartyStrengthRecord{
+			Field96: raw[0x96], Field9B: raw[0x9B], Field110: raw[0x110], Field111: raw[0x111],
+			Field11B: uint8(hp),
+		}, nil
+	}
 	levels, err := partyClassLevels(member)
 	if err != nil {
 		if len(member.Record) != poolsave.NPCRecordSize {
