@@ -44,11 +44,29 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 <!-- worklist:begin 這一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改 -->
 
+### 一、玩家會撞到的功能缺口
+
+- [ ] **神殿除咒照收錢；Attack Ally 詢問。** #66／#83 從停止線搬回。
+      **驗收**：兩項照原版接上並有送鍵測試。
+      **討論**：[#118](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/118)
+
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
+- [ ] **對拍補上 field-cast-spell。** 城區休息被打斷，記不成法術。
+      **驗收**：換不會被打斷的休息點，基準同狀態，連跑兩次都量到。
+      **討論**：[#101](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/101)
+
+### 三、版面與資料的差距
+
+- [ ] **商店畫面照原版版面。** 店主肖像、隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT。
+      **驗收**：照原版版面並跑對拍。
+      **討論**：[#70](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/70)
+- [ ] **逐人效果訊息與編號 57。** is Blessed／ages／is Cured 等逐人訊息。
+      **驗收**：照原版字串與印法，英繁兩語，送鍵測試。
+      **討論**：[#87](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/87)
 
 <!-- worklist:end -->
 

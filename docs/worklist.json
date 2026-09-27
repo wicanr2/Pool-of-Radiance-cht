@@ -18,6 +18,54 @@
         "note": "要別人在真機上跑完回填。checklist 目前沒有結構化的結果欄位，所以沒得驗"
       },
       "github_issue": 6
+    },
+    {
+      "id": "shop-layout",
+      "layer": "presentation",
+      "title": "商店畫面照原版版面",
+      "body": "店主肖像、隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT。",
+      "acceptance": "照原版版面並跑對拍。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 70
+    },
+    {
+      "id": "per-target-effect-messages",
+      "layer": "presentation",
+      "title": "逐人效果訊息與編號 57",
+      "body": "is Blessed／ages／is Cured 等逐人訊息。",
+      "acceptance": "照原版字串與印法，英繁兩語，送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 87
+    },
+    {
+      "id": "parity-field-cast-spell",
+      "layer": "verification",
+      "title": "對拍補上 field-cast-spell",
+      "body": "城區休息被打斷，記不成法術。",
+      "acceptance": "換不會被打斷的休息點，基準同狀態，連跑兩次都量到。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 101
+    },
+    {
+      "id": "temple-uncurse-and-attack-ally",
+      "layer": "feature",
+      "title": "神殿除咒照收錢；Attack Ally 詢問",
+      "body": "#66／#83 從停止線搬回。",
+      "acceptance": "兩項照原版接上並有送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 118
     }
   ]
 }
