@@ -46,27 +46,21 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 ### 一、玩家會撞到的功能缺口
 
-- [ ] **AI 施法的原版骰流收據：dosgolem 走到有施法怪物的遭遇，逐擲對照。** 功能已接上（entry 4、23F9h、Magic On/Off，與玩家共用 castSpell；d7 d7 與原版零錯位）。缺一場有施法怪物的 dosgolem 收據，挑法術與挑目標的 Roll(1,n) 只有程式碼證據。
-      **驗收**：dosgolem 收據含施法怪物的回合，remake 逐擲重現；spec 096 的自承拿掉。
-      **討論**：[#64](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/64)
-- [ ] **ADD NPC 的尾巴：寫回記錄、MONnSPC、舊存檔物品欄、+6Bh、執行期收據。** #97 留下五條。
-      **驗收**：各條照原版接上並有測試，NPC 執行期收據對上。
-      **討論**：[#107](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/107)
 - [ ] **營地施法的尾巴：Lose it?、縮小術等、物品頁挑人、逐格訊息。** #100 留下的 spec 098 條目。
       **驗收**：各條照原版接上並有送鍵測試，畫面改動跑對拍。
       **討論**：[#108](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/108)
 - [ ] **射擊與 AI 換武器的尾巴。** #98 的 spec 151〈還沒接〉八條。
       **驗收**：各條照原版接上並有測試。
       **討論**：[#109](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/109)
-- [ ] **競技場決鬥與戰後選單的尾巴。** CALL 8000h 複製角色成 ROLF、The party has fled、Detect Exit、分錢頁收據。
-      **驗收**：各條照原版接上並有測試，畫面改動跑對拍。
-      **討論**：[#111](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/111)
-- [ ] **效果的剩餘：群組 13、再生、群組 5、麻痺、編號 58、屍體瞄準。** #106 的 spec 153 卡點。
-      **驗收**：各條附位址接上，送鍵測試加變異檢查。
-      **討論**：[#113](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/113)
-- [ ] **物品頁與負重的尾巴。** entry 37、84h 戰鬥分支、拾取負重不計錢、戰鬥 Use 反魔法門。
+- [ ] **反魔法區擋施法、84h 倒下收尾。** 戰鬥 Cast 的 @49E5、84h 倒下接 combatantDown、倒下後回合收尾。
       **驗收**：各條照原版接上並有送鍵測試。
-      **討論**：[#114](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/114)
+      **討論**：[#115](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/115)
+- [ ] **戰場上治療疾病白解。** RemoveEffects 改 Party[].Effects，戰後被 storeCombatEffects 蓋回。
+      **驗收**：戰鬥中解除效果照盤面那一份，送鍵測試。
+      **討論**：[#116](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/116)
+- [ ] **倒下的狀態依打穿點數分 4／5／6。** overlay-24 entry 28。
+      **驗收**：所有倒下路徑照原版，送鍵測試。
+      **討論**：[#117](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/117)
 
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
@@ -82,9 +76,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **公款與錢的邊角：16 位元截斷、S 平分、商店 T）ake、戰利品與神殿清公款。** 四條邊角見 issue。
       **驗收**：每條附位址與收據或測試打勾，寫進 spec 067。
       **討論**：[#79](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/79)
-- [ ] **物品名稱：偵測魔法前綴與揭露藏字的原版收據。** 偵測魔法的 * 前綴未做；揭露藏字那一支沒原版收據。
-      **驗收**：前綴照原版；揭露藏字有原版收據且逐字相同。
-      **討論**：[#80](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/80)
 - [ ] **射線的兩個原版細節：吐息呼叫 2919h 與 DS:6039h。** ov22 31A3h／31B8h 疑似吐息呼叫 2919h 未接；被射線打倒的人何時離開 DS:6039h 未追。
       **驗收**：兩條附位址與證據等級打勾，吐息確認就接上並測試。
       **討論**：[#82](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/82)
@@ -97,31 +88,6 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 - [ ] **命中效果的尾巴：2Fh、21h 改 +111h、群組 4、0C4Dh、014Dh 順序。** 五條細節見 issue。
       **驗收**：各條附位址打勾，接上的有測試。
       **討論**：[#90](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/90)
-- [ ] **對拍的 field-cast-spell 量不到。** 城區休息被城衛隊打斷，記不成法術。
-      **驗收**：換不會被打斷的休息點，基準同狀態，連跑兩次都量到。
-      **討論**：[#101](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/101)
-
-### 三、版面與資料的差距
-
-- [ ] **以 DOS 為構圖基準重繪全套現代奇幻 sprite。** 建立可切換的完整現代奇幻 sprite 表現層，以 DOS 真實資產與 runtime consumer 為 inventory 基準；原版忠實主題完整保留。先盤點 sprite 家族並做少量可丟棄 prototype，再由使用者逐題確認視覺聖經、忠實度、資產邊界與產製／授權流程。
-      **卡在**：先完成 DOS sprite inventory 與三組可丟棄 prototype，再依 grilling 流程逐題確認視覺聖經與資產範圍。
-      **驗收**：完整 inventory 與 DOS archive／consumer 對得上；使用者確認單一視覺聖經；正式 sprite 風格一致且語意可追溯；每張有來源與權利紀錄；原版與現代主題可切換；所有主要正常玩家路徑與發行包抽測無缺圖、越界、裁切或風格混用。
-      **討論**：[#17](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/17)
-- [ ] **拿發行包拍 remake 的戰利品畫面，與原版六張並列。** #47 的畫面與測試已完成，缺截圖。tools/capture-treasure.sh 已能走到遭遇並開打，但一人隊伍在同一個 tick 內全滅回到標題（鎖 HP 的寫回在 tick 結束才做）。下一步假設：六人隊伍、不走 QUICK、或改用市政廳交件的獎金（與原版基準同一筆，最接近 same-state）。
-      **驗收**：docs/screenshots/treasure/ 有 remake 四張與原版並列；差異寫進 spec 034。
-      **討論**：[#52](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/52)
-- [ ] **怪物戰場圖示的配色來源沒定位：boardIconFor 給寫死的預設配色。** - `cmd/pool-game/sprite_overview.go:195`：「原版把哥布林那一類畫成紅色是換了配色，**配色從哪來還沒定位**。」 - `tactical.go` 的 `boardIconFor` 對怪物用固定的預設六組顏色；README 第 325 行、WORKLIST 第 101 行同一件事。
-      **驗收**：配色來源 exact，戰場怪物配色與原版同狀態截圖一致。
-      **討論**：[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)
-- [ ] **商店畫面照原版版面：店主肖像、隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT。** 發行包對拍商店整張 85.50%、視野 48.98%。原版左上店主肖像、右上隊伍清單、底列 BUY VIEW POOL APPRAISE EXIT；remake 是自排的貨品清單頁。
-      **驗收**：版面照原版，對拍商店那一張整張與視野上升。
-      **討論**：[#70](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/70)
-- [ ] **逐人效果訊息與編號 57 is Speedy。** 原版逐人印 is Blessed／ages／is Cured；編號 57 的呼叫端未找到。
-      **驗收**：逐人訊息照原版；編號 57 照原版或寫明走不到。
-      **討論**：[#87](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/87)
-- [ ] **戰鬥訊息的顯示時機與剩餘句子。** foeTurn 跨影格、瞄準列、第 23 列、背刺句、效果句。
-      **驗收**：各條照原版接上並有送鍵測試。
-      **討論**：[#112](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/112)
 
 <!-- worklist:end -->
 
