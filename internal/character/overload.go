@@ -3,7 +3,7 @@ package character
 import "fmt"
 
 // ReceiveOverloaded 是 overlay-19 entry 9（`274Fh`，retf 8）本身：Trade（`178Fh`）在把物品交給
-// 對方之前問它，spec 149〈Trade〉。
+// 對方之前問它，spec 149〈Trade〉；拾取（overlay-06 entry 2 的 `0244h`，spec 035）也是它。
 //
 //	275B  overlay-25 entry 7 重算接收者（+C7h 物品數、+102h 總負重）
 //	2767  +C7h > 0Fh                                  → 超重
@@ -12,7 +12,8 @@ import "fmt"
 //	27AC  +102h + 重量（16 位元 add）> 上限（32 位元有號比較）→ 超重
 //
 // `+102h` 是物品重量加七欄錢的枚數（overlay-25 `0C17h`，spec 079），所以 money 要一起給。
-// CanReceiveItem 是同一支的舊版呼叫端（拾取），它的負重沒有算錢。
+// 全部 overlay 裡叫 `C9:004D` 的只有 overlay-06 `0244h`；另一個呼叫端是 overlay-19 自己的
+// `178Fh`（near call）。CanReceiveItem 不算錢，拾取已經改用這一支。
 func ReceiveOverloaded(strength, exceptional int, inventory [][]byte, money [7]uint16, incoming []byte) (bool, error) {
 	if len(inventory) > 15 {
 		return true, nil

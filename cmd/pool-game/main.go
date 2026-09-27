@@ -2501,11 +2501,14 @@ func (a *app) giveTreasureItem(partyIndex int) error {
 		rawInventory[index] = member.Inventory[index].Raw
 	}
 	record := a.treasureItems[a.treasureSelected]
-	ok, err := poolcharacter.CanReceiveItem(member.Abilities[0], member.ExceptionalStrength, rawInventory, record.Raw[:])
+	// 拾取走 overlay-06 entry 2（`0244h` `9A 4D 00 C9 00`）→ overlay-19 entry 9（`274Fh`），
+	// 與 Trade 同一支：`+102h` 含七欄錢，所以錢一起算（spec 035，#114）。
+	overloaded, err := poolcharacter.ReceiveOverloaded(member.Abilities[0], member.ExceptionalStrength,
+		rawInventory, member.Money, record.Raw[:])
 	if err != nil {
 		return err
 	}
-	if !ok {
+	if overloaded {
 		a.eventText = "OverLoaded"
 		a.statusLine = member.Name + " cannot carry that item."
 		return nil

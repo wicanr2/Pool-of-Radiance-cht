@@ -133,8 +133,9 @@ func (a *app) playerTurnUndead(state *tacticalState) error {
 	return nil
 }
 
-// combatItemsUsable 是 `0F97h..0FCCh` 接不接 " Use"：`[4933h]+1CAh`（這一版恆為 0）、
-// 戰鬥中 runtime +2 非 0——沉默（15h）與咳嗽（1Eh）清它，與 AI 的 entry 3 同一道。
+// combatItemsUsable 是 `0FB8h..0FCCh` 接不接 " Use" 的戰鬥那一道：runtime +2 非 0——
+// 沉默（15h）與咳嗽（1Eh）清它，與 AI 的 entry 3 同一道。前面 `0F97h` 的
+// `[4933h]+1CAh`（反魔法區）在 combatItemUseOpen（item_page_trade.go）。
 func (state *tacticalState) combatItemsUsable(index int) bool {
 	return !state.hasEffect(index, silenceEffectCode) &&
 		!state.hasEffect(index, gamepack.StinkingCloudEffectCode)
@@ -161,7 +162,7 @@ func (a *app) combatItemInput(state *tacticalState) error {
 	case a.justPressed(ebiten.KeyArrowDown):
 		menu.cursor = (menu.cursor + 1) % count
 	case a.justPressed(ebiten.KeyU), a.justPressed(ebiten.KeyEnter):
-		if !state.combatItemsUsable(int(state.Mover)) {
+		if !a.combatItemUseOpen(state, int(state.Mover)) {
 			return nil
 		}
 		return a.useCombatItem(state, slot, menu.cursor)

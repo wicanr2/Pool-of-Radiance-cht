@@ -340,7 +340,7 @@ func (a *app) combatItemFooter(state *tacticalState, slot int) string {
 		return a.text(msgScrollFooter)
 	}
 	parts := []string{a.text(msgCombatItemReady)}
-	if state.combatItemsUsable(int(state.Mover)) {
+	if a.combatItemUseOpen(state, int(state.Mover)) {
 		parts = append(parts, a.text(msgCombatItemsFooter))
 	}
 	parts = append(parts, a.text(msgCombatItemDrop))

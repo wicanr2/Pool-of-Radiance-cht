@@ -28,7 +28,11 @@
 3. overlay-19 `274Fh` 在加入前判斷：
    - 目前 `item count > 15`，或
    - `current load + new item load > carry adjustment + 1500`
-   任一成立即 overload。
+   任一成立即 overload。`current load` 是 `+102h`：物品重量加七欄錢的枚數（overlay-25
+   `0C17h`，spec 079），兩者相加是 16 位元。拾取的呼叫端 overlay-06 `0244h` 與 Trade 的
+   `178Fh` 是全部的呼叫端（spec 149〈Trade〉），remake 兩邊都用
+   `poolcharacter.ReceiveOverloaded`（#114 起拾取也算錢；商店買東西不經這一支，仍是
+   `CanReceiveItem`）。
 4. overload 時 overlay-06 顯示原始字串 `OverLoaded`，回傳 failure；Spec 034 的 loot
    節點因此不移除。成功時配置 63 bytes、完整複製 item、next 清零，附加到角色
    inventory chain，重算 derived data，再回傳 success。

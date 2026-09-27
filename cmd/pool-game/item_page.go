@@ -83,6 +83,8 @@ type itemPageState struct {
 	trading     bool
 	tradeTarget int
 	ticks       int
+	// wearBeats 是 84h 戰鬥外還沒停完的那幾句（item_page_trade.go 的 startWearBeats）。
+	wearBeats []string
 }
 
 // wearItem 是 overlay-19 `1528h..153Fh`／`1650h..1667h`：`+3Eh` 大於 7Fh 的物品裝上或
@@ -234,6 +236,9 @@ func (a *app) itemPageInput() (bool, error) {
 	case itemPageTrade:
 		a.itemPageTradeInput(slot)
 		return true, nil
+	case itemPageWearBeat:
+		a.itemPageWearBeatInput()
+		return true, nil
 	}
 	if len(party[slot].Inventory) == 0 || state.item >= len(party[slot].Inventory) {
 		return false, nil
@@ -244,6 +249,7 @@ func (a *app) itemPageInput() (bool, error) {
 		_, line, err := a.readyMemberItem(slot, index, nil, 0)
 		state.message = line
 		a.afterItemPageChange(slot)
+		a.startWearBeats()
 		return true, err
 	case a.justPressed(ebiten.KeyU):
 		if a.itemPageUsable(slot) {

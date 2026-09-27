@@ -60,6 +60,8 @@ const (
 	itemPageUsesNotice itemPageStage = itemPageTarget + 1 + iota
 	// itemPageTrade 是 overlay-25 entry 42（`2C81h`）的 "Trade with Whom?"。
 	itemPageTrade
+	// itemPageWearBeat 是 84h 戰鬥外受傷那一兩句各停的一拍（overlay-24 entry 19，#114）。
+	itemPageWearBeat
 )
 
 // antiMagicAddress 是 `[4933h]+1CAh` 的 ECL 位址（class 0：`6E00h + addr × 2 ≡ 1CAh`）。
@@ -80,7 +82,20 @@ func (a *app) itemPageUsable(slot int) bool {
 	if a.state.Party[slot].Status > gamepack.AliveStateMax {
 		return false
 	}
+	return a.outsideAntiMagic()
+}
+
+// outsideAntiMagic 是 `0F97h..0FA1h`：`[4933h]+1CAh`（`@49E5`）為 0。
+func (a *app) outsideAntiMagic() bool {
 	return a.eventMachine == nil || a.eventMachine.Memory[antiMagicAddress] == 0
+}
+
+// combatItemUseOpen 是戰鬥中 " Use" 接不接。戰鬥的 'U'（overlay-08 `03F2h`
+// `9A 3E 00 C9 00`）開的是同一支 overlay-19 entry 6，`0F97h` 的反魔法門排在
+// `DS:4954h` 的分派（`0FA3h`）之前，所以戰鬥中一樣要過；過了再看 runtime +2
+// （combatItemsUsable）。`+10Dh` 那一道對輪到的人恆成立。
+func (a *app) combatItemUseOpen(state *tacticalState, index int) bool {
+	return a.outsideAntiMagic() && state.combatItemsUsable(index)
 }
 
 // itemPageTradable 是 " Trade" 接不接（`0FF6h..101Ch`）：不在戰鬥中（物品頁一定不是），
@@ -108,7 +123,9 @@ func (a *app) startItemPageTrade(slot, index int) {
 	a.askItemPageTrade(slot)
 }
 
-// askItemPageTrade 是 entry 13 的前半：`1757h` "Trade with Whom?"，overlay-25 entry 42
+// askItemPageTrade 是 entry 13 的前半。`174Dh` 先叫 overlay-25 entry 37（`280Fh`）：依
+// `DS:4954h` 重畫底下那一層畫面（框、圖、隊伍名單），不寫任何狀態，remake 的物品頁
+// 自己畫，不必做（spec 149）。接著 `1757h` "Trade with Whom?"，overlay-25 entry 42
 // 從 `DS:467Ch` 那一個人起挑（entry 5 `0AD9h` 開頁時設成自己，每一次交易之後設成對方）。
 func (a *app) askItemPageTrade(slot int) {
 	state := a.equipment
@@ -249,18 +266,76 @@ func (a *app) alignedWear(slot int, raw []byte, mode gamepack.WearMode, list gam
 	if damage == 1 {
 		line = fmt.Sprintf(a.text(msgItemWearHurtOne), name)
 	}
+	inCombat := state != nil && cell > 0 && cell < len(state.HitPoints)
 	var next uint8
-	if state != nil && cell > 0 && cell < len(state.HitPoints) {
+	if inCombat {
+		// 戰鬥中 entry 26 走 `205Ah..21BAh`：entry 20(記錄, 那一句, 0Ah, 0) 之後播受傷閃光，
+		// `21BAh` 等一拍。先排這一則，扣血時丟失法術的 "lost a spell"（`153Eh`）接在後面。
+		a.panelNotice(state, uint8(cell), wearNoticeText(line, name), noticeRowPanel, true)
 		next = a.woundWearer(state, cell, damage)
 	} else {
 		result := gamepack.ApplyDamage(member.CurrentHP, member.Status, damage)
 		member.CurrentHP, member.Status = result.HitPoints, result.State
 		next = result.State
 	}
+	down := ""
 	if next > gamepack.AliveStateMax {
-		line += "  " + a.wearDownLine(name, next)
+		down = a.wearDownLine(name, next)
+	}
+	switch {
+	case inCombat && down != "":
+		// `15F6h` entry 20(記錄, "Goes Down"…, 列, 0)；戰鬥中 `1609h..1631h`：`1004h` 摘掉
+		// 十六個戰鬥用的效果代碼、派發群組 13（`161Dh`，#113），`+10Dh` 仍為 0 就以
+		// overlay-32 entry 20（`13D:0084`，倒下的動畫）收尾，它在 `1006h` 等一拍；
+		// 群組 13 把人救回來（`+10Dh` 非 0）時改在 `1638h` 等一拍。兩條路都是一拍。
+		a.panelNotice(state, uint8(cell), wearNoticeText(down, name), noticeRowPanel, true)
+		for _, code := range gamepack.EscapeStrippedEffects {
+			list = list.Remove(code)
+		}
+	case !inCombat && a.equipment != nil && a.speedDelayTicks() > 0:
+		// 戰鬥外 entry 26 以 entry 20(記錄, 那一句, 0Ah, 1) 印完停一拍（`21C1h`）；倒下再印
+		// "Goes Down" 那一句、`1602h` 再等一拍；`163Dh` entry 21 清掉。物品頁照這兩拍停。
+		a.equipment.page.wearBeats = []string{line}
+		if down != "" {
+			a.equipment.page.wearBeats = append(a.equipment.page.wearBeats, down)
+		}
+	}
+	if down != "" {
+		line += "  " + down
 	}
 	return list, line
+}
+
+// wearNoticeText 把「名字＋那一句」換成 entry 20 右欄的那一句：名字由 entry 20 自己印在
+// 上一列（`1865h`），所以去掉開頭的名字。四個字串在兩種語言裡名字都在最前面。
+func wearNoticeText(line, name string) string {
+	return strings.TrimSpace(strings.TrimPrefix(line, name))
+}
+
+// startWearBeats 在 R 之後接手：84h 戰鬥外那一兩句各停一拍（alignedWear 排好的）。
+// 速度 0 時 alignedWear 不排，訊息照舊留在選項列那一行。
+func (a *app) startWearBeats() {
+	page := &a.equipment.page
+	if len(page.wearBeats) == 0 {
+		return
+	}
+	a.equipment.message = page.wearBeats[0]
+	page.wearBeats = page.wearBeats[1:]
+	page.stage, page.ticks = itemPageWearBeat, a.speedDelayTicks()
+}
+
+// itemPageWearBeatInput 在那一拍裡不收鍵；數完換下一句，全部停完由 entry 21（`163Dh`）清掉。
+func (a *app) itemPageWearBeatInput() {
+	page := &a.equipment.page
+	if page.ticks > 1 {
+		page.ticks--
+		return
+	}
+	if len(page.wearBeats) > 0 {
+		a.startWearBeats()
+		return
+	}
+	page.stage, page.ticks, a.equipment.message = itemPagePicking, 0, ""
 }
 
 // wearDownLine 是 entry 19 的 `1560h..15F6h`：`+10Dh` 變成 0 就印 "Goes Down"；狀態 5
