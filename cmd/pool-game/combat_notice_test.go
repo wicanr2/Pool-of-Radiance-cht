@@ -15,17 +15,7 @@ const combatNoticeIdleKey = ebiten.KeyPause
 // 駕駛計數量東西的測試拿它把等待的影格扣掉。
 func combatNoticeHolding(application *app) bool {
 	state := application.tactical
-	if state == nil || state.Finished {
-		return false
-	}
-	// holdCombatNotice 先丟掉前面不停拍的那幾則，再停在第一則還在倒數的（effect_notice.go 之後
-	// 一次施法會排好幾則，不停拍的那一則可能排在前面）。
-	for _, notice := range state.Notices {
-		if notice.Ticks > 0 {
-			return true
-		}
-	}
-	return false
+	return state != nil && !state.Finished && len(state.Notices) > 0 && state.Notices[0].Ticks > 0
 }
 
 // AI 戰鬥訊息帶名字、施法前的 "Casts a Spell" 與停拍（issue #104，spec 098

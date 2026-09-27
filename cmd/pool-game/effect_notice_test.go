@@ -35,6 +35,31 @@ func TestEffectAttachMessagesMatchTheDispatchTable(t *testing.T) {
 	}
 }
 
+// waitCombatNotices 等佇列裡每一則停拍都停完。drainCombatNotices 只看第一則，而一次施法
+// 會排好幾則，不停拍的那一則（速度 0 的 "Casts a Spell"）可能排在閃光那一則前面；
+// holdCombatNotice 會先丟掉它、停在後面那一則，這時送出的鍵會被吃掉。按的是閒置鍵，只是等待。
+func waitCombatNotices(t *testing.T, application *app) {
+	t.Helper()
+	holding := func() bool {
+		state := application.tactical
+		if state == nil || state.Finished {
+			return false
+		}
+		for _, notice := range state.Notices {
+			if notice.Ticks > 0 {
+				return true
+			}
+		}
+		return false
+	}
+	for guard := 0; guard < 1<<20 && holding(); guard++ {
+		pressAll(t, application, combatNoticeIdleKey)
+	}
+	if holding() {
+		t.Fatalf("a combat notice never finished: %+v", application.tactical.Notices)
+	}
+}
+
 // drainEffectBeats 等戰鬥外的逐人訊息停完（停拍中不讀鍵，按的是閒置鍵）。
 func drainEffectBeats(t *testing.T, application *app) {
 	t.Helper()
@@ -97,7 +122,7 @@ func TestBlessNamesEachBlessedTarget(t *testing.T) {
 		if want := 4 * turnedSparkleMilliseconds * 60 / 1000; shown.Ticks < want-1 || shown.Ticks > want {
 			t.Errorf("%v: the blessed line holds %d ticks, want the sparkle %d", tc.language, shown.Ticks, want)
 		}
-		drainCombatNotices(t, application)
+		waitCombatNotices(t, application)
 		if !state.hasEffect(2, gamepack.BlessEffectCode) {
 			t.Fatalf("%v: the ally carries no bless node", tc.language)
 		}
@@ -119,10 +144,10 @@ func TestHasteNamesTheTargetAndItsAging(t *testing.T) {
 		application.gameSpeed = 2
 		state.Text = application.text
 		pressAll(t, application, ebiten.KeyC, ebiten.KeyEnter)
-		drainCombatNotices(t, application) // "Begins Casting"／"Casts a Spell" 那一拍
+		waitCombatNotices(t, application) // "Begins Casting"／"Casts a Spell" 那一拍
 		if state.Casting.Pending[1] != 0 {
 			pressAll(t, application, ebiten.KeyEnter)
-			drainCombatNotices(t, application)
+			waitCombatNotices(t, application)
 		}
 		if !application.castTargeting || len(application.castTargets) == 0 {
 			t.Fatalf("%v: haste did not open aiming: %q", tc.language, state.Status)
@@ -146,7 +171,7 @@ func TestHasteNamesTheTargetAndItsAging(t *testing.T) {
 		if got := application.state.Party[1].Age; got != 21 {
 			t.Fatalf("%v: the hasted ally is %d, want 21", tc.language, got)
 		}
-		drainCombatNotices(t, application)
+		waitCombatNotices(t, application)
 		endRoundWithKeys(t, application, state)
 		if indexOfLine(noticeTexts(state), tc.aged) >= 0 {
 			t.Fatalf("%v: the ally aged again at the round start: %q", tc.language, noticeTexts(state))
@@ -197,7 +222,7 @@ func TestCureDiseaseOnTheBoardNamesTheCure(t *testing.T) {
 				t.Errorf("%v: the cure line holds %d ticks, want one beat", tc.language, notice.Ticks)
 			}
 		}
-		drainCombatNotices(t, application)
+		waitCombatNotices(t, application)
 	}
 }
 

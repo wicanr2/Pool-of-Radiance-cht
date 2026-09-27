@@ -51,7 +51,7 @@ func castFromMenuAt(t *testing.T, application *app, state *tacticalState, caster
 	menuIndex int, target uint8) int {
 	t.Helper()
 	// 上一次施法的逐人訊息還在停拍就先等完（effect_notice.go）。
-	drainCombatNotices(t, application)
+	waitCombatNotices(t, application)
 	released := state.Round
 	press := func(key ebiten.Key) {
 		t.Helper()
@@ -318,7 +318,7 @@ func TestReadMagicCastInCombatRevealsTheScroll(t *testing.T) {
 				t.Fatalf("read magic from the wand: effects %+v mover %d", state.Effects[1], state.Mover)
 			}
 			// "is Reading" 那一則的閃光停拍（effect_notice.go）。
-			drainCombatNotices(t, application)
+			waitCombatNotices(t, application)
 		}
 		pressAll(t, application, ebiten.KeyU, ebiten.KeyArrowDown, ebiten.KeyU)
 		revealed := application.combatItems != nil && application.combatItems.stage == combatItemScroll
