@@ -40,6 +40,8 @@ type shopState struct {
 	sellPrice uint16
 	// leaving：公款還有錢時按 ESC，店主問要不要回去拿（overlay-06 `0684h..0722h`）。
 	leaving bool
+	// take 是 T）ake（`062Ah` → overlay-21 entry 8，money_services.go）。
+	take *moneyTakeState
 }
 
 // sellStage 是賣出那一頁等的是哪一個問題。
@@ -196,6 +198,12 @@ func (a *app) shopInput() error {
 		}
 		return nil
 	}
+	if state.take != nil {
+		if a.moneyTakeInput(state.take, state.buyer) {
+			state.take, state.message = nil, ""
+		}
+		return nil
+	}
 	switch {
 	case a.justPressed(ebiten.KeyEscape):
 		// overlay-06 `066Ch..0681h`：公款七欄有一欄非 0（overlay-21 entry 14）就先問。
@@ -223,6 +231,16 @@ func (a *app) shopInput() error {
 		// S）hare 只在公款有錢時出現在選單上（`05B7h`：選單字串 `0460h`／`0487h`），
 		// 按下去走 overlay-21 entry 7，與戰利品的 Share 同一支（spec 040）。
 		a.shareShopPool()
+	case a.hasPooledMoney() && a.justPressed(ebiten.KeyT):
+		// T）ake 同樣只在有錢的那一版選單上（`062Ah` → overlay-21 entry 8）。
+		state.take, state.message = &moneyTakeState{}, ""
+	case !state.appraising && a.justPressed(ebiten.KeyP):
+		// P）ool（`0636h..0645h` → overlay-21 entry 5）：全隊的錢進公款。
+		if err := a.poolPartyMoney(); err != nil {
+			state.message = err.Error()
+		} else {
+			state.message = a.text(msgShopPooled)
+		}
 	case a.justPressed(ebiten.KeyG):
 		return a.offerShopAppraise(appraiseGem)
 	case a.justPressed(ebiten.KeyJ):
@@ -550,6 +568,14 @@ func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color
 	drawText(screen, a.text(msgShopTitle), 280, 62, accent)
 	if state.selling {
 		drawShopSell(screen, a, foreground, accent)
+		return
+	}
+	if state.take != nil {
+		drawText(screen, a.text(msgShopTakeTitle), shopTextLeft, 92, accent)
+		for index, row := range a.moneyTakeRows(state.take) {
+			drawText(screen, row, shopTextLeft, shopFirstLine+index*shopLineHeight, foreground)
+		}
+		drawText(screen, a.moneyTakePrompt(state.take), shopTextLeft, footerBaseline, accent)
 		return
 	}
 	if len(a.state.Party) > 0 {

@@ -44,16 +44,29 @@
 
 ## Share（overlay-21 entry 7，`062Eh..09E8h`）
 
-1. 先計 active character 數 `n`；`n=0` 必須失敗即關閉，不能除以零。
-2. 每欄先算 `share=floor(pool[i]/n)`、`remainder=pool[i]%n`。
-3. 依欄位 `6→0`、角色 linked-list 順序發放。每位先嘗試 `share`；若負重空間不足，
-   只發可容納數量。仍有 remainder 時，再逐位各發一枚且同樣檢查負重。
-4. 所有角色處理後，未能發出的數量保留在 32-bit `pool[i]`；不丟棄、不轉換幣別。
+1. 份數 n 是 entry 6（`05D8h`）數的人：`+84h` 等於 00h 或 B3h。`n=0` 原版除以零（RTL `05BBh:0294h`
+   → 執行期錯誤 200），remake 失敗即關閉。
+2. 七欄各自（公款當有號 dword，大於 0 才算）：`share=floor(pool[i]/n)`、`remainder=pool[i]%n`，
+   兩者都只留低位字（`06B0h`、`06E1h`）。
+3. 第一輪沿隊伍鏈，只發 `+84h` 小於 80h 的人（`0721h`；B3h 算進份數卻不在這一輪，他那一份
+   從公款消失）。每人依 `6→0` 逐欄問容量 helper `0058h`（現重＋數量，16 位元相加，大於上限回 1）：
+   超過就只發「上限 − 現重」、差額加回餘數；沒超過就發一份，餘數大於 0 時**拿整筆餘數**再問一次
+   （`07B6h` 推的是餘數，不是 1），過得了才多給一枚。
+4. 第二輪（`087Ah`）依 `6→0`，餘數大於 0 的那一欄沿**整隊**（不看 `+84h`）發給「上限 − 現重」
+   無號大於 0 的人，發到餘數用完。
+5. 公款每一欄改寫成那一欄的餘數（`09A3h..09C2h`），錢包加法都是 16 位元、會繞回。
+
+超重的人「上限 − 現重」繞回成很大的無號數，原版照繞回的值發；dosgolem 收據
+`docs/audit/dosgolem-shop-share-wrap.json`（spec 067〈P 之後直接按 S〉）逐欄對得上這個模型。
+remake：`treasure.ShareMoney`／`PoolMoney`（`pooledMember`、`memberControl`：玩家建的角色是 0，
+NPC 讀記錄 `+84h`）。
 
 ## Take Money（overlay-21 entry 8，`0C9Eh..0F2Ah`）
 
 1. 只為非零 pool 建立選項，依 `6→0` 顯示名稱與數量。
-2. 玩家先選幣別，再選 active character，再輸入 `0..pool[i]` 的十進位數量。
+2. 玩家先選幣別，再輸入數量（上限是 `pool[i]` 的低位字，`0EADh`）；錢給目前的角色
+   `DS:5CF0h`（`0EC2h`），這一支不問給誰。戰利品選單的 remake 在這一步多問一次給誰（停止線），
+   商店與神殿照原版給目前的買家／角色（spec 067〈公款〉）。
 3. `0A70h..0B0Ah` 先以 `0058h` 容量 helper 檢查；超重時顯示原版錯誤且不改任何值。
 4. 成功時原子執行 `pool[i]-=amount`、`wallet[i]+=amount`、`currentLoad+=amount`。
 5. 取消、零數量、無有效角色或 uint16 wallet 溢位均不得造成部分 mutation。

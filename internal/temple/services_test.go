@@ -87,8 +87,9 @@ func TestServiceRefusesWhenThereIsNothingToCure(t *testing.T) {
 	if err != nil {
 		t.Fatalf("治療失明：%v", err)
 	}
-	if result.Cost != 1000 || state.Party[0].Money[3] != 8999 {
-		t.Errorf("收了 %d，剩 %d", result.Cost, state.Party[0].Money[3])
+	// 付完餘額重鑄成白金＋金（overlay-21 entry 15）：8999 金 → 白金 1799、金 4。
+	if result.Cost != 1000 || state.Party[0].Money != [7]uint16{3: 4, 4: 1799} {
+		t.Errorf("收了 %d，剩 %v", result.Cost, state.Party[0].Money)
 	}
 	if len(state.Party[0].Effects) != 1 || state.Party[0].Effects[0].Code != 0x24 {
 		t.Errorf("效果剩 %v，應該只拿掉 21h", state.Party[0].Effects)
@@ -162,8 +163,9 @@ func TestStoneToFleshLooksAtTheStatus(t *testing.T) {
 	if state.Party[0].CurrentHP != 1 {
 		t.Errorf("解石化之後是 %d 點生命力，原版寫的是 1", state.Party[0].CurrentHP)
 	}
-	if state.Party[0].Money[3] != 1000 {
-		t.Errorf("剩 %d 金幣，應該收 2000", state.Party[0].Money[3])
+	// 3000 − 2000 = 1000 金，重鑄成白金 200。
+	if state.Party[0].Money != [7]uint16{4: 200} {
+		t.Errorf("剩 %v，應該收 2000 並重鑄", state.Party[0].Money)
 	}
 }
 

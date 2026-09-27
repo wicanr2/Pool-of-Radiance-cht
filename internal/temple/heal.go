@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	poolsave "github.com/wicanr2/Pool-of-Radiance-cht/internal/save"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 )
 
 var ErrNotEnoughMoney = errors.New("not enough money")
@@ -49,15 +50,11 @@ func CureWounds(state *poolsave.State, partyIndex, serviceIndex int, roller Roll
 	service := WoundServices[serviceIndex]
 	character := &state.Party[partyIndex]
 	result := Result{Cost: service.Cost}
-	if int(character.Money[3]) >= service.Cost {
-		character.Money[3] -= uint16(service.Cost)
-		result.PaidFrom = "character"
-	} else if uint64(state.PooledMoney[3]) >= uint64(service.Cost) {
-		state.PooledMoney[3] -= uint32(service.Cost)
-		result.PaidFrom = "pool"
-	} else {
-		return Result{}, ErrNotEnoughMoney
+	paidFrom, err := pay(state, partyIndex, service.Cost)
+	if err != nil {
+		return Result{}, err
 	}
+	result.PaidFrom = paidFrom
 	healed := roller.Roll(service.Count, service.Sides) + service.Bonus
 	before := character.CurrentHP
 	character.CurrentHP += healed
@@ -76,4 +73,18 @@ func syncLibraryCharacter(state *poolsave.State, character poolsave.Character) {
 			return
 		}
 	}
+}
+
+// pay 是 entry 3（`00BFh`）按 Y 之後的 `016Ah..01D1h`：角色的金幣等值（overlay-19 entry 11，
+// 只收低位字）夠就從角色扣、餘額重鑄成白金＋金；不夠才看公款（overlay-21 entry 17／16）。
+// 與武具店同一條 treasure.PayGold（spec 018〈付款來源與順序〉、spec 067〈公款〉）。
+func pay(state *poolsave.State, partyIndex, cost int) (string, error) {
+	source, paid, err := pooltreasure.PayGold(state, partyIndex, int64(cost))
+	if err != nil {
+		return "", err
+	}
+	if !paid {
+		return "", ErrNotEnoughMoney
+	}
+	return string(source), nil
 }

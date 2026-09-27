@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -149,12 +150,13 @@ func TestItemPageUseNeedsAStandingMemberOutsideAntiMagic(t *testing.T) {
 }
 
 // 戰鬥外 Use：entry 8 先印 "<名字> uses an item" 與物品名，等一拍（遊戲速度 × 225 ms）
-// 才進挑對象；那一拍裡不收鍵。
+// 才放；那一拍裡不收鍵。治療藥水的參數表 `+7` 是 1，`0A88h` 不問對象、直接喝下。
 func TestItemPageUseWaitsABeatAfterUsesAnItem(t *testing.T) {
 	items := premadeItems(t, "chrdatd1.itm")
 	potion := items[findItem(t, items, "Potion of Healing")]
 	application := newItemPageApp(t, tradeMember("HAPLO", potion))
 	application.gameSpeed = 2
+	before := append([]byte(nil), application.state.Party[0].Inventory[0].Raw...)
 	pressAll(t, application, ebiten.KeyR, ebiten.KeyU)
 	page := application.equipment.page
 	if page.stage != itemPageUsesNotice ||
@@ -167,8 +169,12 @@ func TestItemPageUseWaitsABeatAfterUsesAnItem(t *testing.T) {
 		idleFrame(t, application)
 		frames++
 	}
-	if application.equipment.page.stage != itemPageTarget || !application.equipmentOpen {
-		t.Fatalf("after the beat: stage %d, open %v", application.equipment.page.stage, application.equipmentOpen)
+	spent := len(application.state.Party[0].Inventory) == 0 ||
+		!bytes.Equal(application.state.Party[0].Inventory[0].Raw[gamepack.ItemCountOffset:],
+			before[gamepack.ItemCountOffset:])
+	if application.equipment.page.stage != itemPagePicking || !application.equipmentOpen || !spent {
+		t.Fatalf("after the beat: stage %d, open %v, spent %v", application.equipment.page.stage,
+			application.equipmentOpen, spent)
 	}
 	if want := application.speedDelayTicks(); frames != want {
 		t.Fatalf("the beat lasted %d frames, want %d", frames, want)

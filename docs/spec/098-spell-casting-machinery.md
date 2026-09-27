@@ -7,7 +7,8 @@ DRAFT（`08BCh` 自己在做什麼、四個覆寫參數的語意、各法術的�
 日期：2026-09-03；2026-09-26 施法時間與收目標（issue #72／#73）、模式 0Ah 分邊與模式 8
 射線（issue #78）、受傷打斷與用物品（issue #75／#77）、模式 0Ah 的效果怎麼掛上去、在戰鬥裡
 改什麼（issue #81）；只掛效果的那一批與 `07C7h` 的特例（issue #89）；靈魂鎚、致病的收尾、傷害型
-碰觸法術與緩毒術的卡點（issue #99）；營地施法走同一支 `08BCh`、表換成 `0A88h`（issue #100）；AI 戰鬥訊息的字串、名字與停拍（issue #104）；攻擊、包紮、用物品等其餘戰鬥訊息、名字的三種顏色與玩家施法前的 "Casts a Spell"（issue #110）。
+碰觸法術與緩毒術的卡點（issue #99）；營地施法走同一支 `08BCh`、表換成 `0A88h`（issue #100）；
+營地的 "Lose it?"、縮小術、解除魔法、恢復術與物品頁 Use 的收表（issue #108，2026-09-27）；AI 戰鬥訊息的字串、名字與停拍（issue #104）；攻擊、包紮、用物品等其餘戰鬥訊息、名字的三種顏色與玩家施法前的 "Casts a Spell"（issue #110）。
 
 ## 擲骰：overlay-24 的兩支
 
@@ -385,7 +386,7 @@ overlay-24 entry 18（`1158h`）收 `(目標, 新力量, 新百分位, var 回�
 
 | 編號 | 法術 | 位址 | 算法 |
 |---:|---|---|---|
-| `0Dh` | Reduce | `135Eh` | 三道關卡：沒有目標就返回、豁免成功（`0100h:0043h(目標, 4, 0)` 回非零）就返回、目標身上沒有效果 `0Ch`（沒被變大過）也返回。**過了之後整支只印 `has been reduced`**——不掛效果、不解掉 `0Ch`、不算傷害 |
+| `0Dh` | Reduce | `135Eh` | 三道關卡：沒有目標就返回、豁免成功（`0100h:0043h(目標, 4, 0)` 回非零）就返回、`0100h:006Bh(目標, 0Ch)`（overlay-24 entry 15：身上有就印 "is Cured"、經 entry 2 摘掉最早的 `0Ch`，收尾還原力量）回 0 也返回；過了印 `has been reduced`。不掛效果、不算傷害。營地那一側照這三道接（〈營地施法的尾巴〉）；戰鬥那一側 remake 只印那一句、沒有摘 `0Ch` |
 | `3Bh` | （無名，`is stronger`）| `2E9Ah` | `0100h:007Ah(目標, 15h ＝ 21, 0, &位元組)` 回非零才印訊息；接著一律 `0100h:0052h` 掛效果碼 `26h` |
 
 ## 編號 `3Ch`（`2F02h`）：一條穿過目標的射線
@@ -1413,18 +1414,78 @@ Use 走同一支。測試全部從 `Update()` 送鍵（`field_cast_effects_test.
 `TestCampShieldCarriesIntoCombatAndStopsMagicMissile`（對照組照打）、
 `TestCampReadMagicRevealsTheScroll`、`TestCampWandOfReadMagicRevealsTheScroll`、
 `TestCampBlessCoversThePartyAndExpiresWithTime`、`TestCampHasteAgesThePartyAndCancelsSlow`、
-`TestCampEffectsSurviveSaveAndLoad`、`TestCampCombatOnlySpellAttachesNothing`。把 `campSpellEffect`
-短路成不處理，前五條全紅（2026-09-26 實跑）。
+`TestCampEffectsSurviveSaveAndLoad`。把 `campSpellEffect`
+短路成不處理，前五條全紅（2026-09-26 實跑）。下一節的四支另有測試。
 
 與原版不同、寫明的幾處：
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| `+7` 為 0 的記憶法術問 "Lose it?"，Y 才清掉、都不放 | 照舊挑對象、清掉記憶、說「要在戰鬥中才有目標」 | 提問那一段沒接（記憶那一側；物品那一側 spec 149 已接）|
-| 每一格印「<名字> <訊息>」、放之前印 "casts" | 選單最後一行只留一句（作用在誰、或 N 人）| 框內只有一行訊息 |
-| 物品頁 `+7` 是 1／4 的不問對象 | 物品頁仍先挑人，效果照 `+7` 收表 | 物品頁的對象步驟沿用 spec 149 |
-| 縮小術（`+8` = 1）走 `08BCh` 擲豁免、`1382h` 解掉變大 | 營地仍是「要在戰鬥中才有目標」 | 營地的豁免與 entry 15 摘節點的收尾沒接 |
-| 死靈（`+7` = 4）、解除魔法、恢復在營地放得出去 | 營地仍是「要在戰鬥中才有目標」 | 各自的處理常式在營地的表沒讀 |
+| 每一格印「<名字> <訊息>」、放之前印 "casts" | 選單最後一行只留一句（作用在誰、或 N 人）| 框內只有一行訊息；停止線（`docs/audit/stop-line.md`）|
+| 死靈術（`2043h`，`+7` = 4）在營地把整隊裡死掉的人類改成不死生物 | 營地仍是「要在戰鬥中才有目標」 | 見下一節〈死靈術〉|
+
+## 營地施法的尾巴（2026-09-27，issue #108）
+
+輸入同上一節（overlay-22 `967065cc…`、overlay-24、overlay-25、overlay-26）；以下除註明者外皆
+exact（位元組逐條讀）。
+
+### 記憶法術的 "Lose it?"
+
+entry 5 在 `0C2Ah` 確定不在戰鬥之後，`0C3Fh` 讀參數表 `+7`（`80 BD 9B 31 00`）；為 0 而且
+`DS:6CB3h` 是 0（記憶的，不是物品）走 `0C50h..0CB7h`：
+
+```
+0C50  198h:2Fh(1, 13h, 0Ah, DS:2883h + 法術 × 29h)   ; 法名
+0C7E  "is a combat-only spell..."（0BA2h）
+0C92  "Lose it? "（0BBCh）
+0CA5  9A 3E 00 1D 01 / 3C 59 / 75 09       overlay-26 entry 6 取一鍵，不是 'Y' 就跳過
+0CB2  9A 70 00 0A 01                        010Ah:0070h(法術) ＝ overlay-25 entry 16 `14ECh`，從記憶清掉
+0D1B  C6 46 0A 00 / C6 46 FF 00             "casts" 與「放出去」兩個旗標都清 → 不放
+```
+
+所以 Y 丟掉那一條、其他鍵留著，兩條路都不放出去，之後回到 overlay-15 的迴圈頂。remake：
+`field_cast.go` 在挑法術那一步看到 `CampTargetCombatOnly` 就進 `fieldCastLoseIt`，
+`camp_spell_extra.go` 的 `fieldCastLoseItInput` 只有 Y 清記憶。測試 `TestCampCombatOnlySpellAsksLoseIt`
+（N 留著、Y 清掉、兩次都沒有任何效果）。
+
+### 縮小術（`135Eh`）
+
+```
+1364  80 3E 88 6B 00 / 76 4D                表空（DS:6B88h）→ 返回
+1379  9A 43 00 00 01 / 08 C0 / 75 36          overlay-24 entry 7(表首, 4, 0)：豁免成功 → 返回
+138D  9A 6B 00 00 01 / 08 C0 / 74 22          overlay-24 entry 15(表首, 0Ch)：回 0 → 返回
+13A3  "has been reduced"（134Dh）
+```
+
+entry 15（`107Bh`）是「身上有這個碼就印 "is Cured"、經 entry 2（`0028h`）摘掉最早的那一個、回 1」
+（spec 112）。`0Ch` 的節點帶收尾，entry 2 先跑它——力量還原到變大之前。處理常式本身不經 `08BCh`，
+豁免是它自己叫的 entry 7。remake：`campSpecialSpell` 的縮小術分支，豁免是 `campSavedAgainst`
+（entry 7 在戰鬥外：1 失敗、20 成功，其餘過群組 12 後無號比較；隊員的 `+101h` 在 remake 一律 0），
+摘節點之後叫 `expiredEffectTeardown`。測試 `TestCampReduceUndoesTheEnlargement`（豁免沒過：`0Ch` 摘掉、
+力量回到 12；自然 20：不動）。
+
+### 解除魔法（`2356h`）與恢復術（`2C01h`）
+
+兩支都沒有 `DS:4954h` 的判斷，只讀表首 `DS:6B89h`（`C4 06 89 6B`）：解除魔法照〈解除魔法〉一節逐個
+節點擲 1d100，過了就 `2449h` `9A 2A 00 00 01`（entry 2，有收尾的先收尾）；恢復術 `2C16h` 看 `+74h`
+（欠的等級），是 0 就整支返回。remake：`campSpecialSpell` 的兩個分支，解除魔法摘掉的節點依序跑
+`expiredEffectTeardown`、`diseaseTeardown`、`mapPoisonTeardown`（與走路到期同一組），恢復術與戰鬥中
+同一支 `gamepack.RestoreDrainedLevel`。測試 `TestCampDispelMagicStripsThePickedMember`、
+`TestCampRestorationGivesALevelBack`。
+
+### 物品頁的 Use
+
+物品放的法術走同一支 entry 5，`0A88h` 對 `+7` 是 1／4 的不問 "Cast Spell on whom"。remake：
+`beginItemPageSpell` 看到 `CampTargetSelf`／`CampTargetParty` 直接 `castItemPageSpell`（表首是用物品的人），
+只有 2 才進挑人那一步。測試 `TestCampItemOfBlessCoversThePartyWithoutAPicker`。
+
+### 死靈術
+
+`2043h` 沿 `DS:5CF4h` 走整隊，`+10Ch == 6`、`+9Fh == 0` 的人（overlay-32 entry 21 `1091h` 在戰鬥外
+`1097h` 直接回 1，所以「站不站得住」那一道一定過）改成 AI 控制（`+10Fh = 1`）、移動 6（`+72h`）、
+不死生物（`+9Fh = 4`）、士氣 B3h（`+84h`）、清記憶、生命補滿、掛 `20h`、狀態 1。remake 的隊員存檔
+沒有 `+72h`、`+9Fh`、`+84h` 這三格，戰鬥外叫起來的人帶進下一場戰鬥時對不上，所以營地的死靈術
+仍是「要在戰鬥中才有目標」。
 
 ## #99：收尾與碰觸（2026-09-26）
 

@@ -27,6 +27,9 @@ const (
 	fieldCastPickCaster = iota
 	fieldCastPickSpell
 	fieldCastPickTarget
+	// fieldCastLoseIt 是 `+7` 為 0 的記憶法術："is a combat-only spell... Lose it?"
+	// （camp_spell_extra.go，issue #108）。
+	fieldCastLoseIt
 )
 
 // 版面：**選單畫在冒險畫面下方那個框裡，不是整頁**。
@@ -96,6 +99,10 @@ func (a *app) closeFieldCast() {
 func (a *app) fieldCastInput() (bool, error) {
 	if !a.fieldCastOpen {
 		return false, nil
+	}
+	if a.fieldCastStage == fieldCastLoseIt {
+		a.fieldCastLoseItInput()
+		return true, nil
 	}
 	switch {
 	case a.justPressed(ebiten.KeyEscape):
@@ -171,6 +178,9 @@ func (a *app) fieldCastAdvance() error {
 			switch a.spellParameters[id].CampTarget() {
 			case gamepack.CampTargetSelf, gamepack.CampTargetParty:
 				return a.resolveFieldCast(a.fieldCastCaster)
+			case gamepack.CampTargetCombatOnly:
+				a.askFieldCastLoseIt()
+				return nil
 			}
 		}
 		a.fieldCastStage, a.fieldCastCursor = fieldCastPickTarget, a.fieldCastCaster
@@ -356,7 +366,7 @@ func (a *app) partyPickerRows() []string {
 
 // drawFieldCast 畫下方那個框：框內是選項，框外那一列是標題與鍵位。
 func drawFieldCast(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
-	if a.fieldCastStage == fieldCastPickSpell {
+	if a.fieldCastStage == fieldCastPickSpell || a.fieldCastStage == fieldCastLoseIt {
 		drawSpellPage(screen, a, background, foreground, accent)
 		return
 	}

@@ -255,16 +255,6 @@ func TestCampEffectsSurviveSaveAndLoad(t *testing.T) {
 }
 
 // 參數表 +7 為 0 的（魔法飛彈）在營地不掛任何東西。
-func TestCampCombatOnlySpellAttachesNothing(t *testing.T) {
-	application := campCastApp(t, campCaster("A", 3, gamepack.SpellIDMagicMissile), campCaster("B", 1))
-	castInCamp(t, application, 0, gamepack.SpellIDMagicMissile, 1)
-	for index, member := range application.state.Party {
-		if len(member.Effects) != 0 {
-			t.Fatalf("member %d got %v from magic missile in camp", index, member.Effects)
-		}
-	}
-}
-
 // 物品頁的 Use 在戰鬥外也是 overlay-22 entry 5（spec 149）：閱讀魔法的魔杖掛上 10h，
 // 同一個人接著打開藏字卷軸就揭開。沒用魔杖的對照組揭不開。
 func TestCampWandOfReadMagicRevealsTheScroll(t *testing.T) {

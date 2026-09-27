@@ -127,8 +127,9 @@ func TestTempleStoneToFleshRunsThroughTheMenu(t *testing.T) {
 	if got := application.state.Party[0].Status; got != temple.StatusNormal {
 		t.Errorf("狀態還是 %d", got)
 	}
-	if got := application.state.Party[0].Money[3]; got != 1000 {
-		t.Errorf("剩 %d 金幣，應該收 2000", got)
+	// 付完餘額重鑄成白金＋金（overlay-21 entry 15，spec 067〈公款〉）：1000 金 → 白金 200。
+	if got := application.state.Party[0].Money; got != [7]uint16{4: 200} {
+		t.Errorf("剩 %v，應該收 2000 並重鑄", got)
 	}
 }
 

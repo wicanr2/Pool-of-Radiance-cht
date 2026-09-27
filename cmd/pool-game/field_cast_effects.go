@@ -72,6 +72,10 @@ func (a *app) campSpellEffect(caster int, option castOption, effect gamepack.Cas
 	if int(option.ID) >= len(a.spellParameters) || caster < 0 || caster >= len(a.state.Party) {
 		return "", false
 	}
+	// 縮小術、解除魔法、恢復術各有自己的處理常式（camp_spell_extra.go，issue #108）。
+	if message, handled := a.campSpecialSpell(caster, option, effect, casterLevel, picked); handled {
+		return message, true
+	}
 	params := a.spellParameters[option.ID]
 	if !campAttachesEffect(effect, params) {
 		return "", false

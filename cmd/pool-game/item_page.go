@@ -425,6 +425,16 @@ func (a *app) beginItemPageSpell(slot, index int, spell uint8, scroll bool) {
 	if a.spellCaster == nil || !a.spellCaster.Implemented(spell) {
 		return
 	}
+	// 參數表 `+7` 是 1（自己）或 4（整隊）的，`0A88h` 不問 "Cast Spell on whom"——
+	// 與 C)AST 那一條同一個分支（field_cast.go，issue #108）。
+	switch a.spellParameters[spell].CampTarget() {
+	case gamepack.CampTargetSelf, gamepack.CampTargetParty:
+		state.page.target = slot
+		if err := a.castItemPageSpell(slot); err != nil {
+			state.message = err.Error()
+		}
+		return
+	}
 	state.page.stage, state.page.target = itemPageTarget, slot
 	state.message = fmt.Sprintf(a.text(msgItemPickTarget),
 		strings.TrimSpace(a.state.Party[slot].Name), a.spellLabel(spell))
@@ -455,6 +465,16 @@ func (a *app) itemPageTargetInput(slot int) error {
 	case a.justPressed(ebiten.KeyArrowDown):
 		page.target = (page.target + 1) % count
 	case a.justPressed(ebiten.KeyEnter), a.justPressed(ebiten.KeySpace):
+		return a.castItemPageSpell(slot)
+	}
+	return nil
+}
+
+// castItemPageSpell 把物品法術放在 page.target 身上（`0A88h` 收表之後的那一段）。
+func (a *app) castItemPageSpell(slot int) error {
+	state := a.equipment
+	page := &state.page
+	{
 		member := a.state.Party[slot]
 		levels := memberClassLevels(member)
 		level := itemCasterLevel(a.spellParameters[page.spell],

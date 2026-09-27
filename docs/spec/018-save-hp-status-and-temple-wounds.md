@@ -58,8 +58,9 @@ overlay-04 `00BFh..0229h` 在玩家回答 `Y` 後：
 5. 兩邊都不足才顯示 `Not enough money.`。控制流沒有「角色出一部分、pool 補差額」；
    因此 remake 也不可混合付款。
 
-remake 目前以 `Gold`／`pooled_gold` 保存已換算 Gold 等值，不假稱已完整保存原版五幣別。
-這足以重現本付款順序與價格；Pool／Share／Take 的五幣別 UI 仍是後續獨立切片。
+remake：`internal/temple` 的 `Serve`／`CureWounds` 走 `treasure.PayGold`——角色那一側是五種硬幣的
+金幣等值（只取低位字）、付完重鑄成白金＋金；公款那一側是 entry 17／16（spec 067〈公款〉）。
+神殿的 Pool／Share／Take 與進門清公款見 spec 067〈公款〉。
 
 ## schema 2 與遷移
 

@@ -111,6 +111,8 @@ const (
 	// A）ppraise 的兩層：先挑寶石或珠寶，再對估好價的那一件選 Sell／Keep。
 	templeAppraise
 	templeAppraiseOffer
+	// templeLeaving 是公款有錢時按 Exit 的 `~Yes ~No`（overlay-04 `0DEFh..0EAEh`）。
+	templeLeaving
 )
 
 type diceRoller struct{ random *rand.Rand }
@@ -250,6 +252,8 @@ type app struct {
 	appraiseValue    int
 	templeParty      int
 	templeService    int
+	// templeTake 是神殿的 T）ake（overlay-04 `0DB1h` → overlay-21 entry 8，money_services.go）。
+	templeTake *moneyTakeState
 	// musicPlayer 是可選的配樂輸出（spec 128）。nil 代表沒有音訊資產——
 	// 可散布的發行包本來就不帶，所有方法對 nil 安全。
 	musicPlayer *music.Player
@@ -1203,6 +1207,15 @@ func (a *app) Update() error {
 					a.statusLine = "A Pool treasure menu is active; choose an option."
 					return nil
 				}
+				if a.templeActive && a.templeTake != nil {
+					if a.moneyTakeInput(a.templeTake, a.templeParty) {
+						a.templeTake = nil
+						a.enterTempleMain()
+						return nil
+					}
+					a.showTempleTake()
+					return nil
+				}
 				if a.templeActive && a.templeStage != templeConfirm {
 					for index, key := range []ebiten.Key{ebiten.KeyDigit1, ebiten.KeyDigit2, ebiten.KeyDigit3, ebiten.KeyDigit4, ebiten.KeyDigit5, ebiten.KeyDigit6} {
 						if index < len(a.state.Party) && a.justPressed(key) {
@@ -1889,6 +1902,12 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 			return err
 		}
 		a.applyCellECLResult(result)
+		if result.MonstersCleared {
+			// `1Ch CLEARMONSTERS`（overlay-03 分派 `33F8h..3401h` → entry 29 `133Dh`）：
+			// `1356h..1362h` 把公款七欄清成 0、放掉戰利品串列（spec 148〈公款從哪裡來〉）。
+			// 不論後面有沒有戰鬥都清；`TREASURE` 在它之後以 `mov` 寫入，所以先清再載。
+			a.state.PooledMoney = [pooltreasure.CurrencyCount]uint32{}
+		}
 		if len(result.TreasureRequests) != 0 {
 			// 商店與戰利品走同一條邊界，先分辨再分派：分不出來的話，
 			// 走進商店會把整櫃存貨當成免費戰利品發下去。
@@ -1912,11 +1931,6 @@ func (a *app) consumeInitialSearch(result eclvm.Result) error {
 		// 競技場（`CALL 8000h`）沒有 `LOAD MONSTER`：對手是接在隊伍鏈尾的複製品，而
 		// `COMBAT` 的分派（overlay-03 `187Dh`）在 DS:829Ah 立著時直接開戰（spec 150）。
 		if result.CombatRequested && (len(result.MonsterSpawns) != 0 || a.arenaCopy) {
-			if result.MonstersCleared {
-				// `1Ch CLEARMONSTERS`（overlay-03 `133Dh`）把公款七欄清成 0；戰後
-				// entry 2 換算經驗值的是這之後的公款（spec 148）。
-				a.state.PooledMoney = [pooltreasure.CurrencyCount]uint32{}
-			}
 			return a.enterCombatStaging(result.MonsterSpawns)
 		}
 		// `11h PRINT` **不是停頓點**：它接著印，與前面那一頁是同一頁
@@ -2697,7 +2711,11 @@ func (a *app) enterSuneTemple() error {
 	a.templeActive = true
 	a.templeStage, a.templeParty, a.templeService = templeMain, 0, 0
 	a.cellEventPending, a.cellWaitingMenu = true, true
-	a.cellMenuOptions = []string{"Heal", "View", "Pool", "Appraise", "Exit"}
+	// overlay-04 entry 1 `0D01h..0D0Dh`：進門先 `FillChar(DS:6752h, 1Ch, 0)`，與商店同一個
+	// 形狀（spec 067〈公款〉）——上一處留下沒拿的錢在這裡消失。
+	a.state.PooledMoney = [pooltreasure.CurrencyCount]uint32{}
+	a.templeTake = nil
+	a.cellMenuOptions = a.templeMainOptions()
 	a.cellMenuCursor = 0
 	a.eventText = strings.TrimSpace(a.state.Party[0].Name) + ", how can we help you?"
 	a.eventLabel = a.cellMenuLabel()
@@ -2740,7 +2758,7 @@ func (a *app) selectTempleParty(index int) {
 
 func (a *app) enterTempleMain() {
 	a.templeStage = templeMain
-	a.cellMenuOptions = []string{"Heal", "View", "Pool", "Appraise", "Exit"}
+	a.cellMenuOptions = a.templeMainOptions()
 	a.cellMenuCursor = 0
 	a.eventLabel = a.cellMenuLabel()
 	a.selectTempleParty(a.templeParty)
@@ -2757,14 +2775,36 @@ func (a *app) enterTempleHeal() {
 func (a *app) selectSuneTempleOption() error {
 	switch a.templeStage {
 	case templeMain:
-		switch a.cellMenuCursor {
-		case 0:
+		switch a.cellMenuOptions[a.cellMenuCursor] {
+		case "Heal":
 			a.enterTempleHeal()
 			return nil
-		case len(a.cellMenuOptions) - 1:
+		case "Exit":
+			// `0DF9h`：公款有錢就先問（`0C69h`／`0CB4h`、`~Yes ~No`）。
+			if a.hasPooledMoney() {
+				a.templeStage = templeLeaving
+				a.cellMenuOptions, a.cellMenuCursor = []string{"Yes", "No"}, 0
+				a.eventText = a.text(msgTempleLeaveMoney)
+				a.eventLabel = a.cellMenuLabel()
+				return nil
+			}
 			return a.leaveSuneTemple()
-		case 3:
+		case "Appraise":
 			a.enterTempleAppraise()
+			return nil
+		case "Pool", "Share":
+			service := a.poolPartyMoney
+			if a.cellMenuOptions[a.cellMenuCursor] == "Share" {
+				service = a.sharePartyMoney
+			}
+			if err := service(); err != nil {
+				a.statusLine = err.Error()
+			}
+			a.enterTempleMain()
+			return nil
+		case "Take":
+			a.templeTake = &moneyTakeState{}
+			a.showTempleTake()
 			return nil
 		default:
 			a.statusLine = "This temple service remains fail-closed until its DOS rules are READY."
@@ -2782,6 +2822,13 @@ func (a *app) selectSuneTempleOption() error {
 		}
 	case templeAppraiseOffer:
 		a.resolveAppraise(a.cellMenuCursor == 1)
+		return nil
+	case templeLeaving:
+		// `0E91h`：選單回 1（No）就離開，錢留在公款；Yes 回到神殿選單。
+		if a.cellMenuCursor == 1 {
+			return a.leaveSuneTemple()
+		}
+		a.enterTempleMain()
 		return nil
 	case templeHeal:
 		if a.cellMenuCursor == len(templeHealOptions)-1 {

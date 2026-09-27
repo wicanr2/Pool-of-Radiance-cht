@@ -66,8 +66,8 @@
 
 ## 付款
 
-**entry 3（`00BFh`）**：先看這個人自己的金幣，不夠才由整隊公款出全額，
-**兩邊不合併**。字串是 ` will only cost `／` gold pieces.`／`pay for cure `／
+**entry 3（`00BFh`）**：先看這個人自己的金幣等值（五種硬幣，只取低位字），不夠才由整隊公款出全額，
+**兩邊不合併**；付完兩邊都重鑄成白金＋金（`treasure.PayGold`，spec 067〈公款〉）。字串是 ` will only cost `／` gold pieces.`／`pay for cure `／
 `Not enough money.`／`is cured.`。
 
 ## 實作

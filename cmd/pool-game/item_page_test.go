@@ -294,16 +294,11 @@ func TestItemPageUsesAHealingPotion(t *testing.T) {
 	if !strings.Contains(application.equipment.message, "MUST BE READIED") {
 		t.Fatalf("an unreadied potion: %q", application.equipment.message)
 	}
+	// 治療藥水的參數表 `+7` 是 1：`0A88h` 表只有用的人自己，不問 "Cast Spell on whom"（spec 098）。
 	pressAll(t, application, ebiten.KeyR, ebiten.KeyU)
-	if application.equipment.page.stage != itemPageTarget {
-		t.Fatalf("U on a readied potion: stage %d, %q", application.equipment.page.stage,
-			application.equipment.message)
+	if application.equipment.page.stage == itemPageTarget {
+		t.Fatalf("U on a readied potion asked for a target: %q", application.equipment.message)
 	}
-	pressAll(t, application, ebiten.KeyEscape)
-	if len(application.state.Party[0].Inventory) != 1 || application.equipment.page.stage != itemPagePicking {
-		t.Fatal("ESC while choosing a target spent the potion")
-	}
-	pressAll(t, application, ebiten.KeyU, ebiten.KeyEnter)
 	member := application.state.Party[0]
 	if member.CurrentHP <= 1 || len(member.Inventory) != 0 {
 		t.Fatalf("after drinking: hp %d, items %d (%q)", member.CurrentHP, len(member.Inventory),

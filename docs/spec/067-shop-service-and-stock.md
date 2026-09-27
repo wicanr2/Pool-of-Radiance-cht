@@ -5,7 +5,8 @@
 付款與公款的前後值有 dosgolem 收據）；DRAFT（原版商店選單的版面；鑑定揭露藏字那一支
 只有位元組與內嵌名稱的正對照，沒有原版實跑）。
 多幣別付款由 `treasure.PayInCoins` 接上（#30）。
-日期：2026-09-03（2026-09-25：賣出，#60；2026-09-26：公款 #67、鑑定 #68）。
+日期：2026-09-03（2026-09-25：賣出，#60；2026-09-26：公款 #67、鑑定 #68；2026-09-27：付款截到
+16 位元、P／T、S 的兩輪與 `+84h`、神殿與 CLEARMONSTERS 清公款，#79）。
 
 ## 商店與戰利品是同一條邊界
 
@@ -202,9 +203,15 @@ overlay-06 entry 1（`052Ah`）是商店本體，一進來先做：
 FC F3 AA CA 08 00`：`les di,[bx+8]; mov cx,[bx+6]; mov al,[bx+4]; cld; rep stosb; retf 8`
 ——Turbo Pascal 的 `FillChar(dest, count, value)`。所以進店把 `DS:6752h` 起 28 bytes
 （七個 longint）全部寫 0，**不發還給任何人**。同一個 `FillChar(DS:6752h, 1Ch, 0)` 的形狀
-另外出現在 overlay-03 `1357h` 與 overlay-04 `0D02h`，那兩處不在本規格範圍。
+另外只出現在兩處：
 
-remake：`enterShop` 把 `State.PooledMoney` 清成 0。
+- overlay-04 entry 1（`0CE4h`，神殿本體）`0D01h..0D0Dh`（`BF 52 67 1E 57 B8 1C 00 50 B0 00 50
+  9A B5 16 BB 05`），緊接在 `C6 06 54 49 01` 之後——進神殿也清。
+- overlay-03 entry 29（`133Dh`，ECL `1Ch CLEARMONSTERS` 的分派）`1356h..1362h`：清公款、放掉
+  戰利品串列（spec 148〈公款從哪裡來〉）。
+
+remake：`enterShop` 與 `enterSuneTemple` 把 `State.PooledMoney` 清成 0；`consumeInitialSearch`
+看到 `MonstersCleared` 就清（不論後面有沒有戰鬥；`TREASURE` 以 `mov` 寫入，先清再載）。
 
 ### 離店時公款有錢就問（exact）
 
@@ -226,12 +233,20 @@ remake：`enterShop` 把 `State.PooledMoney` 清成 0。
 
 離店那一條**不動公款**：錢留在 `DS:6752h`，直到下一次進店被 `0548h` 清掉。
 S）hare（`0648h` → overlay-21 entry 7）、T）ake（`062Ah` → entry 8）只在有錢的那一版
-選單上，與戰利品同一支（spec 040）。
+選單上，P）ool（`0636h`，`[bp-2Ch]` 為 0 才叫 entry 5）兩版都有，與戰利品同三支（spec 040）。
+
+T）ake（entry 8 `0C9Eh..0F2Ah`）：列出非零的幣別（"Select type of coin"，`0C6Dh`），挑一種之後
+"How much <幣> will you take?"（`0C85h`／`0C8Fh`）輸入數量，上限是那一欄的**低位字**（`0EADh`
+推 `[di+6752h]` 一個字給輸入常式 `0292h`）；`0EC2h..0ED3h` 把錢給 **`DS:5CF0h`（目前的角色）**，
+不問給誰；容量 helper 不過就印 "Overloaded"（`0A65h`）、什麼都不動。公款還有錢就回到挑幣別
+（`0EE0h..0F24h`），空了才離開。
 
 remake：`ESC` 時 `hasPooledMoney()` 為真就印這兩句、等 `Y`／`N`；`N` 離店、公款不動，
 `Y` 回到商店。`ESC` 在這個提問上不作用——overlay-07 entry 21 對 ESC 的回傳沒有讀，
-不猜。商店選單接上 `S` 平分公款（`ShareMoney`），讓「回去拿錢」有路可走；
-T）ake 挑幣別與數量那一段商店裡還沒有（戰利品畫面有）。
+不猜。商店的 `P`、`S`、`T` 走 `money_services.go`（`poolPartyMoney`、`sharePartyMoney`、
+`moneyTakeState`），錢給目前的買家；神殿的選單照 `0C1Ah`／`0C42h` 兩版組
+（`templeMainOptions`），T 給 `templeParty`，Exit 在公款有錢時問 "As you leave a priest says…"
+（`0C69h`／`0CB4h`，`~Yes ~No`：No 離開、錢留著）。
 
 ### 原版對照（公款）
 
@@ -244,9 +259,17 @@ dosgolem 收據 `docs/audit/dosgolem-shop-pool-identify.json`
 - `identify-pool` 的後段：公款白金 58 時 E → N，畫面回到城區 (8,11)，公款**仍是 58**；
   往西退一格再走回來按 y 進店，那一步之後公款是 **0**。離店不清、進店才清，兩半都看到了。
 
-同一份收據裡，P 之後直接按 S（`leave-yes` 的 `p,s` 與 `y,s`）公款沒有動；〈賣出〉的
-overload 情境是買過一件之後按 S，錢有分下去。差別的成因沒有追，remake 的 S 照
-overlay-21 entry 7 的位元組做（spec 040）。
+### P 之後直接按 S（exact）
+
+`leave-yes` 的收據只記了五種硬幣，看起來像「S 沒有分下去」。成因是注入的錢包：腳本把白金
+直接寫進 `+88h`，現重 `+102h` 仍是 50（只有物品）。P（entry 5）照樣從現重減掉 100，繞回
+65486；S（entry 7）第一輪從珠寶那一欄起問容量 helper `0058h`：`65486 + 0` 大於上限 1700 →
+「上限 − 現重」以 16 位元繞回成 1750，錢包珠寶加 1750、餘數 `0 − 1750` 繞回 63786、現重回到
+1700；白金那一欄 `1700 + 100` 超過上限、給 0、餘數 100。第二輪每個人的空間都是 0，公款改寫成
+餘數：**白金 100、珠寶 63786**。`tools/dosgolem-shop-share-wrap.py` 讀滿七欄重跑一次
+（`docs/audit/dosgolem-shop-share-wrap.json`），逐欄就是這個數。正常玩法的現重含著每一枚錢，
+不會進這個狀態；remake 的 `ShareMoney` 用同一套 16 位元算術，`TestShareMatchesTheDosgolemWrapReceipt`
+用一件重 65486 的物品重現這張收據。
 
 ## 鑑定
 
@@ -280,9 +303,14 @@ overlay-21 entry 7 的位元組做（spec 040）。
 付款與購買同一條（spec 116〈付款〉，`treasure.PayGold`）：先看角色、不夠才看公款、
 不混付，付完五種硬幣重鑄成白金＋金。**鑑定只改 `+35h` 與名稱**，記錄其餘欄位不動。
 
-重鑄那兩支（overlay-21 entry 15／16，`retf 2`）只收一個 word，而 `1FFFh`／`2035h` 推的是
-32 位元餘額的低位字；餘額超過 65535 金會繞回。購買（overlay-06 `0435h`）同一個形狀。
-`PayGold` 目前沒有照這個截斷，影響購買與鑑定兩邊，另案處理。
+重鑄那兩支（overlay-21 entry 15 `012Eh`／16 `0183h`，`retf 2`）只收一個 word（`[bp+6]`
+除以 5），而 `1FFFh`／`2035h` 推的是 32 位元餘額的低位字；餘額超過 65535 金會繞回。
+購買（overlay-06 `03DDh`、`0435h`）與神殿（overlay-04 `018Bh`、`01C8h`）同一個形狀。
+兩處角色那一側更早就截了：`03B4h`／`0177h` 只存 entry 11 回傳的 `ax`，比價與扣款都是 16 位元；
+鑑定（`1FDDh`／`1FE0h`）兩個字都存，比 32 位元。remake：`PayGold`（商店、神殿）與
+`PayGoldFullCharacter`（鑑定）；測試 `TestPayGoldTruncatesTheRemainderToSixteenBits`、
+`TestShopComparesTheLowWordButIdentifyComparesTheWholeValue`。神殿的 `temple.Serve`／`CureWounds`
+走同一支 `PayGold`（金幣等值、重鑄），不是只看金幣那一欄（spec 018）。
 
 ### 名稱怎麼組（exact）
 
@@ -366,6 +394,9 @@ AND ARMOR」，`A919h` 就在它的 YES 分支底下）。geo3/0 裡索引 22 �
   再鑑定一次照收 200）、`TestIdentifyingWithoutMoneyIsRefused`、
   `TestIdentifiedItemSurvivesSaveAndLoad`、`TestShopIdentifyMatchesTheDosgolemReceipt`；
   進店清公款由 `TestNormalKeysBuyAndEquipFromTheWeaponShop` 走進武具店之後斷言。
+  P／T 與公款付款：`TestShopPoolThenTakeBackThroughUpdate`、`TestShopBuysFromThePoolAfterPooling`；
+  神殿：`TestTemplePoolPaysTheCureAndAsksBeforeLeaving`（進門清、P、公款付治療、T、Exit 先問、S）。
+  分錢與 `+84h`：`internal/treasure/pool_share_test.go`。
   規則在 `internal/treasure/identify_test.go`（311 筆內嵌名稱的正對照、`s ` 的分支、
   付款順序與拒絕）。
 
@@ -375,4 +406,4 @@ AND ARMOR」，`A919h` 就在它的 YES 分支底下）。geo3/0 裡索引 22 �
 - 商店畫面的版面是 remake 的呈現；原版商店選單的**按鍵與分派**已讀（〈賣出〉），
   版面不宣稱一致。
 - 名稱的 `* `（偵測魔法）與 ` Yes  `／` No   `（穿戴欄）前綴，見〈鑑定〉。
-- 商店裡的 T）ake（挑幣別與數量）還沒接，公款只能 S）hare 回來。
+- T）ake 的數量輸入框、"Overloaded" 那一句的位置是 remake 的呈現。

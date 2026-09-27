@@ -1,0 +1,105 @@
+{
+ "generator": "dosgolem cmd/shots",
+ "dosgolem_commit": "2ab6f6513c0817266498798a277196e4d0a1173d",
+ "start_exe_sha256": "12811cbc8166a9e753283e972a7396db566e37e81ff1b272e34833d99b810d9f",
+ "approach_keys": "rep:9:Space,Return,Return,a,a,e,b,rep:27:Return,Right,Right,Up,Return,Right,rep:7:Up,Left,rep:7:Up,y",
+ "keys": "p,s,p",
+ "injected_money": {
+  "platinum": 100
+ },
+ "injected_character_sha256": "452f9e87c7f9f342e500dfab751a3a32aa4140acbbc411f62a37c56f7ef8d8e7",
+ "frames": [
+  {
+   "label": "loaded",
+   "wallet": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 100,
+    "gems": 0,
+    "jewelry": 0,
+    "load": 50,
+    "control": 0
+   },
+   "pool": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 0,
+    "gems": 0,
+    "jewelry": 0
+   }
+  },
+  {
+   "label": "p",
+   "wallet": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 0,
+    "gems": 0,
+    "jewelry": 0,
+    "load": 65486,
+    "control": 0
+   },
+   "pool": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 100,
+    "gems": 0,
+    "jewelry": 0
+   }
+  },
+  {
+   "label": "s",
+   "wallet": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 0,
+    "gems": 0,
+    "jewelry": 1750,
+    "load": 1700,
+    "control": 0
+   },
+   "pool": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 100,
+    "gems": 0,
+    "jewelry": 63786
+   }
+  },
+  {
+   "label": "p",
+   "wallet": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 0,
+    "gems": 0,
+    "jewelry": 0,
+    "load": 65486,
+    "control": 0
+   },
+   "pool": {
+    "copper": 0,
+    "silver": 0,
+    "electrum": 0,
+    "gold": 0,
+    "platinum": 100,
+    "gems": 0,
+    "jewelry": 65536
+   }
+  }
+ ]
+}

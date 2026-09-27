@@ -101,8 +101,8 @@ remake 不模擬堆積位址，**串列上每一件都算**。
 - `27h TREASURE`（overlay-03 `1A82h`）：`1AB5h` 以 `mov` 把七個運算元**寫入**公款（不是加）。
 - entry 2 的 `0089h..00BEh`：怪物身上的七種錢加進公款（spec 142）。
 
-remake：`TREASURE` 在 `enterTreasure` 取代公款（原本就是這樣）；有怪物的遭遇若同一個結果裡
-有 `CLEARMONSTERS`，排遭遇時把 `PooledMoney` 清 0（`consumeInitialSearch`）。上一個戰利品
+remake：`TREASURE` 在 `enterTreasure` 取代公款（原本就是這樣）；結果裡有 `CLEARMONSTERS`
+就把 `PooledMoney` 清 0（`consumeInitialSearch`，不論後面有沒有戰鬥，#79）。上一個戰利品
 選單留在堆裡沒拿的錢，因此不會被下一場算進經驗值——除非腳本沒有先清，那原版也會算。
 
 ## 原版收據（exact）

@@ -136,7 +136,7 @@ func IdentifyItem(state *poolsave.State, partyIndex, itemIndex int, table *gamep
 	if len(item.Raw) <= itemCountOffset {
 		return IdentifyResult{}, fmt.Errorf("Pool identify item %q has %d raw bytes", item.Name, len(item.Raw))
 	}
-	source, paid, err := PayGold(state, partyIndex, IdentifyPrice)
+	source, paid, err := PayGoldFullCharacter(state, partyIndex, IdentifyPrice)
 	if err != nil {
 		return IdentifyResult{}, err
 	}

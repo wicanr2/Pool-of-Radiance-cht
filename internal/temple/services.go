@@ -165,16 +165,11 @@ func Serve(state *poolsave.State, partyIndex int, id string, roller Roller) (Res
 		return Result{}, fmt.Errorf("%s %s", character.Name, service.Refusal)
 	}
 	result := Result{Cost: service.Cost}
-	switch {
-	case int(character.Money[3]) >= service.Cost:
-		character.Money[3] -= uint16(service.Cost)
-		result.PaidFrom = "character"
-	case uint64(state.PooledMoney[3]) >= uint64(service.Cost):
-		state.PooledMoney[3] -= uint32(service.Cost)
-		result.PaidFrom = "pool"
-	default:
-		return Result{}, ErrNotEnoughMoney
+	paidFrom, err := pay(state, partyIndex, service.Cost)
+	if err != nil {
+		return Result{}, err
 	}
+	result.PaidFrom = paidFrom
 
 	character.Effects = withoutEffects(character.Effects, service.RemovesEffects)
 	switch service.ID {

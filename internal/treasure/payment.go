@@ -109,20 +109,39 @@ const (
 // PayGold 是神殿與武具店的付款順序（overlay-06 `034Fh`、overlay-04 `016Ah..01D1h`，
 // spec 018／116）：角色的 GoldEquivalent 夠就從角色扣、餘額重鑄（entry 15）；
 // 不夠才看 pool（entry 17／16）；都不夠回 ok=false、什麼都不動。
+//
+// 兩處都只收 entry 11 回傳的**低位字**（`03B4h` `89 46 F6`、`0177h` `89 86 FC FE`，
+// dx 丟掉），比價與扣款都是 16 位元；pool 那一側比 32 位元，但重鑄的兩支（entry 15／16，
+// `retf 2`）都只收一個 word，推進去的是餘額的低位字（`03DDh`、`0435h`、`018Bh`、`01C8h`）。
+// 所以餘額超過 65535 金會繞回（spec 067〈公款〉）。
 func PayGold(state *poolsave.State, partyIndex int, price int64) (PaySource, bool, error) {
+	return payGold(state, partyIndex, price, true)
+}
+
+// PayGoldFullCharacter 是鑑定那一支（overlay-19 `1FDAh..2038h`）：角色那一側比的是
+// entry 11 完整的 32 位元（`1FDDh`／`1FE0h` 兩個字都存），其餘與 PayGold 相同。
+func PayGoldFullCharacter(state *poolsave.State, partyIndex int, price int64) (PaySource, bool, error) {
+	return payGold(state, partyIndex, price, false)
+}
+
+func payGold(state *poolsave.State, partyIndex int, price int64, characterWord bool) (PaySource, bool, error) {
 	if state == nil || partyIndex < 0 || partyIndex >= len(state.Party) {
 		return "", false, fmt.Errorf("Pool payment has no party member %d", partyIndex)
 	}
 	character := &state.Party[partyIndex]
-	if have := GoldEquivalent(character.Money); have >= price {
-		if err := RemintCharacterMoney(&character.Money, have-price); err != nil {
+	have := GoldEquivalent(character.Money)
+	if characterWord {
+		have = int64(uint16(have))
+	}
+	if have >= price {
+		if err := RemintCharacterMoney(&character.Money, int64(uint16(have-price))); err != nil {
 			return "", false, err
 		}
 		syncLibraryCharacter(state, *character)
 		return PaidByCharacter, true, nil
 	}
 	if have := PoolGoldEquivalent(state.PooledMoney); have >= price {
-		if err := RemintPooledMoney(&state.PooledMoney, have-price); err != nil {
+		if err := RemintPooledMoney(&state.PooledMoney, int64(uint16(have-price))); err != nil {
 			return "", false, err
 		}
 		return PaidByPool, true, nil
