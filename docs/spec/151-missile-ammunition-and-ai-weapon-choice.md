@@ -1,9 +1,10 @@
 # Spec 151：射擊、彈藥與 AI 換武器（overlay-25 entry 43／44／45、overlay-13 射擊路徑、overlay-09 entry 9）
 
 狀態：READY（彈藥查詢、射擊次數、瞄準與撞上去的閘門、扣彈藥與落地、`29h` 防護普通飛彈、
-AI 換武器的位元組都已逐段讀出並實作，送鍵與 foeTurn 測試加變異檢查）；DRAFT（下面〈還沒接〉
-那幾條）。沒有原版執行期收據逐發對過彈藥數，證據是位元組（exact）加上獸人家骰流的旁證。
-日期：2026-09-26。主台帳：GitHub issue #98、#106（`29h` 那一條）。
+AI 換武器的位元組都已逐段讀出並實作，送鍵與 foeTurn 測試加變異檢查；entry 9 結尾每次都重算、
+NPC 與怪物同一支重算，#109）；`0E09h` 的條件寫回卡在「殺了目標還有剩的攻擊次數要續打」，
+見〈`0E09h` 的條件寫回〉。沒有原版執行期收據逐發對過彈藥數，證據是位元組（exact）加上獸人家
+骰流的旁證。日期：2026-09-27。主台帳：GitHub issue #98、#106（`29h` 那一條）、#109。
 
 ## 輸入
 
@@ -195,17 +196,89 @@ remake：`gamepack.ChooseAIGear`（純規則，直接改物品的 `+34h`）、`c
 - foeTurn：`TestOrcLeaderSwitchesToMeleeWhenArrowsRunOut`（穿上弓射一發、箭用完、下一回合換 23h
   往前走）、`TestProtectionFromNormalMissilesStopsTheLeadersArrows`（`29h` 全擋、負對照會受傷）、
   `TestArmedOrcLeaderShootsFromOutsideMeleeReach`（改寫：7 號穿上弓原地射、6 號卸弓往前走）。
+- tacticalInput（`ai_gear_recompute_test.go`，#109）：`TestAIGearRecomputeWashesTheStinkingCloudArmourClass`
+  （沒有物品的獸人咳一次 AC 差 2，下一回合 entry 9 之後回到原值）、
+  `TestAIDrivenNPCIsRecomputedAfterTheGearChoice`（交給電腦的 HERO 拿弓沒箭，entry 9 換回長劍，
+  射程 1、1d10+2）。
 - 變異：拿掉扣彈藥、瞄準閘門、`29h`、entry 9、封頂、撞上去的閘門、射擊次數，七個各自讓至少
-  一條測試變紅。
+  一條測試變紅；#109 的兩處（entry 9 沒有步驟就不重算、NPC 不重算）各自讓上面那兩條之一變紅。
+
+## entry 9 結尾的重算（exact）
+
+`176Eh`（`E9 91 00`）是「不換」那一支，也跳到 `1802h`；`1802h..1813h` 與 `18F8h..18FEh` 前面都沒有
+條件跳躍：
+
+```
+1808  9A 43 00 0A 01   overlay-25 entry 7（重算）
+1813  9A 48 00 96 00   overlay-13 entry 8（射擊次數，`0D29h`）
+18FE  9A 43 00 0A 01   overlay-25 entry 7
+```
+
+所以 entry 9 **每跑一次就重算兩次**，換不換、身上有沒有物品都一樣。entry 7 對 AC 是整份重寫
+（spec 147）：
+
+```
+0E43  26 8A 85 A9 00 / 26 88 85 11 01   +111h = +0A9h
+0FAC  26 C6 85 11 01 00                 +111h = 0，再把四格累加器加回去
+0FFB  26 88 85 12 01                    +112h = 結算值
+```
+
+臭雲的咳嗽（overlay-12 `0AD3h..0AEFh`，spec 121）改的是同一對 `+112h`／`+111h`，所以兩者的共存
+就是**下一次 entry 7 把咳嗽扣的 AC 洗掉**。咳嗽那一回合 `0AC0h` 把 `+108h` 的 `+1` 清成 0、行動權
+沒了，entry 1 不會走到 `019Bh`，那一回合 AC 是差的；之後電腦走到 entry 9（沒有先用物品或施法）
+的那一回合，AC 回到物品算出來的值。玩家操作的人沒有 entry 9，咳嗽扣的 AC 留到戰鬥中換裝
+（overlay-19 `146Fh`）為止。
+
+remake：`foeChooseGear` 不論 `ChooseAIGear` 有沒有步驟、身上有沒有物品，最後都走
+`storeCombatItems`（隊員 `applyPartyGearStats`、NPC `applyNPCGearStats`、怪物
+`applyMonsterGearStats`）。remake 的盤面欄位裡只有臭雲的 AC 是戰鬥中直接改寫、又屬於 entry 7
+重算範圍的（`cloud.go` 的 `StinkingCloudArmourClass`）；其餘效果在命中與傷害時才套。
+
+## NPC 的重算（exact）
+
+entry 7 的呼叫鏈沒有 NPC 分支（spec 147〈NPC〉）。會在戰鬥中改物品鏈、之後叫 entry 7 的三處：
+扣彈藥之後的 `1A96h`（overlay-13）、entry 9 的 `1808h`／`18FEh`，以及物品選單的 `146Fh`。
+remake 的 `storeCombatItems` 以前對 NPC 不重算（射完箭、AI 換了武器，射程與傷害骰還是舊的），
+現在對 NPC 走 `applyNPCGearStats`，與物品選單同一支。
+
+## 怪物換武器的穿戴效果（不接）
+
+Ready 對 `+3Eh > 7Fh` 的物品呼叫 overlay-24 entry 1（spec 149），怪物也一樣（exact）。但原版資料裡
+沒有 entry 9 會碰到的觸發者：MON1..8ITM 全部 301 件（`ReadDOSMonsterItems` 逐 block 掃），帶穿戴
+效果的武器只有 HILL GIANT（MON2／MON5 block 55）的兩件型別 57h，效果碼 87h；盾（類別 1）一件
+都沒有，其餘四件是類別 3／7／9，entry 9 不碰。87h 是 overlay-12 entry 124（`315Dh`：
+`cmp byte es:[di+10h], 13h; jae`），力量小於 19 才卸下；HILL GIANT 的 `+10h` 是 19，常式什麼都
+不做。所以接上與不接，任何一場戰鬥的結果都相同，列入停止線（`docs/audit/stop-line.md`）。
+
+## `0E09h` 的條件寫回（卡住）
+
+overlay-13 `0D29h` 結尾（exact）：
+
+```
+0D36  [bp-2] = +113h（舊的剩餘次數）；0D49 +113h = +0A1h
+0DC8  [bp-1] = 新次數（0E58h）；射擊再以彈藥數封頂
+0E09  26 C4 BD 08 01 / 26 80 7D 08 00   runtime +8 == 0 → 寫回 +113h = [bp-1]
+0E18  新 < 舊 → 寫回
+0E34  新 ≥ 舊 × 2 → 不寫（+113h 留著 +0A1h）
+0E41  射擊（[bp-5] != 0）→ 不寫；否則寫回
+```
+
+runtime `+8` 只有 overlay-13 `1440h`（`26 C6 45 08 01`，攻擊核心 `1404h` 一開頭）寫 1、`002Eh`
+（每回合初始化）寫 0，所以它的意思是「這一回合已經出過手」。這一段只在**同一回合出過手之後又
+叫 entry 8** 時才有作用，而那要攻擊核心先把回合交還：`1755h` 目標 `+10Dh` 變 0 就停手，
+`1799h..17C2h` 兩個形態任一格剩餘次數大於 0 就把「完成」旗標改回 0——殺了目標還有剩的次數，
+這一回合繼續（exact，spec 052 第 9 條）。
+
+remake 每一次攻擊之後一律結束回合（`endTurnAfterAction`、foeTurn 的 `endTurn`），沒有「剩的次數
+續打」，`0E09h` 在 remake 裡沒有可以落地的狀態。接上它要先接續打那一條（玩家與電腦兩邊，
+射擊的彈藥扣法也跟著），這不在 #109 的範圍；多次攻擊的角色殺了目標就少打剩下的幾下，是影響玩法
+的缺口。
 
 ## 還沒接（DRAFT）
 
 | 項目 | 等級 | 為什麼 |
 |---|---|---|
-| `0E09h` 的條件寫回（`+108h` 的 `+8` 立著、而且新次數沒有變少時才寫） | exact（碼）| remake 每次出手才算次數，沒有 `+113h` 那一格；影響的是同一回合中途換武器的次數 |
-| AI 換武器時 Ready 失敗的訊息（"already using"、"Your hands are full!"） | exact（碼）| `16F3h` 對電腦接手的有另一條路，沒讀；remake 不印 |
-| 怪物換武器時的穿戴效果（`+3Eh > 7Fh`） | exact（碼）| 怪物的效果串列走 overlay-24 entry 1，remake 只接了隊員那一側 |
-| NPC 換武器、扣彈藥之後的重算 | exact（`1380h` 對每一筆）| NPC 的戰鬥數值仍讀它帶的記錄（#97 的範圍）；物品鏈照原版改 |
-| 反應攻擊（overlay-13 entry 6）帶不帶彈藥 | unknown | 沒讀；remake 的反應攻擊不扣彈藥 |
-| `1883h` 的彈道動畫（`268Eh`）| exact（碼）| 畫面，不影響規則 |
-| 距離走不到（`TraceMovement` 不完整）時 entry 33 回什麼 | unknown | remake 當 0（`29h` 不擋）|
+| `0E09h` 的條件寫回 | exact（碼）| 卡在「殺了目標、還有剩的攻擊次數時回合繼續」（overlay-13 `1799h..17C2h`），remake 沒有這一條，見上一節 |
+
+已移入停止線（`docs/audit/stop-line.md`）：Ready 失敗的訊息、彈道動畫（呈現）；反應攻擊帶不帶彈藥、
+entry 33 走不到時的回值（未知）；怪物換武器的穿戴效果（原版資料沒有觸發者）。

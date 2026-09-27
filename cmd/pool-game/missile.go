@@ -63,14 +63,15 @@ func (a *app) missileGear(state *tacticalState, index uint8) (gamepack.MissileGe
 
 // storeCombatItems 把改過的物品鏈寫回去，接著照原版重算（overlay-25 entry 7）。
 //
-// NPC 的戰鬥數值直接讀它帶的記錄（applyNPCCombatStats），物品改了先不重算。
+// NPC 與怪物同一支 entry 7（spec 147）：扣彈藥之後的 `1A96h`、AI 換武器的 `1808h`／`18FEh`
+// 對 NPC 一樣從它帶的記錄與物品鏈重算（spec 151〈NPC 的重算〉）。
 func (a *app) storeCombatItems(state *tacticalState, index int, slot int, items []poolsave.Item) error {
 	if slot >= 0 {
 		member := &a.state.Party[slot]
 		member.Inventory = items
 		syncTrainedLibraryCharacter(&a.state, *member)
 		if member.NPC {
-			return nil
+			return a.applyNPCGearStats(state, index, *member)
 		}
 		return a.applyPartyGearStats(state, index, *member)
 	}
@@ -237,9 +238,6 @@ func (a *app) foeChooseGear(state *tacticalState, mover, previousTarget uint8) e
 		return nil
 	}
 	items, slot := a.foeItemBearer(state, mover)
-	if len(items) == 0 {
-		return nil
-	}
 	adjacent, err := state.adjacentEnemies(mover)
 	if err != nil {
 		return err
@@ -262,13 +260,12 @@ func (a *app) foeChooseGear(state *tacticalState, mover, previousTarget uint8) e
 		input.NaturalScore = gamepack.AIGearNaturalScore(monster.Record.Raw[:])
 	}
 	raws := rawItems(items)
-	// 原版 `18FEh` 不論換沒換都跑一次 entry 7；remake 只在真的叫過 Ready 時重算——戰鬥中直接改在
-	// 盤面上的數值（臭雲的 AC，spec 121）還沒有逐項併進重算，每回合重算會把它們洗掉。
 	steps, _, err := gamepack.ChooseAIGear(raws, a.itemTypes, input)
-	if err != nil || len(steps) == 0 {
+	if err != nil {
 		return err
 	}
-	// 穿戴效果（`+3Eh` 大於 7Fh）跟著 Ready 掛上或摘掉；怪物那一側還沒接（spec 151〈還沒接〉）。
+	// 穿戴效果（`+3Eh` 大於 7Fh）跟著 Ready 掛上或摘掉。怪物那一側原版資料裡沒有觸發者
+	// （spec 151〈怪物換武器的穿戴效果〉），不接。
 	if slot >= 0 {
 		for _, step := range steps {
 			switch step.Outcome {
@@ -279,5 +276,8 @@ func (a *app) foeChooseGear(state *tacticalState, mover, previousTarget uint8) e
 			}
 		}
 	}
+	// `1808h` 與 `18FEh` 不論換沒換都跑 entry 7（`176Eh` 不換也跳到 `1802h`），連身上沒有物品的
+	// 也一樣：戰鬥中直接改在記錄上的 `+111h`／`+112h`（臭雲的 AC，spec 121）在這裡照原版被
+	// `0E43h`（`+111h = +0A9h`）與 `0FA9h..0FFBh` 洗回物品算出來的值（spec 151〈每回合的重算〉）。
 	return a.storeCombatItems(state, int(mover), slot, items)
 }
