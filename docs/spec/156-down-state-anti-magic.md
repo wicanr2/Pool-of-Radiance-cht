@@ -53,6 +53,23 @@ remake：`tacticalState.settleDownState`（`cmd/pool-game/death_effects.go`）�
 的狀態寫回、狀態 5 時把 `DyingCounters` 設成打穿的點數。近戰（`resolveAttackSwings` 倒下那一段）、
 法術（`applySpellDamage`）、84h（`woundWearer`）都走它；毒死（`005Ah`）本來就直接寫 6。
 
+### 倒地計數在開戰時歸零（位元組 exact；RTL 常式辨識 strong inference）
+
+runtime（記錄 `+108h`）是每一場戰鬥重新配置的 16h bytes，不跨場保留：
+
+```
+overlay-08 0089  9A 25 00 5F 00            overlay-10 entry 1（1ED6h，開戰）
+overlay-10 1F9C  E8 E1 F3                  → 1380h
+1386..139E                                 走 DS:5CF4h 隊伍串列（+104h 下一個）
+13B8  B8 16 00 / 9A 29 03 BB 05            GetMem(記錄 +108h, 16h)
+13CB  B8 16 00 / B0 00 / 9A B5 16 BB 05    FillChar(+108h 指到的那一塊, 16h, 0)
+overlay-05 1201..122C                      戰後：+108h 非 NULL → FreeMem(…, 16h)、+108h = NULL
+```
+
+`05BBh` 是 Turbo Pascal System 單元的段（`0329h`／`0364h`／`16B5h` 的參數形狀是 GetMem／FreeMem／
+FillChar，strong inference）。所以倒下逃走、下一場再開打時 `+0Eh` 從 0 起，remake 每場從 0 數（spec 061）
+與原版相同，不用改。
+
 ## 84h 在自己的物品選單裡倒下（exact）
 
 - **群組 13**：overlay-24 entry 19 的 `1610h..161Dh` 就是 `combatantDown`（spec 155）。`alignedWear` 戰鬥中
@@ -123,4 +140,5 @@ entry 8 的模式 2、3（`0903h`、`0B57h` 的兩個呼叫端）不過這一道
 |---|---|---|
 | `[4933h]+1CAh` 只有 overlay-07 `025Bh` 寫 0，四個閘門在這一版永遠不成立（spec 096〈entry 3〉與〈還沒讀〉、`combat_screen.go`、`foe_items.go` 的註解）| ECL8 block 16 `9BEEh` 的 SAVE 寫 `@49E5`；overlay 的 disp16 掃描結構上看不到 ECL 的寫入 | `cmd/pool-ecl-memory-audit -addresses 49E5` |
 | 輪到的人 `+10Dh` 對 Use 那一道恆成立（`item_page_trade.go` 舊註解）| 84h 在自己的選單裡倒下之後不成立 | overlay-19 `0F8Fh`、`0F42h`、`0F51h` |
+| 倒地計數 `+0Eh` 跨場保留、開戰不歸零（#69 的讀法）| runtime 每場 GetMem＋FillChar 0，戰後 FreeMem | overlay-10 `13B8h..13D2h`、overlay-05 `1201h..122Ch` |
 | 近戰與法術倒下一律寫狀態 5（spec 155〈與原版不同〉）| entry 28 分 4／5／6，5 時倒地計數是打穿的點數 | overlay-25 `22AFh..2301h` |
