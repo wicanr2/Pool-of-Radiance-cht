@@ -391,6 +391,8 @@ type tacticalState struct {
 	// 被迷住之後仍**只讓它不再行動**：原版會讓它倒戈（spec 112 的
 	// overlay-12 entry 14），那要等敵方 AI 那一側接上來。
 	Effects []gamepack.EffectList
+	// SideAdjust 是遭遇腳本在開打前寫的命中與腳程修正（side_adjust.go）。
+	SideAdjust sideAdjustments
 	// FoeTargets 是每一格上一回合追的目標（原版戰鬥子結構 `+0Ah` 的目標
 	// 遠指標）。目標還有效就沿用，不是每回合重挑（spec 096）。
 	FoeTargets []uint8
@@ -600,8 +602,8 @@ func (state *tacticalState) startRound(roll func(count, sides int) int) {
 	state.RoundRates = make([]gamepack.RoundRateEffects, len(state.Roster))
 	for index := 1; index < len(state.Roster); index++ {
 		state.RoundRates[index] = state.dispatchRateEffects(index)
-		state.Budgets[index] = gamepack.MovementAfterEffects(
-			combat.InitialMovementBudgetBeforeEffects(state.BaseMovement[index], false, 0),
+		// `0123h`：隊伍那一邊先加遭遇腳本的 `+6E4h`（side_adjust.go）。
+		state.Budgets[index] = gamepack.MovementAfterEffects(state.initialMovement(index),
 			state.RoundRates[index])
 		// 已經離場的（體型 0，對應原版記錄的 `+10Dh`）分數一律 0，而且**連骰
 		// 都不擲**。原版是 overlay-13 entry 1 的 `0084h`：`+10Dh` 為 0 就直接
@@ -1031,6 +1033,8 @@ func (a *app) enterTacticalPreview() error {
 	}
 	// 部署時就不在場的隊員留下屍體（overlay-10 `1D55h..1E1Bh`，deploy_corpses.go）。
 	a.deployedCorpses(state)
+	// 遭遇腳本寫的命中與腳程修正（`@6E70..6E72`，side_adjust.go）。
+	state.SideAdjust = readSideAdjustments(a.eventMachine)
 	// 戰鬥佈置的最後：隊伍 `+58Ch` 夾到 100、算第一次 `DS:6D22h`（foe_flee.go）。
 	a.setupMorale(state)
 	state.startRound(a.rollDice)
@@ -1229,6 +1233,10 @@ func (a *app) foeTurn(state *tacticalState) error {
 	if err := a.foeChooseGear(state, mover, previousTarget); err != nil {
 		return err
 	}
+	// entry 5 開場 `0B66h`：效果群組 0Eh（吐息，breath.go）；叫了 entry 34 就收工（`0B73h`）。
+	if acted, err := a.foeApproachEffects(state, mover); acted || err != nil {
+		return err
+	}
 
 	steps := 0
 	if fleeing {
@@ -1242,12 +1250,6 @@ func (a *app) foeTurn(state *tacticalState) error {
 		mode, lastDirection, stuck, target, steps = run.mode, run.lastDirection, run.stuck, run.target, run.steps
 	}
 	for round := 0; round < foeMaxRoundsPerTurn; round++ {
-		// 腳程剩不到一步就收工（`084Dh`：runtime +6 ÷ 2 <= 0 → entry 6）。原版顯示
-		// 給玩家的步數是 +6 ÷ 2，所以剩 1 點算零步；dosgolem 骰流收據（獸人家 24 號）
-		// 量到原版走六步剩 1 點就停，remake 以前拿那 1 點又往前踏了一格。
-		if state.Budget()/2 == 0 {
-			break
-		}
 		snapshot, err = state.tacticalSnapshot()
 		if err != nil {
 			return err
@@ -1288,6 +1290,14 @@ func (a *app) foeTurn(state *tacticalState) error {
 			state.FoeLog = state.say(msgFoeAttacked, a.combatantName(state, mover), steps, state.Status)
 			state.endTurn(a.rollDice, false)
 			return nil
+		}
+		// 腳程剩不到一步就收工（`084Dh`：runtime +6 ÷ 2 <= 0 → entry 6）。原版顯示
+		// 給玩家的步數是 +6 ÷ 2，所以剩 1 點算零步；dosgolem 骰流收據（獸人家 24 號）
+		// 量到原版走六步剩 1 點就停，remake 以前拿那 1 點又往前踏了一格。
+		// 這一道在 `07E8h` 裡，entry 5 每一輪先問搆不搆得到（`0D51h`）才叫 `07E8h`，所以
+		// 腳程剛好用完而身邊有人照樣打（#83）。
+		if state.Budget()/2 == 0 {
+			break
 		}
 
 		// 基準方向是目標相對自己的方位（overlay-13 `261Bh`：自 0 起找第一個
@@ -2114,6 +2124,9 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	}
 	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）。
 	state.turnToFace(target, attacker)
+	// `191Ch..192Dh`：攻擊者 runtime `+0Ah` = 目標，不分玩家或 AI（spec 052；群組 16 的 `2Fh`
+	// 讀被打的人的這一格，#90）。
+	state.setFoeTarget(attacker, target)
 	// 這一下打完原版清掉攻擊者的橫掃上限（`17D0h`，spec 154）。
 	defer state.Sweep.struck(state.Round, attacker)
 	// 施法中被打斷的訊息接在命中那一行後面（damage_interrupt.go）。
@@ -2360,6 +2373,8 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	loot.items = append(loot.items, a.pendingTreasure...)
 	a.pendingTreasure = nil
 	a.tacticalPreview, a.tactical = false, nil
+	// overlay-05 `15D4h..15F0h`：戰後一律清掉遭遇腳本的三格修正（side_adjust.go）。
+	clearSideAdjustments(a.eventMachine)
 	a.castOpen, a.castOptions, a.castCursor = false, nil, 0
 	a.castTargeting, a.castTargets, a.castTargetCursor = false, nil, 0
 	a.castTargetingAttack = false

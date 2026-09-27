@@ -141,6 +141,8 @@ type foeSpellcaster struct {
 	levels  [2]int
 	party   int
 	allowed bool
+	// item 是 `DS:6CB3h`：這一次是用物品放的（overlay-19 `1BBDh` 立起），射程照 6 級算。
+	item bool
 }
 
 func (a *app) foeSpellcasterFor(state *tacticalState, mover uint8) (foeSpellcaster, bool) {
@@ -442,6 +444,10 @@ func (a *app) foeSpellTarget(state *tacticalState, mover, spell uint8,
 		return mover, true, nil
 	}
 	budget := params.Range(foeCasterLevel(params, caster))
+	if caster.item {
+		// `1EF2h` 叫的 overlay-22 entry 3：`DS:6CB3h` 立著就照 6 級算（#85）。
+		budget = params.ItemRange()
+	}
 	for tries := aiSpellTargetTries; tries > 0; tries-- {
 		target, ok, err := a.foeRetarget(state, mover, budget)
 		if err != nil {

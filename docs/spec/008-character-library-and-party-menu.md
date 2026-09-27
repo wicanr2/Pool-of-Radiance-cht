@@ -208,6 +208,13 @@ DO YOU WANT TO TRAIN?'`、四道分類門的告示、八個職業稱號、`PROGR
    重新載入沒有意義，走訪照檔案順序。
 5. **匯出失敗不影響角色。** remake 的真相是自己的 JSON 存檔，三個檔是匯出。
 
+### 豁免表與 `+73h`（#66）
+
+匯出時照 overlay-23 重算：`0253h` 對五個豁免類別各查八個職業等級在 `DS:41E6h` 的最小值寫
+`+6Dh..+71h`（spec 075，全部 overlay 唯一寫 `+6Dh` 的地方），`0066h..0078h` 讓 `+73h` 只往上
+取最高職業等級。七名預設人物拿自己的 `+96h..+9Dh` 重算逐格相同
+（`TestPremadeSavesAreTheLevelTable`，exact）；實作在 `cmd/pool-game/dos_export_saves.go`。
+
 ### 驗收
 
 `TestExportDOSRecordReproducesThePremades` 把七名原版預設人物讀進 remake 的
@@ -216,7 +223,5 @@ DO YOU WANT TO TRAIN?'`、四道分類門的告示、八個職業稱號、`PROGR
 
 ### 仍未閉合
 
-- `+6Dh..+71h` 的豁免表與 `+73h` 的生命骰：remake 只從記錄讀，沒有從職業與
-  等級算的產生端，所以匯出時保留 base 的值。從零建的角色那五格是 0。
 - `+0ABh` 是 `random(100h)`，語意未閉合，不假造定值。
 - `+76h` 驅散不死欄：七名預設人物都是 0（含一名 6 級牧師），寫入端還沒找到。

@@ -10,7 +10,9 @@ const (
 	// DamageOperands 是它吃幾個運算元。
 	DamageOperands = 5
 
-	// DamageFlagApply（bit 7）沒設的話整條什麼都不做（`2B89h` 的分支）。
+	// DamageFlagApply（bit 7）是「擲豁免」那一種。沒設的是**攻擊**那一種（`2B8Fh` 跳到
+	// `2C91h`）：旗標本身就是次數，每一次隨機挑一個人、以運算元 5 對他的 AC 擲命中
+	// （overlay-24 entry 5 `0C4Dh`），中了才吃傷害（spec 084〈攻擊那一種〉，#90）。
 	DamageFlagApply = 0x80
 	// DamageFlagWholeParty（bit 6）是全隊；沒設就隨機挑一個人。
 	DamageFlagWholeParty = 0x40
@@ -25,6 +27,9 @@ const (
 	// DamageSaveCategoryMask 是運算元 5 真正用到的位元（`2B9Dh` 的 `and 7`），
 	// 也就是豁免類別。
 	DamageSaveCategoryMask = 0x07
+	// DamageCurrentCharacter 是運算元 5 的 bit 7：不是全隊時打「目前角色」（`DS:5CF0h`，
+	// `2C01h`），不擲隨機那一個。
+	DamageCurrentCharacter = 0x80
 
 	// UnconsciousState 是打到剛好 0 點的狀態（`+10Ch` = 4）。
 	UnconsciousState = 4
@@ -97,6 +102,30 @@ type DamageRequest struct {
 	// SaveCategory 是運算元 5 的低三位——`record[+6Dh + 類別]` 的索引
 	// （spec 075 的五格）。
 	SaveCategory int
+	// Operand5 是運算元 5 的原值：bit 7 選目前角色，攻擊那一種整個 byte 是命中值。
+	Operand5 uint8
+}
+
+// AttackCount 是攻擊那一種擲幾次（旗標的原值，bit 7 沒設才有意義）。
+func (r DamageRequest) AttackCount() int {
+	if r.Applies() {
+		return 0
+	}
+	return int(r.Flags)
+}
+
+// CurrentCharacter 回報單體的那一支是不是打目前角色（運算元 5 的 bit 7）。
+func (r DamageRequest) CurrentCharacter() bool { return r.Operand5&DamageCurrentCharacter != 0 }
+
+// DamageAttackHits 是 overlay-24 entry 5（`0C4Dh`，`retf 6`：記錄、命中值）在群組 16
+// 之後的比較：d20 小於等於 1 落空，20 改寫成 100，群組 16 調過之後有號小於 0 落空，
+// 否則 `cbw(6780h) + 命中值 > 目標 +111h` 才中（`0CA6h` 的 `7E 04`，嚴格大於）。
+// roll 是已經過群組 16 的值；natural 是擲出來的 d20。
+func DamageAttackHits(natural uint8, roll int8, score uint8, armourInternal int) bool {
+	if natural <= 1 || roll < 0 {
+		return false
+	}
+	return int(roll)+int(score) > armourInternal
 }
 
 // Applies 回報這一條要不要做事。
@@ -119,5 +148,6 @@ func NewDamageRequest(operands [DamageOperands]uint16) DamageRequest {
 		DiceSides:    int(uint8(operands[2])),
 		Bonus:        int(uint8(operands[3])),
 		SaveCategory: int(uint8(operands[4]) & DamageSaveCategoryMask),
+		Operand5:     uint8(operands[4]),
 	}
 }

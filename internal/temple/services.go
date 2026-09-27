@@ -42,6 +42,8 @@ type Service struct {
 	RequiresStatus []uint8
 	// RemovesEffects 是付款之後要拿掉的代碼。
 	RemovesEffects []uint8
+	// OrCursedItem 為真時，身上有被詛咒的物品也算「有這個毛病」（除咒，remove_curse.go）。
+	OrCursedItem bool
 	// Refusal 是「他沒有這個毛病」時原版印的那一句。
 	Refusal string
 }
@@ -76,6 +78,7 @@ var Services = []Service{
 	{
 		ID: "remove-curse", Name: "Remove Curse", Cost: 3500,
 		RequiresEffects: []uint8{0x24},
+		OrCursedItem:    true,
 		Refusal:         "is not cursed.",
 	},
 	{
@@ -107,6 +110,9 @@ func (s Service) Applies(character poolsave.Character) bool {
 		return false
 	}
 	if len(s.RequiresEffects) == 0 {
+		return true
+	}
+	if s.OrCursedItem && HasCursedItem(character) {
 		return true
 	}
 	for _, code := range s.RequiresEffects {
@@ -186,6 +192,9 @@ func Serve(state *poolsave.State, partyIndex int, id string, roller Roller) (Res
 		if character.MaxHP < 1 {
 			character.MaxHP = 1
 		}
+	case "remove-curse":
+		// overlay-04 `08E0h` 交給 overlay-22 entry 9（`2508h`，remove_curse.go）。
+		RemoveCurse(character)
 	case "stone-to-flesh":
 		// `0976h`／`0980h`／`098Ah`：狀態正常、在場，生命力同樣回到 1。
 		character.Status = StatusNormal

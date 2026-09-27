@@ -282,6 +282,10 @@ func applyFieldEffect(member *poolsave.Character, effect gamepack.CastEffect) bo
 			}
 		}
 	}
+	if !applied && effect.UncursesItem {
+		// 除咒術 `2543h`：沒有 24h 可解就清第一件被詛咒的物品（remove_curse.go，#66）。
+		applied = uncurseFirstItem(member)
+	}
 	return applied
 }
 

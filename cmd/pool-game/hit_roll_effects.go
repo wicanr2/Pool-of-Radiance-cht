@@ -52,6 +52,7 @@ func (state *tacticalState) hitRollAfterEffects(attacker, target, roll uint8) (m
 		Target:      state.hitRollCombatant(target),
 		Actor:       state.hitRollCombatant(state.Mover),
 		AttackPhase: state.AttackPhase,
+		TargetAim:   state.targetAimName(target),
 		AreaNode: func(code uint8) (gamepack.EffectNode, bool) {
 			return state.areaEffectNode(attacker, code, prayerAreaRadius)
 		},
@@ -60,7 +61,8 @@ func (state *tacticalState) hitRollAfterEffects(attacker, target, roll uint8) (m
 	if value < 0 {
 		return 0, true
 	}
-	return int(value) - int(base), false
+	// `0D03h..0D25h`：出手的人那一邊的遭遇腳本修正（`+6E2h`／`+6E0h`，side_adjust.go）。
+	return int(value) - int(base) + state.sideHitBonus(attacker), false
 }
 
 // hitRollCombatant 收一個戰鬥者在命中擲骰時被讀到的幾格。
@@ -83,6 +85,19 @@ func (state *tacticalState) hitRollCombatant(index uint8) gamepack.HitRollCombat
 		combatant.Score = state.Scores[index]
 	}
 	return combatant
+}
+
+// targetAimName 是 index 的 runtime `+0Ah`（它正在打的那一個）那一筆記錄的名字；
+// 攻擊包裝在每一次出手時寫（resolveAttackSwings），AI 挑目標時也寫（setFoeTarget）。
+func (state *tacticalState) targetAimName(index uint8) string {
+	if int(index) >= len(state.FoeTargets) {
+		return ""
+	}
+	aim := state.FoeTargets[index]
+	if aim == 0 || int(aim) >= len(state.RecordNames) {
+		return ""
+	}
+	return state.RecordNames[aim]
 }
 
 // rememberRecordName 記下那一格記錄 `+0` 的名字（`12h`／`1Ah`／`30h` 拿它比名字表）。

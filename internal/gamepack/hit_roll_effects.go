@@ -63,6 +63,11 @@ var (
 		"HOBGOBLIN", "HOBGOBLIN CHIEF", "GAGOOL", "MACE"}
 	// GnomeLargeFoeNames 是 overlay-12 CS 的 `1275h`／`127Dh`（`07 "BUGBEAR"`、`05 "GNOLL"`）。
 	GnomeLargeFoeNames = [...]string{"BUGBEAR", "GNOLL"}
+	// GiantFoeNames 是 `DS:0416h..0465h`（`2Fh` 的 `1257h` `add di, 406h`，i = 1..5）。迴圈
+	// 跑到 8，第 6..8 格（`DS:0466h..0495h`）是別的資料：長度 0Ah、0、0Dh 的非字母位元組
+	// （`07 04 01 01 00 00 FF …`），記錄的名字不會等於它們（第 7 格是空字串，而記錄 `+0`
+	// 的名字不是空的），所以只列五格。
+	GiantFoeNames = [...]string{"OGRE", "OGRE LEADER", "TROLL", "FIRE GIANT", "HILL GIANT"}
 )
 
 // GnomeFoeNamesAddress 與 DwarfFoeNamesAddress 是兩張表第 1 格的 DS 位址（i = 1 那一格；
@@ -92,6 +97,9 @@ type HitRollEffects struct {
 	Actor HitRollCombatant
 	// AttackPhase 是 `DS:6CD7h`（spec 051 的相位計數，戰鬥開始是 0）。
 	AttackPhase uint8
+	// TargetAim 是目標 runtime `+0Ah` 指到的那一筆記錄的名字（目標自己正在打的那一個，
+	// 攻擊包裝 overlay-13 `1883h` 在 `1929h` 寫；`2Fh` 讀它）。沒有就是空字串。
+	TargetAim string
 	// AreaNode 是 `014Dh` 的第二條路：攻擊者自己沒帶 `31h` 時，找一個站得夠近的帶著的人，
 	// 回他的節點。沒有就回 false。可以是 nil。
 	AreaNode func(code uint8) (EffectNode, bool)
@@ -215,8 +223,17 @@ func (effects HitRollEffects) applyTargetCode(code uint8, index int, list Effect
 			value = -1
 		}
 	case 0x2f:
-		// entry 44 `1208h`：比對的是**目標自己**的 runtime `+0Ah`（它正在追的那一個）的
-		// 名字，remake 沒有隊員那一格。未接（spec 112〈OPEN〉）。
+		// entry 44 `1208h`（#90）：`DS:6784h` = 目標 `+108h` 的 `+0Ah`（目標自己正在打的
+		// 那一個）；`DS:5CF0h` 的 `+9Fh == 1`（`1227h`）、`+6Ch & 7Fh == 2`（`1237h`），
+		// 名字在 `DS:0416h` 那張表上就 `80 2E 80 67 04`（每對上一格減一次，名字互不相同）。
+		actor := effects.Actor
+		if actor.CreatureType == creatureTypeHumanoid && actor.BodySize&0x7f == 2 {
+			for _, name := range GiantFoeNames {
+				if effects.TargetAim == name {
+					value -= 4
+				}
+			}
+		}
 	case 0x30:
 		// entry 45 `1283h`：`DS:5CF0h` 的 `+9Fh == 1`，名字是 BUGBEAR 或 GNOLL →
 		// `80 2E 80 67 04`。

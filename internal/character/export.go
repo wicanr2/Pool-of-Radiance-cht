@@ -18,9 +18,9 @@ import (
 //
 // 目前**不寫、留給 base** 的已知欄位（都不是漏掉，是 remake 沒有產生端）：
 //
-//   - `+6Dh..+71h` 五個豁免目標值（spec 075）。remake 只會從記錄「讀」，
-//     沒有從職業與等級「算」的那一支。
-//   - `+72h` 移動、`+73h` 生命骰、`+76h` 驅散不死欄、`+A9h`／`+111h` 護甲、
+//   - `+6Dh..+71h` 五個豁免目標值（spec 075）與 `+73h` 最高職業等級：由匯出的呼叫端
+//     照 overlay-23 重算（cmd/pool-game/dos_export_saves.go），這一支不碰。
+//   - `+72h` 移動、`+76h` 驅散不死欄、`+A9h`／`+111h` 護甲、
 //     `+101h` 豁免修正、`+102h` 負重：全部由裝備與等級推導，remake 現算現用，
 //     沒有存進角色模型。
 //   - `+77h` 起的賊技能：`poolsave.Character.ThiefSkills` 可能是空的，
@@ -242,8 +242,8 @@ const (
 // 給 ExportDOSRecord 當 base 用。
 //
 // 沒有寫的兩個已知欄位：`+0ABh` 是 `random(100h)`（原版每次建角擲一次，
-// 語意未閉合，這裡不假造一個定值），`+6Dh..+71h` 的豁免表與 `+73h` 的生命骰
-// remake 還沒有產生端。
+// 語意未閉合，這裡不假造一個定值），`+6Dh..+71h` 的豁免表與 `+73h` 的最高職業等級
+// 由匯出的呼叫端重算（cmd/pool-game/dos_export_saves.go）。
 func NewDOSRecordBase() []byte {
 	record := make([]byte, DOSRecordSize)
 	record[BaseArmourClassOffset] = BaseArmourClassValue

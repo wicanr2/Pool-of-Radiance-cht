@@ -62,54 +62,127 @@ func (a *app) damageRequest(event eclvm.Event) (gamepack.DamageRequest, error) {
 	return gamepack.NewDamageRequest(values), nil
 }
 
-// applyDamageEvent 套用一條 `2Eh`，然後讓 ECL 繼續。
+// applyDamageEvent 套用一條 `2Eh`，然後讓 ECL 繼續。整支照 overlay-03 `2AE2h..2D31h`：
+//
+//	2B4F  傷害 = Roll(個數, 面數) + 加值                      ; 先擲，全隊共用
+//	2B62  旗標 bit 6 → 全隊；否則先擲 Roll(1, 人數) 挑一個   ; bit 7 有沒有設都擲
+//	2B89  旗標 bit 7 沒設 → 2C91h 攻擊那一種
+//	2BA2  全隊：沿串列每一個，bit 5 → 直接吃；否則擲豁免(類別, 修正)，沒過才吃
+//	2C01  運算元 5 bit 7 → 目前角色（5CF0h）：類別 0 不擲豁免，否則擲 (類別 − 1)
+//	2C3D  否則 2B7E 擲到的那一個：一律擲豁免（這一支不看 bit 5）
+//	2C91  攻擊：旗標是次數；每一次 Roll(1, 人數) 挑人、overlay-24 entry 5 以運算元 5
+//	      對他的 AC 擲命中，中了吃傷害；每一次之後重擲傷害（2D0Bh）
 func (a *app) applyDamageEvent(event eclvm.Event) error {
 	request, err := a.damageRequest(event)
 	if err != nil {
 		return err
 	}
-	if !request.Applies() {
-		// bit 7 沒設的話原版整條跳過（`2B89h`）。
-		return a.continueInitialSearch(nil)
+	if err := a.applyDamageRequest(request); err != nil {
+		return err
 	}
+	return a.continueInitialSearch(nil)
+}
+
+// applyDamageRequest 是上面那一段不含「讓 ECL 繼續」的部分。
+func (a *app) applyDamageRequest(request gamepack.DamageRequest) error {
 	if len(a.state.Party) == 0 {
 		return fmt.Errorf("Pool DAMAGE has no party to damage")
 	}
 	// 傷害只擲一次：全隊模式下每個人吃的是同一個數字（`2B47h` 在挑目標之前）。
 	damage := a.rollDice(request.DiceCount, request.DiceSides) + request.Bonus
-	targets := make([]int, 0, len(a.state.Party))
-	if request.WholeParty() {
-		for index := range a.state.Party {
-			targets = append(targets, index)
-		}
-	} else {
-		targets = append(targets, a.rollDice(1, len(a.state.Party))-1)
+	picked := -1
+	if !request.WholeParty() {
+		picked = a.rollDice(1, len(a.state.Party)) - 1
 	}
-	lines := make([]string, 0, len(targets))
-	for _, index := range targets {
-		line, err := a.damageOne(index, request, damage)
+	var lines []string
+	record := func(line string, err error) error {
 		if err != nil {
 			return err
 		}
 		if line != "" {
 			lines = append(lines, line)
 		}
+		return nil
+	}
+	save := gamepack.DamageRequest{}
+	switch {
+	case !request.Applies():
+		for count := request.AttackCount(); count > 0; count-- {
+			index := a.rollDice(1, len(a.state.Party)) - 1
+			hit, err := a.damageAttackHits(index, request.Operand5)
+			if err != nil {
+				return err
+			}
+			if hit {
+				if err := record(a.damageOne(index, nil, damage)); err != nil {
+					return err
+				}
+			}
+			damage = a.rollDice(request.DiceCount, request.DiceSides) + request.Bonus
+		}
+	case request.WholeParty():
+		for index := range a.state.Party {
+			check := &request
+			if !request.AllowsSave() {
+				check = nil
+			}
+			if err := record(a.damageOne(index, check, damage)); err != nil {
+				return err
+			}
+		}
+	case request.CurrentCharacter():
+		index := a.currentCharacter
+		if index < 0 || index >= len(a.state.Party) {
+			index = 0
+		}
+		var check *gamepack.DamageRequest
+		if request.SaveCategory != 0 {
+			save = request
+			save.SaveCategory--
+			check = &save
+		}
+		if err := record(a.damageOne(index, check, damage)); err != nil {
+			return err
+		}
+	default:
+		if err := record(a.damageOne(picked, &request, damage)); err != nil {
+			return err
+		}
 	}
 	if len(lines) != 0 {
 		a.eventText = strings.Join(lines, "\n")
 	}
-	return a.continueInitialSearch(nil)
+	return nil
 }
 
-// damageOne 對一個人擲豁免、套用傷害並回報一行訊息。
-func (a *app) damageOne(index int, request gamepack.DamageRequest, damage int) (string, error) {
+// damageAttackHits 是攻擊那一種的一次命中（overlay-24 entry 5 `0C4Dh`）：擲 d20、問目標的
+// 群組 16，再比「骰 + 命中值 > 目標 +111h」。目標的 `+111h` 照隊伍名單那一支現算。
+func (a *app) damageAttackHits(index int, score uint8) (bool, error) {
+	member := &a.state.Party[index]
+	natural := uint8(a.rollDice(1, 20))
+	if natural <= 1 {
+		return false, nil
+	}
+	roll, effects := gamepack.HitRollEffects{
+		Target: gamepack.HitRollCombatant{Effects: combatEffects(member.Effects)},
+	}.Apply(gamepack.HitRollBase(natural))
+	member.Effects = storedEffects(effects)
+	armour, _, err := a.memberDefenceStats(*member, creationArmorClassInternal, creationBaseMovement)
+	if err != nil {
+		return false, err
+	}
+	return gamepack.DamageAttackHits(natural, roll, score, armour), nil
+}
+
+// damageOne 對一個人擲豁免（save 為 nil 就不擲）、套用傷害並回報一行訊息。
+func (a *app) damageOne(index int, save *gamepack.DamageRequest, damage int) (string, error) {
 	member := a.state.Party[index]
 	if member.Status > gamepack.AliveStateMax {
 		// 已經倒下的人不再吃傷害（`2958h` 對狀態 6 直接返回）。
 		return "", nil
 	}
-	if request.AllowsSave() {
-		saved, err := a.savingThrowFor(member, request.SaveCategory, request.SaveModifier())
+	if save != nil {
+		saved, err := a.savingThrowFor(member, save.SaveCategory, save.SaveModifier())
 		if err != nil {
 			return "", err
 		}

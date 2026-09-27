@@ -458,8 +458,15 @@ func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOp
 			}
 		}
 		if index, ok := a.moverPartyIndex(cell); ok {
-			a.state.Party[index].Effects = storedEffects(state.Effects[cell])
-			syncTrainedLibraryCharacter(&a.state, a.state.Party[index])
+			member := &a.state.Party[index]
+			member.Effects = storedEffects(state.Effects[cell])
+			if removed == 0 && effect.UncursesItem && uncurseFirstItem(member) {
+				// 除咒術 `2543h`：沒有 24h 可解就清第一件被詛咒的物品（remove_curse.go）。
+				syncTrainedLibraryCharacter(&a.state, *member)
+				a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastItemUncursed), strings.TrimSpace(member.Name)))
+				break
+			}
+			syncTrainedLibraryCharacter(&a.state, *member)
 		}
 		a.tacticalStatus(state, fmt.Sprintf(a.text(msgCastCured),
 			a.combatantName(state, cell), removed))

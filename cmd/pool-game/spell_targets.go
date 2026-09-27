@@ -199,6 +199,10 @@ func (a *app) aimSpell(option castOption, release bool) error {
 		return a.releaseSpell(option, spellTargets{}, release)
 	}
 	reach := params.Range(a.casterLevelOf(state, option.ID))
+	if a.combatItem != nil {
+		// overlay-22 entry 3 `0764h`：用物品時射程一律照 6 級算（gamepack.ItemRange，#85）。
+		reach = params.ItemRange()
+	}
 	if reach == 0 || reach == 0xFF {
 		reach = 1
 	}

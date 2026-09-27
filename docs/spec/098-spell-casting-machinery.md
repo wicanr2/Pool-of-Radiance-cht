@@ -52,6 +52,16 @@ Pascal 由左往右推，所以 `[bp+8]` 是**先推的**、`[bp+6]` 是後推�
 見〈用物品放法術〉），所以**用物品放的牧師／法師法術一律當成 6 級、物品效果 12 級**；
 從記憶施法的幾條路（overlay-13 entry 19 與營地）不碰它，用真正的職業等級。
 
+**射程不走這一支（#85，exact）。** 射程是 overlay-22 entry 3（`071Dh`，`retf 2`）：`0723h`
+`80 3E B3 6C 00 / 75 3A` 看 `DS:6CB3h`，沒立才叫 `26F8h` 取等級（`072Eh`），立著就
+`0782h..078Fh` `B9 06 00 / F7 E9`：`+2 + +3 × 6`，**不分職業**。所以物品效果的法術施法者等級
+是 12，射程卻照 6 級算（編號 60 是 4 + 4 × 等級：52 格對 28 格）。兩個呼叫端都在 `DS:6CB3h`
+立起之後：AI 挑目標 overlay-13 `1E09h`（`1EF2h`，overlay-19 `1BBDh` 立旗之後才進 overlay-22
+entry 5）與玩家瞄準。remake：`gamepack.SpellParameters.ItemRange`，`foeSpellTarget`（`caster.item`）
+與 `aimSpell`（`a.combatItem != nil`）各換一次；AI 挑物品時的 `02EAh` 在立旗之前，照舊用
+`26F8h` 的等級。測試 `TestAIItemRangeUsesLevelSix`、`TestPlayerItemAimUsesLevelSixRange`
+（從 Update() 按 ENTER／U）。
+
 ## 處理常式怎麼呼叫 `08BCh`，四個覆寫參數各是什麼
 
 `08BCh` 收七個 word（`retf 0Eh`）。由堆疊位移反推（先推的在高位）：
@@ -175,7 +185,7 @@ Fireball（`262Eh`）先設 `DS:677Eh = 1`，然後分兩條：法術編號等�
 | `37h` | Slow | `2BC7h` | 推急速的碼 `27h`（要解掉的那一個）與 `23F5h(施法者)` 走 `2724h`，掛參數表的 `2Ah`（見〈模式 0Ah：分邊〉〈效果怎麼掛上去〉）|
 | `0Eh` | Friends | `13C8h` | `Roll(2, 4)` 加在記錄 `+15h`（魅力）上，上限 25 |
 | `25h` | Cure Blindness | `21E8h` | 解掉效果碼 `21h` |
-| `2Bh` | Remove Curse | `2508h` | 解掉效果碼 `24h`，並清掉物品的 `+36h` |
+| `2Bh` | Remove Curse | `2508h` | 身上有 `24h` 就只解它（overlay-24 entry 15）；沒有才沿物品串列清掉第一件 `+36h` 非 0 的（`2547h..258Bh`，只清一件，#66）|
 | `40h` | （無名）| `262Eh` | 與火球術共用同一支 |
 | `41h` | （無名）| `300Eh` | `Roll(2, 4)` ＋ 2 |
 | `43h` | Read Magic | `305Bh` | 就是泛型版型，只是法術編號推 `DS:6779h`、等級覆寫推 `FFh`、效果參數推 1 |
@@ -1556,16 +1566,53 @@ overlay-32 `04C0h`（`efc22ba8…`）：`04C3h..04D9h` 以有號 byte 比 `0..31
   `Roll(1, 6) + 20`（見上面〈編號 `3Ch`〉）。
 
 未讀（不擋規則狀態）：overlay-25 entry 24（`2906h`／`2922h` 推 `13h`）與 entry 25（畫一段）
-是表現層，只收座標與常數、回傳值沒被用到（strong inference）。打倒的人在原版
-`DS:6039h` 佔格表上何時清掉沒有追（unknown）；remake 每一步重建佔格，打倒的人不再
-擋線。
+是表現層，只收座標與常數、回傳值沒被用到（strong inference）。
+
+**打倒的人當場離開佔格表（#82，exact）。** `DS:6039h` 全部 overlay 只有一處寫入（overlay-32
+`0453h`，`03A2h` 那一支重建：清零再照 `DS:5E88h` 的體型逐格填）。`287Ch` 打人走 overlay-24
+entry 19；它在 `1623h` 看目標 `+10Dh` 為 0（`2266h` 把人打倒時清的）就 `1631h` 叫 overlay-32
+entry 20（`0E11h`）：戰鬥中而且這個人還不在屍體表（`6634h`，`0E33h..0E5Fh`）時放屍體、
+`102Bh` 把他的 `5E88h` 清 0、`1031h` 重建 `6039h`。所以同一條射線的下一格起，打倒的人不佔格、
+不擋線，反彈回來也打不到他。remake 每一步重新取佔格（`castSpellRay` 的 `cellAt`），同一個結果。
 
 remake：`combat.TraceSpellRay`（`2919h`）、`combat.StrikeSpellRayCell`（`287Ch`）、
 `TacticalState.SignedCellAt`（`04C0h` 的有號比界），`gamepack.CastEffect.Ray` 帶處理常式
 的四個字面值，`app.castSpellRay` 接上豁免與傷害。玩家瞄一點（`aimSpell` 不再跳過模式 8）、
 AI 擲到的目標（`foeSpellTargets`）都進同一支（`TestSpellRay*`、`TestLightningBolt*`、
-`TestFoeLightningBoltUsesTheSameRay`）。overlay-22 `31A3h`／`31B8h` 還有第三個呼叫端
-（推 `2919h(0Ah, 記錄 +32h, 3, 0)`，在效果碼處理常式那一段），不屬於法術派發表，沒有接。
+`TestFoeLightningBoltUsesTheSameRay`）。第三個呼叫端 overlay-22 `31A3h`／`31B8h` 是吐息，見下一節。
+
+## 吐息（效果碼 `58h`，overlay-22 `3092h`，issue #82）
+
+派發表 `DS:6786h` 的 `58h` 由 overlay-22 自己填（spec 112），處理常式是 `3092h`（`retf 0Ah`：
+記錄、節點）。`58h` 在群組 0Eh，群組 0Eh 唯一的呼叫端是 overlay-09 entry 5 開場（`0B66h`），
+也就是怪物接近之前問一次；`0B73h` 接著看 runtime `+3`，處理常式叫過 entry 34 就不進接近迴圈。
+全遊戲只有 MON5 block 66 TYRANITHRAXUS 帶著它（`58 00 00 FF 00`，最後一戰）。以下 exact：
+
+```
+3098  80 3E D7 6C 00 / 74 12      相位 6CD7h != 0：Roll(1, 100)（3C 32 / 77 03）<= 50 就不吐
+30CD  entry 20(記錄, "Breathes!", 0Ah, 1)               ; 字串在 3088h
+30ED  DS:6A78h(33h, 1, &6E8Ch)                         ; AI 放閃電束的挑法（20AEh／1E09h）
+30FC  6CADh = X + sign(6CADh − X)；== X + 1 → 再加一    ; overlay-31 entry 1（0000h）是 sign
+3119  6CAEh 同樣                                        ; 起點在 2×2 身體外面那一格
+315C  0100h:005Ch(記錄)                                 ; overlay-24 entry 12 = 0FCCh，摘 19h
+31A3  287Ch(6CADh, 6CAEh, 記錄 +32h, 3, &擋住)
+31B8  2919h(0Ah, 記錄 +32h, 3, 0)                        ; 長度 10、類別 3（吐息）、不加價
+31BE  節點 +3 > FDh → 減一；否則 0100h:002Ah 摘掉         ; 資料是 FFh：吐三次
+31E8  010Ah:00CAh（entry 34）
+```
+
+傷害是記錄 `+32h`（生命上限），瞄準那一格與射線上每一格都一樣，豁免成功減半（`287Ch` 的
+規則寫死 2）。射程照閃電束：`+2 + +3 × 等級` = 4 + 0（龍沒有法師等級）。`DS:6779h` 不是法術編號，
+鏡影擋不下（`09EAh`）。
+
+remake：`gamepack/breath.go`（`BreathSkipped`、`BreathStart`、`BreathRay`、`BreathAfterUse`）、
+`cmd/pool-game/breath.go`（`foeApproachEffects` 接在 `foeTurn` 的 `foeChooseGear` 之後、
+逃跑與接近迴圈之前，射線交給 `castSpellRay`）。測試 `TestDragonBreathesDownALine`、
+`TestDragonBreathRunsOutAndSkipsHalfTheLaterPhases`（從 Update() 按 ENTER）。
+
+`1E09h` 二十次都挑不到時（射程 4 內沒有人）不寫 `6CADh`／`6CAEh`，原版拿上一次留下的點吐
+（殘值，unknown）；remake 這一回合不吐、照常接近，列在停止線。群組 0Eh 其餘三個碼（`53h`
+BASILISK／MEDUSA、`54h` VAMPIRE、`79h` AHNKHEG）的處理常式還沒接。
 
 ## 受傷打斷（2026-09-26，issue #77）
 
@@ -1596,7 +1643,7 @@ far call 照 spec 109 換算（`(可執行檔位移 − stub 位移 − 3B0h) ÷
 
 | 位址 | 做什麼 | 對打斷的影響 |
 |---|---|---|
-| overlay-12 entry 78 `2272h` `26 FE 8D 1B 01` | 吸取等級：`+32h`、`+B1h`、`+11Bh` 逐級減一（spec 112）| 不清 `+1`。它由一下命中造成傷害之後派發（群組 2／3），那一下已經經過 entry 4——所以結果相同（strong inference：傷害為 0 的命中是否也派發沒讀）|
+| overlay-12 entry 78 `2272h` `26 FE 8D 1B 01` | 吸取等級：`+32h`、`+B1h`、`+11Bh` 逐級減一（spec 112）| 不清 `+1`。群組 2／3 的派發（overlay-13 `1740h..174Dh`）在 `1732h` 的 entry 4 之後，條件只有目標 `+10Dh` 非 0（`1738h`），**不看傷害**（#85，exact）：傷害被調成 0 的命中照樣吸取，而那一下 entry 4 在 `04E8h` 就跳過了，施法中的法術不會丟。remake 的 `woundCombatant` 只在傷害大於 0 時清，吸取不經過它，同一個結果 |
 | overlay-12 entry 4 `00B6h`、overlay-24 entry 11 `0F7Eh` `26 C6 85 1B 01 00` | 改狀態並把 `+10Dh` 清 0（離場）| 目標已離場，不再行動 |
 | overlay-04 entry 7 `06FEh`／`070Ah` `26 28 85 1B 01` | 神殿的 Raise Dead（spec 115）把 `+32h` 與 `+11Bh` 一起減掉算出來的量 | 戰鬥外 |
 | overlay-12 `036Ch`／`26FBh`／`271Ch`、overlay-22 `1892h`／`2C4Ah`、overlay-24 `17CFh`／`17EFh`／`18B4h`、overlay-25 `2328h`／`2359h`、overlay-16 八處 | 補血、封頂、建角與 entry 28 本身 | 不是傷害 |

@@ -52,6 +52,9 @@ type CastEffect struct {
 	// RemoveEffects 是要從目標身上拿掉的效果碼。解病術走的是這條路，
 	// 不掛新效果（overlay-22 `225Bh`）。
 	RemoveEffects []uint8
+	// UncursesItem 是除咒術 `2543h..258Bh`：身上沒有 `24h` 可解時，沿物品串列清掉第一件
+	// `+36h`（詛咒旗標）非 0 的，只清一件（#66）。
+	UncursesItem bool
 	// NeutralizesPoison 為真時（編號 58，`2E02h`）先看表上第一格有沒有中毒 `37h`：有就只解毒
 	// （NeutralizePoison），不走 RemoveEffects 與治療（spec 153）。
 	NeutralizesPoison bool
@@ -534,9 +537,10 @@ func CastSpell(id uint8, parameters []SpellParameters, casterLevel int,
 		// `21F6h` 問 `0100h:006Bh(目標, 21h)`，中了就解掉。
 		effect.RemoveEffects = []uint8{0x21}
 	case SpellIDRemoveCurse:
-		// `2516h` 問效果碼 24h；另外還會把物品的 `+36h`（詛咒旗標）清成 0，
-		// 那一段 remake 還沒有對應的欄位。
+		// `2516h` 問效果碼 24h（overlay-24 entry 15：有就摘掉、回 1），解到就結束；
+		// 沒有才走 `2543h` 的物品串列（UncursesItem，#66）。
 		effect.RemoveEffects = []uint8{0x24}
+		effect.UncursesItem = true
 	case SpellIDCureDisease:
 		// `225Bh` 逐個問 `0100h:006Bh(目標, 碼)`，中了就用 `0100h:002Ah`
 		// 拿掉。碼與 overlay-15 的名稱鏈對得上：2Ch 是致病、32h 是

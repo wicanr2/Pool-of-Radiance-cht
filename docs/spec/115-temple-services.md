@@ -28,7 +28,7 @@
 | entry 6 `0401h` | Cure Light／Serious／Critical Wounds | 100／350／600 | 無 | 擲骰治療（spec 既有）|
 | entry 7 `0515h` | Raise Dead | 5500 | `+10Ch` 是 6 或 1 | 見下 |
 | entry 8 `0736h` | Neutralize Poison | 1000 | 效果 `37h` | 拿掉 `37h`／`16h`／`0Fh` |
-| entry 9 `081Fh` | Remove Curse | 3500 | 效果 `24h` | 交給 overlay-22 entry 9 |
+| entry 9 `081Fh` | Remove Curse | 3500 | 身上有 `+36h` 非 0 的物品（`0845h` 先看）或效果 `24h`（`0888h`）| 交給 overlay-22 entry 9（`2508h`：有 `24h` 只解它，否則清第一件被詛咒的物品，spec 098，#66）|
 | entry 10 `0907h` | Stone to Flesh | 2000 | `+10Ch` 是 7 | `+10Ch = 0`、`+10Dh = 1`、`+11Bh = 1`（生命力回到 1）|
 
 疾病那六個代碼是 `1Fh 22h 2Bh 2Ch 32h 39h`。原版讀的是 `[di+111h]`、索引

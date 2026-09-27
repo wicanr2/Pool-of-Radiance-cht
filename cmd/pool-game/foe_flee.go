@@ -103,13 +103,15 @@ func (state *tacticalState) refreshSideMorale() {
 	}
 }
 
-// speedOf 是 overlay-13 `0123h`（腳程的初值）除以 2。remake 的腳程初值與 startRound
-// 同一支，同樣沒有加隊伍的 `+6E4h` 與效果群組 12h（spec 053）。
+// speedOf 是 overlay-13 `0123h`（腳程的初值）除以 2：隊伍那一側加 `[4937h]+6E4h`
+// （side_adjust.go），再照 `0150h..0182h` 派發群組 12h（急速加倍、緩速減半、`3Ah` 清零），
+// 與 startRound 同一支（#83）。
 func (state *tacticalState) speedOf(index int) int {
 	if index <= 0 || index >= len(state.BaseMovement) {
 		return 0
 	}
-	return int(combat.InitialMovementBudgetBeforeEffects(state.BaseMovement[index], false, 0)) / 2
+	return int(gamepack.MovementAfterEffects(state.initialMovement(index),
+		state.dispatchRateEffects(index))) / 2
 }
 
 // fastestOpponent 是 overlay-13 entry 26（`28E7h`）：對面（`+10Eh` 是對立陣營值）

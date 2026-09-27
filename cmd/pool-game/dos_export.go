@@ -62,6 +62,10 @@ func (a *app) buildDOSCharacterFiles(member poolsave.Character) (dosCharacterFil
 	if err != nil {
 		return dosCharacterFiles{}, err
 	}
+	// 豁免表與最高職業等級照 overlay-23 重算（dos_export_saves.go，#66）。
+	if err := a.recomputeDOSLevelFields(record, member); err != nil {
+		return dosCharacterFiles{}, err
+	}
 	return dosCharacterFiles{
 		Record:  record,
 		Items:   items,

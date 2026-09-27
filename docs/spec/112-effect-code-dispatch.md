@@ -5,7 +5,7 @@
 ——效果系統就是原版套用命中與豁免修正的機制——都讀出來了；
 115 支處理常式已有機器盤點；怪物命中後的群組 2／3、`55h`／`56h`
 能量吸取，`0Ch`／`26h` 力量效果的重疊與到期收尾，以及祝福／詛咒的群組 10 與
-急速／緩速的群組 18 已接入 remake；群組 10／16 除 `2Fh` 外的十四個碼、群組 9 的十個碼
+急速／緩速的群組 18 已接入 remake；群組 10／16 的十五個碼、群組 9 的十個碼
 與群組 17 的讀取端也逐條讀過並接上；群組 11／12／6 裡屬於只掛效果那一批法術的碼接上；
 群組 12 除 `3Dh 6Fh 7Dh` 外全部、群組 6 的 `0Ah 14h 1Ch`、群組 4 的 `1Dh`、群組 5 的 `1Ch`
 與 entry 7 的 byte 無號比較也接上；群組 12 的 `3Dh 6Fh 7Dh`、群組 6 除 `65h` 外、群組 4 的
@@ -322,10 +322,19 @@ OGRE、OGRE LEADER、TROLL、FIRE GIANT、HILL GIANT（第 6..8 格是別的資�
 所以 `12h`／`1Ah` 是矮人與侏儒對類人的 +1，`2Fh`／`30h` 是他們被大型對手打的 −4，
 `59h` 是幻影移位的「第一擊必落空」。
 
+`2Fh` 讀的「目標自己的 `+0Ah`」由攻擊包裝 overlay-13 `1883h` 在每一次出手時寫
+（`191Ch..192Dh`：攻擊者 `+108h` 的 `+0Ah`／`+0Ch` = 目標，spec 052，exact），AI 挑目標
+（`37B8h` 的 `390Ah`、`1E09h` 的 `1E51h`）與玩家撞上去（overlay-08 `0D8Ch`）也寫。所以矮人或
+侏儒只有在**自己正在打**食人魔、巨魔或巨人時，被大型類人打才 −4。`DS:0416h` 那張表的迴圈
+跑到 8，第 6..8 格（`DS:0466h..0495h`）不是名字（長度 0Ah／0／0Dh 的 `07 04 01 01 00 00 FF …`），
+記錄的名字不會等於它們。
+
 remake：`gamepack.HitRollEffects.Apply` 照上表的順序跑兩組，`DropInvisibility` 是
 `0FCCh`；`tacticalState.hitRollAfterEffects` 接進 `resolveAttackSwings`（一般攻擊與
 反應攻擊同一支），`areaEffectNode` 是 `014Dh` 的作用範圍那一條（`combat.NearbyCells`，
-朝向 0FFh、預算 6；串列順序取 roster 順序，strong inference）。測試從 `Update()` 按 A：
+朝向 0FFh、預算 6；串列順序取 roster 順序，strong inference）。`2Fh` 的 `TargetAim` 是
+`targetAimName`：`resolveAttackSwings` 開頭照 `1929h` 把攻擊者的 `FoeTargets` 寫成目標
+（`TestGiantClassPenaltyFollowsTheDefendersOwnTarget`）。測試從 `Update()` 按 A：
 `TestAttackerEffectsAdjustTheHitRoll`、`TestPrayerAreaAdjustsBothSides`、
 `TestTargetEffectsAdjustTheHitRoll`、`TestDisplacementMissesTheFirstAttack`、
 `TestAttackingDropsInvisibility`，每一條都拿同一骰不帶效果的對照組比。
@@ -469,9 +478,21 @@ remake：`gamepack.SaveRollEffects`（群組 12，照呼叫順序；`savedAgains
 `TestMirrorImageAbsorbsASpellButNotAMeleeHit`、`TestEnfeeblementCutsTheFoesMeleeDamage`、
 `TestNegativeSaveRollWrapsIntoASuccess`；每一條都做過變異檢查（拿掉那一段規則就紅，2026-09-26 實跑）。
 
-這一段順帶閉合了上一版 OPEN 的「`21h` 把 `+111h`／`+112h` 各減 4，要等 `+111h` 何時重算讀出來」：
-重算就在群組 11 前面，所以對「被打」而言是每一次 −4、不累加（remake 照這個接）。在群組 12 的
-時點改掉的 `+111h` 會留到下一次重算，而下一次被打之前一定先重算，所以看不到。
+**`21h` 改的 `+111h`／`+112h`（#90，exact）。** `+111h` 是 AC、`+112h` 是背面的 AC：overlay-13
+`1617h` 讀 `[di + [bp-18h] + 111h]`（`[bp-18h]` 是 0 或 1，從背後打取 `+112h`），`15B5h` 對
+無助的目標取 `+112h − 2`。三個群組裡的 `21h`（entry 31 `0BBEh` 的 `80 AD 11 01 04`、
+`80 AD 12 01 04`）都把**那一次交給它的記錄**的兩格減 4。會影響規則的讀者在讀之前都先重算：
+近戰 overlay-13 `1587h`、法術命中 overlay-22 `09A4h`（`010Ah:0043h` 是 overlay-25 entry 7）、
+都在群組 11 前面，所以對「被打」而言是每一次 −4、不累加（remake 照這個接）。群組 10（攻擊者
+自己）與群組 12（豁免那一刻）改掉的兩格留到下一次重算，期間讀它的只有畫面：隊伍名單
+（overlay-25 `0827h`、`0903h`，依 AC 分段上色）與角色頁（overlay-03 `13D7h` 在戰鬥外、
+overlay-04 `031Eh`／`03A6h`），規則狀態不變，列在停止線。
+
+**overlay-24 entry 5（`0C4Dh`）的呼叫端（#90，exact）。** 全部 38 顆 overlay 掃 `9A 39 00 00 01`
+只有 overlay-03 `2CF5h` 一處，`START.EXE` 零筆：ECL `2Eh DAMAGE` 旗標 bit 7 沒設的那一種
+（攻擊，spec 084）。entry 5（`retf 6`：記錄、命中值）擲 d20（`0C5Eh`），1 以下落空、20 改寫
+100，只問目標的群組 16（`0C81h`），`0CA6h` `7E 04`：`cbw(6780h) + 命中值` 嚴格大於目標
+`+111h` 才中。remake 是 `gamepack.DamageAttackHits` 與 `app.damageAttackHits`。
 
 ## 群組 17：士氣的讀取端
 
@@ -680,8 +701,6 @@ entry 2**——那些會把自己（或別的代碼）摘掉。25 個只呼叫 R
   代碼 `0Fh`／`16h`／`17h`／`1Ch`／`1Dh`／`22h`／`29h`／`2Bh`／`2Ch`／`4Eh`／`5Ah`／`61h`，見 spec 098
   〈#99：收尾〉）。其餘的已經有機器盤點
   （大小、碰哪些欄位、呼叫誰），但語意還沒逐支閉合。
-- `21h` 在群組 10（出手的人，`+111h`／`+112h` 的改動在那個時點沒有讀者）與 12（豁免）的
-  `+112h` 用途還沒讀；群組 11 的 AC −4 已接（上面〈群組 11／12／6〉）。
 - 群組 11 的 `1Eh`（雲）：原版每次出手前重算再 −2（`0A76h`），remake 由臭雲術的每回合結算直接
   改 `ArmorClass`（spec 121），兩者不同，未對齊。
 - 群組 6 的 `65h`（TROLL 掛再生 `3Bh`）、`3Bh`→`62h` 與群組 19 的再生在 spec 155。群組 12 的
@@ -689,12 +708,9 @@ entry 2**——那些會把自己（或別的代碼）摘掉。25 個只呼叫 R
 - 群組 5 的 `29h`（防護普通飛彈，entry 40 `108Dh`）已接，彈藥查詢（overlay-25 entry 45）與
   `6781h`（這一形態命中的次數）的讀法在 spec 151。群組 5 其餘的碼（`68h 78h 65h 73h 74h 77h 7Bh 60h 5Eh 3Ch
   7Ah 75h`）在 spec 155。
-- `2Fh` 比的是目標自己 runtime `+0Ah` 的名字，remake 沒有隊員的那一格（只記敵方 AI 的
-  `FoeTargets`），未接。
 - `06h` 在群組 4 另寫 `6777h = 9`（`0227h`），群組 5 的 `7Ah` 與倒下時群組 13 的 `64h` 讀它（spec 155；
   群組 4 的傷害那一半在 spec 153）。群組 13（倒下時，`63h 64h 67h 4Bh 4Ah`）與 overlay-24 `161Dh` 那一個
   近呼叫的派發端也在 spec 155。
-- overlay-24 entry 5（`0C4Dh`，只問群組 16）的呼叫端還沒列。
 - overlay-13 `1726h` 那一處讀 `DS:6776h` 的用途（`01CFh` 那一處已經確認是近戰
   傷害骰，spec 050）。
 - 代碼的編號與法術編號**不是同一套**：`33h` 在法術表是閃電束（spec 069），

@@ -1217,8 +1217,8 @@ func TestDamageStateBoundaries(t *testing.T) {
 	}
 }
 
-// 旗標的四個位元各自管什麼（spec 084）。bit 7 沒設整條不做事，
-// 少判這一個會讓不該扣血的地方扣血。
+// 旗標的四個位元各自管什麼（spec 084）。bit 7 沒設的是攻擊那一種，旗標是次數
+// （ecl_damage_attack_test.go）；旗標 0 就是零次。
 //
 // 低五位是**豁免修正**、運算元 5 的低三位才是**類別**：呼叫端
 // （overlay-03 `2BCEh..2BD6h`）先推 `運算元5 & 7` 再推 `旗標 & 1Fh`，
@@ -1226,8 +1226,8 @@ func TestDamageStateBoundaries(t *testing.T) {
 // 第二個拿去索引 `record[+6Dh + 類別]`。
 func TestDamageRequestFlags(t *testing.T) {
 	quiet := gamepack.NewDamageRequest([gamepack.DamageOperands]uint16{0x00, 1, 6, 0, 0})
-	if quiet.Applies() {
-		t.Fatal("bit 7 沒設卻要動手")
+	if quiet.Applies() || quiet.AttackCount() != 0 {
+		t.Fatal("旗標 0 是零次攻擊，不擲豁免")
 	}
 	// 低五位 0Ah＝修正 +10；運算元 5 的 0Ch & 7 ＝ 類別 4（法術）。
 	// 10 這個值先前被當成類別，於是治具走到野外後面的區域時會失敗即關閉。

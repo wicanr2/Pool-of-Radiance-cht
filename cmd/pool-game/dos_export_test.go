@@ -87,7 +87,11 @@ func TestDOSExportKeepsTheOriginalRecordOfAnNPC(t *testing.T) {
 	if err != nil {
 		t.Skipf("original character records unavailable: %v", err)
 	}
-	a := &app{itemTypes: table}
+	saves, err := gamepack.ReadDOSSavingThrowTable(dosZIPForTests)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := &app{itemTypes: table, savingThrows: saves}
 	member := poolsave.Character{
 		Name: "TINA", RaceID: "human", GenderID: "female", ClassID: "thief",
 		Abilities: [6]int{18, 18, 18, 18, 17, 14}, ExceptionalStrength: 100,
@@ -99,14 +103,15 @@ func TestDOSExportKeepsTheOriginalRecordOfAnNPC(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// 豁免表沒有產生端，必須原樣留著。
+	// 豁免表與 +73h 照 overlay-23 重算（dos_export_saves.go）；原版的 9 級盜賊記錄就是
+	// 那一支算出來的，所以重算的結果必須與原檔逐格相同（正對照）。
 	for offset := 0x6D; offset <= 0x71; offset++ {
 		if files.Record[offset] != record[offset] {
-			t.Fatalf("+%02Xh 的豁免目標值被改掉了", offset)
+			t.Fatalf("+%02Xh 的豁免目標值 %d 與原版的 %d 不同", offset, files.Record[offset], record[offset])
 		}
 	}
 	if files.Record[0x73] != record[0x73] {
-		t.Fatal("+73h 生命骰被改掉了")
+		t.Fatal("+73h 最高職業等級與原版不同")
 	}
 	// 賊技能同樣留著。
 	for offset := 0x77; offset < 0x7F; offset++ {

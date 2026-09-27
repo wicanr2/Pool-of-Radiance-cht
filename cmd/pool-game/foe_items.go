@@ -144,6 +144,8 @@ func (a *app) foeUseItem(state *tacticalState, mover uint8, slot int,
 	}
 	spell := chosen.Spell
 	label := a.spellLabel(spell)
+	// `1BBDh` 立 `DS:6CB3h` 之後才挑目標：射程照物品算（gamepack.ItemRange，#85）。
+	caster.item = true
 	targets, found, err := a.foeSpellTargets(state, mover, spell, caster)
 	if err != nil {
 		return err
