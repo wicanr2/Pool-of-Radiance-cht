@@ -462,6 +462,8 @@ type tacticalState struct {
 	rearArmour map[int]int
 	// reactionSwing 是這一次攻擊包裝的第三個引數（`[bp+0Eh]`）為 1：反應攻擊（spec 059）。
 	reactionSwing bool
+	// beset 是 runtime `+0Fh`／`+12h`：被出手的次數與累計被迫轉過的方向差（beset.go，spec 059）。
+	beset map[uint8]besetMark
 	Budgets       []uint8
 	States        []uint8
 	DyingCounters []uint8
@@ -673,6 +675,8 @@ func (state *tacticalState) selectActor(roll func(count, sides int) int) {
 		return
 	}
 	state.Mover = uint8(selected + 1)
+	// 行動開頭（overlay-08 `01E4h` 的 `01F2h`／`01FFh`）清掉這一位被圍攻的計數（beset.go）。
+	state.clearBeset(state.Mover)
 }
 
 // endTurn 把目前行動者的分數歸零（Delay 時改成 1，與原版的 D 命令一致），
@@ -1469,6 +1473,7 @@ foeEntry:
 			return err
 		}
 		state.Roster[mover].X, state.Roster[mover].Y = x, y
+		state.clearBeset(mover) // entry 5 提交一步（`0867h`）
 		state.Budgets[mover] = budget
 		lastDirection = direction
 		steps++
@@ -2170,6 +2175,7 @@ func (a *app) tacticalInput() error {
 				return err
 			}
 			state.Roster[state.Mover].X, state.Roster[state.Mover].Y = x, y
+			state.clearBeset(state.Mover) // entry 5 提交一步（`0867h`）
 			state.Budgets[state.Mover] = budget
 			state.Status = state.say(msgStatusMoved, direction)
 		}
@@ -2233,8 +2239,12 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	}
 	// 攻擊包裝 overlay-13 `1883h` 一開頭讓目標轉身面向攻擊者（#58）；反應攻擊的第三個引數是 1，
 	// `1898h` 跳過（spec 059）。
+	// 一般出手在包裝之前先叫 entry 14（`17F5h`，beset.go），目標被出手不到三次才轉身（`1891h`）。
 	if !state.reactionSwing {
-		state.turnToFace(target, attacker)
+		state.markAttacked(target, attacker)
+		if state.besetTurns(target) {
+			state.turnToFace(target, attacker)
+		}
 	}
 	// `191Ch..192Dh`：攻擊者 runtime `+0Ah` = 目標，不分玩家或 AI（spec 052；群組 16 的 `2Fh`
 	// 讀被打的人的這一格，#90）。
@@ -2257,8 +2267,9 @@ func (a *app) resolveAttackSwings(state *tacticalState, attacker, target uint8, 
 	var lastRoll uint8
 	// overlay-13 `1587h..1595h`：重算目標的戰鬥數值、派發目標的群組 11，才進擲骰（#89）。
 	armourClass := state.hitCheckArmourClass(target)
-	if state.reactionSwing {
-		// `1604h..161Ch`：旗標立著 → 拿目標的 `+112h`（背後 AC）而不是 `+111h`（spec 059）。
+	if state.reactionSwing || state.hitFromBehind(attacker, target) {
+		// `1604h..161Ch`：旗標立著（反應攻擊）或 `15C4h..1600h` 判定從正後方打 → 拿目標的
+		// `+112h`（背後 AC）而不是 `+111h`（spec 059）。
 		armourClass = state.hitCheckArmourClassFrom(target, state.rearArmourClass(target))
 	}
 	for _, dice := range swings {

@@ -133,6 +133,9 @@ func TestAReactionHitsTheRearArmourClass(t *testing.T) {
 func TestDisengagingFromAFoeFacingAwayIsFree(t *testing.T) {
 	away := func(state *tacticalState) uint8 { return (facingTowardsMover(state) + 4) % 8 }
 	a, state := reactionBoard(t, away)
+	// 朝向窗只在旁路不成立時才看（`0B0Ah..0B1Eh`）：敵人這一回合行動過（先攻 0），之後又被打過一次。
+	state.Scores[2] = 0
+	state.beset = map[uint8]besetMark{2: {count: 1}}
 	for _, facing := range combat.ReactionFacings(state.Facings[2]) {
 		inside, err := combat.FacingArcContains(11, 10, 10, 10, facing)
 		if err != nil {

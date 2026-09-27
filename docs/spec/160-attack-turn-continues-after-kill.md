@@ -133,5 +133,8 @@ remake：`recountSwings`（attack_continue.go）。玩家在物品選單收起�
   清掉、Enter 之後這一回合輪不到它）、`TestAReactionThatDownsTheMoverKeepsTheRest`（剩 `[1 0]`、
   先攻留著）、`TestAReactionHitsTheRearArmourClass`、`TestDisengagingFromAFacingFoeDrawsAReactionAttack`
   （走的人不轉身）。變異：拿掉 entry 34、改回 `+111h`、不寫回次數、照樣轉身，各自讓一條變紅。
+- 被圍攻的計數（spec 059，`beset_test.go`，送鍵）：`TestTheThirdAttackNoLongerTurnsTheTarget`、
+  `TestTheThirdAttackFromBehindHitsTheRearArmourClass`、`TestAFoeFacingAwayStillReactsWhenTheBypassHolds`；
+  變異：轉身不看計數、不判正後方、拿掉任一條旁路、行動開頭不清、entry 14 不加一，各自讓至少一條變紅。
 - `0DFCh` 換完武器再進 entry 5 沒有專屬測試：entry 9 在回合開頭就看身邊有沒有敵人，走得到
   `0DFCh` 的只有走近之後或殺了一個之後的再進；`TestFoeWalkReproducesEveryOriginalAction` 40/40 照舊。

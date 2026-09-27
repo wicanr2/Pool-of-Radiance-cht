@@ -161,9 +161,12 @@ func (state *tacticalState) canReact(mover, opponent uint8) bool {
 		state.hasEffect(int(opponent), reactionBlockedEffectB) {
 		return false
 	}
-	// 朝向窗：對手目前朝向的前後兩格（`(base+6)..(base+10) mod 8`）。原版在
-	// `+108h` 的 `+3 > 0` 或 `+0Fh == 0` 時直接視為成立，那兩格的語意還沒讀，
-	// 這裡一律照弧判定。
+	// `0B0Ah..0B1Eh`：還沒行動（先攻 `+3 > 0`）或上一次行動、上一步之後沒被出手過（`+0Fh == 0`）
+	// 就不看朝向窗（beset.go，spec 059）。
+	if state.reactsWithoutFacing(opponent) {
+		return true
+	}
+	// 朝向窗：對手目前朝向的前後兩格（`(base+6)..(base+10) mod 8`）。
 	from, to := state.Roster[opponent], state.Roster[mover]
 	for _, facing := range combat.ReactionFacings(state.Facings[opponent]) {
 		inside, err := combat.FacingArcContains(from.X, from.Y, to.X, to.Y, facing)

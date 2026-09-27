@@ -345,6 +345,7 @@ func (a *app) foeFleeStep(state *tacticalState, mover uint8, run *foeFleeRun,
 		return false, false, err
 	}
 	state.Roster[mover].X, state.Roster[mover].Y = x, y
+	state.clearBeset(mover) // entry 5 提交一步（`0867h`）
 	state.Budgets[mover] = budget
 	run.lastDirection = direction
 	run.steps++
