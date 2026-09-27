@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	"github.com/wicanr2/golden-box-remake-engine/eclvm"
 )
 
 // 用物品放的法術，射程照 6 級算（overlay-22 entry 3 `0764h`，spec 098〈物品的射程〉，#85）。
@@ -73,5 +74,21 @@ func TestPlayerItemAimUsesLevelSixRange(t *testing.T) {
 	}
 	if application.castAim.reach != 28 {
 		t.Fatalf("item aim reach %d, want 28 (4 + 4 × 6)", application.castAim.reach)
+	}
+}
+
+// overlay-09 entry 3 `0431h`：`[4933h]+1CAh`（ECL @49E5，反魔法區）非 0 時 AI 不用物品，
+// 照常走過去打（#85）。同一支魔法飛彈杖，@49E5 = 1 就不用。
+func TestAIItemUseStopsInsideTheAntiMagicZone(t *testing.T) {
+	for _, zone := range []uint16{0, 1} {
+		application, state := newQuickWandApp(t, 2, 0, true)
+		application.eventMachine = &eclvm.Machine{Memory: map[uint16]uint16{foeItemAntiMagicAddress: zone}}
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+		used := strings.Contains(state.FoeLog, "USES AN ITEM")
+		if used == (zone != 0) {
+			t.Fatalf("@49E5 = %d: used %v (log %q)", zone, used, state.FoeLog)
+		}
 	}
 }

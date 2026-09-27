@@ -15,7 +15,8 @@ import (
 //	03F9  次數 = Roll(1, 7)                      ; 一定擲，閘門都在後面
 //	0407  runtime +2 == 0                → 不用 ; 這一回合的行動權（沉默、咳嗽清掉）
 //	0427  DS:[6772h + 23F5h(記錄)] == 0  → 不用 ; 對面沒人站著
-//	0431  [4933h]+1CAh != 0              → 不用 ; 這一版恆為 0
+//	0431  [4933h]+1CAh != 0              → 不用 ; ECL @49E5：反魔法區（ECL8 block 16 `9BEEh`
+//	                                            ; SAVE 1，換區時 overlay-07 `025Ah` 清成 0）
 //	0440  gamepack.ChooseAIItem（四道過濾、02EAh、門檻逐輪減一）
 //	0519  挑到 → overlay-19 entry 8(物品, &結果)，回 1
 //
@@ -41,6 +42,10 @@ import (
 
 // 訊息 msgFoeUsesItem 與轉變不死生物那幾句一起登記在 foe_turn_undead.go。
 
+// foeItemAntiMagicAddress 是 `[4933h]+1CAh` 換成的 ECL 位址（class 0：`(1CAh − 6E00h) mod 10000h ÷ 2`）。
+// 全部 ECL 只有 ECL8 block 16 `9BEEh` 一處 `SAVE 1` 寫它；每次載入區塊清成 0（gamepack.BlockLoadWrites）。
+const foeItemAntiMagicAddress = 0x49E5
+
 // foeUseItemPhase 是 entry 3。回傳 true 代表用了一件，這一隻的行動結束。
 func (a *app) foeUseItemPhase(state *tacticalState, mover uint8, mode int) (bool, error) {
 	rounds := a.rollDice(1, 7)
@@ -61,6 +66,10 @@ func (a *app) foeUseItemPhase(state *tacticalState, mover uint8, mode int) (bool
 		opposing = counts.Party
 	}
 	if opposing == 0 {
+		return false, nil
+	}
+	// `0431h..043Dh` `26 83 BD CA 01 00 / 74 03`：@49E5 非 0 就不用物品（#85）。
+	if a.eventMachine != nil && a.eventMachine.Memory[foeItemAntiMagicAddress] != 0 {
 		return false, nil
 	}
 	items, slot := a.foeItemBearer(state, mover)

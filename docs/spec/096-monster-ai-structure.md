@@ -275,7 +275,7 @@ entry 2（`0028h`）。entry 2 是**移除效果**：
 0407  entity[+2] == 0                → 返回
 0419  side = overlay-25 entry 30(記錄) ; 對立陣營值
 0427  DS:[6772h + side] <= 0          → 返回   ; 那一邊沒人站著
-0431  [4933h]+1CAh != 0               → 返回   ; 這一版恆為 0，見下
+0431  [4933h]+1CAh != 0               → 返回   ; ECL @49E5：反魔法區，見下
 0440  重複「次數」次：
 0458    物品 = 記錄 +C8h              ; 物品串列的頭
 047e    [bp-8] = 物品 +3Dh
@@ -301,12 +301,12 @@ ZIP 的 `poolrad/items`，`+2Eh` 就是索引），所以這一支是**怪物用
 | `物品 +3Dh <= 0` → 跳過 | 沒有可用的編號 |
 | `物品 +3Eh >= 80h` → 跳過 | `+3Eh >= 80h` 是物品穿戴時掛上的效果碼（overlay-19 `14D4h` 比 `7Fh`，穿上／卸下以它呼叫 overlay-24 entry 1，spec 142）。那一類的 `+3Dh` 不是拿來放的法術 |
 
-`[4933h]+1CAh` 那個閘門**在這一版永遠不成立**：全 36 顆 overlay 加
-`START.EXE` 掃過所有 disp16 形狀，寫它的只有 overlay-07 `025Bh`（寫 0），
-讀它的四處（overlay-08 `073Bh`、overlay-09 `0436h`、overlay-15 `0373h`、
-overlay-19 `0F9Ch`）全都只跟 0 比。與 `DS:43A0h` 是同一個形狀——留著但沒有
-人把它設起來。（唯一的例外是某個整塊複製，那與 spec 114 的 `+5A4h` 是同一
-個未解形狀。）
+`[4933h]+1CAh` 是 class 0 的 ECL `@49E5`（`(1CAh − 6E00h) mod 10000h ÷ 2`）。overlay 裡
+寫它的只有載入區塊時的 overlay-07 `025Ah`（寫 0，gamepack.BlockLoadWrites），而 ECL 那一側
+ECL8 block 16 `9BEEh` 有一處 `SAVE 1 → @49E5`（`cmd/pool-ecl-memory-audit -addresses 49E5`，
+spec 156）：那一區是反魔法區。讀它的四處（overlay-08 `073Bh`、overlay-09 `0436h`、overlay-15
+`0373h`、overlay-19 `0F9Ch`）都只跟 0 比。所以在那一區裡 AI 不用物品（#85，exact）；remake
+`foeUseItemPhase` 讀 `@49E5`（`TestAIItemUseStopsInsideTheAntiMagicZone`）。
 
 ### 挑哪一件、怎麼用、用完怎麼記（exact，2026-09-26，issue #71）
 
@@ -984,10 +984,8 @@ overlay-10 `1380h` 的佈置迴圈另外處理隊伍那一側：沿串列數到�
   但其餘 15 個 byte 沒有人讀。`+0` 幾乎都是 0、偶爾是 1，與「多數怪物佔
   一格、少數佔 2×2」相符。
 - **`DS:43A0h`**：只有 overlay-09 `0B4Ch` 寫它一次（清成 0），沒有讀取端。
-- **`[4933h]+1CAh`**：只有 overlay-07 `025Bh` 寫它一次（寫 0），四處讀它
-  而且都只跟 0 比，所以那幾個閘門在這一版永遠不成立。
 
-三者都留著同一個例外：某個整塊複製有可能把值填進去，而那與 spec 114 的
+兩者都留著同一個例外：某個整塊複製有可能把值填進去，而那與 spec 114 的
 `+5A4h` 是同一個未解形狀。
 
 ## 還沒讀
