@@ -207,3 +207,84 @@ func planToCellsInsideThisMap(application *app, rotate int, want map[[2]int]bool
 }
 
 var _ = gamepack.ProgramCamp
+
+// 在武具店買東西之後去旅店：付錢把金幣重鑄成白金（overlay-21 entry 15），
+// 旅店的 WHO 重選同一個人時要讀到新的白金。ECL 視窗 `6BC3h` 裡還是開場投影
+// 的 0，先前無條件抄回人物身上，23 枚白金在那一刻歸零，旅店回答
+// "YOU DON'T HAVE ENOUGH PLATINUM."（#101，發行包對拍走的就是這條路）。
+func TestBuyingAtTheArmouryThenStayingAtTheInnKeepsThePlatinum(t *testing.T) {
+	zipPath := filepath.Join("..", "..", "Pool of Radiance (1988).zip")
+	application, err := newApp(zipPath, filepath.Join(t.TempDir(), "state.json"))
+	if err != nil {
+		t.Skipf("original DOS ZIP is intentionally not tracked: %v", err)
+	}
+	money := [7]uint16{}
+	money[pooltreasure.Gold] = 120
+	member := poolsave.Character{Name: "HERO", RaceID: "human", GenderID: "male",
+		ClassID: "cleric", AlignmentID: "lawful-good",
+		Abilities: [6]int{16, 10, 17, 13, 10, 10}, MaxHP: 8, CurrentHP: 8,
+		Money: money, PortraitHead: 1, PortraitBody: 1, IconSize: 1}
+	application.state = poolsave.State{Schema: poolsave.Schema,
+		CharacterLibrary: []poolsave.Character{member}, Party: []poolsave.Character{member}}
+	application.saveState = func(poolsave.State) error { return nil }
+	for _, key := range []ebiten.Key{ebiten.KeyEnter, ebiten.KeyB} {
+		if err := press(application, key); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for tick := 0; tick < 20000 && !application.introDone; tick++ {
+		if application.introWaiting || application.tourPage >= 0 {
+			if err := press(application, ebiten.KeyEnter); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		application.keys = scriptedKeys{}
+		if err := application.Update(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !application.introDone {
+		t.Fatal("開場沒有跑完")
+	}
+	if !walkToArmoury(t, application, 4000) {
+		t.Fatalf("沒走到武具店，最後在 %+v", application.spawn)
+	}
+	// 買 1 金的一項，餘額 119 金重鑄成 23 白金 4 金。
+	cheapest := -1
+	for index, item := range application.shop.items {
+		if item.Price() == 1 {
+			cheapest = index
+			break
+		}
+	}
+	if cheapest < 0 {
+		t.Fatal("店裡沒有 1 金的東西")
+	}
+	application.shop.cursor = cheapest
+	if err := press(application, ebiten.KeyEnter); err != nil {
+		t.Fatal(err)
+	}
+	if got := application.state.Party[0].Money[pooltreasure.Platinum]; got != 23 {
+		t.Fatalf("買完身上白金 %d，應該是 23（%q）", got, application.shop.message)
+	}
+	if err := press(application, ebiten.KeyEscape); err != nil {
+		t.Fatal(err)
+	}
+	if !walkToCells(t, application, 4000, innCells) {
+		t.Fatalf("沒走到旅店，最後在 %+v", application.spawn)
+	}
+	application.cellMenuCursor = 0
+	for tick := 0; tick < 64 && !application.campOpen; tick++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !application.campOpen {
+		t.Fatalf("付不了房錢：%q，身上白金 %d", application.eventText,
+			application.state.Party[0].Money[pooltreasure.Platinum])
+	}
+	if got := application.state.Party[0].Money[pooltreasure.Platinum]; got != 22 {
+		t.Errorf("住一晚之後白金 %d，應該是 22", got)
+	}
+}

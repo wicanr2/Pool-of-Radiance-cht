@@ -74,6 +74,11 @@ type CharacterWindow interface {
 type CharacterBinding struct {
 	window  CharacterWindow
 	current int
+	// projected 是投影進視窗時那個人身上的白金。視窗裡的值與它相同就表示
+	// 腳本沒動過，這時不抄回去：商店、神殿這些不經 ECL 的付款改的是人物
+	// 身上的錢，視窗裡還是投影當時的舊值，無條件抄回去會把新的餘額蓋掉
+	// （買完東西重鑄出來的白金在旅店的 WHO 重選時歸零，#101）。
+	projected uint16
 }
 
 // NewCharacterBinding 建一個綁定；current 從 -1 開始表示視窗還沒有人。
@@ -108,16 +113,27 @@ func (b *CharacterBinding) Flush(machine *eclvm.Machine) {
 	if b == nil || machine == nil || b.current < 0 {
 		return
 	}
-	b.window.CommitPlatinum(b.current, machine.Memory[CharacterPlatinumAddress])
+	b.commit(machine.Memory)
+}
+
+// commit 只在腳本改過視窗裡的白金時抄回目前那個人（見 projected）。
+func (b *CharacterBinding) commit(memory map[uint16]uint16) {
+	if b.current < 0 {
+		return
+	}
+	value := memory[CharacterPlatinumAddress]
+	if value == b.projected {
+		return
+	}
+	b.window.CommitPlatinum(b.current, value)
+	b.projected = value
 }
 
 func (b *CharacterBinding) project(index int, memory map[uint16]uint16,
 	strings map[uint16]string) error {
 	// 先抄回去再讀新的：同一個人再選一次時，腳本剛改過的值才不會被
 	// 舊值蓋掉（`ADD 128` 之後那次重選就是這個情形）。
-	if b.current >= 0 {
-		b.window.CommitPlatinum(b.current, memory[CharacterPlatinumAddress])
-	}
+	b.commit(memory)
 	character, ok := b.window.Character(index)
 	if !ok {
 		// The DOS handler leaves DS:5CF0/5CF2 unchanged when the linked-list
@@ -128,7 +144,7 @@ func (b *CharacterBinding) project(index int, memory map[uint16]uint16,
 	memory[0x6C00] = 1
 	memory[0x6BB8] = uint16(character.ControlMorale)
 	memory[CharacterPlatinumAddress] = character.Platinum
-	b.current = index
+	b.current, b.projected = index, character.Platinum
 	return nil
 }
 

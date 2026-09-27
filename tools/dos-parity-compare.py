@@ -343,8 +343,9 @@ def main():
          "digest": "af17c89f", "remake": "remake-field-cast.png",
          "note": "地圖施法的挑人層是 remake 額外畫面；只以原版法術頁作 layout-only 參考"},
         {"name": "field-cast-spell", "kind": "layout", "ref": "spells",
-         "digest": "af17c89f", "remake": "remake-field-cast-spell.png",
-         "note": "地圖施法的法術頁；原版 C)AST 與 MEMORIZE 共用版面（spec 134）"},
+         "digest": "bfa6534d", "remake": "remake-field-cast-spell.png",
+         "note": "地圖施法的法術頁，對原版 C)AST 的 in Memory 頁；兩邊都在旅店"
+                 " (6,12) 休息記好一條祝福術（#101，spec 114／134）"},
         {"name": "icon-confirm", "kind": "layout",
          "digest": "d148516e", "remake": "remake-icon-confirm.png",
          "note": "戰鬥造形設計・確認：原版保留那四格，只把框外那一列換成"

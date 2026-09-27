@@ -46,6 +46,15 @@ REF_CITYHALL="$ROOT/workplace/dosgolem-ref-cityhall"
 REF_CAMPQUIT="$ROOT/workplace/dosgolem-ref-campquit"
 REF_TEMPLE="$ROOT/workplace/dosgolem-ref-temple"
 REF_SHOP="$ROOT/workplace/dosgolem-ref-shop"
+# 法術那一組（spells、field-cast、field-cast-spell 三張）是人類牧師那條鍵序，
+# 走到旅店付一枚白金休息、記好祝福術之後按 C）AST（#101）。重生：
+#   POOL_DOSGOLEM_OUT=workplace/dosgolem-ref-spells POOL_DOSGOLEM_KEYS=
+#   rep:9:Space,Return,Return,c,rep:5:End,Return,Return,Return,Return,Return,Return,
+#   y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:18:Return,Right,Right,Up,Return,Right,rep:7:Up,
+#   Left,rep:7:Up,y,b,b,e,e,Left,Left,Up,Left,Up,Right,Up,y,Return,m,m,End,m,e,e,y,e,
+#   r,h,i,i,r,e,c   tools/dosgolem-reference.sh
+# （鍵序是一整串，逗號之間不留空白。）法術書那一頁（`af17c89f`）不顯示時鐘與座標，
+# 所以在旅店拍到的與在導覽終點拍到的逐格相同。
 REF_SPELLS="$ROOT/workplace/dosgolem-ref-spells"
 OUT="${POOL_PARITY_OUT:-$ROOT/workplace/dos-parity-$LANG_MODE}"
 
@@ -137,6 +146,26 @@ GATE
 # 法術兩張的數字會跳（spells 52055／52065）也是掉鍵：牧師流程在種族頁按五下
 # End（游標往下、會繞回），掉一下就換了種族，擲出來的人物不同，法術頁那一行
 # 「已記 0/1,還能記 1」變成「0/0,還能記 0」。不是游標閃爍，畫面本身沒有閃的東西。
+#
+# **野外施法那兩張要先在旅店休息（#101）。** 城區入口 2 在 `4A07 == 0` 時寫
+# 打斷參數 1／101（spec 114），也就是街上排多久都在第一刻被城衛隊趕走，記不成
+# 法術。旅店收一枚白金之後 `SAVE 1 @4A07` 再跑一次入口 2，寫 0／0，接著開紮營。
+# 新建的角色身上只有金幣，所以先進武具店買一把手斧（1 金）：付錢
+# 會把餘額重鑄成白金＋金（overlay-21 entry 15），原版量到 119 金 → 23 白金 4 金。
+# 兩邊同一條路：導覽終點 (0,4) 朝西 → 右轉兩次、前進一格 (1,4) → 右轉、七格到
+# (1,11) → 左轉、七格到武具店門口 (8,11) → 買手斧、離店 → 左轉兩次、(7,11) →
+# 左轉、(7,12) → 右轉、旅店門口 (6,12) → YES、誰付錢 → 紮營 → R、H、I、I、R
+# 休息 → 收掉紮營 → C）施法。原版排入法術之後休息時間會先填好記憶所需的
+# 04:15，再加兩小時；remake 從零加兩小時。施法頁不顯示時鐘，這一差不進畫面。
+# 原版那一側在紮營裡 MAGIC／MEMORIZE 記祝福術（`End` 把
+# 反白移到第一條，`m` 排入，`e` 之後要答 `y` 才算數）；remake 這一側照舊在
+# 走之前用 K 一覽按 M 記。兩邊到施法頁時都是同一格、同樣的單人牧師隊伍、記著
+# 一條祝福術（屬性是各自擲的，兩邊不同）。
+# 旅店以外的路（貧民窟屋內）要穿過有隨機遭遇的街道，兩邊的亂數不同，走不成
+# 同一個狀態。
+# 手斧在原版清單是第二項，開清單時反白就在它上面，`b` 直接買；remake 的清單
+# 順序與原版相反（手斧是倒數第二項），游標從第一項往上繞兩格。清單順序若改成
+# 與原版一致，這裡要跟著換成往下一格。
 rm -rf "$OUT"; mkdir -p "$OUT"
 # POOL_PARITY_CONTAINER 可替這個容器命名，並行跑好幾份時分得出是誰的。
 docker run --rm ${POOL_PARITY_CONTAINER:+--name "$POOL_PARITY_CONTAINER"} \
@@ -478,46 +507,50 @@ step k spells-cleric-1
 shot remake-spells
 pulse m
 step k adventure-move
-step e camp
+turn Right
+turn Right
+east_step
+turn Right
+for unused in 1 2 3 4 5 6 7; do east_step; done
+turn Left
+for unused in 1 2 3 4 5 6 7; do east_step; done
+await adventure-cell-menu
+pulse Return
+await shop
+pulse Up
+pulse Up
+pulse Return
+pulse Escape
+await_adventure
+turn Left
+turn Left
+east_step
+turn Left
+east_step
+turn Right
+east_step
+await adventure-cell-menu
+n=0
+while test "$(screen)" != camp; do
+  n=$((n+1)); test "$n" -lt 10 || die "inn did not open camp"
+  pulse Return; settle 30
+done
 step r camp-rest
 pulse h
 pulse i
 pulse i
 pulse r
-# **城區街上休息會被城衛隊攔下來**（原版就是這樣，收據
-# `docs/audit/dos-tour-cell-rest.json`：排兩小時，00:05 被打斷，選項 GO／STAY）。
-# 攔下來時畫面是 `adventure-cell-menu`；答 `GO`（走人，原版 STAY 會開打）。
-# **選單是方向鍵移游標、ENTER 選**，不是按首字母——按 `g` 什麼都不會發生。
-# `GO` 是第一個選項，所以游標不用動。
+settle 90
 n=0
-while test "$(screen)" = adventure-cell-menu; do
-  n=$((n+1)); test "$n" -lt 10 || die "城衛隊那一問答不掉"
-  pulse Return; sleep 0.3
+while test "$(screen)" = camp || test "$(screen)" = camp-rest; do
+  n=$((n+1)); test "$n" -lt 10 || die "camp did not close"
+  pulse Escape; settle 30
 done
 await_adventure 60
-# 休息被攔就記不成法術，`C）施法` 那一頁因此可能開不起來。開不起來就**跳過這兩張**
-# ——比對程式會把它們記成「未量」，不會把整份報表弄丟（#42／#51）。
-# 要拍到它們得找一個不會被攔的地方休息（貧民窟的房間），那是另一件事。
-n=0
-while test "$(screen)" != field-cast; do
-  n=$((n+1))
-  if test "$n" -gt 6; then echo "沒有拍到野外施法那兩張（休息被城衛隊攔下來，記不成法術）"; break; fi
-  pulse c; sleep 0.3
-done
-if test "$(screen)" = field-cast; then
-  shot remake-field-cast
-  # 挑人那一頁開得起來，**法術清單那一頁要真的有記好的法術**才開得了；
-  # 休息被城衛隊攔掉就沒有。開不了就只少這一張。
-  n=0
-  while test "$(screen)" != field-cast-spell; do
-    n=$((n+1))
-    if test "$n" -gt 6; then echo "沒有拍到法術清單那一張（沒有記好的法術）"; break; fi
-    pulse Return; sleep 0.3
-  done
-  if test "$(screen)" = field-cast-spell; then
-    shot remake-field-cast-spell
-  fi
-fi
+step c field-cast 6
+shot remake-field-cast
+step Return field-cast-spell 6
+shot remake-field-cast-spell
 
 python3 /tools/dos-parity-compare.py /ref /out /ref-cityhall /ref-campquit /ref-temple /ref-shop /ref-spells
 '

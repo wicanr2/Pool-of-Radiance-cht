@@ -74,10 +74,23 @@ Return,y,H,E,R,O,Return,k,e,y,a,a,e,b,rep:18:Return,e,m,m
 `rep:5:End` 是把種族清單的反白從 `DWARF` 移到 `HUMAN`——**清單用 End／Home
 移動，不是 Down／Up**（spec 133）。
 
-**原版的 `C)AST` 那一種還沒拍到**：一級牧師沒有記憶法術，要先休息讓
-`MEMORIZE` 生效，而貧民區休息一定會被城市守衛打斷
-（`YOU ARE ROUSTED BY THE CITY WATCH…`，見 spec 114）。那一段留給接上
-「休息被打斷」之後再走。
+**原版的 `C)AST` 那一種（`in Memory`）要在旅店休息才拍得到**：城區街上休息
+一定被城衛隊打斷（spec 114），記不成法術。同一條鍵序接著走到旅店（#101）：
+
+```
+…,rep:18:Return,Right,Right,Up,Return,Right,rep:7:Up,Left,rep:7:Up,y,b,b,e,e,
+Left,Left,Up,Left,Up,Right,Up,y,Return,m,m,End,m,e,e,y,e,r,h,i,i,r,e,c
+```
+
+武具店 `(8,11)` 買一把手斧（付錢會把金幣重鑄成白金，旅店只收白金）→ 旅店門口
+`(6,12)` 答 YES、誰付錢 → 紮營 → MAGIC → MEMORIZE。**記憶清單一開啟時反白
+停在級別那一行**，要先按一次 `End` 移到 `BLESS` 才按 `m`；直接按 `m` 或
+Return 會退出清單而什麼都沒排進去。排好之後 `e` 會問
+`MEMORIZE THESE SPELLS? YES NO`，要答 `y` 才算數。休息完收掉紮營，在探索
+畫面按 `c`，單人隊伍直接開 `HERO'S SPELLS IN MEMORY` 那一頁（指令列
+`CHOOSE SPELL: CAST EXIT`，SHA-256 `bfa6534d…`）。基準在
+`workplace/dosgolem-ref-spells`，`MEMORIZE` 那一頁（`af17c89f…`）也在同一組裡：
+它不顯示時鐘與座標，在旅店拍到的與在導覽終點拍到的逐格相同。
 
 ## 兩種座標，不要混用
 
@@ -133,6 +146,7 @@ C（施法）→ ENTER 挑施法者 → 這一頁
 因為翻組只換內容不換畫面——先前那三次 TAB 是盲按，掉一次鍵就拍到神術第 3 級，
 而畫面上白紙黑字寫著別的級別卻沒有任何一步失敗。
 
-**原版那一側的 `in Memory` 仍未拍到**：一級牧師沒有記憶法術，要先休息讓
-`MEMORIZE` 生效，而貧民區休息一定會被城市守衛打斷（見 spec 114）。remake
-這一側拍到的就是 `in Memory` 那一種；版面同一份，所以版面已經對得起來。
+發行包對拍（`tools/appimage-dos-parity.sh`）走的是上面那條旅店路線：remake
+這一側在走之前用法術一覽記祝福術，然後同樣買手斧、住旅店、休息兩小時，再按
+C 與 ENTER。兩邊到施法頁時是同一格、同樣的單人牧師隊伍、記著一條祝福術，`field-cast-spell`
+對的是原版 `in Memory` 那一頁。
