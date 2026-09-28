@@ -4548,6 +4548,8 @@ func main() {
 	// 空字串（預設）什麼都不寫。
 	screenState := flag.String("screen-state", "", "write the current screen identifier to this file; used by the capture scripts")
 	flag.Parse()
+	// 完整版把原版 ZIP 與倚天字型放在執行檔旁的 data/（bundled_data.go）。
+	resolveBundledInputs(zipPath, etenFont)
 	uiLanguage, face, err := resolveUILanguage(*langFlag, *etenFont, *etenSymbol, *etenASCII)
 	if err != nil {
 		log.Fatal(err)

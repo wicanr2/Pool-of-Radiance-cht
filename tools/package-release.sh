@@ -7,9 +7,11 @@
 #
 # 兩種口味（與 CoAB 同一套）：
 #   * `patch`      可散布：只有執行檔與條款檔。
-#   * `full-local` **本機保留**：另外把 Amiga 版的配樂 OGG 放進去。
-#     那是第三方著作權（Wally Beben），只有本機存在 workplace/amiga-music/ogg
-#     時才會產生，而且 dist-all/ 整個在 .gitignore 裡。
+#   * `full-local` **本機保留**：另外把 Amiga 版的配樂 OGG 放進去，並把原版 ZIP
+#     與倚天字型放進執行檔旁的 `data/`（點兩下就能開，預設中文；cmd/pool-game 的
+#     bundled_data.go）。配樂是第三方著作權（Wally Beben），原版資料與字型也都
+#     沒有散布權：只有本機存在 workplace/amiga-music/ogg 時才會產生，而且
+#     dist-all/ 整個在 .gitignore 裡。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -189,6 +191,29 @@ if [ -d "$MUSIC_DIR" ] && [ -n "$(ls -A "$MUSIC_DIR" 2>/dev/null)" ]; then
     done
     cp packaging/README-配樂.md \"\$BASE/README-配樂.md\""
 
+  # 原版 ZIP 與倚天字型放進 data/（本機保留）。字型目錄在 repo 外面，唯讀另外掛；
+  # 掛載前先確認來源存在，不讓 dockerd 以 root 建空目錄頂替。
+  FONT_DIR="${ETEN_FONT_DIR:-/home/anr2/cht/etan_font}"
+  ZIP_NAME="Pool of Radiance (1988).zip"
+  test -f "$ROOT/$ZIP_NAME" || { echo "缺 $ROOT/$ZIP_NAME，full-local 不能帶原版資料" >&2; exit 1; }
+  for font in stdfont.15 ascfont.15 ET353S/FILES/SPCFONT.15; do
+    test -f "$FONT_DIR/$font" || { echo "缺 $FONT_DIR/$font，full-local 不能帶倚天字型" >&2; exit 1; }
+  done
+  docker run --rm --network none --memory 512m --cpus 1 --pids-limit 128 \
+    --log-opt max-size=10m --log-opt max-file=3 \
+    -u "$UID_NOW:$GID_NOW" -v "$ROOT:/src" -v "$FONT_DIR:/fonts:ro" -w /src "$GO_IMAGE" bash -c "set -eu
+    BASE='$OUT/full-local'
+    for target in \
+      \"\$BASE/linux/AppDir/usr/bin\" \
+      \"\$BASE/windows\" \
+      \"\$BASE/macos-amd64/Pool of Radiance Remake.app/Contents/MacOS\" \
+      \"\$BASE/macos-arm64/Pool of Radiance Remake.app/Contents/MacOS\"; do
+      mkdir -p \"\$target/data\"
+      cp '$ZIP_NAME' \"\$target/data/\"
+      cp /fonts/stdfont.15 /fonts/ascfont.15 \"\$target/data/\"
+      cp /fonts/ET353S/FILES/SPCFONT.15 \"\$target/data/spcfont.15\"
+    done"
+
   docker run --rm --network none --memory 1g --cpus 1 --pids-limit 128 \
     --log-opt max-size=10m --log-opt max-file=3 \
     -u "$UID_NOW:$GID_NOW" -v "$ROOT:/src" -w /src "$APPIMAGE_IMAGE" bash -c \
@@ -212,7 +237,7 @@ for source, name in [
                 info.compress_type = zipfile.ZIP_DEFLATED
                 archive.writestr(info, path.read_bytes())
 ' "$OUT/full-local" "$VERSION"
-  echo "本機完整版（含 Amiga 配樂，**不要散布**）在 $ROOT/$OUT/full-local"
+  echo "本機完整版（含 Amiga 配樂、原版 ZIP 與倚天字型，**不要散布**）在 $ROOT/$OUT/full-local"
 else
   echo "沒有 workplace/amiga-music/ogg，略過 full-local（先跑 tools/build-amiga-music.sh）"
 fi
