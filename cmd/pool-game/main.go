@@ -460,6 +460,10 @@ type app struct {
 	duel bool
 	// arenaCopy 是 `CALL 8000h` 接在隊伍鏈尾的 `ROLF`（spec 150〈競技場〉）；戰後摘掉。
 	arenaCopy bool
+	// foeRun 是跨影格執行中的 AI 代打回合（quick_handback.go，#123）。
+	foeRun *foeRun
+	// pendingQuickRelease 是停拍時按下、留在緩衝區的 SPACE（quick_handback.go）。
+	pendingQuickRelease bool
 }
 
 // defaultStatePath 是存檔的預設位置。

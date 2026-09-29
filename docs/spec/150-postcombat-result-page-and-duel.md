@@ -288,7 +288,8 @@ remake：`applyScriptCall` 的 `8000h` → `startArenaDuel`（`postcombat.go`）
 `COMBAT` 沒有 `LOAD MONSTER` 但有複製品時照常開戰；`deployRoster` 把它擺到對面（陣營非 0 的
 那一條）、`boardIconFor` 用它照抄來的造形、`enterTacticalPreview` 記 `B2h` 的士氣；
 `finishCombat` 摘掉複製品（`removeArenaCopy`），每份是最高職業等級 × 100（`arenaDuelExperience`）、
-只有上場的人拿到、不收複製品身上的東西。`@6DC8` 那一個計數沒有接（腳本 `9CABh` 直接 `EXIT`，
+只有上場的人拿到、不收複製品身上的東西。隊伍裡其他 `+10Eh == 1` 的記錄（倒戈的 NPC、ADD NPC 18h）
+由 `removeOpposingMembers` 摘掉，結算見 spec 167。`@6DC8` 那一個計數沒有接（腳本 `9CABh` 直接 `EXIT`，
 沒有讀它）。
 
 ## 隊伍逃走（exact 碼）
@@ -363,7 +364,6 @@ remake：`treasureDetectOption`／`treasureDetect`（`treasure_detect.go`）；`
 |---|---|---|---|
 | 效果 05h 對物品清單的作用 | 讀取端未定位 | unknown | 〈Detect〉：掛上去已接，之後物品怎麼顯示沒讀 |
 | 競技場複製品的造形載入 | overlay-07 `1B36h`（`147h:0039h`）、`+BFh` | strong inference | 畫的是照抄的造形；`cpic`／0Bh／槽位那一支沒讀 |
-| `1164h` 摘掉 `+10Eh == 1` 的其他記錄 | overlay-05 `1164h` | exact（碼） | remake 只摘競技場的複製品；ADD NPC 帶進來、站在對面的 NPC（spec 091）戰後也該摘掉，屬 #107 的範圍 |
 | 逃走那一支的丟出去的武器 | overlay-05 `0E85h` 的串列 | strong inference | `ThrownLoot` 只在有人站著時收 |
 | 原版執行期收據：競技場、逃走 | — | — | dosgolem 沒有走到競技場或逃走的駕駛段 |
 

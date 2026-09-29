@@ -899,11 +899,12 @@ spec 061〈跟著隊伍的非隊員〉。它的 `+84h` 是 B2h，士氣那一條
   `initialMovement` 加群組 12h（`TestSlowedOpponentCannotBlockTheEscape`、
   `TestEncounterScriptSlowsThePartyOnly`、`TestEncounterScriptAdjustsTheHitRoll`）。
 
+`+3 == 14h` 的收工（entry 7 把代打的隊員交還玩家）照原版接上，見 spec 167〈AI 代打中途交還〉。
+
 仍與原版不同、寫明的幾處：
 
 | 原版 | remake | 理由 |
 |---|---|---|
-| `+3 == 14h` 時 entry 5 直接收工 | 逃跑迴圈的條件照做，落到接近迴圈 | `+3 = 14h` 只有兩個寫入點：overlay-09 `109Ah`（`+10Fh` 為 0，這一格剛被放回玩家手上）與 overlay-08 `0525h`（玩家中途取消 Q）UICK）。那是 AI 回合走到一半交還控制的時機；remake 的 AI 回合在同一個影格裡跑完，沒有中途交還的窗口（停止線）|
 | 離開盤面摘十五個效果時跑各代碼的收尾常式（模式 1） | 只摘節點 | 十五個碼裡 remake 產得出來的（`0Bh 1Eh 20h 34h 35h`）到期時本來就只摘節點（`docs/audit/effect-teardown-coverage.json`），摘法相同；人也已經不在盤面上（停止線）|
 | 戰後跳過逃掉的敵方的錢與物品 | 只扣經驗值 | remake 還沒有從怪物身上發錢與物品（#76） |
 

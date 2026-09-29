@@ -682,6 +682,10 @@ func (state *tacticalState) selectActor(roll func(count, sides int) int) {
 	state.Mover = uint8(selected + 1)
 	// 行動開頭（overlay-08 `01E4h` 的 `01F2h`／`01FFh`）清掉這一位被圍攻的計數（beset.go）。
 	state.clearBeset(state.Mover)
+	// `0231h..0248h`：分數是 14h（AI 代打中途交還，quick_handback.go）就改成 13h。
+	if state.Scores[state.Mover] == handBackInitiative {
+		state.Scores[state.Mover] = resumedInitiative
+	}
 }
 
 // endTurn 把目前行動者的分數歸零（Delay 時改成 1，與原版的 D 命令一致），
@@ -1299,6 +1303,11 @@ func (a *app) foeTurn(state *tacticalState) error {
 	if err := a.foeChooseGear(state, mover, previousTarget); err != nil {
 		return err
 	}
+	// entry 1 `01ACh`：換完武器、進 entry 5 之前問一次鍵（quick_handback.go，#123）。
+	if a.foeCheckpoint(state, mover) {
+		a.handBackFoeTurn(state, mover, mode, 0)
+		return nil
+	}
 	// entry 5 開場 `0B66h`：效果群組 0Eh（凝視、吐息、噴酸，breath.go）；叫了 entry 34 就收工（`0B73h`）。
 	if acted, err := a.foeApproachEffects(state, mover, &target, pickTarget); acted || err != nil {
 		return err
@@ -1389,6 +1398,11 @@ foeEntry:
 				goto foeEntry
 			}
 			state.endTurn(a.rollDice, false)
+			return nil
+		}
+		// `07E8h` 每一次進來先問鍵（`0843h`），在腳程那一道之前（quick_handback.go，#123）。
+		if a.foeCheckpoint(state, mover) {
+			a.handBackFoeTurn(state, mover, mode, steps)
 			return nil
 		}
 		// 腳程剩不到一步就收工（`084Dh`：runtime +6 ÷ 2 <= 0 → entry 6）。原版顯示
@@ -1921,8 +1935,19 @@ func (a *app) tacticalInput() error {
 		return nil
 	}
 	// 上一個行動印的訊息還在停拍（overlay-37 entry 13）：這一影格不做別的事。
+	// 停拍本身不讀鍵，但按下的鍵留在 BIOS 緩衝區，下一次問鍵（entry 7 或指令迴圈）
+	// 讀得到——SPACE 留一格（quick_handback.go，#123）。
 	if a.holdCombatNotice(state) {
+		if a.justPressed(ebiten.KeySpace) {
+			a.pendingQuickRelease = true
+		}
 		return nil
+	}
+	typeahead := a.pendingQuickRelease
+	a.pendingQuickRelease = false
+	// AI 代打的回合停在問鍵的點上（overlay-09 entry 7）：這一影格的鍵交給它。
+	if a.foeRun != nil {
+		return a.resumeFoeRun(state, typeahead)
 	}
 	if state.FleePrompt {
 		// `0C1Ah`：Y 交給 overlay-13 entry 7；`0C31h`：N 什麼都不做。
@@ -1993,9 +2018,15 @@ func (a *app) tacticalInput() error {
 	// SPACE 收回全隊的自動戰鬥（NPC 除外）。原版在玩家指令迴圈（`04D8h`）與
 	// 每一隻 AI 動之前的按鍵檢查（overlay-09 entry 7 `0FC8h`）都認這個鍵，
 	// 所以它要排在 AI 分派前面——不然交出去的隊員永遠收不回來。
-	if a.justPressed(ebiten.KeySpace) && !a.castOpen && !a.castTargeting {
+	if (typeahead || a.justPressed(ebiten.KeySpace)) && !a.castOpen && !a.castTargeting {
+		// 這一位是 AI 代打、回合還沒開始：這就是 entry 1 `001Ch` 那一次問鍵，收回之後
+		// 分數寫 14h、重選，同一位接著由玩家走（quick_handback.go）。
+		mover, handable := state.Mover, a.handableMover(state, state.Mover)
 		if a.releaseQuick(state) {
 			state.Status = state.say(msgStatusQuickOff)
+		}
+		if handable && !state.aiDrives(int(mover)) {
+			a.handBackAtTurnStart(state, mover)
 		}
 		return nil
 	}
@@ -2007,7 +2038,7 @@ func (a *app) tacticalInput() error {
 		return nil
 	}
 	if state.Mover != 0 && state.aiDrives(int(state.Mover)) {
-		if err := a.foeTurn(state); err != nil {
+		if err := a.runFoeTurn(state); err != nil {
 			return err
 		}
 		if state.Finished {
@@ -2061,7 +2092,7 @@ func (a *app) tacticalInput() error {
 			a.state.Party[index].Quick = true
 			state.quick(state.Mover)
 			state.Status = state.say(msgStatusQuick, a.combatantName(state, state.Mover))
-			if err := a.foeTurn(state); err != nil {
+			if err := a.runFoeTurn(state); err != nil {
 				return err
 			}
 			if state.Finished {
@@ -2214,6 +2245,11 @@ func (a *app) stagedMonsterFor(index int, partySlot []int, friendly []bool) (sta
 
 // stagedMonsterCopy 同上，另外回傳這一格是同一條 `LOAD MONSTER` 的第幾隻（從 0 起）。
 func (a *app) stagedMonsterCopy(index int, partySlot []int, friendly []bool) (stagedMonster, int, bool) {
+	// 隊員那一格不是怪物——倒戈的隊伍 NPC 站到對面之後 friendly 是 false，不擋的話會被數成
+	// 前面那一隻怪物的複本，戰後多收一份錢與物品（#122）。
+	if index < len(partySlot) && partySlot[index] >= 0 {
+		return stagedMonster{}, 0, false
+	}
 	position := 0
 	for slot := 1; slot < index; slot++ {
 		if slot < len(partySlot) {
@@ -2486,6 +2522,12 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	// 決鬥（spec 150）輸了也不是全滅：`04ADh` 在 `0507h` 把 DS:4960h 清 0，`0612h` 的
 	// 狀態換算照打贏那樣跑。
 	duel := staged && a.duel && outcome != combat.CombatOngoing
+	// 隊員全部倒下或逃掉、而站到對面的隊員還站著：`04ADh` 的 82A0h 看的是隊伍那一段的狀態、
+	// 不看陣營，439Dh 因此被清掉，走的是打贏那一條（opposing_members.go，spec 167）。
+	if staged && !duel && outcome != combat.CombatVictory && outcome != combat.CombatOngoing &&
+		a.opposingMemberHoldsTheField(a.tactical) {
+		outcome = combat.CombatVictory
+	}
 	if staged {
 		stored := outcome
 		if duel {
@@ -2503,6 +2545,8 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		standing = duelChampionStanding(a.tactical)
 	}
 	fought := foughtAnyFoe(a.tactical)
+	// 站到對面的隊員（#122）：entry 2 把他們當敵方結算，`1164h` 再從隊伍摘掉。
+	opposing := a.opposingMembers(a.tactical)
 	// 身上的錢與物品在同一個迴圈收（monster_loot.go）；盤面丟掉之前先收好。entry 2
 	// 只在有人站著時跑（`05E0h`／決鬥的 `077Dh`）。競技場的複製品不是 staged 的怪物，
 	// 身上的東西不收——entry 2 在 `0006h` 就整段跳過了（spec 150）。
@@ -2528,6 +2572,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		// 清掉，否則同一場架會被重新排出來。
 		a.combatActive, a.combatMonsters = false, nil
 		a.duel = false
+		a.removeOpposingMembers()
 		tacticalStalemateEndings++
 		a.statusLine = "Tactical combat ended in a stalemate; neither side could close."
 		return nil
@@ -2546,7 +2591,10 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		for _, member := range a.state.Party {
 			states = append(states, member.Status)
 		}
-		if fledAway, wiped := a.partyFledOutcome(states); fledAway && !wiped {
+		fledAway, wiped := a.partyFledOutcome(states)
+		// `1164h` 在 `04ADh` 之後、全滅判定（`14EDh`）之前。
+		a.removeOpposingMembers()
+		if fledAway && !wiped {
 			a.leaveBehindAfterFleeing()
 			a.cellEventPending, a.cellWaitingMenu = false, false
 			a.eventText, a.eventLabel = "", ""
@@ -2577,8 +2625,11 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 		if duel {
 			divisor = len(a.state.Party)
 		}
-		share = a.awardCombatExperienceWithLoot(fled, a.monsterLootExperience(loot), eligible, divisor)
+		share = a.awardCombatExperienceWithLoot(fled,
+			a.monsterLootExperience(loot)+a.opposingMembersExperience(opposing), eligible, divisor)
 	}
+	// `1164h`：entry 2／3 發完經驗值之後才摘，`1295h` 的 NPC 分錢因此看不到他們。
+	a.removeOpposingMembers()
 	if duel {
 		a.finishDuelState()
 	}

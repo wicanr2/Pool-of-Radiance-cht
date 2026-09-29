@@ -85,6 +85,7 @@ spec 127）。所以頂層的 `Q` 是 QUICK、移動中的 `Q` 是東南，兩�
 `cmd/pool-game/tactical.go`：`quick`／`releaseQuick`、`Moving`、`tacticalStepKeypad`；
 `poolsave.Character.Quick`；訊息 `ui.statusQuick`／`ui.statusQuickOff`。測試
 `cmd/pool-game/quick_test.go`。探索器的駕駛（`tactical_pilot_test.go`）走一步前先按 M。
+AI 回合走到一半按 SPACE 交還（overlay-09 entry 7 的三個問鍵點、`+3 = 14h`）見 spec 167。
 `2` 在 `tacticalInput`（排在 AI 分派之前，同 SPACE）呼叫 `foe_cast.go` 的 `toggleMagic`，
 開關存在 `tacticalState.Casting.MagicOn`（新的一場就是新的 state，等於每場清 0）；
 訊息 `ui.statusMagicOn`／`ui.statusMagicOff`。測試 `cmd/pool-game/foe_cast_test.go`。

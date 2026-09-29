@@ -93,8 +93,8 @@
 - A）IM 的 Target（`resolveAimedAttack`）：射程、Target 在不在之後問；Y 走 `strikeAimedTarget`，
   其他鍵回到瞄準列。施法的瞄準不經過這裡。
 - `turnAlliesHostile` 是 `29CFh..2A36h`：@6E33 = 1；狀態 0 而 `+84h > 7Fh` 的每一格改到對面、追的目標清掉。
-  `+10Eh` 寫在記錄上，所以隊伍裡的 NPC 同步改 `Party[i].Side` 與記錄 `+10Eh`（下一場照 Side 擺到對面，
-  spec 061）；怪物那一條改 `combatMonsters` 的記錄 `+10Eh`，戰後的經驗值因此算它（overlay-05 entry 2
+  `+10Eh` 寫在記錄上，所以隊伍裡的 NPC 同步改 `Party[i].Side` 與記錄 `+10Eh`（戰後像怪物那樣結算、
+  再被 `1164h` 摘掉，spec 167）；怪物那一條改 `combatMonsters` 的記錄 `+10Eh`，戰後的經驗值因此算它（overlay-05 entry 2
   `0068h` 只跳過 `+10Eh != 1` 的）。
 - 開打時（`deploy` 收尾、`setupMorale` 之前）@6E33 歸零。
 
@@ -110,5 +110,4 @@
 
 ## 未閉合
 
-- 倒戈的隊伍 NPC 在戰後的經驗值與分帳：overlay-05 entry 2 對隊伍鏈上 `+10Eh == 1` 的 NPC 怎麼算沒讀
-  （停止線，未知）。
+- 倒戈的隊伍 NPC 在戰後的經驗值與分帳：由 spec 167 接手（#122）。

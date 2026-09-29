@@ -252,6 +252,11 @@ func (a *app) foeFleeLoop(state *tacticalState, mover uint8, run *foeFleeRun,
 // `07E8h` 回來時 `[bp-5]` 立著、但回合沒有結束（卡住三次）。
 func (a *app) foeFleeStep(state *tacticalState, mover uint8, run *foeFleeRun,
 	pickTarget func() (uint8, error)) (ended, stop bool, err error) {
+	// `0843h`：先問鍵；AI 代打的隊員被收回就收工，不叫 entry 34（quick_handback.go，#123）。
+	if a.foeCheckpoint(state, mover) {
+		a.handBackFoeTurn(state, mover, run.mode, run.steps)
+		return true, false, nil
+	}
 	// `084Dh`：腳程 ÷ 2 不到一步就交給 entry 6。
 	if state.Budget()/2 == 0 {
 		a.foeFleeEnd(state, mover, run)

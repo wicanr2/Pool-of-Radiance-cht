@@ -117,9 +117,9 @@ func (a *app) turnAlliesHostile(state *tacticalState) {
 		}
 		state.Friendly[index] = false
 		state.setFoeTarget(uint8(index), 0)
-		// `+10Eh` 寫在記錄上：隊伍裡的 NPC 記錄就是存檔那一份，跨出這一場還是敵方
-		// （下一場 deployRoster 照 Side 擺到對面，spec 061）；怪物那一份在戰後的經驗值
-		// 裡改算（overlay-05 entry 2 `0068h` 只跳過 `+10Eh != 1` 的）。
+		// `+10Eh` 寫在記錄上。隊伍裡的 NPC 在戰後像怪物那樣結算（entry 2 的經驗值、錢與
+		// 物品），接著 `1164h` 把它從隊伍摘掉（opposing_members.go，spec 167）；怪物那一份
+		// 同樣在戰後的經驗值裡改算（overlay-05 entry 2 `0068h` 只跳過 `+10Eh != 1` 的）。
 		if index < len(state.PartySlot) && state.PartySlot[index] >= 0 {
 			if slot := state.PartySlot[index]; slot < len(a.state.Party) {
 				member := &a.state.Party[slot]

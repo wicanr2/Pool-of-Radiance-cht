@@ -109,6 +109,11 @@ func (a *app) collectMonsterLoot(state *tacticalState) monsterLoot {
 	}
 	friendly := state.Friendly
 	taken := 0
+	// 隊伍那一段排在串列前面：站到對面的隊員先收（opposing_members.go，#122）。競技場那一場
+	// 在 `0006h` 整段跳過，不收。
+	if !a.arenaCopy {
+		a.collectOpposingMembers(&loot, a.opposingMembers(state), skipItems, &taken)
+	}
 	for index := 1; index < len(state.Roster) && index < len(friendly); index++ {
 		if friendly[index] {
 			continue
@@ -131,29 +136,35 @@ func (a *app) collectMonsterLoot(state *tacticalState) monsterLoot {
 			continue
 		}
 		for _, item := range state.FoeItems[index] {
-			if len(item.Raw) != gamepack.MonsterItemRecordSize {
-				continue
-			}
-			value := uint16(item.Raw[monsterLootValueOffset]) | uint16(item.Raw[monsterLootValueOffset+1])<<8
-			if value == 0 {
-				if taken >= monsterLootItemCap || a.rollDice(1, 10) > 3 {
-					continue
-				}
-			}
-			taken++
-			named := a.namedItem(item.Raw)
-			if named.Name == "" {
-				// 組不出名字的存不進存檔（`save.validateItem`）；原版不會發生，這裡失敗即關閉。
-				continue
-			}
-			var record gamepack.TreasureItemRecord
-			record.Name = named.Name
-			copy(record.Raw[:], named.Raw)
-			record.Raw[gamepack.ItemReadiedOffset] = 0
-			loot.items = append([]gamepack.TreasureItemRecord{record}, loot.items...)
+			a.takeLootItem(&loot, item, &taken)
 		}
 	}
 	return loot
+}
+
+// takeLootItem 是 `0111h..01FBh` 對一件物品：價值大於 0 就收；否則收滿 8 件就不收，
+// 沒滿就 Roll(1, 10) <= 3 才收。收的那件名稱重組、+34h 清 0、插在串列頭。
+func (a *app) takeLootItem(loot *monsterLoot, item poolsave.Item, taken *int) {
+	if len(item.Raw) != gamepack.MonsterItemRecordSize {
+		return
+	}
+	value := uint16(item.Raw[monsterLootValueOffset]) | uint16(item.Raw[monsterLootValueOffset+1])<<8
+	if value == 0 {
+		if *taken >= monsterLootItemCap || a.rollDice(1, 10) > 3 {
+			return
+		}
+	}
+	*taken++
+	named := a.namedItem(item.Raw)
+	if named.Name == "" {
+		// 組不出名字的存不進存檔（`save.validateItem`）；原版不會發生，這裡失敗即關閉。
+		return
+	}
+	var record gamepack.TreasureItemRecord
+	record.Name = named.Name
+	copy(record.Raw[:], named.Raw)
+	record.Raw[gamepack.ItemReadiedOffset] = 0
+	loot.items = append([]gamepack.TreasureItemRecord{record}, loot.items...)
 }
 
 // openMonsterLoot 把錢加進公款、物品交給戰後戰利品選單（spec 034），先經過 NPC 分錢與
