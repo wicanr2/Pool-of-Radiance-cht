@@ -44,11 +44,35 @@ README 的缺口清單留著四條做完的——休息被打斷、遠程武器�
 
 <!-- worklist:begin 這一段由 `cmd/pool-worklist -mode render -write WORKLIST.md` 產生，不要手改 -->
 
+### 一、玩家會撞到的功能缺口
+
+- [ ] **倒戈的隊伍 NPC 戰後經驗與分帳。** 使用者 2026-09-29 從停止線搬回。
+      **驗收**：讀 overlay-05 entry 2 照接，送鍵測試。
+      **討論**：[#122](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/122)
+- [ ] **快速戰鬥中途交還控制。** 使用者 2026-09-29 從停止線搬回。
+      **驗收**：照原版 +3 == 14h 接上，送鍵測試。
+      **討論**：[#123](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/123)
+
 ### 二、驗證缺口：接了，但沒拿原版當裁判驗過
 
 - [ ] **Windows 與 macOS 的真機啟動結果回填。** 逐步清單已經寫好交接出去（[`docs/verification/real-machine-startup-checklist.md`](docs/verification/real-machine-startup-checklist.md)），**結果還沒寫回來**。Wine 與 Docker 證得了「不是連跑都跑不起來」，證不了真機。
       **驗收**：把七步的結果與每台三張截圖寫回那份清單。
       **討論**：[#6](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/6)
+
+### 三、版面與資料的差距
+
+- [ ] **怪物戰場圖示照原版配色。** 使用者 2026-09-29 從停止線搬回。
+      **驗收**：找出配色來源並照原版畫，跑對拍。
+      **討論**：[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)
+- [ ] **事件圖片照原版顯示（PICTURE／PIC）。** 使用者 2026-09-29 從停止線搬回。
+      **驗收**：事件、神殿、城區對話照原版顯示肖像與動畫，跑對拍。
+      **討論**：[#120](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/120)
+- [ ] **戰鬥動畫：彈道、受傷閃光、倒下。** 使用者 2026-09-29 從停止線搬回。
+      **驗收**：照原版路徑、圖格、時長接上，跑對拍。
+      **討論**：[#121](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/121)
+- [ ] **商店貨品清單照原版版面。** 使用者 2026-09-29 從停止線搬回。
+      **驗收**：補 dosgolem 基準、照原版版面、對拍。
+      **討論**：[#124](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/124)
 
 <!-- worklist:end -->
 

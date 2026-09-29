@@ -18,6 +18,78 @@
         "note": "要別人在真機上跑完回填。checklist 目前沒有結構化的結果欄位，所以沒得驗"
       },
       "github_issue": 6
+    },
+    {
+      "id": "monster-icon-palette",
+      "layer": "presentation",
+      "title": "怪物戰場圖示照原版配色",
+      "body": "使用者 2026-09-29 從停止線搬回。",
+      "acceptance": "找出配色來源並照原版畫，跑對拍。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 63
+    },
+    {
+      "id": "event-pictures",
+      "layer": "presentation",
+      "title": "事件圖片照原版顯示（PICTURE／PIC）",
+      "body": "使用者 2026-09-29 從停止線搬回。",
+      "acceptance": "事件、神殿、城區對話照原版顯示肖像與動畫，跑對拍。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 120
+    },
+    {
+      "id": "combat-animations",
+      "layer": "presentation",
+      "title": "戰鬥動畫：彈道、受傷閃光、倒下",
+      "body": "使用者 2026-09-29 從停止線搬回。",
+      "acceptance": "照原版路徑、圖格、時長接上，跑對拍。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 121
+    },
+    {
+      "id": "turncoat-npc-xp",
+      "layer": "feature",
+      "title": "倒戈的隊伍 NPC 戰後經驗與分帳",
+      "body": "使用者 2026-09-29 從停止線搬回。",
+      "acceptance": "讀 overlay-05 entry 2 照接，送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 122
+    },
+    {
+      "id": "quick-cancel-midturn",
+      "layer": "feature",
+      "title": "快速戰鬥中途交還控制",
+      "body": "使用者 2026-09-29 從停止線搬回。",
+      "acceptance": "照原版 +3 == 14h 接上，送鍵測試。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 123
+    },
+    {
+      "id": "shop-list-layout",
+      "layer": "presentation",
+      "title": "商店貨品清單照原版版面",
+      "body": "使用者 2026-09-29 從停止線搬回。",
+      "acceptance": "補 dosgolem 基準、照原版版面、對拍。",
+      "verify": {
+        "kind": "manual",
+        "note": "要人判"
+      },
+      "github_issue": 124
     }
   ]
 }
