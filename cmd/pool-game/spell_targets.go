@@ -529,6 +529,11 @@ func (a *app) castSpellRay(state *tacticalState, effect gamepack.CastEffect, x, 
 	err := combat.TraceSpellRay(combat.SpellRay{
 		CasterX: int(caster.X), CasterY: int(caster.Y), TargetX: x, TargetY: y,
 		Length: ray.Length, Surcharge: ray.Surcharge,
+		// `2AA8h`：每一段先畫（槽 13h 的四格、50 毫秒），才打停下來的那一格（spec 166）。
+		Segment: func(fromX, fromY, toX, toY int) {
+			a.missileAnimation(state, fromX, fromY, toX, toY, fourFrames(slotRay),
+				missileFramesComposite, rayMilliseconds)
+		},
 	}, state.Classes, cellAt, strike(ray.Damage))
 	return hits, err
 }

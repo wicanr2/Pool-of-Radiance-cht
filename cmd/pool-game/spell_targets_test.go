@@ -176,7 +176,8 @@ func TestPlayerLosesAPendingSpellWhenWounded(t *testing.T) {
 	if state.Mover != 1 {
 		t.Fatalf("losing the spell used up the turn: mover %d", state.Mover)
 	}
-	// 同一回合再按 C：Cast 不在指令列上，清單不開。
+	// 同一回合再按 C：Cast 不在指令列上，清單不開。受傷閃光（spec 166）停著的時候不讀鍵，先等它過去。
+	drainCombatNotices(t, application)
 	pressAll(t, application, ebiten.KeyC)
 	if application.castOpen || !strings.Contains(state.Status, "NO SPELLCASTING") {
 		t.Fatalf("cast menu opened after a wound: open %v status %q", application.castOpen, state.Status)

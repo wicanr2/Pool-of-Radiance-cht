@@ -43,7 +43,7 @@
 ```
 1CCBh  c4 7e 0c / 26 c4 bd 08 01 / 26 c4 45 0a     6784h = 自己 runtime +0Ah（目標）
 1CF0h  9a 34 06 bb 05 … 9a 84 00 0a 01            entry 20(自己, "gazes...", 0Ah, 0)（1CA5h）
-1D03h  9a 98 00 0a 01                              overlay-25 entry 24(12h)（聲音）
+1D03h  9a 98 00 0a 01                              overlay-25 entry 24(12h)（組四格圖，spec 166）
 1D42h  9a 9d 00 0a 01                              overlay-25 entry 25(自己 X,Y, 目標 X,Y, 4, 2Dh)（動畫）
 1D47h  b0 7f … 9a a7 00 0a 01 / 08 c0 / 75 03      overlay-25 entry 27(自己, 7Fh)：沒有 → 1E38h
 1D65h  26 c4 85 c8 00                              走 6784h 的物品串列（記錄 +C8h，+2Ah 是下一個）
@@ -71,7 +71,7 @@ entry 20。與中毒致死同一支（spec 153）。
 1ED0h  9a 57 00 96 00 / 08 c0 / 75 03               overlay-13 entry 11（1087h）(自己, 目標)：0 → 返回
 1F0Bh  9a 39 00 38 01 / 08 c0 / 75 03               overlay-31 entry 5（0419h）(自己 X,Y → 目標 X,Y，
                                                    預算 [bp-2])：0 → 返回
-1F27h  entry 20(自己, "Gazes...", 0Ah, 0)（1E73h）；1F3Ah 聲音、1F79h 動畫
+1F27h  entry 20(自己, "Gazes...", 0Ah, 0)（1E73h）；1F3Ah 組圖、1F79h 動畫（spec 166）
 1F7Eh  c6 06 79 67 0a                              DS:6779h = 0Ah（魅惑人類）
 1F91h..1FBFh                                        entry 20 的引數：(目標, 0Bh, 持續 0,
          (自己 +10Eh << 7) + 0Ch, 1, 1, overlay-24 entry 7(目標, 4, FEh), "is charmed")（1E7Ch）
@@ -104,7 +104,7 @@ overlay-12 entry 14 的倒戈（spec 112）。群組 9 的魔法抗性用 `010Ah
 2C53h  b0 01 50 / b0 64 50 / 9a 48 00 00 01 / 3c 19 / 76 03    Roll(1, 100) > 25 → 返回
 2C6Dh  9a c5 00 0a 01 / 3c 04 / 72 03                          overlay-25 entry 33（2591h）距離 >= 4 → 返回
 2C7Fh  9a ca 00 0a 01                                           overlay-25 entry 34（266Dh）結束行動
-2C97h  entry 20(自己, "Spits Acid", 0Ah, 1)（2C27h）；2CAAh 聲音 17h、2CE9h 動畫（1, 1Eh）
+2C97h  entry 20(自己, "Spits Acid", 0Ah, 1)（2C27h）；2CAAh 以槽 17h 組圖、2CE9h 動畫（1, 1Eh；spec 166）
 2CF6h  b0 08 50 / b0 04 50 / 9a 4d 00 00 01                    overlay-24 entry 9(8, 4)（8d4，骰數記進 677Ah）
 2D02h  b0 02 50 … b0 03 50 / b0 00 50 / 9a 43 00 00 01          entry 7(目標, 3, 0)
 2D19h  9a 7f 00 00 01                                           overlay-24 entry 19(目標, 傷害, 規則 2, 豁免)

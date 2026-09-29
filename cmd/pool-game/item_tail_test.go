@@ -80,7 +80,7 @@ func TestAlignedSwordStopsABeatPerSentence(t *testing.T) {
 	}
 }
 
-// 戰鬥中 84h：entry 26 戰鬥那一路（entry 20 旗標 0，`21BAh` 等一拍）、倒下那一句之後
+// 戰鬥中 84h：entry 26 戰鬥那一路（entry 20 旗標 0、閃光、`21BAh` 等一拍）、倒下那一句之後
 // `1609h` 的 `1004h` 摘掉十六個戰鬥效果（最後一個是 `DS:0C37h` 的 4Bh），倒下動畫在
 // overlay-32 `1006h` 再等一拍。兩則都排進戰鬥訊息佇列，名字由 entry 20 印在上一列。
 func TestAlignedSwordInCombatStopsTwoBeatsAndStripsEffects(t *testing.T) {
@@ -94,14 +94,18 @@ func TestAlignedSwordInCombatStopsTwoBeatsAndStripsEffects(t *testing.T) {
 		gamepack.NewEffectNode(0x3D, 0, 12, false),
 	}
 	pressAll(t, application, ebiten.KeyU, ebiten.KeyR)
-	if len(state.Notices) != 2 {
+	// 三則：受傷那一句（閃光一輪 4 × 70 毫秒再等一拍，spec 166）、倒下那一句（entry 20 旗標 0，
+	// 字留在右欄）、倒下動畫（骷髏，`1006h` 的一拍，字照樣留著）。
+	if len(state.Notices) != 3 {
 		t.Fatalf("notices %+v", state.Notices)
 	}
 	beat := application.speedDelayTicks()
-	hurt, down := state.Notices[0], state.Notices[1]
-	if hurt.Name != "A" || hurt.Text != "TAKES 15 POINTS OF DAMAGE FROM MAGIC" || hurt.Ticks != beat ||
-		down.Name != "A" || down.Text != "GOES DOWN, AND IS DYING" || down.Ticks != beat {
-		t.Fatalf("notices %+v %+v, beat %d", hurt, down, beat)
+	hurt, down, skull := state.Notices[0], state.Notices[1], state.Notices[2]
+	if hurt.Name != "A" || hurt.Text != "TAKES 15 POINTS OF DAMAGE FROM MAGIC" ||
+		hurt.Ticks != millisecondsToTicks(4*0x46)+beat || hurt.Anim == nil || hurt.Anim.Kind != animationSparkle ||
+		down.Name != "A" || down.Text != "GOES DOWN, AND IS DYING" || down.Ticks != 0 ||
+		skull.Anim == nil || skull.Anim.Kind != animationSkull || skull.Ticks != beat || skull.Text != down.Text {
+		t.Fatalf("notices %+v %+v %+v, beat %d", hurt, down, skull, beat)
 	}
 	if state.HitPoints[1] != 0 || state.States[1] != gamepack.DyingState || state.Roster[1].FootprintClass != 0 {
 		t.Fatalf("board after the sword: hp %d state %d footprint %d", state.HitPoints[1], state.States[1],
@@ -112,7 +116,7 @@ func TestAlignedSwordInCombatStopsTwoBeatsAndStripsEffects(t *testing.T) {
 	}
 	// 停拍裡 tacticalInput 不做別的事：一影格扣一格。
 	idleFrame(t, application)
-	if len(state.Notices) != 2 || state.Notices[0].Ticks != beat-1 {
+	if len(state.Notices) != 3 || state.Notices[0].Ticks != hurt.Ticks-1 {
 		t.Fatalf("hold: %+v", state.Notices)
 	}
 }

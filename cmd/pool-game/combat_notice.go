@@ -98,6 +98,10 @@ type combatNotice struct {
 	Footer string
 	// Ticks 是還要停幾個影格。0 代表這一則不停拍。
 	Ticks int
+	// Anim 是這一則停拍期間盤面上播的動畫（彈道、閃光、倒下；combat_animation.go，spec 166）。
+	Anim *combatAnimation
+	// Kept 是 entry 20 的「停」為 0：印完不清右欄，接著播的動畫期間字還在（queueAnimation）。
+	Kept bool
 }
 
 // combatantName 是記錄 `+0` 的名字，也就是 `1865h` 印在右欄的那一行：隊員讀角色，
@@ -138,7 +142,7 @@ func (state *tacticalState) nameInk(index uint8) uint8 {
 // 一行（名字、空白、那一句）。
 func (a *app) panelNotice(state *tacticalState, index uint8, text string, row int, beat bool) string {
 	name := a.combatantName(state, index)
-	notice := combatNotice{Name: name, Text: text, Row: row, NameInk: state.nameInk(index)}
+	notice := combatNotice{Name: name, Text: text, Row: row, NameInk: state.nameInk(index), Kept: !beat}
 	if beat {
 		notice.Ticks = a.speedDelayTicks()
 	}
@@ -205,11 +209,15 @@ const turnedSparkleMilliseconds = 0x46
 // turnedNotice 是 overlay-25 entry 26（`2041h`）旗標 1 的那一路（"is turned"，overlay-13
 // `129Dh..12A7h`）：entry 20(記錄, 字串, 0Ah, **0**) 之後播閃光動畫，(遊戲速度 + 1) 輪、
 // 每輪四格、每格 Delay(70 ms)（`2130h..21ADh`）；遊戲速度是 0 才另外等一拍（`21B4h`，
-// 那時一拍是 0）。remake 沒有這段動畫，停的長度照它算。
+// 那時一拍是 0）。閃光畫的是槽 16h（COMSPR 9）的四格（combat_animation.go，spec 166）。
 func (a *app) turnedNotice(state *tacticalState, index uint8, text string) string {
 	line := a.panelNotice(state, index, text, noticeRowPanel, false)
-	state.Notices[len(state.Notices)-1].Ticks =
-		(int(a.gameSpeed) + 1) * 4 * turnedSparkleMilliseconds * 60 / 1000
+	notice := &state.Notices[len(state.Notices)-1]
+	notice.Ticks = (int(a.gameSpeed) + 1) * 4 * turnedSparkleMilliseconds * 60 / 1000
+	notice.Anim = sparkleAnimation(state, index, slotSparkle, int(a.gameSpeed)+1)
+	if notice.Anim != nil {
+		notice.Anim.Ticks = notice.Ticks
+	}
 	return line
 }
 

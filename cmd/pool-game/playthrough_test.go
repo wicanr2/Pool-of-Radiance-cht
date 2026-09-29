@@ -761,6 +761,12 @@ func premadeReadiedKit() ([]poolsave.Item, error) {
 // 等於撞牆就放棄，那樣量到的是驅動程式的極限，不是遊戲的。
 func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 	t.Helper()
+	// 戰鬥動畫（彈道、閃光、骷髏，spec 166）只是等待：送鍵之前空轉過去，不算進預算。
+	// 停拍（Anim 為 nil 的那幾則）照舊吃掉按鍵，與加動畫之前的駕駛一模一樣。
+	send := func(key ebiten.Key) error {
+		drainCombatAnimations(t, application)
+		return press(application, key)
+	}
 	for tick := 0; tick < budget; tick++ {
 		state := application.tactical
 		if state == nil || state.Finished {
@@ -768,14 +774,14 @@ func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 		}
 		if state.Prompt {
 			// 敵方清光時原版會問「還要繼續嗎」，N 才是收尾。
-			if err := press(application, ebiten.KeyN); err != nil {
+			if err := send(ebiten.KeyN); err != nil {
 				return err
 			}
 			continue
 		}
 		mover := state.Mover
 		if mover == 0 || int(mover) >= len(state.Friendly) || !state.Friendly[mover] {
-			if err := press(application, ebiten.KeyEnter); err != nil {
+			if err := send(ebiten.KeyEnter); err != nil {
 				return err
 			}
 			continue
@@ -783,7 +789,7 @@ func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 		target, ok := state.nearestOpposing(mover)
 		if !ok {
 			// 場上沒有敵人了：結束回合，讓 endRound 去問「還要繼續嗎」。
-			if err := press(application, ebiten.KeyEnter); err != nil {
+			if err := send(ebiten.KeyEnter); err != nil {
 				return err
 			}
 			continue
@@ -806,11 +812,11 @@ func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 		moved := false
 		for _, direction := range order {
 			if application.tactical != nil && !application.tactical.Moving {
-				if err := press(application, ebiten.KeyM); err != nil {
+				if err := send(ebiten.KeyM); err != nil {
 					return err
 				}
 			}
-			if err := press(application, tacticalStepKeys[direction]); err != nil {
+			if err := send(tacticalStepKeys[direction]); err != nil {
 				return err
 			}
 			after := application.tactical
@@ -823,7 +829,7 @@ func driveTacticalCombat(t *testing.T, application *app, budget int) error {
 			}
 		}
 		if !moved {
-			if err := press(application, ebiten.KeyEnter); err != nil {
+			if err := send(ebiten.KeyEnter); err != nil {
 				return err
 			}
 		}

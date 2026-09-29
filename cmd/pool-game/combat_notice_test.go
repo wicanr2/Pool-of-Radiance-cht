@@ -11,11 +11,23 @@ import (
 // combatNoticeIdleKey 是停拍中空轉一個影格時送的鍵：遊戲裡沒有任何地方接它。
 const combatNoticeIdleKey = ebiten.KeyPause
 
-// combatNoticeHolding 說這一影格是不是停拍中（tacticalInput 不讀鍵）。以預算或
+// combatNoticeHolding 說下一影格是不是停拍中（tacticalInput 不讀鍵）。以預算或
 // 駕駛計數量東西的測試拿它把等待的影格扣掉。
+//
+// 看的是**整個佇列**，不是第一則：holdCombatNotice 先把倒數到 0 的那幾則丟掉，再停在下一則
+// 還有影格的上面。只看第一則的話，一則剛停完、後面還排著動畫（spec 166）時會說「沒在停」，
+// 而下一個按鍵照樣被停拍吃掉——治具與真實輸入層不一致。
 func combatNoticeHolding(application *app) bool {
 	state := application.tactical
-	return state != nil && !state.Finished && len(state.Notices) > 0 && state.Notices[0].Ticks > 0
+	if state == nil || state.Finished {
+		return false
+	}
+	for _, notice := range state.Notices {
+		if notice.Ticks > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 // AI 戰鬥訊息帶名字、施法前的 "Casts a Spell" 與停拍（issue #104，spec 098
@@ -53,9 +65,11 @@ func TestFoeCastAnnouncesCasterAndSpellByName(t *testing.T) {
 		if state.FoeLog != tc.log(application) {
 			t.Fatalf("%v: log %q, want %q", tc.language, state.FoeLog, tc.log(application))
 		}
-		// 遊戲速度 0 不停拍：訊息排進佇列，下一個影格就丟掉。
-		if len(state.Notices) != 1 {
-			t.Fatalf("%v: notices %+v, want the one cast notice", tc.language, state.Notices)
+		// 遊戲速度 0 不停拍：訊息排進佇列，下一個影格就丟掉。之後是施法那一道（entry 5 `0E24h`）
+		// 與魔法飛彈打中的受傷閃光（overlay-24 `14ECh`），兩則都不看遊戲速度（spec 166）。
+		if len(state.Notices) != 3 || state.Notices[1].Anim == nil || state.Notices[1].Anim.Kind != animationMissile ||
+			state.Notices[1].Name != "" || state.Notices[2].Anim == nil || state.Notices[2].Anim.Kind != animationSparkle {
+			t.Fatalf("%v: notices %+v, want the cast notice, the bolt and the hurt sparkle", tc.language, state.Notices)
 		}
 		notice := state.Notices[0]
 		if notice.Name != "LEVEL 6 MU" || notice.Text != tc.text || notice.Row != noticeRowPanel ||
@@ -75,9 +89,11 @@ func TestFoeCastHoldsForOneBeat(t *testing.T) {
 		t.Fatal(err)
 	}
 	beat := application.speedDelayTicks()
-	if beat != 54 || len(state.Notices) != 1 || state.Notices[0].Ticks != beat {
-		t.Fatalf("beat %d notices %+v, want one notice holding 54 frames", beat, state.Notices)
+	// 施法那一句一拍，之後是施法那一道與受傷閃光（spec 166），各停自己的長度。
+	if beat != 54 || len(state.Notices) != 3 || state.Notices[0].Ticks != beat {
+		t.Fatalf("beat %d notices %+v, want the cast notice holding 54 frames", beat, state.Notices)
 	}
+	rest := state.Notices[1].Ticks + state.Notices[2].Ticks
 	if state.Mover != 1 {
 		t.Fatalf("after the foe cast the party member should be up, mover %d", state.Mover)
 	}
@@ -85,12 +101,21 @@ func TestFoeCastHoldsForOneBeat(t *testing.T) {
 		if err := press(application, ebiten.KeyEnter); err != nil {
 			t.Fatal(err)
 		}
-		if state.Mover != 1 || len(state.Notices) != 1 {
+		if state.Mover != 1 || len(state.Notices) != 3 {
 			t.Fatalf("frame %d: the beat was cut short: mover %d notices %+v", frame, state.Mover, state.Notices)
 		}
 	}
 	if state.Notices[0].Ticks != 0 {
 		t.Fatalf("ticks left after the beat: %d", state.Notices[0].Ticks)
+	}
+	// 動畫期間一樣不讀鍵：ENTER 照樣被吃掉。
+	for frame := 0; frame < rest; frame++ {
+		if err := press(application, ebiten.KeyEnter); err != nil {
+			t.Fatal(err)
+		}
+		if state.Mover != 1 || len(state.Notices) == 0 {
+			t.Fatalf("frame %d: the animations were cut short: mover %d notices %+v", frame, state.Mover, state.Notices)
+		}
 	}
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)

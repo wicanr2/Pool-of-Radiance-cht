@@ -84,8 +84,10 @@ func TestArenaDuelCopiesTheCurrentCharacterAsRolf(t *testing.T) {
 			if !state.AIDriven[index] {
 				t.Fatal("the copy is not driven by the AI (+10Fh = 1)")
 			}
-			if state.Icons[index].Head != 3 || state.Icons[index].Body != 7 {
-				t.Fatalf("copy icon %+v, want the champion's", state.Icons[index])
+			// 記錄照抄，造形不照抄：overlay-07 `1B20h..1B36h` 載 "cpic" 區塊 0Bh、`1BD5h` 寫 `+0BFh`（spec 166）。
+			if icon := state.Icons[index]; !icon.Monster || icon.Body != arenaCopyIconBlock ||
+				icon.Archive != application.monsterArchive() {
+				t.Fatalf("copy icon %+v, want CPIC%d block 0Bh", icon, application.monsterArchive())
 			}
 			if state.Morale.Raw[index] != 0xB2 {
 				t.Fatalf("copy morale %02X, want B2h (1BC6h)", state.Morale.Raw[index])

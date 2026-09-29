@@ -366,6 +366,13 @@ type spellCasting struct {
 func (a *app) castSpell(state *tacticalState, caster spellCasting, option castOption,
 	targets spellTargets) error {
 	target, chosen := targets.first()
+	// overlay-22 entry 5 `0D67h..0E24h`：挑到目標之後、派發處理常式之前，從施法者往瞄準的那一格
+	// 畫一道（槽 12h 的四格、30 毫秒；spec 166）。只佔停拍。
+	if targets.Chosen && int(state.Mover) < len(state.Roster) {
+		self := state.Roster[state.Mover]
+		a.missileAnimation(state, int(self.X), int(self.Y), targets.X, targets.Y,
+			fourFrames(slotSpellBolt), missileFramesComposite, spellBoltMilliseconds)
+	}
 	casterLevel := caster.level
 	if state.isFriendly(state.Mover) {
 		state.Activity.PartyCasts++
@@ -980,6 +987,10 @@ func (a *app) applySpellDamage(state *tacticalState, target uint8, damage int) {
 	}
 	// 一擊斃命（spec 141）：施法者是隊員、豁免後傷害仍大於 0 時歸零。
 	damage = a.cheatDamage(state, state.Mover, target, damage)
+	if damage > 0 {
+		// entry 19 `14ECh`：扣血（`14FBh`）之前以 entry 26 旗標 0 印那一句、閃光一輪、等一拍（spec 166）。
+		a.hurtNotice(state, target, hurtText(state, damage, state.SpellDamage.Flags))
+	}
 	state.HitPoints[target] -= damage
 	// overlay-24 entry 19 `1500h..155Fh`：傷害大於 0 的當下清 runtime +1、丟失施法中的。
 	a.woundCombatant(state, target, damage)

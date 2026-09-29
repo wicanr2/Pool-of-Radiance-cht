@@ -59,6 +59,9 @@ type SpellRay struct {
 	Length uint8
 	// Surcharge 是 `[bp+6]`：閃電束 1、編號 3Ch 0。
 	Surcharge bool
+	// Segment 是 `2AA8h` 的 overlay-25 entry 25（畫這一段，spec 166）：從這一段開始時走訪器的
+	// 位置（`2A0Eh` 存的 prev）畫到停下來的那一格，在打那一格（`2AC3h`）之前。nil 就不畫。
+	Segment func(fromX, fromY, toX, toY int)
 }
 
 // SpellRayCell 是盤面：`CellAt` 的佔格者與地形，以及地形類別表。
@@ -114,6 +117,7 @@ func TraceSpellRay(ray SpellRay, classes CellClasses, cellAt SpellRayCell,
 		goalY := int(int16(ty + (ty-cy)*sign*int(remaining)))
 		walker := NewStepWalker(tx, ty, goalX, goalY)
 		for {
+			fromX, fromY := walker.X, walker.Y
 			if walker.StartX != walker.GoalX || walker.StartY != walker.GoalY {
 				for {
 					moved := walker.Step()
@@ -136,6 +140,9 @@ func TraceSpellRay(ray SpellRay, classes CellClasses, cellAt SpellRayCell,
 			lastOcc = occupant
 			if terrain == 0 {
 				remaining = 0
+			}
+			if ray.Segment != nil {
+				ray.Segment(fromX, fromY, walker.X, walker.Y)
 			}
 			blocked, err := StrikeSpellRayCell(classes, cellAt, walker.X, walker.Y, hit)
 			if err != nil {

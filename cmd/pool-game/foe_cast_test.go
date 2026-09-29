@@ -204,7 +204,8 @@ func TestQuickMagicOffKeepsSpellsAndTwoTurnsItOn(t *testing.T) {
 	if application.state.Party[0].Memorised[0] != 0 {
 		t.Fatal("the member's memorised slot was not used up")
 	}
-	// 再按一次關掉。
+	// 再按一次關掉。施法那一道與受傷閃光（spec 166）停著的時候不讀鍵，先等它過去。
+	drainCombatNotices(t, application)
 	if err := press(application, ebiten.KeyDigit2); err != nil {
 		t.Fatal(err)
 	}
@@ -272,6 +273,8 @@ func TestStagedMagicUserCastsInANaturalFight(t *testing.T) {
 	}
 	cast := ""
 	for tick := 0; tick < 400 && cast == "" && application.tactical != nil; tick++ {
+		// 停拍與戰鬥動畫只是等待，不算進預算（spec 166）。
+		drainCombatNotices(t, application)
 		key := ebiten.KeyEnter
 		if state.Prompt {
 			key = ebiten.KeyN

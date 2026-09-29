@@ -277,7 +277,8 @@ func (a *app) alignedWear(slot int, raw []byte, mode gamepack.WearMode, list gam
 	if inCombat {
 		// 戰鬥中 entry 26 走 `205Ah..21BAh`：entry 20(記錄, 那一句, 0Ah, 0) 之後播受傷閃光，
 		// `21BAh` 等一拍。先排這一則，扣血時丟失法術的 "lost a spell"（`153Eh`）接在後面。
-		a.panelNotice(state, uint8(cell), wearNoticeText(line, name), noticeRowPanel, true)
+		// 閃光一輪（槽 17h）、再等一拍：hurtNotice（combat_animation.go，spec 166）。
+		a.hurtNotice(state, uint8(cell), wearNoticeText(line, name))
 		next, overkill = a.woundWearer(state, cell, damage)
 	} else {
 		result := gamepack.ApplyDamage(member.CurrentHP, member.Status, damage)
@@ -293,8 +294,9 @@ func (a *app) alignedWear(slot int, raw []byte, mode gamepack.WearMode, list gam
 		// `15F6h` entry 20(記錄, "Goes Down"…, 列, 0)；戰鬥中 `1609h..1631h`：`1004h` 摘掉
 		// 十六個戰鬥用的效果代碼、派發群組 13（`161Dh`，#113），`+10Dh` 仍為 0 就以
 		// overlay-32 entry 20（`13D:0084`，倒下的動畫）收尾，它在 `1006h` 等一拍；
-		// 群組 13 把人救回來（`+10Dh` 非 0）時改在 `1638h` 等一拍。兩條路都是一拍。
-		a.panelNotice(state, uint8(cell), wearNoticeText(down, name), noticeRowPanel, true)
+		// 群組 13 把人救回來（`+10Dh` 非 0）時改在 `1638h` 等一拍。兩條路都是一拍，由 combatantDown
+		// 排（骷髏或單純一拍，spec 166）；這一句本身不停拍，字留在右欄。
+		a.panelNotice(state, uint8(cell), wearNoticeText(down, name), noticeRowPanel, false)
 		// `1610h..161Dh` 就是 combatantDown（spec 155）：它改的是盤面那一份串列，所以先把手上這一份
 		// 放回去再叫它，叫完再拿回來（wearItem 最後把這一份寫回盤面）。
 		state.Effects[cell] = list

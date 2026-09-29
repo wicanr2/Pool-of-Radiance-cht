@@ -56,17 +56,21 @@ const gazeTraceBudget = 0xff
 // 的判斷，也不結束行動。
 //
 //	1CCBh  6784h = 自己 runtime +0Ah（目標）
-//	1CF0h  entry 20(自己, "gazes...", 0Ah, 0)；1D03h 聲音、1D42h 動畫
+//	1CF0h  entry 20(自己, "gazes...", 0Ah, 0)；1D03h 組圖、1D42h 動畫（spec 166）
 //	1D47h  entry 27(自己, 7Fh)：有才走目標的物品串列
 //	1D8Ah  裝備中（+34h）而且 +2Fh／+30h／+31h 有一格是 76h（Mirror）→
 //	1DC7h    entry 20(目標, "reflects it!", 0Ch, 0)、反向動畫、6784h = 自己
 //	1E38h  entry 7(6784h, 1, 0)；沒過 → 005Ah(6784h, 7, "is Stoned")
 func (a *app) foeGazeStone(state *tacticalState, mover, target uint8) string {
 	line := a.panelNotice(state, mover, state.say(msgFoeGazesStone), noticeRowPanel, false)
+	// `1D03h`／`1D42h`：自己往目標畫一道（槽 12h 的四格、45 毫秒；spec 166）。
+	a.combatantMissile(state, mover, target, fourFrames(slotSpellBolt), missileFramesComposite, gazeMilliseconds)
 	victim := target
 	if state.hasEffect(int(mover), gamepack.GazeReflectableEffectCode) && state.ItemsOf != nil &&
 		gamepack.MirrorReadied(state.ItemsOf(int(target))) {
 		line += " " + a.panelNotice(state, target, state.say(msgFoeGazeReflected), noticeRowLost, false)
+		// `1E11h`：反射回來，從目標往自己畫同一道。
+		a.combatantMissile(state, target, mover, fourFrames(slotSpellBolt), missileFramesComposite, gazeMilliseconds)
 		victim = mover
 	}
 	if a.savedAgainstCategory(state, victim, gamepack.GazeStoneSaveCategory, 0) {
@@ -81,7 +85,7 @@ func (a *app) foeGazeStone(state *tacticalState, mover, target uint8) string {
 //
 //	1ED0h  overlay-13 `1087h`(自己, 目標) 不過就返回（吸血鬼的 `7Eh` 認鏡子與聖徽）
 //	1F0Bh  overlay-31 `0419h` 從自己走向目標，地形擋住就返回（預算見 gazeTraceBudget）
-//	1F27h  entry 20(自己, "Gazes...", 0Ah, 0)；1F3Ah 聲音、1F79h 動畫
+//	1F27h  entry 20(自己, "Gazes...", 0Ah, 0)；1F3Ah 組圖、1F79h 動畫（spec 166）
 //	1F7Eh  DS:6779h = 0Ah（魅惑人類）
 //	1FD4h  overlay-24 entry 20(目標, 0Bh, 持續 0, (自己 +10Eh << 7) + 0Ch, 有收尾 1, 規則 1,
 //	         entry 7(目標, 4, FEh), "is charmed")
@@ -91,6 +95,8 @@ func (a *app) foeGazeCharm(state *tacticalState, mover, target uint8) string {
 		return ""
 	}
 	line := a.panelNotice(state, mover, state.say(msgFoeGazesCharm), noticeRowPanel, false)
+	// `1F3Ah`／`1F79h`：自己往目標畫一道（槽 12h 的四格、45 毫秒；spec 166）。
+	a.combatantMissile(state, mover, target, fourFrames(slotSpellBolt), missileFramesComposite, gazeMilliseconds)
 	// entry 20 的引數由左往右求值：豁免（entry 7）在 entry 20 的群組 9 之前擲。
 	saved := a.savedAgainstCategory(state, target, gamepack.GazeCharmSaveCategory, gamepack.GazeCharmSaveModifier)
 	// 群組 9 的魔法抗性用 `010Ah:00D4h(DS:6779h)`：魅惑人類是法師法術，讀 `DS:5CF0h`（吸血鬼）的
@@ -125,7 +131,7 @@ func (a *app) recordMagicUserLevel(state *tacticalState, index uint8) int {
 //	2C53h  Roll(1, 100) > 25 → 返回
 //	2C6Dh  overlay-25 entry 33（`2591h`）量到目標的距離 >= 4 → 返回
 //	2C7Fh  entry 34（`266Dh`）結束行動
-//	2C97h  entry 20(自己, "Spits Acid", 0Ah, 1)；聲音、動畫
+//	2C97h  entry 20(自己, "Spits Acid", 0Ah, 1)；2CAAh 組圖、2CE9h 動畫（spec 166）
 //	2CFCh  overlay-24 entry 9(8, 4)（骰數記進 DS:677Ah）
 //	2D13h  entry 7(目標, 3, 0)
 //	2D19h  overlay-24 entry 19(目標, 傷害, 規則 2, 豁免)
@@ -142,6 +148,8 @@ func (a *app) foeAcidSpit(state *tacticalState, mover, target uint8) (bool, erro
 		return false, nil
 	}
 	notice := a.panelNotice(state, mover, state.say(msgFoeSpitsAcid), noticeRowPanel, true)
+	// `2CAAh`／`2CE9h`：entry 24 以槽 17h 組四格，只用第一格、30 毫秒（spec 166）。
+	a.combatantMissile(state, mover, target, fourFrames(slotHurtSparkle), 1, acidSpitMilliseconds)
 	damage := 0
 	for die := 0; die < gamepack.AcidSpitDiceCount; die++ {
 		damage += a.rollDice(1, gamepack.AcidSpitDiceSides)

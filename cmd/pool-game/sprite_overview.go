@@ -55,16 +55,12 @@ func (a *app) openSpriteOverview() {
 			a.spriteEffects = append(a.spriteEffects, pair)
 		}
 	}
-	// 戰場上的造形：`CBODY.DAX` 的身體逐個配同一個頭。
-	// 怪物記錄與角色記錄同格式，所以走的是同一套（`ReadCombatIcon`）。
-	if len(a.spriteMonsters) == 0 && a.loadIcon != nil {
-		colours := [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}
-		for body := uint8(0); body < 32; body++ {
-			var pair [2]*ebiten.Image
-			if icon, err := a.loadIcon(1, body, 1, false, colours); err == nil {
-				pair[0] = icon
+	// 怪物的戰場造形：目前這一組的 `CPICn.DAX`（spec 166），站立圖是 0..7Fh 裡實際有的區塊。
+	if len(a.spriteMonsters) == 0 && a.loadMonsterIcon != nil {
+		for block := uint8(0); block < 0x80; block++ {
+			if icon, err := a.loadMonsterIcon(a.monsterArchive(), block, false); err == nil && icon != nil {
+				a.spriteMonsters = append(a.spriteMonsters, [2]*ebiten.Image{icon, nil})
 			}
-			a.spriteMonsters = append(a.spriteMonsters, pair)
 		}
 	}
 	// 戰場地形：三個 `*COM.DAX` 各一組（spec 131）。與戰鬥畫面共用同一份
@@ -188,12 +184,12 @@ func drawTerrainOverview(screen *ebiten.Image, a *app, foreground, accent color.
 	}
 }
 
-// drawMonsterOverview 畫戰場上的造形庫（`CBODY.DAX` 的三十二種身體）。
+// drawMonsterOverview 畫目前這一組的怪物戰場造形（`CPICn.DAX`，spec 166）。
 //
-// **怪物與玩家角色共用這一組**：怪物記錄裡的造形欄位（`+BDh`..`+C6h`）全是 0，
-// 戰場上用哪一個由 ECL 的 `LOAD MONSTER` 第三個引數（`MonsterSpawn.IconBlock`）
-// 指定。這裡畫的是玩家的預設配色；原版把哥布林那一類畫成紅色是換了配色，
-// **配色從哪來還沒定位**。
+// 怪物記錄裡的造形欄位（`+BDh`..`+C6h`）全是 0；戰場上用哪一張由 ECL 的 `LOAD MONSTER`
+// 第三個引數（`MonsterSpawn.IconBlock`）指定，檔案組是 `DS:52D4h`（與 MONnCHA 同一個數字）。
+// 顏色就是圖本身的，只經 `DS:0CE6h → 0CF6h` 把 0Dh 換成 08h。大型怪物的圖是 48 寬或 48 高，
+// 這一頁一律縮進同樣大的一格。
 func drawMonsterOverview(screen *ebiten.Image, a *app, foreground, accent color.Color) {
 	drawText(screen, a.text(msgSpriteMonsters), spriteLabelLeft, spritePortraitTop, accent)
 	if len(a.spriteMonsters) == 0 {
@@ -207,8 +203,10 @@ func drawMonsterOverview(screen *ebiten.Image, a *app, foreground, accent color.
 		if icon == nil {
 			continue
 		}
+		// 24 像素的畫成 36；48 的縮一半塞進同一格。
+		scale := 36.0 / float64(max(icon.Bounds().Dx(), icon.Bounds().Dy()))
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Scale(1.5, 1.5)
+		op.GeoM.Scale(scale, scale)
 		op.GeoM.Translate(float64(spriteRowLeft+(index%columns)*cellWidth),
 			float64(spritePortraitTop+16+(index/columns)*cellHeight))
 		screen.DrawImage(icon, op)

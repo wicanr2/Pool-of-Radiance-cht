@@ -83,6 +83,18 @@ func recolorCombatIcon(picture graphics.Picture, colors [6][2]uint8) graphics.Pi
 }
 
 func readCombatIconBlock(members []*zip.File, name string, blockID uint8) (graphics.Picture, error) {
+	picture, err := readIconBlock(members, name, blockID)
+	if err != nil {
+		return graphics.Picture{}, err
+	}
+	if picture.Width() != 24 || picture.ItemCount != 1 {
+		return graphics.Picture{}, fmt.Errorf("%s block 0x%02X shape is %dx%dx%d", name, blockID, picture.Width(), picture.Height(), picture.ItemCount)
+	}
+	return picture, nil
+}
+
+// readIconBlock 讀一個 masked 圖片區塊，不限寬度（怪物造形有 48 寬的，spec 166）。
+func readIconBlock(members []*zip.File, name string, blockID uint8) (graphics.Picture, error) {
 	var member *zip.File
 	for _, candidate := range members {
 		if strings.EqualFold(filepath.Base(candidate.Name), name) {
@@ -119,9 +131,6 @@ func readCombatIconBlock(members []*zip.File, name string, blockID uint8) (graph
 		picture, err := graphics.ParsePicture(block.Data, true, 0)
 		if err != nil {
 			return graphics.Picture{}, fmt.Errorf("%s block 0x%02X: %w", name, blockID, err)
-		}
-		if picture.Width() != 24 || picture.ItemCount != 1 {
-			return graphics.Picture{}, fmt.Errorf("%s block 0x%02X shape is %dx%dx%d", name, blockID, picture.Width(), picture.Height(), picture.ItemCount)
 		}
 		return picture, nil
 	}

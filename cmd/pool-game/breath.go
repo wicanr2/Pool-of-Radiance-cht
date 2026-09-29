@@ -115,6 +115,9 @@ func (a *app) foeBreath(state *tacticalState, mover uint8) (bool, error) {
 	ray := gamepack.BreathRay(damage)
 	// 吐息不是法術：`DS:6779h` 是 0（鏡影擋不下）。
 	state.SpellDamage = spellDamageContext{}
+	// `3167h..3185h`：從自己往那一點畫一道（槽 13h 的四格、50 毫秒；spec 166），才拉射線。
+	a.missileAnimation(state, int(self.X), int(self.Y), x, y, fourFrames(slotRay),
+		missileFramesComposite, rayMilliseconds)
 	hits, err := a.castSpellRay(state, gamepack.CastEffect{Damage: damage, Ray: &ray}, x, y)
 	state.SpellDamage = spellDamageContext{}
 	if err != nil {

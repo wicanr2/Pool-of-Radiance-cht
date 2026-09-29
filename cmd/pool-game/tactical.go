@@ -214,11 +214,15 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 	partySlot := []int{-1}
 	icons := []boardIcon{{}}
 	// 怪物照 ECL 的順序展開：`LOAD MONSTER` 的第三個引數是那一群共用的造形
-	// 編號（`MonsterSpawn.IconBlock`），數量是第二個。
-	foeIcons := make([]uint8, 0, 8)
+	// 編號（`MonsterSpawn.IconBlock`），數量是第二個；圖在 `CPICn.DAX`（spec 166）。
+	foeIcons := make([]boardIcon, 0, 8)
 	for _, monster := range a.combatMonsters {
+		archive := monster.Archive
+		if archive == 0 {
+			archive = a.monsterArchive()
+		}
 		for index := 0; index < int(monster.Spawn.Count); index++ {
-			foeIcons = append(foeIcons, monster.Spawn.IconBlock)
+			foeIcons = append(foeIcons, monsterBoardIcon(archive, monster.Spawn.IconBlock))
 		}
 	}
 	nextFoe := 0
@@ -340,19 +344,32 @@ func deployRoster(a *app, grid combat.TacticalGrid, classes combat.CellClasses) 
 	return cells, friendly, partySlot, icons, nil
 }
 
-// boardIcon 是一格用哪一個戰鬥造形。怪物與角色共用 `CBODY.DAX` 的身體，
-// 差別只在誰指定它：角色是自己建角時選的，怪物是 ECL `LOAD MONSTER` 的
-// 第三個引數（見 CONTEXT 2026-09-08 那一節）。
+// boardIcon 是一格用哪一個戰鬥造形。角色是 `CHEAD`／`CBODY` 依建角時選的組起來、套自己的
+// 六組配色；怪物（Monster）是 `CPICn.DAX` 的第 Body 號，n 是 Archive（spec 166）。
 type boardIcon struct {
 	Head, Body, Size uint8
 	Colours          [6][2]uint8
 	Valid            bool
+	Monster          bool
+	Archive          uint8
+}
+
+// arenaCopyIconBlock 是競技場複製品的造形：overlay-07 `1B20h..1B36h` 以 "cpic"、區塊 0Bh 叫
+// overlay-33 entry 5 載進槽位 `DS:6D49h`，`1BCFh..1BD5h` 把槽位寫進複製品的 `+0BFh`（spec 166）。
+const arenaCopyIconBlock = 0x0B
+
+// monsterBoardIcon 是 overlay-03 `0507h..0529h` 載的那一張：`CPIC` + `Str(DS:52D4h)` 的第 block 號。
+func monsterBoardIcon(archive, block uint8) boardIcon {
+	return boardIcon{Body: block, Size: 1, Valid: true, Monster: true, Archive: archive}
 }
 
 // boardIconFor 取一格的造形。`slot` 是隊伍索引，-1 代表敵方。
-func (a *app) boardIconFor(slot int, isParty bool, foeIcons []uint8, nextFoe *int) boardIcon {
-	// 競技場的複製品站在對面，造形欄位是從上場的人照抄的（spec 150）。
-	if (isParty || a.isArenaCopy(slot)) && slot >= 0 && slot < len(a.state.Party) {
+func (a *app) boardIconFor(slot int, isParty bool, foeIcons []boardIcon, nextFoe *int) boardIcon {
+	// 競技場的複製品站在對面；記錄是照抄上場的人，**造形不是**：`+0BFh` 指到 CPIC 區塊 0Bh（spec 166）。
+	if a.isArenaCopy(slot) && slot >= 0 && slot < len(a.state.Party) {
+		return monsterBoardIcon(a.monsterArchive(), arenaCopyIconBlock)
+	}
+	if isParty && slot >= 0 && slot < len(a.state.Party) {
 		member := a.state.Party[slot]
 		size := member.IconSize
 		if size != 1 && size != 2 {
@@ -361,15 +378,22 @@ func (a *app) boardIconFor(slot int, isParty bool, foeIcons []uint8, nextFoe *in
 		return boardIcon{Head: member.IconHead, Body: member.IconWeapon, Size: size,
 			Colours: member.IconColors, Valid: true}
 	}
-	// 敵方：怪物記錄裡的造形欄位全是 0，編號來自 ECL。用完就沒有了，
+	// 敵方：編號來自 ECL，圖與顏色都是 CPIC 區塊本身的（spec 166）。用完就沒有了，
 	// 那時退回第一個——寧可畫錯一隻，也不要整場沒有敵人的圖。
-	body := uint8(0)
 	if len(foeIcons) > 0 {
-		body = foeIcons[*nextFoe%len(foeIcons)]
+		icon := foeIcons[*nextFoe%len(foeIcons)]
 		*nextFoe++
+		return icon
 	}
-	return boardIcon{Head: 0, Body: body, Size: 1,
-		Colours: [6][2]uint8{{1, 9}, {2, 10}, {3, 11}, {4, 12}, {6, 14}, {7, 15}}, Valid: true}
+	return monsterBoardIcon(a.monsterArchive(), 0)
+}
+
+// monsterArchive 是 `DS:52D4h`：enterCombatStaging 讀 MONnCHA 用的那一個數字。
+func (a *app) monsterArchive() uint8 {
+	if a.eclArchive != 0 {
+		return a.eclArchive
+	}
+	return a.spawn.Map.Archive
 }
 
 // tacticalState 是戰術預覽跨影格保留的狀態。Scores 對應原版 runtime 的 `+3`

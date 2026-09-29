@@ -37,11 +37,11 @@ func fillCombatCell(screen *ebiten.Image, column, row int, ink color.Color) {
 // boardSprite 取一格的戰鬥造形，載一次就留著。
 func (a *app) boardSprite(index int) *ebiten.Image {
 	state := a.tactical
-	if state == nil || index >= len(state.Icons) || a.loadIcon == nil {
+	if state == nil || index >= len(state.Icons) {
 		return nil
 	}
 	choice := state.Icons[index]
-	if !choice.Valid {
+	if !choice.Valid || (choice.Monster && a.loadMonsterIcon == nil) || (!choice.Monster && a.loadIcon == nil) {
 		return nil
 	}
 	if icon, ok := a.boardIcons[choice]; ok {
@@ -50,7 +50,14 @@ func (a *app) boardSprite(index int) *ebiten.Image {
 	if a.boardIcons == nil {
 		a.boardIcons = map[boardIcon]*ebiten.Image{}
 	}
-	icon, err := a.loadIcon(choice.Head, choice.Body, choice.Size, false, choice.Colours)
+	var icon *ebiten.Image
+	var err error
+	if choice.Monster {
+		// 怪物是 `CPICn.DAX` 的區塊本身，顏色就是圖上的（spec 166）。
+		icon, err = a.loadMonsterIcon(choice.Archive, choice.Body, false)
+	} else {
+		icon, err = a.loadIcon(choice.Head, choice.Body, choice.Size, false, choice.Colours)
+	}
 	if err != nil {
 		// 載不出來也記著，不然每一影格都重試一次。
 		a.boardIcons[choice] = nil
@@ -288,23 +295,41 @@ func drawCombatBoard(screen *ebiten.Image, a *app, foreground color.Color) {
 			if index == 0 {
 				continue
 			}
-			// 有人就畫**戰鬥造形**（24×24，正好一格；spec 129）。載不出來
-			// 才退回色塊——那時畫面上還是看得出誰站哪裡。
-			if icon := a.boardSprite(int(index)); icon != nil {
-				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Scale(2, 2)
-				left, top := combatBoardCellRect(column, row)
-				op.GeoM.Translate(float64(left), float64(top))
-				screen.DrawImage(icon, op)
-			} else {
+			// 造形載不出來才退回色塊——那時畫面上還是看得出誰站哪裡。
+			if a.boardSprite(int(index)) == nil {
 				mark := foeInk
 				if int(index) < len(state.Friendly) && state.Friendly[index] {
 					mark = partyInk
 				}
 				fillCombatCell(screen, column, row, mark)
 			}
-			// 輪到誰就框起來，原版那一格有一圈白框。
-			if uint8(index) == state.Mover {
+		}
+	}
+	// 地形鋪完才畫人：原版的造形從戰鬥員那一格（記錄的 X、Y）的左上角往右下鋪，
+	// 大型怪物的圖（48 寬或 48 高）會蓋過旁邊的格子（overlay-33 entry 6，spec 166）。
+	for index := 1; index < len(state.Roster); index++ {
+		cell := state.Roster[index]
+		if cell.FootprintClass == 0 && !state.pendingSkull(index) {
+			continue
+		}
+		icon := a.boardSprite(index)
+		if icon == nil {
+			continue
+		}
+		// `0568h`：朝向（runtime `+9`）大於 3 就左右翻著畫（`18E:0052`）。
+		flip := index < len(state.Facings) && state.Facings[index] > 3
+		drawBoardPicture(screen, state, icon, int(cell.X)*3, int(cell.Y)*3, flip)
+	}
+	drawCombatAnimation(screen, a)
+	// 輪到誰就框起來，原版那一格有一圈白框。
+	for row := 0; row < combat.ViewportTileSpan; row++ {
+		for column := 0; column < combat.ViewportTileSpan; column++ {
+			mapX := int(state.Viewport.X) + column
+			mapY := int(state.Viewport.Y) + row
+			if mapX < 0 || mapX >= combat.TacticalMapWidth || mapY < 0 || mapY >= combat.TacticalMapHeight {
+				continue
+			}
+			if index := occupancy[mapY*combat.TacticalRowStride+mapX]; index != 0 && index == state.Mover {
 				outlineCombatCell(screen, column, row, color.RGBA{255, 255, 255, 255})
 			}
 		}

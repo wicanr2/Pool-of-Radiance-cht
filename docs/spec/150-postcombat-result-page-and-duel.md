@@ -265,8 +265,9 @@ overlay-07 entry 26 以參數 1 進來，`1AB9h..1B15h` 與 `8001h` 相同，之
 
 所以複製品是**整筆照抄**（能力值、生命值、職業等級、記憶法術、造形 `+BDh..+C6h`），改的只有名字、
 陣營、AI、士氣、造形槽位、效果與物品鏈；物品順序是反的（與 spec 142 怪物物品、本份〈第二隻起的
-效果串列反序〉同一個形狀）。`147h:0039h` 載入哪一份造形沒讀：remake 畫複製品用上場那個人的造形
-（strong inference：`+BDh..+C6h` 在 Move 裡照抄）。
+效果串列反序〉同一個形狀）。`147h:0039h` 是 overlay-33 entry 5，"cpic" 走它的 `040Bh` 那一支：
+檔名接上 `Str(DS:52D4h)`，載的是這一組 `CPIC` 的區塊 0Bh，`+BFh` 指到那個槽位——**畫出來的是那一張
+怪物圖，不是上場那個人的造形**（exact，spec 166）。
 
 打完：
 
@@ -363,7 +364,7 @@ remake：`treasureDetectOption`／`treasureDetect`（`treasure_detect.go`）；`
 | 項目 | 位址 | 等級 | 為什麼沒接 |
 |---|---|---|---|
 | 效果 05h 對物品清單的作用 | 讀取端未定位 | unknown | 〈Detect〉：掛上去已接，之後物品怎麼顯示沒讀 |
-| 競技場複製品的造形載入 | overlay-07 `1B36h`（`147h:0039h`）、`+BFh` | strong inference | 畫的是照抄的造形；`cpic`／0Bh／槽位那一支沒讀 |
+| 競技場複製品的造形載入 | overlay-07 `1B20h..1B36h`（`147h:0039h`）、`1BCFh..1BD5h` 寫 `+BFh` | exact | 造形不照抄：畫這一組 `CPIC` 的區塊 0Bh（spec 166） |
 | 逃走那一支的丟出去的武器 | overlay-05 `0E85h` 的串列 | strong inference | `ThrownLoot` 只在有人站著時收 |
 | 原版執行期收據：競技場、逃走 | — | — | dosgolem 沒有走到競技場或逃走的駕駛段 |
 

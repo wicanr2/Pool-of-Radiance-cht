@@ -10,9 +10,9 @@ import (
 // 戰鬥特效圖形（`COMSPR.DAX`）。
 //
 // **這一份不是怪物的戰場造形。** 實際解出來的是箭、飛斧、擲石、閃光、爆炸這類
-// 特效與狀態圖示（外加一個骷髏交叉骨與一個騎馬人像）；戰場上的怪物用的是
-// `CBODY.DAX` 的身體，與玩家角色共用同一套（`cmd/pool-game/sprite_overview.go`
-// 的 `drawMonsterOverview` 與 `drawEffectOverview` 分得很清楚）。
+// 特效與狀態圖示（外加一個骷髏交叉骨與一個騎馬人像）；戰場上的怪物是
+// `CPICn.DAX`（monster_icon.go，spec 166）。區塊 b 開場時載進圖示槽 b + 0Dh
+// （19h 例外，槽 19h），彈道、閃光與倒下的動畫都從這裡取（spec 166）。
 // 每一張 24×24，分兩態——站立在 `id`、動作在 `id + 80h`。
 //
 // `COMSPR.DAX` 有十三組，編號**不是連續的**：`0..0Bh` 與 `19h`

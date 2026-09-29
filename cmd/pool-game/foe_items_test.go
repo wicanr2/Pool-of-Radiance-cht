@@ -72,6 +72,8 @@ func TestQuickMemberUsesAWandUntilItIsEmpty(t *testing.T) {
 	if len(inventory) != 1 || inventory[0].Raw[gamepack.AIItemChargesOffset] != 1 {
 		t.Fatalf("one charge should be left: %+v", inventory)
 	}
+	// 魔杖那一道與受傷閃光（spec 166）停著的時候不讀鍵，先等它過去。
+	drainCombatNotices(t, application)
 	state.Mover = 1
 	if err := press(application, ebiten.KeyEnter); err != nil {
 		t.Fatal(err)

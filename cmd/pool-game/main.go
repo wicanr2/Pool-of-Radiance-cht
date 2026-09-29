@@ -79,6 +79,8 @@ type stagedMonster struct {
 	// Items 是 MONnITM.DAX 同一個 block 的物品串列（記錄 `+C8h`，spec 142），
 	// 一件 63 bytes，順序照檔案。
 	Items [][]byte
+	// Archive 是載入時的 `DS:52D4h`：MONnCHA 與戰場造形 CPICn 用同一個數字（spec 166）。
+	Archive uint8
 }
 
 const (
@@ -397,6 +399,10 @@ type app struct {
 	spritePage      int
 	// loadMonsterSprite 讀戰場上的怪物圖形（`COMSPR.DAX`）。
 	loadMonsterSprite func(block uint8, action bool) (*ebiten.Image, error)
+	// loadMonsterIcon 讀怪物的戰場造形（`CPICn.DAX`，spec 166）。
+	loadMonsterIcon func(archive, block uint8, action bool) (*ebiten.Image, error)
+	// animationSprites 是戰鬥動畫用的 `COMSPR.DAX` 圖格，載一次就留著（combat_animation.go）。
+	animationSprites map[animationSprite]*ebiten.Image
 	// 探索畫面的 `V)IEW`（spec 119，view_sheet.go）。
 	viewSheetOpen     bool
 	viewSheetShown    bool
@@ -677,6 +683,17 @@ func newApp(zipPath, statePath string) (*app, error) {
 	}
 	application.loadMonsterSprite = func(block uint8, action bool) (*ebiten.Image, error) {
 		picture, err := assets.ReadMonsterSprite(zipPath, block, action)
+		if err != nil {
+			return nil, err
+		}
+		rendered, err := picture.RGBA(0, application.artPalette())
+		if err != nil {
+			return nil, err
+		}
+		return ebiten.NewImageFromImage(rendered), nil
+	}
+	application.loadMonsterIcon = func(archive, block uint8, action bool) (*ebiten.Image, error) {
+		picture, err := assets.ReadMonsterCombatIcon(zipPath, archive, block, action)
 		if err != nil {
 			return nil, err
 		}
@@ -2121,7 +2138,8 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 					archive, spawn.MonsterID, err)
 			}
 		}
-		staged = append(staged, stagedMonster{Spawn: spawn, Record: record, Effects: effects, Items: items})
+		staged = append(staged, stagedMonster{Spawn: spawn, Record: record, Effects: effects, Items: items,
+			Archive: archive})
 		labels = append(labels, fmt.Sprintf("%s ×%d", a.monsterText.Translate(record.Name), spawn.Count))
 	}
 	if a.arenaCopy {

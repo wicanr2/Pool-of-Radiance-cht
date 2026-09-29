@@ -154,6 +154,8 @@ func (a *app) resolveWeaponAttack(state *tacticalState, target uint8, fire bool)
 	}
 	// 這一回合出過手的照 `+113h`／`+114h` 剩下的打；打完扣掉，還有剩就不結束回合（spec 160）。
 	swings, form2 = state.remainingSwings(mover, swings, form2)
+	// 包裝 `1883h` 在擲命中之前畫彈道（`193Ah..1981h`，spec 166）：只佔停拍，不碰擲骰。
+	a.weaponMissile(state, mover, target, rawItems(items), ammunition, gear.Weapon)
 	if err := a.resolveAttackSwings(state, mover, target, swings, form2); err != nil {
 		return err
 	}

@@ -115,6 +115,13 @@ func TestBlessNamesEachBlessedTarget(t *testing.T) {
 			t.Fatalf("%v: the foe was named as blessed: %q", tc.language, lines)
 		}
 		pressAll(t, application, combatNoticeIdleKey)
+		// 施法那一道（overlay-22 `0E24h`，spec 166）排在前面：等它畫完。
+		for guard := 0; guard < 600; guard++ {
+			if shown, ok := state.shownNotice(); !ok || shown.Anim == nil || shown.Anim.Kind != animationMissile {
+				break
+			}
+			pressAll(t, application, combatNoticeIdleKey)
+		}
 		shown, ok := state.shownNotice()
 		if !ok || shown.Name+" "+shown.Text != tc.want {
 			t.Fatalf("%v: the screen shows %+v, want %q", tc.language, shown, tc.want)

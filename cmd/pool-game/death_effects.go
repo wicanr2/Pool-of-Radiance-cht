@@ -48,6 +48,15 @@ func (a *app) combatantDown(state *tacticalState, index int, overkill int) {
 	if index <= 0 || index >= len(state.Effects) {
 		return
 	}
+	// overlay-32 entry 20 `0E2Fh..0E5Fh`：已經在屍體表上的整支不做（沒有骷髏，也不等）。原版的
+	// 屍體表只記 runtime `+13h` 為 0 的人（`0F4Bh`，隊員），怪物倒幾次都照樣畫骷髏。
+	alreadyCorpse := false
+	if index < len(state.PartySlot) && state.PartySlot[index] >= 0 {
+		for _, corpse := range state.Corpses {
+			alreadyCorpse = alreadyCorpse || corpse == index
+		}
+	}
+	defer a.downBeat(state, index, alreadyCorpse)
 	// ov32 entry 20 的 `0F55h..0FF9h`：記進屍體表（`6673h` 加一，`6634h` 那一筆是記錄與 X／Y）。
 	state.Corpses = append(state.Corpses, index)
 	// entry 13：每個碼摘最早掛上的那一個；`+4` 立著就先以模式 1 叫處理常式（entry 2 `0028h`）。
