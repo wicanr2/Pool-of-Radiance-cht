@@ -451,16 +451,16 @@
       "reference": "64-y.png",
       "reference_step": 474200000,
       "remake": "remake-temple.png",
-      "same": 50830,
+      "same": 54225,
       "total": 64000,
-      "ratio": 0.7942,
+      "ratio": 0.8473,
       "note": "正常走進 Sune 神殿後的服務選單（spec 017／115；layout-only）",
       "frame_same": 7463,
       "frame_total": 7936,
       "frame_ratio": 0.9404,
-      "view_same": 813,
+      "view_same": 7744,
       "view_total": 7744,
-      "view_ratio": 0.105
+      "view_ratio": 1
     },
     {
       "name": "shop",

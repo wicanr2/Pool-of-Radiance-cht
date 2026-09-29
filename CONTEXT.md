@@ -10,6 +10,16 @@
 - #101 順帶修掉：商店重鑄成白金後進旅店，ECL 視窗 `6BC3h` 的舊值寫回、白金歸零（`internal/gamepack/intro.go`）。
 - #119：本機完整版在執行檔旁 `data/` 帶原版 ZIP 與倚天字型（`bundled_data.go`，不散布），點兩下即開、預設中文。
 - 使用者取消重繪現代奇幻主題與 sprite（#17）。
+- #63／#121（spec 166）：怪物的戰場造形是 `CPIC<區號>.DAX`（`LOAD MONSTER` 第三個運算元，overlay-03
+  `0507h..0529h`），換色表只把 0Dh 換成 08h 而 218 張圖沒有 0Dh，顏色就是圖本身的；dosgolem 第一場那隻
+  逐像素相同。戰鬥動畫（彈道、受傷閃光、倒下骷髏）照 overlay-25 entry 23～26、overlay-32 entry 20 接上。
+- #120（spec 165）：事件 `PICTURE` 照原版畫在第一人稱框（HEAD／BODY 疊圖或 PIC 動畫），四個收圖時機；
+  神殿那一張視野 10.50% → 100%。
+- #122／#123（spec 167）：倒戈 NPC 當怪物結算並離隊；快速戰鬥三個問鍵點可 SPACE 收回。
+- #125：戰後寫 `@6DC8`（瓦海登墳場靠它遞減骷髏殭屍數，remake 以前每場都是原數量）；ADD NPC 帶 `+88h` 的錢。
+  貧民窟不受影響（`B13Eh` 的 COMPARE 在貧民窟走不到）。
+- #124（spec 168）：商店貨品清單照原版版面與倒序；對拍增為 36 張。
+- 已推翻：「怪物與隊員共用 `CBODY`、配色未定位」——怪物用 `CPIC`（#63）；spec 136「兩個計數各自加」（#125）。
 - open issue 只剩 #6（Windows／macOS 真機驗收）；README 自評 84～90% → 87～92%。
 - 已推翻：「沒有毛病的人神殿不收錢」——原版問 "cast cure anyway" 後照收（#118）；spec 061「EFREETI 的
   `+10Fh` 是 1 所以不問 Attack Ally」——`2995h` 看的是攻擊者（#118）。
@@ -856,12 +866,8 @@ boundary 全部是 `exit` 或 `event`）。斯倫特貧民區的架在原版是�
 - **`COMSPR.DAX` 不是怪物。** 十三組 24×24（編號 `0..0Bh` 與 `19h`，動作態
   各加 `80h`）畫出來是箭、飛斧、石頭、閃光、爆炸——那是**投射物與特效**。
   檔名 `COMSPR`（combat sprites）很容易讀成「怪物」。
-- **怪物與玩家角色共用 `CBODY.DAX` 的三十二種身體。** 怪物記錄裡的造形欄位
-  （`+BDh` head、`+BEh` weapon、`+C0h` size、`+C1h`..`+C6h` 六組配色）
-  **全是 0**，所以造形不在記錄裡；戰場上用哪一個由 ECL `LOAD MONSTER` 的
-  第三個引數（`MonsterSpawn.IconBlock`）指定。
-- **配色從哪來還沒定位**（[#63](https://github.com/wicanr2/Pool-of-Radiance-cht/issues/63)）。原版把哥布林那一類畫成紅色，而 `IconBlock` 只給
-  身體編號。
+- 怪物的戰場造形：見最上面 2026-09-29 那一節（`CPIC<區號>.DAX`，spec 166）。這裡原本寫的
+  「怪物與隊員共用 `CBODY`、配色未定位」已推翻。
 
 素材總覽（`F4`）的第三頁畫的就是這一組特效。**不要把它叫成怪物。**
 
