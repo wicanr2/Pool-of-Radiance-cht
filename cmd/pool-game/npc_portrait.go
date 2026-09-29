@@ -47,4 +47,6 @@ func (a *app) clearNPCPortrait() {
 	if a.shop != nil {
 		a.shop.portrait, a.shop.portraitTried = nil, false
 	}
+	// 事件圖片也是（spec 165）；換張的進度留著。
+	a.eventPicture.frames, a.eventPicture.tried = nil, false
 }

@@ -74,52 +74,8 @@ func ReadCampFire(zipPath string, archive uint8) ([]graphics.Picture, error) {
 }
 
 // parseAnimation 把一個 PIC 區塊拆成每一張，並把差分張還原成完整圖。
+// 每一張的延遲由 parseAnimationWithDelays 讀（pic_animation.go，spec 165）。
 func parseAnimation(data []byte) ([]graphics.Picture, error) {
-	if len(data) < 1 {
-		return nil, fmt.Errorf("animation block is empty")
-	}
-	count := int(data[0])
-	if count == 0 {
-		return nil, fmt.Errorf("animation block declares no frames")
-	}
-	result := make([]graphics.Picture, 0, count)
-	var base graphics.Picture
-	pos := 1
-	for index := 0; index < count; index++ {
-		// 每一張前面有 4 bytes 前綴，內容還沒讀出來，這裡只跳過。
-		if pos+4+17 > len(data) {
-			return nil, fmt.Errorf("frame %d runs past the block", index)
-		}
-		header := data[pos+4:]
-		width := int(uint16(header[2]) | uint16(header[3])<<8)
-		height := int(uint16(header[0]) | uint16(header[1])<<8)
-		items := int(header[8])
-		if width == 0 || height == 0 || items == 0 {
-			return nil, fmt.Errorf("frame %d has invalid dimensions", index)
-		}
-		size := 17 + items*(width*8*height)/2
-		if pos+4+size > len(data) {
-			return nil, fmt.Errorf("frame %d wants %d bytes, block has %d left",
-				index, size, len(data)-pos-4)
-		}
-		picture, err := graphics.ParsePicture(data[pos+4:pos+4+size], false, 0)
-		if err != nil {
-			return nil, fmt.Errorf("frame %d: %w", index, err)
-		}
-		if index == 0 {
-			base = picture
-		} else {
-			restored := base
-			restored.Pixels = make([]uint8, len(base.Pixels))
-			for i := range base.Pixels {
-				if i < len(picture.Pixels) {
-					restored.Pixels[i] = base.Pixels[i] ^ picture.Pixels[i]
-				}
-			}
-			picture = restored
-		}
-		result = append(result, picture)
-		pos += 4 + size
-	}
-	return result, nil
+	pictures, _, err := parseAnimationWithDelays(data)
+	return pictures, err
 }

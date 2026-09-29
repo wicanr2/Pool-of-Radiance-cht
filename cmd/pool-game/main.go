@@ -177,6 +177,10 @@ type app struct {
 	shopActive      bool
 	// lastPicture 是最近一次 `0Eh PICTURE`（shop_menu.go，spec 164）。
 	lastPicture eclPicture
+	// eventPicture 是事件裡蓋在第一人稱框上的那張圖（event_picture.go，spec 165）。
+	eventPicture eventPicture
+	// loadPICAnimation 讀 `PIC<區號>.DAX` 的一段動畫（spec 165）；由 newApp 注入。
+	loadPICAnimation func(archive, block uint8) ([]*ebiten.Image, []uint32, error)
 	equipment       *equipmentState
 	equipmentOpen   bool
 	journalOpen     bool
@@ -744,6 +748,21 @@ func newApp(zipPath, statePath string) (*app, error) {
 		}
 		return ebiten.NewImageFromImage(rendered), nil
 	}
+	application.loadPICAnimation = func(archive, block uint8) ([]*ebiten.Image, []uint32, error) {
+		animation, err := assets.ReadPICAnimation(zipPath, archive, block)
+		if err != nil {
+			return nil, nil, err
+		}
+		frames := make([]*ebiten.Image, 0, len(animation.Frames))
+		for _, frame := range animation.Frames {
+			rendered, err := frame.RGBA(0, application.artPalette())
+			if err != nil {
+				return nil, nil, err
+			}
+			frames = append(frames, ebiten.NewImageFromImage(rendered))
+		}
+		return frames, animation.Delays, nil
+	}
 	application.reloadTitle = func() error {
 		rendered, err := pictures[1].RGBA(0, application.artPalette())
 		if err != nil {
@@ -846,6 +865,8 @@ func (a *app) Update() error {
 	// 配樂跟著畫面狀態走（spec 128）。沒有音訊資產時 musicPlayer 是 nil，
 	// 這一行什麼都不做。
 	a.updateMusic()
+	// 事件圖片的動畫由選單的等鍵推著走（spec 165）。
+	a.tickEventPicture()
 	// 鎖 HP 在這一次更新結束時補，不論從哪一個分支返回（spec 141）。
 	defer a.applyCheatLockHP()
 	if a.justPressed(ebiten.KeyF10) {
@@ -1865,6 +1886,8 @@ func (a *app) syncArchiveFromEventMachine() error {
 func (a *app) beginInitialSearch() error {
 	// 新的一格，等待次數從頭算（見 `pauseAppliedCellResult`）。
 	a.cellWaitedOnce, a.cellTextSticky = false, false
+	// 走完一步，視野重畫過了（spec 165）。
+	a.clearEventPicture()
 	// 命令列的兩個搜尋旗標是 ECL 變數，腳本自己會讀（spec 136）。
 	if a.eventSession != nil {
 		if machine := a.eventSession.Machine(); machine != nil {
@@ -2096,6 +2119,8 @@ func presentationBoundary(result eclvm.Result) bool {
 // 記錄讀進來（spec 048 的 MON*CHA 與 staging），而那條指令同時分派戰鬥、
 // 神殿與戰後服務三種去向（spec 036）。
 func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
+	// `COMBAT` 打完之後原版重畫視野（spec 165）。
+	a.clearEventPicture()
 	if a.loadMonster == nil {
 		return fmt.Errorf("Pool monster loader is not configured")
 	}
@@ -2717,6 +2742,7 @@ func (a *app) restoreCampaign(loaded poolsave.State) error {
 	a.arenaCopy = false
 	a.combatMonsters = nil
 	a.eventText, a.eventLabel, a.cellMenuOptions = "", "", nil
+	a.clearEventPicture()
 	a.mode = modeAdventure
 	a.statusLine = fmt.Sprintf("Campaign restored at GEO%d block %d (%d,%d).", key.Archive, key.BlockID, campaign.X, campaign.Y)
 	return nil
@@ -2999,6 +3025,8 @@ func (a *app) finishCellBlock() {
 	a.cellEventPending, a.cellWaitingMenu = false, false
 	a.cellTextSticky = false
 	a.templeActive = false
+	// `EXIT` 之後主迴圈重畫視野（spec 165）。
+	a.clearEventPicture()
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText, a.eventLabel = "", ""
 	a.journalCues, a.journalCueDone = nil, nil
@@ -3384,6 +3412,7 @@ func (a *app) applyCellECLResult(result eclvm.Result) {
 		switch event.Opcode {
 		case gamepack.PictureOpcode:
 			a.recordECLPicture(event.Value)
+			a.showEventPicture(a.lastPicture)
 		case gamepack.ClearBoxOpcode:
 			a.eventText = ""
 		case gamepack.PrintReturnOpcode:
@@ -4008,6 +4037,8 @@ func drawAdventure(screen *ebiten.Image, a *app, foreground, accent color.Color)
 		op.GeoM.Translate(float64(viewLeft), float64(viewTop))
 		screen.DrawImage(ebiten.NewImageFromImage(rendered), op)
 	}
+	// 事件的 `PICTURE` 蓋在視野上（spec 165）。
+	a.drawEventPicture(screen, viewLeft, viewTop)
 	// 右邊那一塊是原版的隊伍面板加狀態列，不是除錯文字；出處與現況那幾列
 	// 移到 F1 的說明頁（`adventureProvenanceLines`），畫面上留給玩家看得到的
 	// 東西。右欄的最後一列不能低於 262——對話框的上緣在 `dialogueTop`（264）。

@@ -100,6 +100,9 @@ ECL 變數**。
 XOR 的差分（overlay-29 `0338h..03B7h` 那段 XOR 迴圈只在檔名是 `PIC` 或
 `FINAL` 時才跑，`0101h..0129h` 就是在比這兩個字串）。
 
+每一張的 4 bytes 前綴是延遲；事件裡的 `PICTURE` 怎麼畫、什麼時候收、動畫怎麼推，
+見 spec 165。
+
 ## 契約
 
 1. `InitialEvent` 保存 `SETUP MONSTER` 的三個 operand
