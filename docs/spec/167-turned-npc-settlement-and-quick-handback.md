@@ -1,7 +1,7 @@
 # Spec 167：倒戈隊員的戰後結算、AI 代打中途交還
 
 狀態：READY（兩節的碼逐條讀過位元組並實作，從 `Update()` 送鍵測試；沒有原版執行期收據）。
-證據等級 exact，另註者除外。日期：2026-09-29。主台帳：GitHub issue #122、#123。
+證據等級 exact，另註者除外。日期：2026-09-29。主台帳：GitHub issue #122、#123、#125。
 接手 spec 162〈未閉合〉、spec 150〈還沒接〉的 `1164h` 那一列、spec 096 與 spec 139 的 `+3 == 14h`。
 
 ## 輸入
@@ -160,10 +160,47 @@ overlay-08 `0525h` 的另一個 `+3 = 14h` 是指令迴圈的鍵 `10h`：目前�
 - `TestSpaceAtTheStartOfAQuickTurnHandsItBack`：輪到代打的隊員時按 SPACE：同一位由玩家走、分數 13h、
   戰術模式照擲寫回、沒有移動。
 
+## 三、`1164h` 的 @6DC8（#125）
+
+```
+116A  C4 3E 37 49 / 31 C0 / 26 89 85 90 05   [4937h]+590h = 0          ; @6DC8 清 0
+1194  26 80 7D 13 01 / 74 0B                   runtime +13h == 1 →
+119E  26 80 BD 0E 01 01 / 75 5B                或 +10Eh == 1 →
+11A9  26 80 BD 0D 01 01 / 74 09                  +10Dh != 1 →
+11B1  C4 3E 37 49 / 26 FF 85 90 05             [4937h]+590h 加一（word）
+```
+
+class 1 位移 `(2A00h + 6DC8h × 2) mod 10000h = 590h`；`cmd/pool-disp-scan -addresses 590,5AA`
+（`5AAh` 正對照照樣掃出 overlay-14 那四條）只有這兩處寫它。runtime `+13h` 是 overlay-10 `13EFh`
+對串列上排在隊伍人數之後的立 1（spec 096〈跟著隊伍的非隊員〉），所以數的是**怪物、跟著的非隊員、
+競技場複製品與站到對面的隊員裡不在場的**（倒下、死亡、逃掉、投降都把 `+10Dh` 清 0）。
+`14CAh` 每一次都走 `1164h`，打贏、逃走、全滅、沒有怪物的 `TREASURE → COMBAT` 都寫。
+
+讀它的腳本（`cmd/pool-ecl-memory-audit -addresses 6DC8`）：
+
+| 位置 | 做什麼 |
+|---|---|
+| ECL4 block 10 `9CD7h`／`9CE1h` | 瓦海登墳場骷髏那一場回來：`SUBTRACT @6DC8 @4A01 → @4A01`（剩下的骷髏，下一場的數量 `9CC6h SAVE @4A01 → @6E7F`）、`ADD @6DC8 @4A39 → @4A39` |
+| ECL4 block 10 `9F0Bh`／`9F15h` | 殭屍那一場：`@4A02`、`@4A3A` 同一個形狀 |
+| ECL4 block 10 `B59Dh` | `SAVE 0 → @6DC8`（腳本自己清） |
+| ECL8 block 16 `9A13h..9A30h` | 子程式：`@6DC8` 分到 `@6E79`、`@6E7E` 兩個計數，再減掉 |
+| ECL8 block 29 `AC8Eh`、ECL2 block 20 `B13Eh` | 只在 `@6DC7 == 1` 時讀（spec 136），引擎不寫 1，走不到 |
+
+remake 以前沒寫 `@6DC8`：墳場的骷髏與殭屍每一場都是原來的數量，打完不會減少。
+
+remake：`opposing_members.go` 的 `recordDefeatedCount`，`finishCombat` 對排出來的遭遇（`combatActive`）
+每一條收場都寫：盤面上不是隊員的格、加上站到對面的隊員，體型 0 就算；站到對面而沒上場的隊員也算。
+`enterTreasure`（沒有怪物的 `14CAh`）寫 0。
+
+測試 `cmd/pool-game/defeated_count_test.go`：
+
+- `TestGraveyardSkeletonsDropByTheDefeatedCount`：從 ECL4 block 10 `9CD7h` 開始，三隻打到投降、
+  從結算頁與選單按出去，腳本續跑：@6DC8 = 3、`@4A01` 10 → 7、`@4A39` 3 → 6。
+- `TestDefeatedCountSkipsTheFoesStillStanding`：一隻逃掉、一隻站著、隊伍逃走收場：@6DC8 = 1。
+
 ## 未閉合
 
 | 項目 | 等級 | 為什麼沒做 |
 |---|---|---|
 | 每一步之間停多久 | unknown | overlay-13 entry 5 的重畫（`27Fh:0000h`）沒讀；remake 停一個影格。停拍長度，見停止線 |
 | entry 7 的 `-` 鍵（`0096h:00B6h`） | unknown | 沒讀；指令迴圈那一條（`056Eh`）remake 也沒有 |
-| `1164h` 的 `@6DC8` 計數 | exact（碼） | 本份只接倒戈者；`@6DC8` 每一場都寫（怪物也算），貧民窟 `B13Eh` 讀它（spec 136），不屬 #122 |

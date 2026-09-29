@@ -2225,6 +2225,10 @@ func (a *app) enterTreasure(requests []eclvm.TreasureRequest) error {
 	// 選單是 `TREASURE → COMBAT` 的 overlay-05 `14CAh` 開的：先發經驗值（公款與
 	// 物品折算，spec 148），再讓 NPC 拿走份額（`1295h`），印結算頁（`08E0h`），才進選單。
 	share := a.awardTreasureExperience(loaded)
+	// `1164h`：串列上沒有怪物，@6DC8 清成 0（`1170h`，#125）。
+	if a.eventMachine != nil {
+		a.eventMachine.Memory[defeatedCountAddress] = 0
+	}
 	a.awardCommissionExperience(loaded)
 	a.treasureItems = loaded
 	a.statusLine = fmt.Sprintf("Original Pool treasure service: %d item(s), seven money pools ready.", len(loaded))

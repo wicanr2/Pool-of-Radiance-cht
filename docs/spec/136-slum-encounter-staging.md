@@ -63,15 +63,34 @@ overlay-03 的主迴圈（`3626h`，spec 135）每一圈先跑入口 4，再依�
 
 ```
 B118  COMPARE @6DC7 128 ; IF > GOTO @B225      ; 被打退 → 走逃跑那條
-B123  COMPARE @6DC7 1   ; IF < ADD 1 + @4A80 → @4A80 ; GOSUB @B69C
-B13E  COMPARE @6DC8 0   ; IF > ADD 1 + @4A80 → @4A80 ; GOSUB @B69C
+B123  COMPARE @6DC7 1   ; IF < ADD 1 + @4A80 → @4A80 ; IF < GOSUB @B69C
+B138  IF > GOTO @B250    ; IF = COMPARE @6DC8 0
+B144  IF > ADD 1 + @4A80 → @4A80 ; IF > GOSUB @B69C ; GOTO @B250
 B69C  COMPARE @4ABB 254 ; IF >= RETURN         ; 鎖上了就不再累加
 B6A4  ADD 1 + @4ABB → @4ABB
 B6AD  COMPARE @4ABB 25  ; IF < RETURN
 B6B5  SAVE 254 → @4ABB                          ; 滿 25 就鎖成 254
 ```
 
-`@6DC7`／`@6DC8` 是上一場的結果碼（overlay-05 寫的）。所以**打贏才加**，
+`@6DC7` 是上一場的結果碼、`@6DC8` 是上一場不在場的敵方數，都是 overlay-05 戰後寫的
+（spec 167〈三〉）。ECL 的 `IF` 條件不成立就跳過下一條，旗標留到下一個 `COMPARE`
+（engine `eclvm/machine.go` opcode 16h..1Bh），所以這一段是：
+
+| `@6DC7` | 做什麼 |
+|---|---|
+| 0（打贏） | `@4A80` 加一、`B69C` 讓 `@4ABB` 加一；`B13Dh` 的 `IF =` 不成立，`B13Eh` 的 `COMPARE @6DC8` **被跳過**，`B144h`／`B14Eh` 還是看 `@6DC7` 對 1，都跳過 |
+| 1 | 才比 `@6DC8`：非 0 就各加一 |
+| 2..80h | `B139h` 直接到 `B250h`（80h 是全滅，不會回到這裡） |
+| 81h（逃走） | `B11Fh` 走逃跑那條 |
+
+`@6DC7` 的寫入端：引擎只有 overlay-05 `14D6h`（0）、`068Ch`（81h）、`155Bh`（80h）三處
+（`cmd/pool-disp-scan -addresses 58E`）；ECL 寫 1 的只有 ECL2 block 9 `A01Ah` 與 ECL5 四處
+（`cmd/pool-ecl-memory-audit -addresses 6DC7`），都不在貧民窟，而 `B118h` 只在 `COMBAT` 之後
+跑，那時 `14D6h` 已經寫過。所以**貧民窟裡 `B13Eh` 這一條走不到，`@6DC8` 不影響清區進度**：
+原版與 remake 都是一場打贏各加一（exact）。remake 以前沒寫 `@6DC8`（#125），對貧民窟的路線、
+遭遇機率與市政廳委任（ECL3 block 8 `A8ABh` 讀的是 `@4ABB`）都沒有差別；有差別的是
+瓦海登墳場（spec 167〈三〉）。
+
 兩個計數各自對上一道否決：`@4A80` 滿 15、或 `@4ABB` 滿 25（鎖成 254），
 走路遭遇就停了。貧民窟清得完。
 

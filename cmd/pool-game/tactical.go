@@ -2571,6 +2571,10 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	fought := foughtAnyFoe(a.tactical)
 	// 站到對面的隊員（#122）：entry 2 把他們當敵方結算，`1164h` 再從隊伍摘掉。
 	opposing := a.opposingMembers(a.tactical)
+	// `1164h` 同一個迴圈數不在場的敵方寫進 @6DC8（#125）；每一條收場都寫。
+	if staged {
+		a.recordDefeatedCount(a.tactical)
+	}
 	// 身上的錢與物品在同一個迴圈收（monster_loot.go）；盤面丟掉之前先收好。entry 2
 	// 只在有人站著時跑（`05E0h`／決鬥的 `077Dh`）。競技場的複製品不是 staged 的怪物，
 	// 身上的東西不收——entry 2 在 `0006h` 就整段跳過了（spec 150）。

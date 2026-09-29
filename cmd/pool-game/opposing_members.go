@@ -152,3 +152,42 @@ func (a *app) opposingMemberHoldsTheField(state *tacticalState) bool {
 	_, wiped := a.partyFledOutcome(states)
 	return !wiped
 }
+
+// defeatedCountAddress 是 ECL `@6DC8`：class 1 位移 `(2A00h + 6DC8h × 2) mod 10000h = 590h`。
+// 引擎只有 `1164h` 兩處寫它（`1170h` 清 0、`11B5h` 加一，`cmd/pool-disp-scan -addresses 590`）。
+const defeatedCountAddress = 0x6DC8
+
+// recordDefeatedCount 是 `1164h` 的計數（#125，spec 167）：沿 `DS:5CF4h`，runtime `+13h == 1`
+// （串列上排在隊伍人數之後的：怪物、跟著的非隊員、競技場複製品）或 `+10Eh == 1` 的記錄，
+// `+10Dh != 1`（不在場：倒下、死亡、逃掉、投降）的每一筆加一。remake 的盤面上不是隊員的格、
+// 加上站到對面的隊員，體型 0 就是不在場；站到對面卻沒上場的隊員 `+10Dh` 是 0，也算。
+// 腳本讀它的是 ECL4 block 10 的骷髏與殭屍數（`9CD7h`／`9F0Bh`）、ECL8 block 16 `9A13h`、
+// ECL8 block 29 `AC8Eh` 與貧民窟 `B13Eh`（spec 136）。
+func (a *app) recordDefeatedCount(state *tacticalState) {
+	if a.eventMachine == nil || state == nil {
+		return
+	}
+	count := 0
+	onBoard := map[int]bool{}
+	for index := 1; index < len(state.Roster); index++ {
+		slot := -1
+		if index < len(state.PartySlot) {
+			slot = state.PartySlot[index]
+		}
+		if slot >= 0 {
+			onBoard[slot] = true
+			if slot >= len(a.state.Party) || a.state.Party[slot].Side == 0 {
+				continue
+			}
+		}
+		if state.Roster[index].FootprintClass == 0 {
+			count++
+		}
+	}
+	for slot, member := range a.state.Party {
+		if member.Side != 0 && !onBoard[slot] {
+			count++
+		}
+	}
+	a.eventMachine.Memory[defeatedCountAddress] = uint16(count)
+}

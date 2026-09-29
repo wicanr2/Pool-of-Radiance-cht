@@ -72,6 +72,13 @@ func (a *app) applyAddNPC(event eclvm.Event) error {
 		CurrentHP: int(record.CurrentHitPoints()),
 	}
 	member.Inventory = items
+	// `0E90h` 讀進整筆記錄，`+88h` 起七個 word 就是這一位身上的錢；加入的過程沒有人清它
+	// （dosgolem 雇 WARRIOR 那一刻 `+8Ah` = 1 銀幣，spec 154）。remake 的錢包是
+	// `Character.Money`（DOS 匯出寫回 `+88h` 的就是它，#125）。
+	for currency := range member.Money {
+		offset := gamepack.MonsterMoneyOffset + currency*2
+		member.Money[currency] = uint16(record.Raw[offset]) | uint16(record.Raw[offset+1])<<8
+	}
 	// 掛進隊伍（overlay-17 `13EDh` 的 `150Fh`）時跑 overlay-23 entry 1：`+2Dh`、`+73h`、`+A1h`
 	// 照職業等級重寫（spec 154）。樣板的 `+2Dh` 不一定是這個值：WARRIOR 40 → 41、HERO 與
 	// PRINCESS FATIMA 42 → 43，dosgolem 雇 WARRIOR 那一刻讀到的是 41。

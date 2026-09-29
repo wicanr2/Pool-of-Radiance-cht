@@ -86,6 +86,22 @@ remake 同一條（`TestAddNPCRecordMatchesTheHireRuntimeReceipt`：跑同一條
 十四個 NPC 來源（spec 091 的八個呼叫點，雇傭兵表展開）裡 overlay-23 改得到 `+2Dh` 的是
 WARRIOR 40 → 41、HERO 與 PRINCESS FATIMA 42 → 43；`+73h`、`+A1h`、豁免五格與樣板都相同。
 
+## 身上的錢（exact，#125）
+
+`0E90h` 把 MONnCHA 的 285 bytes 整筆讀進來，`+88h` 起七個 word 就是這一位的錢（與怪物同一個
+版面，spec 142 `0089h`）。上表加入過程裡沒有一條寫 `+88h..+95h`。執行期收據
+（`docs/audit/dosgolem-npc-combat-runtime.json`，SHA-256 `56409498…29c29e`）雇 WARRIOR（MON3CHA
+block 67h）那一刻的記錄 `+88h..+95h` 是 `00 00 01 00 00…`：一枚銀幣，與樣板相同。
+
+remake 的錢包是 `Character.Money`（DOS 匯出寫回 `+88h` 的就是它）。`applyAddNPC` 以前沒把這七格
+帶過來，加入的 NPC 身上是 0；現在照記錄帶。十四筆 ADD NPC 來源有錢的：MAD MAN 2 銀、
+DIRTEN／EVOKER／CURATE／THEURGIST 20 銅、LEVEL 6 MU 20 銅 15 銀、GENHEERIS 15 金、
+ACOLYTE 4 銀、WARRIOR 1 銀、SWORDSMAN／ROBBER／HERO 5 銀（樣板位元組，`gamepack` 讀出）。
+舊存檔已經加入的 NPC 不補：錢包分不出「本來是 0」與「後來拿走了」。
+
+測試：`cmd/pool-game/defeated_count_test.go` 的 `TestHiredMercenaryCarriesThePurseInItsRecord`
+從 ecl3/11 `9EABh`「IS THIS ACCEPTABLE?」選 YES 走到 `9F1Ch ADD NPC`，七格逐一對收據。
+
 ## MONnSPC 效果串列（exact，資料上是空的）
 
 `0E90h` 在 `1051h` 用同一個 block 讀 `MON<n>SPC.DAX`，9 bytes 一節鏈在 `+7Fh`（spec 142），ADD NPC 與
