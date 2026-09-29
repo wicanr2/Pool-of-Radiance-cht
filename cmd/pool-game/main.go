@@ -133,6 +133,20 @@ type ebitenKeys struct{}
 func (ebitenKeys) JustPressed(key ebiten.Key) bool { return inpututil.IsKeyJustPressed(key) }
 func (ebitenKeys) Chars() []rune                   { return ebiten.AppendInputChars(nil) }
 
+// Pressed 是「按住」：修飾鍵要看這個，JustPressed 只在按下那一格成立。
+func (ebitenKeys) Pressed(key ebiten.Key) bool { return ebiten.IsKeyPressed(key) }
+
+// heldKeySource 是會回報「按住」的輸入來源。治具沒有實作它時，keyHeld 退回
+// JustPressed——腳本在同一格同時按下修飾鍵與字母，兩者是同一件事。
+type heldKeySource interface{ Pressed(ebiten.Key) bool }
+
+func (a *app) keyHeld(key ebiten.Key) bool {
+	if held, ok := a.keys.(heldKeySource); ok {
+		return held.Pressed(key)
+	}
+	return a.justPressed(key)
+}
+
 type app struct {
 	mode            screenMode
 	title           *ebiten.Image
@@ -265,6 +279,8 @@ type app struct {
 	// musicPlayer 是可選的配樂輸出（spec 128）。nil 代表沒有音訊資產——
 	// 可散布的發行包本來就不帶，所有方法對 nil 安全。
 	musicPlayer *music.Player
+	// lastLoadedMonster 是最後載入的怪物記錄編號（PC-98 `[9D41h]`，spec 169）。
+	lastLoadedMonster uint8
 	// stingPrompt／stingBuffer／stingUnlocked 是原版的除錯碼（`J` 再輸入
 	// `STING`，overlay-16 `049Ah`），見 training_gate.go。
 	stingPrompt   bool
@@ -869,6 +885,10 @@ func (a *app) Update() error {
 	a.tickEventPicture()
 	// 鎖 HP 在這一次更新結束時補，不論從哪一個分支返回（spec 141）。
 	defer a.applyCheatLockHP()
+	// Ctrl+O 開關音樂（PC-98 原版的按鍵，spec 169）。
+	if a.toggleMusicKey() {
+		return nil
+	}
 	if a.justPressed(ebiten.KeyF10) {
 		if a.saveState != nil {
 			state, err := a.stateForSave()
@@ -2186,6 +2206,10 @@ func (a *app) enterCombatStaging(spawns []eclvm.MonsterSpawn) error {
 	}
 	a.combatActive = true
 	a.combatMonsters = staged
+	// 原版 `[9D41h]` 是最後載入的那一筆怪物記錄，PC-98 版拿它挑戰鬥曲（spec 169）。
+	if len(staged) > 0 {
+		a.lastLoadedMonster = staged[len(staged)-1].Spawn.MonsterID
+	}
 	a.cellEventPending, a.cellWaitingMenu = true, false
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
 	a.eventText = "Encounter: " + strings.Join(labels, " / ")
@@ -4599,8 +4623,11 @@ func main() {
 	// 發行包才有，可散布的包不帶音訊（spec 128）。
 	musicDir := flag.String("music-dir", "", "directory holding the OGG music; defaults to music/ beside the executable")
 	// 原版（C64，實跑量過）只有標題有音樂；地圖與戰鬥是靜的。full 會連那兩處
-	// 也放，那是 remake 自己加的（spec 128）。
-	musicMode := flag.String("music-mode", "original", "music cues: original (title only, as measured) or full")
+	// 也放，那是 remake 自己加的（spec 128）。**只管 Amiga 來源**：PC-98 版本來
+	// 就全程有音樂，original 對它來說就是全程（spec 169）。
+	musicMode := flag.String("music-mode", "original", "Amiga music cues: original (title only, as measured) or full; the PC-98 source always plays throughout, as the PC-98 original does")
+	// 曲子來源。預設 PC-98 那 15 首（music/pc98/）；沒有那些檔案就退回 Amiga 六首。
+	musicSource := flag.String("music-source", string(music.SourcePC98), "music source: pc98 (15 YM2203 tracks, falls back to amiga when absent) or amiga")
 	// 自動截圖用：每次畫面換了就把識別字寫進這個檔（screen_state.go）。
 	// 空字串（預設）什麼都不寫。
 	screenState := flag.String("screen-state", "", "write the current screen identifier to this file; used by the capture scripts")
@@ -4655,8 +4682,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, "music: 找不到音訊裝置，這一次不放音樂")
 		dir = ""
 	}
+	switch music.Source(*musicSource) {
+	case music.SourcePC98, music.SourceAmiga:
+	default:
+		log.Fatalf("-music-source 只能是 pc98 或 amiga，收到 %q", *musicSource)
+	}
 	// 音樂開不起來不該讓遊戲開不起來：報一行就繼續，安靜地跑。
-	if player, err := music.NewPlayer(dir); err != nil {
+	if player, err := music.Open(dir, music.Source(*musicSource)); err != nil {
 		fmt.Fprintln(os.Stderr, "music:", err)
 	} else {
 		switch music.Mode(*musicMode) {
@@ -4664,6 +4696,9 @@ func main() {
 			player.SetMode(music.Mode(*musicMode))
 		default:
 			log.Fatalf("-music-mode 只能是 original 或 full，收到 %q", *musicMode)
+		}
+		if player != nil && player.Source() != music.Source(*musicSource) {
+			fmt.Fprintf(os.Stderr, "music: %s 沒有 %s 的曲子，改用 %s\n", dir, *musicSource, player.Source())
 		}
 		game.musicPlayer = player
 		defer player.Close()

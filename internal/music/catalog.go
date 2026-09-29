@@ -9,7 +9,9 @@
 //   - **Amiga（1990，U.S. Gold／SSI）**：Wally Beben 作曲，一個自訂播放器模組
 //     `wb.Pool_of_Radiance` 裡有 **6 首 subsong**。
 //
-// remake 用 Amiga 那一份（見 docs/spec/128-music-cues.md）。音訊是第三方著作權，
+// 這個檔案是 Amiga 那一份（見 docs/spec/128-music-cues.md）。本機 full-local 包的
+// 預設來源是 **PC-98 版的 15 首**，規則在 pc98.go（spec 169）；Amiga 這一套是
+// `-music-source amiga` 或 PC-98 檔案不在時的退路。音訊是第三方著作權，
 // **不進 repo、不隨可散布的發行包走**；只有本機的 full-local 包會帶。
 //
 // # 什麼時候放——**在 VICE 裡實跑量出來的**

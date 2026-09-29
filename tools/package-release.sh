@@ -7,11 +7,12 @@
 #
 # 兩種口味（與 CoAB 同一套）：
 #   * `patch`      可散布：只有執行檔與條款檔。
-#   * `full-local` **本機保留**：另外把 Amiga 版的配樂 OGG 放進去，並把原版 ZIP
-#     與倚天字型放進執行檔旁的 `data/`（點兩下就能開，預設中文；cmd/pool-game 的
-#     bundled_data.go）。配樂是第三方著作權（Wally Beben），原版資料與字型也都
-#     沒有散布權：只有本機存在 workplace/amiga-music/ogg 時才會產生，而且
-#     dist-all/ 整個在 .gitignore 裡。
+#   * `full-local` **本機保留**：另外把配樂 OGG 放進去（PC-98 版 15 首在
+#     `music/pc98/`、Amiga 版 6 首在 `music/`），並把原版 ZIP 與倚天字型放進
+#     執行檔旁的 `data/`（點兩下就能開，預設中文；cmd/pool-game 的
+#     bundled_data.go）。配樂是第三方著作權（Pony Canyon／Wally Beben），原版
+#     資料與字型也都沒有散布權：只有本機存在 workplace/pc98-music/ogg 或
+#     workplace/amiga-music/ogg 時才會產生，而且 dist-all/ 整個在 .gitignore 裡。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -168,12 +169,25 @@ for row in rows:
     print(row["sha256"], row["name"], row["bytes"], "bytes")
 ' "$OUT/patch" "$VERSION"
 
-# ── full-local：patch 的內容再加上 Amiga 版的配樂 OGG ───────────────────────
+# ── full-local：patch 的內容再加上配樂 OGG ─────────────────────────────────
 #
-# **本機保留，不散布。** 只有 workplace/amiga-music/ogg 存在時才做；
-# 沒有那個目錄就只輸出 patch，這樣在沒有音訊的機器上也建得起來。
+# **本機保留，不散布。** 只有 workplace/pc98-music/ogg（PC-98 版 15 首，
+# tools/build-pc98-music.sh）或 workplace/amiga-music/ogg（Amiga 版 6 首，
+# tools/build-amiga-music.sh）存在時才做；兩個都沒有就只輸出 patch，
+# 這樣在沒有音訊的機器上也建得起來。遊戲預設用 PC-98 那一套（spec 169），
+# 沒有就退回 Amiga。
 MUSIC_DIR="$ROOT/workplace/amiga-music/ogg"
-if [ -d "$MUSIC_DIR" ] && [ -n "$(ls -A "$MUSIC_DIR" 2>/dev/null)" ]; then
+PC98_MUSIC_DIR="$ROOT/workplace/pc98-music/ogg"
+HAVE_AMIGA=0
+HAVE_PC98=0
+if [ -d "$MUSIC_DIR" ] && [ -n "$(ls -A "$MUSIC_DIR" 2>/dev/null)" ]; then HAVE_AMIGA=1; fi
+# PC-98 那一套靠 loops.json 帶循環點；清單不在，遊戲也不會用那些 OGG。
+if [ -f "$PC98_MUSIC_DIR/loops.json" ]; then
+  test "$(ls "$PC98_MUSIC_DIR"/pc98-*.ogg | wc -l)" = 15 ||
+    { echo "$PC98_MUSIC_DIR 不是 15 首，重跑 tools/build-pc98-music.sh" >&2; exit 1; }
+  HAVE_PC98=1
+fi
+if [ "$HAVE_AMIGA" = 1 ] || [ "$HAVE_PC98" = 1 ]; then
   run_helper "set -eu
     V='$VERSION'
     BASE='$OUT/full-local'
@@ -187,7 +201,13 @@ if [ -d "$MUSIC_DIR" ] && [ -n "$(ls -A "$MUSIC_DIR" 2>/dev/null)" ]; then
       \"\$BASE/macos-amd64/Pool of Radiance Remake.app/Contents/MacOS\" \
       \"\$BASE/macos-arm64/Pool of Radiance Remake.app/Contents/MacOS\"; do
       mkdir -p \"\$target/music\"
-      cp workplace/amiga-music/ogg/*.ogg \"\$target/music/\"
+      if [ '$HAVE_AMIGA' = 1 ]; then
+        cp workplace/amiga-music/ogg/*.ogg \"\$target/music/\"
+      fi
+      if [ '$HAVE_PC98' = 1 ]; then
+        mkdir -p \"\$target/music/pc98\"
+        cp workplace/pc98-music/ogg/pc98-*.ogg workplace/pc98-music/ogg/loops.json \"\$target/music/pc98/\"
+      fi
     done
     cp packaging/README-配樂.md \"\$BASE/README-配樂.md\""
 
@@ -237,9 +257,9 @@ for source, name in [
                 info.compress_type = zipfile.ZIP_DEFLATED
                 archive.writestr(info, path.read_bytes())
 ' "$OUT/full-local" "$VERSION"
-  echo "本機完整版（含 Amiga 配樂、原版 ZIP 與倚天字型，**不要散布**）在 $ROOT/$OUT/full-local"
+  echo "本機完整版（含配樂［PC-98=$HAVE_PC98、Amiga=$HAVE_AMIGA］、原版 ZIP 與倚天字型，**不要散布**）在 $ROOT/$OUT/full-local"
 else
-  echo "沒有 workplace/amiga-music/ogg，略過 full-local（先跑 tools/build-amiga-music.sh）"
+  echo "沒有 workplace/pc98-music/ogg 也沒有 workplace/amiga-music/ogg，略過 full-local（先跑 tools/build-pc98-music.sh 或 tools/build-amiga-music.sh）"
 fi
 
 echo "可散布的發行包在 $ROOT/$OUT/patch"

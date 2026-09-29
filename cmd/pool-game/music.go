@@ -6,15 +6,19 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/music"
 )
 
-// 配樂（spec 128）。
+// 配樂（spec 128、169）。
 //
-// 原版 DOS 版沒有音樂，所以這一層**沒有 DOS 對照可比**。曲子來自 Amiga 版
-// （Wally Beben），情境的形狀來自 C64 版驅動的三支包裝——`INIT`（開機／標題）、
-// `DUNGEON`、`COMBAT`。「哪一個情境配哪一首」是 remake 自己決定的，
-// 理由寫在 internal/music 的 Bindings。
+// 原版 DOS 版沒有音樂，所以這一層**沒有 DOS 對照可比**。曲子有兩個來源：
+//
+//   - **PC-98 版**（預設，spec 169）：15 首 YM2203，派曲規則照那一版的
+//     `GAME.EXE` 逐條讀出（區塊對照表 `$63CC`、標題／戰鬥／商店／結局的直接呼叫）。
+//   - **Amiga 版**（spec 128）：Wally Beben 的六首；情境的形狀來自 C64 版驅動的
+//     三支包裝，「哪一個情境配哪一首」是 remake 自己決定的（internal/music 的 Bindings）。
 //
 // **音訊不隨可散布的發行包走**：沒有 `-music-dir`、或那個目錄裡沒有檔案，
 // 遊戲就安靜地跑。那是預設情況，不是錯誤路徑。
@@ -80,8 +84,44 @@ func (a *app) musicCue() music.Cue {
 	}
 }
 
-// updateMusic 每一影格叫一次。`Set` 自己會擋掉「同一個情境重放」，
-// 所以這裡不必記上一次是什麼——那條規則的理由寫在 music.Player.Set。
+// musicScene 把目前的畫面狀態交給派曲規則（spec 169）。
+//
+// 各欄位對到 PC-98 版 `GAME.EXE` 的哪一個模式寫在 music.Scene；這裡只負責
+// 從 remake 的狀態讀出來。
+func (a *app) musicScene() music.Scene {
+	scene := music.Scene{
+		Title:      a.mode == modeTitle,
+		Adventure:  a.mode == modeAdventure,
+		Combat:     a.tactical != nil && a.tacticalPreview,
+		BossCombat: a.lastLoadedMonster == music.PC98BossMonsterID,
+		Shop:       a.shopActive,
+		Temple:     a.templeActive,
+		Ending:     a.endingActive,
+		Block:      music.PC98StartBlock,
+	}
+	// 還沒有 ECL 區塊時（開始選單、建角）是開機初始化留下的 0；
+	// 有了就是目前的區塊（原版 `[9D3Fh]` 由區塊載入時寫入，overlay 7 `803Dh`）。
+	if a.eventSession != nil {
+		scene.Block = int(a.eventSession.CurrentBlockID())
+	}
+	return scene
+}
+
+// updateMusic 每一影格叫一次。「同一首不重播」由 player 自己擋，
+// 所以這裡不必記上一次是什麼——那條規則的理由寫在 music.Player。
 func (a *app) updateMusic() {
-	a.musicPlayer.Set(a.musicCue())
+	a.musicPlayer.Update(a.musicScene())
+}
+
+// toggleMusicKey 是原版的音樂開關：PC-98 `GAME.EXE $5EA6` 讀到按鍵碼 `0Fh`
+//（Ctrl+O）就把 `[9D42h]` 反相並重派區域配樂（spec 169）。
+//
+// 按到了就吃掉這一影格：O 在營地、作弊選單裡另有用途，同一次按鍵不該兩邊都作用。
+func (a *app) toggleMusicKey() bool {
+	if !a.keyHeld(ebiten.KeyControl) || !a.justPressed(ebiten.KeyO) {
+		return false
+	}
+	// 原版切換時畫面上沒有任何訊息（`$5EAC..$5EB9` 只改旗標、重派曲），這裡也不加。
+	a.musicPlayer.ToggleEnabled()
+	return true
 }
