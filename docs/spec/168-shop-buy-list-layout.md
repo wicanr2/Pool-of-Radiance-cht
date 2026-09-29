@@ -79,10 +79,34 @@ GUISARME, GUISARME-VOULGE, HALBERD, LUCERN HAMMER`，
 
 ## 價格欄
 
-原版在記錄價格為 0 的四種彈藥（`4 DARTS`、`2 JAVELINS`、`20 QUARRELS`、`10 ARROWS`）
-與 `SLING` 上顯示 `1`（`80-b` 第 8 行、`84-n` 第 1／8 行、`85-n` 第 6／8 行逐格讀出）。
-remake 的清單顯示記錄的價格（0），與實際收的錢一致；原版收 0 還是 1 沒有量過，這一頁不動
-買賣規則。這幾格在對拍上是價格欄的一個字。
+**記錄價格為 0 的貨品上架時改成 1 金，清單印 1、買也收 1（exact）。**
+
+武具店有五筆：`4 DARTS`、`2 JAVELINS`、`20 QUARRELS`、`10 ARROWS`、`SLING`。
+原版清單上都印 `1`（`80-b` 第 8 行、`84-n` 第 1／8 行、`85-n` 第 6／8 行逐格讀出）。
+
+位元組（`GAME.OVR` SHA-256 `bc4e3c32…`，overlay-06 `workplace/ovr/overlay-06.bin`
+SHA-256 `2db20078…`，overlay 內 offset，`objdump -m i8086` 反組譯）：
+
+```
+0030h  清單那一支：les ax,[676Eh]   ; 存貨鏈的頭
+0064h  C4 7E F8          les di,[bp-8]            ; 這一筆
+0067h  26 83 7D 3A 00    cmp word es:[di+3Ah],0
+006Ch  75 09             jne 0077h
+0071h  26 C7 45 3A 01 00 mov word es:[di+3Ah],1   ; 寫回記憶體裡的那一筆
+007Ah  26 8B 45 3A       mov ax,es:[di+3Ah]       ; 印價格
+```
+
+B）uy（entry 4 `034Fh`）一進來就 `0383h call 0030h` 印清單，`039Dh` 付款讀的是同一筆的
+`+3Ah`，所以收的就是改過的 1。全 38 個 overlay 掃 `26 C7/89 .. 3A` 寫 `+3Ah` 的指令，
+overlay-06 只有 `0071h` 這一條（其餘在 overlay-21，是估價與戰利品那一路）。
+
+runtime 收據（dosgolem `2ab6f651`，`START.EXE` `12811cbc…`，`workplace/dosgolem-probe-price`）：
+ref-shop 那條鍵序進店，`v` 看人物資料頁 `GOLD 120`（`80-v`）；`b`、`End` ×7 反白 `4 DARTS`、
+`b` 買、`e`、`v`：`PLATINUM 23 GOLD 4`（`92-v`，119 金）；再買一次：`PLATINUM 23 GOLD 3`
+（`104-v`，118 金）。負重 27 → 47 → 66，兩次都真的收下了。
+
+remake：`shopStock` 上架時把價格 0 的記錄寫成 1（`TreasureItemRecord.SetPrice`），買下的那一件
+也帶著 1——與原版寫回記憶體裡那一筆相同，之後賣出的出價照 `+3Ah` 算。
 
 ## 驗收
 
@@ -91,6 +115,9 @@ remake 的清單顯示記錄的價格（0），與實際收的錢一致；原版
 - `TestShopListPagesLikeTheOriginal`：End／Home、NEXT 保留頁內行、中間頁與最後一頁的底列、
   最後一頁 NEXT 不作用、離開再開回到 `HAND AXE`。
 - `TestShopListBBuysTheHighlightedItem`：`B`、`B` 買到手斧。
+- `TestShopListChargesOneForZeroPricedAmmunition`：從 Update() 送 `b`、`End` ×7、`b`、`e`
+  兩輪，錢包 120 → 白金 23 金 4 → 白金 23 金 3，與 dosgolem 收據相同。
+- `TestShopStockOnlyRaisesZeroPrices`：只有那五筆從 0 改成 1，其餘價格不動。
 - 發行包對拍 `shop-buy`（`tools/appimage-dos-parity.sh`，基準 `ref-shop` 的 `4d5cbdcf`），
   數字在 `docs/audit/dos-parity-sample.*`。旅店那一段買手斧改成與原版同一組鍵
   `b,b,e,e`。
@@ -101,4 +128,3 @@ remake 的清單顯示記錄的價格（0），與實際收的錢一致；原版
   走到指定的一件）。
 - 起點不在 19 的倍數時按 NEXT（例如重開之後 `top = 1`）：remake 讓 `top` 加 19、可以不足一頁；
   原版沒拍。
-- 價格為 0 的那幾件原版實際收多少（見〈價格欄〉）。

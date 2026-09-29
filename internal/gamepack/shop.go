@@ -33,3 +33,10 @@ const itemPriceOffset = 0x3a
 func (r TreasureItemRecord) Price() uint16 {
 	return uint16(r.Raw[itemPriceOffset]) | uint16(r.Raw[itemPriceOffset+1])<<8
 }
+
+// SetPrice 寫回記錄裡的價格欄（`+3Ah`，word）。商店上架時原版會把 0 改成 1
+// （overlay-06 `0067h..0076h`，spec 168〈價格欄〉），就是寫這一欄。
+func (r *TreasureItemRecord) SetPrice(price uint16) {
+	r.Raw[itemPriceOffset] = byte(price)
+	r.Raw[itemPriceOffset+1] = byte(price >> 8)
+}

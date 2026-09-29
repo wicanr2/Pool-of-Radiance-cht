@@ -66,9 +66,19 @@ const (
 // 檔案裡是 `…Bardiche, Hand Axe, Battle Axe`；翻頁到最後一頁的最後一行是 `SHIELD`，
 // 檔案的第一筆（dosgolem `84-n`／`85-n`）。不只一個 block 的店（目前沒有）照同一條
 // 倒過來是推論。
+//
+// 價格為 0 的記錄上架時改成 1（exact）：overlay-06 `0030h` 那一支逐筆走存貨鏈
+// （`DS:676Eh`），`0067h cmp word es:[di+3Ah],0`／`0071h mov word es:[di+3Ah],1`
+// 直接寫回記憶體裡的那一筆，之後印價格與 `039Dh` 付款讀的都是改過的那一欄。
+// dosgolem 買 `4 DARTS` 兩次，錢包 120 → 119 → 118 金（spec 168〈價格欄〉）。
 func shopStock(records []gamepack.TreasureItemRecord) []gamepack.TreasureItemRecord {
 	stock := slices.Clone(records)
 	slices.Reverse(stock)
+	for index := range stock {
+		if stock[index].Price() == 0 {
+			stock[index].SetPrice(1)
+		}
+	}
 	return stock
 }
 

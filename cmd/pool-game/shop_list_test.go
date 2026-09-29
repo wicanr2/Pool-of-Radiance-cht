@@ -8,11 +8,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/wicanr2/Pool-of-Radiance-cht/internal/gamepack"
+	pooltreasure "github.com/wicanr2/Pool-of-Radiance-cht/internal/treasure"
 )
 
 // 原版武具店按 `b` 之後的第一頁（dosgolem `workplace/dosgolem-ref-shop/80-b`，
-// 雜湊 `4d5cbdcf`），逐行讀自那一幀。價格欄 `4 DARTS` 原版顯示 1，記錄是 0，
-// 那一欄另外說明（spec 168〈價格欄〉），這裡只對名稱。
+// 雜湊 `4d5cbdcf`），逐行讀自那一幀。價格欄另有一條（記錄是 0 的上架改成 1，
+// spec 168〈價格欄〉），這裡只對名稱。
 var dosArmouryFirstPage = []string{
 	"BATTLE AXE", "HAND AXE", "BARDICHE", "BEC DE CORBIN", "BILL-GUISARME",
 	"BO STICK", "CLUB", "DAGGER", "4 DARTS", "FAUCHARD", "FAUCHARD-FORK", "FLAIL",
@@ -115,5 +116,62 @@ func TestShopListBBuysTheHighlightedItem(t *testing.T) {
 	inventory := a.state.Party[0].Inventory
 	if len(inventory) != 1 || !strings.EqualFold(inventory[0].Name, "Hand Axe") {
 		t.Fatalf("B B bought %v (%q), want the Hand Axe", inventory, a.shop.message)
+	}
+}
+
+// 記錄價格為 0 的彈藥上架時是 1 金，清單印 1、買也收 1（overlay-06 `0071h`，
+// spec 168〈價格欄〉）。收據是 dosgolem 在武具店買 `4 DARTS` 兩次
+// （`workplace/dosgolem-probe-price`）：人物資料頁 GOLD 120 → PLATINUM 23 GOLD 4
+// → PLATINUM 23 GOLD 3。全程從 Update() 送原版那一組鍵：b、End ×7、b、e。
+func TestShopListChargesOneForZeroPricedAmmunition(t *testing.T) {
+	a := newShopListApp(t)
+	a.state.Party[0].Money = [7]uint16{}
+	a.state.Party[0].Money[pooltreasure.Gold] = 120
+	a.state.CharacterLibrary[0].Money = a.state.Party[0].Money
+	want := [][2]uint16{{23, 4}, {23, 3}}
+	for round, wallet := range want {
+		pressKeys(t, a, ebiten.KeyB)
+		for step := 0; step < 7; step++ {
+			pressKeys(t, a, ebiten.KeyEnd)
+		}
+		record := a.shop.items[a.shop.cursor]
+		if name := strings.ToUpper(a.shopListName(record)); name != "4 DARTS" || record.Price() != 1 {
+			t.Fatalf("round %d: highlight on %q priced %d, want 4 DARTS priced 1", round, name, record.Price())
+		}
+		pressKeys(t, a, ebiten.KeyB, ebiten.KeyE)
+		money := a.state.Party[0].Money
+		if got := [2]uint16{money[pooltreasure.Platinum], money[pooltreasure.Gold]}; got != wallet {
+			t.Fatalf("round %d: wallet platinum/gold %v, original %v (%q)", round, got, wallet, a.shop.message)
+		}
+	}
+	inventory := a.state.Party[0].Inventory
+	if len(inventory) != 2 {
+		t.Fatalf("bought %d items, want two lots of darts", len(inventory))
+	}
+	bought := gamepack.TreasureItemRecord{}
+	copy(bought.Raw[:], inventory[0].Raw)
+	if bought.Price() != 1 {
+		t.Fatalf("the darts carry price %d; the original writes 1 into the stocked record", bought.Price())
+	}
+}
+
+// 上架只改價格為 0 的那幾筆；其餘照記錄（長劍 15、板甲 400）。
+func TestShopStockOnlyRaisesZeroPrices(t *testing.T) {
+	raw := armouryStock(t)
+	stocked := shopStock(raw)
+	changed := 0
+	for index, record := range stocked {
+		original := raw[len(raw)-1-index]
+		switch {
+		case original.Price() == 0 && record.Price() != 1:
+			t.Fatalf("%s: zero price became %d, want 1", record.Name, record.Price())
+		case original.Price() != 0 && record.Price() != original.Price():
+			t.Fatalf("%s: price %d changed to %d", record.Name, original.Price(), record.Price())
+		case original.Price() == 0:
+			changed++
+		}
+	}
+	if changed != 5 {
+		t.Fatalf("%d records raised to 1, want 5 (darts, javelins, quarrels, arrows, sling)", changed)
 	}
 }
