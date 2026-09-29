@@ -50,13 +50,20 @@ if ! kill -0 "$game_pid" 2>/dev/null; then
   cat /tmp/game.log >&2
   exit 1
 fi
-# 配樂：full-local 那一包必須帶滿六個 OGG，而且遊戲不能因為它們而抱怨。
-# 容器裡沒有音訊裝置，所以「有沒有真的出聲」不在這裡驗——那由
-# internal/music 的對拍測試顧（解回 PCM 與渲染來源比相關係數）。
+# 配樂：full-local 那一包帶的 Amiga 配樂要是完整的六個 OGG；有 PC-98 那一套時是 15 個加
+# loops.json（spec 169），而且遊戲不能因為它們而抱怨。容器裡沒有音訊裝置，所以
+# 「有沒有真的出聲」不在這裡驗——那由 internal/music 的測試顧（Amiga 解回 PCM 比
+# 相關係數、PC-98 解碼長度對清單）。
 oggs=$(find ./squashfs-root -name "*.ogg" | wc -l)
 if test "$FLAVOUR" = full-local; then
-  if test "$oggs" -ne 6; then
-    echo "full-local 只有 $oggs 個 OGG，應該是 6 個" >&2
+  amiga=$(find ./squashfs-root -name "por-amiga-*.ogg" | wc -l)
+  pc98=$(find ./squashfs-root -path "*/music/pc98/pc98-*.ogg" | wc -l)
+  if { test "$amiga" -ne 0 && test "$amiga" -ne 6; } || test "$((amiga + pc98))" -eq 0; then
+    echo "full-local 有 $amiga 個 Amiga OGG、$pc98 個 PC-98 OGG；Amiga 應該是 6 個，兩套至少要有一套" >&2
+    exit 1
+  fi
+  if test "$pc98" -ne 0 && { test "$pc98" -ne 15 || ! test -f ./squashfs-root/usr/bin/music/pc98/loops.json; }; then
+    echo "full-local 的 PC-98 配樂是 $pc98 首，應該是 15 首加 loops.json" >&2
     exit 1
   fi
 elif test "$oggs" -ne 0; then
