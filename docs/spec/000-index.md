@@ -4,7 +4,7 @@
 > 對應關係的主鍵是 spec 編號——程式碼註解裡的 `spec NNN` 就是那條線，
 > 這份只是把它反過來收攏，所以改了註解重跑一次就對了。
 
-162 份規格，其中 0 份還沒有任何檔案的註解指回它、0 份沒有測試提到它；
+163 份規格，其中 0 份還沒有任何檔案的註解指回它、0 份沒有測試提到它；
 另有 9 份實作在共用 engine（`eclvm`）、1 份的實作不是 Go、1 份由 Go 以外的測試驗證。
 這些數字是**盤點用的**：沒有反向引用不代表沒實作，只代表那條線還沒接起來。
 
@@ -112,7 +112,7 @@
 | [098](098-spell-casting-machinery.md) | 施法的共用機制（擲骰、施法者等級、處理常式的呼叫慣例） | CONFORMED＋DRAFT | `cmd/pool-game/animate_dead.go`、`cmd/pool-game/approach_effects.go`、`cmd/pool-game/beset.go` 等 40 個 | `cmd/pool-game/animate_dead_test.go`、`cmd/pool-game/camp_spell_extra_test.go`、`cmd/pool-game/cast_test.go` 等 18 個 |
 | [099](099-boat-travel-and-quest-gate.md) | 搭船旅行與它的進度閘門 | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/coverage_test.go` |
 | [100](100-the-6dd5-map-exit-gate.md) | `DS:6DD5h` — 擋住整個世界的那一個變數 | CONFORMED | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/main.go`、`cmd/pool-game/training_gate.go` | `cmd/pool-doc-index/main_test.go`、`cmd/pool-game/coverage_test.go`、`cmd/pool-game/mainline_castle_test.go` 等 4 個 |
-| [101](101-world-transition-graph.md) | 世界怎麼接起來——NEWECL 圖與邊界出口 | READY | `cmd/pool-game/main.go`、`cmd/pool-world-graph/main.go` | `cmd/pool-game/kuto_well_test.go`、`cmd/pool-game/mainline_castle_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 7 個 |
+| [101](101-world-transition-graph.md) | 世界怎麼接起來——NEWECL 圖與邊界出口 | READY | `cmd/pool-game/main.go`、`cmd/pool-world-graph/main.go`、`internal/music/pc98.go` | `cmd/pool-game/kuto_well_test.go`、`cmd/pool-game/mainline_castle_test.go`、`cmd/pool-game/mainline_house_rule_test.go` 等 8 個 |
 | [102](102-city-location-dispatch.md) | 城區的地點是 terrain 索引分派的，而且有些要面對它 | READY | `cmd/pool-game/main.go`、`cmd/pool-map-names/main.go`、`internal/gamepack/game_clock.go` | `cmd/pool-game/city_watch_test.go`、`cmd/pool-game/combat_effects_test.go`、`cmd/pool-game/coverage_test.go` 等 13 個 |
 | [103](103-world-cell-sweep.md) | 整包格子入口掃描 | READY | `cmd/pool-world-cell-sweep/main.go` | `cmd/pool-game/coverage_test.go` |
 | [104](104-script-call-selectors.md) | `2Dh CALL` 的選擇子只有五個有動作 | READY | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go`、`cmd/pool-game/stojanow_gate_test.go` |
@@ -139,7 +139,7 @@
 | [125](125-map-boundary-and-the-exit-flag.md) | 走到地圖邊界會怎樣——`@6DD5` 是誰寫的 | CONFORMED | `cmd/pool-disp-scan/main.go`、`cmd/pool-game/main.go` | `cmd/pool-disp-scan/main_test.go` |
 | [126](126-first-person-inset-pixel-parity.md) | 第一人稱內框逐格對上原版 | CONFORMED＋DRAFT | `cmd/pool-game/first_person_inset.go` | `cmd/pool-game/first_person_inset_test.go` |
 | [127](127-aim-bar-and-manual-cursor.md) | 瞄準列與 Manual 格子游標（overlay-13 `352Ch`） | CONFORMED | `cmd/pool-game/cast.go`、`cmd/pool-game/main.go`、`cmd/pool-game/manual_aim.go` 等 4 個 | `cmd/pool-game/manual_aim_test.go`、`cmd/pool-game/music_test.go` |
-| [128](128-music-cues.md) | 配樂——素材、派曲的形狀，以及界線在哪 | CONFORMED | `cmd/pool-game/main.go`、`cmd/pool-game/music.go`、`internal/music/catalog.go` | `internal/music/catalog_test.go`、`internal/music/render_test.go` |
+| [128](128-music-cues.md) | 配樂——素材、派曲的形狀，以及界線在哪 | CONFORMED | `cmd/pool-game/main.go`、`cmd/pool-game/music.go`、`internal/music/catalog.go` 等 4 個 | `internal/music/catalog_test.go`、`internal/music/pc98_test.go`、`internal/music/render_test.go` |
 | [129](129-combat-screen-layout-and-command-bar.md) | 戰鬥畫面的版面與指令列 | READY＋DRAFT | `cmd/pool-game/combat_commands.go`、`cmd/pool-game/combat_screen.go`、`cmd/pool-game/main.go` 等 8 個 | `cmd/pool-game/combat_screen_test.go`、`cmd/pool-game/tactical_test.go`、`internal/assets/monster_sprite_test.go` 等 4 個 |
 | [130](130-character-sheet-layout.md) | 人物資料頁的版面 | READY＋DRAFT | `cmd/pool-game/character_sheet.go`、`cmd/pool-game/command_bar.go`、`cmd/pool-game/main.go` 等 6 個 | `cmd/pool-game/field_cast_test.go`、`cmd/pool-game/portrait_frame_test.go` |
 | [131](131-combat-terrain-tiles.md) | 戰場的地形圖塊 | READY＋DRAFT | `cmd/pool-game/combat_screen.go`、`cmd/pool-game/sprite_overview.go`、`internal/assets/combat_terrain.go` | `internal/assets/combat_terrain_test.go` |
@@ -174,6 +174,7 @@
 | [166](166-monster-icons-and-combat-animation.md) | 怪物戰場造形與戰鬥動畫（彈道、閃光、倒下） | READY | `cmd/pool-game/approach_effects.go`、`cmd/pool-game/breath.go`、`cmd/pool-game/cast.go` 等 16 個 | `cmd/pool-game/arena_duel_test.go`、`cmd/pool-game/combat_animation_test.go`、`cmd/pool-game/combat_notice_test.go` 等 10 個 |
 | [167](167-turned-npc-settlement-and-quick-handback.md) | 倒戈隊員的戰後結算、AI 代打中途交還 | READY | `cmd/pool-game/attack_ally.go`、`cmd/pool-game/opposing_members.go`、`cmd/pool-game/quick_handback.go` 等 4 個 | `cmd/pool-game/defeated_count_test.go`、`cmd/pool-game/opposing_members_test.go`、`cmd/pool-game/quick_handback_test.go` |
 | [168](168-shop-buy-list-layout.md) | 商店貨品清單那一頁 | CONFORMED | `cmd/pool-game/screen_state.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/shop_list.go` 等 4 個 | `cmd/pool-game/money_services_test.go`、`cmd/pool-game/shop_list_test.go`、`cmd/pool-game/shop_test.go` |
+| [169](169-pc98-music-playback.md) | PC-98 版配樂——15 首的循環渲染與全程派曲 | CONFORMED | `cmd/pool-game/main.go`、`cmd/pool-game/music.go`、`cmd/pool-pc98-music/main.go` 等 7 個 | `cmd/pool-game/music_pc98_test.go`、`cmd/pool-pc98-music/main_test.go` |
 
 ## `cmd/` 底下的工具
 
@@ -191,7 +192,7 @@
 | `pool-ecl-opcodes` | 把 overlay-03 的 ECL 派發鏈 dump 成 JSON：每條 opcode 的處理常式位移與運算元個數，並標出與共用 engine 那張二手 arity 表的差異 | 有 | — |
 | `pool-ecl-trace` | exports one original Pool ECL block's complete statically reachable graph without executing or assigning story semantics | 有 | 093 |
 | `pool-font-coverage` | 報出遊戲要顯示、但倚天字型畫不出來的字 | 有 | — |
-| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 135 份 |
+| `pool-game` | remake 的遊戲本體：Ebiten 視窗、玩家輸入、畫面，以及與共用 engine 和 game pack 的接線 | 有 | 003、005、007、008、012、014 等 136 份 |
 | `pool-geo-audit` | decodes every Pool GEO block through the shared engine and records only structural map evidence | 有 | 009 |
 | `pool-initial-cell-sweep` | executes the original initial-map cell lifecycle entry against isolated copies of the post-Rolf VM state | 有 | 015 |
 | `pool-input-manifest` | inventories the fixed DOS source ZIP without extracting or modifying its contents | 有 | — |
@@ -204,6 +205,7 @@
 | `pool-ovr-manifest` | 產生 docs/audit/dos-ovr-manifest.json：38 顆 overlay 的位置、長度、重定位表與各自的 SHA-256，是所有 overlay 反查的起點 | 有 | — |
 | `pool-parity-check` | 把一次對拍跑出來的 parity.json 拿去對**基準表** （`docs/audit/dos-parity-sample.json`），而不是對上一次跑的結果 | 有 | — |
 | `pool-password-audit` | 盤點原版每一處 `10h INPUT STRING`（spec 087）：玩家在哪裡被要求打字、問句是什麼、比對的答案是什麼 | 有 | 002、087、141 |
+| `pool-pc98-music` | 把 PC-98 版 `MSCDRV.EXE` 的 15 首曲子渲染成可以無縫循環的 WAV，並寫出循環點清單（spec 169） | 有 | 169 |
 | `pool-portrait-atlas` | 把人物肖像圖鑑要用的 PNG 與收據匯出到磁碟 | — | 006、117 |
 | `pool-portrait-audit` | measures Pool's HEAD/BODY archives through the reusable engine picture decoder | 有 | 006 |
 | `pool-spell-dispatch` | 把 overlay-22 的法術效果派發表 dump 成 JSON，供 spec 073 引用，也當作後續逐支解讀處理常式的工作清單 | 有 | 070、073 |

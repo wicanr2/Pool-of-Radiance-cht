@@ -5,8 +5,8 @@
     "criteria": "檔名是 *_test.go｜內容有 func TestXxx",
     "mismatches": []
   },
-  "spec_count": 162,
-  "tool_count": 33,
+  "spec_count": 163,
+  "tool_count": 34,
   "specs_without_implementation": [],
   "specs_without_tests": [],
   "specs_in_shared_engine": [
