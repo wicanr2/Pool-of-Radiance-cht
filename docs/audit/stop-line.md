@@ -55,3 +55,4 @@
 | "Attack Ally:" 問句的列位與字樣 | 呈現 | remake 畫在指令列那一條基線；Y 以外的鍵都算不打、倒戈與 @6E33 照 `2977h`（spec 162） | #118 |
 | 事件裡 PIC 動畫（碼頭的船 `PIC3/41`）的 dosgolem 收據 | 收據 | 容器與解碼由營火逐格驗過（spec 135），延遲與換張照 overlay-26 位元組；缺的是原版走到碼頭的那一幀（spec 165） | #120 |
 | `PICTURE 255` 在 `DS:495Ah ≤ 1` 且 `495Bh ≠ 1` 時不重畫視野（overlay-03 `08DFh..08EBh`） | 未知 | 兩個旗標的語意沒讀，remake 一律收圖；腳本接著 `EXIT` 或走一步時原版也會重畫（spec 165〈不做〉） | #120 |
+| CAMP → ALTER → PICS 兩個開關的作用範圍 | 呈現 | 原版 `4956h`（Portraits）只有 overlay-19 `04E5h`（角色資料頁）判斷；`4957h`（Monsters）在 overlay-07 `061Fh` 與 `82AFh` 一起決定畫不畫 `6DE1h` 那張肖像（`82AFh` 語意未讀）。remake 的商店主選單與 APPROACH 半身像看的是 Portraits；只影響開關關掉時哪幾張圖不畫（`pool-disp-scan 4956,4957`，正對照 `5AAh`） | #120 |
