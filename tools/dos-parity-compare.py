@@ -333,6 +333,13 @@ def main():
         {"name": "shop", "kind": "layout", "view": True,
          "ref": "shop", "digest": "02d78f41", "remake": "remake-shop.png",
          "note": "正常走進菲蘭武具店後的服務選單（spec 067／102；layout-only）"},
+        # 同一條鍵序在主選單多按一個 `b`（`workplace/dosgolem-ref-shop` 的 `80-b`）。
+        # 清單不畫隊伍，所以 spells 那組牧師路線的 `76-b` 也是同一個雜湊。
+        {"name": "shop-buy", "kind": "layout",
+         "ref": "shop", "digest": "4d5cbdcf", "remake": "remake-shop-buy.png",
+         "note": "武具店主選單按 B 之後的貨品清單第一頁（spec 168）：整頁外框、"
+                 "置中的 SHOP、19 行清單（名稱第 1 欄、價格靠右到第 30 欄）、"
+                 "反白在第二項 HAND AXE、框外 ITEMS: BUY NEXT EXIT"},
         {"name": "spells", "kind": "layout", "ref": "spells",
          "digest": "af17c89f", "remake": "remake-spells.png",
          "note": "人類牧師的神術一級清單，對原版 MAGIC／MEMORIZE 法術書頁（spec 134）"},

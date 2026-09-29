@@ -147,6 +147,10 @@ func (a *app) screenName() string {
 		}
 		return "spells"
 	case a.shopActive:
+		// 貨品清單是另一頁（spec 168），截圖腳本要分得出按了 B 之後到了沒。
+		if a.shop != nil && a.shop.buying && !a.shop.selling && a.shop.take == nil {
+			return "shop-buy"
+		}
 		return "shop"
 	case a.templeActive:
 		return "temple"

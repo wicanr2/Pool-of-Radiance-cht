@@ -45,6 +45,12 @@ REF="$ROOT/workplace/dosgolem-ref"
 REF_CITYHALL="$ROOT/workplace/dosgolem-ref-cityhall"
 REF_CAMPQUIT="$ROOT/workplace/dosgolem-ref-campquit"
 REF_TEMPLE="$ROOT/workplace/dosgolem-ref-temple"
+# 商店那一組（shop、shop-buy 兩張）是主基準的建角，導覽完走到菲蘭武具店門口答 `y`
+# （主選單，spec 164），再按 `b` 開貨品清單（spec 168）。重生：
+#   POOL_DOSGOLEM_OUT=workplace/dosgolem-ref-shop POOL_DOSGOLEM_KEYS=
+#   rep:9:Space,Return,Return,c,Return,Return,Return,Return,Return,Return,y,H,E,R,O,
+#   Return,k,e,y,a,a,e,b,rep:27:Return,Right,Right,Up,Return,Right,rep:7:Up,Left,
+#   rep:7:Up,y,b   tools/dosgolem-reference.sh
 REF_SHOP="$ROOT/workplace/dosgolem-ref-shop"
 # 法術那一組（spells、field-cast、field-cast-spell 三張）是人類牧師那條鍵序，
 # 走到旅店付一枚白金休息、記好祝福術之後按 C）AST（#101）。重生：
@@ -163,10 +169,12 @@ GATE
 # 一條祝福術（屬性是各自擲的，兩邊不同）。
 # 旅店以外的路（貧民窟屋內）要穿過有隨機遭遇的街道，兩邊的亂數不同，走不成
 # 同一個狀態。
-# 手斧在原版清單是第二項，開清單時反白就在它上面，`b` 直接買；remake 要先按 `b`
-# 開貨品清單（#70，spec 164），清單順序與原版相反（手斧是倒數第二項），游標從第一項
-# 往上繞兩格；買完 ESC 關清單、再 ESC 離店。清單順序若改成
-# 與原版一致，這裡要跟著換成往下一格。
+# 手斧在原版清單是第二項，開清單時反白就在它上面。兩邊同一組鍵：`b` 開貨品清單、
+# `b` 買反白那一件、`e` 回主選單、`e` 離店（spec 164／168；清單順序與開清單時的
+# 反白都照原版）。
+#
+# 貨品清單那一張（shop-buy）在第一條路的武具店拍：主選單拍完按 `b`，基準是
+# `workplace/dosgolem-ref-shop` 那條鍵序多按一個 `b` 的最後一幀（spec 168）。
 rm -rf "$OUT"; mkdir -p "$OUT"
 # POOL_PARITY_CONTAINER 可替這個容器命名，並行跑好幾份時分得出是誰的。
 docker run --rm ${POOL_PARITY_CONTAINER:+--name "$POOL_PARITY_CONTAINER"} \
@@ -459,6 +467,9 @@ await adventure-cell-menu
 pulse Return
 await shop
 shot remake-shop
+step b shop-buy
+shot remake-shop-buy
+step Escape shop
 pulse Escape
 await_adventure
 
@@ -518,12 +529,10 @@ for unused in 1 2 3 4 5 6 7; do east_step; done
 await adventure-cell-menu
 pulse Return
 await shop
+step b shop-buy
 pulse b
-pulse Up
-pulse Up
-pulse Return
-pulse Escape
-pulse Escape
+step e shop
+pulse e
 await_adventure
 turn Left
 turn Left

@@ -1,7 +1,7 @@
 # Spec 164：商店主選單的版面與店主肖像
 
 狀態：CONFORMED（店主肖像的來源與像素、主選單的構圖、底列兩個選單字串、B）uy 之後
-才出現貨品清單）；貨品清單那一頁本身的版面是 remake 的呈現（原版那一頁沒有 dosgolem 基準）。
+才出現貨品清單）。貨品清單那一頁由 spec 168 接手。
 日期：2026-09-27（#70）。
 
 買賣、估價、公款與鑑定的規則在 spec 067 與 spec 116，這一份只管畫面。
@@ -52,7 +52,7 @@ dosgolem 走進菲蘭武具店、答 `y` 之後那一幀：`workplace/dosgolem-r
    `Buy View Pool Appraise Exit`，有錢是 `0460h` `Buy View Take Pool Share Appraise Exit`；
    離店提問（`~Yes ~No`）時不畫。字母高亮與冒險指令列同一支（`drawCommandLabels`）。
    繁中標籤鍵名留在最前面（`B 購買`），同冒險與紮營那兩列。
-4. 按 `B` 才開貨品清單；清單裡上下選、`ENTER` 買、`TAB` 換買家、`ESC` 回主選單。
+4. 按 `B` 才開貨品清單；清單裡的鍵與版面見 spec 168。
    主選單上 `ENTER` 與方向鍵不買東西，`E` 與 `ESC` 離店。其餘鍵（V、P、S、T、G、J、TAB）
    照 spec 067／116。`A` 印出 G／J 的提示——原版的估價子選單是 remake 的 G／J 兩鍵。
 5. `CAMP → ALTER → PICS` 關掉肖像、`6DE1h == FFh`（PIC 那一條，remake 還沒接）或
@@ -75,4 +75,3 @@ dosgolem 走進菲蘭武具店、答 `y` 之後那一幀：`workplace/dosgolem-r
 - `PICTURE` 在其他場合（進店前的開場白、神殿、城區事件）的顯示。那些畫面各有自己的
   對拍項，這一份只接商店主選單。
 - PIC 那一條（`PIC<區號>.DAX` 的動畫容器，spec 117〈PIC 容器的版面〉）。
-- 貨品清單那一頁的原版版面；需要 dosgolem 按 `b` 之後的基準才能對。

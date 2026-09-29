@@ -481,6 +481,21 @@
       "view_ratio": 1
     },
     {
+      "name": "shop-buy",
+      "label": "菲蘭武具店・貨品清單",
+      "kind": "layout",
+      "reference": "80-b.png",
+      "reference_step": 531600000,
+      "remake": "remake-shop-buy.png",
+      "same": 57418,
+      "total": 64000,
+      "ratio": 0.8972,
+      "note": "武具店主選單按 B 之後的貨品清單第一頁（spec 168）",
+      "frame_same": 7936,
+      "frame_total": 7936,
+      "frame_ratio": 1
+    },
+    {
       "name": "spells",
       "label": "神術一級法術頁",
       "kind": "layout",

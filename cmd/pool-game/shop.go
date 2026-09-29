@@ -45,6 +45,9 @@ type shopState struct {
 	// buying：主選單按 B）uy 之後的貨品清單（spec 164）。沒開的時候畫面是
 	// 原版的主選單——店主肖像、隊伍名單、底列指令。
 	buying bool
+	// top 是清單這一頁的第一行（spec 168）。跟著這一趟進店留著：離開清單再
+	// 按 B，原版的起點只移到看得見反白，不是回到第一頁。
+	top int
 	// portrait 是店主肖像的快取；portraitTried 讓載不到時不每一幀重讀。
 	portrait      *ebiten.Image
 	portraitTried bool
@@ -114,7 +117,8 @@ func (a *app) enterShop(requests []eclvm.TreasureRequest) error {
 	// 進店先把公款七欄清成 0（overlay-06 `0548h..0554h`：`FillChar(DS:6752h, 1Ch, 0)`，
 	// spec 067〈公款〉）。上一家店離開時說「不拿了」留下的錢就在這裡消失。
 	a.state.PooledMoney = [pooltreasure.CurrencyCount]uint32{}
-	a.shop = &shopState{items: stock}
+	// 清單順序照原版：記錄倒過來（spec 168）。
+	a.shop = &shopState{items: shopStock(stock)}
 	a.shopActive = true
 	a.cellEventPending, a.cellWaitingMenu = true, true
 	a.cellMenuOptions, a.cellMenuCursor = nil, 0
@@ -228,8 +232,8 @@ func (a *app) shopInput() error {
 		}
 		state.message = ""
 	case !state.appraising && a.justPressed(ebiten.KeyB):
-		// B）uy（overlay-06 選單的第一項）開貨品清單，spec 164。
-		state.buying, state.message = true, ""
+		// B）uy（overlay-06 選單的第一項）開貨品清單，spec 164／168。
+		a.openShopBuyList()
 	case !state.appraising && a.justPressed(ebiten.KeyA):
 		// A）ppraise：寶石與珠寶分開估（spec 116），這裡先說要按哪一個。
 		state.message = a.text(msgShopAppraiseChoose)
@@ -549,29 +553,15 @@ func (a *app) leaveShop() error {
 	return a.consumeInitialSearch(result)
 }
 
-// shopWindow 讓游標附近的項目留在畫面上：存貨可以有 57 筆，一頁放不下。
-func (s *shopState) window(lines int) (first, last int) {
-	first = s.cursor - lines/2
-	if first < 0 {
-		first = 0
-	}
-	if first+lines > len(s.items) {
-		first = len(s.items) - lines
-	}
-	if first < 0 {
-		first = 0
-	}
-	last = first + lines
-	if last > len(s.items) {
-		last = len(s.items)
-	}
-	return first, last
-}
-
 func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color.Color) {
 	state := a.shop
 	if !state.buying && !state.selling && state.take == nil {
 		drawShopMenu(screen, a, background, foreground, accent)
+		return
+	}
+	if state.buying && !state.selling && state.take == nil {
+		// 貨品清單是整頁（spec 168）。
+		drawShopBuyList(screen, a, background, foreground, accent)
 		return
 	}
 	for y := 40; y < 372; y++ {
@@ -590,36 +580,7 @@ func drawShop(screen *ebiten.Image, a *app, background, foreground, accent color
 			drawText(screen, row, shopTextLeft, shopFirstLine+index*shopLineHeight, foreground)
 		}
 		drawText(screen, a.moneyTakePrompt(state.take), shopTextLeft, footerBaseline, accent)
-		return
 	}
-	if len(a.state.Party) > 0 {
-		if state.buyer >= len(a.state.Party) {
-			state.buyer = 0
-		}
-		buyer := a.state.Party[state.buyer]
-		drawText(screen, fmt.Sprintf(a.text(msgShopBuyer),
-			// 金幣等值（五種硬幣，entry 11）：付錢與賣出都把錢放在白金那一欄，
-			// 只印金幣欄會看起來錢沒動。
-			state.buyer+1, len(a.state.Party), buyer.Name, pooltreasure.GoldEquivalent(buyer.Money)),
-			shopTextLeft, 92, accent)
-	}
-	first, last := state.window(shopLineCount)
-	for index := first; index < last; index++ {
-		record := state.items[index]
-		cursor, ink := " ", foreground
-		if index == state.cursor {
-			cursor, ink = ">", accent
-		}
-		drawText(screen, fmt.Sprintf("%s%-34s %6d", cursor, record.Name, record.Price()),
-			shopTextLeft, shopFirstLine+(index-first)*shopLineHeight, ink)
-	}
-	drawText(screen, fmt.Sprintf(a.text(msgShopCount), state.cursor+1, len(state.items)),
-		shopTextLeft, 336, foreground)
-	footer := a.text(msgShopFooter)
-	if state.message != "" {
-		footer = state.message
-	}
-	drawText(screen, footer, shopTextLeft, footerBaseline, accent)
 }
 
 // drawShopSell 畫賣出那一頁：目前這個人的物品，穿戴中的前面有標記。

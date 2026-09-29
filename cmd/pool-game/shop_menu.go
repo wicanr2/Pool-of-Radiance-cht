@@ -102,26 +102,6 @@ func (a *app) shopMenuCommands() []messageID {
 		msgShopCommandAppraise, msgShopCommandExit}
 }
 
-// shopBuyInput 是貨品清單那一頁：上下選、ENTER 買、TAB 換買家、ESC 回主選單。
-func (a *app) shopBuyInput() {
-	state := a.shop
-	switch {
-	case a.justPressed(ebiten.KeyEscape):
-		state.buying, state.message = false, ""
-	case a.justPressed(ebiten.KeyTab):
-		if len(a.state.Party) > 0 {
-			state.buyer = (state.buyer + 1) % len(a.state.Party)
-		}
-		state.message = ""
-	case a.justPressed(ebiten.KeyDown):
-		state.cursor = (state.cursor + 1) % len(state.items)
-	case a.justPressed(ebiten.KeyUp):
-		state.cursor = (state.cursor - 1 + len(state.items)) % len(state.items)
-	case a.justPressed(ebiten.KeyEnter):
-		a.buy()
-	}
-}
-
 // drawShopMenu 畫主選單在框裡框外的部分；肖像與名單由 drawAdventure 畫
 // （`drawShopFrame`）。文字框原版是清空的，有話要說（估價、公款、錢不夠）
 // 才印在框裡的第一行起。

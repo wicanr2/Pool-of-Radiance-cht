@@ -45,7 +45,8 @@ func TestArmouryStockCarriesTheOriginalPrices(t *testing.T) {
 
 func newShopApp(t *testing.T) *app {
 	t.Helper()
-	stock := armouryStock(t)
+	// 清單照原版的順序（記錄倒過來，spec 168），與 enterShop 同一支。
+	stock := shopStock(armouryStock(t))
 	member := poolsave.Character{Name: "HERO", ClassID: "fighter",
 		Abilities: [6]int{18, 10, 10, 12, 10, 10}}
 	member.Money[pooltreasure.Gold] = 100
@@ -63,10 +64,17 @@ func newShopApp(t *testing.T) *app {
 	return a
 }
 
-// openShopBuyList 按主選單的 B）uy 打開貨品清單（spec 164）。已經開著時
-// B 不作用，所以在同一家店裡重複叫也可以。
+// openShopBuyList 按主選單的 B）uy 打開貨品清單（spec 164）。清單裡的 B 是
+// 買（spec 168），所以已經開著時不再按。
+//
+// 原版一打開清單反白就在第二項（spec 168），這裡的測試要買的是事先挑好的那一件，
+// 所以開完清單把游標放回開之前指的那一件。
 func openShopBuyList(t *testing.T, a *app) {
 	t.Helper()
+	chosen := a.shop.cursor
+	if a.shop.buying {
+		return
+	}
 	a.keys = scriptedKeys{ebiten.KeyB: true}
 	if err := a.shopInput(); err != nil {
 		t.Fatal(err)
@@ -74,6 +82,8 @@ func openShopBuyList(t *testing.T, a *app) {
 	if !a.shop.buying {
 		t.Fatal("B did not open the list of wares")
 	}
+	a.shop.cursor = chosen
+	a.shop.keepCursorVisible()
 }
 
 // 買下去：扣金幣、物品進背包，隊伍與角色庫都要同步。
@@ -281,8 +291,8 @@ func TestShopPaymentMatchesTheDosgolemReceipt(t *testing.T) {
 	for name, scenario := range receipt.Scenarios {
 		a := newShopApp(t)
 		// 原版按 b 之後 Return 買到的是 HAND AXE（1 金）：500 金剩 499 → 99 白金 4 金。
-		// 這一家的存貨是 ITEM3.DAX block 35h（防具店的鐵匠），清單順序 remake 照檔案，
-		// 原版畫面照另一個順序排，所以用名字找同一件。
+		// 這一家的存貨是 ITEM3.DAX block 35h（防具店的鐵匠）。清單順序兩邊一樣
+		// （記錄倒過來，spec 168），HAND AXE 是第二項；仍用名字找，不綁位置。
 		a.shop.cursor = -1
 		for index, record := range a.shop.items {
 			if strings.EqualFold(record.Name, "Hand Axe") {
