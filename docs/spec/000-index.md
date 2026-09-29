@@ -173,7 +173,7 @@
 | [165](165-event-picture.md) | 事件的 `PICTURE`：HEAD／BODY 疊圖與 PIC 動畫 | CONFORMED＋READY | `cmd/pool-game/event_picture.go`、`cmd/pool-game/main.go`、`cmd/pool-game/npc_portrait.go` 等 5 個 | `cmd/pool-game/event_picture_test.go`、`internal/assets/pic_animation_test.go` |
 | [166](166-monster-icons-and-combat-animation.md) | 怪物戰場造形與戰鬥動畫（彈道、閃光、倒下） | READY | `cmd/pool-game/approach_effects.go`、`cmd/pool-game/breath.go`、`cmd/pool-game/cast.go` 等 16 個 | `cmd/pool-game/arena_duel_test.go`、`cmd/pool-game/combat_animation_test.go`、`cmd/pool-game/combat_notice_test.go` 等 10 個 |
 | [167](167-turned-npc-settlement-and-quick-handback.md) | 倒戈隊員的戰後結算、AI 代打中途交還 | READY | `cmd/pool-game/attack_ally.go`、`cmd/pool-game/opposing_members.go`、`cmd/pool-game/quick_handback.go` 等 4 個 | `cmd/pool-game/defeated_count_test.go`、`cmd/pool-game/opposing_members_test.go`、`cmd/pool-game/quick_handback_test.go` |
-| [168](168-shop-buy-list-layout.md) | 商店貨品清單那一頁 | CONFORMED | `cmd/pool-game/screen_state.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/shop_list.go` | `cmd/pool-game/money_services_test.go`、`cmd/pool-game/shop_list_test.go`、`cmd/pool-game/shop_test.go` |
+| [168](168-shop-buy-list-layout.md) | 商店貨品清單那一頁 | CONFORMED | `cmd/pool-game/screen_state.go`、`cmd/pool-game/shop.go`、`cmd/pool-game/shop_list.go` 等 4 個 | `cmd/pool-game/money_services_test.go`、`cmd/pool-game/shop_list_test.go`、`cmd/pool-game/shop_test.go` |
 
 ## `cmd/` 底下的工具
 
