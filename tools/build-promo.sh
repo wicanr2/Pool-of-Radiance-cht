@@ -5,12 +5,16 @@
 #
 # 素材界線（rulebook 93）：
 #   * 畫面一律是**真的實機錄影**，不是 mockup 也不是重畫的假畫面。
-#   * 配樂是**原版素材**：Amiga 版（1990，U.S. Gold／SSI）的遊戲內音樂，
-#     作曲 Wally Beben，由 UnExoticA 的 disk rip `wb.Pool_of_Radiance`
-#     （75446 bytes）以 UADE 2.13 渲染。DOS 版沒有音樂檔（只有 PC 喇叭），
-#     所以配樂只能來自別的平台版本。
-#   * 那份音訊是**第三方著作權**，不進 repo、不隨發行包散布，
-#     由 tools/fetch-amiga-music.sh 另外備妥在 workplace/amiga-music/。
+#   * 配樂是**原版素材**：預設是 PC-98 版的標題曲（第 1 首），由原版
+#     `MSCDRV.EXE` 經共用 engine 的 `audio/pc98mscdrv` 渲染（spec 169）；
+#     `PROMO_MUSIC` 可換成 Amiga 版（Wally Beben，tools/fetch-amiga-music.sh）。
+#     DOS 版沒有音樂檔（只有 PC 喇叭），所以配樂只能來自別的平台版本。
+#   * 那份音訊是**第三方著作權**，不進 repo、不隨發行包散布；成片只供內部，
+#     公開前要先處理權利（rulebook 93、AGENTS.md §10）。
+#   * 片尾接一段 DOS 對 remake 的並排對照，圖與數字都讀自
+#     workplace/dos-parity-zh/parity.json——那一份必須是同一版發行包對拍的結果，
+#     否則拒跑。標籤照 parity.json 的 kind：pixel-parity 標 same-state，
+#     layout 標 layout-only。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -21,7 +25,11 @@ APPIMAGE="$RELEASE/pool-of-radiance-remake-$VERSION-x86_64.AppImage"
 OUT="$ROOT/dist-all/$VERSION/promo"
 FONT_DIR="${ETEN_FONT_DIR:-/home/anr2/cht/etan_font}"
 CAPTION_FONT="${PROMO_CAPTION_FONT:-$ROOT/../curse_of_the_azure_bonds/assets/fonts/NotoSansTC-Regular.ttf}"
-MUSIC="${PROMO_MUSIC:-$ROOT/workplace/amiga-music/wav/por-amiga-sub1.wav}"
+MUSIC="${PROMO_MUSIC:-$ROOT/workplace/pc98-music/wav/pc98-01.wav}"
+PARITY="$ROOT/workplace/dos-parity-zh"
+REF="$ROOT/workplace/dosgolem-ref"
+REF_SHOP="$ROOT/workplace/dosgolem-ref-shop"
+REF_SPELLS="$ROOT/workplace/dosgolem-ref-spells"
 
 if [[ -z "$VERSION" || ! -x "$APPIMAGE" ]]; then
   echo "用法：tools/build-promo.sh <已建置版本>（先跑 tools/package-release.sh）" >&2
@@ -31,6 +39,13 @@ test -f "$ROOT/Pool of Radiance (1988).zip"
 test -f "$FONT_DIR/stdfont.15"
 test -f "$CAPTION_FONT"
 test -f "$MUSIC"
+test -f "$PARITY/parity.json"
+test -d "$REF" && test -d "$REF_SHOP" && test -d "$REF_SPELLS"
+# 對照段的 remake 圖要是這一版發行包拍的：比 AppImage 舊就是上一版的畫面。
+if test "$PARITY/remake-title.png" -ot "$APPIMAGE"; then
+  echo "workplace/dos-parity-zh 比 $VERSION 的 AppImage 舊：先跑 tools/appimage-dos-parity.sh $VERSION" >&2
+  exit 2
+fi
 docker image inspect "$IMAGE" >/dev/null
 
 rm -rf "$OUT"; mkdir -p "$OUT"
@@ -150,7 +165,7 @@ hold 3
 pulse b
 sleep 1.5
 expect 導覽第一頁
-beat "原版開場導覽：遊戲內 1731 句敘事全部翻完"
+beat "原版開場導覽與遊戲內敘事全部繁中化"
 hold 5
 for _ in $(seq 1 6); do pulse Return; done
 beat "導覽走的是原版 34 步腳本移動與七頁文字"
@@ -201,6 +216,16 @@ expect 平面圖
 beat "平面圖"
 hold 4
 pulse a; sleep 0.4
+pulse F2; sleep 0.8
+expect 現代色盤
+beat "F2 切換現代色盤：只換表現層，不動規則"
+hold 3.5
+pulse F2; sleep 0.8
+pulse F1; sleep 0.6
+expect 說明頁
+beat "F1 說明頁：按鍵與設定一覽"
+hold 3.5
+pulse F1; sleep 0.4
 pulse j; sleep 0.6; pulse 4; sleep 0.3; pulse 6; sleep 0.3; pulse Return
 expect 探險者手冊
 beat "說明書的探險者手冊整本進了遊戲"
@@ -222,13 +247,16 @@ grab=""
 cat /promo/beats.txt >&2
 '
 
-# 後製：套字幕、加原版 Amiga 配樂、淡入淡出。
+# 後製：套字幕、接 DOS 對照段、加原版配樂、淡入淡出。
 docker run --rm --network none --memory 4g --cpus 2 --pids-limit 256 \
   --log-opt max-size=10m --log-opt max-file=3 \
   -i -u "$(id -u):$(id -g)" -v "$OUT:/promo" \
   -v "$CAPTION_FONT:/caption.ttf:ro" -v "$MUSIC:/music.wav:ro" \
-  "$IMAGE" python3 - <<'PY'
+  -v "$PARITY:/parity:ro" -v "$REF:/ref:ro" \
+  -v "$REF_SHOP:/ref-shop:ro" -v "$REF_SPELLS:/ref-spells:ro" \
+  -e VERSION="$VERSION" "$IMAGE" python3 - <<'PY'
 import json
+import os
 import subprocess
 
 raw = []
@@ -281,20 +309,90 @@ video = ",".join(trim + [
     # 這裡釘回 30——錄的時候本來就是 30。
     "fps=30",
     "fade=t=in:st=0:d=1",
-    "fade=t=out:st=%.2f:d=1.2" % max(total - 1.2, 0),
 ])
-audio = "afade=t=in:st=0:d=2,afade=t=out:st=%.2f:d=3,volume=0.55" % max(total - 3, 0)
+ENC = ["-r", "30", "-c:v", "libx264", "-preset", "veryfast", "-threads", "2",
+       "-crf", "18", "-pix_fmt", "yuv420p"]
+subprocess.run([
+    "ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", "/promo/raw.mp4",
+    "-vf", video, "-t", "%.2f" % total, "-an"] + ENC + ["/promo/part-play.mp4"], check=True)
 
+# DOS 對照段：左邊 dosgolem 基準、右邊這一版發行包，數字直接讀 parity.json。
+COMPARE = [
+    ("title", "/ref", "標題畫面"),
+    ("first-person", "/ref", "第一人稱視野"),
+    ("race", "/ref", "建角：種族"),
+    ("shop-buy", "/ref-shop", "武具店貨品清單"),
+    ("spells", "/ref-spells", "牧師法術書"),
+    ("combat", "/ref", "戰鬥盤面"),
+]
+screens = {row["name"]: row for row in json.load(open("/parity/parity.json"))["screens"]}
+SLIDE = 3.6
+
+
+def draw(text, x, y, size, color="0xF2E4C4"):
+    return ("drawtext=fontfile=/caption.ttf:text='%s':expansion=none:fontcolor=%s"
+            ":fontsize=%d:x=%s:y=%d" % (escape(text), color, size, x, y))
+
+
+parts = ["/promo/part-play.mp4"]
+compare_log = []
+for index, (name, ref_dir, label) in enumerate(COMPARE):
+    row = screens[name]
+    ref = os.path.join(ref_dir, row["reference"])
+    remake = os.path.join("/parity", row["remake"])
+    if not (os.path.isfile(ref) and os.path.isfile(remake)):
+        raise SystemExit("對照圖不在：%s／%s" % (ref, remake))
+    if row["kind"] == "pixel-parity":
+        tag = "same-state　逐格 %.2f%%" % (row["ratio"] * 100)
+    else:
+        tag = "layout-only　外框 %.2f%%　整張 %.2f%%" % (row["frame_ratio"] * 100, row["ratio"] * 100)
+        if name == "combat":
+            tag += "（盤面內容不同）"
+    compare_log.append({"screen": name, "reference": ref, "remake": remake, "tag": tag})
+    graph = ";".join([
+        "[0:v]scale=600:375:flags=neighbor[l]",
+        "[1:v]scale=600:375:flags=area[r]",
+        "color=c=0x0B0E14:s=1280x720:r=30:d=%.2f[bg]" % SLIDE,
+        "[bg][l]overlay=27:150[a]",
+        "[a][r]overlay=653:150," + ",".join([
+            draw("與原版 DOS 對照　%d／%d" % (index + 1, len(COMPARE)), "(w-text_w)/2", 40, 30),
+            draw("DOS 原版（dosgolem 基準）", "27+(600-text_w)/2", 108, 24, "0xB8C4D8"),
+            draw("繁中 remake %s" % os.environ["VERSION"], "653+(600-text_w)/2", 108, 24, "0xB8C4D8"),
+            draw(label, "(w-text_w)/2", 560, 32),
+            draw(tag, "(w-text_w)/2", 612, 26, "0xD8C898"),
+            "fade=t=in:st=0:d=0.3",
+            "fade=t=out:st=%.2f:d=0.3" % (SLIDE - 0.3),
+        ]) + "[v]",
+    ])
+    out = "/promo/part-cmp-%d.mp4" % index
+    subprocess.run([
+        "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+        "-loop", "1", "-i", ref, "-loop", "1", "-i", remake,
+        "-filter_complex", graph, "-map", "[v]", "-t", "%.2f" % SLIDE] + ENC + [out], check=True)
+    parts.append(out)
+
+with open("/promo/parts.txt", "w") as handle:
+    for part in parts:
+        handle.write("file '%s'\n" % part)
+with open("/promo/compare.json", "w", encoding="utf-8") as handle:
+    json.dump(compare_log, handle, ensure_ascii=False, indent=1)
+
+final = total + SLIDE * len(COMPARE)
+# 配樂用 aloop 接滿，不靠 -shortest：成片長度由畫面決定。
+audio = "aloop=loop=-1:size=2e9,atrim=0:%.2f,afade=t=in:st=0:d=2,afade=t=out:st=%.2f:d=3,volume=0.55" % (
+    final, max(final - 3, 0))
 subprocess.run([
     "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-    "-i", "/promo/raw.mp4", "-i", "/music.wav",
-    "-filter_complex", "[0:v]%s[v];[1:a]%s[a]" % (video, audio),
-    "-map", "[v]", "-map", "[a]", "-t", "%.2f" % total,
-    "-r", "30", "-c:v", "libx264", "-preset", "slow", "-crf", "20", "-pix_fmt", "yuv420p",
+    "-f", "concat", "-safe", "0", "-i", "/promo/parts.txt", "-i", "/music.wav",
+    "-filter_complex", "[0:v]fade=t=out:st=%.2f:d=1.2[v];[1:a]%s[a]" % (max(final - 1.2, 0), audio),
+    "-map", "[v]", "-map", "[a]", "-t", "%.2f" % final] + ENC + [
     "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart",
     "/promo/pool-of-radiance-cht-promo.mp4",
 ], check=True)
-print(json.dumps({"seconds": round(total, 2), "captions": len(beats)}, ensure_ascii=False))
+for part in parts:
+    os.remove(part)
+print(json.dumps({"seconds": round(final, 2), "captions": len(beats), "compare": len(COMPARE)},
+                 ensure_ascii=False))
 PY
 
 ls -la "$OUT"
