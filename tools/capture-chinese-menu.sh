@@ -16,6 +16,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENGINE="$(cd "$ROOT/../golden-box-remake-engine" && pwd)"
 FONT_DIR="${ETEN_FONT_DIR:-/home/anr2/cht/etan_font}"
 CAPTURE_UNTIL="${1:-all}"
+# 亂數種子固定下來：紮營休息會被隨機遭遇打斷，種子不固定時每次跑的結果都不一樣，
+# 被打斷的那一次就停在「等不到 adventure-move」。
+CAPTURE_SEED="${CAPTURE_SEED:-136}"
 case "$CAPTURE_UNTIL" in
   all|view-sheet) ;;
   *) echo "用法：$0 [all|view-sheet]" >&2; exit 2 ;;
@@ -28,6 +31,7 @@ docker run --rm --network none --memory 2g --cpus 2 --pids-limit 256 \
   -u "$(id -u):$(id -g)" --tmpfs /tmp/.X11-unix:rw,mode=1777 \
   -e HOME=/tmp/home -e GOCACHE=/src/workplace/go-build-cache \
   -e GOMODCACHE=/src/workplace/go-mod-cache -e CAPTURE_UNTIL="$CAPTURE_UNTIL" \
+  -e CAPTURE_SEED="$CAPTURE_SEED" \
   -v "$ROOT:/src" -v "$ENGINE:/engine:ro" -v "$FONT_DIR:/fonts:ro" -w /src \
   wasteland-go:1.24-x11-record-r1 bash -c '
 set -eu
@@ -49,7 +53,8 @@ go build -modfile=/tmp/pool.mod -o /tmp/pool-game ./cmd/pool-game
 STATE=/tmp/pool-screen
 rm -f "$STATE"
 (cd /tmp && exec /tmp/pool-game -zip "/src/Pool of Radiance (1988).zip" \
-   -lang zh -eten-font /fonts/stdfont.15 -screen-state "$STATE") >/tmp/game.log 2>&1 &
+   -lang zh -eten-font /fonts/stdfont.15 -screen-state "$STATE" \
+   -dice-seed "$CAPTURE_SEED") >/tmp/game.log 2>&1 &
 game_pid=$!
 retries=0
 window=
@@ -73,6 +78,9 @@ screen() { cat "$STATE" 2>/dev/null | tr -d "\n"; }
 die() {
   echo "$1" >&2
   echo "目前畫面：$(screen)" >&2
+  # 停在哪一張就留哪一張，不用重跑一次猜。
+  ffmpeg -y -hide_banner -loglevel error -f x11grab -video_size "${WIDTH}x${HEIGHT}" \
+    -i ":99+${X},${Y}" -frames:v 1 /src/workplace/capture-failed.png 2>/dev/null || true
   tail -20 /tmp/game.log >&2 || true
   exit 1
 }
@@ -289,26 +297,16 @@ step e camp
 step r camp-rest
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-camp-rest.png
-# 休息兩小時。祝福術是第 1 級，記完要一小時（overlay-20 entry 15 每小時
-# 把記錄 `+2Ch` 減一，spec 114）；多排一小時是留餘裕，不是規則。
-# `H` 選到小時欄、`I` 加一、`R` 開始休息——休息完自己回到自由移動。
-pulse h
-pulse i
-pulse i
-sleep 0.3
-pulse r
-await adventure-move 60
+# 這裡不真的休息：在街上休息會被城衛隊趕走（城區入口 2 在 `4A07 == 0` 時寫打斷參數，
+# spec 114），趕走之後格子文字留在框裡，後面那一串 `step Escape adventure-move` 會一路
+# 退回人物管理。拍完排時間那一層就退出營地。施法挑完人之後的法術頁要先在旅店休息，
+# 發行包對拍（tools/appimage-dos-parity.sh 的 field-cast-spell）走的就是那條路。
+step Escape camp
+step e adventure-move
 sleep 0.4
 step c field-cast
 sleep 0.4
 shot docs/screenshots/pool-remake-chinese-field-cast.png
-# 挑完人就是整頁的法術清單（spec 134）。**走得到這裡等於前面三件事都成立**：
-# 建的是施法職業、`M` 把法術記進去了、紮營休息讓它變成可施展。少任何一件，
-# 按下去只會得到「沒有記憶法術」，這一步就會停在 field-cast 等到逾時。
-step Return field-cast-spell
-sleep 0.5
-shot docs/screenshots/pool-remake-chinese-spell-page.png
-step Escape field-cast
 step Escape adventure-move
 # F4 是素材總覽：肖像、戰鬥造形、牆面圖塊與外框符號各一排。
 step F4 sprites
@@ -347,7 +345,13 @@ step Escape adventure-move
 # 導覽在 (0,4) 結束、朝西（spec 076）：右轉兩次朝東，再往前走就到 (3,4)。
 pulse Right
 pulse Right
-step Up adventure-cell-text
+# 市政廳外第一段是三行文字加原版自己的「按 ENTER 繼續」，畫面識別字
+# 是 adventure-cell-menu；舊版在這裡回 adventure-cell-text。兩個都算走到了。
+n=0
+while test "$(screen)" != adventure-cell-text && test "$(screen)" != adventure-cell-menu; do
+  n=$((n + 1)); test "$n" -le 10 || die "往前走不到市政廳外"
+  pulse Up; sleep 0.4
+done
 pulse Return
 sleep 0.4
 pulse Return
@@ -355,16 +359,17 @@ sleep 0.4
 pulse Return
 sleep 0.6
 shot docs/screenshots/pool-remake-chinese-journal-cue.png
-step Return journal-proclamation
+# 字留在框裡、底下換回指令列之後，翻手冊那一下是 `J`（框裡那一行寫著「J 翻到議會公告」）。
+step j journal-proclamation
 sleep 0.6
 shot docs/screenshots/pool-remake-chinese-journal-proclamation.png
 # 關掉手冊就回到自由移動了——**腳本跑完之後文字留在框裡，但事件已經結束**
 # （原版就是這樣，見 spec 132 與 `docs/audit/dos-parity-sample.md`）。
 step Escape adventure-cell-done
-# 剩下三則：每一則 ENTER 翻進去、ESC 出來。翻完之後 ENTER 就沒有作用了，
+# 剩下三則：每一則 J 翻進去、ESC 出來。翻完之後 J 就沒有作用了，
 # 所以這裡數次數，不等畫面。
 for _ in 1 2 3; do
-  pulse Return
+  pulse j
   sleep 0.4
   pulse Escape
   sleep 0.3
