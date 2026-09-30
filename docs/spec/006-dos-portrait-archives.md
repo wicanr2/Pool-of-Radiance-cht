@@ -92,6 +92,40 @@ loader 載入基址 `10000h`，資料段基址 `17400h`，對應 bytes 如下：
 所以建角 portrait 是保留每個 4-bit palette index 的 88×40／88×48 垂直串接，
 結果固定為 88×88。這不是 combat icon 的 masked／OR merge 規則。
 
+## 預設肖像（remake 偏離，#130）
+
+**原版**：玩家建角時 overlay-16 `05F5h`／`05FEh`（`26 C6 85 BB 00 01`、
+`26 C6 85 BC 00 01`）無條件把 CHA `+BBh`／`+BCh` 寫成 1。overlay-16 裡其餘對這兩欄的
+寫入只有上面的 `H`／`B`／`K` 處理，所以不論性別，肖像編輯器一律從 HEAD 1／BODY 1
+開始（exact）。
+
+**原版的性別分組表**：overlay-17 `1216h`（overlay SHA-256 `f92fed1b…`，IDA 9.4，
+overlay-local）配置一筆 `11Dh` 位元組的新角色記錄時，依 CHA `+9Eh`（gender，
+spec 003）與職業列索引（`+96h` 起，等級大於 0 的職業隨機挑一個）查表：
+
+- HEAD：`13AAh` 讀 DS `8DBh + gender×8 + random(1..8)`
+- BODY：`12E8h`／`131Ch`／`134Fh`／`137Eh` 依列索引讀
+  牧師 0 → `8EBh`、法師 5 → `8FFh`、盜賊 6 → `909h`、其他 → `8F5h`，
+  位址 `<表> + gender×5 + random(1..5)`
+
+START.EXE（SHA-256 `12811cbc8166…`）的位元組，資料段換算與上一節相同，
+正對照是 DS `2884h` 的 HEAD3 block 表：
+
+| 表 | 男性 | 女性 |
+|---|---|---|
+| HEAD（DS `8DCh`） | 1 2 3 4 5 8 11 12 | 6 7 9 10 13 14 6 7 |
+| BODY 牧師（`8ECh`） | 2 4 2 4 2 | 2 4 8 2 4 |
+| BODY 其他（`8F6h`） | 1 3 4 5 6 | 7 9 11 7 9 |
+| BODY 法師（`900h`） | 2 2 2 2 2 | 8 10 12 8 10 |
+| BODY 盜賊（`90Ah`） | 6 6 6 6 6 | 8 10 8 10 8 |
+
+**remake**（使用者 2026-09-30 定案）：建角的預設肖像取上表該性別、該職業的第一格；
+多職業取列索引最小的組成職業。結果是男性一律 HEAD 1，女性一律 HEAD 6，BODY 依職業
+（男戰士 1、女戰士 7、牧師 2、男法師 2、女法師 8、男盜賊 6、女盜賊 8）。
+`H`／`B` 的循環範圍不變，仍是 1..14／1..12。這是表現層的偏離，不影響規則；
+實作在 `internal/creation/portrait_default.go`，位元組由
+`TestDefaultPortraitTablesMatchStartEXE` 對原版檔核對。
+
 ## 實作閘門
 
 portrait editor 可使用上述 14×12 原版 selector 組合；不得把其他 archive 的 109 張

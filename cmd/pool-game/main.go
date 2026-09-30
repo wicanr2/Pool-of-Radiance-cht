@@ -3541,6 +3541,8 @@ func (a *app) updateCreation() error {
 		a.cursor = 0
 		if a.flow.Stage <= creation.StageAlignment {
 			a.rolled = nil
+			// 退回到能改性別或職業的那幾頁，預設肖像要跟著重算（#130）。
+			a.flow.PortraitHead, a.flow.PortraitBody = 0, 0
 		}
 		return nil
 	}
@@ -3553,10 +3555,10 @@ func (a *app) updateCreation() error {
 			a.rolled = &rolled
 			// 原版的資料頁右上角就有肖像（spec 130 的第 16 幀），用的是
 			// 預設那一張——玩家要到後面（`StagePortrait`）才換得動它。
-			// 那一步本來就從 1／1 起算，這裡先填同一組，不然是 0／0，
-			// 載不出圖，資料頁右上角就空著。
+			// 預設依性別與職業（#130，portrait_default.go），這裡先填同一組，
+			// 不然是 0／0，載不出圖，資料頁右上角就空著。
 			if a.flow.PortraitHead == 0 {
-				a.flow.PortraitHead, a.flow.PortraitBody = 1, 1
+				a.flow.PortraitHead, a.flow.PortraitBody = a.flow.DefaultPortrait()
 			}
 			if err := a.reloadPortrait(); err != nil {
 				a.statusLine = err.Error()

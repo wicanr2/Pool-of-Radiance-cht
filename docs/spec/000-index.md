@@ -17,7 +17,7 @@
 | [003](003-dos-character-creation-flow.md) | DOS 建角流程 | READY | `cmd/pool-game/dos_export.go`、`cmd/pool-game/icon_menu.go`、`cmd/pool-game/main.go` 等 4 個 | `cmd/pool-game/icon_menu_test.go`、`cmd/pool-game/main_test.go`、`internal/gamepack/weapon_stats_test.go` |
 | [004](004-dos-character-roll-fields.md) | DOS 角色擲值與持久欄位 | READY | `internal/creation/rolls.go` | `internal/gamepack/monster_test.go` |
 | [005](005-first-remake-executable.md) | 第一支 remake executable | CONFORMED | `cmd/pool-game/main.go` | `cmd/pool-game/main_test.go` |
-| [006](006-dos-portrait-archives.md) | DOS 建角 portrait archive 形狀 | READY | `cmd/pool-portrait-atlas/main.go`、`cmd/pool-portrait-audit/main.go` | `cmd/pool-portrait-audit/main_test.go` |
+| [006](006-dos-portrait-archives.md) | DOS 建角 portrait archive 形狀 | READY | `cmd/pool-portrait-atlas/main.go`、`cmd/pool-portrait-audit/main.go`、`internal/creation/portrait_default.go` | `cmd/pool-portrait-audit/main_test.go`、`internal/creation/portrait_default_test.go` |
 | [007](007-dos-combat-icons.md) | DOS 戰鬥圖示 | READY | `cmd/pool-game/icon_menu.go` | `cmd/pool-combat-icon-audit/main_test.go` |
 | [008](008-character-library-and-party-menu.md) | 建角完成、角色庫與 Party Creation Menu | CONFORMED＋READY | `cmd/pool-game/dos_export_saves.go`、`cmd/pool-game/party_menu.go`、`cmd/pool-game/training.go` 等 5 個 | `cmd/pool-game/party_menu_test.go` |
 | [009](009-dos-geo-map-inventory.md) | DOS GEO 地圖盤點與 Phlan 入口 | CONFORMED＋READY＋DRAFT | `internal/gamepack/geometry.go` | `cmd/pool-geo-audit/main_test.go` |

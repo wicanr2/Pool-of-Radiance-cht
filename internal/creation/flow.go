@@ -143,7 +143,13 @@ func (flow *Flow) SetName(name string) error {
 	if len(name) < 1 || len(name) > 15 {
 		return fmt.Errorf("Pool character name length %d, want 1..15 bytes", len(name))
 	}
-	flow.Name, flow.PortraitHead, flow.PortraitBody, flow.Stage = name, 1, 1, StagePortrait
+	// 預設肖像依性別與職業（portrait_default.go）；原版一律 1／1。
+	// 已經有值（資料頁先填過，或玩家從肖像頁退回姓名再回來）就不動，
+	// 不然退一步就把玩家挑好的頭像洗掉。
+	if flow.PortraitHead == 0 || flow.PortraitBody == 0 {
+		flow.PortraitHead, flow.PortraitBody = flow.DefaultPortrait()
+	}
+	flow.Name, flow.Stage = name, StagePortrait
 	return nil
 }
 
