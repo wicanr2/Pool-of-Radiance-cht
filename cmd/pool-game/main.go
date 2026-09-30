@@ -172,6 +172,10 @@ type app struct {
 	cellPendingBlock  uint16
 	tacticalPreview bool
 	language        language
+	// chineseFace／chineseShadow 是 F7 切回繁中時要換上的字型（language_switch.go）。
+	// nil 表示沒有倚天字型，F7 只會說明原因。
+	chineseFace   font.Face
+	chineseShadow *etenfont.Face
 	gameText        *gametext.Catalogue
 	// monsterText 是 `MONnCHA` 名字的譯名表。戰鬥與遭遇畫面顯示的是
 	// 玩家看得到的字，沒有這一份就會在中文畫面上冒出 `SPECTRE ×2`。
@@ -921,6 +925,11 @@ func (a *app) Update() error {
 	}
 	if a.justPressed(ebiten.KeyF2) {
 		if err := a.switchTheme(); err != nil {
+			a.statusLine = err.Error()
+		}
+	}
+	if a.justPressed(languageSwitchKey) {
+		if err := a.switchLanguage(); err != nil {
 			a.statusLine = err.Error()
 		}
 	}
@@ -4667,6 +4676,11 @@ func main() {
 	}
 	game.screenStatePath = defaultScreenStatePath(*screenState)
 	game.language, game.gameText, game.monsterText = uiLanguage, catalogue, monsters
+	if uiLanguage == languageTraditionalChinese {
+		game.rememberChineseFace(face)
+	} else {
+		game.loadSwitchableChineseFace(*etenFont, *etenSymbol, *etenASCII)
+	}
 	// 遊戲內攻略（`F3`）。載不進來就讓它是 nil——那時 F3 會說「這張地圖還沒有
 	// 建過攻略點」，不是把遊戲收掉。
 	if guideCatalogue, err := guideFor(uiLanguage); err == nil {
