@@ -7,7 +7,7 @@ import (
 )
 
 // 結局過場在 overlay-18 entry 1（`02A1h`），由 `38h PROGRAM` 運算元 8 進來
-// （spec 081）。唯一的呼叫點是 `ECL5/7` 的 `A82Ah`——打贏泰倫斯拉克斯之後。
+// （spec 081）。唯一的呼叫點是 `ECL5/7` 的 `A82Ah`——打贏泰蘭特拉克斯之後。
 const (
 	EndingOverlay      = 18
 	EndingEntryOffset  = 0x02A1

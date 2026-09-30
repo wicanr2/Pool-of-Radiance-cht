@@ -2666,7 +2666,7 @@ func (a *app) finishCombat(outcome combat.CombatOutcome) error {
 	a.eventText, a.eventLabel = "", ""
 	// `1295h` → `08E0h` → `0E85h`：選單不論有沒有東西都開（spec 150）；離開時
 	// （exitTreasure）才續跑戰後腳本。戰後腳本走的是跟走進一格時同一條邊界分派——
-	// 打贏泰倫斯拉克斯之後的 `A82Ah PROGRAM 08` 也是從那裡接上的。
+	// 打贏泰蘭特拉克斯之後的 `A82Ah PROGRAM 08` 也是從那裡接上的。
 	a.openMonsterLoot(loot, postCombatReport{fought: fought, duel: duel, standing: standing, share: share})
 	return nil
 }

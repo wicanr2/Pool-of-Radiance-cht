@@ -49,7 +49,7 @@ const (
 	// overlay-25 entry 37。所以值 9 是「選法術＋休息」，不是隊伍管理。
 	ProgramCamp = 9
 	// ProgramEnding（值 8）是結局過場（overlay-18 entry 1，spec 108）。
-	// 唯一的呼叫點是 `ECL5/7` 的 `A82Ah`——打贏泰倫斯拉克斯之後。
+	// 唯一的呼叫點是 `ECL5/7` 的 `A82Ah`——打贏泰蘭特拉克斯之後。
 	ProgramEnding = 8
 
 	// AddNPCOpcode 是 `36h ADD NPC`（spec 091）。
