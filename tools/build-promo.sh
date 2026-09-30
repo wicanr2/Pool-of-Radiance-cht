@@ -74,7 +74,8 @@ trap finish EXIT
 n=0; until test -S /tmp/.X11-unix/X99; do n=$((n+1)); test "$n" -lt 100 || exit 1; sleep 0.1; done
 
 "/release/pool-of-radiance-remake-$VERSION-x86_64.AppImage" \
-  -zip /zip/pool.zip -lang zh -eten-font /fonts/stdfont.15 >/tmp/game.log 2>&1 &
+  -zip /zip/pool.zip -lang zh -eten-font /fonts/stdfont.15 \
+  -screen-state /tmp/pool-screen -dice-seed 136 >/tmp/game.log 2>&1 &
 game=$!
 window=""; n=0
 until test -n "$window"; do
@@ -123,47 +124,81 @@ expect() { # expect <這一拍的名字>
 # 那件事。這比拍壞更糟，所以每一拍都用 expect 對過。
 pulse() { xdotool keydown "$1"; sleep 0.18; xdotool keyup "$1"; sleep 0.28; }
 hold() { sleep "$1"; }
+# 剪掉的那幾段（補位建角、開作弊、找遭遇）不看像素，看畫面識別字
+# （-screen-state），與 tools/capture-treasure.sh 同一套。
+screen() { cat /tmp/pool-screen 2>/dev/null | tr -d "\n"; }
+die() { echo "$1；目前畫面：$(screen)" >&2; tail -30 /tmp/game.log >&2 || true; exit 1; }
+step() {
+  key=$1; want=$2; limit=${3:-40}; attempt=0
+  while test "$(screen)" != "$want"; do
+    attempt=$((attempt+1)); test "$attempt" -le "$limit" || die "按 $key 走不到 $want"
+    pulse "$key"; waited=0
+    while test "$(screen)" != "$want" && test "$waited" -lt 15; do sleep 0.1; waited=$((waited+1)); done
+  done
+}
+make_character() {
+  step c creation-race
+  step Return creation-gender
+  step Return creation-class
+  step Return creation-alignment
+  step Return creation-roll
+  step Return creation-name
+  xdotool type --delay 80 "$1"
+  step Return creation-portrait
+  step k creation-icon-0
+  step e creation-icon-confirm
+  step y menu
+}
 
 beat "SSI 金盒子《光芒之池》繁體中文重製"
 expect 標題
 hold 4
-pulse Return
+# 建角這一段也用畫面識別字推進。靠 sleep 盲按時掉一個鍵，expect 只看得出
+# 「畫面有換」，看不出換到哪——曾經整段停在姓名欄，後面按的 c 全打成名字。
+step Return menu
 expect 人物管理
 beat "人物管理：十一個指令的可見規則照原版接"
 hold 4
-pulse c
+step c creation-race
 expect 種族
 beat "建角的用詞取自軟體世界當年的官方中文說明書"
 hold 3.5
-pulse Return; pulse Return
+step Return creation-gender
+step Return creation-class
 expect 職業
 beat "九個陣營、四種職業、六項屬性"
 hold 3.5
-pulse Return; pulse Return
+step Return creation-alignment
+step Return creation-roll
 expect 人物資料頁
 beat "人物資料頁"
 hold 4
-pulse Return
-sleep 0.5
+step Return creation-name
 xdotool type --delay 120 HERO
-pulse Return
-sleep 0.6
+step Return creation-portrait
+sleep 0.4
 expect 肖像編輯器
 beat "肖像用原版 HEAD／BODY 素材"
 hold 3.5
-pulse k
-sleep 0.8
-for key in p h n k e; do pulse "$key"; done
-sleep 0.5
+step k creation-icon-0
+sleep 0.4
 expect 戰鬥圖示編輯器
 beat "戰鬥圖示用原版 READY／ACTION 素材"
 hold 3.5
-pulse e; sleep 0.5; pulse y; sleep 0.8; pulse a; sleep 0.8
+step e creation-icon-confirm
+step y menu
+# 補五個隊員再一起加入：一人隊伍在隨機遭遇裡一個 tick 內就被打光，鎖 HP
+# 是 tick 結束才補（spec 141 的限制），會直接跳回標題。這一段剪掉不播。
+beat "@CUT"
+for name in ARTH BRAN CELE DARA EDRI; do make_character "$name"; done
+beat "@RESUME"
+for _ in 1 2 3 4 5 6; do pulse a; sleep 0.3; done
+sleep 0.5
 expect 隊伍
 beat "加入隊伍，開始冒險"
 hold 3
-pulse b
-sleep 1.5
+step b adventure-intro 5
+sleep 1
 expect 導覽第一頁
 beat "原版開場導覽與遊戲內敘事全部繁中化"
 hold 5
@@ -235,10 +270,68 @@ for _ in 1 2 3; do pulse Tab; sleep 0.2; done
 expect 法術一覽
 beat "六十七支法術全部接完"
 hold 5
-pulse k; sleep 0.4; pulse F5
-expect 戰術盤面
-beat "戰術戰鬥：原版八方向與回合流程"
-hold 5
+pulse k; sleep 0.4
+# 真實遭遇戰（#128）：開作弊的鎖 HP、一擊斃命與穿牆，往前走到隨機遭遇。
+# 開作弊與找路那一段剪掉，字幕照實寫出錄影開了鎖 HP。
+beat "@CUT"
+# 不要用 Escape 等「回到可以走」：冒險畫面上 ESC 是回人物管理。
+# 關掉法術一覽之後停在哪一格（adventure-move 或 adventure-cell-done）不一定，
+# 兩個都能走。
+echo "法術一覽關掉之後：$(screen)" >&2
+step F6 cheat-menu
+pulse l; pulse o; pulse w
+sleep 0.3
+pulse Escape
+n=0; while test "$(screen)" = cheat-menu; do n=$((n+1)); test "$n" -lt 30 || die "作弊選單關不掉"; sleep 0.1; done
+case "$(screen)" in adventure-move|adventure-cell-done) ;; *) die "關掉作弊選單後不在可走的畫面" ;; esac
+n=0
+while test "$(screen)" != combat-staged; do
+  n=$((n+1)); test "$n" -lt 500 || die "走了 500 步沒有遇到隨機遭遇"
+  case "$(screen)" in
+    adventure-move|adventure-cell-done) pulse Up ;;
+    tactical) die "沒經過 combat-staged 就進了戰術盤" ;;
+    *) pulse Return ;;
+  esac
+done
+sleep 0.6
+beat "@RESUME"
+expect 遭遇
+beat "走著走著撞上隨機遭遇"
+hold 4
+step Return tactical 10
+sleep 0.6
+expect 真實戰鬥
+beat "真實遭遇戰：戰場造形用原版 CPIC 圖，Q 交給 AI 打（錄影時開了鎖 HP）"
+hold 3
+fight_start=$(date +%s)
+while test "$(screen)" = tactical && test $(( $(date +%s) - fight_start )) -lt 14; do
+  pulse q; sleep 0.4; pulse Return; sleep 0.4; pulse n; sleep 0.3
+done
+if test "$(screen)" = tactical; then
+  beat "@CUT"
+  n=0
+  while test "$(screen)" = tactical; do
+    n=$((n+1)); test "$n" -lt 200 || die "戰鬥沒有結束"
+    pulse q; pulse Return; pulse n
+  done
+  sleep 0.6
+  beat "@RESUME"
+fi
+test "$(screen)" != title || die "全滅回到標題"
+sleep 0.8
+expect 戰鬥結束
+case "$(screen)" in
+  treasure*) beat "打贏：經驗值與戰利品結算" ;;
+  *) beat "戰鬥結束，回到探索" ;;
+esac
+hold 4
+pulse F7; sleep 0.8
+expect 英文介面
+beat "F7 切換繁中／English：只換顯示，不動遊戲狀態"
+hold 4
+pulse F7; sleep 0.8
+expect 繁中介面
+hold 2
 beat "END"
 sleep 0.5
 kill -INT "$grab" 2>/dev/null || true
@@ -266,19 +359,35 @@ with open("/promo/beats.txt", encoding="utf-8") as handle:
         raw.append((float(seconds), caption))
 raw_total = raw[-1][0]
 
-# @CUT..@RESUME 是照實錄下來但不播的那一段（導覽的按鍵快轉）。
-cut_start = next((t for t, c in raw if c == "@CUT"), None)
-cut_end = next((t for t, c in raw if c == "@RESUME"), None)
-if (cut_start is None) != (cut_end is None):
+# @CUT..@RESUME 是照實錄下來但不播的段落（導覽快轉、補位建角、找遭遇），
+# 可以有好幾段，要一段一段成對。
+cuts = []
+open_cut = None
+for seconds, caption in raw:
+    if caption == "@CUT":
+        if open_cut is not None:
+            raise SystemExit("@CUT 沒有接 @RESUME 又開了一段")
+        open_cut = seconds
+    elif caption == "@RESUME":
+        if open_cut is None:
+            raise SystemExit("@RESUME 前面沒有 @CUT")
+        cuts.append((open_cut, seconds))
+        open_cut = None
+if open_cut is not None:
     raise SystemExit("@CUT 與 @RESUME 要成對")
-dropped = (cut_end - cut_start) if cut_start is not None else 0.0
+
+
+def played(seconds):
+    # 錄影時間換成成片時間：扣掉它之前所有剪掉的長度。
+    return seconds - sum(min(end, seconds) - start for start, end in cuts if start < seconds)
+
 
 beats = []
 for seconds, caption in raw:
     if caption in ("END", "@CUT", "@RESUME"):
         continue
-    beats.append((seconds - dropped if seconds >= (cut_end or 0) else seconds, caption))
-total = raw_total - dropped
+    beats.append((played(seconds), caption))
+total = played(raw_total)
 
 
 def escape(text):
@@ -297,9 +406,9 @@ for index, (start, caption) in enumerate(beats):
         ":x=(w-text_w)/2:y=666:enable='between(t,%.2f,%.2f)'" % (escape(caption), start, end))
 
 trim = []
-if cut_start is not None:
-    trim = ["select='not(between(t,%.2f,%.2f))'" % (cut_start, cut_end),
-            "setpts=N/FRAME_RATE/TB"]
+if cuts:
+    keep = "+".join("between(t,%.2f,%.2f)" % cut for cut in cuts)
+    trim = ["select='not(%s)'" % keep, "setpts=N/FRAME_RATE/TB"]
 
 video = ",".join(trim + [
     "scale=1024:640:flags=lanczos",
