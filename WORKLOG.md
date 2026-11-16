@@ -307,3 +307,4 @@
 ## 2026-11-16 重複檔改唯讀硬連結
 
 依使用者要求清理空間，只處理git未追蹤、4096 bytes以上、不在巢狀git repo內的檔案。連結前在Docker重新計算兩端SHA-256並核對大小與擁有者，共5個檔案改成硬連結，省下41434 bytes，略過0個。路徑與內容不變；共用檔已移除寫入權限，原地改寫會報錯而不會同時改到其他路徑。收據與工具在`workplace/cleanup-20261116-dedup/`。要解除時，用`cp`複製成獨立檔案再補回寫入權限。原始輸入、程式來源、研究紀錄與dist-all內容都沒有刪除。
+- 依使用者要求打包git未追蹤的本機資料，不含dist-all與頂層.git，供放上Google Drive：`~/Downloads/golden_box-backup-20261116/pool_of_radiance-backup-20261116.zip`，97107833 bytes，SHA-256 `c1e27d666383bf9123f1ae81f9972a65d1307b60b7be7602a871c625ec33f862`。包內附SHA256SUMS、符號連結清單與還原說明，打包後重新讀取逐檔比對SHA全部相符。
